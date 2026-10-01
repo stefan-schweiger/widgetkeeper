@@ -5,6 +5,8 @@ Custom dashboard widgets for Homey Pro (`com.thomassidor.widgetkeeper`).
 ## Widgets
 
 ### Electricity
+<img src="widgets/electricity/preview-dark.png" alt="Electricity widget preview" width="320">
+
 One card with:
 - live power for a configurable window (30 s to 1 h)
 - the hourly electricity price from 24 h back to 12 h ahead
@@ -18,6 +20,8 @@ Hover or drag over either chart to scrub.
 - **Settings**: *Live power window*, *Show usage history* (optionally as a separate chart), *Show lowest price* (off / next 12 h / next 24 h / both).
 
 ### Thermostat shortcuts
+<img src="widgets/thermostat/preview-dark.png" alt="Thermostat shortcuts widget preview" width="320">
+
 Three preset buttons for one thermostat or aircon. Each button can set the power (keep / on / off), the target temperature, the mode, and one extra setting such as the fan speed. The button that matches the device's current state is highlighted.
 
 ## Diagnostics
