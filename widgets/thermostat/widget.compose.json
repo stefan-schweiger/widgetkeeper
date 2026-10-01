@@ -1,0 +1,173 @@
+{
+  "name": {
+    "en": "Thermostat shortcuts"
+  },
+  "height": 140,
+  "transparent": false,
+  "settings": [
+    {
+      "id": "device",
+      "type": "autocomplete",
+      "title": {
+        "en": "Thermostat or aircon"
+      }
+    },
+    {
+      "id": "b1Power",
+      "type": "dropdown",
+      "title": {
+        "en": "Button 1 – power"
+      },
+      "value": "off",
+      "values": [
+        {
+          "id": "keep",
+          "title": {
+            "en": "Don't change"
+          }
+        },
+        {
+          "id": "on",
+          "title": {
+            "en": "Turn on"
+          }
+        },
+        {
+          "id": "off",
+          "title": {
+            "en": "Turn off"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b1Temp",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 1 – target temperature"
+      }
+    },
+    {
+      "id": "b1Mode",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 1 – mode"
+      }
+    },
+    {
+      "id": "b1Extra",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 1 – fan or other setting"
+      }
+    },
+    {
+      "id": "b2Power",
+      "type": "dropdown",
+      "title": {
+        "en": "Button 2 – power"
+      },
+      "value": "on",
+      "values": [
+        {
+          "id": "keep",
+          "title": {
+            "en": "Don't change"
+          }
+        },
+        {
+          "id": "on",
+          "title": {
+            "en": "Turn on"
+          }
+        },
+        {
+          "id": "off",
+          "title": {
+            "en": "Turn off"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b2Temp",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 2 – target temperature"
+      }
+    },
+    {
+      "id": "b2Mode",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 2 – mode"
+      }
+    },
+    {
+      "id": "b2Extra",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 2 – fan or other setting"
+      }
+    },
+    {
+      "id": "b3Power",
+      "type": "dropdown",
+      "title": {
+        "en": "Button 3 – power"
+      },
+      "value": "on",
+      "values": [
+        {
+          "id": "keep",
+          "title": {
+            "en": "Don't change"
+          }
+        },
+        {
+          "id": "on",
+          "title": {
+            "en": "Turn on"
+          }
+        },
+        {
+          "id": "off",
+          "title": {
+            "en": "Turn off"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b3Temp",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 3 – target temperature"
+      }
+    },
+    {
+      "id": "b3Mode",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 3 – mode"
+      }
+    },
+    {
+      "id": "b3Extra",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 3 – fan or other setting"
+      }
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    },
+    "apply": {
+      "method": "POST",
+      "path": "/apply"
+    }
+  }
+}

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Electricity widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/electricity/public/widget.css">
+  <script src="../widgets/electricity/public/widget.js"></script>
+  <style>
+    body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    .card { background: var(--homey-background-color, #1F2029); border-radius: 20px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.3); box-sizing: border-box; }
+    .light {
+      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75;
+      color: var(--ew-text);
+    }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>400 px · default</span><div class="card" style="width:400px"><div id="w1"></div></div></div>
+  <div class="col"><span>352 px · usage off</span><div class="card" style="width:352px"><div id="w2"></div></div></div>
+  <div class="col"><span>400 px · light · missing future prices</span><div class="card light" style="width:400px"><div id="w3"></div></div></div>
+  <div class="col"><span>400 px · separate usage chart · 5 min live</span><div class="card" style="width:400px"><div id="w4"></div></div></div>
+  <div class="col"><span>400 px · lowest price 12h + 24h</span><div class="card" style="width:400px"><div id="w5"></div></div></div>
+  <div class="col"><span>352 px · lowest price 24h</span><div class="card" style="width:352px"><div id="w6"></div></div></div>
+
+  <script>
+    // Mock data, ported from the prototype's generator (Handoff/prototype/Electricity Widget.dc.html).
+    function rng(seed) { return () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
+    const PB = [1.30, 1.25, 1.22, 1.20, 1.22, 1.35, 1.75, 2.25, 2.38, 2.05, 1.75, 1.50, 1.30, 1.22, 1.25, 1.40, 1.85, 2.30, 2.58, 2.50, 2.15, 1.80, 1.60, 1.42];
+    const UB = [0.32, 0.30, 0.28, 0.29, 0.30, 0.35, 0.70, 1.10, 0.85, 0.55, 0.48, 0.52, 0.60, 0.50, 0.48, 0.55, 0.95, 1.60, 1.85, 1.40, 1.05, 0.80, 0.60, 0.42];
+
+    function mockSnapshot({ futureHours = 24 } = {}) {
+      const now = Date.now(), r = rng(4242);
+      const hs = Math.floor(now / 3600e3) * 3600e3, mins = new Date(now).getMinutes();
+      const prices = [];
+      for (let i = 0; i < 49; i++) {
+        const t = hs + (i - 24) * 3600e3, d = new Date(t), h = d.getHours();
+        const dayF = d.getDate() % 2 ? 0.94 : 1.04;
+        const price = +(PB[h] * dayF + (r() - 0.5) * 0.08).toFixed(2);
+        r();
+        prices.push({ start: t, price: i > 24 + futureHours ? null : price });
+      }
+      const usage = [];
+      const nFine = 24 * 12 + Math.floor(mins / 5) + 1;
+      let fridge = 0, spike = 0, spikeW = 0;
+      for (let j = 0; j < nFine; j++) {
+        const h = new Date(prices[Math.floor(j / 12)].start).getHours();
+        if (j % 3 === 0) fridge = (fridge + 1) % 5;
+        if (spike <= 0 && r() < (h >= 6 && h <= 22 ? 0.05 : 0.01)) { spike = 1 + Math.floor(r() * 4); spikeW = 350 + r() * 650; }
+        let v = 120 + UB[h] * 1300 * (0.8 + r() * 0.4) + (fridge < 2 ? 110 : 0) + (r() - 0.5) * 60;
+        if (spike > 0) { v += spikeW * (0.85 + r() * 0.3); spike--; }
+        usage.push({ t: prices[0].start + j * 300e3, w: Math.round(Math.max(120, v)) });
+      }
+      // Raw meter readings every ~5–15 s for the last hour.
+      const live = [];
+      for (let t = now - 3600e3; t <= now; t += 5e3 + r() * 10e3) {
+        const m = (t - now) / 60e3;
+        let v = 285 + r() * 30;
+        if (Math.floor((m + 60) / 13) % 2 === 0) v += 115;
+        if (m > -38 && m < -27) v += 1820 + r() * 60;
+        if (m > -9) v += 560 + r() * 25;
+        if (m > -4 && m < -2) v += 900;
+        live.push({ t: Math.round(t), w: Math.round(v) });
+      }
+      return { now, deviceName: 'Meter', live, prices, usage, currency: 'DKK' };
+    }
+
+    const widgets = [
+      [createElectricityWidget(document.getElementById('w1'), { locale: 'da-DK' }), mockSnapshot(), {}],
+      [createElectricityWidget(document.getElementById('w2'), { locale: 'da-DK' }), mockSnapshot(), { showUsage: false }],
+      [createElectricityWidget(document.getElementById('w3'), { locale: 'da-DK' }), mockSnapshot({ futureHours: 5 }), {}],
+      [createElectricityWidget(document.getElementById('w4'), { locale: 'da-DK' }), mockSnapshot(), { separateUsage: true, liveWindow: 5 }],
+      [createElectricityWidget(document.getElementById('w5'), { locale: 'da-DK' }), mockSnapshot(), { nextLow: 'both' }],
+      [createElectricityWidget(document.getElementById('w6'), { locale: 'da-DK' }), mockSnapshot(), { nextLow: '24', showUsage: false }],
+    ];
+    for (const [w, snap, settings] of widgets) { w.setSettings({ liveWindow: 60, ...settings }); w.setData(snap); }
+
+    // ?snap=/temp/real-snapshot.json renders a snapshot captured from a real Homey in the first card.
+    const snapUrl = new URLSearchParams(location.search).get('snap');
+    if (snapUrl) fetch(snapUrl).then(r => r.json()).then(s => { widgets[0][1] = s; widgets[0][0].setData(s); });
+
+    // Scrub simulation for screenshots: #live=0.4 or #price=0.3 (fraction of the plot width).
+    const scrub = /#(live|price)=([\d.]+)/.exec(location.hash);
+    if (scrub) {
+      setTimeout(() => {
+        for (const id of ['w1', 'w2', 'w3', 'w4']) {
+          const svg = document.querySelectorAll(`#${id} svg`)[scrub[1] === 'live' ? 0 : 2];
+          const r = svg.getBoundingClientRect();
+          const x = r.left + 38 + (r.width - 72) * Number(scrub[2]);
+          svg.dispatchEvent(new PointerEvent('pointermove', { clientX: x, clientY: r.top + 60, bubbles: true }));
+        }
+      }, 100);
+    }
+
+    // Simulate meter readings every 5 s.
+    setInterval(() => {
+      for (const [w, snap] of widgets) {
+        const last = snap.live[snap.live.length - 1];
+        w.pushLive({ t: Date.now(), w: Math.round(last.w + (Math.random() - 0.5) * 80) });
+      }
+    }, 5000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Widget Previews</title>
+<!--
+  Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
+  Without a query it shows all four on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light`
+  renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
+-->
+<style>
+  body { margin: 0; background: #2A2B33; font-family: Roboto, -apple-system, system-ui, sans-serif; }
+  .canvas { display: flex; flex-wrap: wrap; gap: 48px; padding: 48px; }
+  .item { display: flex; flex-direction: column; gap: 12px; }
+  .label { color: #EDEEF0; font-size: 20px; font-weight: 500; }
+  .checker { background-size: 32px 32px; background-position: 0 0, 16px 16px; }
+  .checker.dark { background-color: #16171C; background-image: linear-gradient(45deg,#1C1D23 25%,transparent 25%,transparent 75%,#1C1D23 75%), linear-gradient(45deg,#1C1D23 25%,transparent 25%,transparent 75%,#1C1D23 75%); }
+  .checker.light { background-color: #E9EAEE; background-image: linear-gradient(45deg,#DFE0E5 25%,transparent 25%,transparent 75%,#DFE0E5 75%), linear-gradient(45deg,#DFE0E5 25%,transparent 25%,transparent 75%,#DFE0E5 75%); }
+  .frame { width: 1024px; height: 1024px; display: flex; align-items: center; justify-content: center; }
+  .card { width: 800px; border-radius: 48px; padding: 48px; box-sizing: border-box; display: flex; flex-direction: column; }
+  .dark .card { background: #1F2029; box-shadow: 0 12px 40px rgba(0,0,0,0.45); }
+  .light .card { background: #FFFFFF; box-shadow: 0 12px 40px rgba(17,18,23,0.12); }
+  .pill { border-radius: 999px; }
+  svg { display: block; overflow: visible; }
+
+  /* Single-frame mode */
+  body.solo { background: transparent; }
+  body.solo .canvas { padding: 0; gap: 0; }
+  body.solo .label { display: none; }
+  body.solo .checker { background: none; }
+</style>
+</head>
+<body>
+<section class="canvas" id="canvas"></section>
+<script>
+const W = 704;
+const PB = [1.30,1.25,1.22,1.20,1.22,1.35,1.75,2.25,2.38,2.05,1.75,1.50,1.30,1.22,1.25,1.40,1.85,2.30,2.58,2.50,2.15,1.80,1.60,1.42];
+
+function paths() {
+  const H1 = 150, n = 48, live = [];
+  for (let i = 0; i < n; i++) {
+    let v = 0.22 + (Math.floor(i / 6) % 2 ? 0.08 : 0);
+    if (i > 14 && i < 22) v = 0.85;
+    if (i > 38) v = 0.5;
+    live.push(v);
+  }
+  const lx = i => W * i / (n - 1), ly = v => H1 - 8 - (H1 - 16) * v;
+  const liveLine = 'M' + live.map((v, i) => `${lx(i).toFixed(1)} ${ly(v).toFixed(1)}`).join('L');
+  const H2 = 180, pmax = 2.7, sw = W / PB.length, py = p => H2 - 8 - (H2 - 16) * (p / pmax);
+  let priceLine = `M0 ${py(PB[0]).toFixed(1)}`;
+  PB.forEach((p, i) => { if (i) priceLine += `V${py(p).toFixed(1)}`; priceLine += `H${((i + 1) * sw).toFixed(1)}`; });
+  const grid = (h, k) => Array.from({ length: k }, (_, j) => `M0 ${(h * (j + 1) / k).toFixed(1)}H${W}`).join('');
+  return {
+    liveLine, liveArea: liveLine + `L${W} ${H1}L0 ${H1}Z`,
+    priceLine, priceArea: priceLine + `V${H2}H0Z`,
+    grid1: grid(H1, 3), grid2: grid(H2, 3),
+  };
+}
+
+const THEMES = {
+  dark:  { fg: '#EDEEF0', muted: '#2C2D36', grid: '#2C2D36', green: '#71D51B', liveFill: 0.22, priceFill: 0.16, tile: '#2C2D36', tileText: '#464752' },
+  light: { fg: '#1F2029', muted: '#E6E7EB', grid: '#EEEFF2', green: '#5DB80F', liveFill: 0.18, priceFill: 0.14, tile: '#F0F1F4', tileText: '#D5D6DC' },
+};
+const BLUE = '#2F8DF6', ORANGE = '#F2761E';
+const pill = (w, h, bg, extra = '') => `<div class="pill" style="width:${w}px;height:${h}px;background:${bg};${extra}"></div>`;
+
+function electricity(t) {
+  const p = paths();
+  return `<div class="card" style="gap:40px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+      <div style="display:flex;flex-direction:column;gap:14px">${pill(220, 44, t.green)}${pill(150, 24, t.muted)}</div>
+      <div style="display:flex;flex-direction:column;gap:14px">${pill(240, 44, BLUE)}${pill(180, 24, t.muted)}</div>
+    </div>
+    <svg width="704" height="150" viewBox="0 0 704 150">
+      <path d="${p.grid1}" fill="none" stroke="${t.grid}" stroke-width="3"/>
+      <path d="${p.liveArea}" fill="${t.green}" fill-opacity="${t.liveFill}"/>
+      <path d="${p.liveLine}" fill="none" stroke="${t.green}" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+    </svg>
+    <svg width="704" height="180" viewBox="0 0 704 180">
+      <path d="${p.grid2}" fill="none" stroke="${t.grid}" stroke-width="3"/>
+      <path d="${p.priceArea}" fill="${BLUE}" fill-opacity="${t.priceFill}"/>
+      <path d="${p.priceLine}" fill="none" stroke="${BLUE}" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+    </svg>
+    <div style="display:flex;justify-content:space-between;align-items:center;border-top:3px solid ${t.grid};padding-top:32px">
+      ${pill(280, 24, t.muted)}${pill(130, 24, BLUE)}
+    </div>
+  </div>`;
+}
+
+function thermostat(t) {
+  const tile = (radius, inner) => `<div style="flex:1;height:200px;background:${radius[1]};border-radius:${radius[0]};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">${inner}</div>`;
+  return `<div class="card" style="gap:44px">
+    <div style="display:flex;align-items:center;gap:32px">
+      <div style="width:72px;height:84px;border:7px solid ${t.fg};border-radius:18px;box-sizing:border-box;flex:none"></div>
+      <div style="display:flex;flex-direction:column;gap:14px">${pill(300, 36, t.fg)}${pill(200, 24, t.muted)}</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      ${tile(['44px 12px 12px 44px', t.tile], pill(96, 36, t.tileText))}
+      ${tile(['12px', ORANGE], pill(110, 40, '#FFFFFF') + pill(130, 22, 'rgba(255,255,255,0.6)'))}
+      ${tile(['12px 44px 44px 12px', t.tile], pill(110, 40, t.tileText) + pill(130, 22, ORANGE, 'opacity:0.7'))}
+    </div>
+  </div>`;
+}
+
+const PREVIEWS = [
+  { id: 'elec-dark',    label: '1a · Electricity — preview-dark.png',          theme: 'dark',  render: electricity },
+  { id: 'elec-light',   label: '1b · Electricity — preview-light.png',         theme: 'light', render: electricity },
+  { id: 'thermo-dark',  label: '1c · Thermostat shortcuts — preview-dark.png',  theme: 'dark',  render: thermostat },
+  { id: 'thermo-light', label: '1d · Thermostat shortcuts — preview-light.png', theme: 'light', render: thermostat },
+];
+
+const solo = new URLSearchParams(location.search).get('p');
+if (solo) document.body.classList.add('solo');
+document.getElementById('canvas').innerHTML = PREVIEWS
+  .filter(p => !solo || p.id === solo)
+  .map(p => `<div class="item">
+    <div class="label">${p.label}</div>
+    <div class="checker ${p.theme}"><div class="frame" data-preview="${p.id}">${p.render(THEMES[p.theme])}</div></div>
+  </div>`).join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,339 @@
+{
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "id": "com.thomassidor.widgetkeeper",
+  "version": "0.1.0",
+  "compatibility": ">=12.6.0",
+  "sdk": 3,
+  "runtime": "nodejs",
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Widgetkeeper"
+  },
+  "description": {
+    "en": "Custom dashboard widgets for your Homey."
+  },
+  "category": [
+    "energy"
+  ],
+  "brandColor": "#2F8DF6",
+  "permissions": [
+    "homey:manager:api"
+  ],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Thomas Sidor",
+    "email": "mail@thomassidor.com"
+  },
+  "source": "https://github.com/thomassidor/widgetkeeper",
+  "bugs": {
+    "url": "https://github.com/thomassidor/widgetkeeper/issues"
+  },
+  "api": {
+    "getDiagnostics": {
+      "method": "GET",
+      "path": "/diagnostics"
+    }
+  },
+  "esm": true,
+  "widgets": {
+    "electricity": {
+      "name": {
+        "en": "Electricity"
+      },
+      "height": 483,
+      "transparent": false,
+      "devices": {
+        "type": "global",
+        "singular": true,
+        "filter": {
+          "capabilities": "measure_power"
+        }
+      },
+      "settings": [
+        {
+          "id": "liveWindow",
+          "type": "dropdown",
+          "title": {
+            "en": "Live power window"
+          },
+          "value": "10",
+          "values": [
+            {
+              "id": "60",
+              "title": {
+                "en": "1 hour"
+              }
+            },
+            {
+              "id": "30",
+              "title": {
+                "en": "30 minutes"
+              }
+            },
+            {
+              "id": "10",
+              "title": {
+                "en": "10 minutes"
+              }
+            },
+            {
+              "id": "5",
+              "title": {
+                "en": "5 minutes"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "1 minute"
+              }
+            },
+            {
+              "id": "0.5",
+              "title": {
+                "en": "30 seconds"
+              }
+            }
+          ]
+        },
+        {
+          "id": "showUsage",
+          "type": "checkbox",
+          "title": {
+            "en": "Show usage history"
+          },
+          "value": true
+        },
+        {
+          "id": "separateUsage",
+          "type": "checkbox",
+          "title": {
+            "en": "Show usage history as a separate chart"
+          },
+          "value": false
+        },
+        {
+          "id": "nextLow",
+          "type": "dropdown",
+          "title": {
+            "en": "Show lowest price"
+          },
+          "value": "12",
+          "values": [
+            {
+              "id": "none",
+              "title": {
+                "en": "Off"
+              }
+            },
+            {
+              "id": "12",
+              "title": {
+                "en": "Next 12 hours"
+              }
+            },
+            {
+              "id": "24",
+              "title": {
+                "en": "Next 24 hours"
+              }
+            },
+            {
+              "id": "both",
+              "title": {
+                "en": "Next 12 and 24 hours"
+              }
+            }
+          ]
+        }
+      ],
+      "api": {
+        "getSnapshot": {
+          "method": "GET",
+          "path": "/snapshot"
+        }
+      },
+      "id": "electricity"
+    },
+    "thermostat": {
+      "name": {
+        "en": "Thermostat shortcuts"
+      },
+      "height": 140,
+      "transparent": false,
+      "settings": [
+        {
+          "id": "device",
+          "type": "autocomplete",
+          "title": {
+            "en": "Thermostat or aircon"
+          }
+        },
+        {
+          "id": "b1Power",
+          "type": "dropdown",
+          "title": {
+            "en": "Button 1 – power"
+          },
+          "value": "off",
+          "values": [
+            {
+              "id": "keep",
+              "title": {
+                "en": "Don't change"
+              }
+            },
+            {
+              "id": "on",
+              "title": {
+                "en": "Turn on"
+              }
+            },
+            {
+              "id": "off",
+              "title": {
+                "en": "Turn off"
+              }
+            }
+          ]
+        },
+        {
+          "id": "b1Temp",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 1 – target temperature"
+          }
+        },
+        {
+          "id": "b1Mode",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 1 – mode"
+          }
+        },
+        {
+          "id": "b1Extra",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 1 – fan or other setting"
+          }
+        },
+        {
+          "id": "b2Power",
+          "type": "dropdown",
+          "title": {
+            "en": "Button 2 – power"
+          },
+          "value": "on",
+          "values": [
+            {
+              "id": "keep",
+              "title": {
+                "en": "Don't change"
+              }
+            },
+            {
+              "id": "on",
+              "title": {
+                "en": "Turn on"
+              }
+            },
+            {
+              "id": "off",
+              "title": {
+                "en": "Turn off"
+              }
+            }
+          ]
+        },
+        {
+          "id": "b2Temp",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 2 – target temperature"
+          }
+        },
+        {
+          "id": "b2Mode",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 2 – mode"
+          }
+        },
+        {
+          "id": "b2Extra",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 2 – fan or other setting"
+          }
+        },
+        {
+          "id": "b3Power",
+          "type": "dropdown",
+          "title": {
+            "en": "Button 3 – power"
+          },
+          "value": "on",
+          "values": [
+            {
+              "id": "keep",
+              "title": {
+                "en": "Don't change"
+              }
+            },
+            {
+              "id": "on",
+              "title": {
+                "en": "Turn on"
+              }
+            },
+            {
+              "id": "off",
+              "title": {
+                "en": "Turn off"
+              }
+            }
+          ]
+        },
+        {
+          "id": "b3Temp",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 3 – target temperature"
+          }
+        },
+        {
+          "id": "b3Mode",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 3 – mode"
+          }
+        },
+        {
+          "id": "b3Extra",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 3 – fan or other setting"
+          }
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        },
+        "apply": {
+          "method": "POST",
+          "path": "/apply"
+        }
+      },
+      "id": "thermostat"
+    }
+  }
+}

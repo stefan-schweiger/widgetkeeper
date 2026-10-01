@@ -1,0 +1,30 @@
+{
+  "name": "com.thomassidor.widgetkeeper",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Custom dashboard widgets for Homey Pro",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomassidor/widgetkeeper.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "placeholders": "node scripts/make-placeholders.mjs",
+    "previews": "node scripts/render-previews.mjs",
+    "validate": "homey app validate --level debug",
+    "start": "homey app run",
+    "install-homey": "homey app install"
+  },
+  "dependencies": {
+    "homey-api": "^3.20.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^16.1.9",
+    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
+    "@types/node": "^26.6.3",
+    "homey": "^4.5.3",
+    "typescript": "^7.0.2"
+  }
+}

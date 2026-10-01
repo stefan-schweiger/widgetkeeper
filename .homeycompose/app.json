@@ -1,0 +1,42 @@
+{
+  "id": "com.thomassidor.widgetkeeper",
+  "version": "0.1.0",
+  "compatibility": ">=12.6.0",
+  "sdk": 3,
+  "runtime": "nodejs",
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Widgetkeeper"
+  },
+  "description": {
+    "en": "Custom dashboard widgets for your Homey."
+  },
+  "category": [
+    "energy"
+  ],
+  "brandColor": "#2F8DF6",
+  "permissions": [
+    "homey:manager:api"
+  ],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Thomas Sidor",
+    "email": "mail@thomassidor.com"
+  },
+  "source": "https://github.com/thomassidor/widgetkeeper",
+  "bugs": {
+    "url": "https://github.com/thomassidor/widgetkeeper/issues"
+  },
+  "api": {
+    "getDiagnostics": {
+      "method": "GET",
+      "path": "/diagnostics"
+    }
+  }
+}

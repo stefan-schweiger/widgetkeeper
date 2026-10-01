@@ -1,0 +1,27 @@
+{
+  "electricity": {
+    "usingNow": "Using now",
+    "minutesRemaining": "__minutes__ minutes remaining",
+    "livePower": "Live power",
+    "price": "Price",
+    "usage": "Usage",
+    "now": "Now",
+    "lowestNext12h": "Lowest price next 12h",
+    "lowestNext24h": "Lowest price next 24h",
+    "lowestBoth": "Lowest price 12h/24h",
+    "selectMeter": "Select a power meter in the widget settings.",
+    "noPrices": "No electricity prices available. Enable dynamic prices in Homey Energy.",
+    "error": "Could not load data."
+  },
+  "thermostat": {
+    "selectDevice": "Select a thermostat in the widget settings.",
+    "selectDeviceFirst": "Select a thermostat first, then reopen this setting.",
+    "unchanged": "Don't change",
+    "off": "Off",
+    "error": "Could not load the thermostat.",
+    "applyFailed": "Could not change the thermostat.",
+    "on": "On",
+    "currently": "Currently __state__",
+    "currentlyOff": "Currently off"
+  }
+}

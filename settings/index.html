@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+  <style>
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+    .row > * { flex: 1 1 auto; }
+    #report {
+      width: 100%; box-sizing: border-box; height: 60vh; font: 11px/1.4 ui-monospace, Menlo, Consolas, monospace;
+      white-space: pre; overflow: auto; resize: vertical;
+    }
+    #status { min-height: 1.4em; }
+  </style>
+</head>
+<body>
+  <header class="homey-header">
+    <h1 class="homey-title">Diagnostics</h1>
+    <p class="homey-subtitle">The app's recent log and device details. Copy or share the report to get help debugging.</p>
+  </header>
+
+  <fieldset class="homey-form-fieldset">
+    <div class="homey-form-group">
+      <label class="homey-form-label" for="device">Include device details</label>
+      <select class="homey-form-select" id="device"><option value="">None</option></select>
+    </div>
+  </fieldset>
+
+  <div class="row">
+    <button class="homey-button-secondary-shadow" id="refresh">Refresh</button>
+    <button class="homey-button-primary-shadow" id="copy">Copy</button>
+    <button class="homey-button-secondary-shadow" id="share" style="display:none">Share</button>
+  </div>
+  <p class="homey-form-help" id="status"></p>
+  <textarea id="report" readonly></textarea>
+
+  <script type="text/javascript">
+    function onHomeyReady(Homey) {
+      const select = document.getElementById('device');
+      const report = document.getElementById('report');
+      const status = document.getElementById('status');
+      let devicesListed = false;
+
+      function load() {
+        status.textContent = 'Loading…';
+        const device = select.value;
+        Homey.api('GET', `/diagnostics${device ? `?device=${encodeURIComponent(device)}` : ''}`, null, (err, result) => {
+          if (err) {
+            status.textContent = `Could not load diagnostics: ${err.message || err}`;
+            return;
+          }
+          if (!devicesListed && Array.isArray(result.thermostats)) {
+            devicesListed = true;
+            for (const d of result.thermostats) {
+              const o = document.createElement('option');
+              o.value = d.id;
+              o.textContent = d.name;
+              select.appendChild(o);
+            }
+          }
+          report.value = JSON.stringify(result, null, 2);
+          status.textContent = `Updated ${new Date().toLocaleTimeString()}`;
+        });
+      }
+
+      async function copy() {
+        try {
+          await navigator.clipboard.writeText(report.value);
+        } catch (e) {
+          // The Homey app's web view may not allow the async clipboard.
+          report.focus();
+          report.select();
+          document.execCommand('copy');
+        }
+        status.textContent = 'Copied to clipboard';
+      }
+
+      const share = document.getElementById('share');
+      if (navigator.share) {
+        share.style.display = '';
+        share.addEventListener('click', () => {
+          navigator.share({ title: 'Widgetkeeper diagnostics', text: report.value }).catch(() => {});
+        });
+      }
+
+      select.addEventListener('change', load);
+      document.getElementById('refresh').addEventListener('click', load);
+      document.getElementById('copy').addEventListener('click', copy);
+      load();
+      Homey.ready();
+    }
+  </script>
+</body>
+</html>

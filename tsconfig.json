@@ -1,0 +1,10 @@
+{
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "outDir": "./.homeybuild",
+    "sourceMap": true,
+    "skipLibCheck": true
+  },
+  "include": ["app.ts", "api.ts", "lib/**/*.ts", "widgets/*/api.ts"]
+}

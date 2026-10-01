@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="widget.css">
+  <script src="widget.js"></script>
+</head>
+<body class="homey-widget">
+  <div id="root"></div>
+  <script>
+    const REFRESH_MS = 5 * 60e3; // keeps the app's device subscription alive and resyncs state
+
+    function onHomeyReady(Homey) {
+      const settings = Homey.getSettings() || {};
+      const deviceId = (settings.device && settings.device.id) || null;
+      let readySent = false;
+
+      const widget = createThermostatWidget(document.getElementById('root'), {
+        t: (key, tokens) => Homey.__(key, tokens),
+        onApply: (values) => Homey.api('POST', '/apply', {
+          deviceId, values: values.map(({ capabilityId, value }) => ({ capabilityId, value })),
+        }),
+        onHeight: (h) => {
+          if (!readySent) return;
+          Homey.setHeight(h);
+        },
+      });
+      widget.setButtons(thermostatPresetsFromSettings(settings));
+
+      function ready() {
+        if (readySent) return;
+        readySent = true;
+        Homey.ready({ height: Math.ceil(document.body.getBoundingClientRect().height) });
+      }
+
+      async function load() {
+        if (!deviceId) {
+          widget.setMessage(widget.t('selectDevice'));
+          ready();
+          return;
+        }
+        try {
+          widget.setState(await Homey.api('GET', `/state?deviceId=${encodeURIComponent(deviceId)}`));
+        } catch (err) {
+          console.error(err);
+          widget.setMessage(widget.t('error'));
+        }
+        ready();
+      }
+
+      Homey.on('thermostat:state', (data) => {
+        if (data && data.deviceId === deviceId) widget.pushChange(data);
+      });
+
+      setInterval(load, REFRESH_MS);
+      load();
+    }
+  </script>
+</body>
+</html>

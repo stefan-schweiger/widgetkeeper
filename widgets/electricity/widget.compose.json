@@ -1,0 +1,118 @@
+{
+  "name": {
+    "en": "Electricity"
+  },
+  "height": 483,
+  "transparent": false,
+  "devices": {
+    "type": "global",
+    "singular": true,
+    "filter": {
+      "capabilities": "measure_power"
+    }
+  },
+  "settings": [
+    {
+      "id": "liveWindow",
+      "type": "dropdown",
+      "title": {
+        "en": "Live power window"
+      },
+      "value": "10",
+      "values": [
+        {
+          "id": "60",
+          "title": {
+            "en": "1 hour"
+          }
+        },
+        {
+          "id": "30",
+          "title": {
+            "en": "30 minutes"
+          }
+        },
+        {
+          "id": "10",
+          "title": {
+            "en": "10 minutes"
+          }
+        },
+        {
+          "id": "5",
+          "title": {
+            "en": "5 minutes"
+          }
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "1 minute"
+          }
+        },
+        {
+          "id": "0.5",
+          "title": {
+            "en": "30 seconds"
+          }
+        }
+      ]
+    },
+    {
+      "id": "showUsage",
+      "type": "checkbox",
+      "title": {
+        "en": "Show usage history"
+      },
+      "value": true
+    },
+    {
+      "id": "separateUsage",
+      "type": "checkbox",
+      "title": {
+        "en": "Show usage history as a separate chart"
+      },
+      "value": false
+    },
+    {
+      "id": "nextLow",
+      "type": "dropdown",
+      "title": {
+        "en": "Show lowest price"
+      },
+      "value": "12",
+      "values": [
+        {
+          "id": "none",
+          "title": {
+            "en": "Off"
+          }
+        },
+        {
+          "id": "12",
+          "title": {
+            "en": "Next 12 hours"
+          }
+        },
+        {
+          "id": "24",
+          "title": {
+            "en": "Next 24 hours"
+          }
+        },
+        {
+          "id": "both",
+          "title": {
+            "en": "Next 12 and 24 hours"
+          }
+        }
+      ]
+    }
+  ],
+  "api": {
+    "getSnapshot": {
+      "method": "GET",
+      "path": "/snapshot"
+    }
+  }
+}

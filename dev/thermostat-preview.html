@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thermostat widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/thermostat/public/widget.css">
+  <script src="../widgets/thermostat/public/widget.js"></script>
+  <style>
+    body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    .card { background: var(--homey-background-color, #1F2029); border-radius: 20px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.3); box-sizing: border-box; }
+    .light {
+      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75;
+      color: var(--tw-text);
+    }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>400 px · off active</span><div class="card" style="width:400px"><div id="w1"></div></div></div>
+  <div class="col"><span>400 px · changed elsewhere (none active)</span><div class="card" style="width:400px"><div id="w2"></div></div></div>
+  <div class="col"><span>400 px · 21° heat active</span><div class="card" style="width:400px"><div id="w3"></div></div></div>
+  <div class="col"><span>400 px · light · none active</span><div class="card light" style="width:400px"><div id="w4"></div></div></div>
+  <div class="col"><span>352 px · cool active · no icon</span><div class="card" style="width:352px"><div id="w5"></div></div></div>
+  <div class="col"><span>400 px · no device</span><div class="card" style="width:400px"><div id="w6"></div></div></div>
+
+  <script>
+    const ICON = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><rect x="4" y="4" width="28" height="28" rx="5" fill="none" stroke="#000" stroke-width="2.5"/><text x="18" y="22.5" font-family="Roboto,Arial" font-weight="700" font-size="11" text-anchor="middle">21</text></svg>');
+    const FAN = { title: 'Fan speed', units: null, values: [{ id: 'auto', title: 'Auto' }, { id: 'slow', title: 'Slow' }, { id: 'fast', title: 'Fast' }] };
+    const MODE = { title: 'Thermostat mode', units: null, values: [{ id: 'auto', title: 'Auto' }, { id: 'heat', title: 'Heat' }, { id: 'cool', title: 'Cool' }, { id: 'off', title: 'Off' }] };
+    const caps = { onoff: { title: 'Turned on' }, target_temperature: { title: 'Target temperature', units: '°C' }, thermostat_mode: MODE, fan_speed: FAN };
+    const settings = {
+      b1Power: 'off',
+      b2Power: 'on', b2Temp: { capabilityId: 'target_temperature', value: 21 }, b2Mode: { capabilityId: 'thermostat_mode', value: 'heat' }, b2Extra: { capabilityId: 'fan_speed', value: 'slow' },
+      b3Power: 'on', b3Temp: { capabilityId: 'target_temperature', value: 25 }, b3Mode: { capabilityId: 'thermostat_mode', value: 'heat' }, b3Extra: { capabilityId: 'fan_speed', value: 'fast' },
+    };
+    const coolSettings = { ...settings, b3Temp: { capabilityId: 'target_temperature', value: 19 }, b3Mode: { capabilityId: 'thermostat_mode', value: 'cool' }, b3Extra: { capabilityId: 'fan_speed', value: 'auto' } };
+    const cases = [
+      ['w1', settings, ICON, { onoff: false, target_temperature: 25, thermostat_mode: 'heat', fan_speed: 'fast' }],
+      ['w2', settings, ICON, { onoff: true, target_temperature: 23, thermostat_mode: 'cool', fan_speed: 'auto' }],
+      ['w3', settings, ICON, { onoff: true, target_temperature: 21, thermostat_mode: 'heat', fan_speed: 'slow' }],
+      ['w4', settings, ICON, { onoff: true, target_temperature: 23, thermostat_mode: 'cool', fan_speed: 'auto' }],
+      ['w5', coolSettings, null, { onoff: true, target_temperature: 19, thermostat_mode: 'cool', fan_speed: 'auto' }],
+    ];
+    for (const [id, s, icon, values] of cases) {
+      let w;
+      w = createThermostatWidget(document.getElementById(id), {
+        locale: 'da-DK',
+        // Simulate the device applying the values after a moment.
+        onApply: (vals) => new Promise(r => setTimeout(() => { for (const v of vals) w.pushChange(v); r(); }, 600)),
+      });
+      w.setButtons(thermostatPresetsFromSettings(s));
+      w.setState({ name: 'Aircon | Garage', icon, values: { ...values }, caps });
+    }
+    const empty = createThermostatWidget(document.getElementById('w6'), {});
+    empty.setButtons(thermostatPresetsFromSettings(settings));
+    empty.setMessage(empty.t('selectDevice'));
+  </script>
+</body>
+</html>
