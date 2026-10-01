@@ -2,6 +2,8 @@
 
 Extra dashboard widgets for Homey Pro.
 
+I built these to replace a few native Homey widgets that didn't quite behave the way I wanted. The aim is widgets that sit naturally next to Homey's own: the same look, the same feel, and no sense that they came from somewhere else.
+
 ## Widgets
 
 ### Electricity
