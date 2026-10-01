@@ -39,7 +39,8 @@
       async function load() {
         try {
           const snapshot = await Homey.api('GET', `/snapshot?deviceId=${encodeURIComponent(deviceId || '')}`);
-          if (!deviceId || !snapshot.live.length) widget.setMessage(widget.t('selectMeter'));
+          // Without readings (or with a meter error) the prices still show; the widget notes the meter.
+          if (!deviceId) widget.setMessage(widget.t('selectMeter'));
           else widget.setData(snapshot);
         } catch (err) {
           console.error(err);

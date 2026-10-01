@@ -7,7 +7,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - `npx homey app validate --level debug`: compiles the TS and validates.
 - `npx homey app install`: builds and installs on the active Homey (firmware 13.x). No Docker needed.
 - `npx homey app run`: live logs and hot reload of the widget files. It needs Docker Desktop running, which usually isn't.
-- `npm run placeholders`: regenerates the placeholder app PNGs from `scripts/make-placeholders.mjs`.
+- `npm run app-images`: renders the three app store PNGs from `dev/app-images.html` (the hero photo `dev/hero.webp`, cropped to 10:7) with headless Edge.
 - `npm run previews`: renders the four widget preview PNGs from `dev/widget-previews.html` (the "Widget Previews" Claude Design project) with headless Edge. Open the page without a query to see them all; `?p=elec-dark` and so on shows one frame.
 - `dev/preview.html`: the widget with mock data in a plain browser.
   - Serve the repo root (`python -m http.server 8765`) and open `/dev/preview.html`.
@@ -67,5 +67,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - The footer shows only the start hour and price (`03:00 • 1,22 kr.`). With both 12h and 24h: `Lowest price 12h/24h   03:00 • 1,22 / 03:00 • 1,22` (no unit).
 - Weekday names follow Homey's language, and numbers follow the device locale.
 
-## Open items
-- The app artwork is placeholder, including the bolt `assets/icon.svg`. The widget previews are final.
+## Branding
+- From the "Widgetkeeper Logo" Claude Design project: brand colour `#2A1958` (`brandColor` in `.homeycompose/app.json`).
+- Logomark: three outlined rounded squares and a four-point sparkle in the top-right cell, on a 64×64 grid. `assets/icon.svg` is the black mark on transparent (Homey tints it).
+- The widgets keep Homey's own blue for chart colours; the brand colour is only for the app's identity.

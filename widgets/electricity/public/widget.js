@@ -36,6 +36,8 @@
     lowestNext24h: 'Lowest price next 24h',
     lowestBoth: 'Lowest price 12h/24h',
     selectMeter: 'Select a power meter in the widget settings.',
+    noReadings: 'No readings from the power meter yet.',
+    meterError: 'Could not read the power meter.',
     noPrices: 'No electricity prices available. Enable dynamic prices in Homey Energy.',
     error: 'Could not load data.',
   };
@@ -166,11 +168,12 @@
         return { box, chips, svg };
       };
       const live = chart();
+      const noLive = el('div', { class: 'ew-message' }, wrap);
       const usage = chart();
       const price = chart();
       const noPrices = el('div', { class: 'ew-message' }, wrap);
       const footer = el('div', { class: 'ew-footer' }, wrap);
-      return { message, header, live, usage, price, noPrices, footer };
+      return { message, header, live, noLive, usage, price, noPrices, footer };
     })();
     const geom = { live: null, slots: null }; // geometry of the latest render, for pointer math
 
@@ -211,7 +214,7 @@
       show(ui.message, !!state.message);
       ui.message.textContent = state.message || '';
       if (!ready) {
-        [ui.header, ui.live.box, ui.usage.box, ui.price.box, ui.noPrices, ui.footer].forEach(n => show(n, false));
+        [ui.header, ui.live.box, ui.noLive, ui.usage.box, ui.price.box, ui.noPrices, ui.footer].forEach(n => show(n, false));
         reportHeight();
         return;
       }
@@ -221,6 +224,8 @@
       renderHeader(ui.header, m);
       show(ui.live.box, m.live.length > 0);
       if (m.live.length) renderLive(ui.live, m);
+      show(ui.noLive, !m.live.length);
+      ui.noLive.textContent = t(m.d.meterError ? 'meterError' : 'noReadings');
       show(ui.usage.box, m.separate && m.slots.length > 0);
       if (m.separate && m.slots.length) renderUsage(ui.usage, m);
       show(ui.price.box, m.hasPrices);

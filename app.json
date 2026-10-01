@@ -15,9 +15,9 @@
     "en": "Custom dashboard widgets for your Homey."
   },
   "category": [
-    "energy"
+    "tools"
   ],
-  "brandColor": "#2F8DF6",
+  "brandColor": "#2A1958",
   "permissions": [
     "homey:manager:api"
   ],

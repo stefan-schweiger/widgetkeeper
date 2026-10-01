@@ -148,11 +148,23 @@
 
     // ---------------------------------------------------------------- device model
 
-    /** The capability the buttons' Mode field uses (often a driver's own, not `thermostat_mode`). */
+    function offValue(id) {
+      const info = state && state.caps[id];
+      return info && info.values && info.values.find(x => /^off$/i.test(x.id) || /^off$/i.test(x.title));
+    }
+
+    /**
+     * The capability the buttons' Mode field uses (often a driver's own, not `thermostat_mode`).
+     * When no button sets a mode: `thermostat_mode`, else the first enum with an `off` value.
+     */
     function modeCap() {
       for (const p of presets) {
         const m = p.values.find(v => v.slot === 'mode');
         if (m) return m.capabilityId;
+      }
+      if (state && !state.caps.thermostat_mode) {
+        const id = Object.keys(state.caps).find(offValue);
+        if (id) return id;
       }
       return 'thermostat_mode';
     }
@@ -160,8 +172,7 @@
     /** The mode value that means off, e.g. `thermostat_mode: off`. */
     function offMode() {
       const id = modeCap();
-      const info = state && state.caps[id];
-      const off = info && info.values && info.values.find(x => /^off$/i.test(x.id) || /^off$/i.test(x.title));
+      const off = offValue(id);
       return off ? { capabilityId: id, value: off.id } : null;
     }
 
@@ -177,9 +188,13 @@
      */
     function deviceValues(preset) {
       if (!state || state.caps.onoff) return preset.values;
-      const off = preset.values.some(v => v.capabilityId === 'onoff' && v.value === false) ? offMode() : null;
-      // Turning off wins over any mode the preset also sets.
-      if (off) return [off, ...preset.values.filter(v => v.capabilityId !== 'onoff' && v.capabilityId !== off.capabilityId)];
+      if (preset.values.some(v => v.capabilityId === 'onoff' && v.value === false)) {
+        const off = offMode();
+        // No way to turn this device off: the "Off" button is disabled rather than sending the rest.
+        if (!off) return [];
+        // Turning off wins over any mode the preset also sets.
+        return [off, ...preset.values.filter(v => v.capabilityId !== 'onoff' && v.capabilityId !== off.capabilityId)];
+      }
       return preset.values.filter(v => v.capabilityId !== 'onoff');
     }
 

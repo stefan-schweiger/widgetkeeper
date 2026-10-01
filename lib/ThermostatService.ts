@@ -44,6 +44,10 @@ function relevantCaps(device: any): string[] {
     || (obj[id]?.type === 'enum' && obj[id]?.setable !== false));
 }
 
+function isThermostat(device: any): boolean {
+  return !!(device?.capabilities?.includes('target_temperature') || device?.capabilities?.includes('thermostat_mode'));
+}
+
 function capInfo(cap: any, id: string): CapInfo {
   return {
     title: typeof cap?.title === 'string' ? cap.title : id,
@@ -63,6 +67,7 @@ export default class ThermostatService {
 
   private tracked = new Map<string, Tracked>();
   private trackPromises = new Map<string, Promise<Tracked>>();
+  private applying = new Map<string, { gen: number, done: Promise<void> }>();
   private tickTimer: NodeJS.Timeout | null = null;
 
   constructor(private homey: Homey.App['homey'], private log: (...args: any[]) => void) {}
@@ -80,6 +85,11 @@ export default class ThermostatService {
     return getAppApi(this.homey);
   }
 
+  /** The widget API may only touch thermostat-like devices (the same ones the device setting lists). */
+  private assertThermostat(device: any) {
+    if (!isThermostat(device)) throw new Error(`${device?.name ?? 'Device'} is not a thermostat`);
+  }
+
   async getState(deviceId: string): Promise<ThermostatState> {
     const t = await this.ensureTracked(deviceId);
     t.lastRequested = Date.now();
@@ -91,15 +101,35 @@ export default class ThermostatService {
    * and fan), except that `onoff=true` goes first and `onoff=false` last. Some drivers validate a
    * value against the current mode (e.g. allowed fan speeds), so after each value it waits until
    * the device reports it before sending the next one. Values the device already has are skipped.
+   *
+   * Applies to one device run one at a time. A newer apply supersedes an older one that is still
+   * running: the older one stops before its next value, so two presets' values never interleave.
    */
   async apply(deviceId: string, values: CapValue[]) {
+    const prev = this.applying.get(deviceId);
+    const gen = (prev?.gen ?? 0) + 1;
+    const superseded = () => this.applying.get(deviceId)?.gen !== gen;
+    const run = (prev?.done ?? Promise.resolve()).then(() => this.applyNow(deviceId, values, superseded));
+    const entry = { gen, done: run.then(() => {}, () => {}) };
+    this.applying.set(deviceId, entry);
+    try {
+      await run;
+    } finally {
+      if (this.applying.get(deviceId) === entry) this.applying.delete(deviceId);
+    }
+  }
+
+  private async applyNow(deviceId: string, values: CapValue[], superseded: () => boolean) {
+    if (superseded()) return;
     const api = await this.getApi();
     const device = await api.devices.getDevice({ id: deviceId, $cache: false });
+    this.assertThermostat(device);
     const obj = device.capabilitiesObj || {};
+    const allowed = relevantCaps(device);
     this.log(`Apply requested for ${device.name}:`, JSON.stringify(values));
     for (const v of values) {
       if (!obj[v.capabilityId]) throw new Error(`${device.name} has no ${v.capabilityId} capability (it has ${Object.keys(obj).join(', ')})`);
-      if (obj[v.capabilityId].setable === false) throw new Error(`${v.capabilityId} is not settable`);
+      if (!allowed.includes(v.capabilityId) || obj[v.capabilityId].setable === false) throw new Error(`${v.capabilityId} is not settable`);
     }
     const rank = (v: CapValue) => (v.capabilityId !== 'onoff' ? 1 : v.value ? 0 : 2);
     const ordered = [...values].sort((a, b) => rank(a) - rank(b));
@@ -109,6 +139,10 @@ export default class ThermostatService {
     const sent: string[] = [];
     for (const [i, v] of ordered.entries()) {
       if (current[v.capabilityId] === v.value) continue;
+      if (superseded()) {
+        this.log(`Apply to ${device.name} superseded by a newer one (after ${sent.join(', ') || 'nothing'})`);
+        return;
+      }
       try {
         await device.setCapabilityValue({ capabilityId: v.capabilityId, value: v.value });
       } catch (err) {
@@ -116,14 +150,15 @@ export default class ThermostatService {
         throw err;
       }
       sent.push(`${v.capabilityId}=${JSON.stringify(v.value)}`);
-      if (i < ordered.length - 1) await this.waitForValue(api, deviceId, v);
+      if (i < ordered.length - 1) await this.waitForValue(api, deviceId, v, superseded);
     }
     this.log(`Applied to ${device.name}:`, sent.join(', ') || 'nothing to change');
   }
 
-  private async waitForValue(api: any, deviceId: string, v: CapValue) {
+  private async waitForValue(api: any, deviceId: string, v: CapValue, superseded: () => boolean) {
     const until = Date.now() + CONFIRM_TIMEOUT;
     while (Date.now() < until) {
+      if (superseded()) return;
       try {
         const d = await api.devices.getDevice({ id: deviceId, $cache: false });
         if (d.capabilitiesObj?.[v.capabilityId]?.value === v.value) return;
@@ -142,7 +177,7 @@ export default class ThermostatService {
       api.zones.getZones().catch(() => ({})),
     ]);
     return (Object.values(devices) as any[])
-      .filter(d => d.capabilities?.includes('target_temperature') || d.capabilities?.includes('thermostat_mode'))
+      .filter(isThermostat)
       .map(d => ({ name: d.name as string, description: (zones as any)[d.zone]?.name, id: d.id as string }))
       .filter(d => matches(query, d.name, d.description))
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -204,6 +239,7 @@ export default class ThermostatService {
   private async track(deviceId: string): Promise<Tracked> {
     const api = await this.getApi();
     const device = await api.devices.getDevice({ id: deviceId });
+    this.assertThermostat(device);
     const ids = relevantCaps(device);
     const t: Tracked = {
       deviceId,

@@ -19,6 +19,7 @@ export const LIVE_EVENT = 'electricity:live';
 export type Snapshot = {
   now: number,
   deviceName: string | null,
+  meterError: string | null, // why the selected meter could not be read
   live: Sample[], // raw readings for the last hour, oldest first (the widget resamples)
   prices: ({ start: number, price: number | null })[], // 49 hourly slots, index 24 = current hour
   usage: Sample[], // 5-min averages from the first price slot up to now
@@ -69,8 +70,13 @@ export default class ElectricityService {
     const hourStart = floorTo(now, HOUR);
     const firstSlot = hourStart - PRICE_PAST_HOURS * HOUR;
 
+    let meterError: string | null = null;
     const [meter, prices] = await Promise.all([
-      deviceId ? this.ensureMeter(deviceId).catch(err => { this.log('Meter error', err); return null; }) : null,
+      deviceId ? this.ensureMeter(deviceId).catch(err => {
+        this.log('Meter error', err);
+        meterError = err instanceof Error ? err.message : String(err);
+        return null;
+      }) : null,
       this.getPriceSlots(firstSlot).catch(err => { this.log('Price error', err); return []; }),
     ]);
 
@@ -83,6 +89,7 @@ export default class ElectricityService {
     return {
       now,
       deviceName: meter?.name ?? null,
+      meterError,
       live: meter ? meter.live.slice() : [],
       prices,
       usage,
@@ -236,8 +243,13 @@ export default class ElectricityService {
     for (let t = firstSlot; t <= lastSlot; t += HOUR) days.add(this.localDate(t));
 
     const hours = new Map<number, number>();
+    // A day that fails (e.g. tomorrow before publication) leaves its slots empty, not the others.
     for (const day of days) {
-      for (const [h, p] of await this.getPriceDay(day)) hours.set(h, p);
+      try {
+        for (const [h, p] of await this.getPriceDay(day)) hours.set(h, p);
+      } catch (err) {
+        this.log(`Price error for ${day}`, err);
+      }
     }
 
     if (this.currency == null) {

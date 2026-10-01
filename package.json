@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "placeholders": "node scripts/make-placeholders.mjs",
+    "app-images": "node scripts/render-app-images.mjs",
     "previews": "node scripts/render-previews.mjs",
     "validate": "homey app validate --level debug",
     "start": "homey app run",

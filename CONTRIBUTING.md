@@ -18,7 +18,7 @@ Use the project-local Homey CLI (`npx homey`, v4). An older globally installed `
 npx homey app validate --level debug   # compile + validate
 npx homey app install                  # build and install on your Homey
 npx homey app run                      # run with live logs (needs Docker); widget files hot-reload
-npm run placeholders                   # regenerate placeholder PNGs
+npm run app-images                     # render the app store images
 npm run previews                       # render the widget preview images
 ```
 
@@ -45,5 +45,5 @@ widgets/electricity/            widget manifest, api.ts, public/ (renderer)
 widgets/thermostat/             widget manifest, api.ts, public/ (renderer)
 settings/                       app settings page (diagnostics)
 dev/                            browser previews with mock data
-scripts/                        placeholder artwork and preview image generators
+scripts/                        app image and widget preview generators
 ```
