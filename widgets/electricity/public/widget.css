@@ -17,6 +17,8 @@
   --ew-usage: var(--ew-text);
   /* Homey's type scale: only these size/line-height pairs, and the weights noted, are used natively. */
   --ew-fs-small: var(--homey-font-size-small, 14px); --ew-lh-small: var(--homey-line-height-small, 20px); /* regular */
+  /* Labels (chart chips, footer): 12/16, like the axis labels; a deliberate step below Homey's scale. */
+  --ew-fs-label: 12px; --ew-lh-label: 16px;
   --ew-fs-xlarge: var(--homey-font-size-xlarge, 24px); --ew-lh-xlarge: var(--homey-line-height-xlarge, 32px); /* bold */
   --ew-regular: var(--homey-font-weight-regular, 400);
   --ew-bold: var(--homey-font-weight-bold, 700);
@@ -27,6 +29,8 @@ html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
 html, body { margin: 0; }
 
 .ew { display: flex; flex-direction: column; gap: 16px; min-width: 0; color: var(--ew-text); }
+/* Text is dir="auto" so RTL sentences get their punctuation right; the layout itself stays LTR. */
+.ew [dir="auto"] { text-align: left; }
 .ew * { box-sizing: border-box; }
 .ew-num, .ew svg text { font-variant-numeric: tabular-nums; }
 
@@ -49,7 +53,7 @@ html, body { margin: 0; }
 .ew-chip {
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--ew-chip); border-radius: 12px; padding: 2px 10px 2px 8px;
-  font-size: var(--ew-fs-small); line-height: var(--ew-lh-small); color: var(--ew-text); white-space: nowrap;
+  font-size: var(--ew-fs-label); line-height: var(--ew-lh-label); color: var(--ew-text); white-space: nowrap;
 }
 .ew-chip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 .ew-chip .unit { color: var(--ew-muted); }
@@ -80,7 +84,7 @@ html, body { margin: 0; }
 .ew-footer {
   border-top: 1px solid var(--ew-grid); padding-top: 12px;
   display: flex; justify-content: space-between; gap: 8px;
-  font-size: var(--ew-fs-small); line-height: var(--ew-lh-small); font-weight: var(--ew-regular); white-space: nowrap;
+  font-size: var(--ew-fs-label); line-height: var(--ew-lh-label); font-weight: var(--ew-regular); white-space: nowrap;
 }
 .ew-footer .l { color: var(--ew-muted); overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .ew-footer .r { display: flex; gap: 3px; flex-shrink: 0; }

@@ -1,6 +1,6 @@
 {
   "id": "com.thomassidor.widgetkeeper",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "compatibility": ">=12.6.0",
   "sdk": 3,
   "runtime": "nodejs",
@@ -8,10 +8,34 @@
     "local"
   ],
   "name": {
-    "en": "Widgetkeeper"
+    "en": "Widgetkeeper",
+    "nl": "Widgetkeeper",
+    "de": "Widgetkeeper",
+    "fr": "Widgetkeeper",
+    "it": "Widgetkeeper",
+    "sv": "Widgetkeeper",
+    "no": "Widgetkeeper",
+    "es": "Widgetkeeper",
+    "da": "Widgetkeeper",
+    "ru": "Widgetkeeper",
+    "pl": "Widgetkeeper",
+    "ko": "Widgetkeeper",
+    "ar": "Widgetkeeper"
   },
   "description": {
-    "en": "Custom dashboard widgets for your Homey."
+    "en": "Custom dashboard widgets for your Homey.",
+    "nl": "Aangepaste dashboardwidgets voor je Homey.",
+    "de": "Eigene Dashboard-Widgets für dein Homey.",
+    "fr": "Des widgets de tableau de bord personnalisés pour votre Homey.",
+    "it": "Widget personalizzati per la dashboard del tuo Homey.",
+    "sv": "Anpassade widgets för instrumentpanelen i din Homey.",
+    "no": "Egne dashbord-widgeter for din Homey.",
+    "es": "Widgets personalizados para el panel de tu Homey.",
+    "da": "Egne dashboard-widgets til din Homey.",
+    "ru": "Пользовательские виджеты панели для вашего Homey.",
+    "pl": "Własne widżety pulpitu dla Twojego Homey.",
+    "ko": "Homey를 위한 맞춤형 대시보드 위젯.",
+    "ar": "أدوات مخصصة للوحة التحكم في Homey."
   },
   "category": [
     "tools"

@@ -1,0 +1,43 @@
+{
+  "electricity": {
+    "usingNow": "Consumo attuale",
+    "minutesRemaining": "ancora __minutes__ min",
+    "livePower": "Potenza in tempo reale",
+    "price": "Prezzo",
+    "usage": "Consumo",
+    "now": "Ora",
+    "lowestNext12h": "Prezzo min. 12h",
+    "lowestNext24h": "Prezzo min. 24h",
+    "lowestBoth": "Min. 12/24h",
+    "selectMeter": "Seleziona un misuratore di energia nelle impostazioni del widget.",
+    "noReadings": "Ancora nessuna lettura dal misuratore.",
+    "meterError": "Impossibile leggere il misuratore.",
+    "noPrices": "Nessun prezzo dell'elettricità disponibile. Attiva i prezzi dinamici in Homey Energy.",
+    "error": "Impossibile caricare i dati."
+  },
+  "thermostat": {
+    "selectDevice": "Seleziona un termostato nelle impostazioni del widget.",
+    "selectDeviceFirst": "Seleziona prima un termostato, poi riapri questa impostazione.",
+    "unchanged": "Non modificare",
+    "off": "Spento",
+    "error": "Impossibile caricare il termostato.",
+    "applyFailed": "Impossibile modificare il termostato.",
+    "on": "Acceso",
+    "currently": "Attualmente __state__",
+    "currentlyOff": "Attualmente spento"
+  },
+  "settings": {
+    "title": "Diagnostica",
+    "subtitle": "Il registro recente dell'app e i dettagli dei dispositivi. Copia o condividi il rapporto per ricevere aiuto nel debug.",
+    "includeDevice": "Includi dettagli del dispositivo",
+    "none": "Nessuno",
+    "refresh": "Aggiorna",
+    "copy": "Copia",
+    "share": "Condividi",
+    "loading": "Caricamento…",
+    "loadFailed": "Impossibile caricare la diagnostica: __error__",
+    "updated": "Aggiornato alle __time__",
+    "copied": "Copiato negli appunti",
+    "shareTitle": "Diagnostica Widgetkeeper"
+  }
+}

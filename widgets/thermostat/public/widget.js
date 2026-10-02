@@ -80,8 +80,8 @@
     const header = el('div', { class: 'tw-header' }, root);
     const iconBox = el('div', { class: 'tw-device-icon' }, header);
     const titles = el('div', { class: 'tw-titles' }, header);
-    const nameEl = el('div', { class: 'tw-name' }, titles);
-    const subEl = el('div', { class: 'tw-sub' }, titles);
+    const nameEl = el('div', { class: 'tw-name', dir: 'auto' }, titles);
+    const subEl = el('div', { class: 'tw-sub', dir: 'auto' }, titles);
     const row = el('div', { class: 'tw-row' }, root);
     let tiles = [];
 

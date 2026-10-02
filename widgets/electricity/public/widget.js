@@ -159,7 +159,7 @@
     // a finger drops the touch pointer capture and ends the scrub.
     const ui = (() => {
       const wrap = el('div', { class: 'ew' }, root);
-      const message = el('div', { class: 'ew-message' }, wrap);
+      const message = el('div', { class: 'ew-message', dir: 'auto' }, wrap);
       const header = el('div', { class: 'ew-header' }, wrap);
       const chart = () => {
         const box = el('div', { class: 'ew-chart' }, wrap);
@@ -168,10 +168,10 @@
         return { box, chips, svg };
       };
       const live = chart();
-      const noLive = el('div', { class: 'ew-message' }, wrap);
+      const noLive = el('div', { class: 'ew-message', dir: 'auto' }, wrap);
       const usage = chart();
       const price = chart();
-      const noPrices = el('div', { class: 'ew-message' }, wrap);
+      const noPrices = el('div', { class: 'ew-message', dir: 'auto' }, wrap);
       const footer = el('div', { class: 'ew-footer' }, wrap);
       return { message, header, live, noLive, usage, price, noPrices, footer };
     })();
@@ -269,13 +269,13 @@
       const lv = el('div', { class: 'ew-hval live' }, lc);
       el('span', { class: 'v ew-num', text: leftVal == null ? '–' : nf(leftVal) }, lv);
       el('span', { class: 'u', text: 'W' }, lv);
-      el('div', { class: 'ew-hsub', text: leftSub }, lc);
+      el('div', { class: 'ew-hsub', dir: 'auto', text: leftSub }, lc);
 
       const rc = el('div', { class: 'ew-hcol' }, header);
       const rv = el('div', { class: 'ew-hval price' }, rc);
       el('span', { class: 'v ew-num', text: `${price == null ? '–' : nf(price, 2)} ${cur.value}` }, rv);
       el('span', { class: 'u', text: '/kWh' }, rv);
-      el('div', { class: 'ew-hsub', text: priceSub }, rc);
+      el('div', { class: 'ew-hsub', dir: 'auto', text: priceSub }, rc);
     }
 
     function chip(parent, kind, label, unit) {
@@ -545,7 +545,7 @@
       if (!lows.length) { show(footer, false); return; }
       const both = lows.length > 1;
       const cur = currencyUnits(m.d.currency);
-      el('span', { class: 'l', text: t(mode === 'both' ? 'lowestBoth' : mode === '24' ? 'lowestNext24h' : 'lowestNext12h') }, footer);
+      el('span', { class: 'l', dir: 'auto', text: t(mode === 'both' ? 'lowestBoth' : mode === '24' ? 'lowestNext24h' : 'lowestNext12h') }, footer);
       const r = el('span', { class: 'r' }, footer);
       lows.forEach((low, k) => {
         const s = slots[low];

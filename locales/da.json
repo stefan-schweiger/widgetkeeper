@@ -1,0 +1,43 @@
+{
+  "electricity": {
+    "usingNow": "Forbruger nu",
+    "minutesRemaining": "__minutes__ min tilbage",
+    "livePower": "Live-effekt",
+    "price": "Pris",
+    "usage": "Forbrug",
+    "now": "Nu",
+    "lowestNext12h": "Laveste pris 12 t",
+    "lowestNext24h": "Laveste pris 24 t",
+    "lowestBoth": "Lavest 12/24 t",
+    "selectMeter": "Vælg en elmåler i widgetindstillingerne.",
+    "noReadings": "Ingen målinger fra elmåleren endnu.",
+    "meterError": "Kunne ikke læse elmåleren.",
+    "noPrices": "Ingen elpriser tilgængelige. Slå dynamiske priser til i Homey Energy.",
+    "error": "Kunne ikke indlæse data."
+  },
+  "thermostat": {
+    "selectDevice": "Vælg en termostat i widgetindstillingerne.",
+    "selectDeviceFirst": "Vælg først en termostat, og åbn så denne indstilling igen.",
+    "unchanged": "Ingen ændring",
+    "off": "Fra",
+    "error": "Kunne ikke indlæse termostaten.",
+    "applyFailed": "Kunne ikke ændre termostaten.",
+    "on": "Til",
+    "currently": "Lige nu __state__",
+    "currentlyOff": "Lige nu slukket"
+  },
+  "settings": {
+    "title": "Diagnostik",
+    "subtitle": "Appens seneste log og enhedsdetaljer. Kopiér eller del rapporten for at få hjælp til fejlfinding.",
+    "includeDevice": "Medtag enhedsdetaljer",
+    "none": "Ingen",
+    "refresh": "Opdater",
+    "copy": "Kopiér",
+    "share": "Del",
+    "loading": "Indlæser…",
+    "loadFailed": "Kunne ikke indlæse diagnostik: __error__",
+    "updated": "Opdateret __time__",
+    "copied": "Kopieret til udklipsholderen",
+    "shareTitle": "Widgetkeeper-diagnostik"
+  }
+}

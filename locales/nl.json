@@ -1,0 +1,43 @@
+{
+  "electricity": {
+    "usingNow": "Nu in gebruik",
+    "minutesRemaining": "nog __minutes__ min",
+    "livePower": "Live vermogen",
+    "price": "Prijs",
+    "usage": "Verbruik",
+    "now": "Nu",
+    "lowestNext12h": "Laagste prijs 12u",
+    "lowestNext24h": "Laagste prijs 24u",
+    "lowestBoth": "Laagst 12/24u",
+    "selectMeter": "Kies een energiemeter in de widgetinstellingen.",
+    "noReadings": "Nog geen metingen van de energiemeter.",
+    "meterError": "Kan de energiemeter niet uitlezen.",
+    "noPrices": "Geen stroomprijzen beschikbaar. Schakel dynamische prijzen in via Homey Energy.",
+    "error": "Kan gegevens niet laden."
+  },
+  "thermostat": {
+    "selectDevice": "Kies een thermostaat in de widgetinstellingen.",
+    "selectDeviceFirst": "Kies eerst een thermostaat en open deze instelling daarna opnieuw.",
+    "unchanged": "Niet wijzigen",
+    "off": "Uit",
+    "error": "Kan de thermostaat niet laden.",
+    "applyFailed": "Kan de thermostaat niet aanpassen.",
+    "on": "Aan",
+    "currently": "Nu __state__",
+    "currentlyOff": "Nu uit"
+  },
+  "settings": {
+    "title": "Diagnose",
+    "subtitle": "Het recente logboek van de app en apparaatdetails. Kopieer of deel het rapport om hulp te krijgen bij het oplossen van problemen.",
+    "includeDevice": "Apparaatdetails toevoegen",
+    "none": "Geen",
+    "refresh": "Vernieuwen",
+    "copy": "Kopiëren",
+    "share": "Delen",
+    "loading": "Laden…",
+    "loadFailed": "Kan diagnose niet laden: __error__",
+    "updated": "Bijgewerkt om __time__",
+    "copied": "Gekopieerd naar klembord",
+    "shareTitle": "Widgetkeeper-diagnose"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "electricity": {
+    "usingNow": "Förbrukar nu",
+    "minutesRemaining": "__minutes__ min kvar",
+    "livePower": "Live-effekt",
+    "price": "Pris",
+    "usage": "Förbrukning",
+    "now": "Nu",
+    "lowestNext12h": "Lägsta pris 12 h",
+    "lowestNext24h": "Lägsta pris 24 h",
+    "lowestBoth": "Lägst 12/24 h",
+    "selectMeter": "Välj en elmätare i widgetinställningarna.",
+    "noReadings": "Inga mätvärden från elmätaren ännu.",
+    "meterError": "Kunde inte läsa elmätaren.",
+    "noPrices": "Inga elpriser tillgängliga. Aktivera dynamiska priser i Homey Energy.",
+    "error": "Kunde inte läsa in data."
+  },
+  "thermostat": {
+    "selectDevice": "Välj en termostat i widgetinställningarna.",
+    "selectDeviceFirst": "Välj en termostat först och öppna sedan den här inställningen igen.",
+    "unchanged": "Ändra inte",
+    "off": "Av",
+    "error": "Kunde inte läsa in termostaten.",
+    "applyFailed": "Kunde inte ändra termostaten.",
+    "on": "På",
+    "currently": "Just nu __state__",
+    "currentlyOff": "Just nu av"
+  },
+  "settings": {
+    "title": "Diagnostik",
+    "subtitle": "Appens senaste logg och enhetsdetaljer. Kopiera eller dela rapporten för att få hjälp med felsökning.",
+    "includeDevice": "Inkludera enhetsdetaljer",
+    "none": "Ingen",
+    "refresh": "Uppdatera",
+    "copy": "Kopiera",
+    "share": "Dela",
+    "loading": "Läser in…",
+    "loadFailed": "Kunde inte läsa in diagnostik: __error__",
+    "updated": "Uppdaterad __time__",
+    "copied": "Kopierat till urklipp",
+    "shareTitle": "Widgetkeeper-diagnostik"
+  }
+}

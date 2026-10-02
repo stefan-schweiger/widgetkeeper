@@ -1,0 +1,43 @@
+{
+  "electricity": {
+    "usingNow": "Verbrauch jetzt",
+    "minutesRemaining": "noch __minutes__ Min.",
+    "livePower": "Live-Leistung",
+    "price": "Preis",
+    "usage": "Verbrauch",
+    "now": "Jetzt",
+    "lowestNext12h": "Tiefstpreis 12 Std.",
+    "lowestNext24h": "Tiefstpreis 24 Std.",
+    "lowestBoth": "Tiefst 12/24h",
+    "selectMeter": "Wähle in den Widget-Einstellungen einen Stromzähler aus.",
+    "noReadings": "Noch keine Messwerte vom Stromzähler.",
+    "meterError": "Der Stromzähler konnte nicht gelesen werden.",
+    "noPrices": "Keine Strompreise verfügbar. Aktiviere dynamische Preise in Homey Energy.",
+    "error": "Daten konnten nicht geladen werden."
+  },
+  "thermostat": {
+    "selectDevice": "Wähle in den Widget-Einstellungen ein Thermostat aus.",
+    "selectDeviceFirst": "Wähle zuerst ein Thermostat aus und öffne diese Einstellung dann erneut.",
+    "unchanged": "Nicht ändern",
+    "off": "Aus",
+    "error": "Das Thermostat konnte nicht geladen werden.",
+    "applyFailed": "Das Thermostat konnte nicht geändert werden.",
+    "on": "Ein",
+    "currently": "Aktuell __state__",
+    "currentlyOff": "Aktuell aus"
+  },
+  "settings": {
+    "title": "Diagnose",
+    "subtitle": "Das aktuelle Protokoll der App und Gerätedetails. Kopiere oder teile den Bericht, um Hilfe bei der Fehlersuche zu bekommen.",
+    "includeDevice": "Gerätedetails einbeziehen",
+    "none": "Keine",
+    "refresh": "Aktualisieren",
+    "copy": "Kopieren",
+    "share": "Teilen",
+    "loading": "Wird geladen…",
+    "loadFailed": "Diagnose konnte nicht geladen werden: __error__",
+    "updated": "Aktualisiert um __time__",
+    "copied": "In die Zwischenablage kopiert",
+    "shareTitle": "Widgetkeeper-Diagnose"
+  }
+}

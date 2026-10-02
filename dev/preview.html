@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../widgets/electricity/public/widget.css">
   <script src="../widgets/electricity/public/widget.js"></script>
+  <script src="i18n.js"></script>
   <style>
     body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
     .card { background: var(--homey-background-color, #1F2029); border-radius: 20px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.3); box-sizing: border-box; }
@@ -70,13 +71,13 @@
     }
 
     const widgets = [
-      [createElectricityWidget(document.getElementById('w1'), { locale: 'da-DK' }), mockSnapshot(), {}],
-      [createElectricityWidget(document.getElementById('w2'), { locale: 'da-DK' }), mockSnapshot(), { showUsage: false }],
-      [createElectricityWidget(document.getElementById('w3'), { locale: 'da-DK' }), mockSnapshot({ futureHours: 5 }), {}],
-      [createElectricityWidget(document.getElementById('w4'), { locale: 'da-DK' }), mockSnapshot(), { separateUsage: true, liveWindow: 5 }],
-      [createElectricityWidget(document.getElementById('w5'), { locale: 'da-DK' }), mockSnapshot(), { nextLow: 'both' }],
-      [createElectricityWidget(document.getElementById('w7'), { locale: 'da-DK' }), mockSnapshot(), { nextLow: 'both', liveWindow: 10 }],
-      [createElectricityWidget(document.getElementById('w6'), { locale: 'da-DK' }), mockSnapshot(), { nextLow: '24', showUsage: false }],
+      [createElectricityWidget(document.getElementById('w1'), { locale: 'da-DK', t: devT }), mockSnapshot(), {}],
+      [createElectricityWidget(document.getElementById('w2'), { locale: 'da-DK', t: devT }), mockSnapshot(), { showUsage: false }],
+      [createElectricityWidget(document.getElementById('w3'), { locale: 'da-DK', t: devT }), mockSnapshot({ futureHours: 5 }), {}],
+      [createElectricityWidget(document.getElementById('w4'), { locale: 'da-DK', t: devT }), mockSnapshot(), { separateUsage: true, liveWindow: 5 }],
+      [createElectricityWidget(document.getElementById('w5'), { locale: 'da-DK', t: devT }), mockSnapshot(), { nextLow: 'both' }],
+      [createElectricityWidget(document.getElementById('w7'), { locale: 'da-DK', t: devT }), mockSnapshot(), { nextLow: 'both', liveWindow: 10 }],
+      [createElectricityWidget(document.getElementById('w6'), { locale: 'da-DK', t: devT }), mockSnapshot(), { nextLow: '24', showUsage: false }],
     ];
     for (const [w, snap, settings] of widgets) { w.setSettings({ liveWindow: 60, ...settings }); w.setData(snap); }
 

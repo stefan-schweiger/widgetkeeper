@@ -1,6 +1,18 @@
 {
   "name": {
-    "en": "Thermostat shortcuts"
+    "en": "Thermostat shortcuts",
+    "nl": "Thermostaatsnelkoppelingen",
+    "de": "Thermostat-Schnelltasten",
+    "fr": "Raccourcis thermostat",
+    "it": "Scorciatoie termostato",
+    "sv": "Termostatgenvägar",
+    "no": "Termostatsnarveier",
+    "es": "Accesos directos de termostato",
+    "da": "Termostatgenveje",
+    "ru": "Быстрые кнопки термостата",
+    "pl": "Skróty termostatu",
+    "ko": "온도 조절기 바로가기",
+    "ar": "اختصارات منظم الحرارة"
   },
   "height": 140,
   "transparent": false,
@@ -9,33 +21,93 @@
       "id": "device",
       "type": "autocomplete",
       "title": {
-        "en": "Thermostat or aircon"
+        "en": "Thermostat or aircon",
+        "nl": "Thermostaat of airco",
+        "de": "Thermostat oder Klimaanlage",
+        "fr": "Thermostat ou climatiseur",
+        "it": "Termostato o condizionatore",
+        "sv": "Termostat eller luftvärmepump",
+        "no": "Termostat eller varmepumpe",
+        "es": "Termostato o aire acondicionado",
+        "da": "Termostat eller varmepumpe",
+        "ru": "Термостат или кондиционер",
+        "pl": "Termostat lub klimatyzator",
+        "ko": "온도 조절기 또는 에어컨",
+        "ar": "منظم حرارة أو مكيف"
       }
     },
     {
       "id": "b1Power",
       "type": "dropdown",
       "title": {
-        "en": "Button 1 – power"
+        "en": "Button 1 – power",
+        "nl": "Knop 1 – aan/uit",
+        "de": "Taste 1 – Ein/Aus",
+        "fr": "Bouton 1 – marche/arrêt",
+        "it": "Pulsante 1 – accensione",
+        "sv": "Knapp 1 – på/av",
+        "no": "Knapp 1 – av/på",
+        "es": "Botón 1 – encendido",
+        "da": "Knap 1 – tænd/sluk",
+        "ru": "Кнопка 1 – питание",
+        "pl": "Przycisk 1 – zasilanie",
+        "ko": "버튼 1 – 전원",
+        "ar": "الزر 1 – التشغيل"
       },
       "value": "off",
       "values": [
         {
           "id": "keep",
           "title": {
-            "en": "Don't change"
+            "en": "Don't change",
+            "nl": "Niet wijzigen",
+            "de": "Nicht ändern",
+            "fr": "Ne pas modifier",
+            "it": "Non modificare",
+            "sv": "Ändra inte",
+            "no": "Ikke endre",
+            "es": "No cambiar",
+            "da": "Ingen ændring",
+            "ru": "Не менять",
+            "pl": "Bez zmian",
+            "ko": "변경 안 함",
+            "ar": "بدون تغيير"
           }
         },
         {
           "id": "on",
           "title": {
-            "en": "Turn on"
+            "en": "Turn on",
+            "nl": "Inschakelen",
+            "de": "Einschalten",
+            "fr": "Allumer",
+            "it": "Accendi",
+            "sv": "Slå på",
+            "no": "Slå på",
+            "es": "Encender",
+            "da": "Tænd",
+            "ru": "Включить",
+            "pl": "Włącz",
+            "ko": "켜기",
+            "ar": "تشغيل"
           }
         },
         {
           "id": "off",
           "title": {
-            "en": "Turn off"
+            "en": "Turn off",
+            "nl": "Uitschakelen",
+            "de": "Ausschalten",
+            "fr": "Éteindre",
+            "it": "Spegni",
+            "sv": "Stäng av",
+            "no": "Slå av",
+            "es": "Apagar",
+            "da": "Sluk",
+            "ru": "Выключить",
+            "pl": "Wyłącz",
+            "ko": "끄기",
+            "ar": "إيقاف"
           }
         }
       ]
@@ -44,47 +116,131 @@
       "id": "b1Temp",
       "type": "autocomplete",
       "title": {
-        "en": "Button 1 – target temperature"
+        "en": "Button 1 – target temperature",
+        "nl": "Knop 1 – doeltemperatuur",
+        "de": "Taste 1 – Zieltemperatur",
+        "fr": "Bouton 1 – température cible",
+        "it": "Pulsante 1 – temperatura target",
+        "sv": "Knapp 1 – måltemperatur",
+        "no": "Knapp 1 – måltemperatur",
+        "es": "Botón 1 – temperatura objetivo",
+        "da": "Knap 1 – måltemperatur",
+        "ru": "Кнопка 1 – целевая температура",
+        "pl": "Przycisk 1 – temperatura docelowa",
+        "ko": "버튼 1 – 목표 온도",
+        "ar": "الزر 1 – درجة الحرارة المستهدفة"
       }
     },
     {
       "id": "b1Mode",
       "type": "autocomplete",
       "title": {
-        "en": "Button 1 – mode"
+        "en": "Button 1 – mode",
+        "nl": "Knop 1 – modus",
+        "de": "Taste 1 – Modus",
+        "fr": "Bouton 1 – mode",
+        "it": "Pulsante 1 – modalità",
+        "sv": "Knapp 1 – läge",
+        "no": "Knapp 1 – modus",
+        "es": "Botón 1 – modo",
+        "da": "Knap 1 – tilstand",
+        "ru": "Кнопка 1 – режим",
+        "pl": "Przycisk 1 – tryb",
+        "ko": "버튼 1 – 모드",
+        "ar": "الزر 1 – الوضع"
       }
     },
     {
       "id": "b1Extra",
       "type": "autocomplete",
       "title": {
-        "en": "Button 1 – fan or other setting"
+        "en": "Button 1 – fan or other setting",
+        "nl": "Knop 1 – ventilator of andere instelling",
+        "de": "Taste 1 – Lüfter oder andere Einstellung",
+        "fr": "Bouton 1 – ventilation ou autre réglage",
+        "it": "Pulsante 1 – ventola o altra impostazione",
+        "sv": "Knapp 1 – fläkt eller annan inställning",
+        "no": "Knapp 1 – vifte eller annen innstilling",
+        "es": "Botón 1 – ventilador u otro ajuste",
+        "da": "Knap 1 – blæser eller anden indstilling",
+        "ru": "Кнопка 1 – вентилятор или другая настройка",
+        "pl": "Przycisk 1 – wentylator lub inne ustawienie",
+        "ko": "버튼 1 – 팬 또는 기타 설정",
+        "ar": "الزر 1 – المروحة أو إعداد آخر"
       }
     },
     {
       "id": "b2Power",
       "type": "dropdown",
       "title": {
-        "en": "Button 2 – power"
+        "en": "Button 2 – power",
+        "nl": "Knop 2 – aan/uit",
+        "de": "Taste 2 – Ein/Aus",
+        "fr": "Bouton 2 – marche/arrêt",
+        "it": "Pulsante 2 – accensione",
+        "sv": "Knapp 2 – på/av",
+        "no": "Knapp 2 – av/på",
+        "es": "Botón 2 – encendido",
+        "da": "Knap 2 – tænd/sluk",
+        "ru": "Кнопка 2 – питание",
+        "pl": "Przycisk 2 – zasilanie",
+        "ko": "버튼 2 – 전원",
+        "ar": "الزر 2 – التشغيل"
       },
       "value": "on",
       "values": [
         {
           "id": "keep",
           "title": {
-            "en": "Don't change"
+            "en": "Don't change",
+            "nl": "Niet wijzigen",
+            "de": "Nicht ändern",
+            "fr": "Ne pas modifier",
+            "it": "Non modificare",
+            "sv": "Ändra inte",
+            "no": "Ikke endre",
+            "es": "No cambiar",
+            "da": "Ingen ændring",
+            "ru": "Не менять",
+            "pl": "Bez zmian",
+            "ko": "변경 안 함",
+            "ar": "بدون تغيير"
           }
         },
         {
           "id": "on",
           "title": {
-            "en": "Turn on"
+            "en": "Turn on",
+            "nl": "Inschakelen",
+            "de": "Einschalten",
+            "fr": "Allumer",
+            "it": "Accendi",
+            "sv": "Slå på",
+            "no": "Slå på",
+            "es": "Encender",
+            "da": "Tænd",
+            "ru": "Включить",
+            "pl": "Włącz",
+            "ko": "켜기",
+            "ar": "تشغيل"
           }
         },
         {
           "id": "off",
           "title": {
-            "en": "Turn off"
+            "en": "Turn off",
+            "nl": "Uitschakelen",
+            "de": "Ausschalten",
+            "fr": "Éteindre",
+            "it": "Spegni",
+            "sv": "Stäng av",
+            "no": "Slå av",
+            "es": "Apagar",
+            "da": "Sluk",
+            "ru": "Выключить",
+            "pl": "Wyłącz",
+            "ko": "끄기",
+            "ar": "إيقاف"
           }
         }
       ]
@@ -93,47 +249,131 @@
       "id": "b2Temp",
       "type": "autocomplete",
       "title": {
-        "en": "Button 2 – target temperature"
+        "en": "Button 2 – target temperature",
+        "nl": "Knop 2 – doeltemperatuur",
+        "de": "Taste 2 – Zieltemperatur",
+        "fr": "Bouton 2 – température cible",
+        "it": "Pulsante 2 – temperatura target",
+        "sv": "Knapp 2 – måltemperatur",
+        "no": "Knapp 2 – måltemperatur",
+        "es": "Botón 2 – temperatura objetivo",
+        "da": "Knap 2 – måltemperatur",
+        "ru": "Кнопка 2 – целевая температура",
+        "pl": "Przycisk 2 – temperatura docelowa",
+        "ko": "버튼 2 – 목표 온도",
+        "ar": "الزر 2 – درجة الحرارة المستهدفة"
       }
     },
     {
       "id": "b2Mode",
       "type": "autocomplete",
       "title": {
-        "en": "Button 2 – mode"
+        "en": "Button 2 – mode",
+        "nl": "Knop 2 – modus",
+        "de": "Taste 2 – Modus",
+        "fr": "Bouton 2 – mode",
+        "it": "Pulsante 2 – modalità",
+        "sv": "Knapp 2 – läge",
+        "no": "Knapp 2 – modus",
+        "es": "Botón 2 – modo",
+        "da": "Knap 2 – tilstand",
+        "ru": "Кнопка 2 – режим",
+        "pl": "Przycisk 2 – tryb",
+        "ko": "버튼 2 – 모드",
+        "ar": "الزر 2 – الوضع"
       }
     },
     {
       "id": "b2Extra",
       "type": "autocomplete",
       "title": {
-        "en": "Button 2 – fan or other setting"
+        "en": "Button 2 – fan or other setting",
+        "nl": "Knop 2 – ventilator of andere instelling",
+        "de": "Taste 2 – Lüfter oder andere Einstellung",
+        "fr": "Bouton 2 – ventilation ou autre réglage",
+        "it": "Pulsante 2 – ventola o altra impostazione",
+        "sv": "Knapp 2 – fläkt eller annan inställning",
+        "no": "Knapp 2 – vifte eller annen innstilling",
+        "es": "Botón 2 – ventilador u otro ajuste",
+        "da": "Knap 2 – blæser eller anden indstilling",
+        "ru": "Кнопка 2 – вентилятор или другая настройка",
+        "pl": "Przycisk 2 – wentylator lub inne ustawienie",
+        "ko": "버튼 2 – 팬 또는 기타 설정",
+        "ar": "الزر 2 – المروحة أو إعداد آخر"
       }
     },
     {
       "id": "b3Power",
       "type": "dropdown",
       "title": {
-        "en": "Button 3 – power"
+        "en": "Button 3 – power",
+        "nl": "Knop 3 – aan/uit",
+        "de": "Taste 3 – Ein/Aus",
+        "fr": "Bouton 3 – marche/arrêt",
+        "it": "Pulsante 3 – accensione",
+        "sv": "Knapp 3 – på/av",
+        "no": "Knapp 3 – av/på",
+        "es": "Botón 3 – encendido",
+        "da": "Knap 3 – tænd/sluk",
+        "ru": "Кнопка 3 – питание",
+        "pl": "Przycisk 3 – zasilanie",
+        "ko": "버튼 3 – 전원",
+        "ar": "الزر 3 – التشغيل"
       },
       "value": "on",
       "values": [
         {
           "id": "keep",
           "title": {
-            "en": "Don't change"
+            "en": "Don't change",
+            "nl": "Niet wijzigen",
+            "de": "Nicht ändern",
+            "fr": "Ne pas modifier",
+            "it": "Non modificare",
+            "sv": "Ändra inte",
+            "no": "Ikke endre",
+            "es": "No cambiar",
+            "da": "Ingen ændring",
+            "ru": "Не менять",
+            "pl": "Bez zmian",
+            "ko": "변경 안 함",
+            "ar": "بدون تغيير"
           }
         },
         {
           "id": "on",
           "title": {
-            "en": "Turn on"
+            "en": "Turn on",
+            "nl": "Inschakelen",
+            "de": "Einschalten",
+            "fr": "Allumer",
+            "it": "Accendi",
+            "sv": "Slå på",
+            "no": "Slå på",
+            "es": "Encender",
+            "da": "Tænd",
+            "ru": "Включить",
+            "pl": "Włącz",
+            "ko": "켜기",
+            "ar": "تشغيل"
           }
         },
         {
           "id": "off",
           "title": {
-            "en": "Turn off"
+            "en": "Turn off",
+            "nl": "Uitschakelen",
+            "de": "Ausschalten",
+            "fr": "Éteindre",
+            "it": "Spegni",
+            "sv": "Stäng av",
+            "no": "Slå av",
+            "es": "Apagar",
+            "da": "Sluk",
+            "ru": "Выключить",
+            "pl": "Wyłącz",
+            "ko": "끄기",
+            "ar": "إيقاف"
           }
         }
       ]
@@ -142,21 +382,57 @@
       "id": "b3Temp",
       "type": "autocomplete",
       "title": {
-        "en": "Button 3 – target temperature"
+        "en": "Button 3 – target temperature",
+        "nl": "Knop 3 – doeltemperatuur",
+        "de": "Taste 3 – Zieltemperatur",
+        "fr": "Bouton 3 – température cible",
+        "it": "Pulsante 3 – temperatura target",
+        "sv": "Knapp 3 – måltemperatur",
+        "no": "Knapp 3 – måltemperatur",
+        "es": "Botón 3 – temperatura objetivo",
+        "da": "Knap 3 – måltemperatur",
+        "ru": "Кнопка 3 – целевая температура",
+        "pl": "Przycisk 3 – temperatura docelowa",
+        "ko": "버튼 3 – 목표 온도",
+        "ar": "الزر 3 – درجة الحرارة المستهدفة"
       }
     },
     {
       "id": "b3Mode",
       "type": "autocomplete",
       "title": {
-        "en": "Button 3 – mode"
+        "en": "Button 3 – mode",
+        "nl": "Knop 3 – modus",
+        "de": "Taste 3 – Modus",
+        "fr": "Bouton 3 – mode",
+        "it": "Pulsante 3 – modalità",
+        "sv": "Knapp 3 – läge",
+        "no": "Knapp 3 – modus",
+        "es": "Botón 3 – modo",
+        "da": "Knap 3 – tilstand",
+        "ru": "Кнопка 3 – режим",
+        "pl": "Przycisk 3 – tryb",
+        "ko": "버튼 3 – 모드",
+        "ar": "الزر 3 – الوضع"
       }
     },
     {
       "id": "b3Extra",
       "type": "autocomplete",
       "title": {
-        "en": "Button 3 – fan or other setting"
+        "en": "Button 3 – fan or other setting",
+        "nl": "Knop 3 – ventilator of andere instelling",
+        "de": "Taste 3 – Lüfter oder andere Einstellung",
+        "fr": "Bouton 3 – ventilation ou autre réglage",
+        "it": "Pulsante 3 – ventola o altra impostazione",
+        "sv": "Knapp 3 – fläkt eller annan inställning",
+        "no": "Knapp 3 – vifte eller annen innstilling",
+        "es": "Botón 3 – ventilador u otro ajuste",
+        "da": "Knap 3 – blæser eller anden indstilling",
+        "ru": "Кнопка 3 – вентилятор или другая настройка",
+        "pl": "Przycisk 3 – wentylator lub inne ustawienie",
+        "ko": "버튼 3 – 팬 또는 기타 설정",
+        "ar": "الزر 3 – المروحة أو إعداد آخر"
       }
     }
   ],

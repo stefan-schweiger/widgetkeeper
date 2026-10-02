@@ -16,6 +16,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
   - `?snap=/temp/real-snapshot.json` loads a real captured snapshot.
   - `#live=0.4` / `#price=0.3` simulates a scrub.
   - `dev/thermostat-preview.html` does the same for the thermostat widget.
+  - `?lang=de` (either page) uses `locales/de.json`, through `dev/i18n.js`.
   - Headless screenshots: `msedge --headless=new --screenshot=… --user-data-dir=<fresh dir>`. A fresh profile avoids a stale cached CSS.
 
 ## Architecture
@@ -62,12 +63,20 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - Widget `devices` setting (`type: global, singular, filter capabilities measure_power`); read it with `Homey.getDeviceIds()`.
 - Widget preview images are 1024×1024. App images are 250×175, 500×350 and 1000×700.
 
+## Localization
+- All 13 Homey languages: en nl de fr it sv no es da ru pl ko ar.
+- The widget, thermostat-service and settings-page strings are in `locales/<lang>.json`. The manifest strings are in the compose JSONs, and the store text is in `README.<lang>.txt`.
+- `test/locales.test.ts` fails if a key, a `__token__` or a manifest language is missing. A new string needs all 13 languages.
+- Keep the strings as short as the English. The 300 px narrow widget truncates the header subtitles and the footer label.
+- Arabic keeps the LTR layout. The text elements are `dir="auto"` with `text-align: left`.
+
 ## Widget settings
 `liveWindow` (60/30/10/5/1/0.5 min, default 10) · `showUsage` · `separateUsage` (usage as its own chart above price) · `nextLow` (none/12/24/both, default 12; replaced the `showNextLow` checkbox, which `index.html` still honours as a fallback).
 
 ## Design decisions that differ from the spec
 - The live window is configurable, with relative axis labels (`1h · 30m · Now`).
 - Axis labels are 12 px, to match Homey's native energy widgets; the gutters and plots were resized to match.
+- The chart title chips and the whole footer are 12/16 too (`--ew-fs-label`), a step below Homey's scale. The header subtitles (`Using now`, `min left`) stay 14, the header values 24.
 - There are dashed midnight lines on the slot charts.
 - The footer shows only the start hour and price (`03:00 • 1,22 kr.`). With both 12h and 24h: `Lowest 12/24h   03:00 • 1,22 / 03:00 • 1,22` (no unit), or a single `03:00 • 1,22 kr.` when both are the same slot.
 - Weekday names follow Homey's language, and numbers follow the device locale.

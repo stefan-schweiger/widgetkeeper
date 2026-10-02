@@ -1,0 +1,43 @@
+{
+  "electricity": {
+    "usingNow": "Zużycie teraz",
+    "minutesRemaining": "jeszcze __minutes__ min",
+    "livePower": "Moc na żywo",
+    "price": "Cena",
+    "usage": "Zużycie",
+    "now": "Teraz",
+    "lowestNext12h": "Min. cena 12 h",
+    "lowestNext24h": "Min. cena 24 h",
+    "lowestBoth": "Min. 12/24 h",
+    "selectMeter": "Wybierz licznik energii w ustawieniach widżetu.",
+    "noReadings": "Brak odczytów z licznika.",
+    "meterError": "Nie można odczytać licznika.",
+    "noPrices": "Brak cen energii. Włącz ceny dynamiczne w Homey Energy.",
+    "error": "Nie można wczytać danych."
+  },
+  "thermostat": {
+    "selectDevice": "Wybierz termostat w ustawieniach widżetu.",
+    "selectDeviceFirst": "Najpierw wybierz termostat, a potem ponownie otwórz to ustawienie.",
+    "unchanged": "Bez zmian",
+    "off": "Wył.",
+    "error": "Nie można wczytać termostatu.",
+    "applyFailed": "Nie można zmienić ustawień termostatu.",
+    "on": "Wł.",
+    "currently": "Teraz: __state__",
+    "currentlyOff": "Teraz wyłączony"
+  },
+  "settings": {
+    "title": "Diagnostyka",
+    "subtitle": "Ostatni dziennik aplikacji i szczegóły urządzeń. Skopiuj lub udostępnij raport, aby uzyskać pomoc w debugowaniu.",
+    "includeDevice": "Dołącz szczegóły urządzenia",
+    "none": "Brak",
+    "refresh": "Odśwież",
+    "copy": "Kopiuj",
+    "share": "Udostępnij",
+    "loading": "Wczytywanie…",
+    "loadFailed": "Nie można wczytać diagnostyki: __error__",
+    "updated": "Zaktualizowano o __time__",
+    "copied": "Skopiowano do schowka",
+    "shareTitle": "Diagnostyka Widgetkeeper"
+  }
+}

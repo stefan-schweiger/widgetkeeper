@@ -25,5 +25,19 @@
     "on": "On",
     "currently": "Currently __state__",
     "currentlyOff": "Currently off"
+  },
+  "settings": {
+    "title": "Diagnostics",
+    "subtitle": "The app's recent log and device details. Copy or share the report to get help debugging.",
+    "includeDevice": "Include device details",
+    "none": "None",
+    "refresh": "Refresh",
+    "copy": "Copy",
+    "share": "Share",
+    "loading": "Loading…",
+    "loadFailed": "Could not load diagnostics: __error__",
+    "updated": "Updated __time__",
+    "copied": "Copied to clipboard",
+    "shareTitle": "Widgetkeeper diagnostics"
   }
 }
