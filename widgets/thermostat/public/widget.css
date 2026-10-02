@@ -18,9 +18,9 @@
   /* Homey's type scale: only these size/line-height pairs, and the weights noted, are used natively. */
   --tw-fs-small: var(--homey-font-size-small, 14px); --tw-lh-small: var(--homey-line-height-small, 20px); /* regular */
   --tw-fs-default: var(--homey-font-size-default, 17px); --tw-lh-default: var(--homey-line-height-default, 24px);
-  --tw-fs-large: var(--homey-font-size-large, 20px); --tw-lh-large: var(--homey-line-height-large, 28px); /* medium */
+  --tw-fs-xlarge: var(--homey-font-size-xlarge, 24px); --tw-lh-xlarge: var(--homey-line-height-xlarge, 32px); /* bold */
   --tw-regular: var(--homey-font-weight-regular, 400);
-  --tw-medium: var(--homey-font-weight-medium, 500);
+  --tw-bold: var(--homey-font-weight-bold, 700);
   --tw-radius: var(--homey-border-radius-default, 14px);
   --tw-radius-small: var(--homey-border-radius-small, 3px);
 }
@@ -28,6 +28,19 @@
 /* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
 html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
 html, body { margin: 0; }
+
+/*
+ * Dark mode: the frame looks like Homey's native device tiles. Those are darker than the default widget
+ * background, with a 1px lighter rim that's brightest along the top. The radius approximates the frame's
+ * own, which clips the page.
+ */
+.homey-dark-mode .tw-frame, .tw-frame.homey-dark-mode {
+  --tw-frame-bg: #181920;
+  background-color: var(--tw-frame-bg);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+body.tw-frame { min-height: 100vh; box-sizing: border-box; }
 
 .tw { display: flex; flex-direction: column; gap: 16px; min-width: 0; color: var(--tw-text); }
 .tw * { box-sizing: border-box; }
@@ -46,7 +59,7 @@ html, body { margin: 0; }
 }
 .tw-titles { display: flex; flex-direction: column; min-width: 0; }
 .tw-name, .tw-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tw-name { font-size: var(--tw-fs-default); line-height: var(--tw-lh-default); font-weight: var(--tw-medium); }
+.tw-name { font-size: var(--tw-fs-default); line-height: var(--tw-lh-default); font-weight: var(--tw-bold); }
 .tw-sub { font-size: var(--tw-fs-small); line-height: var(--tw-lh-small); font-weight: var(--tw-regular); color: var(--tw-muted); }
 .tw-header.message-only .tw-sub, .tw-sub.error { white-space: normal; }
 .tw-sub.error { color: var(--homey-color-red, #F25F5C); }
@@ -56,7 +69,7 @@ html, body { margin: 0; }
 .tw-btn {
   --c: var(--tw-other);
   appearance: none; border: 0; margin: 0; font: inherit; color: var(--tw-text);
-  background: var(--tw-tile); border-radius: var(--tw-radius-small); height: 80px; padding: 6px 4px; min-width: 0;
+  background: var(--tw-tile); border-radius: var(--tw-radius-small); height: 80px; padding: 4px; min-width: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
   transition: background-color .15s, color .15s, transform .1s;
@@ -73,7 +86,7 @@ html, body { margin: 0; }
 .tw-btn:disabled:not(.active) > * { opacity: .5; }
 
 .tw-btn > span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tw-big { font-size: var(--tw-fs-large); line-height: var(--tw-lh-large); font-weight: var(--tw-medium); }
+.tw-big { font-size: var(--tw-fs-xlarge); line-height: var(--tw-lh-xlarge); font-weight: var(--tw-bold); }
 .tw-modetext { font-size: var(--tw-fs-small); line-height: var(--tw-lh-small); font-weight: var(--tw-regular); color: var(--c); }
 .tw-extra { font-size: var(--tw-fs-small); line-height: var(--tw-lh-small); font-weight: var(--tw-regular); color: var(--tw-muted); }
 
