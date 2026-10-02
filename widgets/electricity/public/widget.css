@@ -76,8 +76,10 @@ html, body { margin: 0; }
 .ew .dot-ring { fill: var(--ew-card); stroke-width: 2; }
 .ew .dot-ring.live { stroke: var(--ew-green); }
 .ew .dot-ring.price { stroke: var(--ew-blue); }
+.ew .dot-ring.usage { stroke: var(--ew-usage); }
 .ew .dot-core.live { fill: var(--ew-green); }
 .ew .dot-core.price { fill: var(--ew-blue); }
+.ew .dot-core.usage { fill: var(--ew-usage); }
 .ew .usage-dot { fill: var(--ew-usage); stroke: var(--ew-card); stroke-width: 2; }
 
 /* Footer */

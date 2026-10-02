@@ -411,9 +411,10 @@
       el('svg:path', { d: area, fill: gradient(svg, 'usage-stop', [[0, 0.22], [1, 0.02]]) }, svg);
       el('svg:path', { class: 'usage-line solo', d: line }, svg);
 
-      if (state.fineIdx != null && m.usageByIdx.has(state.fineIdx)) {
-        el('svg:circle', { class: 'usage-dot', cx: f1(fx(state.fineIdx)), cy: f1(y(m.usageByIdx.get(state.fineIdx))), r: 4 }, svg);
-      }
+      // Marker at the scrubbed 5 min, else at the latest reading, like the live and price dots.
+      const idx = state.fineIdx != null && m.usageByIdx.has(state.fineIdx)
+        ? state.fineIdx : Math.max(-1, ...m.usageByIdx.keys());
+      if (idx >= 0) dot(svg, fx(idx), y(m.usageByIdx.get(idx)), 'usage');
       slotLabels(svg, slots, sw, pw, base);
     }
 

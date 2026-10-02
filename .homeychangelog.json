@@ -2,18 +2,18 @@
   "0.1.0": { "en": "First release, with the Electricity and Thermostat shortcuts widgets." },
   "0.1.1": { "en": "Widgets now look more like Homey's own, with more compact thermostat buttons. Electricity: the lowest price is shown once when the 12h and 24h lowest are the same hour." },
   "0.1.2": {
-    "en": "Now available in 13 languages. Electricity: smaller chart titles and footer text.",
-    "nl": "Nu beschikbaar in 13 talen. Elektriciteit: kleinere grafiektitels en voettekst.",
-    "de": "Jetzt in 13 Sprachen verfügbar. Strom: kleinere Diagrammtitel und Fußzeile.",
-    "fr": "Désormais disponible en 13 langues. Électricité : titres des graphiques et pied de page plus petits.",
-    "it": "Ora disponibile in 13 lingue. Elettricità: titoli dei grafici e piè di pagina più piccoli.",
-    "sv": "Nu tillgänglig på 13 språk. El: mindre diagramrubriker och sidfot.",
-    "no": "Nå tilgjengelig på 13 språk. Strøm: mindre diagramtitler og bunntekst.",
-    "es": "Ahora disponible en 13 idiomas. Electricidad: títulos de gráficos y pie más pequeños.",
-    "da": "Nu på 13 sprog. Elektricitet: mindre graftitler og bundtekst.",
-    "ru": "Теперь на 13 языках. Электроэнергия: уменьшены заголовки графиков и нижняя строка.",
-    "pl": "Teraz dostępne w 13 językach. Prąd: mniejsze tytuły wykresów i stopka.",
-    "ko": "이제 13개 언어를 지원합니다. 전기: 차트 제목과 하단 텍스트를 더 작게 했습니다.",
-    "ar": "متوفر الآن بـ 13 لغة. الكهرباء: عناوين مخططات ونص سفلي أصغر."
+    "en": "Now available in 13 languages. Electricity: smaller chart titles and footer text. Usage chart: a marker at the latest reading.",
+    "nl": "Nu beschikbaar in 13 talen. Elektriciteit: kleinere grafiektitels en voettekst. Verbruiksgrafiek: een markering bij de laatste meting.",
+    "de": "Jetzt in 13 Sprachen verfügbar. Strom: kleinere Diagrammtitel und Fußzeile. Verbrauchsdiagramm: eine Markierung am letzten Messwert.",
+    "fr": "Désormais disponible en 13 langues. Électricité : titres des graphiques et pied de page plus petits. Graphique de consommation : un repère sur la dernière mesure.",
+    "it": "Ora disponibile in 13 lingue. Elettricità: titoli dei grafici e piè di pagina più piccoli. Grafico dei consumi: un indicatore sull'ultima lettura.",
+    "sv": "Nu tillgänglig på 13 språk. El: mindre diagramrubriker och sidfot. Förbrukningsdiagram: en markör vid senaste mätvärdet.",
+    "no": "Nå tilgjengelig på 13 språk. Strøm: mindre diagramtitler og bunntekst. Forbruksdiagram: en markør ved siste måling.",
+    "es": "Ahora disponible en 13 idiomas. Electricidad: títulos de gráficos y pie más pequeños. Gráfico de consumo: un marcador en la última lectura.",
+    "da": "Nu på 13 sprog. Elektricitet: mindre graftitler og bundtekst. Forbrugsgraf: en markør ved seneste måling.",
+    "ru": "Теперь на 13 языках. Электроэнергия: уменьшены заголовки графиков и нижняя строка. График потребления: маркер на последнем показании.",
+    "pl": "Teraz dostępne w 13 językach. Prąd: mniejsze tytuły wykresów i stopka. Wykres zużycia: znacznik przy ostatnim odczycie.",
+    "ko": "이제 13개 언어를 지원합니다. 전기: 차트 제목과 하단 텍스트를 더 작게 했습니다. 사용량 차트: 최근 측정값에 표시가 추가되었습니다.",
+    "ar": "متوفر الآن بـ 13 لغة. الكهرباء: عناوين مخططات ونص سفلي أصغر. مخطط الاستهلاك: علامة عند آخر قراءة."
   }
 }
