@@ -28,6 +28,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
   - Keep the SVG elements persistent across re-renders; replacing them breaks touch scrubbing.
   - It resamples the raw live readings to 120 points for the selected window and re-renders on a timer so the chart scrolls.
 - Colours are Homey CSS tokens with spec-hex fallbacks, defined on `.ew` (not `:root`) so the light-mode overrides in the preview inherit.
+- Both widgets stick to Homey's widget type scale (`--homey-font-size-*` with its matching `--homey-line-height-*`, and only the allowed weights: 14 regular, 17 any, 20 medium, 24/32 bold), `--homey-line-color(-light)` and `--homey-border-radius-*`, each with a px fallback. The font is set on `html`, so Homey's own font on `body` wins.
 
 ## Thermostat shortcuts widget
 - Three preset buttons for one device. `lib/ThermostatService.ts` owns it; `lib/appApi.ts` holds the shared `createAppAPI` instance.
@@ -40,6 +41,8 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - A button is highlighted while the device matches every value it sets. A preset that doesn't turn the device off never matches while the device is off.
 - Layout: a header with the device icon and name, then a segmented row of three buttons. Each button's text is derived from its preset (`21°` / `Heat` / `Fan slow`, or `Off`). The custom label and icon settings are hidden for now.
 - When no preset matches, the header shows `Currently Cool 23° · Fan auto` under the name.
+- Type: the name and the button values are 17 bold. The buttons' mode/extra text is 12/16 regular, a deliberate exception to Homey's scale so three lines fit the 68 px buttons.
+- In dark mode, `body.tw-frame` mimics Homey's native device tiles: a `#181920` fill and a 1px rim that's lighter at the top (a fixed `::after`, so it stays out of the height), using a 10px radius measured from a phone screenshot. It's gated on `.homey-dark-mode`; light mode keeps the default frame.
 - The device icon is fetched by the app from `homey.api.getLocalUrl()` + `device.iconObj.url`, sent as an SVG data URL, and used as a CSS mask. A rounded square is the fallback.
 
 ## Diagnostics (no Docker needed)
@@ -64,7 +67,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - The live window is configurable, with relative axis labels (`1h · 30m · Now`).
 - Axis labels are 12 px, to match Homey's native energy widgets; the gutters and plots were resized to match.
 - There are dashed midnight lines on the slot charts.
-- The footer shows only the start hour and price (`03:00 • 1,22 kr.`). With both 12h and 24h: `Lowest price 12h/24h   03:00 • 1,22 / 03:00 • 1,22` (no unit).
+- The footer shows only the start hour and price (`03:00 • 1,22 kr.`). With both 12h and 24h: `Lowest price 12h/24h   03:00 • 1,22 / 03:00 • 1,22` (no unit), or a single `03:00 • 1,22 kr.` when both are the same slot.
 - Weekday names follow Homey's language, and numbers follow the device locale.
 
 ## Branding

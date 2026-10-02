@@ -54,5 +54,8 @@ Widgetkeeper isn't in the Homey App Store yet. For now you can install it from s
 - **"No electricity prices available"**: switch on dynamic prices in Homey Energy.
 - **A thermostat preset doesn't apply**: open the Homey app, go to **Apps → Widgetkeeper → Configure**, and pick the device. The page shows recent log lines and your device's capabilities. Include that report when you [open an issue](https://github.com/thomassidor/widgetkeeper/issues).
 
+## Changelog
+See [CHANGELOG.md](CHANGELOG.md) for what's new in each version.
+
 ## License
 [MIT](LICENSE)
