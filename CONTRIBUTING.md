@@ -17,6 +17,7 @@ Use the project-local Homey CLI (`npx homey`, v4). An older globally installed `
 ```sh
 npx homey app validate --level debug   # compile + validate
 npm test                               # unit tests (vitest; widget tests use happy-dom)
+npm run typecheck                      # tsc for the app + basic JS checking of the widget front ends
 npx homey app install                  # build and install on your Homey
 npx homey app run                      # run with live logs (needs Docker); widget files hot-reload
 npm run app-images                     # render the app store images
