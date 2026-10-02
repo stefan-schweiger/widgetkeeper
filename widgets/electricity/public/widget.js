@@ -533,16 +533,19 @@
       return low;
     }
 
-    /** `mode` is '12', '24' or 'both'. Both: `03:00 • 1,22 / 03:00 • 1,22`, without the unit. */
+    /**
+     * `mode` is '12', '24' or 'both'. Both: `03:00 • 1,22 / 03:00 • 1,22`, without the unit;
+     * when the 12h and 24h lowest are the same slot it's shown once, with the unit.
+     */
     function renderFooter(footer, m, mode) {
       const slots = m.allSlots;
       const lows = (mode === 'both' ? [12, 24] : [mode === '24' ? 24 : 12])
-        .map(h => lowestSlot(slots, h)).filter(i => i >= 0);
+        .map(h => lowestSlot(slots, h)).filter((i, k, a) => i >= 0 && a.indexOf(i) === k);
       clear(footer);
       if (!lows.length) { show(footer, false); return; }
       const both = lows.length > 1;
       const cur = currencyUnits(m.d.currency);
-      el('span', { class: 'l', text: t(both ? 'lowestBoth' : mode === '24' ? 'lowestNext24h' : 'lowestNext12h') }, footer);
+      el('span', { class: 'l', text: t(mode === 'both' ? 'lowestBoth' : mode === '24' ? 'lowestNext24h' : 'lowestNext12h') }, footer);
       const r = el('span', { class: 'r' }, footer);
       lows.forEach((low, k) => {
         const s = slots[low];
