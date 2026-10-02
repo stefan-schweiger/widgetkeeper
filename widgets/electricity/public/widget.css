@@ -15,6 +15,7 @@
   --ew-band: color-mix(in srgb, var(--ew-text) 7%, transparent);
   --ew-future: color-mix(in srgb, var(--ew-card) 35%, transparent);
   --ew-usage: var(--ew-text);
+  --ew-usage-dot: color-mix(in srgb, var(--ew-usage) 65%, var(--ew-card)); /* toned down, like the usage line */
   /* Homey's type scale: only these size/line-height pairs, and the weights noted, are used natively. */
   --ew-fs-small: var(--homey-font-size-small, 14px); --ew-lh-small: var(--homey-line-height-small, 20px); /* regular */
   /* Labels (chart chips, footer): 12/16, like the axis labels; a deliberate step below Homey's scale. */
@@ -60,7 +61,9 @@ html, body { margin: 0; }
 .ew-chip.live i { background: var(--ew-green); }
 .ew-chip.price i { background: var(--ew-blue); }
 .ew-chip.usage i { background: var(--ew-usage); }
-.ew svg { display: block; overflow: visible; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.ew svg { display: block; overflow: visible; touch-action: none; user-select: none; -webkit-user-select: none; }
+/* Pointer events go to the persistent <svg>, never to its children, which are redrawn every render. */
+.ew svg * { pointer-events: none; }
 
 .ew svg text { font-size: 12px; fill: var(--ew-muted); }
 .ew .grid { stroke: var(--ew-grid); stroke-width: 1; fill: none; shape-rendering: crispEdges; }
@@ -76,10 +79,10 @@ html, body { margin: 0; }
 .ew .dot-ring { fill: var(--ew-card); stroke-width: 2; }
 .ew .dot-ring.live { stroke: var(--ew-green); }
 .ew .dot-ring.price { stroke: var(--ew-blue); }
-.ew .dot-ring.usage { stroke: var(--ew-usage); }
+.ew .dot-ring.usage { stroke: var(--ew-usage-dot); }
 .ew .dot-core.live { fill: var(--ew-green); }
 .ew .dot-core.price { fill: var(--ew-blue); }
-.ew .dot-core.usage { fill: var(--ew-usage); }
+.ew .dot-core.usage { fill: var(--ew-usage-dot); }
 .ew .usage-dot { fill: var(--ew-usage); stroke: var(--ew-card); stroke-width: 2; }
 
 /* Footer */

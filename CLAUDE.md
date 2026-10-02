@@ -29,6 +29,9 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - The widget front end (`widgets/electricity/public/`) is **plain JS**, with no build step, because Homey serves it as-is.
   - `widget.js` exposes `createElectricityWidget(root, opts)`; `index.html` wires it to `Homey`.
   - Keep the SVG elements persistent across re-renders; replacing them breaks touch scrubbing.
+  - Touch: the charts `preventDefault` every `touchstart`/`touchmove` (with `touch-action: none`). Without that, Homey's dashboard scrolls and cancels the scrub. The iOS app honours it.
+  - Homey's Android app (a React Native WebView) ignores it. The native dashboard takes the touch about 100 ms in, before the first `touchmove`, and sends `pointercancel`; this was verified with an on-screen event log on a Galaxy Tab. No widget message is sent during touches, so no widget-side fix is possible.
+  - So a tap selects (on `pointerdown`). A touch selection stays for 3 s after `pointerup`/`pointercancel`. Mouse selections reset on `pointerleave`.
   - It resamples the raw live readings to 120 points for the selected window and re-renders on a timer so the chart scrolls.
 - Colours are Homey CSS tokens with spec-hex fallbacks, defined on `.ew` (not `:root`) so the light-mode overrides in the preview inherit.
 - Both widgets stick to Homey's widget type scale (`--homey-font-size-*` with its matching `--homey-line-height-*`, and only the allowed weights: 14 regular, 17 any, 20 medium, 24/32 bold), `--homey-line-color(-light)` and `--homey-border-radius-*`, each with a px fallback. The font is set on `html`, so Homey's own font on `body` wins.

@@ -147,6 +147,33 @@ describe('usage', () => {
   });
 });
 
+it('claims touches on the charts, so the dashboard does not scroll and cancel the scrub', () => {
+  const { root } = widget(snapshot());
+  for (const svg of root.querySelectorAll('svg')) {
+    for (const type of ['touchstart', 'touchmove']) {
+      const e = new TouchEvent(type, { touches: [{ clientX: 100, clientY: 50, identifier: 1, target: svg }] as any, bubbles: true, cancelable: true });
+      svg.dispatchEvent(e);
+      expect(e.defaultPrevented, type).toBe(true);
+    }
+  }
+});
+
+it('selects on tap and keeps a touch selection for 3 s after the finger lifts', () => {
+  const { root, q } = widget(snapshot());
+  const svg = root.querySelectorAll('svg')[2]; // price chart
+  const sub = () => root.querySelectorAll('.ew-hsub')[1].textContent;
+  const idle = sub();
+  const at = (type: string, x: number) => svg.dispatchEvent(new PointerEvent(type, { clientX: x, clientY: 50, pointerType: 'touch', bubbles: true }));
+  at('pointerdown', 60);
+  expect(sub()).not.toBe(idle);
+  at('pointercancel', 60); // Android's dashboard taking over the drag
+  vi.advanceTimersByTime(2900);
+  expect(sub()).not.toBe(idle);
+  vi.advanceTimersByTime(200);
+  expect(sub()).toBe(idle);
+  expect(q('.ew-header')).toBeTruthy();
+});
+
 it('shows a message instead of the charts', () => {
   const { w, messages, shown, q } = widget(snapshot());
   w.setMessage('Select a power meter in the widget settings.');

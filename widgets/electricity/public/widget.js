@@ -297,9 +297,9 @@
       return `url(#${id})`;
     }
 
-    function dot(svg, x, y, kind) {
-      el('svg:circle', { class: `dot-ring ${kind}`, cx: f1(x), cy: f1(y), r: 7 }, svg);
-      el('svg:circle', { class: `dot-core ${kind}`, cx: f1(x), cy: f1(y), r: 4 }, svg);
+    function dot(svg, x, y, kind, small) {
+      el('svg:circle', { class: `dot-ring ${kind}`, cx: f1(x), cy: f1(y), r: small ? 6.5 : 7 }, svg);
+      el('svg:circle', { class: `dot-core ${kind}`, cx: f1(x), cy: f1(y), r: small ? 3.5 : 4 }, svg);
     }
 
     function prepareSvg(svg, w, h) {
@@ -414,7 +414,7 @@
       // Marker at the scrubbed 5 min, else at the latest reading, like the live and price dots.
       const idx = state.fineIdx != null && m.usageByIdx.has(state.fineIdx)
         ? state.fineIdx : Math.max(-1, ...m.usageByIdx.keys());
-      if (idx >= 0) dot(svg, fx(idx), y(m.usageByIdx.get(idx)), 'usage');
+      if (idx >= 0) dot(svg, fx(idx), y(m.usageByIdx.get(idx)), 'usage', true);
       slotLabels(svg, slots, sw, pw, base);
     }
 
@@ -561,7 +561,7 @@
 
     const pointerX = (e, svg) => e.clientX - svg.getBoundingClientRect().left;
 
-    ui.live.svg.addEventListener('pointermove', e => {
+    function scrubLive(e) {
       const g = geom.live;
       if (!g || !g.xs.length) return;
       const px = pointerX(e, ui.live.svg);
@@ -571,29 +571,46 @@
         for (let k = 1; k < g.xs.length; k++) if (Math.abs(g.xs[k] - px) < Math.abs(g.xs[i] - px)) i = k;
       }
       if (i !== state.liveIdx) { state.liveIdx = i; render(); }
-    });
-    // The usage and price charts share the 37-slot x axis, so they share scrub state.
-    for (const svg of [ui.usage.svg, ui.price.svg]) {
-      svg.addEventListener('pointermove', e => {
-        const g = geom.slots;
-        if (!g) return;
-        const px = pointerX(e, svg) - L;
-        const i = Math.floor(px / g.sw);
-        const c = i < 0 || i >= g.n ? null : i;
-        const j = c == null ? null : Math.max(0, Math.round(px / g.sw * 12 - 0.5));
-        if (c !== state.slotIdx || j !== state.fineIdx) { state.slotIdx = c; state.fineIdx = j; render(); }
-      });
+    }
+    function scrubSlots(e, svg) {
+      const g = geom.slots;
+      if (!g) return;
+      const px = pointerX(e, svg) - L;
+      const i = Math.floor(px / g.sw);
+      const c = i < 0 || i >= g.n ? null : i;
+      const j = c == null ? null : Math.max(0, Math.round(px / g.sw * 12 - 0.5));
+      if (c !== state.slotIdx || j !== state.fineIdx) { state.slotIdx = c; state.fineIdx = j; render(); }
     }
     const resetLive = () => { if (state.liveIdx != null) { state.liveIdx = null; render(); } };
     const resetSlots = () => {
       if (state.slotIdx != null || state.fineIdx != null) { state.slotIdx = null; state.fineIdx = null; render(); }
     };
-    // Touch scrubs end when the finger lifts; mouse scrubs end when the pointer leaves.
-    for (const ev of ['pointerleave', 'pointercancel', 'pointerup']) {
-      const guard = fn => e => { if (ev !== 'pointerup' || e.pointerType !== 'mouse') fn(); };
-      ui.live.svg.addEventListener(ev, guard(resetLive));
-      ui.usage.svg.addEventListener(ev, guard(resetSlots));
-      ui.price.svg.addEventListener(ev, guard(resetSlots));
+
+    // The usage and price charts share the 37-slot x axis, so they share scrub state.
+    // Mouse: scrub on hover, reset on leave. Touch: a tap or drag selects; the selection stays
+    // TOUCH_HOLD_MS after the finger lifts. That also makes taps work on Homey's Android app,
+    // whose dashboard takes over a drag (pointercancel) about 100 ms in, whatever the page does.
+    const TOUCH_HOLD_MS = 3000;
+    const liveHold = { timer: null }, slotsHold = { timer: null }; // usage + price share one
+    for (const [svg, scrub, reset, hold] of [
+      [ui.live.svg, e => scrubLive(e), resetLive, liveHold],
+      [ui.usage.svg, e => scrubSlots(e, ui.usage.svg), resetSlots, slotsHold],
+      [ui.price.svg, e => scrubSlots(e, ui.price.svg), resetSlots, slotsHold],
+    ]) {
+      svg.addEventListener('pointerdown', e => { clearTimeout(hold.timer); scrub(e); });
+      svg.addEventListener('pointermove', scrub);
+      svg.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') reset(); });
+      for (const ev of ['pointerup', 'pointercancel']) {
+        svg.addEventListener(ev, e => {
+          if (e.pointerType === 'mouse') return;
+          clearTimeout(hold.timer);
+          hold.timer = setTimeout(reset, TOUCH_HOLD_MS);
+        });
+      }
+      // Without this, Homey's dashboard scrolls and cancels the touch (iOS honours it; Android doesn't).
+      for (const ev of ['touchstart', 'touchmove']) {
+        svg.addEventListener(ev, e => { if (e.cancelable) e.preventDefault(); }, { passive: false });
+      }
     }
 
     const ro = new ResizeObserver(entries => {
