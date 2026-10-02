@@ -41,7 +41,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - A button is highlighted while the device matches every value it sets. A preset that doesn't turn the device off never matches while the device is off.
 - Layout: a header with the device icon and name, then a segmented row of three buttons. Each button's text is derived from its preset (`21°` / `Heat` / `Fan slow`, or `Off`). The custom label and icon settings are hidden for now.
 - When no preset matches, the header shows `Currently Cool 23° · Fan auto` under the name.
-- Type: the name and the button values are 17 bold, and mode/extra text is 14 regular. Buttons are 68 px tall.
+- Type: the name and the button values are 17 bold. The buttons' mode/extra text is 12/16 regular, a deliberate exception to Homey's scale so three lines fit the 68 px buttons.
 - In dark mode, `body.tw-frame` mimics Homey's native device tiles: a `#181920` fill and a 1px rim that's lighter at the top (a fixed `::after`, so it stays out of the height), using a 10px radius measured from a phone screenshot. It's gated on `.homey-dark-mode`; light mode keeps the default frame.
 - The device icon is fetched by the app from `homey.api.getLocalUrl()` + `device.iconObj.url`, sent as an SVG data URL, and used as a CSS mask. A rounded square is the fallback.
 

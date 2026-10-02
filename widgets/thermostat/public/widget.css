@@ -18,6 +18,8 @@
   /* Homey's type scale: only these size/line-height pairs, and the weights noted, are used natively. */
   --tw-fs-small: var(--homey-font-size-small, 14px); --tw-lh-small: var(--homey-line-height-small, 20px); /* regular */
   --tw-fs-default: var(--homey-font-size-default, 17px); --tw-lh-default: var(--homey-line-height-default, 24px);
+  /* Button mode/extra text: below Homey's 14px on purpose, so three lines fit a compact button. */
+  --tw-fs-aux: 12px; --tw-lh-aux: 16px;
   --tw-regular: var(--homey-font-weight-regular, 400);
   --tw-bold: var(--homey-font-weight-bold, 700);
   --tw-radius: var(--homey-border-radius-default, 14px);
@@ -73,7 +75,7 @@ html, body { margin: 0; }
 .tw-btn {
   --c: var(--tw-other);
   appearance: none; border: 0; margin: 0; font: inherit; color: var(--tw-text);
-  background: var(--tw-tile); border-radius: var(--tw-radius-small); height: 68px; padding: 2px 4px; min-width: 0;
+  background: var(--tw-tile); border-radius: var(--tw-radius-small); height: 68px; padding: 6px 4px; min-width: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
   transition: background-color .15s, color .15s, transform .1s;
@@ -91,8 +93,8 @@ html, body { margin: 0; }
 
 .tw-btn > span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tw-big { font-size: var(--tw-fs-default); line-height: var(--tw-lh-default); font-weight: var(--tw-bold); }
-.tw-modetext { font-size: var(--tw-fs-small); line-height: var(--tw-lh-small); font-weight: var(--tw-regular); color: var(--c); }
-.tw-extra { font-size: var(--tw-fs-small); line-height: var(--tw-lh-small); font-weight: var(--tw-regular); color: var(--tw-muted); }
+.tw-modetext { font-size: var(--tw-fs-aux); line-height: var(--tw-lh-aux); font-weight: var(--tw-regular); color: var(--c); }
+.tw-extra { font-size: var(--tw-fs-aux); line-height: var(--tw-lh-aux); font-weight: var(--tw-regular); color: var(--tw-muted); }
 
 .tw-btn.active {
   color: var(--tw-on-color);
