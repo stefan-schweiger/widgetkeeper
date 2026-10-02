@@ -6,8 +6,8 @@ I built these to replace a few native Homey widgets that didn't quite behave the
 
 ## Widgets
 
-### Electricity
-<img src="widgets/electricity/preview-dark.png" alt="Electricity widget preview" width="320">
+### Electricity Overview
+<img src="widgets/electricity/preview-dark.png" alt="Electricity Overview widget preview" width="320">
 
 Your power use and electricity price together on one card:
 - **Live power**, updated every few seconds, over the last 30 seconds to 1 hour.
@@ -15,7 +15,7 @@ Your power use and electricity price together on one card:
 - **Usage history** for the last 24 hours, drawn on the price chart or as its own chart.
 - **Cheapest upcoming hour** in the next 12 hours, the next 24 hours, or both.
 
-Tap and drag (or hover) over a chart to see the exact value at any moment.
+Tap or drag on a chart (or hover with a mouse) to see the exact value at any moment. On Android, Homey's dashboard takes over drags, so tap instead; the value stays for 3 seconds.
 
 **What you need**
 - A power meter in Homey, such as a P1 meter or an energy-monitoring smart plug. Any device that reports power will work.
@@ -29,8 +29,8 @@ Tap and drag (or hover) over a chart to see the exact value at any moment.
 | Show usage history | On / off, and optionally as a separate chart |
 | Show lowest price | Off, next 12 hours, next 24 hours, or both |
 
-### Thermostat shortcuts
-<img src="widgets/thermostat/preview-dark.png" alt="Thermostat shortcuts widget preview" width="320">
+### Thermostat Shortcuts
+<img src="widgets/thermostat/preview-dark.png" alt="Thermostat Shortcuts widget preview" width="320">
 
 Three one-tap presets for a thermostat, heat pump or air conditioner. For example: *Off*, *Heat 21°* and *Cool 23° · Fan auto*.
 
@@ -45,6 +45,9 @@ The button that matches the device's current state lights up. When no preset mat
 **Setting it up**
 1. Add the widget to a dashboard and pick your thermostat or aircon.
 2. Configure each button. The temperature, mode and extra lists show only what your device supports. Pick the device first, then reopen these settings.
+
+## Languages
+English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic. The widgets follow Homey's language.
 
 ## Installation
 Widgetkeeper isn't in the Homey App Store yet. For now you can install it from source with the Homey CLI. See [CONTRIBUTING.md](CONTRIBUTING.md).

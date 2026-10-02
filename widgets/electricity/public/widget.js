@@ -1,5 +1,5 @@
 /*
- * Electricity widget renderer: live power, hourly price with usage trace, lowest price.
+ * Electricity Overview widget renderer: live power, hourly price with usage trace, lowest price.
  * Plain browser JS (widget public files are served as-is). See the design spec for every
  * measurement used below.
  */

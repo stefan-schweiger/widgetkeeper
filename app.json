@@ -68,19 +68,19 @@
   "widgets": {
     "electricity": {
       "name": {
-        "en": "Electricity",
-        "nl": "Elektriciteit",
-        "de": "Strom",
-        "fr": "Électricité",
-        "it": "Elettricità",
-        "sv": "El",
-        "no": "Strøm",
-        "es": "Electricidad",
-        "da": "Elektricitet",
-        "ru": "Электроэнергия",
-        "pl": "Prąd",
-        "ko": "전기",
-        "ar": "الكهرباء"
+        "en": "Electricity Overview",
+        "nl": "Elektriciteitsoverzicht",
+        "de": "Stromübersicht",
+        "fr": "Aperçu de l'électricité",
+        "it": "Panoramica elettricità",
+        "sv": "Elöversikt",
+        "no": "Strømoversikt",
+        "es": "Resumen de electricidad",
+        "da": "Strømoverblik",
+        "ru": "Обзор электроэнергии",
+        "pl": "Przegląd energii",
+        "ko": "전기 개요",
+        "ar": "نظرة عامة على الكهرباء"
       },
       "height": 483,
       "transparent": false,
@@ -367,7 +367,7 @@
     },
     "thermostat": {
       "name": {
-        "en": "Thermostat shortcuts",
+        "en": "Thermostat Shortcuts",
         "nl": "Thermostaatsnelkoppelingen",
         "de": "Thermostat-Schnelltasten",
         "fr": "Raccourcis thermostat",

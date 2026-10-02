@@ -1,6 +1,6 @@
 # Widgetkeeper — notes for Claude
 
-Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widgets: **Electricity** and **Thermostat shortcuts**. Its design spec is in `temp/Homey electricity dashboard widget.zip`; `temp/` is gitignored.
+Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widgets: **Electricity Overview** (id `electricity`) and **Thermostat Shortcuts** (id `thermostat`). Keep the ids; renaming them would break widgets already on dashboards. Its design spec is in `temp/Homey electricity dashboard widget.zip`; `temp/` is gitignored.
 
 ## Commands
 - Use the **project-local Homey CLI v4**: `npx homey …`. The global `homey` is an old 3.7.x.
@@ -36,7 +36,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - Colours are Homey CSS tokens with spec-hex fallbacks, defined on `.ew` (not `:root`) so the light-mode overrides in the preview inherit.
 - Both widgets stick to Homey's widget type scale (`--homey-font-size-*` with its matching `--homey-line-height-*`, and only the allowed weights: 14 regular, 17 any, 20 medium, 24/32 bold), `--homey-line-color(-light)` and `--homey-border-radius-*`, each with a px fallback. The font is set on `html`, so Homey's own font on `body` wins.
 
-## Thermostat shortcuts widget
+## Thermostat Shortcuts widget
 - Three preset buttons for one device. `lib/ThermostatService.ts` owns it; `lib/appApi.ts` holds the shared `createAppAPI` instance.
 - The device is an **autocomplete** setting (`device`), not the `devices` picker, because autocomplete listeners get the other settings but not the device selection. `app.ts` registers the listeners.
 - Per button: `bNPower` (keep/on/off) and the autocompletes `bNTemp`, `bNMode` and `bNExtra`. Each autocomplete item carries `{capabilityId, value}`, read from the device's `target_temperature` range and its settable enum capabilities.
