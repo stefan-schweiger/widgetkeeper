@@ -10,21 +10,23 @@
   --ew-green: var(--homey-color-green, #71D51B);
   --ew-blue: var(--homey-color-blue, #2F8DF6);
   --ew-chip: color-mix(in srgb, var(--ew-text) 9%, var(--ew-card));
-  --ew-grid: color-mix(in srgb, var(--ew-text) 9%, var(--ew-card));
-  --ew-axis: color-mix(in srgb, var(--ew-text) 22%, var(--ew-card));
+  --ew-grid: var(--homey-line-color-light, color-mix(in srgb, var(--ew-text) 9%, var(--ew-card)));
+  --ew-axis: var(--homey-line-color, color-mix(in srgb, var(--ew-text) 22%, var(--ew-card)));
   --ew-band: color-mix(in srgb, var(--ew-text) 7%, transparent);
   --ew-future: color-mix(in srgb, var(--ew-card) 35%, transparent);
   --ew-usage: var(--ew-text);
+  /* Homey's type scale: only these size/line-height pairs, and the weights noted, are used natively. */
+  --ew-fs-small: var(--homey-font-size-small, 14px); --ew-lh-small: var(--homey-line-height-small, 20px); /* regular */
+  --ew-fs-xlarge: var(--homey-font-size-xlarge, 24px); --ew-lh-xlarge: var(--homey-line-height-xlarge, 32px); /* bold */
+  --ew-regular: var(--homey-font-weight-regular, 400);
+  --ew-bold: var(--homey-font-weight-bold, 700);
 }
 
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
 html, body { margin: 0; }
-body {
-  font-family: Roboto, -apple-system, system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  color: var(--ew-text);
-}
 
-.ew { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.ew { display: flex; flex-direction: column; gap: 16px; min-width: 0; color: var(--ew-text); }
 .ew * { box-sizing: border-box; }
 .ew-num, .ew svg text { font-variant-numeric: tabular-nums; }
 
@@ -32,12 +34,12 @@ body {
 .ew-header { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
 .ew-hcol { display: flex; flex-direction: column; min-width: 0; }
 .ew-hval { display: flex; align-items: baseline; white-space: nowrap; }
-.ew-hval .v { font-size: 24px; line-height: 32px; font-weight: 700; }
-.ew-hval .u { font-size: 14px; line-height: 20px; font-weight: 400; }
+.ew-hval .v { font-size: var(--ew-fs-xlarge); line-height: var(--ew-lh-xlarge); font-weight: var(--ew-bold); }
+.ew-hval .u { font-size: var(--ew-fs-small); line-height: var(--ew-lh-small); font-weight: var(--ew-regular); }
 .ew-hval.live { color: var(--ew-green); gap: 3px; }
 .ew-hval.price { color: var(--ew-blue); gap: 1px; }
 .ew-hsub {
-  font-size: 14px; line-height: 20px; color: var(--ew-muted);
+  font-size: var(--ew-fs-small); line-height: var(--ew-lh-small); color: var(--ew-muted);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
@@ -47,7 +49,7 @@ body {
 .ew-chip {
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--ew-chip); border-radius: 12px; padding: 2px 10px 2px 8px;
-  font-size: 14px; line-height: 20px; color: var(--ew-text); white-space: nowrap;
+  font-size: var(--ew-fs-small); line-height: var(--ew-lh-small); color: var(--ew-text); white-space: nowrap;
 }
 .ew-chip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 .ew-chip .unit { color: var(--ew-muted); }
@@ -78,16 +80,16 @@ body {
 .ew-footer {
   border-top: 1px solid var(--ew-grid); padding-top: 12px;
   display: flex; justify-content: space-between; gap: 12px;
-  font-size: 14px; line-height: 20px; white-space: nowrap;
+  font-size: var(--ew-fs-small); line-height: var(--ew-lh-small); font-weight: var(--ew-regular); white-space: nowrap;
 }
 .ew-footer .l { color: var(--ew-muted); overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .ew-footer .r { display: flex; gap: 6px; flex-shrink: 0; }
-.ew-footer .when { color: var(--ew-text); font-weight: 500; }
+.ew-footer .when { color: var(--ew-text); }
 .ew-footer .sep, .ew-footer .div { color: var(--ew-muted); }
 .ew-footer .div { margin: 0 2px; }
 .ew-footer .price { color: var(--ew-blue); }
 
-.ew-message { font-size: 14px; line-height: 20px; color: var(--ew-muted); padding: 8px 0; }
+.ew-message { font-size: var(--ew-fs-small); line-height: var(--ew-lh-small); color: var(--ew-muted); padding: 8px 0; }
 
 /* Separate usage chart */
 .ew .usage-stop { stop-color: var(--ew-usage); }
