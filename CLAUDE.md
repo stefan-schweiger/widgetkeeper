@@ -5,6 +5,8 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 ## Commands
 - Use the **project-local Homey CLI v4**: `npx homey …`. The global `homey` is an old 3.7.x.
 - `npx homey app validate --level debug`: compiles the TS and validates.
+- `npm test`: the vitest suite in `test/` (`npm run test:watch` to watch). It runs in Europe/Copenhagen. Service tests mock `homey-api` with fakes from `test/helpers/fakeHomey.ts`; widget tests run the unchanged `public/widget.js` in happy-dom (`test/helpers/loadWidget.ts`). CI (`.github/workflows/ci.yml`) runs typecheck, the tests and validate.
+- `npm run typecheck`: `tsc` for the app, plus a basic (non-strict) `checkJs` pass over both `widgets/*/public/widget.js` (`tsconfig.widgets.json`; the window globals are declared in `types/widgets.d.ts`). TypeScript 7 defaults to strict, so that config sets `strict: false` explicitly.
 - `npx homey app install`: builds and installs on the active Homey (firmware 13.x). No Docker needed.
 - `npx homey app run`: live logs and hot reload of the widget files. It needs Docker Desktop running, which usually isn't.
 - `npm run app-images`: renders the three app store PNGs from `dev/app-images.html` (the hero photo `dev/hero.webp`, cropped to 10:7) with headless Edge.

@@ -1,0 +1,14 @@
+{
+  // Basic type checking of the widget front ends (plain browser JS, served as-is; nothing is emitted).
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": false, // TypeScript 7 defaults to strict; the widgets are checked at the basic level
+    "target": "es2022",
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "types": [],
+    "skipLibCheck": true
+  },
+  "files": ["types/widgets.d.ts", "widgets/electricity/public/widget.js", "widgets/thermostat/public/widget.js"]
+}

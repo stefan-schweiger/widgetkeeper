@@ -5,3 +5,7 @@ README.md
 CLAUDE.md
 CONTRIBUTING.md
 CHANGELOG.md
+test
+vitest.config.ts
+types
+tsconfig.widgets.json

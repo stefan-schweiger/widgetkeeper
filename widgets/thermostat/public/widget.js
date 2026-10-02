@@ -20,6 +20,7 @@
   };
 
   // Mode value ids → colour class. Anything else uses the accent colour.
+  /** @type {[RegExp, string][]} */
   const MODE_KINDS = [[/heat/i, 'heat'], [/cool/i, 'cool'], [/auto/i, 'auto'], [/dry|dehum/i, 'dry'], [/fan|vent/i, 'fan']];
 
   function el(tag, attrs, parent) {
