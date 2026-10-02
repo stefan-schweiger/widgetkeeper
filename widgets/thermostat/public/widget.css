@@ -18,7 +18,6 @@
   /* Homey's type scale: only these size/line-height pairs, and the weights noted, are used natively. */
   --tw-fs-small: var(--homey-font-size-small, 14px); --tw-lh-small: var(--homey-line-height-small, 20px); /* regular */
   --tw-fs-default: var(--homey-font-size-default, 17px); --tw-lh-default: var(--homey-line-height-default, 24px);
-  --tw-fs-xlarge: var(--homey-font-size-xlarge, 24px); --tw-lh-xlarge: var(--homey-line-height-xlarge, 32px); /* bold */
   --tw-regular: var(--homey-font-weight-regular, 400);
   --tw-bold: var(--homey-font-weight-bold, 700);
   --tw-radius: var(--homey-border-radius-default, 14px);
@@ -38,11 +37,16 @@ html, body { margin: 0; }
   --tw-frame-bg: #181920;
   background-color: var(--tw-frame-bg);
   border-radius: 10px;
+}
+/* The rim covers the viewport without taking part in layout, so the reported height stays the content's. */
+.homey-dark-mode .tw-frame::after, .tw-frame.homey-dark-mode::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: 10px;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
 }
-body.tw-frame { min-height: 100vh; box-sizing: border-box; }
+.tw-frame { position: relative; }
+.homey-dark-mode body.tw-frame::after, body.tw-frame.homey-dark-mode::after { position: fixed; }
 
-.tw { display: flex; flex-direction: column; gap: 16px; min-width: 0; color: var(--tw-text); }
+.tw { display: flex; flex-direction: column; gap: var(--homey-su-3, 12px); min-width: 0; color: var(--tw-text); }
 .tw * { box-sizing: border-box; }
 
 /* Header */
@@ -69,7 +73,7 @@ body.tw-frame { min-height: 100vh; box-sizing: border-box; }
 .tw-btn {
   --c: var(--tw-other);
   appearance: none; border: 0; margin: 0; font: inherit; color: var(--tw-text);
-  background: var(--tw-tile); border-radius: var(--tw-radius-small); height: 80px; padding: 4px; min-width: 0;
+  background: var(--tw-tile); border-radius: var(--tw-radius-small); height: 68px; padding: 2px 4px; min-width: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
   transition: background-color .15s, color .15s, transform .1s;
@@ -86,7 +90,7 @@ body.tw-frame { min-height: 100vh; box-sizing: border-box; }
 .tw-btn:disabled:not(.active) > * { opacity: .5; }
 
 .tw-btn > span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tw-big { font-size: var(--tw-fs-xlarge); line-height: var(--tw-lh-xlarge); font-weight: var(--tw-bold); }
+.tw-big { font-size: var(--tw-fs-default); line-height: var(--tw-lh-default); font-weight: var(--tw-bold); }
 .tw-modetext { font-size: var(--tw-fs-small); line-height: var(--tw-lh-small); font-weight: var(--tw-regular); color: var(--c); }
 .tw-extra { font-size: var(--tw-fs-small); line-height: var(--tw-lh-small); font-weight: var(--tw-regular); color: var(--tw-muted); }
 
