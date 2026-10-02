@@ -1,14 +1,14 @@
 {
   "electricity": {
     "usingNow": "Using now",
-    "minutesRemaining": "__minutes__ minutes remaining",
+    "minutesRemaining": "__minutes__ min left",
     "livePower": "Live power",
     "price": "Price",
     "usage": "Usage",
     "now": "Now",
-    "lowestNext12h": "Lowest price next 12h",
-    "lowestNext24h": "Lowest price next 24h",
-    "lowestBoth": "Lowest price 12h/24h",
+    "lowestNext12h": "Lowest next 12h",
+    "lowestNext24h": "Lowest next 24h",
+    "lowestBoth": "Lowest 12/24h",
     "selectMeter": "Select a power meter in the widget settings.",
     "noReadings": "No readings from the power meter yet.",
     "meterError": "Could not read the power meter.",

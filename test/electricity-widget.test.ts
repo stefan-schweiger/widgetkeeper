@@ -49,33 +49,33 @@ afterEach(() => { vi.useRealTimers(); });
 describe('lowest price footer', () => {
   it('shows the cheapest hour in the next 12 h', () => {
     const { footer } = widget(snapshot({}, { 27: 1.22, 40: 0.5 }));
-    expect(footer()).toBe('Lowest price next 12h | 13:00•1,22 kr.');
+    expect(footer()).toBe('Lowest next 12h | 13:00•1,22 kr.');
   });
 
   it('includes the 12th hour ahead but not the 13th', () => {
-    expect(widget(snapshot({}, { 36: 1 })).footer()).toBe('Lowest price next 12h | 22:00•1,00 kr.');
-    expect(widget(snapshot({}, { 37: 1 })).footer()).toBe('Lowest price next 12h | Now•2,00 kr.');
+    expect(widget(snapshot({}, { 36: 1 })).footer()).toBe('Lowest next 12h | 22:00•1,00 kr.');
+    expect(widget(snapshot({}, { 37: 1 })).footer()).toBe('Lowest next 12h | Now•2,00 kr.');
   });
 
   it('picks the earliest of equal prices and says "Now" for the current hour', () => {
-    expect(widget(snapshot({}, { 26: 1, 30: 1 })).footer()).toBe('Lowest price next 12h | 12:00•1,00 kr.');
-    expect(widget(snapshot()).footer()).toBe('Lowest price next 12h | Now•2,00 kr.');
+    expect(widget(snapshot({}, { 26: 1, 30: 1 })).footer()).toBe('Lowest next 12h | 12:00•1,00 kr.');
+    expect(widget(snapshot()).footer()).toBe('Lowest next 12h | Now•2,00 kr.');
   });
 
   it('ignores past hours and missing prices', () => {
-    expect(widget(snapshot({}, { 10: 0.1, 23: 0.1, 24: null, 25: 1.5 })).footer()).toBe('Lowest price next 12h | 11:00•1,50 kr.');
+    expect(widget(snapshot({}, { 10: 0.1, 23: 0.1, 24: null, 25: 1.5 })).footer()).toBe('Lowest next 12h | 11:00•1,50 kr.');
   });
 
   it('looks 24 h ahead', () => {
     const { footer } = widget(snapshot({}, { 27: 1.22, 40: 0.5 }), { nextLow: '24' });
-    expect(footer()).toBe('Lowest price next 24h | 02:00•0,50 kr.');
+    expect(footer()).toBe('Lowest next 24h | 02:00•0,50 kr.');
   });
 
   it('shows both without the unit, or once when they are the same hour', () => {
     expect(widget(snapshot({}, { 27: 1.22, 40: 0.5 }), { nextLow: 'both' }).footer())
-      .toBe('Lowest price 12h/24h | 13:00•1,22/02:00•0,50');
+      .toBe('Lowest 12/24h | 13:00•1,22/02:00•0,50');
     expect(widget(snapshot({}, { 27: 0.4, 40: 0.5 }), { nextLow: 'both' }).footer())
-      .toBe('Lowest price 12h/24h | 13:00•0,40 kr.');
+      .toBe('Lowest 12/24h | 13:00•0,40 kr.');
   });
 
   it('is hidden for "none" and without prices', () => {
@@ -86,7 +86,7 @@ describe('lowest price footer', () => {
   });
 
   it('uses the currency unit', () => {
-    expect(widget(snapshot({ currency: 'EUR' })).footer()).toBe('Lowest price next 12h | Now•2,00 €');
+    expect(widget(snapshot({ currency: 'EUR' })).footer()).toBe('Lowest next 12h | Now•2,00 €');
   });
 });
 
@@ -95,7 +95,7 @@ describe('header', () => {
     const { q } = widget(snapshot({}, { 24: 1.5 }));
     expect(q('.ew-hval.live')!.textContent).toBe('500W');
     expect(q('.ew-hval.price')!.textContent).toBe('1,50 kr./kWh');
-    expect([...q('.ew-header')!.querySelectorAll('.ew-hsub')].map(e => e.textContent)).toEqual(['Using now', '40 minutes remaining']);
+    expect([...q('.ew-header')!.querySelectorAll('.ew-hsub')].map(e => e.textContent)).toEqual(['Using now', '40 min left']);
   });
 
   it('follows realtime readings', () => {

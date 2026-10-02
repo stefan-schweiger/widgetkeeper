@@ -69,7 +69,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - The live window is configurable, with relative axis labels (`1h · 30m · Now`).
 - Axis labels are 12 px, to match Homey's native energy widgets; the gutters and plots were resized to match.
 - There are dashed midnight lines on the slot charts.
-- The footer shows only the start hour and price (`03:00 • 1,22 kr.`). With both 12h and 24h: `Lowest price 12h/24h   03:00 • 1,22 / 03:00 • 1,22` (no unit), or a single `03:00 • 1,22 kr.` when both are the same slot.
+- The footer shows only the start hour and price (`03:00 • 1,22 kr.`). With both 12h and 24h: `Lowest 12/24h   03:00 • 1,22 / 03:00 • 1,22` (no unit), or a single `03:00 • 1,22 kr.` when both are the same slot.
 - Weekday names follow Homey's language, and numbers follow the device locale.
 
 ## Branding

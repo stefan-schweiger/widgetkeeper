@@ -24,6 +24,7 @@
   <div class="col"><span>400 px · light · missing future prices</span><div class="card light" style="width:400px"><div id="w3"></div></div></div>
   <div class="col"><span>400 px · separate usage chart · 5 min live</span><div class="card" style="width:400px"><div id="w4"></div></div></div>
   <div class="col"><span>400 px · lowest price 12h + 24h</span><div class="card" style="width:400px"><div id="w5"></div></div></div>
+  <div class="col"><span>300 px · narrow (Homey tablet) · 12h + 24h</span><div class="card" style="width:300px"><div id="w7"></div></div></div>
   <div class="col"><span>352 px · lowest price 24h</span><div class="card" style="width:352px"><div id="w6"></div></div></div>
 
   <script>
@@ -74,6 +75,7 @@
       [createElectricityWidget(document.getElementById('w3'), { locale: 'da-DK' }), mockSnapshot({ futureHours: 5 }), {}],
       [createElectricityWidget(document.getElementById('w4'), { locale: 'da-DK' }), mockSnapshot(), { separateUsage: true, liveWindow: 5 }],
       [createElectricityWidget(document.getElementById('w5'), { locale: 'da-DK' }), mockSnapshot(), { nextLow: 'both' }],
+      [createElectricityWidget(document.getElementById('w7'), { locale: 'da-DK' }), mockSnapshot(), { nextLow: 'both', liveWindow: 10 }],
       [createElectricityWidget(document.getElementById('w6'), { locale: 'da-DK' }), mockSnapshot(), { nextLow: '24', showUsage: false }],
     ];
     for (const [w, snap, settings] of widgets) { w.setSettings({ liveWindow: 60, ...settings }); w.setData(snap); }

@@ -79,14 +79,13 @@ html, body { margin: 0; }
 /* Footer */
 .ew-footer {
   border-top: 1px solid var(--ew-grid); padding-top: 12px;
-  display: flex; justify-content: space-between; gap: 12px;
+  display: flex; justify-content: space-between; gap: 8px;
   font-size: var(--ew-fs-small); line-height: var(--ew-lh-small); font-weight: var(--ew-regular); white-space: nowrap;
 }
 .ew-footer .l { color: var(--ew-muted); overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.ew-footer .r { display: flex; gap: 6px; flex-shrink: 0; }
+.ew-footer .r { display: flex; gap: 3px; flex-shrink: 0; }
 .ew-footer .when { color: var(--ew-text); }
 .ew-footer .sep, .ew-footer .div { color: var(--ew-muted); }
-.ew-footer .div { margin: 0 2px; }
 .ew-footer .price { color: var(--ew-blue); }
 
 .ew-message { font-size: var(--ew-fs-small); line-height: var(--ew-lh-small); color: var(--ew-muted); padding: 8px 0; }
