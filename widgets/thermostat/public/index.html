@@ -21,17 +21,22 @@
         onApply: (values) => Homey.api('POST', '/apply', {
           deviceId, values: values.map(({ capabilityId, value }) => ({ capabilityId, value })),
         }),
-        onHeight: (h) => {
+        // The widget reports its own height; Homey needs the body's, which adds the widget padding.
+        onHeight: () => {
           if (!readySent) return;
-          Homey.setHeight(h);
+          Homey.setHeight(bodyHeight());
         },
       });
       widget.setButtons(thermostatPresetsFromSettings(settings));
 
+      function bodyHeight() {
+        return Math.ceil(document.body.getBoundingClientRect().height);
+      }
+
       function ready() {
         if (readySent) return;
         readySent = true;
-        Homey.ready({ height: Math.ceil(document.body.getBoundingClientRect().height) });
+        Homey.ready({ height: bodyHeight() });
       }
 
       async function load() {
