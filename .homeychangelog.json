@@ -1,1 +1,4 @@
-{ "0.1.0": { "en": "First release, with the Electricity and Thermostat shortcuts widgets." } }
+{
+  "0.1.0": { "en": "First release, with the Electricity and Thermostat shortcuts widgets." },
+  "0.1.1": { "en": "Electricity: the lowest price is shown once when the 12h and 24h lowest are the same hour." }
+}
