@@ -4,6 +4,9 @@ import { getAppApi } from './appApi.js';
 
 const MAX_LINES = 500;
 
+/** App setting that turns on routine (debug) logging. */
+export const DEBUG_LOG_SETTING = 'debugLog';
+
 type AppHomey = Homey.App['homey'];
 
 /**
@@ -32,6 +35,7 @@ export default class Diagnostics {
       version: this.homey.manifest.version,
       homeyVersion: this.homey.version,
       uptimeMinutes: Math.round((Date.now() - this.startedAt) / 60e3),
+      debugLog: this.homey.settings.get(DEBUG_LOG_SETTING) === true,
     };
     try {
       const api = await getAppApi(this.homey);

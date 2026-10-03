@@ -55,7 +55,11 @@ export default class ElectricityService {
   private tickTimer: NodeJS.Timeout | null = null;
   private loggedPriceSample = false;
 
-  constructor(private homey: Homey.App['homey'], private log: (...args: any[]) => void) {}
+  constructor(
+    private homey: Homey.App['homey'],
+    private log: (...args: any[]) => void, // errors and warnings: always kept
+    private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
+  ) {}
 
   start() {
     this.tickTimer = this.homey.setInterval(() => this.tick(), TICK);
@@ -71,7 +75,7 @@ export default class ElectricityService {
     const firstSlot = floorTo(Date.now(), HOUR) - PRICE_PAST_HOURS * HOUR;
     const tm = new Timings();
     this.getPriceSlots(firstSlot, tm)
-      .then(() => this.log(`Prices warmed up: ${tm.summary()}`))
+      .then(() => this.debug(`Prices warmed up: ${tm.summary()}`))
       .catch(err => this.log('Warm-up failed', err));
   }
 
@@ -101,7 +105,7 @@ export default class ElectricityService {
       usage = await tm.time('usage', () => this.getUsage(meter, firstSlot, now)).catch(err => { this.log('Usage error', err); return []; });
     }
 
-    this.log(`Snapshot ${meter?.name ?? deviceId ?? '-'}: ${tm.summary()}`);
+    this.debug(`Snapshot ${meter?.name ?? deviceId ?? '-'}: ${tm.summary()}`);
     return {
       now,
       deviceName: meter?.name ?? null,
@@ -166,7 +170,7 @@ export default class ElectricityService {
     });
 
     this.meters.set(deviceId, meter);
-    this.log(`Tracking live power for ${device.name} (${deviceId}), log ${meter.logId}, ${logs.lastHour.length} history points`);
+    this.debug(`Tracking live power for ${device.name} (${deviceId}), log ${meter.logId}, ${logs.lastHour.length} history points`);
     return meter;
   }
 
@@ -241,7 +245,7 @@ export default class ElectricityService {
     try { meter.capability?.destroy(); } catch (err) { /* ignore */ }
     if (meter.pushTimer) this.homey.clearTimeout(meter.pushTimer);
     this.meters.delete(meter.deviceId);
-    this.log(`Stopped tracking ${meter.name}`);
+    this.debug(`Stopped tracking ${meter.name}`);
   }
 
   // ---------------------------------------------------------------- usage history
@@ -319,7 +323,7 @@ export default class ElectricityService {
     const res = await api.energy.fetchDynamicElectricityPrices({ date: day });
     if (!this.loggedPriceSample) {
       this.loggedPriceSample = true;
-      this.log(`Price response sample for ${day}:`, JSON.stringify(res)?.slice(0, 600));
+      this.debug(`Price response sample for ${day}:`, JSON.stringify(res)?.slice(0, 600));
     }
     const hours = hourlyPrices(parsePriceResponse(res));
     this.priceDays.set(day, { at: now, hours });

@@ -57,7 +57,11 @@ export default class QuickActionService {
   private trackPromises = new Map<string, Promise<Tracked>>();
   private tickTimer: NodeJS.Timeout | null = null;
 
-  constructor(private homey: Homey.App['homey'], private log: (...args: any[]) => void) {}
+  constructor(
+    private homey: Homey.App['homey'],
+    private log: (...args: any[]) => void, // errors and warnings: always kept
+    private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
+  ) {}
 
   start() {
     this.tickTimer = this.homey.setInterval(() => this.tick(), TICK);
@@ -81,7 +85,7 @@ export default class QuickActionService {
         return { id, missing: true };
       }
     }));
-    this.log(`Quick actions state for ${deviceIds.length} devices: ${tm.summary()}`);
+    this.debug(`Quick actions state for ${deviceIds.length} devices: ${tm.summary()}`);
     return out;
   }
 
@@ -95,7 +99,7 @@ export default class QuickActionService {
     const v = isMomentary(id) ? true : value;
     if (typeof v !== 'boolean') throw new Error(`Invalid value ${JSON.stringify(value)}`);
     await device.setCapabilityValue({ capabilityId: id, value: v });
-    this.log(`Quick action ${device.name}: ${id}=${v}`);
+    this.debug(`Quick action ${device.name}: ${id}=${v}`);
   }
 
   // ---------------------------------------------------------------- live state
@@ -141,7 +145,7 @@ export default class QuickActionService {
       });
     }
     this.tracked.set(deviceId, t);
-    this.log(`Tracking quick action of ${device.name} (${deviceId}): ${id ?? 'none'}=${JSON.stringify(t.quickAction?.value)}`);
+    this.debug(`Tracking quick action of ${device.name} (${deviceId}): ${id ?? 'none'}=${JSON.stringify(t.quickAction?.value)}`);
     return t;
   }
 
@@ -155,7 +159,7 @@ export default class QuickActionService {
   private dispose(t: Tracked) {
     try { t.instance?.destroy(); } catch (err) { /* ignore */ }
     this.tracked.delete(t.deviceId);
-    this.log(`Stopped tracking ${t.name}`);
+    this.debug(`Stopped tracking ${t.name}`);
   }
 
 }

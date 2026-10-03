@@ -13,7 +13,7 @@ export default {
     const app = homey.app as WidgetkeeperApp;
     if (!query.deviceId) throw new Error('Missing deviceId');
     const perf = describeWidgetPerf(query.perf);
-    if (perf) app.log(`Thermostat widget: ${perf}`);
+    if (perf) app.debug(`Thermostat widget: ${perf}`);
     try {
       return await app.thermostat.getState(query.deviceId);
     } catch (err) {

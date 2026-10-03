@@ -12,7 +12,7 @@ export default {
     const app = homey.app as WidgetkeeperApp;
     const ids = (query.deviceIds || '').split(',').filter(Boolean);
     const perf = describeWidgetPerf(query.perf);
-    if (perf) app.log(`Quick actions widget: ${perf}`);
+    if (perf) app.debug(`Quick actions widget: ${perf}`);
     try {
       return await app.quickActions.getState(ids);
     } catch (err) {

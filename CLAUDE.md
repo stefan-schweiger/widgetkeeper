@@ -6,6 +6,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - Use the **project-local Homey CLI v4**: `npx homey …`. The global `homey` is an old 3.7.x.
 - `npx homey app validate --level debug`: compiles the TS and validates.
 - `npm test`: the vitest suite in `test/` (`npm run test:watch` to watch). It runs in Europe/Copenhagen. Service tests mock `homey-api` with fakes from `test/helpers/fakeHomey.ts`; widget tests run the unchanged `public/widget.js` in happy-dom (`test/helpers/loadWidget.ts`). CI (`.github/workflows/ci.yml`) runs typecheck, the tests and validate.
+- `npm run diagnostics`: the app's diagnostics report and log from the active Homey (see Diagnostics below).
 - `npm run typecheck`: `tsc` for the app, plus a basic (non-strict) `checkJs` pass over both `widgets/*/public/widget.js` (`tsconfig.widgets.json`; the window globals are declared in `types/widgets.d.ts`). TypeScript 7 defaults to strict, so that config sets `strict: false` explicitly.
 - `npx homey app install`: builds and installs on the active Homey (firmware 13.x). No Docker needed.
 - `npx homey app run`: live logs and hot reload of the widget files. It needs Docker Desktop running, which usually isn't.
@@ -68,13 +69,13 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - The diagnostics report lists every device with its quick action, override, type and icon.
 
 ## Diagnostics (no Docker needed)
+- **Read it yourself with `npm run diagnostics`** (`scripts/diagnostics.mjs`); don't ask the user to paste it. It calls the app's `GET /diagnostics` on the active Homey through `homey api raw`, which uses the CLI's login. Options: `-- --device <id|name>`, `--devices`, `--json`, `--debug on|off`. Right after an install the app may still be starting, so retry.
 - `lib/Diagnostics.ts` keeps the last 500 log lines. `app.log`/`app.error` are overridden to feed it.
-- Load timings (`lib/Timings.ts`): each snapshot/state request logs its total and per-step ms. A widget's first request also sends `perf=` (frame start, HTML, SDK ready, request), logged as `<Widget> widget: frame started … SDK ready 1100 ms`.
+- Errors and warnings always go to `log`. Routine detail (tracking, timings, applies, widget load marks) goes to `debug`, which logs only while the `debugLog` app setting is on (`npm run diagnostics -- --debug on`; off by default, and the report shows it). Services take `debug` as an optional third constructor argument.
+- Load timings (`lib/Timings.ts`, debug): each snapshot/state request logs its total and per-step ms. A widget's first request also sends `perf=` (frame start, HTML, SDK ready, request), logged as `<Widget> widget: frame started … SDK ready 1100 ms`.
 - Measured on 2026-10-03 (phone app): Homey creates all frames at once, the HTML arrives ~0.3 s in, the SDK is ready ~1.0–1.1 s in, and each request takes ~0.4 s each way through Homey. The app answers in 0–30 ms when warm, ~60–150 ms after the 10-min idle drop, ~0.2–0.4 s right after an app restart. So most of a widget's load time is Homey's, not ours.
 - At start, `app.ts` connects the API and `ElectricityService.warmUp()` fetches the prices. Concurrent requests for a price day share one fetch.
-- It's shown on the app settings page (`settings/index.html`; Homey app → Apps → Widgetkeeper → Configure) through the authenticated app API `GET /diagnostics[?device=]` (`api.ts`). Pick a device to get its full capability details.
-- The user copies or shares the report into the chat.
-- A public, key-protected endpoint for reading it from the dev machine was blocked by the auto-mode classifier. It's not implemented.
+- It's also shown on the app settings page (`settings/index.html`; Homey app → Apps → Widgetkeeper → Configure) through the authenticated app API `GET /diagnostics[?device=]` (`api.ts`). Pick a device to get its full capability details.
 
 ## Homey API facts (verified on the real Homey)
 - Dynamic prices: `energy.fetchDynamicElectricityPrices({ date: 'YYYY-MM-DD' })` returns `{ priceUnit: 'DKK', interval: 60, pricesPerInterval: [{ periodStart, periodEnd, value }] }`. Zone DK2. `getCurrency()` returns `"DKK"`.

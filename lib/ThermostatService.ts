@@ -72,7 +72,11 @@ export default class ThermostatService {
   private applying = new Map<string, { gen: number, done: Promise<void> }>();
   private tickTimer: NodeJS.Timeout | null = null;
 
-  constructor(private homey: Homey.App['homey'], private log: (...args: any[]) => void) {}
+  constructor(
+    private homey: Homey.App['homey'],
+    private log: (...args: any[]) => void, // errors and warnings: always kept
+    private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
+  ) {}
 
   start() {
     this.tickTimer = this.homey.setInterval(() => this.tick(), TICK);
@@ -96,7 +100,7 @@ export default class ThermostatService {
     const tm = new Timings();
     const t = await this.ensureTracked(deviceId, tm);
     t.lastRequested = Date.now();
-    this.log(`Thermostat state ${t.name}: ${tm.summary()}`);
+    this.debug(`Thermostat state ${t.name}: ${tm.summary()}`);
     return { name: t.name, icon: t.icon, values: { ...t.values }, caps: t.caps };
   }
 
@@ -130,7 +134,7 @@ export default class ThermostatService {
     this.assertThermostat(device);
     const obj = device.capabilitiesObj || {};
     const allowed = relevantCaps(device);
-    this.log(`Apply requested for ${device.name}:`, JSON.stringify(values));
+    this.debug(`Apply requested for ${device.name}:`, JSON.stringify(values));
     for (const v of values) {
       if (!obj[v.capabilityId]) throw new Error(`${device.name} has no ${v.capabilityId} capability (it has ${Object.keys(obj).join(', ')})`);
       if (!allowed.includes(v.capabilityId) || obj[v.capabilityId].setable === false) throw new Error(`${v.capabilityId} is not settable`);
@@ -144,7 +148,7 @@ export default class ThermostatService {
     for (const [i, v] of ordered.entries()) {
       if (current[v.capabilityId] === v.value) continue;
       if (superseded()) {
-        this.log(`Apply to ${device.name} superseded by a newer one (after ${sent.join(', ') || 'nothing'})`);
+        this.debug(`Apply to ${device.name} superseded by a newer one (after ${sent.join(', ') || 'nothing'})`);
         return;
       }
       try {
@@ -156,7 +160,7 @@ export default class ThermostatService {
       sent.push(`${v.capabilityId}=${JSON.stringify(v.value)}`);
       if (i < ordered.length - 1) await this.waitForValue(api, deviceId, v, superseded);
     }
-    this.log(`Applied to ${device.name}:`, sent.join(', ') || 'nothing to change');
+    this.debug(`Applied to ${device.name}:`, sent.join(', ') || 'nothing to change');
   }
 
   private async waitForValue(api: any, deviceId: string, v: CapValue, superseded: () => boolean) {
@@ -264,7 +268,7 @@ export default class ThermostatService {
       }));
     }
     this.tracked.set(deviceId, t);
-    this.log(`Tracking thermostat ${device.name} (${deviceId}):`,
+    this.debug(`Tracking thermostat ${device.name} (${deviceId}):`,
       ids.map(id => `${id}=${JSON.stringify(t.values[id])}${t.caps[id].values ? ` [${t.caps[id].values!.map(v => v.id).join('|')}]` : ''}`).join(', '));
     return t;
   }
@@ -281,7 +285,7 @@ export default class ThermostatService {
       try { i.destroy(); } catch (err) { /* ignore */ }
     }
     this.tracked.delete(t.deviceId);
-    this.log(`Stopped tracking ${t.name}`);
+    this.debug(`Stopped tracking ${t.name}`);
   }
 
 }
