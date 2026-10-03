@@ -21,6 +21,9 @@
 /* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
 html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
 html, body { margin: 0; }
+/* The widget is transparent, but until the SDK adds .homey-dark-mode (~1 s in) Homey's stylesheet paints body
+   in its light background, which shows as white corners around Homey's rounded loading overlay. */
+html, body { background: transparent !important; }
 
 .qa { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--qa-text); }
 .qa * { box-sizing: border-box; }
