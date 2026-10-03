@@ -26,6 +26,12 @@
     "currently": "Just nu __state__",
     "currentlyOff": "Just nu av"
   },
+  "quickactions": {
+    "selectDevices": "Välj enheter i widgetinställningarna.",
+    "error": "Kunde inte läsa in enheterna.",
+    "failed": "Kunde inte ändra __name__.",
+    "unavailable": "Inte tillgänglig"
+  },
   "settings": {
     "title": "Diagnostik",
     "subtitle": "Appens senaste logg och enhetsdetaljer. Kopiera eller dela rapporten för att få hjälp med felsökning.",

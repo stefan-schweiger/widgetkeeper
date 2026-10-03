@@ -1,5 +1,5 @@
 // Renders the widget preview PNGs (1024×1024, transparent outside the card) from dev/widget-previews.html
-// with headless Edge. Usage: `npm run previews` (set EDGE to the browser path if it isn't the default).
+// with headless Edge. Usage: `npm run previews [-- <id>…]` (set EDGE to the browser path if it isn't the default).
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -13,9 +13,12 @@ const OUT = {
   'elec-light': 'widgets/electricity/preview-light.png',
   'thermo-dark': 'widgets/thermostat/preview-dark.png',
   'thermo-light': 'widgets/thermostat/preview-light.png',
+  'qa-dark': 'widgets/quickactions/preview-dark.png',
+  'qa-light': 'widgets/quickactions/preview-light.png',
 };
 
-for (const [id, out] of Object.entries(OUT)) {
+const only = process.argv.slice(2);
+for (const [id, out] of Object.entries(OUT).filter(([id]) => !only.length || only.includes(id))) {
   // A fresh profile per run avoids stale cached files.
   const profile = mkdtempSync(join(tmpdir(), 'wk-previews-'));
   try {

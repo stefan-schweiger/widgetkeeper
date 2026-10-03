@@ -1,0 +1,84 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/quickactions-preview.html).
+ */
+.qa {
+  --qa-tile: var(--homey-background-color, #FFFFFF);
+  --qa-text: var(--homey-text-color, #EDEEF0);
+  --qa-muted: var(--homey-text-color-light, #9C9DA5);
+  --qa-on-color: var(--homey-text-color-white, #FFFFFF);
+  --qa-accent: var(--homey-color-blue, #2F8DF6);
+  --qa-accent-icon: var(--qa-accent); /* icons on a blue-tinted tile */
+  --qa-lighter: color-mix(in srgb, var(--qa-text) 9%, var(--qa-tile)); /* the "lighter tile" on-state */
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --qa-fs-small: var(--homey-font-size-small, 14px); --qa-lh-small: var(--homey-line-height-small, 20px);
+  --qa-regular: var(--homey-font-weight-regular, 400);
+  --qa-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+}
+/* Dark mode: each tile looks like a native device tile, darker than the default widget background. */
+.homey-dark-mode .qa, .qa.homey-dark-mode { --qa-tile: #181920; --qa-accent-icon: #5AA6FF; --qa-lighter: #2E3039; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+
+.qa { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--qa-text); }
+.qa * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.qa [dir="auto"] { text-align: left; }
+
+.qa-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--homey-su-3, 12px); }
+
+/* Half the height of a native device tile (about 56px): the icon row and the name. */
+.qa-tile {
+  position: relative; appearance: none; border: 0; margin: 0; font: inherit; color: var(--qa-text);
+  background: var(--qa-tile); border-radius: var(--qa-radius); padding: 8px 10px; min-width: 0;
+  display: flex; flex-direction: column; align-items: stretch; text-align: left;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+  transition: background-color .15s, color .15s, transform .1s;
+}
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .qa-tile::after, .qa.homey-dark-mode .qa-tile::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.qa-tile:active:not(:disabled), .qa-tile.pressing:not(:disabled) { transform: scale(.97); }
+.qa-tile:disabled { cursor: default; }
+.qa-tile:disabled > * { opacity: .5; }
+
+.qa-top { display: flex; align-items: center; justify-content: space-between; height: 24px; }
+.qa-icon, .qa-action {
+  flex-shrink: 0; background: currentColor;
+  -webkit-mask: var(--qa-mask) center / contain no-repeat; mask: var(--qa-mask) center / contain no-repeat;
+}
+.qa-icon { width: 24px; height: 24px; }
+.qa-icon.fallback {
+  /* No device icon: a rounded square outline. */
+  background: none; -webkit-mask: none; mask: none;
+  border: 2px solid currentColor; border-radius: 5px; width: 18px; height: 18px; margin: 3px;
+}
+.qa-action { width: 20px; height: 20px; color: var(--qa-muted); }
+.qa-name {
+  /* Native device tiles' name: 14/20 regular, measured from a phone screenshot. */
+  font-size: var(--qa-fs-small); line-height: var(--qa-lh-small); font-weight: var(--qa-regular);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/*
+ * The whole tile shows the state: on, locked, playing (or a button just pressed). Two styles, picked
+ * in the widget settings: a blue tint with blue icons (the default), or a plain lighter tile.
+ */
+.qa-tile.active { background: color-mix(in srgb, var(--qa-accent) 22%, var(--qa-tile)); }
+.qa-tile.active .qa-icon, .qa-tile.active .qa-action { color: var(--qa-accent-icon); }
+.qa[data-active-style="lighter"] .qa-tile.active { background: var(--qa-lighter); }
+.qa[data-active-style="lighter"] .qa-tile.active .qa-icon,
+.qa[data-active-style="lighter"] .qa-tile.active .qa-action { color: inherit; }
+
+.qa-message { font-size: var(--qa-fs-small); line-height: var(--qa-lh-small); color: var(--qa-muted); }
+.qa-message.error { color: var(--homey-color-red, #F25F5C); }
+
+.qa-tile.shake { animation: qa-shake .35s; }
+@keyframes qa-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}

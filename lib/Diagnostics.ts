@@ -39,6 +39,18 @@ export default class Diagnostics {
       out.thermostats = devices
         .filter(d => d.capabilities?.includes('target_temperature') || d.capabilities?.includes('thermostat_mode'))
         .map(d => ({ id: d.id, name: d.name, capabilities: d.capabilities }));
+      out.devices = devices
+        .map(d => {
+          const qa = d.ui?.quickAction ?? null;
+          const cap = qa ? d.capabilitiesObj?.[qa] : null;
+          return {
+            id: d.id, name: d.name as string, class: d.class, virtualClass: d.virtualClass ?? null,
+            quickAction: qa, quickActionOverride: d.ui?.quickActionOverride ?? null,
+            qaType: cap?.type ?? null, qaSetable: cap?.setable ?? null, qaIconObj: cap?.iconObj ?? null,
+            booleanCaps: (d.capabilities as string[] || []).filter(id => d.capabilitiesObj?.[id]?.type === 'boolean'),
+          };
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
       if (device) {
         const q = device.toLowerCase();
         const d = devices.find(x => x.id === device) || devices.find(x => String(x.name).toLowerCase().includes(q));
@@ -61,11 +73,13 @@ export default class Diagnostics {
       unavailableMessage: d.unavailableMessage,
       iconObj: d.iconObj,
       iconOverride: d.iconOverride,
+      ui: d.ui,
       capabilities: Object.fromEntries((d.capabilities as string[] || []).map(id => {
         const c = d.capabilitiesObj?.[id] || {};
         return [id, {
           type: c.type, title: c.title, value: c.value, setable: c.setable, getable: c.getable,
           units: c.units, min: c.min, max: c.max, step: c.step, values: c.values, lastUpdated: c.lastUpdated,
+          iconObj: c.iconObj,
         }];
       })),
     };

@@ -51,9 +51,9 @@
             status.textContent = t('loadFailed', { error: err.message || err });
             return;
           }
-          if (!devicesListed && Array.isArray(result.thermostats)) {
+          if (!devicesListed && Array.isArray(result.devices)) {
             devicesListed = true;
-            for (const d of result.thermostats) {
+            for (const d of result.devices) {
               const o = document.createElement('option');
               o.value = d.id;
               o.textContent = d.name;

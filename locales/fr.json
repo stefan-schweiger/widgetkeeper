@@ -26,6 +26,12 @@
     "currently": "Actuellement __state__",
     "currentlyOff": "Actuellement éteint"
   },
+  "quickactions": {
+    "selectDevices": "Choisissez des appareils dans les réglages.",
+    "error": "Impossible de charger les appareils.",
+    "failed": "Impossible de modifier __name__.",
+    "unavailable": "Indisponible"
+  },
   "settings": {
     "title": "Diagnostic",
     "subtitle": "Le journal récent de l'app et les détails des appareils. Copiez ou partagez le rapport pour obtenir de l'aide au débogage.",

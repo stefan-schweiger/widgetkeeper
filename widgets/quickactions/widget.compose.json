@@ -1,0 +1,93 @@
+{
+  "name": {
+    "en": "Device Quick Actions",
+    "nl": "Snelle apparaatacties",
+    "de": "Geräte-Schnellaktionen",
+    "fr": "Actions rapides d'appareils",
+    "it": "Azioni rapide dispositivi",
+    "sv": "Snabbåtgärder för enheter",
+    "no": "Hurtighandlinger for enheter",
+    "es": "Acciones rápidas de dispositivos",
+    "da": "Hurtighandlinger for enheder",
+    "ru": "Быстрые действия устройств",
+    "pl": "Szybkie akcje urządzeń",
+    "ko": "기기 빠른 실행",
+    "ar": "إجراءات سريعة للأجهزة"
+  },
+  "height": 64,
+  "transparent": true,
+  "devices": {
+    "type": "global",
+    "singular": false
+  },
+  "settings": [
+    {
+      "id": "activeStyle",
+      "type": "dropdown",
+      "title": {
+        "en": "Active tile style",
+        "nl": "Stijl actieve tegel",
+        "de": "Stil aktiver Kacheln",
+        "fr": "Style des tuiles actives",
+        "it": "Stile riquadri attivi",
+        "sv": "Stil för aktiva rutor",
+        "no": "Stil for aktive fliser",
+        "es": "Estilo de mosaicos activos",
+        "da": "Stil for aktive felter",
+        "ru": "Стиль активных плиток",
+        "pl": "Styl aktywnych kafelków",
+        "ko": "활성 타일 스타일",
+        "ar": "نمط البلاطات النشطة"
+      },
+      "value": "tint",
+      "values": [
+        {
+          "id": "tint",
+          "title": {
+            "en": "Blue tint",
+            "nl": "Blauwe tint",
+            "de": "Blauer Farbton",
+            "fr": "Teinte bleue",
+            "it": "Tinta blu",
+            "sv": "Blå ton",
+            "no": "Blå tone",
+            "es": "Tono azul",
+            "da": "Blå tone",
+            "ru": "Синий оттенок",
+            "pl": "Niebieski odcień",
+            "ko": "파란색 색조",
+            "ar": "صبغة زرقاء"
+          }
+        },
+        {
+          "id": "lighter",
+          "title": {
+            "en": "Lighter tile",
+            "nl": "Lichtere tegel",
+            "de": "Hellere Kachel",
+            "fr": "Tuile plus claire",
+            "it": "Riquadro più chiaro",
+            "sv": "Ljusare ruta",
+            "no": "Lysere flis",
+            "es": "Mosaico más claro",
+            "da": "Lysere felt",
+            "ru": "Более светлая плитка",
+            "pl": "Jaśniejszy kafelek",
+            "ko": "밝은 타일",
+            "ar": "بلاطة أفتح"
+          }
+        }
+      ]
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    },
+    "trigger": {
+      "method": "POST",
+      "path": "/trigger"
+    }
+  }
+}

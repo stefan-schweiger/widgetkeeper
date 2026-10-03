@@ -1,6 +1,6 @@
 {
   "name": "com.thomassidor.widgetkeeper",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Custom dashboard widgets for Homey Pro",
@@ -16,6 +16,7 @@
     "test:watch": "vitest",
     "app-images": "node scripts/render-app-images.mjs",
     "previews": "node scripts/render-previews.mjs",
+    "screenshots": "node scripts/render-screenshots.mjs",
     "validate": "homey app validate --level debug",
     "start": "homey app run",
     "install-homey": "homey app install"

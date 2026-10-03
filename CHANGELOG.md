@@ -2,6 +2,20 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 0.2.0
+
+### New: Device Quick Actions
+- Half-height device tiles for as many devices as you like, three per row.
+- Tap a tile to run the device's quick action, the same action as the round button on Homey's own device tile: on/off, lock/unlock, play/pause or a button press. It follows the quick action you picked in the device's settings.
+- The whole tile shows the state. Pick the style in the widget settings: a blue tint (the default) or a lighter tile.
+- The tiles use the same icons and text size as Homey's own device tiles, including icons you picked for a device.
+
+### Thermostat Shortcuts
+- The device icon is now the one Homey shows, including an icon you picked for the device.
+
+### Diagnostics
+- The device list on **Apps → Widgetkeeper → Configure** now includes every device, with its quick action.
+
 ## 0.1.1
 
 ### Both widgets

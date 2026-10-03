@@ -1,6 +1,6 @@
 # Widgetkeeper — notes for Claude
 
-Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widgets: **Electricity Overview** (id `electricity`) and **Thermostat Shortcuts** (id `thermostat`). Keep the ids; renaming them would break widgets already on dashboards. Its design spec is in `temp/Homey electricity dashboard widget.zip`; `temp/` is gitignored.
+Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widgets: **Electricity Overview** (id `electricity`), **Thermostat Shortcuts** (id `thermostat`) and **Device Quick Actions** (id `quickactions`). Keep the ids; renaming them would break widgets already on dashboards. Its design spec is in `temp/Homey electricity dashboard widget.zip`; `temp/` is gitignored.
 
 ## Commands
 - Use the **project-local Homey CLI v4**: `npx homey …`. The global `homey` is an old 3.7.x.
@@ -10,12 +10,13 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - `npx homey app install`: builds and installs on the active Homey (firmware 13.x). No Docker needed.
 - `npx homey app run`: live logs and hot reload of the widget files. It needs Docker Desktop running, which usually isn't.
 - `npm run app-images`: renders the three app store PNGs from `dev/app-images.html` (the hero photo `dev/hero.webp`, cropped to 10:7) with headless Edge.
-- `npm run previews`: renders the four widget preview PNGs from `dev/widget-previews.html` (the "Widget Previews" Claude Design project) with headless Edge. Open the page without a query to see them all; `?p=elec-dark` and so on shows one frame.
-- `dev/preview.html`: the widget with mock data in a plain browser.
+- `npm run previews [-- qa-dark …]`: renders the widget preview PNGs (all, or the ids given) from `dev/widget-previews.html` (the "Widget Previews" Claude Design project) with headless Edge. Open the page without a query to see them all; `?p=elec-dark` and so on shows one frame.
+- `npm run screenshots [-- thermostat …]`: renders the README screenshots (`docs/screenshots/*.png`) from `dev/screenshots.html`: the real widgets with mock data on Homey's dark dashboard, 390 px at 3x. It downloads the Homey library icons the mock devices use into `temp/screenshot-icons.js` (not committed).
+- `dev/preview.html`: the widget with mock data in a plain browser. Its mock snapshot is in `dev/mock-electricity.js`.
   - Serve the repo root (`python -m http.server 8765`) and open `/dev/preview.html`.
   - `?snap=/temp/real-snapshot.json` loads a real captured snapshot.
   - `#live=0.4` / `#price=0.3` simulates a scrub.
-  - `dev/thermostat-preview.html` does the same for the thermostat widget.
+  - `dev/thermostat-preview.html` and `dev/quickactions-preview.html` do the same for the other widgets.
   - `?lang=de` (either page) uses `locales/de.json`, through `dev/i18n.js`.
   - Headless screenshots: `msedge --headless=new --screenshot=… --user-data-dir=<fresh dir>`. A fresh profile avoids a stale cached CSS.
 
@@ -49,7 +50,21 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - When no preset matches, the header shows `Currently Cool 23° · Fan auto` under the name.
 - Type: the name and the button values are 17 bold. The buttons' mode/extra text is 12/16 regular, a deliberate exception to Homey's scale so three lines fit the 68 px buttons.
 - In dark mode, `body.tw-frame` mimics Homey's native device tiles: a `#181920` fill and a 1px rim that's lighter at the top (a fixed `::after`, so it stays out of the height), using a 10px radius measured from a phone screenshot. It's gated on `.homey-dark-mode`; light mode keeps the default frame.
-- The device icon is fetched by the app from `homey.api.getLocalUrl()` + `device.iconObj.url`, sent as an SVG data URL, and used as a CSS mask. A rounded square is the fallback.
+- The device icon is fetched by the app (`lib/deviceIcon.ts`), sent as an SVG data URL, and used as a CSS mask. A rounded square is the fallback.
+  - A user-picked icon (`device.iconOverride`, e.g. `lock`, `christmas-lights`) comes from Homey's icon library at `https://my.homey.app/img/devices/<name>.svg`. That's public, and it's where the web app's own bundle loads it from. Fetched once per name.
+  - Otherwise it's the driver's icon: `api.baseUrl` + `device.iconObj.url`.
+
+## Device Quick Actions widget
+- Half-height tiles for several devices (the `devices` setting with `singular: false`, read with `Homey.getDeviceIds()`), 3 per row. `lib/QuickActionService.ts` owns it. The widget is `transparent`, so each tile sits on the dashboard like a native one.
+- The whole tile triggers the device's quick action and shows its state. The `activeStyle` setting picks how: `tint` (default; a blue-tinted tile with blue icons) or `lighter` (a lighter grey tile). There's no circle around the quick-action icon.
+- The name is 14/20 regular, like the native device tiles' name (measured from a phone screenshot).
+- The quick action is `ui.quickActionOverride` (the user's choice; `.none` turns it off) or else `ui.quickAction`. Locks only have the override (`locked`).
+- Taps come from the touch events (a touch ending within 10 px of where it started), with `click` kept for mouse and keyboard. A drag is left alone, so the dashboard still scrolls. Tiles do nothing in the dashboard's edit mode.
+- Only settable booleans can be triggered. `button*` capabilities are momentary: always `true`, and the tile flashes.
+- Icons: Homey's standard capabilities have `iconObj: null` (the Homey app draws those icons), so the widget has built-in power/padlock/play/button glyphs. A custom capability's own icon (e.g. the Roborock's `clean_full`) is used when present.
+- Endpoints: `GET /state?deviceIds=a,b` (one entry per id, in order; deleted devices are `{id, missing: true}`) and `POST /trigger {deviceId, value}`, which only ever sets the quick-action capability.
+- Realtime: `quickactions:state` `{deviceId, capabilityId, value}`. Tracking is dropped after 10 min without `/state`; widgets re-fetch every 5 min.
+- The diagnostics report lists every device with its quick action, override, type and icon.
 
 ## Diagnostics (no Docker needed)
 - `lib/Diagnostics.ts` keeps the last 500 log lines. `app.log`/`app.error` are overridden to feed it.

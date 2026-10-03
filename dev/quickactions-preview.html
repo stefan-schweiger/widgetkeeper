@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quick actions widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/quickactions/public/widget.css">
+  <script src="../widgets/quickactions/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <style>
+    body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px;
+      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark · blue tint</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · dark · lighter tile</span><div class="dash homey-dark-mode" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>358 px · light · blue tint</span><div class="dash light" style="width:358px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · light · lighter tile</span><div class="dash light" style="width:358px"><div id="w4"></div></div></div>
+  <div class="col"><span>358 px · no devices</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+
+  <script>
+    const svg = body => 'data:image/svg+xml;base64,' + btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round">${body}</svg>`);
+    const LIGHTS = svg('<path d="M2 7c5 3 15 3 20 0"/><circle cx="6" cy="12" r="2"/><circle cx="10" cy="13" r="2"/><circle cx="14" cy="13" r="2"/><circle cx="18" cy="12" r="2"/>');
+    const DOOR = svg('<path d="M10 3v18M10 3h2v18h-2M12 11h7"/>');
+    const LAMP = svg('<path d="M8 3h8l3 8H5zM12 11v9M8 21h8"/>');
+    const qa = (capabilityId, value, extra = {}) => ({ capabilityId, value, actionable: true, momentary: capabilityId === 'button', icon: null, ...extra });
+    const devices = () => [
+      { id: 'a', name: 'Dinoer', icon: LIGHTS, quickAction: qa('onoff', false) },
+      { id: 'b', name: 'Hoveddør', icon: DOOR, quickAction: qa('locked', true) },
+      { id: 'c', name: 'Bryggersdør', icon: DOOR, quickAction: qa('locked', false) },
+      { id: 'd', name: 'Floor lamp | Living room', icon: LAMP, quickAction: qa('onoff', true) },
+      { id: 'e', name: 'Kitchen', icon: null, quickAction: qa('speaker_playing', false) },
+      { id: 'f', name: 'Alarm', icon: null, quickAction: qa('button', false) },
+      { id: 'g', name: 'Back Door Sensor', icon: null, quickAction: null },
+      { id: 'h', missing: true },
+    ];
+    for (const [id, activeStyle] of [['w1', 'tint'], ['w2', 'lighter'], ['w3', 'tint'], ['w4', 'lighter']]) {
+      let w;
+      w = createQuickActionsWidget(document.getElementById(id), {
+        t: devT,
+        activeStyle,
+        // Simulate the device confirming after a moment.
+        onTrigger: (deviceId, value) => new Promise(r => setTimeout(() => {
+          const d = list.find(x => x.id === deviceId);
+          if (!d.quickAction.momentary) w.pushChange({ deviceId, capabilityId: d.quickAction.capabilityId, value });
+          r();
+        }, 600)),
+      });
+      const list = devices();
+      w.setState(list);
+    }
+    const empty = createQuickActionsWidget(document.getElementById('w5'), { t: devT });
+    empty.setMessage(empty.t('selectDevices'));
+  </script>
+</body>
+</html>

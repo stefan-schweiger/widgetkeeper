@@ -26,6 +26,12 @@
     "currently": "Ahora __state__",
     "currentlyOff": "Ahora apagado"
   },
+  "quickactions": {
+    "selectDevices": "Elige dispositivos en los ajustes del widget.",
+    "error": "No se pudieron cargar los dispositivos.",
+    "failed": "No se pudo cambiar __name__.",
+    "unavailable": "No disponible"
+  },
   "settings": {
     "title": "Diagnóstico",
     "subtitle": "El registro reciente de la app y los detalles de los dispositivos. Copia o comparte el informe para obtener ayuda con la depuración.",

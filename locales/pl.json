@@ -26,6 +26,12 @@
     "currently": "Teraz: __state__",
     "currentlyOff": "Teraz wyłączony"
   },
+  "quickactions": {
+    "selectDevices": "Wybierz urządzenia w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać urządzeń.",
+    "failed": "Nie udało się zmienić __name__.",
+    "unavailable": "Niedostępne"
+  },
   "settings": {
     "title": "Diagnostyka",
     "subtitle": "Ostatni dziennik aplikacji i szczegóły urządzeń. Skopiuj lub udostępnij raport, aby uzyskać pomoc w debugowaniu.",

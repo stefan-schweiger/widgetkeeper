@@ -1,5 +1,7 @@
 {
-  "0.1.0": { "en": "First release, with the Electricity and Thermostat shortcuts widgets." },
+  "0.1.0": {
+    "en": "First release, with the Electricity and Thermostat shortcuts widgets."
+  },
   "0.1.1": {
     "en": "Widgets now look more like Homey's own, with more compact thermostat buttons. Electricity: the lowest price is shown once when the 12h and 24h lowest are the same hour. Now available in 13 languages. Electricity: smaller chart titles and footer text. Usage chart: a marker at the latest reading. Tap a chart to see its values; dragging no longer scrolls the dashboard. The widgets are now called Electricity Overview and Thermostat Shortcuts.",
     "nl": "Widgets lijken nu meer op die van Homey zelf, met compactere thermostaatknoppen. Elektriciteit: de laagste prijs wordt één keer getoond als de laagste van 12 en 24 uur in hetzelfde uur vallen. Nu beschikbaar in 13 talen. Elektriciteit: kleinere grafiektitels en voettekst. Verbruiksgrafiek: een markering bij de laatste meting. Tik op een grafiek om de waarden te zien; slepen scrolt het dashboard niet meer. De widgets heten nu Elektriciteitsoverzicht en Thermostaatsnelkoppelingen.",
@@ -14,5 +16,20 @@
     "pl": "Widżety wyglądają teraz bardziej jak wbudowane w Homey, a przyciski termostatu są bardziej kompaktowe. Prąd: najniższa cena jest pokazywana raz, gdy minimum z 12 h i 24 h przypada na tę samą godzinę. Teraz dostępne w 13 językach. Prąd: mniejsze tytuły wykresów i stopka. Wykres zużycia: znacznik przy ostatnim odczycie. Dotknij wykresu, aby zobaczyć wartości; przeciąganie nie przewija już pulpitu. Widżety nazywają się teraz Przegląd energii i Skróty termostatu.",
     "ko": "위젯이 Homey 기본 위젯과 더 비슷해졌고, 온도 조절기 버튼이 더 작아졌습니다. 전기: 12시간과 24시간 최저가가 같은 시간이면 최저가를 한 번만 표시합니다. 이제 13개 언어를 지원합니다. 전기: 차트 제목과 하단 텍스트를 더 작게 했습니다. 사용량 차트: 최근 측정값에 표시가 추가되었습니다. 차트를 탭하면 값을 볼 수 있으며, 드래그해도 더 이상 대시보드가 스크롤되지 않습니다. 위젯 이름이 전기 개요 및 온도 조절기 바로가기(으)로 바뀌었습니다.",
     "ar": "أصبحت الأدوات تشبه أدوات Homey الأصلية أكثر، مع أزرار أصغر لمنظم الحرارة. الكهرباء: يُعرض أدنى سعر مرة واحدة عندما يكون أدنى سعر خلال 12 و24 ساعة في الساعة نفسها. متوفر الآن بـ 13 لغة. الكهرباء: عناوين مخططات ونص سفلي أصغر. مخطط الاستهلاك: علامة عند آخر قراءة. المس مخططًا لرؤية قيمه؛ لم يعد السحب يمرّر لوحة التحكم. أصبح اسم الأداتين نظرة عامة على الكهرباء واختصارات منظم الحرارة."
+  },
+  "0.2.0": {
+    "en": "New widget: Device Quick Actions, compact tiles that run a device's quick action with one tap. Thermostat Shortcuts now shows the device icon you picked in Homey.",
+    "nl": "Nieuwe widget: Snelle apparaatacties, compacte tegels die met één tik de snelle actie van een apparaat uitvoeren. Thermostaatsnelkoppelingen toont nu het apparaaticoon dat je in Homey hebt gekozen.",
+    "de": "Neues Widget: Geräte-Schnellaktionen, kompakte Kacheln, die mit einem Tippen die Schnellaktion eines Geräts ausführen. Thermostat-Schnelltasten zeigt jetzt das Gerätesymbol, das du in Homey gewählt hast.",
+    "fr": "Nouveau widget : Actions rapides d'appareils, des tuiles compactes qui lancent l'action rapide d'un appareil d'un seul toucher. Raccourcis thermostat affiche désormais l'icône d'appareil choisie dans Homey.",
+    "it": "Nuovo widget: Azioni rapide dispositivi, riquadri compatti che eseguono l'azione rapida di un dispositivo con un tocco. Scorciatoie termostato ora mostra l'icona del dispositivo scelta in Homey.",
+    "sv": "Ny widget: Snabbåtgärder för enheter, kompakta rutor som kör en enhets snabbåtgärd med ett tryck. Termostatgenvägar visar nu den enhetsikon du valt i Homey.",
+    "no": "Ny widget: Hurtighandlinger for enheter, kompakte fliser som kjører en enhets hurtighandling med ett trykk. Termostatsnarveier viser nå enhetsikonet du har valgt i Homey.",
+    "es": "Nuevo widget: Acciones rápidas de dispositivos, mosaicos compactos que ejecutan la acción rápida de un dispositivo con un toque. Accesos directos de termostato ahora muestra el icono del dispositivo que elegiste en Homey.",
+    "da": "Ny widget: Hurtighandlinger for enheder, kompakte felter, der udfører en enheds hurtighandling med ét tryk. Termostatgenveje viser nu det enhedsikon, du har valgt i Homey.",
+    "ru": "Новый виджет «Быстрые действия устройств»: компактные плитки, которые одним нажатием выполняют быстрое действие устройства. «Быстрые кнопки термостата» теперь показывают значок устройства, выбранный в Homey.",
+    "pl": "Nowy widżet: Szybkie akcje urządzeń, kompaktowe kafelki, które jednym dotknięciem wykonują szybką akcję urządzenia. Skróty termostatu pokazują teraz ikonę urządzenia wybraną w Homey.",
+    "ko": "새 위젯: 기기 빠른 실행. 한 번 탭으로 기기의 빠른 실행을 수행하는 작은 타일입니다. 온도 조절기 바로가기에 이제 Homey에서 선택한 기기 아이콘이 표시됩니다.",
+    "ar": "أداة جديدة: إجراءات سريعة للأجهزة، بلاطات صغيرة تنفّذ الإجراء السريع للجهاز بلمسة واحدة. تعرض اختصارات منظم الحرارة الآن أيقونة الجهاز التي اخترتها في Homey."
   }
 }

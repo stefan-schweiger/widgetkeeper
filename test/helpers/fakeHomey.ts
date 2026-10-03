@@ -19,6 +19,7 @@ export type FakeCap = {
   min?: number,
   max?: number,
   step?: number,
+  iconObj?: { id?: string, url?: string } | null,
 };
 
 export type FakeDeviceOptions = {
@@ -26,19 +27,21 @@ export type FakeDeviceOptions = {
   name?: string,
   zone?: string,
   caps: Record<string, FakeCap>,
+  ui?: { quickAction?: string | null, quickActionOverride?: string | null },
   /** ms before a set value is reported back; `null` = never reported. */
   reportDelay?: number | null,
 };
 
 export type FakeDevice = ReturnType<typeof fakeDevice>;
 
-export function fakeDevice({ id = 'dev1', name = 'Aircon', zone = 'z1', caps, reportDelay = 0 }: FakeDeviceOptions) {
+export function fakeDevice({ id = 'dev1', name = 'Aircon', zone = 'z1', caps, ui, reportDelay = 0 }: FakeDeviceOptions) {
   const listeners = new Map<string, ((value: unknown) => void)[]>();
   const device = {
     id,
     name,
     zone,
     iconObj: null,
+    ui: ui ?? {},
     capabilities: Object.keys(caps),
     capabilitiesObj: Object.fromEntries(Object.entries(caps).map(([k, c]) => [k, { id: k, ...c }])) as Record<string, any>,
     /** Every value sent, in order, as `capabilityId=value`. */

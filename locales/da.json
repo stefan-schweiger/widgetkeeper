@@ -26,6 +26,12 @@
     "currently": "Lige nu __state__",
     "currentlyOff": "Lige nu slukket"
   },
+  "quickactions": {
+    "selectDevices": "Vælg enheder i widgetindstillingerne.",
+    "error": "Kunne ikke indlæse enhederne.",
+    "failed": "Kunne ikke ændre __name__.",
+    "unavailable": "Utilgængelig"
+  },
   "settings": {
     "title": "Diagnostik",
     "subtitle": "Appens seneste log og enhedsdetaljer. Kopiér eller del rapporten for at få hjælp til fejlfinding.",

@@ -1,6 +1,6 @@
 # Contributing
 
-Bug reports and pull requests are welcome. For a thermostat problem, include the diagnostics report from **Apps → Widgetkeeper → Configure** with the device selected.
+Bug reports and pull requests are welcome. For a problem with a device, include the diagnostics report from **Apps → Widgetkeeper → Configure** with that device selected.
 
 ## Setup
 
@@ -21,7 +21,8 @@ npm run typecheck                      # tsc for the app + basic JS checking of 
 npx homey app install                  # build and install on your Homey
 npx homey app run                      # run with live logs (needs Docker); widget files hot-reload
 npm run app-images                     # render the app store images
-npm run previews                       # render the widget preview images
+npm run previews                       # render the widget preview images (Homey's widget picker)
+npm run screenshots                    # render the README screenshots (docs/screenshots)
 ```
 
 ## How it's built
@@ -29,7 +30,7 @@ npm run previews                       # render the widget preview images
 - **Widget front ends** (`widgets/*/public`) are plain JS with no build step, because Homey serves those files as-is.
 
 ### Previewing widgets in a browser
-`dev/preview.html` and `dev/thermostat-preview.html` render the widgets with mock data, outside Homey.
+`dev/preview.html`, `dev/thermostat-preview.html` and `dev/quickactions-preview.html` render the widgets with mock data, outside Homey.
 1. Serve the repo root, e.g. `python -m http.server 8765`.
 2. Open `/dev/preview.html`.
 3. Optionally add `#live=0.4` or `#price=0.3` to the URL to simulate scrubbing.
@@ -40,13 +41,17 @@ app.ts                          App: owns the services, registers autocomplete l
 api.ts                          App API (diagnostics for the settings page)
 lib/ElectricityService.ts       live buffer, insights usage, Homey Energy prices
 lib/ThermostatService.ts        thermostat state tracking and preset apply
+lib/QuickActionService.ts       quick-action state tracking and triggering
+lib/deviceIcon.ts               device and capability icons, as SVG data URLs
 lib/appApi.ts                   shared HomeyAPI instance
 lib/Diagnostics.ts              in-memory log buffer
 lib/series.ts                   resampling / parsing helpers
 widgets/electricity/            widget manifest, api.ts, public/ (renderer)
 widgets/thermostat/             widget manifest, api.ts, public/ (renderer)
+widgets/quickactions/           widget manifest, api.ts, public/ (renderer)
 settings/                       app settings page (diagnostics)
-dev/                            browser previews with mock data
-scripts/                        app image and widget preview generators
+dev/                            browser previews with mock data; screenshots.html for the README
+scripts/                        app image, widget preview and screenshot generators
+docs/screenshots/               README screenshots (npm run screenshots)
 test/                           vitest tests; helpers/ has the fake Homey API and the widget loader
 ```

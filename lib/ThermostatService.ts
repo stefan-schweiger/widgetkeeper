@@ -1,5 +1,6 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import { fetchDeviceIcon } from './deviceIcon.js';
 
 const MINUTE = 60e3;
 const TICK = MINUTE;
@@ -244,7 +245,7 @@ export default class ThermostatService {
     const t: Tracked = {
       deviceId,
       name: device.name,
-      icon: await this.fetchIcon(api, device),
+      icon: await fetchDeviceIcon(api, device, this.log),
       values: {},
       caps: {},
       instances: [],
@@ -263,24 +264,6 @@ export default class ThermostatService {
     this.log(`Tracking thermostat ${device.name} (${deviceId}):`,
       ids.map(id => `${id}=${JSON.stringify(t.values[id])}${t.caps[id].values ? ` [${t.caps[id].values!.map(v => v.id).join('|')}]` : ''}`).join(', '));
     return t;
-  }
-
-  /** Device icons are served by Homey's web server, which the widget can't reach itself. */
-  private async fetchIcon(api: any, device: any): Promise<string | null> {
-    const obj = device.iconObj || {};
-    const path = obj.url || (obj.id ? `/api/icon/${obj.id}` : null);
-    if (!path || typeof fetch !== 'function') return null;
-    try {
-      const url = /^https?:/.test(path) ? path : `${await api.baseUrl}${path}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const svg = await res.text();
-      if (!svg.includes('<svg')) throw new Error('Not an SVG');
-      return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
-    } catch (err) {
-      this.log(`Could not load icon for ${device.name} (${JSON.stringify(device.iconObj)})`, err);
-      return null;
-    }
   }
 
   private tick() {

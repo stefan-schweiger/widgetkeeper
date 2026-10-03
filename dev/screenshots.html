@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html class="homey-dark-mode">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Widget screenshots</title>
+  <!--
+    The README screenshots: the real widget code with mock data, laid out like Homey's dark dashboard on a
+    phone (390 px wide, colours sampled from an iPhone screenshot). `?s=electricity|thermostat|quickactions`
+    shows one, for scripts/render-screenshots.mjs; without it, all three.
+    Device icons come from Homey's icon library. The render script downloads them to temp/screenshot-icons.js;
+    without that file the tiles fall back to plain squares.
+  -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/electricity/public/widget.css">
+  <link rel="stylesheet" href="../widgets/thermostat/public/widget.css">
+  <link rel="stylesheet" href="../widgets/quickactions/public/widget.css">
+  <script src="../widgets/electricity/public/widget.js"></script>
+  <script src="../widgets/thermostat/public/widget.js"></script>
+  <script src="../widgets/quickactions/public/widget.js"></script>
+  <script src="mock-electricity.js"></script>
+  <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
+  <style>
+    html, body { background: #111218; }
+    body { width: 390px; margin: 0; padding: 20px 16px 24px; box-sizing: border-box; font-family: Roboto, sans-serif;
+      display: flex; flex-direction: column; gap: 32px; }
+    .shot { display: flex; flex-direction: column; gap: 12px; }
+    .shot[hidden] { display: none; }
+    /* The widget title Homey shows above a widget. */
+    .title { color: #E4E4E7; font-size: 20px; line-height: 28px; font-weight: 700; }
+    /* A non-transparent widget's frame (default widget background, with Homey's widget padding). */
+    .card { background: #1F2029; border-radius: 20px; padding: 16px; box-sizing: border-box; }
+    .card.tw-frame { background: #181920; }
+  </style>
+</head>
+<body>
+  <section class="shot" id="electricity"><div class="title">Electricity</div><div class="card"><div id="w-elec"></div></div></section>
+  <section class="shot" id="thermostat"><div class="title">Climate</div><div class="card tw-frame"><div id="w-thermo"></div></div></section>
+  <section class="shot" id="quickactions"><div class="title">Quick actions</div><div id="w-qa"></div></section>
+
+  <script>
+    const icon = name => (window.ICONS && ICONS[name]) || null;
+
+    const elec = createElectricityWidget(document.getElementById('w-elec'), { locale: 'en-GB' });
+    elec.setSettings({ liveWindow: 10, nextLow: 'both' });
+    elec.setData(mockSnapshot());
+
+    const FAN = { title: 'Fan level', units: null, values: ['AUTO', 'LEVEL1', 'LEVEL2', 'LEVEL3', 'LEVEL4', 'LEVEL5'].map((id, i) => ({ id, title: i ? `Level ${i}` : 'Auto' })) };
+    const MODE = { title: 'Mode', units: null, values: [['COOL', 'Cool'], ['HEAT', 'Heat'], ['AUTO', 'Auto'], ['OFF', 'Off']].map(([id, title]) => ({ id, title })) };
+    const thermo = createThermostatWidget(document.getElementById('w-thermo'), { locale: 'en-GB' });
+    thermo.setButtons(thermostatPresetsFromSettings({
+      b1Power: 'off',
+      b2Power: 'keep', b2Temp: { capabilityId: 'target_temperature', value: 21 }, b2Mode: { capabilityId: 'ac_mode', value: 'HEAT' }, b2Extra: { capabilityId: 'fan_level', value: 'LEVEL1' },
+      b3Power: 'keep', b3Temp: { capabilityId: 'target_temperature', value: 24 }, b3Mode: { capabilityId: 'ac_mode', value: 'HEAT' }, b3Extra: { capabilityId: 'fan_level', value: 'LEVEL5' },
+    }));
+    thermo.setState({
+      name: 'Aircon | Garage', icon: icon('climate'),
+      values: { target_temperature: 21, ac_mode: 'HEAT', fan_level: 'LEVEL1' },
+      caps: { target_temperature: { title: 'Target temperature', units: '°C', values: null }, ac_mode: MODE, fan_level: FAN },
+    });
+
+    const qa = (capabilityId, value) => ({ capabilityId, value, actionable: true, momentary: false, icon: null });
+    createQuickActionsWidget(document.getElementById('w-qa'), {}).setState([
+      { id: '1', name: 'Dinoer', icon: icon('christmas-lights'), quickAction: qa('onoff', true) },
+      { id: '2', name: 'Hoveddør', icon: icon('lock'), quickAction: qa('locked', true) },
+      { id: '3', name: 'Bryggersdør', icon: icon('lock'), quickAction: qa('locked', false) },
+      { id: '4', name: 'Floor lamp', icon: icon('light-standing'), quickAction: qa('onoff', false) },
+      { id: '5', name: 'Kitchen', icon: icon('speaker'), quickAction: qa('speaker_playing', true) },
+      { id: '6', name: 'Pendant', icon: icon('light-hanging'), quickAction: qa('onoff', false) },
+    ]);
+
+    // One shot alone; its height goes on <body> for the render script.
+    const only = new URLSearchParams(location.search).get('s');
+    if (only) for (const s of document.querySelectorAll('.shot')) s.hidden = s.id !== only;
+    document.fonts.ready.then(() => {
+      document.body.dataset.height = String(Math.ceil(document.body.getBoundingClientRect().height));
+    });
+  </script>
+</body>
+</html>

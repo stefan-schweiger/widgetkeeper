@@ -26,6 +26,12 @@
     "currently": "Nu __state__",
     "currentlyOff": "Nu uit"
   },
+  "quickactions": {
+    "selectDevices": "Kies apparaten in de widgetinstellingen.",
+    "error": "Kon de apparaten niet laden.",
+    "failed": "Kon __name__ niet wijzigen.",
+    "unavailable": "Niet beschikbaar"
+  },
   "settings": {
     "title": "Diagnose",
     "subtitle": "Het recente logboek van de app en apparaatdetails. Kopieer of deel het rapport om hulp te krijgen bij het oplossen van problemen.",

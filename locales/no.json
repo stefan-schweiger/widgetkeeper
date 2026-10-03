@@ -26,6 +26,12 @@
     "currently": "Nå __state__",
     "currentlyOff": "Nå av"
   },
+  "quickactions": {
+    "selectDevices": "Velg enheter i widgetinnstillingene.",
+    "error": "Kunne ikke laste inn enhetene.",
+    "failed": "Kunne ikke endre __name__.",
+    "unavailable": "Utilgjengelig"
+  },
   "settings": {
     "title": "Diagnostikk",
     "subtitle": "Appens siste logg og enhetsdetaljer. Kopier eller del rapporten for å få hjelp med feilsøking.",

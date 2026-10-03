@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="widget.css">
+  <script src="widget.js"></script>
+</head>
+<body class="homey-widget-full">
+  <div id="root"></div>
+  <script>
+    const REFRESH_MS = 5 * 60e3; // keeps the app's device subscriptions alive and resyncs state
+
+    function onHomeyReady(Homey) {
+      const settings = Homey.getSettings() || {};
+      let deviceIds = [];
+      let readySent = false;
+
+      const widget = createQuickActionsWidget(document.getElementById('root'), {
+        t: (key, tokens) => Homey.__(key, tokens),
+        activeStyle: settings.activeStyle,
+        onTrigger: (deviceId, value) => Homey.api('POST', '/trigger', { deviceId, value }),
+        onHeight: () => {
+          if (!readySent) return;
+          Homey.setHeight(bodyHeight());
+        },
+      });
+
+      function bodyHeight() {
+        return Math.ceil(document.body.getBoundingClientRect().height);
+      }
+
+      // Shown once the text font has loaded (at most 1 s), so the names don't pop in after the icons.
+      let readyStarted = false;
+      async function ready() {
+        if (readyStarted) return;
+        readyStarted = true;
+        if (document.fonts && document.fonts.ready) {
+          await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1000))]);
+        }
+        readySent = true;
+        Homey.ready({ height: bodyHeight() });
+      }
+
+      async function load() {
+        if (!deviceIds.length) {
+          widget.setMessage(widget.t('selectDevices'));
+          ready();
+          return;
+        }
+        try {
+          widget.setState(await Homey.api('GET', `/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}`));
+        } catch (err) {
+          console.error(err);
+          widget.setMessage(widget.t('error'));
+        }
+        ready();
+      }
+
+      Homey.on('quickactions:state', (data) => {
+        if (data && deviceIds.includes(data.deviceId)) widget.pushChange(data);
+      });
+
+      Promise.resolve(typeof Homey.getDeviceIds === 'function' ? Homey.getDeviceIds() : [])
+        .then((ids) => { deviceIds = Array.isArray(ids) ? ids : []; })
+        .catch(() => { deviceIds = []; })
+        .then(() => {
+          setInterval(load, REFRESH_MS);
+          load();
+        });
+    }
+  </script>
+</body>
+</html>

@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows all four on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -103,11 +103,34 @@ function thermostat(t) {
   </div>`;
 }
 
+// Device Quick Actions is transparent: the tiles sit straight on the dashboard, with no card.
+function quickActions(t, theme) {
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const tile = on => {
+    // The default on-state: a blue-tinted tile with blue icons.
+    const tint = theme === 'dark' ? '#1D3150' : '#DCEBFD', iconOn = theme === 'dark' ? '#5AA6FF' : BLUE;
+    const fg = on ? iconOn : t.fg, bg = on ? tint : tileBg;
+    return `<div style="height:200px;border-radius:32px;background:${bg};box-shadow:${shadow};padding:36px 32px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="width:56px;height:56px;border:7px solid ${fg};border-radius:14px;box-sizing:border-box"></div>
+        <div style="width:40px;height:40px;border-radius:50%;border:7px solid ${on ? fg : t.tileText};box-sizing:border-box"></div>
+      </div>
+      ${pill(150, 30, t.fg, 'opacity:.85')}
+    </div>`;
+  };
+  return `<div style="width:880px;display:grid;grid-template-columns:repeat(3,1fr);gap:32px">
+    ${[true, false, true, false, false, true].map(tile).join('')}
+  </div>`;
+}
+
 const PREVIEWS = [
   { id: 'elec-dark',    label: '1a · Electricity Overview — preview-dark.png', theme: 'dark',  render: electricity },
   { id: 'elec-light',   label: '1b · Electricity Overview — preview-light.png', theme: 'light', render: electricity },
   { id: 'thermo-dark',  label: '1c · Thermostat Shortcuts — preview-dark.png',  theme: 'dark',  render: thermostat },
   { id: 'thermo-light', label: '1d · Thermostat Shortcuts — preview-light.png', theme: 'light', render: thermostat },
+  { id: 'qa-dark',      label: '1e · Device Quick Actions — preview-dark.png',  theme: 'dark',  render: quickActions },
+  { id: 'qa-light',     label: '1f · Device Quick Actions — preview-light.png', theme: 'light', render: quickActions },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');
@@ -116,7 +139,7 @@ document.getElementById('canvas').innerHTML = PREVIEWS
   .filter(p => !solo || p.id === solo)
   .map(p => `<div class="item">
     <div class="label">${p.label}</div>
-    <div class="checker ${p.theme}"><div class="frame" data-preview="${p.id}">${p.render(THEMES[p.theme])}</div></div>
+    <div class="checker ${p.theme}"><div class="frame" data-preview="${p.id}">${p.render(THEMES[p.theme], p.theme)}</div></div>
   </div>`).join('');
 </script>
 </body>

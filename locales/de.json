@@ -26,6 +26,12 @@
     "currently": "Aktuell __state__",
     "currentlyOff": "Aktuell aus"
   },
+  "quickactions": {
+    "selectDevices": "Wähle Geräte in den Widget-Einstellungen.",
+    "error": "Geräte konnten nicht geladen werden.",
+    "failed": "__name__ konnte nicht geändert werden.",
+    "unavailable": "Nicht verfügbar"
+  },
   "settings": {
     "title": "Diagnose",
     "subtitle": "Das aktuelle Protokoll der App und Gerätedetails. Kopiere oder teile den Bericht, um Hilfe bei der Fehlersuche zu bekommen.",

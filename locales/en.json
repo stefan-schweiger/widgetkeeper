@@ -26,6 +26,12 @@
     "currently": "Currently __state__",
     "currentlyOff": "Currently off"
   },
+  "quickactions": {
+    "selectDevices": "Select devices in the widget settings.",
+    "error": "Could not load the devices.",
+    "failed": "Could not change __name__.",
+    "unavailable": "Unavailable"
+  },
   "settings": {
     "title": "Diagnostics",
     "subtitle": "The app's recent log and device details. Copy or share the report to get help debugging.",
