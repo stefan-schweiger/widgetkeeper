@@ -6,6 +6,7 @@ Inkluderte widgeter:
 - Strømoversikt: strømforbruk nå, timepriser og forbrukshistorikk på ett kort.
 - Termostatsnarveier: tre forhåndsvalg med ett trykk for en termostat, varmepumpe eller klimaanlegg.
 - Hurtighandlinger for enheter: kompakte fliser som kjører en enhets hurtighandling, som å slå på et lys eller låse en dør.
+- Sensoralarmer: fliser som viser om en sensor har en alarm, som røyk, vann eller CO₂, og blir røde når den har det.
 - Værvarsel: symbol, temperatur, vind og nedbør time for time de neste 36 timene, fra MET Norway (yr.no).
 
 Værdata fra MET Norway, lisensiert under CC BY 4.0.

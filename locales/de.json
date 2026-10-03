@@ -32,6 +32,14 @@
     "failed": "__name__ konnte nicht geändert werden.",
     "unavailable": "Nicht verfügbar"
   },
+  "sensoralarms": {
+    "selectDevices": "Wähle Sensoren in den Widget-Einstellungen.",
+    "error": "Sensoren konnten nicht geladen werden.",
+    "noAlarm": "Kein Alarm",
+    "alarms": "__count__ Alarme",
+    "noSensors": "Keine Alarmsensoren",
+    "unavailable": "Nicht verfügbar"
+  },
   "weather": {
     "now": "Jetzt",
     "error": "Vorhersage nicht geladen.",

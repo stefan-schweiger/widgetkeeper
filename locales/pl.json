@@ -32,6 +32,14 @@
     "failed": "Nie udało się zmienić __name__.",
     "unavailable": "Niedostępne"
   },
+  "sensoralarms": {
+    "selectDevices": "Wybierz czujniki w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać czujników.",
+    "noAlarm": "Brak alarmu",
+    "alarms": "Alarmy: __count__",
+    "noSensors": "Brak czujników alarmu",
+    "unavailable": "Niedostępne"
+  },
   "weather": {
     "now": "Teraz",
     "error": "Nie udało się wczytać prognozy.",

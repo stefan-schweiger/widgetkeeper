@@ -6,8 +6,8 @@
   <title>Widget screenshots</title>
   <!--
     The README screenshots: the real widget code with mock data, laid out like Homey's dark dashboard on a
-    phone (390 px wide, colours sampled from an iPhone screenshot). `?s=electricity|thermostat|quickactions|weather`
-    shows one, for scripts/render-screenshots.mjs; without it, all four.
+    phone (390 px wide, colours sampled from an iPhone screenshot). `?s=electricity|thermostat|quickactions|sensoralarms|weather`
+    shows one, for scripts/render-screenshots.mjs; without it, all five.
     Device icons come from Homey's icon library. The render script downloads them to temp/screenshot-icons.js;
     without that file the tiles fall back to plain squares.
   -->
@@ -15,10 +15,12 @@
   <link rel="stylesheet" href="../widgets/electricity/public/widget.css">
   <link rel="stylesheet" href="../widgets/thermostat/public/widget.css">
   <link rel="stylesheet" href="../widgets/quickactions/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sensoralarms/public/widget.css">
   <link rel="stylesheet" href="../widgets/weather/public/widget.css">
   <script src="../widgets/electricity/public/widget.js"></script>
   <script src="../widgets/thermostat/public/widget.js"></script>
   <script src="../widgets/quickactions/public/widget.js"></script>
+  <script src="../widgets/sensoralarms/public/widget.js"></script>
   <script src="../widgets/weather/public/widget.js"></script>
   <script src="mock-electricity.js"></script>
   <script src="mock-weather.js"></script>
@@ -41,6 +43,7 @@
   <section class="shot" id="electricity"><div class="title">Electricity</div><div class="card"><div id="w-elec"></div></div></section>
   <section class="shot" id="thermostat"><div class="title">Climate</div><div class="card tw-frame"><div id="w-thermo"></div></div></section>
   <section class="shot" id="quickactions"><div class="title">Quick actions</div><div id="w-qa"></div></section>
+  <section class="shot" id="sensoralarms"><div class="title">Alarms</div><div id="w-sa"></div></section>
   <section class="shot" id="weather"><div class="title">Weather</div><div class="card wf-frame"><div id="w-weather"></div></div></section>
 
   <script>
@@ -72,6 +75,16 @@
       { id: '4', name: 'Floor lamp', icon: icon('light-standing'), quickAction: qa('onoff', false) },
       { id: '5', name: 'Kitchen', icon: icon('speaker'), quickAction: qa('speaker_playing', true) },
       { id: '6', name: 'Pendant', icon: icon('light-hanging'), quickAction: qa('onoff', false) },
+    ]);
+
+    const alarm = (capabilityId, value, title, state = false) => ({ capabilityId, title, value, state });
+    createSensorAlarmsWidget(document.getElementById('w-sa'), {}).setState([
+      { id: '1', name: 'Kitchen', icon: icon('smoke-detector'), alarms: [alarm('alarm_smoke', false, 'Smoke alarm'), alarm('alarm_battery', false, 'Battery alarm')] },
+      { id: '2', name: 'Hallway', icon: icon('smoke-detector'), alarms: [alarm('alarm_smoke', false, 'Smoke alarm')] },
+      { id: '3', name: "Kid's Room", icon: icon('air-purifier'), alarms: [alarm('alarm_co2', true, 'CO₂ Alarm'), alarm('alarm_radon', false, 'Radon alarm')] },
+      { id: '4', name: 'Bedroom', icon: icon('air-purifier'), alarms: [alarm('alarm_co2', false, 'CO₂ Alarm'), alarm('alarm_radon', false, 'Radon alarm')] },
+      { id: '5', name: 'Laundry', icon: icon('washing-machine'), alarms: [alarm('alarm_water', false, 'Water alarm')] },
+      { id: '6', name: 'Front door', icon: icon('door'), alarms: [alarm('alarm_contact', true, 'Contact alarm', true), alarm('alarm_tamper', false, 'Tamper alarm')] },
     ]);
 
     // A fixed afternoon, so the shot doesn't change with the time it's rendered.

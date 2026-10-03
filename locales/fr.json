@@ -32,6 +32,14 @@
     "failed": "Impossible de modifier __name__.",
     "unavailable": "Indisponible"
   },
+  "sensoralarms": {
+    "selectDevices": "Choisissez des capteurs dans les réglages.",
+    "error": "Impossible de charger les capteurs.",
+    "noAlarm": "Aucune alarme",
+    "alarms": "__count__ alarmes",
+    "noSensors": "Aucun capteur d'alarme",
+    "unavailable": "Indisponible"
+  },
   "weather": {
     "now": "Actuel",
     "error": "Impossible de charger les prévisions.",

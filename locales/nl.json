@@ -32,6 +32,14 @@
     "failed": "Kon __name__ niet wijzigen.",
     "unavailable": "Niet beschikbaar"
   },
+  "sensoralarms": {
+    "selectDevices": "Kies sensoren in de widgetinstellingen.",
+    "error": "Kon de sensoren niet laden.",
+    "noAlarm": "Geen alarm",
+    "alarms": "__count__ alarmen",
+    "noSensors": "Geen alarmsensoren",
+    "unavailable": "Niet beschikbaar"
+  },
   "weather": {
     "now": "Nu",
     "error": "Kon de verwachting niet laden.",

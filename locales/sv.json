@@ -32,6 +32,14 @@
     "failed": "Kunde inte ändra __name__.",
     "unavailable": "Inte tillgänglig"
   },
+  "sensoralarms": {
+    "selectDevices": "Välj sensorer i widgetinställningarna.",
+    "error": "Kunde inte läsa in sensorerna.",
+    "noAlarm": "Inget larm",
+    "alarms": "__count__ larm",
+    "noSensors": "Inga larmsensorer",
+    "unavailable": "Inte tillgänglig"
+  },
   "weather": {
     "now": "Nu",
     "error": "Kunde inte hämta prognosen.",

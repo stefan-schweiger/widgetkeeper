@@ -1,5 +1,6 @@
 import { inspect } from 'node:util';
 import type Homey from 'homey';
+import { alarmCaps } from './SensorAlarmService.js';
 import { getAppApi } from './appApi.js';
 
 const MAX_LINES = 500;
@@ -53,6 +54,7 @@ export default class Diagnostics {
             quickAction: qa, quickActionOverride: d.ui?.quickActionOverride ?? null,
             qaType: cap?.type ?? null, qaSetable: cap?.setable ?? null, qaIconObj: cap?.iconObj ?? null,
             booleanCaps: (d.capabilities as string[] || []).filter(id => d.capabilitiesObj?.[id]?.type === 'boolean'),
+            alarms: alarmCaps(d).map(a => `${a.capabilityId}=${a.value}`),
           };
         })
         .sort((a, b) => a.name.localeCompare(b.name));

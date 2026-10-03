@@ -15,6 +15,8 @@ const OUT = {
   'thermo-light': 'widgets/thermostat/preview-light.png',
   'qa-dark': 'widgets/quickactions/preview-dark.png',
   'qa-light': 'widgets/quickactions/preview-light.png',
+  'sa-dark': 'widgets/sensoralarms/preview-dark.png',
+  'sa-light': 'widgets/sensoralarms/preview-light.png',
   'weather-dark': 'widgets/weather/preview-dark.png',
   'weather-light': 'widgets/weather/preview-light.png',
 };

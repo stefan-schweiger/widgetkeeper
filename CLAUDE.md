@@ -1,6 +1,6 @@
 # Widgetkeeper — notes for Claude
 
-Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widgets: **Electricity Overview** (id `electricity`), **Thermostat Shortcuts** (id `thermostat`), **Device Quick Actions** (id `quickactions`) and **Weather Forecast** (id `weather`). Keep the ids; renaming them would break widgets already on dashboards. Its design spec is in `temp/Homey electricity dashboard widget.zip`; `temp/` is gitignored.
+Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widgets: **Electricity Overview** (id `electricity`), **Thermostat Shortcuts** (id `thermostat`), **Device Quick Actions** (id `quickactions`), **Sensor Alarms** (id `sensoralarms`) and **Weather Forecast** (id `weather`). Keep the ids; renaming them would break widgets already on dashboards. Its design spec is in `temp/Homey electricity dashboard widget.zip`; `temp/` is gitignored.
 
 ## Commands
 - Use the **project-local Homey CLI v4**: `npx homey …`. The global `homey` is an old 3.7.x.
@@ -17,7 +17,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
   - Serve the repo root (`python -m http.server 8765`) and open `/dev/preview.html`.
   - `?snap=/temp/real-snapshot.json` loads a real captured snapshot.
   - `#live=0.4` / `#price=0.3` simulates a scrub.
-  - `dev/thermostat-preview.html`, `dev/quickactions-preview.html` and `dev/weather-preview.html` do the same for the other widgets. The weather page takes `?snap=/temp/met-compact.json` (a real MET response); its mock is `dev/mock-weather.js`.
+  - `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html` and `dev/weather-preview.html` do the same for the other widgets. The weather page takes `?snap=/temp/met-compact.json` (a real MET response); its mock is `dev/mock-weather.js`.
   - `?lang=de` (either page) uses `locales/de.json`, through `dev/i18n.js`.
   - Headless screenshots: `msedge --headless=new --screenshot=… --user-data-dir=<fresh dir>`. A fresh profile avoids a stale cached CSS.
 
@@ -70,6 +70,16 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - A failed 5-min refresh keeps the tiles and shows the error as a transient message; only a failed first load replaces the tiles with it.
 - The diagnostics report lists every device with its quick action, override, type and icon.
 
+## Sensor Alarms widget
+- Tiles for several devices (the `devices` setting, `singular: false`, no filter so custom alarm capabilities count), 2 per row, in the style of Homey's native temperature tiles. `lib/SensorAlarmService.ts` owns it. The widget is `transparent`, like Quick Actions.
+- A tile: the device icon (24 px, muted), the name (14 bold) and the alarm text (14 regular, muted), both on an 18px line: deliberate exceptions to Homey's scale, measured from the native tiles. The tile is `#2B2C36` in dark mode, flat, with a 10px radius and 52 px high, all measured from a phone screenshot of the native temperature tiles.
+- Alarms are every boolean capability whose base id starts with `alarm_` (`alarmCaps()`), custom ones included (an Airthings' `alarm_radon`). Each one carries its `title` (localised by Homey) and `state`: true for `alarm_motion`/`alarm_contact` and the cameras' `alarm_person`/`alarm_vehicle`/`alarm_pet`. Those only count with the `includeStates` checkbox (off by default); the widget filters, not the service.
+- Active alarms are counted once per title without a trailing `(…)`: the Airthings reports radon three times (`Radon alarm`, `… (Bq/m³)`, `… (pCi/L)`).
+- Text: `No alarm`, the one active alarm's title, or `__count__ alarms` (the user chose a count over a list). Without counted alarm capabilities: `No alarm sensors`. Any active alarm makes the tile red (`.alarm`: a red-tinted tile, red icon and text); the user chose always red over a colour per alarm type.
+- Endpoint: `GET /state?deviceIds=a,b`, one entry per id (`{id, name, icon, alarms}` or `{id, missing: true}`). `/state` re-reads tracked devices and re-tracks when the set of alarm capabilities changed.
+- Realtime: `sensoralarms:state` `{deviceId, capabilityId, value}`. Tracking is dropped after 10 min without `/state`; widgets re-fetch every 5 min. A failed refresh keeps the tiles, as in Quick Actions.
+- The diagnostics report lists each device's alarm capabilities and values (`alarms`).
+
 ## Weather Forecast widget
 - The next 36 hours for the Homey's location (`homey.geolocation`, which needs the `homey:manager:geolocation` permission), from MET Norway's Locationforecast 2.0 `compact` (the data behind yr.no).
 - Settings: `density` (`compact`, the default, or `detailed`), `rows` (`1` or `2`) and `step` (`1`, `2` or `3` hours per column). They're passed to `createWeatherWidget` as `opts.density`, `opts.rows` and `opts.step`.
@@ -118,6 +128,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
   - The frient meter logs power as `energy_power`, not `measure_power`. The service reads `measure_power`, then `energy_power` (a missing log throws), and remembers the one that worked per device. Don't go back to `insights.getLogs()`: it lists every log on the Homey.
 - The meter is a frient EMIZB-141 ("Electricity Meter", id `3450f8d3-…`). It reports `measure_power` about every 10 s, and Homey doesn't re-emit unchanged values.
 - Widget `devices` setting (`type: global, singular, filter capabilities measure_power`); read it with `Homey.getDeviceIds()`.
+- A widget can't open Homey's native device sheet. On the phone app (2026-10-03) the widget `Homey` object has only the documented methods (`ready api on getSettings getWidgetInstanceId getDeviceIds setHeight popup hapticFeedback __`); `popup(url)` just opens an in-app browser. A web search found no other route either. So the Sensor Alarms tiles are display-only.
 - Widget preview images are 1024×1024. App images are 250×175, 500×350 and 1000×700.
 
 ## Localization

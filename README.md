@@ -9,6 +9,7 @@ I built these to replace a few native Homey widgets that didn't quite behave the
 | [Electricity Overview](#electricity-overview) | Live power use, hourly electricity prices and usage history on one card |
 | [Thermostat Shortcuts](#thermostat-shortcuts) | Three one-tap presets for a thermostat, heat pump or air conditioner |
 | [Device Quick Actions](#device-quick-actions) | Compact tiles that run a device's quick action with one tap |
+| [Sensor Alarms](#sensor-alarms) | Tiles that show a sensor's alarm and turn red when one is on |
 | [Weather Forecast](#weather-forecast) | The next 36 hours, hour by hour, from MET Norway (yr.no) |
 
 ## Electricity Overview
@@ -67,6 +68,20 @@ The whole tile shows the state: it's highlighted while the device is on, locked 
 2. Optionally pick the active tile style: **Blue tint** (the default) or **Lighter tile**.
 
 The quick action is the one Homey uses for the device, including one you changed in the device's settings. Devices without a quick action, such as sensors, are shown dimmed. The tiles don't react while the dashboard is in edit mode.
+
+## Sensor Alarms
+<img src="docs/screenshots/sensoralarms.png" alt="Sensor Alarms on a Homey dashboard" width="390">
+
+Tiles for as many sensors as you like, two per row, in the style of Homey's own temperature tiles. Each tile shows the device icon, its name and its alarm:
+- *No alarm* when everything is fine
+- the alarm that's on, such as *Smoke alarm*, *Water alarm* or *CO₂ Alarm*
+- the number of alarms when several are on
+
+The tile turns red while an alarm is on, and updates the moment it goes on or off. Every alarm a device has counts, including those added by apps, such as an air quality monitor's radon or VOC alarm.
+
+**Setting it up**
+1. Add the widget to a dashboard and pick the sensors. They're shown in the order you pick them.
+2. Optionally switch on **Count motion and contact as alarms**. It's off by default, so an open door, detected motion or a camera spotting a person doesn't turn a tile red.
 
 ## Weather Forecast
 <img src="docs/screenshots/weather.png" alt="Weather Forecast on a Homey dashboard" width="390">

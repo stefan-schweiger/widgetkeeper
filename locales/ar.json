@@ -32,6 +32,14 @@
     "failed": "تعذر تغيير __name__.",
     "unavailable": "غير متاح"
   },
+  "sensoralarms": {
+    "selectDevices": "اختر المستشعرات في إعدادات الأداة.",
+    "error": "تعذّر تحميل المستشعرات.",
+    "noAlarm": "لا يوجد إنذار",
+    "alarms": "__count__ إنذارات",
+    "noSensors": "لا مستشعرات إنذار",
+    "unavailable": "غير متاح"
+  },
   "weather": {
     "now": "الآن",
     "error": "تعذر تحميل التوقعات.",

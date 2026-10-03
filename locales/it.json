@@ -32,6 +32,14 @@
     "failed": "Impossibile modificare __name__.",
     "unavailable": "Non disponibile"
   },
+  "sensoralarms": {
+    "selectDevices": "Scegli i sensori nelle impostazioni del widget.",
+    "error": "Impossibile caricare i sensori.",
+    "noAlarm": "Nessun allarme",
+    "alarms": "__count__ allarmi",
+    "noSensors": "Nessun sensore d'allarme",
+    "unavailable": "Non disponibile"
+  },
   "weather": {
     "now": "Ora",
     "error": "Impossibile caricare le previsioni.",

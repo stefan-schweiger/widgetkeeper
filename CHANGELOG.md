@@ -2,6 +2,18 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 0.4.0
+
+### New: Sensor Alarms
+- Tiles for as many sensors as you like, two per row, in the style of Homey's own temperature tiles: the device icon, its name and its alarm.
+- Each tile shows the alarm that's on (such as *CO₂ Alarm* or *Smoke alarm*), the number of alarms when there are several, or *No alarm*. The tile turns red while an alarm is on.
+- Every alarm a device has counts, including those added by apps, such as an air quality monitor's radon or VOC alarm. Motion, contact (an open door) and camera detections only count when you switch that on in the widget settings.
+- The tiles update the moment an alarm goes on or off.
+
+### Device Quick Actions
+- A renamed device, a changed quick action or a deleted device now shows on the next refresh (every 5 minutes).
+- When a refresh fails, the tiles stay and the error shows briefly underneath.
+
 ## 0.3.0
 
 ### New: Weather Forecast

@@ -46,5 +46,20 @@
     "pl": "Nowy widżet: Prognoza pogody: ikona, temperatura, wiatr i opady godzina po godzinie na najbliższe 36 godzin, z MET Norway (yr.no).",
     "ko": "새 위젯: 일기 예보: 앞으로 36시간 동안의 시간별 날씨 아이콘, 기온, 바람, 강수량 (MET Norway, yr.no 제공).",
     "ar": "أداة جديدة: توقعات الطقس: الرمز ودرجة الحرارة والرياح والهطول ساعة بساعة للساعات الـ 36 القادمة، من MET Norway (yr.no)."
+  },
+  "0.4.0": {
+    "en": "New widget: Sensor Alarms, tiles that show whether a sensor has an alarm and turn red when it does. Device Quick Actions picks up renamed and deleted devices, and keeps its tiles when a refresh fails.",
+    "nl": "Nieuwe widget: Sensoralarmen, tegels die laten zien of een sensor een alarm heeft en rood worden als dat zo is. Snelle apparaatacties ziet nu hernoemde en verwijderde apparaten en houdt de tegels als vernieuwen mislukt.",
+    "de": "Neues Widget: Sensoralarme, Kacheln, die zeigen, ob ein Sensor einen Alarm hat, und dann rot werden. Geräte-Schnellaktionen erkennt umbenannte und gelöschte Geräte und behält die Kacheln, wenn eine Aktualisierung fehlschlägt.",
+    "fr": "Nouveau widget : Alarmes des capteurs, des tuiles qui indiquent si un capteur est en alarme et deviennent rouges quand c'est le cas. Actions rapides d'appareils prend en compte les appareils renommés ou supprimés et garde ses tuiles si une actualisation échoue.",
+    "it": "Nuovo widget: Allarmi sensori, riquadri che mostrano se un sensore ha un allarme e diventano rossi quando lo ha. Azioni rapide dispositivi rileva i dispositivi rinominati ed eliminati e mantiene i riquadri se un aggiornamento non riesce.",
+    "sv": "Ny widget: Sensorlarm, rutor som visar om en sensor har ett larm och blir röda när den har det. Snabbåtgärder för enheter hittar nu omdöpta och borttagna enheter och behåller rutorna om en uppdatering misslyckas.",
+    "no": "Ny widget: Sensoralarmer, fliser som viser om en sensor har en alarm og blir røde når den har det. Hurtighandlinger for enheter fanger nå opp omdøpte og slettede enheter og beholder flisene hvis en oppdatering mislykkes.",
+    "es": "Nuevo widget: Alarmas de sensores, mosaicos que muestran si un sensor tiene una alarma y se ponen en rojo cuando la tiene. Acciones rápidas de dispositivos detecta los dispositivos renombrados y eliminados y conserva los mosaicos si falla una actualización.",
+    "da": "Ny widget: Sensoralarmer, felter, der viser, om en sensor har en alarm, og bliver røde, når den har. Hurtighandlinger for enheder opdager nu omdøbte og slettede enheder og beholder felterne, hvis en opdatering fejler.",
+    "ru": "Новый виджет «Тревоги датчиков»: плитки, которые показывают, есть ли у датчика тревога, и становятся красными, если есть. «Быстрые действия устройств» теперь замечают переименованные и удалённые устройства и сохраняют плитки, если обновление не удалось.",
+    "pl": "Nowy widżet: Alarmy czujników, kafelki, które pokazują, czy czujnik ma alarm, i zmieniają kolor na czerwony, gdy go ma. Szybkie akcje urządzeń wykrywają teraz urządzenia o zmienionej nazwie i usunięte oraz zachowują kafelki, gdy odświeżenie się nie powiedzie.",
+    "ko": "새 위젯: 센서 알람. 센서에 알람이 있는지 보여 주고 알람이 있으면 빨간색으로 바뀌는 타일입니다. 기기 빠른 실행은 이제 이름이 바뀌거나 삭제된 기기를 반영하고, 새로 고침에 실패해도 타일을 유지합니다.",
+    "ar": "أداة جديدة: إنذارات المستشعرات، بلاطات تُظهر ما إذا كان لدى المستشعر إنذار وتتحول إلى الأحمر عند وجوده. أصبحت الإجراءات السريعة للأجهزة تلتقط الأجهزة المعاد تسميتها والمحذوفة، وتحتفظ بالبلاطات عند فشل التحديث."
   }
 }

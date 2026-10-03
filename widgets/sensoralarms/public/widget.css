@@ -1,0 +1,69 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/sensoralarms-preview.html).
+ */
+.sa {
+  --sa-tile: var(--homey-background-color, #FFFFFF);
+  --sa-text: var(--homey-text-color, #EDEEF0);
+  --sa-muted: var(--homey-text-color-light, #9C9DA5);
+  --sa-red: var(--homey-color-red, #F25F5C);
+  --sa-red-text: #D93B37; /* the alarm text and icon on a red-tinted light tile */
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --sa-fs-small: var(--homey-font-size-small, 14px); --sa-lh-small: var(--homey-line-height-small, 20px);
+  --sa-regular: var(--homey-font-weight-regular, 400);
+  --sa-bold: var(--homey-font-weight-bold, 700);
+  --sa-radius: 10px; /* Homey's native sensor tiles, measured from a phone screenshot */
+}
+/* Dark mode: the tile colour of Homey's native temperature tiles (measured from a phone screenshot). */
+.homey-dark-mode .sa, .sa.homey-dark-mode { --sa-tile: #2B2C36; --sa-red-text: #FF7B78; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* The widget is transparent, but until the SDK adds .homey-dark-mode (~1 s in) Homey's stylesheet paints body
+   in its light background, which shows as white corners around Homey's rounded loading overlay. */
+html, body { background: transparent !important; }
+
+.sa { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--sa-text); }
+.sa * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.sa [dir="auto"] { text-align: left; }
+
+.sa-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--homey-su-3, 12px); }
+
+/*
+ * Like the native temperature tiles (measured from phone screenshots at 3x): 52px high, a 24px icon, then
+ * the name over the alarm text, both 14px on an 18px line (tighter than Homey's 14/20).
+ */
+.sa-tile {
+  position: relative; display: flex; align-items: center; gap: 13px; min-width: 0; height: 52px;
+  padding: 6px 12px 6px 10px; background: var(--sa-tile); border-radius: var(--sa-radius);
+  transition: background-color .2s;
+}
+.sa-icon {
+  flex-shrink: 0; width: 24px; height: 24px; background: var(--sa-muted);
+  -webkit-mask: var(--sa-mask) center / contain no-repeat; mask: var(--sa-mask) center / contain no-repeat;
+}
+.sa-icon.fallback {
+  /* No device icon: a rounded square outline. */
+  background: none; -webkit-mask: none; mask: none;
+  border: 2px solid var(--sa-muted); border-radius: 5px; width: 18px; height: 18px; margin: 3px;
+}
+.sa-text { display: flex; flex-direction: column; min-width: 0; }
+.sa-name, .sa-status {
+  font-size: var(--sa-fs-small); line-height: 18px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* The native tiles' name is 14 bold, outside Homey's widget scale (which only has 14 regular). */
+.sa-name { font-weight: var(--sa-bold); }
+.sa-status { font-weight: var(--sa-regular); color: var(--sa-muted); }
+.sa-tile.missing > * { opacity: .5; }
+
+/* An active alarm: a red-tinted tile, with a red icon and red alarm text. */
+.sa-tile.alarm { background: color-mix(in srgb, var(--sa-red) 22%, var(--sa-tile)); }
+.sa-tile.alarm .sa-icon:not(.fallback) { background: var(--sa-red-text); }
+.sa-tile.alarm .sa-icon.fallback { border-color: var(--sa-red-text); }
+.sa-tile.alarm .sa-status { color: var(--sa-red-text); }
+
+.sa-message { font-size: var(--sa-fs-small); line-height: var(--sa-lh-small); color: var(--sa-muted); }
+.sa-message.error { color: var(--sa-red); }

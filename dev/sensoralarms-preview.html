@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sensor alarms widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/sensoralarms/public/widget.css">
+  <script src="../widgets/sensoralarms/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <style>
+    body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px;
+      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · dark · motion and contact count</span><div class="dash homey-dark-mode" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>358 px · light</span><div class="dash light" style="width:358px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · no devices</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
+
+  <script>
+    const svg = body => 'data:image/svg+xml;base64,' + btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round">${body}</svg>`);
+    const AIR = svg('<rect x="5" y="3" width="14" height="18" rx="3"/><circle cx="12" cy="10" r="3"/><path d="M9 17h6"/>');
+    const SMOKE = svg('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>');
+    const DOOR = svg('<path d="M10 3v18M10 3h2v18h-2M12 11h7"/>');
+    const THERMO = svg('<path d="M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z"/>');
+    const a = (capabilityId, value, title, state = false) => ({ capabilityId, title, value, state });
+    const devices = () => [
+      { id: 'kids', name: "Air quality | Kid's room", icon: AIR, alarms: [a('alarm_co2', false, 'CO₂ Alarm'), a('alarm_radon', false, 'Radon alarm'), a('alarm_voc', false, 'VOC alarm')] },
+      { id: 'bed', name: 'Air quality | Bedroom', icon: AIR, alarms: [a('alarm_co2', true, 'CO₂ Alarm'), a('alarm_radon', false, 'Radon alarm')] },
+      { id: 'hall', name: 'Smoke alarm | Hall', icon: SMOKE, alarms: [a('alarm_smoke', true, 'Smoke alarm'), a('alarm_battery', true, 'Battery alarm')] },
+      { id: 'door', name: 'Back door', icon: DOOR, alarms: [a('alarm_contact', true, 'Contact alarm', true), a('alarm_battery', false, 'Battery alarm')] },
+      { id: 'thermo', name: 'Bedroom', icon: THERMO, alarms: [] },
+      { id: 'gone', missing: true },
+    ];
+    const widgets = [['w1', false], ['w2', true], ['w3', false]].map(([id, includeStates]) => {
+      const w = createSensorAlarmsWidget(document.getElementById(id), { t: devT, includeStates });
+      w.setState(devices());
+      return w;
+    });
+    const empty = createSensorAlarmsWidget(document.getElementById('w4'), { t: devT });
+    empty.setMessage(empty.t('selectDevices'));
+    // Simulate the radon alarm coming and going.
+    let radon = false;
+    setInterval(() => {
+      radon = !radon;
+      for (const w of widgets) w.pushChange({ deviceId: 'kids', capabilityId: 'alarm_radon', value: radon });
+    }, 3000);
+  </script>
+</body>
+</html>

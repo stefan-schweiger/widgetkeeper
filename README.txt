@@ -6,6 +6,7 @@ Included widgets:
 - Electricity Overview: live power use, hourly prices and usage history on one card.
 - Thermostat Shortcuts: three one-tap presets for a thermostat, heat pump or air conditioner.
 - Device Quick Actions: compact tiles that run a device's quick action, like turning on a light or locking a door.
+- Sensor Alarms: tiles that show whether a sensor has an alarm, like smoke, water or CO₂, and turn red when it does.
 - Weather Forecast: icon, temperature, wind and precipitation hour by hour for the next 36 hours, from MET Norway (yr.no).
 
 Weather data from MET Norway, licensed under CC BY 4.0.

@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.thomassidor.widgetkeeper",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "compatibility": ">=12.6.0",
   "sdk": 3,
   "runtime": "nodejs",
@@ -459,6 +459,73 @@
         }
       },
       "id": "quickactions"
+    },
+    "sensoralarms": {
+      "name": {
+        "en": "Sensor Alarms",
+        "nl": "Sensoralarmen",
+        "de": "Sensoralarme",
+        "fr": "Alarmes des capteurs",
+        "it": "Allarmi sensori",
+        "sv": "Sensorlarm",
+        "no": "Sensoralarmer",
+        "es": "Alarmas de sensores",
+        "da": "Sensoralarmer",
+        "ru": "Тревоги датчиков",
+        "pl": "Alarmy czujników",
+        "ko": "센서 알람",
+        "ar": "إنذارات المستشعرات"
+      },
+      "height": 64,
+      "transparent": true,
+      "devices": {
+        "type": "global",
+        "singular": false
+      },
+      "settings": [
+        {
+          "id": "includeStates",
+          "type": "checkbox",
+          "title": {
+            "en": "Count motion and contact as alarms",
+            "nl": "Beweging en contact als alarm tellen",
+            "de": "Bewegung und Kontakt als Alarm zählen",
+            "fr": "Compter mouvement et contact comme alarmes",
+            "it": "Conta movimento e contatto come allarmi",
+            "sv": "Räkna rörelse och kontakt som larm",
+            "no": "Regn bevegelse og kontakt som alarmer",
+            "es": "Contar movimiento y contacto como alarmas",
+            "da": "Tæl bevægelse og kontakt som alarmer",
+            "ru": "Считать движение и контакт тревогой",
+            "pl": "Licz ruch i kontakt jako alarmy",
+            "ko": "동작 및 접촉을 알람으로 표시",
+            "ar": "احتساب الحركة والتلامس كإنذارات"
+          },
+          "hint": {
+            "en": "Off: an open door or detected motion doesn't turn the tile red.",
+            "nl": "Uit: een open deur of gedetecteerde beweging kleurt de tegel niet rood.",
+            "de": "Aus: Eine offene Tür oder erkannte Bewegung färbt die Kachel nicht rot.",
+            "fr": "Désactivé : une porte ouverte ou un mouvement détecté ne rend pas la tuile rouge.",
+            "it": "Disattivato: una porta aperta o un movimento rilevato non colorano di rosso il riquadro.",
+            "sv": "Av: en öppen dörr eller upptäckt rörelse gör inte rutan röd.",
+            "no": "Av: en åpen dør eller registrert bevegelse gjør ikke flisen rød.",
+            "es": "Desactivado: una puerta abierta o un movimiento detectado no ponen el mosaico en rojo.",
+            "da": "Fra: en åben dør eller registreret bevægelse gør ikke feltet rødt.",
+            "ru": "Выкл.: открытая дверь или движение не окрашивают плитку в красный.",
+            "pl": "Wył.: otwarte drzwi lub wykryty ruch nie barwią kafelka na czerwono.",
+            "ko": "끔: 열린 문이나 감지된 동작은 타일을 빨간색으로 표시하지 않습니다.",
+            "ar": "إيقاف: الباب المفتوح أو الحركة المكتشفة لا تجعل البلاطة حمراء."
+          },
+          "value": false
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        }
+      },
+      "id": "sensoralarms"
     },
     "thermostat": {
       "name": {

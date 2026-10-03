@@ -32,6 +32,14 @@
     "failed": "Kunne ikke ændre __name__.",
     "unavailable": "Utilgængelig"
   },
+  "sensoralarms": {
+    "selectDevices": "Vælg sensorer i widgetindstillingerne.",
+    "error": "Kunne ikke indlæse sensorerne.",
+    "noAlarm": "Ingen alarm",
+    "alarms": "__count__ alarmer",
+    "noSensors": "Ingen alarmsensorer",
+    "unavailable": "Utilgængelig"
+  },
   "weather": {
     "now": "Nu",
     "error": "Kunne ikke hente vejrudsigten.",

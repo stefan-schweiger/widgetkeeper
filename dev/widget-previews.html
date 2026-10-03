@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|weather-dark|weather-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|weather-dark|weather-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -124,6 +124,23 @@ function quickActions(t, theme) {
   </div>`;
 }
 
+// Sensor Alarms is transparent too: 2 tiles per row, each an icon, the name and the alarm text; an alarm turns it red.
+function sensorAlarms(t, theme) {
+  const tileBg = theme === 'dark' ? '#2B2C36' : '#FFFFFF';
+  const shadow = theme === 'dark' ? '0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const RED = theme === 'dark' ? '#FF7B78' : '#D93B37', redTint = theme === 'dark' ? '#4A2E36' : '#FCE0DF';
+  const tile = alarm => {
+    const bg = alarm ? redTint : tileBg, icon = alarm ? RED : (theme === 'dark' ? '#9C9DA5' : '#6B6C75');
+    return `<div style="height:150px;border-radius:32px;background:${bg};box-shadow:${shadow};padding:0 40px 0 32px;box-sizing:border-box;display:flex;align-items:center;gap:40px">
+      <div style="width:56px;height:72px;border:7px solid ${icon};border-radius:14px;box-sizing:border-box;flex:none"></div>
+      <div style="display:flex;flex-direction:column;gap:18px">${pill(200, 30, t.fg, 'opacity:.85')}${pill(alarm ? 170 : 130, 24, alarm ? RED : t.tileText)}</div>
+    </div>`;
+  };
+  return `<div style="width:880px;display:grid;grid-template-columns:repeat(2,1fr);gap:32px">
+    ${[false, true, false, false, false, false].map(tile).join('')}
+  </div>`;
+}
+
 // Weather Forecast: an hour strip (icon, temperature, precipitation, wind), fading out to the right.
 function weather(t) {
   const YELLOW = '#FFC531', cloud = t.fg === '#EDEEF0' ? '#B9BAC2' : '#AEB0B8';
@@ -162,6 +179,8 @@ const PREVIEWS = [
   { id: 'thermo-light', label: '1d · Thermostat Shortcuts — preview-light.png', theme: 'light', render: thermostat },
   { id: 'qa-dark',      label: '1e · Device Quick Actions — preview-dark.png',  theme: 'dark',  render: quickActions },
   { id: 'qa-light',     label: '1f · Device Quick Actions — preview-light.png', theme: 'light', render: quickActions },
+  { id: 'sa-dark',      label: '1i · Sensor Alarms — preview-dark.png',          theme: 'dark',  render: sensorAlarms },
+  { id: 'sa-light',     label: '1j · Sensor Alarms — preview-light.png',         theme: 'light', render: sensorAlarms },
   { id: 'weather-dark',  label: '1g · Weather Forecast — preview-dark.png',      theme: 'dark',  render: weather },
   { id: 'weather-light', label: '1h · Weather Forecast — preview-light.png',     theme: 'light', render: weather },
 ];
