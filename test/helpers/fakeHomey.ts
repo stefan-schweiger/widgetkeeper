@@ -95,7 +95,11 @@ export function fakeApi(opts: FakeApiOptions = {}) {
     zones: { getZones: vi.fn(async () => opts.zones ?? {}) },
     insights: {
       getLogs: vi.fn(async () => Object.fromEntries((opts.logs ?? []).map(l => [l.id, l]))),
-      getLogEntries: vi.fn(async (args: any) => opts.logEntries?.(args) ?? { values: [] }),
+      // Like Homey, reading a log that doesn't exist throws.
+      getLogEntries: vi.fn(async (args: any) => {
+        if (opts.logs && !opts.logs.some(l => l.id === args.id)) throw new Error(`Log not found: ${args.id}`);
+        return opts.logEntries?.(args) ?? { values: [] };
+      }),
     },
     energy: {
       fetchDynamicElectricityPrices: vi.fn(async (args: { date: string }) => opts.prices?.(args) ?? {}),

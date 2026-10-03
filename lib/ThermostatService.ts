@@ -1,6 +1,7 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import { fetchDeviceIcon } from './deviceIcon.js';
+import Timings from './Timings.js';
 
 const MINUTE = 60e3;
 const TICK = MINUTE;
@@ -92,8 +93,10 @@ export default class ThermostatService {
   }
 
   async getState(deviceId: string): Promise<ThermostatState> {
-    const t = await this.ensureTracked(deviceId);
+    const tm = new Timings();
+    const t = await this.ensureTracked(deviceId, tm);
     t.lastRequested = Date.now();
+    this.log(`Thermostat state ${t.name}: ${tm.summary()}`);
     return { name: t.name, icon: t.icon, values: { ...t.values }, caps: t.caps };
   }
 
@@ -226,26 +229,26 @@ export default class ThermostatService {
 
   // ---------------------------------------------------------------- live state
 
-  private ensureTracked(deviceId: string): Promise<Tracked> {
+  private ensureTracked(deviceId: string, tm: Timings): Promise<Tracked> {
     const existing = this.tracked.get(deviceId);
     if (existing) return Promise.resolve(existing);
     let p = this.trackPromises.get(deviceId);
     if (!p) {
-      p = this.track(deviceId).finally(() => this.trackPromises.delete(deviceId));
+      p = this.track(deviceId, tm).finally(() => this.trackPromises.delete(deviceId));
       this.trackPromises.set(deviceId, p);
     }
     return p;
   }
 
-  private async track(deviceId: string): Promise<Tracked> {
-    const api = await this.getApi();
-    const device = await api.devices.getDevice({ id: deviceId });
+  private async track(deviceId: string, tm: Timings): Promise<Tracked> {
+    const api = await tm.time('api', () => this.getApi());
+    const device: any = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId }));
     this.assertThermostat(device);
     const ids = relevantCaps(device);
     const t: Tracked = {
       deviceId,
       name: device.name,
-      icon: await fetchDeviceIcon(api, device, this.log),
+      icon: await tm.time('icon', () => fetchDeviceIcon(api, device, this.log)),
       values: {},
       caps: {},
       instances: [],

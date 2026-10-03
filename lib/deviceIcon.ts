@@ -12,7 +12,7 @@ export async function fetchSvgIcon(
   const path = obj.url || (obj.id ? `/api/icon/${obj.id}` : null);
   if (!path) return null;
   try {
-    return await fetchSvg(/^https?:/.test(path) ? path : `${await api.baseUrl}${path}`);
+    return await cachedSvg(/^https?:/.test(path) ? path : `${await api.baseUrl}${path}`);
   } catch (err) {
     log(`Could not load icon for ${label} (${JSON.stringify(iconObj)})`, err);
     return null;
@@ -27,15 +27,8 @@ export async function fetchSvgIcon(
 export async function fetchDeviceIcon(api: any, device: any, log: (...args: any[]) => void): Promise<string | null> {
   const override = device?.iconOverride;
   if (typeof override === 'string' && /^[\w-]+$/.test(override)) {
-    const url = `https://my.homey.app/img/devices/${override}.svg`;
-    let p = libraryIcons.get(url);
-    if (!p) {
-      p = fetchSvg(url);
-      libraryIcons.set(url, p);
-      p.catch(() => libraryIcons.delete(url)); // retry next time
-    }
     try {
-      return await p;
+      return await cachedSvg(`https://my.homey.app/img/devices/${override}.svg`);
     } catch (err) {
       log(`Could not load icon ${override} for ${device.name}, using the driver's`, err);
     }
@@ -43,8 +36,21 @@ export async function fetchDeviceIcon(api: any, device: any, log: (...args: any[
   return fetchSvgIcon(api, device?.iconObj, device?.name, log);
 }
 
-/** Library icons are shared by many devices; fetched once per app run. */
-const libraryIcons = new Map<string, Promise<string>>();
+/**
+ * Icons are shared by many devices and hardly ever change, so each URL is fetched once per app run
+ * (a failed fetch is retried next time). Fetching them took ~150-450 ms per widget load.
+ */
+const icons = new Map<string, Promise<string>>();
+
+function cachedSvg(url: string): Promise<string> {
+  let p = icons.get(url);
+  if (!p) {
+    p = fetchSvg(url);
+    icons.set(url, p);
+    p.catch(() => icons.delete(url));
+  }
+  return p;
+}
 
 async function fetchSvg(url: string): Promise<string> {
   if (typeof fetch !== 'function') throw new Error('No fetch');

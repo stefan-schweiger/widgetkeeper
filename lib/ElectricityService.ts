@@ -1,5 +1,6 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import Timings from './Timings.js';
 import {
   HOUR, MINUTE, SECOND, Sample,
   bucketAverage, floorTo, hourlyPrices, parseInsightsEntries, parsePriceResponse,
@@ -13,6 +14,7 @@ const USAGE_TTL = 5 * MINUTE;
 const PRICE_PAST_HOURS = 24;
 const PRICE_FUTURE_HOURS = 24; // the chart shows 12; the lowest-price footer can look 24 ahead
 const IDLE_TIMEOUT = 10 * MINUTE;
+const POWER_LOGS = ['measure_power', 'energy_power']; // in order of preference
 
 export const LIVE_EVENT = 'electricity:live';
 
@@ -45,8 +47,11 @@ export default class ElectricityService {
 
   private meters = new Map<string, Meter>();
   private meterPromises = new Map<string, Promise<Meter>>();
+  private logIds = new Map<string, string>(); // the power log that worked, per device; kept when a meter is dropped
   private priceDays = new Map<string, { at: number, hours: Map<number, number> }>();
+  private pricePending = new Map<string, Promise<Map<number, number>>>();
   private currency: string | null = null;
+  private currencyPending: Promise<void> | null = null;
   private tickTimer: NodeJS.Timeout | null = null;
   private loggedPriceSample = false;
 
@@ -61,6 +66,15 @@ export default class ElectricityService {
     for (const m of this.meters.values()) this.disposeMeter(m);
   }
 
+  /** Connects to Homey's API and fetches the prices at app start, so the first widget doesn't wait for them. */
+  warmUp() {
+    const firstSlot = floorTo(Date.now(), HOUR) - PRICE_PAST_HOURS * HOUR;
+    const tm = new Timings();
+    this.getPriceSlots(firstSlot, tm)
+      .then(() => this.log(`Prices warmed up: ${tm.summary()}`))
+      .catch(err => this.log('Warm-up failed', err));
+  }
+
   private getApi(): Promise<any> {
     return getAppApi(this.homey);
   }
@@ -69,23 +83,25 @@ export default class ElectricityService {
     const now = Date.now();
     const hourStart = floorTo(now, HOUR);
     const firstSlot = hourStart - PRICE_PAST_HOURS * HOUR;
+    const tm = new Timings();
 
     let meterError: string | null = null;
     const [meter, prices] = await Promise.all([
-      deviceId ? this.ensureMeter(deviceId).catch(err => {
+      deviceId ? tm.time('meter', () => this.ensureMeter(deviceId, tm)).catch(err => {
         this.log('Meter error', err);
         meterError = err instanceof Error ? err.message : String(err);
         return null;
       }) : null,
-      this.getPriceSlots(firstSlot).catch(err => { this.log('Price error', err); return []; }),
+      tm.time('prices', () => this.getPriceSlots(firstSlot, tm)).catch(err => { this.log('Price error', err); return []; }),
     ]);
 
     let usage: Sample[] = [];
     if (meter) {
       meter.lastRequested = now;
-      usage = await this.getUsage(meter, firstSlot, now).catch(err => { this.log('Usage error', err); return []; });
+      usage = await tm.time('usage', () => this.getUsage(meter, firstSlot, now)).catch(err => { this.log('Usage error', err); return []; });
     }
 
+    this.log(`Snapshot ${meter?.name ?? deviceId ?? '-'}: ${tm.summary()}`);
     return {
       now,
       deviceName: meter?.name ?? null,
@@ -100,20 +116,24 @@ export default class ElectricityService {
 
   // ---------------------------------------------------------------- live power
 
-  private ensureMeter(deviceId: string): Promise<Meter> {
+  private ensureMeter(deviceId: string, tm: Timings): Promise<Meter> {
     const existing = this.meters.get(deviceId);
     if (existing) return Promise.resolve(existing);
     let p = this.meterPromises.get(deviceId);
     if (!p) {
-      p = this.createMeter(deviceId).finally(() => this.meterPromises.delete(deviceId));
+      p = this.createMeter(deviceId, tm).finally(() => this.meterPromises.delete(deviceId));
       this.meterPromises.set(deviceId, p);
     }
     return p;
   }
 
-  private async createMeter(deviceId: string): Promise<Meter> {
-    const api = await this.getApi();
-    const device = await api.devices.getDevice({ id: deviceId });
+  private async createMeter(deviceId: string, tm: Timings): Promise<Meter> {
+    const api = await tm.time('api', () => this.getApi());
+    // The power history doesn't need the device, so both are requested at once.
+    const [device, logs] = await Promise.all([
+      tm.time('getDevice', () => api.devices.getDevice({ id: deviceId })) as Promise<any>,
+      tm.time('history', () => this.readPowerLogs(api, deviceId)),
+    ]);
     if (!device.capabilities?.includes('measure_power')) {
       throw new Error(`Device ${device.name} has no measure_power capability`);
     }
@@ -128,18 +148,12 @@ export default class ElectricityService {
       pending: null,
       pushTimer: null,
       lastRequested: Date.now(),
-      logId: await this.findPowerLog(api, deviceId),
-      usage: null,
+      logId: logs.logId,
+      usage: logs.last24Hours ? { at: Date.now(), data: logs.last24Hours } : null,
     };
 
-    // Seed from insights (5 s resolution for `lastHour`) so the chart is full on first render.
-    let history: Sample[] = [];
-    try {
-      history = await this.readLog(api, meter, 'lastHour');
-    } catch (err) {
-      this.log('Could not read live history', err);
-    }
-    meter.live = history.map(p => ({ t: p.t, w: Math.round(p.w) }));
+    // Seeded from insights (5 s resolution for `lastHour`) so the chart is full on first render.
+    meter.live = logs.lastHour.map(p => ({ t: p.t, w: Math.round(p.w) }));
     if (meter.current != null) meter.live.push({ t: Date.now(), w: Math.round(meter.current) });
 
     meter.capability = device.makeCapabilityInstance('measure_power', (value: number) => {
@@ -152,33 +166,43 @@ export default class ElectricityService {
     });
 
     this.meters.set(deviceId, meter);
-    this.log(`Tracking live power for ${device.name} (${deviceId}), log ${meter.logId}, ${history.length} history points`);
+    this.log(`Tracking live power for ${device.name} (${deviceId}), log ${meter.logId}, ${logs.lastHour.length} history points`);
     return meter;
   }
 
   /**
-   * Homey logs power as `measure_power` for most devices, but as `energy_power` for some
-   * (e.g. cumulative electricity meters). Log ids are `homey:device:<id>:<capability>`.
+   * The device's power log for the last hour (5 s steps; seeds the live chart) and the last 24 h
+   * (5 min steps; usage). Homey logs power as `measure_power` for most devices, but as
+   * `energy_power` for some (e.g. cumulative electricity meters). Listing every insights log to find
+   * out is slow, so this reads them in turn (a missing log throws) and remembers the one that
+   * worked. Log ids are `homey:device:<id>:<capability>`.
    */
-  private async findPowerLog(api: any, deviceId: string): Promise<string | null> {
-    const ownerUri = `homey:device:${deviceId}`;
-    try {
-      const logs = Object.values(await api.insights.getLogs()) as any[];
-      const mine = logs.filter(l => l.ownerUri === ownerUri);
-      for (const cap of ['measure_power', 'energy_power']) {
-        const log = mine.find(l => l.ownerId === cap);
-        if (log) return log.id;
+  private async readPowerLogs(api: any, deviceId: string): Promise<{
+    logId: string | null, lastHour: Sample[], last24Hours: Sample[] | null,
+  }> {
+    const known = this.logIds.get(deviceId);
+    const candidates = known ? [known] : POWER_LOGS.map(cap => `homey:device:${deviceId}:${cap}`);
+    let error: unknown;
+    for (const logId of candidates) {
+      try {
+        const [lastHour, last24Hours] = await Promise.all([
+          this.readLog(api, deviceId, logId, 'lastHour'),
+          this.readLog(api, deviceId, logId, 'last24Hours'),
+        ]);
+        this.logIds.set(deviceId, logId);
+        return { logId, lastHour, last24Hours };
+      } catch (err) {
+        error = err;
       }
-    } catch (err) {
-      this.log('Could not list insights logs', err);
     }
-    return null;
+    this.log('Could not read the power history', error);
+    // A known log that failed is kept, so the usage history is retried with it later.
+    return { logId: known ?? null, lastHour: [], last24Hours: null };
   }
 
-  private async readLog(api: any, meter: Meter, resolution: string): Promise<Sample[]> {
-    if (!meter.logId) return [];
+  private async readLog(api: any, deviceId: string, logId: string, resolution: string): Promise<Sample[]> {
     return parseInsightsEntries(await api.insights.getLogEntries({
-      uri: `homey:device:${meter.deviceId}`, id: meter.logId, resolution,
+      uri: `homey:device:${deviceId}`, id: logId, resolution,
     }));
   }
 
@@ -224,7 +248,7 @@ export default class ElectricityService {
 
   private async getUsage(meter: Meter, from: number, now: number): Promise<Sample[]> {
     if (!meter.usage || now - meter.usage.at > USAGE_TTL) {
-      const data = await this.readLog(await this.getApi(), meter, 'last24Hours');
+      const data = meter.logId ? await this.readLog(await this.getApi(), meter.deviceId, meter.logId, 'last24Hours') : [];
       meter.usage = { at: now, data };
     }
     const count = Math.floor((now - from) / USAGE_STEP) + 1;
@@ -236,30 +260,23 @@ export default class ElectricityService {
 
   // ---------------------------------------------------------------- prices
 
-  private async getPriceSlots(firstSlot: number): Promise<Snapshot['prices']> {
+  private async getPriceSlots(firstSlot: number, tm: Timings): Promise<Snapshot['prices']> {
     const count = PRICE_PAST_HOURS + 1 + PRICE_FUTURE_HOURS;
     const lastSlot = firstSlot + (count - 1) * HOUR;
     const days = new Set<string>();
     for (let t = firstSlot; t <= lastSlot; t += HOUR) days.add(this.localDate(t));
 
-    const hours = new Map<number, number>();
     // A day that fails (e.g. tomorrow before publication) leaves its slots empty, not the others.
-    for (const day of days) {
-      try {
-        for (const [h, p] of await this.getPriceDay(day)) hours.set(h, p);
-      } catch (err) {
+    const [dayHours] = await Promise.all([
+      Promise.all([...days].map(day => tm.time(day, () => this.getPriceDay(day)).catch(err => {
         this.log(`Price error for ${day}`, err);
-      }
-    }
-
-    if (this.currency == null) {
-      try {
-        const api = await this.getApi();
-        const c = await api.energy.getCurrency();
-        this.currency = typeof c === 'string' ? c : (c?.currency ?? c?.symbol ?? null);
-      } catch (err) {
-        this.log('Could not read currency', err);
-      }
+        return null;
+      }))),
+      this.currency == null ? tm.time('currency', () => this.loadCurrency()) : null,
+    ]);
+    const hours = new Map<number, number>();
+    for (const day of dayHours) {
+      for (const [h, p] of day ?? []) hours.set(h, p);
     }
 
     return Array.from({ length: count }, (_, i) => {
@@ -268,13 +285,36 @@ export default class ElectricityService {
     });
   }
 
-  private async getPriceDay(day: string): Promise<Map<number, number>> {
-    const now = Date.now();
+  private loadCurrency(): Promise<void> {
+    this.currencyPending ??= (async () => {
+      try {
+        const c = await (await this.getApi()).energy.getCurrency();
+        this.currency = typeof c === 'string' ? c : (c?.currency ?? c?.symbol ?? null);
+      } catch (err) {
+        this.log('Could not read currency', err);
+      } finally {
+        this.currencyPending = null;
+      }
+    })();
+    return this.currencyPending;
+  }
+
+  /** One day's hourly prices. Concurrent requests for a day (warm-up, several widgets) share one fetch. */
+  private getPriceDay(day: string): Promise<Map<number, number>> {
     const cached = this.priceDays.get(day);
     // Complete days are cached for good; empty/partial days (tomorrow before publication) are
     // retried every 15 minutes.
-    if (cached && (cached.hours.size >= 23 || now - cached.at < 15 * MINUTE)) return cached.hours;
+    if (cached && (cached.hours.size >= 23 || Date.now() - cached.at < 15 * MINUTE)) return Promise.resolve(cached.hours);
+    let p = this.pricePending.get(day);
+    if (!p) {
+      p = this.fetchPriceDay(day).finally(() => this.pricePending.delete(day));
+      this.pricePending.set(day, p);
+    }
+    return p;
+  }
 
+  private async fetchPriceDay(day: string): Promise<Map<number, number>> {
+    const now = Date.now();
     const api = await this.getApi();
     const res = await api.energy.fetchDynamicElectricityPrices({ date: day });
     if (!this.loggedPriceSample) {

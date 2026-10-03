@@ -11,7 +11,21 @@
   <script>
     const REFRESH_MS = 5 * 60e3; // keeps the app's device subscriptions alive and resyncs state
 
+    // Load marks for the app's diagnostics log, sent with the first request only.
+    let perf = '';
+    function loadMarks(sdkAt) {
+      const nav = performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
+      return [Math.round(performance.timeOrigin), nav ? Math.round(nav.responseEnd) : -1,
+        Math.round(sdkAt), Math.round(performance.now())].join(',');
+    }
+    function perfParam() {
+      const p = perf ? `&perf=${perf}` : '';
+      perf = '';
+      return p;
+    }
+
     function onHomeyReady(Homey) {
+      const sdkAt = performance.now();
       const settings = Homey.getSettings() || {};
       let deviceIds = [];
       let readySent = false;
@@ -49,7 +63,7 @@
           return;
         }
         try {
-          widget.setState(await Homey.api('GET', `/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}`));
+          widget.setState(await Homey.api('GET', `/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${perfParam()}`));
         } catch (err) {
           console.error(err);
           widget.setMessage(widget.t('error'));
@@ -65,6 +79,7 @@
         .then((ids) => { deviceIds = Array.isArray(ids) ? ids : []; })
         .catch(() => { deviceIds = []; })
         .then(() => {
+          perf = loadMarks(sdkAt);
           setInterval(load, REFRESH_MS);
           load();
         });

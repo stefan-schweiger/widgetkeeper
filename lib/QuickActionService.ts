@@ -1,6 +1,7 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import { fetchDeviceIcon, fetchSvgIcon } from './deviceIcon.js';
+import Timings from './Timings.js';
 
 const MINUTE = 60e3;
 const TICK = MINUTE;
@@ -69,9 +70,10 @@ export default class QuickActionService {
 
   /** One entry per device, in the order asked for. A deleted device doesn't fail the others. */
   async getState(deviceIds: string[]): Promise<QuickActionDevice[]> {
-    return Promise.all(deviceIds.map(async (id): Promise<QuickActionDevice> => {
+    const tm = new Timings();
+    const out = await Promise.all(deviceIds.map(async (id): Promise<QuickActionDevice> => {
       try {
-        const t = await this.ensureTracked(id);
+        const t = await this.ensureTracked(id, tm);
         t.lastRequested = Date.now();
         return { id, name: t.name, icon: t.icon, quickAction: t.quickAction && { ...t.quickAction } };
       } catch (err) {
@@ -79,6 +81,8 @@ export default class QuickActionService {
         return { id, missing: true };
       }
     }));
+    this.log(`Quick actions state for ${deviceIds.length} devices: ${tm.summary()}`);
+    return out;
   }
 
   /** Sets the device's quick-action capability, and nothing else. */
@@ -96,26 +100,26 @@ export default class QuickActionService {
 
   // ---------------------------------------------------------------- live state
 
-  private ensureTracked(deviceId: string): Promise<Tracked> {
+  private ensureTracked(deviceId: string, tm: Timings): Promise<Tracked> {
     const existing = this.tracked.get(deviceId);
     if (existing) return Promise.resolve(existing);
     let p = this.trackPromises.get(deviceId);
     if (!p) {
-      p = this.track(deviceId).finally(() => this.trackPromises.delete(deviceId));
+      p = this.track(deviceId, tm).finally(() => this.trackPromises.delete(deviceId));
       this.trackPromises.set(deviceId, p);
     }
     return p;
   }
 
-  private async track(deviceId: string): Promise<Tracked> {
-    const api = await getAppApi(this.homey);
-    const device = await api.devices.getDevice({ id: deviceId });
+  private async track(deviceId: string, tm: Timings): Promise<Tracked> {
+    const api = await tm.time('api', () => getAppApi(this.homey));
+    const device: any = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId }));
     const id = quickActionId(device);
     const cap = id ? device.capabilitiesObj[id] : null;
-    const [icon, capIcon] = await Promise.all([
+    const [icon, capIcon] = await tm.time('icons', () => Promise.all([
       fetchDeviceIcon(api, device, this.log),
       id ? fetchSvgIcon(api, cap.iconObj, `${device.name} ${id}`, this.log) : null,
-    ]);
+    ]));
     const t: Tracked = {
       deviceId,
       name: device.name,

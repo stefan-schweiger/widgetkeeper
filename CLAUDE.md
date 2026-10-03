@@ -51,8 +51,9 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - Type: the name and the button values are 17 bold. The buttons' mode/extra text is 12/16 regular, a deliberate exception to Homey's scale so three lines fit the 68 px buttons.
 - In dark mode, `body.tw-frame` mimics Homey's native device tiles: a `#181920` fill and a 1px rim that's lighter at the top (a fixed `::after`, so it stays out of the height), using a 10px radius measured from a phone screenshot. It's gated on `.homey-dark-mode`; light mode keeps the default frame.
 - The device icon is fetched by the app (`lib/deviceIcon.ts`), sent as an SVG data URL, and used as a CSS mask. A rounded square is the fallback.
-  - A user-picked icon (`device.iconOverride`, e.g. `lock`, `christmas-lights`) comes from Homey's icon library at `https://my.homey.app/img/devices/<name>.svg`. That's public, and it's where the web app's own bundle loads it from. Fetched once per name.
+  - A user-picked icon (`device.iconOverride`, e.g. `lock`, `christmas-lights`) comes from Homey's icon library at `https://my.homey.app/img/devices/<name>.svg`. That's public, and it's where the web app's own bundle loads it from.
   - Otherwise it's the driver's icon: `api.baseUrl` + `device.iconObj.url`.
+  - Every icon URL is fetched once per app run (`lib/deviceIcon.ts`); fetching took 150–450 ms per widget load.
 
 ## Device Quick Actions widget
 - Half-height tiles for several devices (the `devices` setting with `singular: false`, read with `Homey.getDeviceIds()`), 3 per row. `lib/QuickActionService.ts` owns it. The widget is `transparent`, so each tile sits on the dashboard like a native one.
@@ -68,6 +69,9 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 
 ## Diagnostics (no Docker needed)
 - `lib/Diagnostics.ts` keeps the last 500 log lines. `app.log`/`app.error` are overridden to feed it.
+- Load timings (`lib/Timings.ts`): each snapshot/state request logs its total and per-step ms. A widget's first request also sends `perf=` (frame start, HTML, SDK ready, request), logged as `<Widget> widget: frame started … SDK ready 1100 ms`.
+- Measured on 2026-10-03 (phone app): Homey creates all frames at once, the HTML arrives ~0.3 s in, the SDK is ready ~1.0–1.1 s in, and each request takes ~0.4 s each way through Homey. The app answers in 0–30 ms when warm, ~60–150 ms after the 10-min idle drop, ~0.2–0.4 s right after an app restart. So most of a widget's load time is Homey's, not ours.
+- At start, `app.ts` connects the API and `ElectricityService.warmUp()` fetches the prices. Concurrent requests for a price day share one fetch.
 - It's shown on the app settings page (`settings/index.html`; Homey app → Apps → Widgetkeeper → Configure) through the authenticated app API `GET /diagnostics[?device=]` (`api.ts`). Pick a device to get its full capability details.
 - The user copies or shares the report into the chat.
 - A public, key-protected endpoint for reading it from the dev machine was blocked by the auto-mode classifier. It's not implemented.
@@ -76,7 +80,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - Dynamic prices: `energy.fetchDynamicElectricityPrices({ date: 'YYYY-MM-DD' })` returns `{ priceUnit: 'DKK', interval: 60, pricesPerInterval: [{ periodStart, periodEnd, value }] }`. Zone DK2. `getCurrency()` returns `"DKK"`.
 - Insights: `getLogEntries({ uri: 'homey:device:<id>', id: 'homey:device:<id>:<cap>', resolution })`. **The `id` is the full log id.**
   - `lastHour` has a 5 s step; `last24Hours` has a 5 min step.
-  - The frient meter logs power as `energy_power`, not `measure_power`. The service picks whichever exists.
+  - The frient meter logs power as `energy_power`, not `measure_power`. The service reads `measure_power`, then `energy_power` (a missing log throws), and remembers the one that worked per device. Don't go back to `insights.getLogs()`: it lists every log on the Homey.
 - The meter is a frient EMIZB-141 ("Electricity Meter", id `3450f8d3-…`). It reports `measure_power` about every 10 s, and Homey doesn't re-emit unchanged values.
 - Widget `devices` setting (`type: global, singular, filter capabilities measure_power`); read it with `Homey.getDeviceIds()`.
 - Widget preview images are 1024×1024. App images are 250×175, 500×350 and 1000×700.

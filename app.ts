@@ -1,5 +1,6 @@
 import Homey from 'homey';
 import Diagnostics from './lib/Diagnostics.js';
+import { getAppApi } from './lib/appApi.js';
 import ElectricityService from './lib/ElectricityService.js';
 import QuickActionService from './lib/QuickActionService.js';
 import ThermostatService from './lib/ThermostatService.js';
@@ -16,6 +17,9 @@ export default class WidgetkeeperApp extends Homey.App {
     const log = this.log.bind(this);
     this.electricity = new ElectricityService(this.homey, log);
     this.electricity.start();
+    // Connect to Homey's API and fetch the prices now, not when the first widget asks.
+    getAppApi(this.homey).catch(err => this.log('Could not connect to the Homey API', err));
+    this.electricity.warmUp();
     this.thermostat = new ThermostatService(this.homey, log);
     this.thermostat.start();
     this.registerThermostatSettings();

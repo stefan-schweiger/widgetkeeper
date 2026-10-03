@@ -130,7 +130,24 @@ describe('meter', () => {
       ],
     });
     await service.getSnapshot('m1');
+    const read = (id: string) => api.insights.getLogEntries.mock.calls.filter(([a]) => a.id === id).map(([a]) => a.resolution);
+    expect(read('homey:device:m1:energy_power').sort()).toEqual(['last24Hours', 'lastHour']);
+    expect(api.insights.getLogs).not.toHaveBeenCalled();
+
+    // Remembered after the meter is dropped: only energy_power is read again.
+    service.start();
+    await vi.advanceTimersByTimeAsync(11 * MINUTE);
+    api.insights.getLogEntries.mockClear();
+    await service.getSnapshot('m1');
     expect(api.insights.getLogEntries.mock.calls.every(([a]) => a.id === 'homey:device:m1:energy_power')).toBe(true);
+    await service.stop();
+  });
+
+  it('shares one fetch per price day between concurrent snapshots', async () => {
+    const { service, api } = setup();
+    await Promise.all([service.getSnapshot(null), service.getSnapshot(null)]);
+    expect(fetchesFor(api, '2026-01-15')).toBe(1);
+    expect(api.energy.getCurrency).toHaveBeenCalledTimes(1);
   });
 
   it('reports a device without measure_power as a meter error, and still returns prices', async () => {

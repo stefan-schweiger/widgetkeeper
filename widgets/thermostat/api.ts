@@ -1,5 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
+import { describeWidgetPerf } from '../../lib/Timings.js';
 import type { CapValue } from '../../lib/ThermostatService.js';
 
 type Homey = App['homey'];
@@ -11,6 +12,8 @@ export default {
   }) {
     const app = homey.app as WidgetkeeperApp;
     if (!query.deviceId) throw new Error('Missing deviceId');
+    const perf = describeWidgetPerf(query.perf);
+    if (perf) app.log(`Thermostat widget: ${perf}`);
     try {
       return await app.thermostat.getState(query.deviceId);
     } catch (err) {

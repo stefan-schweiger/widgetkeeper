@@ -77,6 +77,19 @@ describe('icons', () => {
     expect(decode(a)).toBe('<svg>https://my.homey.app/img/devices/christmas-lights.svg</svg>');
     expect(decode(b)).toBe('<svg>http://homey/api/icon/b</svg>');
   });
+
+  it('fetches each icon once, even for a new service', async () => {
+    const fetch = vi.fn(async (url: string) => ({ ok: true, text: async () => `<svg>${url}</svg>` }));
+    vi.stubGlobal('fetch', fetch);
+    const devices = () => [
+      Object.assign(lamp(), { iconObj: { url: '/api/icon/shared' } }),
+      Object.assign(lock(), { iconObj: { url: '/api/icon/shared' } }),
+    ];
+    const homey = () => fakeHomey(Object.assign(fakeApi({ devices: devices() }), { baseUrl: 'http://homey' }));
+    await new QuickActionService(homey(), () => {}).getState(['lamp', 'lock']);
+    await new QuickActionService(homey(), () => {}).getState(['lamp']);
+    expect(fetch.mock.calls.filter(([url]) => url === 'http://homey/api/icon/shared')).toHaveLength(1);
+  });
 });
 
 describe('tracking', () => {

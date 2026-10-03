@@ -11,7 +11,21 @@
   <script>
     const REFRESH_MS = 5 * 60e3; // usage history resolution; also keeps the app's meter subscription alive
 
+    // Load marks for the app's diagnostics log, sent with the first request only.
+    let perf = '';
+    function loadMarks(sdkAt) {
+      const nav = performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
+      return [Math.round(performance.timeOrigin), nav ? Math.round(nav.responseEnd) : -1,
+        Math.round(sdkAt), Math.round(performance.now())].join(',');
+    }
+    function perfParam() {
+      const p = perf ? `&perf=${perf}` : '';
+      perf = '';
+      return p;
+    }
+
     function onHomeyReady(Homey) {
+      const sdkAt = performance.now();
       const settings = Homey.getSettings() || {};
       let deviceId = null;
       let readySent = false;
@@ -38,7 +52,7 @@
 
       async function load() {
         try {
-          const snapshot = await Homey.api('GET', `/snapshot?deviceId=${encodeURIComponent(deviceId || '')}`);
+          const snapshot = await Homey.api('GET', `/snapshot?deviceId=${encodeURIComponent(deviceId || '')}${perfParam()}`);
           // Without readings (or with a meter error) the prices still show; the widget notes the meter.
           if (!deviceId) widget.setMessage(widget.t('selectMeter'));
           else widget.setData(snapshot);
@@ -70,7 +84,7 @@
       Promise.resolve(typeof Homey.getDeviceIds === 'function' ? Homey.getDeviceIds() : [])
         .then((ids) => { deviceId = (ids && ids[0]) || null; })
         .catch(() => { deviceId = null; })
-        .then(load);
+        .then(() => { perf = loadMarks(sdkAt); load(); });
     }
   </script>
 </body>
