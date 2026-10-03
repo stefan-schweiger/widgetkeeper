@@ -195,6 +195,26 @@
       "value": false
     },
     {
+      "id": "smooth",
+      "type": "checkbox",
+      "title": {
+        "en": "Smooth chart lines",
+        "nl": "Vloeiende grafieklijnen",
+        "de": "Geglättete Diagrammlinien",
+        "fr": "Lisser les courbes",
+        "it": "Linee del grafico smussate",
+        "sv": "Utjämnade diagramlinjer",
+        "no": "Glatte diagramlinjer",
+        "es": "Suavizar las líneas del gráfico",
+        "da": "Udglattede graflinjer",
+        "ru": "Сглаживать линии графиков",
+        "pl": "Wygładzone linie wykresów",
+        "ko": "차트 선 부드럽게",
+        "ar": "تنعيم خطوط المخطط"
+      },
+      "value": false
+    },
+    {
       "id": "nextLow",
       "type": "dropdown",
       "title": {

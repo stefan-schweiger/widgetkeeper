@@ -33,6 +33,7 @@ Tap or drag on a chart (or hover with a mouse) to see the exact value at any mom
 | Power meter | Any device that reports power |
 | Live power window | 30 seconds, 1, 5, 10 or 30 minutes, or 1 hour |
 | Show usage history | On / off, and optionally as a separate chart |
+| Smooth chart lines | On / off: softer live and usage lines and rounded price steps |
 | Show lowest price | Off, next 12 hours, next 24 hours, or both |
 
 ## Thermostat Shortcuts

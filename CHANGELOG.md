@@ -2,6 +2,11 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 0.4.1
+
+### Electricity Overview
+- New setting, *Smooth chart lines*: the live power and usage lines are drawn as smooth curves that show the trend rather than every flicker, and the price steps get rounded corners. Off by default.
+
 ## 0.4.0
 
 ### New: Sensor Alarms

@@ -147,6 +147,35 @@ describe('usage', () => {
   });
 });
 
+describe('smooth lines', () => {
+  const usage = Array.from({ length: 24 * 12 }, (_, i) => ({ t: HOUR_START - 24 * HOUR + i * 5 * MIN, w: 200 + (i % 7) * 50 }));
+  const live = Array.from({ length: 60 }, (_, i) => ({ t: NOW - 10 * MIN + i * 10e3, w: i % 2 ? 300 : 900 }));
+  const d = (root: HTMLElement, sel: string) => root.querySelector(sel)!.getAttribute('d')!;
+  const dotY = (root: HTMLElement, kind: string) => Number(root.querySelector(`.dot-core.${kind}`)!.getAttribute('cy'));
+
+  it('draws straight lines by default', () => {
+    const { root } = widget(snapshot({ live, usage }, { 26: 3 }), { separateUsage: true });
+    for (const sel of ['.live-line', '.usage-line', '.price-line']) expect(d(root, sel)).not.toMatch(/[CQ]/);
+  });
+
+  it('curves the live and usage lines and rounds the price steps', () => {
+    const { root } = widget(snapshot({ live, usage }, { 26: 3 }), { separateUsage: true, smooth: true });
+    expect(d(root, '.live-line')).toMatch(/^M[\d.]+ [\d.]+C/);
+    expect(d(root, '.usage-line')).toMatch(/^M[\d.]+ [\d.]+C/);
+    expect(d(root, '.price-line')).toContain('Q');
+    expect(root.innerHTML).not.toContain('NaN');
+  });
+
+  it('calms an alternating trace and keeps the live dot on the smoothed line', () => {
+    // The y of each point the line passes through: the M, then the end of each C or L.
+    const ys = (root: HTMLElement) => d(root, '.live-line').slice(1).split(/[CL]/).map(s => Number(s.trim().split(' ').at(-1)));
+    const plain = widget(snapshot({ live })).root, smooth = widget(snapshot({ live }), { smooth: true }).root;
+    const range = (v: number[]) => Math.max(...v.slice(10, -10)) - Math.min(...v.slice(10, -10));
+    expect(range(ys(smooth))).toBeLessThan(range(ys(plain)) / 4);
+    expect(dotY(smooth, 'live')).toBe(ys(smooth).at(-1));
+  });
+});
+
 it('claims touches on the charts, so the dashboard does not scroll and cancel the scrub', () => {
   const { root } = widget(snapshot());
   for (const svg of root.querySelectorAll('svg')) {

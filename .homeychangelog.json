@@ -61,5 +61,20 @@
     "pl": "Nowy widżet: Alarmy czujników, kafelki, które pokazują, czy czujnik ma alarm, i zmieniają kolor na czerwony, gdy go ma. Szybkie akcje urządzeń wykrywają teraz urządzenia o zmienionej nazwie i usunięte oraz zachowują kafelki, gdy odświeżenie się nie powiedzie.",
     "ko": "새 위젯: 센서 알람. 센서에 알람이 있는지 보여 주고 알람이 있으면 빨간색으로 바뀌는 타일입니다. 기기 빠른 실행은 이제 이름이 바뀌거나 삭제된 기기를 반영하고, 새로 고침에 실패해도 타일을 유지합니다.",
     "ar": "أداة جديدة: إنذارات المستشعرات، بلاطات تُظهر ما إذا كان لدى المستشعر إنذار وتتحول إلى الأحمر عند وجوده. أصبحت الإجراءات السريعة للأجهزة تلتقط الأجهزة المعاد تسميتها والمحذوفة، وتحتفظ بالبلاطات عند فشل التحديث."
+  },
+  "0.4.1": {
+    "en": "Electricity Overview: a new setting, Smooth chart lines, draws the live power and usage as smooth curves and rounds the price steps.",
+    "nl": "Elektriciteitsoverzicht: een nieuwe instelling, Vloeiende grafieklijnen, tekent live vermogen en verbruik als vloeiende curves en rondt de prijstreden af.",
+    "de": "Stromübersicht: Die neue Einstellung „Geglättete Diagrammlinien“ zeichnet Live-Leistung und Verbrauch als glatte Kurven und rundet die Preisstufen ab.",
+    "fr": "Aperçu de l'électricité : un nouveau réglage, Lisser les courbes, dessine la puissance en direct et la consommation en courbes lisses et arrondit les paliers de prix.",
+    "it": "Panoramica elettricità: una nuova impostazione, Linee del grafico smussate, disegna potenza in tempo reale e consumi come curve morbide e arrotonda i gradini del prezzo.",
+    "sv": "Elöversikt: en ny inställning, Utjämnade diagramlinjer, ritar live-effekt och förbrukning som mjuka kurvor och rundar av prisstegen.",
+    "no": "Strømoversikt: en ny innstilling, Glatte diagramlinjer, tegner live-effekt og forbruk som glatte kurver og runder av pristrinnene.",
+    "es": "Resumen de electricidad: un nuevo ajuste, Suavizar las líneas del gráfico, dibuja la potencia en directo y el consumo como curvas suaves y redondea los escalones de precio.",
+    "da": "Strømoverblik: en ny indstilling, Udglattede graflinjer, tegner live-effekt og forbrug som bløde kurver og runder pristrinene af.",
+    "ru": "Обзор электроэнергии: новая настройка «Сглаживать линии графиков» рисует текущую мощность и потребление плавными кривыми и скругляет ступени цены.",
+    "pl": "Przegląd energii: nowe ustawienie Wygładzone linie wykresów rysuje moc na żywo i zużycie jako gładkie krzywe i zaokrągla stopnie ceny.",
+    "ko": "전기 개요: 새 설정 \"차트 선 부드럽게\"는 실시간 전력과 사용량을 부드러운 곡선으로 그리고 가격 계단의 모서리를 둥글게 합니다.",
+    "ar": "نظرة عامة على الكهرباء: إعداد جديد، تنعيم خطوط المخطط، يرسم القدرة المباشرة والاستهلاك كمنحنيات ناعمة ويدوّر درجات السعر."
   }
 }

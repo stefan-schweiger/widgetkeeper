@@ -139,7 +139,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - Arabic keeps the LTR layout. The text elements are `dir="auto"` with `text-align: left`.
 
 ## Widget settings
-`liveWindow` (60/30/10/5/1/0.5 min, default 10) · `showUsage` · `separateUsage` (usage as its own chart above price) · `nextLow` (none/12/24/both, default 12; replaced the `showNextLow` checkbox, which `index.html` still honours as a fallback).
+`liveWindow` (60/30/10/5/1/0.5 min, default 10) · `showUsage` · `separateUsage` (usage as its own chart above price) · `smooth` (off by default: the live and usage traces get six [1 2 1]/4 averaging passes drawn as a monotone cubic, so spikes come out lower; the price steps get 5 px rounded corners; the dots sit on the smoothed line, the header values stay real) · `nextLow` (none/12/24/both, default 12; replaced the `showNextLow` checkbox, which `index.html` still honours as a fallback).
 
 ## Design decisions that differ from the spec
 - The live window is configurable, with relative axis labels (`1h · 30m · Now`).

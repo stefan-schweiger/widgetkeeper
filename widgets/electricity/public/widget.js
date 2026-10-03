@@ -23,7 +23,9 @@
   const LABEL_PAD = 8; // y label ↔ axis
   const LABEL_MIN_GAP = 16; // min vertical distance between y labels
   const LIVE_POINTS = 120; // live chart resolution, whatever the window
-  const LIVE_KEEP = 62 * MIN; // raw readings kept client-side (longest window + margin)
+  const SMOOTH_PASSES = 6; // `smooth` setting: averaging passes over the live and usage traces
+  const STEP_RADIUS = 5; // `smooth` setting: corner radius on the price steps
+  const LIVE_KEEP =62 * MIN; // raw readings kept client-side (longest window + margin)
 
   const DEFAULT_STRINGS = {
     usingNow: 'Using now',
@@ -76,6 +78,55 @@
   function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
   function show(node, on) { node.style.display = on ? '' : 'none'; }
   function f1(n) { return Math.round(n * 10) / 10; }
+
+  /** Smoothed values for the `smooth` setting: six [1 2 1]/4 passes; the ends stay put. */
+  function smoothValues(vs) {
+    let q = vs;
+    for (let k = 0; k < SMOOTH_PASSES; k++) {
+      q = q.map((v, i) => i === 0 || i === q.length - 1 ? v : (q[i - 1] + 2 * v + q[i + 1]) / 4);
+    }
+    return q;
+  }
+
+  /**
+   * Path segments (after the M) through `pts` ([x, y] with rising x): a monotone cubic
+   * (Fritsch–Carlson, like d3's curveMonotoneX), which never overshoots between points.
+   */
+  function monotonePath(pts) {
+    const n = pts.length;
+    if (n < 3) return pts.slice(1).map(([x, y]) => `L${f1(x)} ${f1(y)}`).join('');
+    const s = [], m = [];
+    for (let i = 0; i < n - 1; i++) s.push((pts[i + 1][1] - pts[i][1]) / ((pts[i + 1][0] - pts[i][0]) || 1e-9));
+    m[0] = s[0];
+    m[n - 1] = s[n - 2];
+    for (let i = 1; i < n - 1; i++) {
+      if (s[i - 1] * s[i] <= 0) { m[i] = 0; continue; }
+      const h0 = pts[i][0] - pts[i - 1][0], h1 = pts[i + 1][0] - pts[i][0];
+      const w0 = (h0 + 2 * h1) / (3 * (h0 + h1));
+      m[i] = 1 / (w0 / s[i - 1] + (1 - w0) / s[i]);
+    }
+    let d = '';
+    for (let i = 0; i < n - 1; i++) {
+      const [x0, y0] = pts[i], [x1, y1] = pts[i + 1], h = (x1 - x0) / 3;
+      d += `C${f1(x0 + h)} ${f1(y0 + m[i] * h)} ${f1(x1 - h)} ${f1(y1 - m[i + 1] * h)} ${f1(x1)} ${f1(y1)}`;
+    }
+    return d;
+  }
+
+  /** Path segments (after the M) through the corners of a step line, rounded with radius `r`. */
+  function roundedPath(pts, r) {
+    let d = '';
+    for (let i = 1; i < pts.length; i++) {
+      const [x, y] = pts[i];
+      if (i === pts.length - 1) { d += `L${f1(x)} ${f1(y)}`; break; }
+      const [ax, ay] = pts[i - 1], [bx, by] = pts[i + 1];
+      const d0 = Math.hypot(x - ax, y - ay), d1 = Math.hypot(bx - x, by - y);
+      const rr = Math.min(r, d0 / 2, d1 / 2);
+      d += `L${f1(x - (x - ax) / d0 * rr)} ${f1(y - (y - ay) / d0 * rr)}`
+        + `Q${f1(x)} ${f1(y)} ${f1(x + (bx - x) / d1 * rr)} ${f1(y + (by - y) / d1 * rr)}`;
+    }
+    return d;
+  }
 
   /** 98.5th percentile, used to size usage scales so single spikes don't flatten the trace. */
   function p985(values) {
@@ -143,7 +194,7 @@
 
     const state = {
       data: null, // snapshot from the app; data.live holds raw readings
-      settings: { showUsage: true, nextLow: '12', separateUsage: false, liveWindow: 10 }, // nextLow: none/12/24/both
+      settings: { showUsage: true, nextLow: '12', separateUsage: false, liveWindow: 10, smooth: false }, // nextLow: none/12/24/both
       message: null,
       width: root.clientWidth || 368,
       lastHeight: 0,
@@ -340,13 +391,17 @@
       const { y } = wattScale(svg, Math.max(1, ...live.map(p => p.w)), LIVE_H, top, pw, 0);
       el('svg:path', { class: 'axis', d: `M${L} ${top - 6}V${base}H${L + pw}M${L - 6} ${base}H${L}` }, svg);
 
-      const line = 'M' + live.map((p, i) => `${f1(xs[i])} ${f1(y(p.w))}`).join('L');
+      // With `smooth`, the line (and the dot) follow the smoothed values; the header keeps the real ones.
+      const ws = state.settings.smooth ? smoothValues(live.map(p => p.w)) : live.map(p => p.w);
+      const pts = ws.map((w, i) => [xs[i], y(w)]);
+      const line = `M${f1(pts[0][0])} ${f1(pts[0][1])}` + (state.settings.smooth
+        ? monotonePath(pts) : pts.slice(1).map(([x, yy]) => `L${f1(x)} ${f1(yy)}`).join(''));
       el('svg:path', { d: `${line}L${f1(xs[xs.length - 1])} ${base}L${f1(xs[0])} ${base}Z`, fill }, svg);
       el('svg:path', { class: 'live-line', d: line }, svg);
 
       const idx = state.liveIdx == null ? live.length - 1 : Math.min(state.liveIdx, live.length - 1);
       if (state.liveIdx != null) el('svg:path', { class: 'cursor', d: `M${f1(xs[idx])} ${top}V${base}` }, svg);
-      dot(svg, xs[idx], y(live[idx].w), 'live');
+      dot(svg, pts[idx][0], pts[idx][1], 'live');
 
       const ly = base + X_LABEL_GAP;
       text(svg, L, ly, ago(m.windowMs), 'start', 'hanging');
@@ -370,21 +425,30 @@
       return selIdx;
     }
 
-    /** Usage trace path(s), broken over gaps; returns { line, area }. */
+    /**
+     * Usage trace path(s), broken over gaps; returns { line, area, yAt }, where yAt maps a
+     * 5-min index to the trace's y (the smoothed one with `smooth`), for the dots.
+     */
     function usagePaths(m, fx, y, base) {
-      const pts = [...m.usageByIdx.entries()].sort((a, b) => a[0] - b[0]);
-      let line = '', area = '', seg = '', segStart = null, prev = null;
-      const close = () => {
-        if (seg) { line += seg; area += `${seg}V${base}H${f1(fx(segStart))}Z`; }
-        seg = '';
-      };
-      for (const [j, v] of pts) {
-        if (prev == null || j !== prev + 1) { close(); segStart = j; seg = `M${f1(fx(j))} ${f1(y(v))}`; }
-        else seg += `L${f1(fx(j))} ${f1(y(v))}`;
-        prev = j;
+      const smooth = state.settings.smooth;
+      const entries = [...m.usageByIdx.entries()].sort((a, b) => a[0] - b[0]);
+      const segs = [];
+      for (const [j, v] of entries) {
+        const last = segs[segs.length - 1];
+        if (last && j === last[last.length - 1][0] + 1) last.push([j, v]); else segs.push([[j, v]]);
       }
-      close();
-      return { line, area };
+      let line = '', area = '';
+      const yAt = new Map();
+      for (const seg of segs) {
+        const vs = smooth ? smoothValues(seg.map(e => e[1])) : seg.map(e => e[1]);
+        const pts = seg.map(([j], i) => [fx(j), y(vs[i])]);
+        seg.forEach(([j], i) => yAt.set(j, pts[i][1]));
+        const d = `M${f1(pts[0][0])} ${f1(pts[0][1])}` + (smooth
+          ? monotonePath(pts) : pts.slice(1).map(([x, yy]) => `L${f1(x)} ${f1(yy)}`).join(''));
+        line += d;
+        area += `${d}V${base}H${f1(pts[0][0])}Z`;
+      }
+      return { line, area, yAt };
     }
 
     /** Separate usage chart: same 37-slot x axis as the price chart, with its own W scale. */
@@ -407,14 +471,14 @@
       slotBand(svg, sw, top, USAGE_H);
       el('svg:path', { class: 'axis', d: `M${L} ${top - 6}V${base}H${L + pw}M${L - 6} ${base}H${L}` }, svg);
 
-      const { line, area } = usagePaths(m, fx, y, base);
+      const { line, area, yAt } = usagePaths(m, fx, y, base);
       el('svg:path', { d: area, fill: gradient(svg, 'usage-stop', [[0, 0.22], [1, 0.02]]) }, svg);
       el('svg:path', { class: 'usage-line solo', d: line }, svg);
 
       // Marker at the scrubbed 5 min, else at the latest reading, like the live and price dots.
       const idx = state.fineIdx != null && m.usageByIdx.has(state.fineIdx)
         ? state.fineIdx : Math.max(-1, ...m.usageByIdx.keys());
-      if (idx >= 0) dot(svg, fx(idx), y(m.usageByIdx.get(idx)), 'usage', true);
+      if (idx >= 0) dot(svg, fx(idx), yAt.get(idx), 'usage', true);
       slotLabels(svg, slots, sw, pw, base);
     }
 
@@ -472,21 +536,27 @@
       el('svg:path', { class: 'axis', d: axis }, svg);
 
       // 4. Usage trace
-      if (showUsage) el('svg:path', { class: 'usage-line', d: usagePaths(m, fx, uy, base).line }, svg);
+      const usage = showUsage ? usagePaths(m, fx, uy, base) : null;
+      if (usage) el('svg:path', { class: 'usage-line', d: usage.line }, svg);
 
-      // 5–6. Price area + step line, broken where prices are missing
-      let line = '', area = '', seg = '', segStart = null, lastKnown = -1;
+      // 5–6. Price area + step line, broken where prices are missing. With `smooth`, the steps'
+      // corners are rounded.
+      let line = '', area = '', pts = null, lastKnown = -1;
       for (let i = 0; i <= n; i++) {
         const p = i < n ? slots[i].price : null;
         if (p != null) {
-          const yy = f1(py(p));
-          if (segStart == null) { segStart = i; seg = `M${f1(L + i * sw)} ${yy}`; } else seg += `V${yy}`;
-          seg += `H${f1(L + (i + 1) * sw)}`;
+          const yy = py(p), x0 = L + i * sw, x1 = L + (i + 1) * sw;
+          if (!pts) pts = [[x0, yy]];
+          else if (yy !== pts[pts.length - 1][1]) pts.push([x0, yy]);
+          else pts.pop(); // same price: extend the previous step
+          pts.push([x1, yy]);
           lastKnown = i;
-        } else if (segStart != null) {
+        } else if (pts) {
+          const seg = `M${f1(pts[0][0])} ${f1(pts[0][1])}` + (state.settings.smooth
+            ? roundedPath(pts, STEP_RADIUS) : pts.slice(1).map(([x, yy]) => `L${f1(x)} ${f1(yy)}`).join(''));
           line += seg;
-          area += `${seg}V${base}H${f1(L + segStart * sw)}Z`;
-          segStart = null;
+          area += `${seg}V${base}H${f1(pts[0][0])}Z`;
+          pts = null;
         }
       }
       el('svg:path', { d: area, fill }, svg);
@@ -497,8 +567,8 @@
       if (fEnd > fStart) el('svg:rect', { class: 'future', x: f1(fStart), y: top - 6, width: f1(fEnd - fStart), height: PRICE_H + 6 }, svg);
 
       // 8. Usage scrub dot
-      if (showUsage && state.fineIdx != null && m.usageByIdx.has(state.fineIdx)) {
-        el('svg:circle', { class: 'usage-dot', cx: f1(fx(state.fineIdx)), cy: f1(uy(m.usageByIdx.get(state.fineIdx))), r: 4 }, svg);
+      if (usage && state.fineIdx != null && usage.yAt.has(state.fineIdx)) {
+        el('svg:circle', { class: 'usage-dot', cx: f1(fx(state.fineIdx)), cy: f1(usage.yAt.get(state.fineIdx)), r: 4 }, svg);
       }
 
       // 9. Price dot
