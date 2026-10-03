@@ -24,7 +24,8 @@
   <script src="mock-weather.js"></script>
   <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
   <style>
-    html, body { background: #111218; }
+    /* !important: the Quick Actions stylesheet makes the page transparent (it is a transparent widget). */
+    html, body { background: #111218 !important; }
     body { width: 390px; margin: 0; padding: 20px 16px 24px; box-sizing: border-box; font-family: Roboto, sans-serif;
       display: flex; flex-direction: column; gap: 32px; }
     .shot { display: flex; flex-direction: column; gap: 12px; }
