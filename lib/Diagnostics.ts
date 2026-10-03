@@ -36,6 +36,7 @@ export default class Diagnostics {
       homeyVersion: this.homey.version,
       uptimeMinutes: Math.round((Date.now() - this.startedAt) / 60e3),
       debugLog: this.homey.settings.get(DEBUG_LOG_SETTING) === true,
+      weather: (this.homey.app as any)?.weather?.describe?.() ?? null,
     };
     try {
       const api = await getAppApi(this.homey);

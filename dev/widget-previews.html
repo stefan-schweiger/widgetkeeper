@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|weather-dark|weather-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -124,6 +124,37 @@ function quickActions(t, theme) {
   </div>`;
 }
 
+// Weather Forecast: an hour strip (icon, temperature, precipitation, wind), fading out to the right.
+function weather(t) {
+  const YELLOW = '#FFC531', cloud = t.fg === '#EDEEF0' ? '#B9BAC2' : '#AEB0B8';
+  const sun = '<circle cx="60" cy="60" r="30" fill="' + YELLOW + '"/>';
+  const cloudPath = (x, y, s) => `<path transform="translate(${x} ${y}) scale(${s})" d="M30 70a22 22 0 0 1 4-43.6A30 30 0 0 1 90 34a20 20 0 0 1 0 36Z" fill="${cloud}"/>`;
+  const drops = '<path d="M38 100l-6 14M62 100l-6 14M86 100l-6 14" stroke="' + BLUE + '" stroke-width="8" stroke-linecap="round"/>';
+  const icons = [
+    sun,
+    '<circle cx="46" cy="44" r="24" fill="' + YELLOW + '"/>' + cloudPath(14, 22, 0.95),
+    cloudPath(4, 4, 1.05) + drops,
+    cloudPath(4, 4, 1.05) + drops,
+    '<circle cx="46" cy="44" r="24" fill="' + YELLOW + '"/>' + cloudPath(14, 22, 0.95),
+  ];
+  // The widget's temperature scale (widget.css): red when warm, the text colour when mild, blue when cold.
+  const dark = t.fg === '#EDEEF0';
+  const [warm, cold] = dark ? ['#FF6B70', '#5DB2FF'] : ['#C42335', '#1A6FC4'];
+  const temps = [warm, warm, t.fg, cold, cold];
+  const rain = [false, false, true, true, false];
+  const col = (i, last) => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:22px;${last ? 'opacity:.35' : ''}">
+      ${pill(i === 0 ? 96 : 64, 26, i === 0 ? t.fg : t.muted)}
+      <svg width="120" height="120" viewBox="0 0 120 120">${icons[i]}</svg>
+      ${pill(92, 40, temps[i])}
+      ${rain[i] ? pill(100, 24, BLUE) : '<div style="height:24px"></div>'}
+      ${pill(88, 24, t.muted)}
+    </div>`;
+  return `<div class="card" style="gap:44px">
+    <div style="display:flex;gap:8px">${[0, 1, 2, 3, 4].map(i => col(i, i === 4)).join('')}</div>
+    ${pill(260, 22, t.muted)}
+  </div>`;
+}
+
 const PREVIEWS = [
   { id: 'elec-dark',    label: '1a · Electricity Overview — preview-dark.png', theme: 'dark',  render: electricity },
   { id: 'elec-light',   label: '1b · Electricity Overview — preview-light.png', theme: 'light', render: electricity },
@@ -131,6 +162,8 @@ const PREVIEWS = [
   { id: 'thermo-light', label: '1d · Thermostat Shortcuts — preview-light.png', theme: 'light', render: thermostat },
   { id: 'qa-dark',      label: '1e · Device Quick Actions — preview-dark.png',  theme: 'dark',  render: quickActions },
   { id: 'qa-light',     label: '1f · Device Quick Actions — preview-light.png', theme: 'light', render: quickActions },
+  { id: 'weather-dark',  label: '1g · Weather Forecast — preview-dark.png',      theme: 'dark',  render: weather },
+  { id: 'weather-light', label: '1h · Weather Forecast — preview-light.png',     theme: 'light', render: weather },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');

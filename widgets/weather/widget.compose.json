@@ -1,0 +1,219 @@
+{
+  "name": {
+    "en": "Weather Forecast",
+    "nl": "Weersverwachting",
+    "de": "Wettervorhersage",
+    "fr": "Prévisions météo",
+    "it": "Previsioni meteo",
+    "sv": "Väderprognos",
+    "no": "Værvarsel",
+    "es": "Previsión del tiempo",
+    "da": "Vejrudsigt",
+    "ru": "Прогноз погоды",
+    "pl": "Prognoza pogody",
+    "ko": "일기 예보",
+    "ar": "توقعات الطقس"
+  },
+  "height": 150,
+  "transparent": false,
+  "settings": [
+    {
+      "id": "density",
+      "type": "dropdown",
+      "title": {
+        "en": "Hour columns",
+        "nl": "Uurkolommen",
+        "de": "Stundenspalten",
+        "fr": "Colonnes horaires",
+        "it": "Colonne orarie",
+        "sv": "Timkolumner",
+        "no": "Timekolonner",
+        "es": "Columnas por hora",
+        "da": "Timekolonner",
+        "ru": "Столбцы часов",
+        "pl": "Kolumny godzin",
+        "ko": "시간 열",
+        "ar": "أعمدة الساعات"
+      },
+      "value": "compact",
+      "values": [
+        {
+          "id": "compact",
+          "title": {
+            "en": "Compact",
+            "nl": "Compact",
+            "de": "Kompakt",
+            "fr": "Compactes",
+            "it": "Compatte",
+            "sv": "Kompakta",
+            "no": "Kompakte",
+            "es": "Compactas",
+            "da": "Kompakte",
+            "ru": "Компактные",
+            "pl": "Kompaktowe",
+            "ko": "간단히",
+            "ar": "مضغوطة"
+          }
+        },
+        {
+          "id": "detailed",
+          "title": {
+            "en": "Detailed",
+            "nl": "Gedetailleerd",
+            "de": "Ausführlich",
+            "fr": "Détaillées",
+            "it": "Dettagliate",
+            "sv": "Detaljerade",
+            "no": "Detaljerte",
+            "es": "Detalladas",
+            "da": "Detaljerede",
+            "ru": "Подробные",
+            "pl": "Szczegółowe",
+            "ko": "자세히",
+            "ar": "مفصلة"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rows",
+      "type": "dropdown",
+      "title": {
+        "en": "Rows",
+        "nl": "Rijen",
+        "de": "Zeilen",
+        "fr": "Lignes",
+        "it": "Righe",
+        "sv": "Rader",
+        "no": "Rader",
+        "es": "Filas",
+        "da": "Rækker",
+        "ru": "Строки",
+        "pl": "Wiersze",
+        "ko": "행",
+        "ar": "الصفوف"
+      },
+      "value": "1",
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "One row",
+            "nl": "Eén rij",
+            "de": "Eine Zeile",
+            "fr": "Une ligne",
+            "it": "Una riga",
+            "sv": "En rad",
+            "no": "Én rad",
+            "es": "Una fila",
+            "da": "Én række",
+            "ru": "Одна строка",
+            "pl": "Jeden wiersz",
+            "ko": "한 행",
+            "ar": "صف واحد"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Two rows",
+            "nl": "Twee rijen",
+            "de": "Zwei Zeilen",
+            "fr": "Deux lignes",
+            "it": "Due righe",
+            "sv": "Två rader",
+            "no": "To rader",
+            "es": "Dos filas",
+            "da": "To rækker",
+            "ru": "Две строки",
+            "pl": "Dwa wiersze",
+            "ko": "두 행",
+            "ar": "صفان"
+          }
+        }
+      ]
+    },
+    {
+      "id": "step",
+      "type": "dropdown",
+      "title": {
+        "en": "Interval",
+        "nl": "Interval",
+        "de": "Intervall",
+        "fr": "Intervalle",
+        "it": "Intervallo",
+        "sv": "Intervall",
+        "no": "Intervall",
+        "es": "Intervalo",
+        "da": "Interval",
+        "ru": "Интервал",
+        "pl": "Odstęp",
+        "ko": "간격",
+        "ar": "الفاصل الزمني"
+      },
+      "value": "1",
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "Every hour",
+            "nl": "Elk uur",
+            "de": "Jede Stunde",
+            "fr": "Chaque heure",
+            "it": "Ogni ora",
+            "sv": "Varje timme",
+            "no": "Hver time",
+            "es": "Cada hora",
+            "da": "Hver time",
+            "ru": "Каждый час",
+            "pl": "Co godzinę",
+            "ko": "1시간마다",
+            "ar": "كل ساعة"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Every 2 hours (averaged)",
+            "nl": "Elke 2 uur (gemiddeld)",
+            "de": "Alle 2 Stunden (gemittelt)",
+            "fr": "Toutes les 2 heures (moyenne)",
+            "it": "Ogni 2 ore (media)",
+            "sv": "Varannan timme (medel)",
+            "no": "Annenhver time (snitt)",
+            "es": "Cada 2 horas (promedio)",
+            "da": "Hver 2. time (gennemsnit)",
+            "ru": "Каждые 2 часа (среднее)",
+            "pl": "Co 2 godziny (średnia)",
+            "ko": "2시간마다 (평균)",
+            "ar": "كل ساعتين (متوسط)"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Every 3 hours (averaged)",
+            "nl": "Elke 3 uur (gemiddeld)",
+            "de": "Alle 3 Stunden (gemittelt)",
+            "fr": "Toutes les 3 heures (moyenne)",
+            "it": "Ogni 3 ore (media)",
+            "sv": "Var tredje timme (medel)",
+            "no": "Hver tredje time (snitt)",
+            "es": "Cada 3 horas (promedio)",
+            "da": "Hver 3. time (gennemsnit)",
+            "ru": "Каждые 3 часа (среднее)",
+            "pl": "Co 3 godziny (średnia)",
+            "ko": "3시간마다 (평균)",
+            "ar": "كل 3 ساعات (متوسط)"
+          }
+        }
+      ]
+    }
+  ],
+  "api": {
+    "getForecast": {
+      "method": "GET",
+      "path": "/forecast"
+    }
+  }
+}

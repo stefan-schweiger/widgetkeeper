@@ -32,6 +32,13 @@
     "failed": "Could not change __name__.",
     "unavailable": "Unavailable"
   },
+  "weather": {
+    "now": "Now",
+    "error": "Could not load the forecast.",
+    "noLocation": "Set Homey's location to see the forecast.",
+    "today": "Today",
+    "tomorrow": "Tomorrow"
+  },
   "settings": {
     "title": "Diagnostics",
     "subtitle": "The app's recent log and device details. Copy or share the report to get help debugging.",

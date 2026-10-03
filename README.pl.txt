@@ -6,3 +6,6 @@ Dołączone widżety:
 - Przegląd energii: bieżące zużycie, ceny godzinowe i historia zużycia na jednej karcie.
 - Skróty termostatu: trzy ustawienia jednym dotknięciem dla termostatu, pompy ciepła lub klimatyzatora.
 - Szybkie akcje urządzeń: kompaktowe kafelki, które wykonują szybką akcję urządzenia, np. włączają światło lub zamykają drzwi.
+- Prognoza pogody: ikona, temperatura, wiatr i opady godzina po godzinie na najbliższe 36 godzin, z MET Norway (yr.no).
+
+Dane pogodowe: MET Norway, licencja CC BY 4.0.

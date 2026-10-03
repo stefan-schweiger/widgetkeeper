@@ -32,6 +32,13 @@
     "failed": "Kunde inte ändra __name__.",
     "unavailable": "Inte tillgänglig"
   },
+  "weather": {
+    "now": "Nu",
+    "error": "Kunde inte hämta prognosen.",
+    "noLocation": "Ange Homeys plats för att se prognosen.",
+    "today": "Idag",
+    "tomorrow": "I morgon"
+  },
   "settings": {
     "title": "Diagnostik",
     "subtitle": "Appens senaste logg och enhetsdetaljer. Kopiera eller dela rapporten för att få hjälp med felsökning.",

@@ -32,6 +32,13 @@
     "failed": "Kunne ikke ændre __name__.",
     "unavailable": "Utilgængelig"
   },
+  "weather": {
+    "now": "Nu",
+    "error": "Kunne ikke hente vejrudsigten.",
+    "noLocation": "Angiv Homeys placering for at se udsigten.",
+    "today": "I dag",
+    "tomorrow": "I morgen"
+  },
   "settings": {
     "title": "Diagnostik",
     "subtitle": "Appens seneste log og enhedsdetaljer. Kopiér eller del rapporten for at få hjælp til fejlfinding.",

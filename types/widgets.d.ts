@@ -3,5 +3,6 @@ interface Window {
   createElectricityWidget: (root: HTMLElement, opts?: object) => object;
   createThermostatWidget: (root: HTMLElement, opts?: object) => object;
   createQuickActionsWidget: (root: HTMLElement, opts?: object) => object;
+  createWeatherWidget: (root: HTMLElement, opts?: object) => object;
   thermostatPresetsFromSettings: (settings: Record<string, any>) => { values: object[] }[];
 }

@@ -1,0 +1,118 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/weather-preview.html).
+ */
+.wf {
+  --wf-card: var(--homey-background-color, #1F2029);
+  --wf-text: var(--homey-text-color, #EDEEF0);
+  --wf-muted: var(--homey-text-color-light, #9C9DA5);
+  --wf-line: var(--homey-line-color-light, rgb(255 255 255 / .08));
+  --wf-rain: var(--homey-color-blue, #2F8DF6);
+  /* Homey's type scale: only these size/line-height pairs, and the weights noted, are used natively. */
+  --wf-fs-default: var(--homey-font-size-default, 17px); --wf-lh-default: var(--homey-line-height-default, 24px);
+  /* Hour labels, precipitation, wind and the footer: a step below Homey's scale, like the electricity chart labels. */
+  --wf-fs-label: 12px; --wf-lh-label: 16px;
+  --wf-regular: var(--homey-font-weight-regular, 400);
+  --wf-medium: var(--homey-font-weight-medium, 500);
+  --wf-bold: var(--homey-font-weight-bold, 700);
+  container: wf / inline-size;
+}
+/*
+ * Columns visible at once; wider widgets show more hours. widget.js reads --wf-cols to fill the
+ * two-row pages. Detailed columns are ~60 px, compact ones ~34 px.
+ */
+.wf-detailed .wf-strip { --wf-cols: 6; }
+.wf-compact .wf-strip { --wf-cols: 10; }
+@container wf (max-width: 339px) { .wf-detailed .wf-strip { --wf-cols: 5; } .wf-compact .wf-strip { --wf-cols: 9; } }
+@container wf (max-width: 299px) { .wf-compact .wf-strip { --wf-cols: 8; } }
+@container wf (min-width: 460px) { .wf-detailed .wf-strip { --wf-cols: 8; } .wf-compact .wf-strip { --wf-cols: 13; } }
+@container wf (min-width: 620px) { .wf-detailed .wf-strip { --wf-cols: 10; } .wf-compact .wf-strip { --wf-cols: 18; } }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+
+/* Dark mode: the frame looks like Homey's native device tiles (see the thermostat widget's .tw-frame). */
+.homey-dark-mode .wf-frame, .wf-frame.homey-dark-mode {
+  background-color: #181920;
+  border-radius: 10px;
+}
+.homey-dark-mode .wf-frame::after, .wf-frame.homey-dark-mode::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.wf-frame { position: relative; }
+.homey-dark-mode body.wf-frame::after, body.wf-frame.homey-dark-mode::after { position: fixed; }
+
+.wf { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--wf-text); }
+.wf [dir="auto"] { text-align: left; }
+.wf * { box-sizing: border-box; }
+.wf [hidden] { display: none !important; }
+
+/* The strip: a native horizontal scroller. No preventDefault, so vertical swipes still scroll the dashboard. */
+.wf-strip {
+  display: grid; grid-auto-flow: column; grid-auto-columns: calc(100% / var(--wf-cols));
+  overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
+  touch-action: pan-x pan-y; scroll-snap-type: x proximity; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch; user-select: none; -webkit-user-select: none;
+}
+.wf-strip::-webkit-scrollbar { display: none; }
+.wf-strip.dragging { scroll-snap-type: none; cursor: grabbing; }
+/* Two rows: each page is the strip's full width and snaps into place a page at a time. */
+.wf-paged .wf-strip { grid-auto-columns: 100%; scroll-snap-type: x mandatory; }
+.wf-page {
+  display: grid; grid-template-columns: repeat(var(--wf-cols), minmax(0, 1fr)); align-content: start;
+  row-gap: var(--homey-su-3, 12px); scroll-snap-align: start; scroll-snap-stop: always;
+}
+.wf-paged .wf-col { scroll-snap-align: none; }
+/* A fade on the side with more hours. */
+.wf:not(.wf-paged).more-right .wf-strip { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); }
+.wf:not(.wf-paged).more-left .wf-strip { -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 24px), transparent); }
+.wf:not(.wf-paged).more-left.more-right .wf-strip {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+
+.wf-col {
+  display: flex; flex-direction: column; align-items: center; min-width: 0;
+  scroll-snap-align: start; padding: 0 2px;
+}
+/* A thin line where a new day starts. */
+.wf-col.wf-newday { box-shadow: inset 1px 0 0 var(--wf-line); }
+
+.wf-hour, .wf-precip, .wf-wind, .wf-footer, .wf-message {
+  font-size: var(--wf-fs-label); line-height: var(--wf-lh-label); font-weight: var(--wf-regular);
+}
+.wf-hour { color: var(--wf-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center !important; }
+.wf-hour.strong { color: var(--wf-text); font-weight: var(--wf-medium); }
+.wf-icon { width: 36px; height: 36px; margin: 4px 0 2px; }
+.wf-icon img { width: 100%; height: 100%; display: block; pointer-events: none; }
+.wf-temp { font-size: var(--wf-fs-default); line-height: var(--wf-lh-default); font-weight: var(--wf-bold); min-height: var(--wf-lh-default); white-space: nowrap; }
+.wf-precip { color: var(--wf-rain); min-height: var(--wf-lh-label); white-space: nowrap; }
+.wf-wind { color: var(--wf-muted); display: flex; align-items: center; gap: 2px; white-space: nowrap; min-height: var(--wf-lh-label); }
+.wf-arrow { width: 9px; height: 9px; fill: currentColor; flex-shrink: 0; }
+
+.wf-footer { color: var(--wf-muted); display: flex; justify-content: space-between; gap: 8px; }
+.wf-footer > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wf-summary { display: flex; gap: 12px; min-width: 0; }
+.wf-day { display: flex; gap: 4px; }
+.wf-range { font-weight: var(--wf-medium); }
+.wf-units { flex-shrink: 0; }
+
+/* Compact: smaller icons, and the temperature a step below Homey's 17 so "-12°" fits a ~34 px column. */
+.wf-compact .wf-col { padding: 0; }
+.wf-compact .wf-icon { width: 28px; height: 28px; margin: 2px 0 0; }
+.wf-compact .wf-temp { font-size: var(--homey-font-size-small, 14px); line-height: var(--homey-line-height-small, 20px); min-height: var(--homey-line-height-small, 20px); }
+.wf-compact .wf-wind { gap: 1px; }
+.wf-compact .wf-arrow { width: 8px; height: 8px; }
+.wf-message { color: var(--wf-muted); font-size: var(--homey-font-size-small, 14px); line-height: var(--homey-line-height-small, 20px); padding: 12px 0; }
+
+/*
+ * Temperature colours: blue for cold, the text colour around 12°, red for hot, blended by --k (0-1,
+ * set per element by widget.js). The ends pass 4.5:1 as text: the light pair on white, the dark pair
+ * on Homey's dark widget and tile backgrounds.
+ */
+.wf { --wf-cold: #1A6FC4; --wf-hot: #C42335; }
+.homey-dark-mode .wf, .wf.homey-dark-mode { --wf-cold: #5DB2FF; --wf-hot: #FF6B70; }
+.wf .cold { color: color-mix(in oklab, var(--wf-cold) calc(var(--k, 1) * 100%), var(--wf-text)); }
+.wf .warm { color: color-mix(in oklab, var(--wf-hot) calc(var(--k, 1) * 100%), var(--wf-text)); }

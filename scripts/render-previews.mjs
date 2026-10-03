@@ -15,6 +15,8 @@ const OUT = {
   'thermo-light': 'widgets/thermostat/preview-light.png',
   'qa-dark': 'widgets/quickactions/preview-dark.png',
   'qa-light': 'widgets/quickactions/preview-light.png',
+  'weather-dark': 'widgets/weather/preview-dark.png',
+  'weather-light': 'widgets/weather/preview-light.png',
 };
 
 const only = process.argv.slice(2);

@@ -32,6 +32,13 @@
     "failed": "No se pudo cambiar __name__.",
     "unavailable": "No disponible"
   },
+  "weather": {
+    "now": "Ahora",
+    "error": "No se pudo cargar la previsión.",
+    "noLocation": "Configura la ubicación de Homey.",
+    "today": "Hoy",
+    "tomorrow": "Mañana"
+  },
   "settings": {
     "title": "Diagnóstico",
     "subtitle": "El registro reciente de la app y los detalles de los dispositivos. Copia o comparte el informe para obtener ayuda con la depuración.",

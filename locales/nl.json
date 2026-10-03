@@ -32,6 +32,13 @@
     "failed": "Kon __name__ niet wijzigen.",
     "unavailable": "Niet beschikbaar"
   },
+  "weather": {
+    "now": "Nu",
+    "error": "Kon de verwachting niet laden.",
+    "noLocation": "Stel de locatie van Homey in.",
+    "today": "Vandaag",
+    "tomorrow": "Morgen"
+  },
   "settings": {
     "title": "Diagnose",
     "subtitle": "Het recente logboek van de app en apparaatdetails. Kopieer of deel het rapport om hulp te krijgen bij het oplossen van problemen.",

@@ -2,6 +2,17 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 0.3.0
+
+### New: Weather Forecast
+- The next 36 hours for your Homey's location, from MET Norway (the forecast behind yr.no).
+- Each hour shows the weather icon, temperature, precipitation and wind, with the wind's direction. Swipe sideways to see further ahead.
+- Underneath: the highest and lowest temperature for the rest of today and for tomorrow.
+- Show every hour, or every 2 or 3 hours with the hours averaged (precipitation is the total).
+- Compact columns (the default) fit 9 hours across a phone, or 18 with two rows. Detailed columns are larger, with units on every value.
+- Temperatures go from blue when it's cold, through plain text when it's mild, to red when it's hot.
+- The forecast is fetched only while a widget is on screen, and no more often than MET Norway updates it. The weather icons arrive with the forecast, so they don't pop in afterwards.
+
 ## 0.2.0
 
 ### New: Device Quick Actions

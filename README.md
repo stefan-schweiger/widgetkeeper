@@ -9,6 +9,7 @@ I built these to replace a few native Homey widgets that didn't quite behave the
 | [Electricity Overview](#electricity-overview) | Live power use, hourly electricity prices and usage history on one card |
 | [Thermostat Shortcuts](#thermostat-shortcuts) | Three one-tap presets for a thermostat, heat pump or air conditioner |
 | [Device Quick Actions](#device-quick-actions) | Compact tiles that run a device's quick action with one tap |
+| [Weather Forecast](#weather-forecast) | The next 36 hours, hour by hour, from MET Norway (yr.no) |
 
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="390">
@@ -67,6 +68,28 @@ The whole tile shows the state: it's highlighted while the device is on, locked 
 
 The quick action is the one Homey uses for the device, including one you changed in the device's settings. Devices without a quick action, such as sensors, are shown dimmed. The tiles don't react while the dashboard is in edit mode.
 
+## Weather Forecast
+<img src="docs/screenshots/weather.png" alt="Weather Forecast on a Homey dashboard" width="390">
+
+The next 36 hours for your Homey's location, hour by hour, from [MET Norway](https://www.met.no/en), the forecast behind [yr.no](https://www.yr.no). Each hour shows:
+- the weather icon
+- the temperature, blue when it's cold, plain around 12° and red when it's hot
+- the precipitation in mm, when there is any
+- the wind speed in m/s, with an arrow showing which way it blows
+
+Swipe the hours sideways to see further ahead. A thin line marks each new day. Underneath, the highest and lowest temperature for the rest of today and for tomorrow. On a phone, compact columns show 9 hours at a time, or 18 with two rows; wider widgets show more.
+
+**Settings**
+| Setting | Options |
+| --- | --- |
+| Hour columns | **Compact** (the default: more hours, with the units shown once) or **Detailed** (larger, with units on every value) |
+| Rows | **One row**, or **Two rows**, which swipe a page at a time |
+| Interval | **Every hour**, or every **2** or **3 hours**. A combined column shows the average temperature and wind and the total precipitation for those hours, with the icon of the wettest one. |
+
+The forecast needs no other setup: the widget uses the location set for your Homey (Homey app → Settings → Location).
+
+The forecast is shared by all weather widgets and only fetched while one is on screen, at most as often as MET Norway updates it. Weather data from MET Norway is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The weather icons are [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
+
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic. The widgets follow Homey's language.
 
@@ -75,6 +98,7 @@ Widgetkeeper isn't in the Homey App Store yet. For now you can install it from s
 
 ## Troubleshooting
 - **"Select a power meter" / "Select a thermostat" / "Select devices"**: open the widget's settings and pick a device.
+- **"Set Homey's location to see the forecast"**: set your Homey's location in the Homey app, under **Settings → Location**.
 - **"No electricity prices available"**: switch on dynamic prices in Homey Energy.
 - **A thermostat preset or quick action doesn't apply**: open the Homey app, go to **Apps → Widgetkeeper → Configure**, and pick the device. The page shows recent log lines and your device's capabilities. Include that report when you [open an issue](https://github.com/thomassidor/widgetkeeper/issues).
 

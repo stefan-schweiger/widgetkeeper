@@ -6,3 +6,6 @@ Inbegrepen widgets:
 - Elektriciteitsoverzicht: actueel verbruik, uurprijzen en verbruiksgeschiedenis op één kaart.
 - Thermostaatsnelkoppelingen: drie voorinstellingen met één tik voor een thermostaat, warmtepomp of airco.
 - Snelle apparaatacties: compacte tegels die de snelle actie van een apparaat uitvoeren, zoals een lamp aanzetten of een deur op slot doen.
+- Weersverwachting: icoon, temperatuur, wind en neerslag per uur voor de komende 36 uur, van MET Norway (yr.no).
+
+Weergegevens van MET Norway, onder licentie CC BY 4.0.

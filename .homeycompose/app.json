@@ -1,6 +1,6 @@
 {
   "id": "com.thomassidor.widgetkeeper",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "compatibility": ">=12.6.0",
   "sdk": 3,
   "runtime": "nodejs",
@@ -42,7 +42,8 @@
   ],
   "brandColor": "#2A1958",
   "permissions": [
-    "homey:manager:api"
+    "homey:manager:api",
+    "homey:manager:geolocation"
   ],
   "images": {
     "small": "/assets/images/small.png",

@@ -6,3 +6,6 @@ Widget inclusi:
 - Panoramica elettricità: consumo in tempo reale, prezzi orari e storico dei consumi in un'unica scheda.
 - Scorciatoie termostato: tre preimpostazioni con un tocco per termostato, pompa di calore o condizionatore.
 - Azioni rapide dispositivi: riquadri compatti che eseguono l'azione rapida di un dispositivo, come accendere una luce o chiudere una porta.
+- Previsioni meteo: icona, temperatura, vento e precipitazioni ora per ora per le prossime 36 ore, da MET Norway (yr.no).
+
+Dati meteo di MET Norway, con licenza CC BY 4.0.

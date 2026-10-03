@@ -4,6 +4,7 @@ import { getAppApi } from './lib/appApi.js';
 import ElectricityService from './lib/ElectricityService.js';
 import QuickActionService from './lib/QuickActionService.js';
 import ThermostatService from './lib/ThermostatService.js';
+import WeatherService from './lib/WeatherService.js';
 
 export default class WidgetkeeperApp extends Homey.App {
 
@@ -11,6 +12,7 @@ export default class WidgetkeeperApp extends Homey.App {
   electricity!: ElectricityService;
   thermostat!: ThermostatService;
   quickActions!: QuickActionService;
+  weather!: WeatherService;
 
   async onInit() {
     this.diagnostics = new Diagnostics(this.homey);
@@ -26,6 +28,8 @@ export default class WidgetkeeperApp extends Homey.App {
     this.registerThermostatSettings();
     this.quickActions = new QuickActionService(this.homey, log, debug);
     this.quickActions.start();
+    this.weather = new WeatherService(this.homey, log, debug);
+    this.weather.start();
     this.debug('Widgetkeeper has been initialized');
   }
 
@@ -52,6 +56,7 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.electricity?.stop();
     await this.thermostat?.stop();
     await this.quickActions?.stop();
+    await this.weather?.stop();
   }
 
   /** Autocomplete for the thermostat widget: the device, then per-button options read from it. */

@@ -32,6 +32,13 @@
     "failed": "Impossible de modifier __name__.",
     "unavailable": "Indisponible"
   },
+  "weather": {
+    "now": "Actuel",
+    "error": "Impossible de charger les prévisions.",
+    "noLocation": "Définissez l'emplacement de Homey.",
+    "today": "Aujourd'hui",
+    "tomorrow": "Demain"
+  },
   "settings": {
     "title": "Diagnostic",
     "subtitle": "Le journal récent de l'app et les détails des appareils. Copiez ou partagez le rapport pour obtenir de l'aide au débogage.",

@@ -32,6 +32,13 @@
     "failed": "Nie udało się zmienić __name__.",
     "unavailable": "Niedostępne"
   },
+  "weather": {
+    "now": "Teraz",
+    "error": "Nie udało się wczytać prognozy.",
+    "noLocation": "Ustaw lokalizację Homey.",
+    "today": "Dziś",
+    "tomorrow": "Jutro"
+  },
   "settings": {
     "title": "Diagnostyka",
     "subtitle": "Ostatni dziennik aplikacji i szczegóły urządzeń. Skopiuj lub udostępnij raport, aby uzyskać pomoc w debugowaniu.",

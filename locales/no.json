@@ -32,6 +32,13 @@
     "failed": "Kunne ikke endre __name__.",
     "unavailable": "Utilgjengelig"
   },
+  "weather": {
+    "now": "Nå",
+    "error": "Kunne ikke hente værvarselet.",
+    "noLocation": "Angi Homeys posisjon for å se varselet.",
+    "today": "I dag",
+    "tomorrow": "I morgen"
+  },
   "settings": {
     "title": "Diagnostikk",
     "subtitle": "Appens siste logg og enhetsdetaljer. Kopier eller del rapporten for å få hjelp med feilsøking.",

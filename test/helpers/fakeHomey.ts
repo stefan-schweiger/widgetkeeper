@@ -118,6 +118,8 @@ export function fakeHomey(api: ReturnType<typeof fakeApi>) {
     api: { realtime: vi.fn() },
     clock: { getTimezone: () => 'Europe/Copenhagen' },
     i18n: { getLanguage: () => 'en' },
+    geolocation: { getLatitude: () => 55.6761234, getLongitude: () => 12.5683456, on: vi.fn(), off: vi.fn() },
+    manifest: { id: 'com.thomassidor.widgetkeeper', version: '0.3.0' },
     __: () => undefined,
   } as any;
 }

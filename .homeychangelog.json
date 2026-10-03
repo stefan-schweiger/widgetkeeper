@@ -31,5 +31,20 @@
     "pl": "Nowy widżet: Szybkie akcje urządzeń, kompaktowe kafelki, które jednym dotknięciem wykonują szybką akcję urządzenia. Skróty termostatu pokazują teraz ikonę urządzenia wybraną w Homey.",
     "ko": "새 위젯: 기기 빠른 실행. 한 번 탭으로 기기의 빠른 실행을 수행하는 작은 타일입니다. 온도 조절기 바로가기에 이제 Homey에서 선택한 기기 아이콘이 표시됩니다.",
     "ar": "أداة جديدة: إجراءات سريعة للأجهزة، بلاطات صغيرة تنفّذ الإجراء السريع للجهاز بلمسة واحدة. تعرض اختصارات منظم الحرارة الآن أيقونة الجهاز التي اخترتها في Homey."
+  },
+  "0.3.0": {
+    "en": "New widget: Weather Forecast: icon, temperature, wind and precipitation hour by hour for the next 36 hours, from MET Norway (yr.no).",
+    "nl": "Nieuwe widget: Weersverwachting: icoon, temperatuur, wind en neerslag per uur voor de komende 36 uur, van MET Norway (yr.no).",
+    "de": "Neues Widget: Wettervorhersage: Symbol, Temperatur, Wind und Niederschlag Stunde für Stunde für die nächsten 36 Stunden, von MET Norway (yr.no).",
+    "fr": "Nouveau widget : Prévisions météo : icône, température, vent et précipitations heure par heure pour les 36 prochaines heures, par MET Norway (yr.no).",
+    "it": "Nuovo widget: Previsioni meteo: icona, temperatura, vento e precipitazioni ora per ora per le prossime 36 ore, da MET Norway (yr.no).",
+    "sv": "Ny widget: Väderprognos: symbol, temperatur, vind och nederbörd timme för timme för de kommande 36 timmarna, från MET Norway (yr.no).",
+    "no": "Ny widget: Værvarsel: symbol, temperatur, vind og nedbør time for time de neste 36 timene, fra MET Norway (yr.no).",
+    "es": "Nuevo widget: Previsión del tiempo: icono, temperatura, viento y precipitación hora a hora para las próximas 36 horas, de MET Norway (yr.no).",
+    "da": "Ny widget: Vejrudsigt: ikon, temperatur, vind og nedbør time for time de næste 36 timer, fra MET Norway (yr.no).",
+    "ru": "Новый виджет: Прогноз погоды: значок, температура, ветер и осадки по часам на ближайшие 36 часов от MET Norway (yr.no).",
+    "pl": "Nowy widżet: Prognoza pogody: ikona, temperatura, wiatr i opady godzina po godzinie na najbliższe 36 godzin, z MET Norway (yr.no).",
+    "ko": "새 위젯: 일기 예보: 앞으로 36시간 동안의 시간별 날씨 아이콘, 기온, 바람, 강수량 (MET Norway, yr.no 제공).",
+    "ar": "أداة جديدة: توقعات الطقس: الرمز ودرجة الحرارة والرياح والهطول ساعة بساعة للساعات الـ 36 القادمة، من MET Norway (yr.no)."
   }
 }

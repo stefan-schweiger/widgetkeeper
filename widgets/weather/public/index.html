@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="widget.css">
+  <script src="widget.js"></script>
+</head>
+<body class="homey-widget wf-frame">
+  <div id="root"></div>
+  <script>
+    // The app only refetches from MET when its forecast expires (~30 min); this picks that up.
+    const REFRESH_MS = 5 * 60e3;
+
+    // Load marks for the app's diagnostics log, sent with the first request only.
+    let perf = '';
+    function loadMarks(sdkAt) {
+      const nav = performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
+      return [Math.round(performance.timeOrigin), nav ? Math.round(nav.responseEnd) : -1,
+        Math.round(sdkAt), Math.round(performance.now())].join(',');
+    }
+    function perfParam() {
+      const p = perf ? `?perf=${perf}` : '';
+      perf = '';
+      return p;
+    }
+
+    function onHomeyReady(Homey) {
+      perf = loadMarks(performance.now());
+      const settings = Homey.getSettings() || {};
+      let readySent = false;
+
+      const widget = createWeatherWidget(document.getElementById('root'), {
+        t: (key, tokens) => Homey.__(key, tokens),
+        density: settings.density,
+        rows: settings.rows,
+        step: settings.step,
+        // The widget reports its own height; Homey needs the body's, which adds the widget padding.
+        onHeight: () => {
+          if (!readySent) return;
+          Homey.setHeight(bodyHeight());
+        },
+      });
+
+      function bodyHeight() {
+        return Math.ceil(document.body.getBoundingClientRect().height);
+      }
+
+      function ready() {
+        if (readySent) return;
+        readySent = true;
+        Homey.ready({ height: bodyHeight() });
+      }
+
+      let loaded = false;
+      async function load() {
+        try {
+          widget.setForecast(await Homey.api('GET', `/forecast${perfParam()}`));
+          loaded = true;
+        } catch (err) {
+          console.error(err);
+          // A failed refresh keeps the forecast already shown.
+          if (!loaded) widget.setMessage(widget.t('error'));
+        }
+        ready();
+      }
+
+      setInterval(load, REFRESH_MS);
+      load();
+    }
+  </script>
+</body>
+</html>

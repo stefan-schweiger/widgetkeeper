@@ -32,6 +32,13 @@
     "failed": "__name__ konnte nicht geändert werden.",
     "unavailable": "Nicht verfügbar"
   },
+  "weather": {
+    "now": "Jetzt",
+    "error": "Vorhersage nicht geladen.",
+    "noLocation": "Lege den Standort von Homey fest.",
+    "today": "Heute",
+    "tomorrow": "Morgen"
+  },
   "settings": {
     "title": "Diagnose",
     "subtitle": "Das aktuelle Protokoll der App und Gerätedetails. Kopiere oder teile den Bericht, um Hilfe bei der Fehlersuche zu bekommen.",

@@ -1,13 +1,13 @@
 # Widgetkeeper — notes for Claude
 
-Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widgets: **Electricity Overview** (id `electricity`), **Thermostat Shortcuts** (id `thermostat`) and **Device Quick Actions** (id `quickactions`). Keep the ids; renaming them would break widgets already on dashboards. Its design spec is in `temp/Homey electricity dashboard widget.zip`; `temp/` is gitignored.
+Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widgets: **Electricity Overview** (id `electricity`), **Thermostat Shortcuts** (id `thermostat`), **Device Quick Actions** (id `quickactions`) and **Weather Forecast** (id `weather`). Keep the ids; renaming them would break widgets already on dashboards. Its design spec is in `temp/Homey electricity dashboard widget.zip`; `temp/` is gitignored.
 
 ## Commands
 - Use the **project-local Homey CLI v4**: `npx homey …`. The global `homey` is an old 3.7.x.
 - `npx homey app validate --level debug`: compiles the TS and validates.
 - `npm test`: the vitest suite in `test/` (`npm run test:watch` to watch). It runs in Europe/Copenhagen. Service tests mock `homey-api` with fakes from `test/helpers/fakeHomey.ts`; widget tests run the unchanged `public/widget.js` in happy-dom (`test/helpers/loadWidget.ts`). CI (`.github/workflows/ci.yml`) runs typecheck, the tests and validate.
 - `npm run diagnostics`: the app's diagnostics report and log from the active Homey (see Diagnostics below).
-- `npm run typecheck`: `tsc` for the app, plus a basic (non-strict) `checkJs` pass over both `widgets/*/public/widget.js` (`tsconfig.widgets.json`; the window globals are declared in `types/widgets.d.ts`). TypeScript 7 defaults to strict, so that config sets `strict: false` explicitly.
+- `npm run typecheck`: `tsc` for the app, plus a basic (non-strict) `checkJs` pass over every `widgets/*/public/widget.js` (`tsconfig.widgets.json`; the window globals are declared in `types/widgets.d.ts`). TypeScript 7 defaults to strict, so that config sets `strict: false` explicitly.
 - `npx homey app install`: builds and installs on the active Homey (firmware 13.x). No Docker needed.
 - `npx homey app run`: live logs and hot reload of the widget files. It needs Docker Desktop running, which usually isn't.
 - `npm run app-images`: renders the three app store PNGs from `dev/app-images.html` (the hero photo `dev/hero.webp`, cropped to 10:7) with headless Edge.
@@ -17,7 +17,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
   - Serve the repo root (`python -m http.server 8765`) and open `/dev/preview.html`.
   - `?snap=/temp/real-snapshot.json` loads a real captured snapshot.
   - `#live=0.4` / `#price=0.3` simulates a scrub.
-  - `dev/thermostat-preview.html` and `dev/quickactions-preview.html` do the same for the other widgets.
+  - `dev/thermostat-preview.html`, `dev/quickactions-preview.html` and `dev/weather-preview.html` do the same for the other widgets. The weather page takes `?snap=/temp/met-compact.json` (a real MET response); its mock is `dev/mock-weather.js`.
   - `?lang=de` (either page) uses `locales/de.json`, through `dev/i18n.js`.
   - Headless screenshots: `msedge --headless=new --screenshot=… --user-data-dir=<fresh dir>`. A fresh profile avoids a stale cached CSS.
 
@@ -68,9 +68,41 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - Realtime: `quickactions:state` `{deviceId, capabilityId, value}`. Tracking is dropped after 10 min without `/state`; widgets re-fetch every 5 min.
 - The diagnostics report lists every device with its quick action, override, type and icon.
 
+## Weather Forecast widget
+- The next 36 hours for the Homey's location (`homey.geolocation`, which needs the `homey:manager:geolocation` permission), from MET Norway's Locationforecast 2.0 `compact` (the data behind yr.no).
+- Settings: `density` (`compact`, the default, or `detailed`), `rows` (`1` or `2`) and `step` (`1`, `2` or `3` hours per column). They're passed to `createWeatherWidget` as `opts.density`, `opts.rows` and `opts.step`.
+- With `step` 2 or 3, the widget combines the hours (`group()`/`combine()` in `widget.js`) into columns on the clock (00, 03, 06 …); the first one runs from the current hour to the next boundary.
+  - A combined column has the average temperature and wind speed, the summed precipitation (a total is more useful than an average), the wind direction averaged as vectors weighted by speed, and the icon of the wettest hour (the first hour's when dry).
+  - The footer's day ranges always use the raw hours. `lib/WeatherService.ts` owns it.
+- MET's terms, which the service follows:
+  - An identifying `User-Agent` (`Widgetkeeper/<version> github.com/thomassidor/widgetkeeper`); without one MET answers 403.
+  - At most 4 decimals in the coordinates. We round to 3.
+  - No refetch before `Expires` (about 30 min), then revalidate with `If-Modified-Since` (a `304` only moves the expiry on).
+  - The limits count the traffic from every installation, so it only fetches while a widget asks. The cache is dropped after 10 min without a request or when the Homey's location changes.
+  - The data is CC BY 4.0. The credit is in the store text (the last line of each `README.<lang>.txt`) and in README.md, not in the widget, whose footer has the day ranges instead.
+- A failed refetch keeps serving the previous forecast and retries after 5 min. The first fetch failing is an error.
+- Endpoint: `GET /forecast` returns up to 48 hourly entries from the current hour, `{t, symbol, temp, wind, windDir, precip}`, plus `updatedAt` and `language`, or `noLocation: true`. The widget shows 36, and drops passed hours on the hour itself.
+- Fields used: `instant.details.air_temperature`, `wind_speed` and `wind_from_direction`, and `next_1_hours`'s `symbol_code` and `precipitation_amount`. Compact is hourly for about 60 h, then 6-hourly (no `next_1_hours`).
+- Icons: MET's own set (`metno/weathericons`, MIT), vendored in `widgets/weather/public/icons/`. The file names are the symbol codes.
+  - `/forecast` also sends `icons`: the SVG text of each symbol in use, read from those files once per app run (a few KB each, usually 3–10 symbols). Otherwise each icon would be its own request through Homey (~0.4 s).
+  - The widget turns them into data URLs, falling back to `icons/<symbol>.svg`.
+  - The widget skips rebuilding the strip when a refresh brings the same hours, the same hour and the same column count. MET kept the `lightssleet…`/`lightssnow…` typos in both.
+- Layout: a strip of hour columns: the hour label, the icon, the temperature, then precipitation and wind at 12/16. Columns are `100% / --wf-cols`, set by container queries.
+  - Detailed: a 36 px icon and the temperature at 17 bold, with units on every value. 6 columns by default, 5 below 340 px (phones), 8 from 460 px, 10 from 620 px.
+  - Compact: a 28 px icon and the temperature at 14 bold (a deliberate exception to Homey's scale, so `-12°` fits about 34 px). Plain numbers, with `mm · m/s` once in the footer. 10 columns by default, 9 below 340 px, 8 below 300 px, 13 from 460 px, 18 from 620 px.
+  - Two rows: pages (`.wf-page`) of 2 × `--wf-cols` hours, each the strip's full width, with mandatory scroll snap. `widget.js` reads `--wf-cols` from the computed style, falling back to 9/5, and re-renders through a `ResizeObserver` when it changes. The edge fades are off in this mode.
+  - Temperature colour runs blue → the text colour → red. `colorTemp()` in `widget.js` sets a `cold`/`warm` class and `--k` (0–1): neutral at 12°, full blue at -5°, full red at 28°. CSS blends with `color-mix(in oklab, …)`. It's not white, so it still reads in light mode.
+    - The ends have a dark pair (under `.homey-dark-mode`) and a darker light pair; each passes 4.5:1 as text.
+    - The user rejected a red/blue split at 0° ("red for 10° is weird") and then a rainbow scale ("green is weird"). Precipitation is blank at 0. The wind arrow points to where the wind blows (`wind_from_direction` + 180°).
+  - The first column is "Now", and midnight shows the weekday in Homey's language, with a divider line.
+- Scrolling is native `overflow-x` with no `preventDefault`, so vertical swipes still scroll the dashboard. A mouse drags it.
+  - Untested on Android, where the dashboard steals touches. If it cancels the horizontal scroll there, add ‹ › paging buttons (taps work).
+- Footer: today's and tomorrow's high and low (`Today ↑10° ↓4°  Tomorrow ↑8° ↓-2°`, coloured like the temperatures), worked out in the widget from all 48 hours in the device's local days. Today only counts from the current hour, because the forecast starts there. In compact, `mm · m/s` sits on the right.
+- The dark frame (`.wf-frame`) copies the thermostat's `.tw-frame`.
+
 ## Diagnostics (no Docker needed)
 - **Read it yourself with `npm run diagnostics`** (`scripts/diagnostics.mjs`); don't ask the user to paste it. It calls the app's `GET /diagnostics` on the active Homey through `homey api raw`, which uses the CLI's login. Options: `-- --device <id|name>`, `--devices`, `--json`, `--debug on|off`. Right after an install the app may still be starting, so retry.
-- `lib/Diagnostics.ts` keeps the last 500 log lines. `app.log`/`app.error` are overridden to feed it.
+- `lib/Diagnostics.ts` keeps the last 500 log lines. The report's `weather` section has the rounded location, the last fetch, `Expires`, and the last status and error. `app.log`/`app.error` are overridden to feed it.
 - Errors and warnings always go to `log`. Routine detail (tracking, timings, applies, widget load marks) goes to `debug`, which logs only while the `debugLog` app setting is on (`npm run diagnostics -- --debug on`; off by default, and the report shows it). Services take `debug` as an optional third constructor argument.
 - Load timings (`lib/Timings.ts`, debug): each snapshot/state request logs its total and per-step ms. A widget's first request also sends `perf=` (frame start, HTML, SDK ready, request), logged as `<Widget> widget: frame started … SDK ready 1100 ms`.
 - Measured on 2026-10-03 (phone app): Homey creates all frames at once, the HTML arrives ~0.3 s in, the SDK is ready ~1.0–1.1 s in, and each request takes ~0.4 s each way through Homey. The app answers in 0–30 ms when warm, ~60–150 ms after the 10-min idle drop, ~0.2–0.4 s right after an app restart. So most of a widget's load time is Homey's, not ours.
