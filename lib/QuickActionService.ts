@@ -77,7 +77,7 @@ export default class QuickActionService {
     const tm = new Timings();
     const out = await Promise.all(deviceIds.map(async (id): Promise<QuickActionDevice> => {
       try {
-        const t = await this.ensureTracked(id, tm);
+        const t = await this.current(id, tm);
         t.lastRequested = Date.now();
         return { id, name: t.name, icon: t.icon, quickAction: t.quickAction && { ...t.quickAction } };
       } catch (err) {
@@ -103,6 +103,37 @@ export default class QuickActionService {
   }
 
   // ---------------------------------------------------------------- live state
+
+  /**
+   * The tracked entry, re-read from the device when it was already tracked: an open widget keeps the
+   * entry alive indefinitely, so a rename, a new quick action or a deleted device would otherwise never show.
+   */
+  private async current(deviceId: string, tm: Timings): Promise<Tracked> {
+    const t = this.tracked.get(deviceId);
+    if (!t) return this.ensureTracked(deviceId, tm);
+    const api = await getAppApi(this.homey);
+    let device: any;
+    try {
+      device = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId, $cache: false }));
+    } catch (err) {
+      this.dispose(t);
+      throw err;
+    }
+    const id = quickActionId(device);
+    if (id !== (t.quickAction?.capabilityId ?? null)) {
+      this.debug(`Quick action of ${device.name} changed: ${t.quickAction?.capabilityId ?? 'none'} → ${id ?? 'none'}`);
+      this.dispose(t);
+      return this.ensureTracked(deviceId, tm);
+    }
+    t.name = device.name;
+    t.icon = await tm.time('icons', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
+    if (id && t.quickAction) {
+      const cap = device.capabilitiesObj[id];
+      t.quickAction.value = cap.value ?? null;
+      t.quickAction.actionable = isActionable(cap);
+    }
+    return t;
+  }
 
   private ensureTracked(deviceId: string, tm: Timings): Promise<Tracked> {
     const existing = this.tracked.get(deviceId);
@@ -158,7 +189,7 @@ export default class QuickActionService {
 
   private dispose(t: Tracked) {
     try { t.instance?.destroy(); } catch (err) { /* ignore */ }
-    this.tracked.delete(t.deviceId);
+    if (this.tracked.get(t.deviceId) === t) this.tracked.delete(t.deviceId);
     this.debug(`Stopped tracking ${t.name}`);
   }
 

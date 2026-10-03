@@ -110,6 +110,29 @@ describe('tracking', () => {
     expect(devices[0].makeCapabilityInstance).toHaveBeenCalledWith('onoff', expect.any(Function));
   });
 
+  it('picks up a renamed device and a changed quick action on the next request', async () => {
+    const { service, devices } = setup();
+    const [lampDev] = devices;
+    await service.getState(['lamp']);
+    lampDev.name = 'Desk lamp';
+    lampDev.ui.quickActionOverride = '.none';
+    expect(await service.getState(['lamp'])).toEqual([{ id: 'lamp', name: 'Desk lamp', icon: null, quickAction: null }]);
+    expect(lampDev.listenerCount('onoff')).toBe(0);
+    lampDev.ui.quickActionOverride = 'onoff';
+    const [s] = await service.getState(['lamp']);
+    expect(s).toMatchObject({ quickAction: { capabilityId: 'onoff' } });
+    expect(lampDev.listenerCount('onoff')).toBe(1);
+  });
+
+  it('marks a device deleted while tracked as missing, and stops tracking it', async () => {
+    const { service, devices } = setup();
+    const [lampDev] = devices;
+    await service.getState(['lamp']);
+    devices.splice(0, 1);
+    expect(await service.getState(['lamp'])).toEqual([{ id: 'lamp', missing: true }]);
+    expect(lampDev.listenerCount('onoff')).toBe(0);
+  });
+
   it('stops tracking after 10 minutes without a request', async () => {
     const { service, devices } = setup();
     service.start();

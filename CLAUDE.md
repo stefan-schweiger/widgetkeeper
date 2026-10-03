@@ -66,6 +66,8 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - Icons: Homey's standard capabilities have `iconObj: null` (the Homey app draws those icons), so the widget has built-in power/padlock/play/button glyphs. A custom capability's own icon (e.g. the Roborock's `clean_full`) is used when present.
 - Endpoints: `GET /state?deviceIds=a,b` (one entry per id, in order; deleted devices are `{id, missing: true}`) and `POST /trigger {deviceId, value}`, which only ever sets the quick-action capability.
 - Realtime: `quickactions:state` `{deviceId, capabilityId, value}`. Tracking is dropped after 10 min without `/state`; widgets re-fetch every 5 min.
+- `/state` re-reads an already-tracked device (`current()`), so a rename, a changed quick action (re-tracked) or a deleted device (`missing`) shows on the next refresh. Without that an open widget kept the first read forever.
+- A failed 5-min refresh keeps the tiles and shows the error as a transient message; only a failed first load replaces the tiles with it.
 - The diagnostics report lists every device with its quick action, override, type and icon.
 
 ## Weather Forecast widget
