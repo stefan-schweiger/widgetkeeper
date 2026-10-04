@@ -25,7 +25,29 @@
       return p;
     }
 
+    // Homey's Android app already scales its type tokens by the system font scale (calc(1.1 * 14px)), and
+    // the WebView's text zoom then scales all text again, so token text came out 1.21x where the native tiles
+    // are 1.1x. Divide the tokens by the zoom (measured: a 100px font computes as 110px), so they render at
+    // Homey's size. Fixed px sizes keep the zoom once, like the native text.
+    function undoTextZoom() {
+      const probe = document.createElement('span');
+      probe.style.cssText = 'position:absolute;visibility:hidden;font-size:100px';
+      document.body.appendChild(probe);
+      const zoom = parseFloat(getComputedStyle(probe).fontSize) / 100;
+      probe.remove();
+      if (!(zoom > 0) || Math.abs(zoom - 1) < 0.01) return;
+      const cs = getComputedStyle(document.body);
+      for (const size of ['small', 'default', 'large', 'xlarge', 'xxlarge']) {
+        for (const prop of ['font-size', 'line-height']) {
+          const name = `--homey-${prop}-${size}`;
+          const v = cs.getPropertyValue(name).trim();
+          if (v) document.body.style.setProperty(name, `calc((${v}) / ${zoom})`);
+        }
+      }
+    }
+
     function onHomeyReady(Homey) {
+      undoTextZoom();
       perf = loadMarks(performance.now());
       const settings = Homey.getSettings() || {};
       let readySent = false;

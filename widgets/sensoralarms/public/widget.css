@@ -34,10 +34,11 @@ html, body { background: transparent !important; }
 /*
  * Like the native temperature tiles (measured from phone screenshots at 3x): 52px high, a 24px icon, then
  * the name over the alarm text, both 14px on an 18px line (tighter than Homey's 14/20).
+ * The text sits 1px below centre (7/5 padding), as the native name does.
  */
 .sa-tile {
   position: relative; display: flex; align-items: center; gap: 13px; min-width: 0; height: 52px;
-  padding: 6px 12px 6px 10px; background: var(--sa-tile); border-radius: var(--sa-radius);
+  padding: 7px 12px 5px 10px; background: var(--sa-tile); border-radius: var(--sa-radius);
   transition: background-color .2s;
 }
 .sa-icon {

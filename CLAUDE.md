@@ -90,8 +90,8 @@ How this project uses it:
 ## Device Quick Actions widget
 - Half-height tiles for several devices (the `devices` setting with `singular: false`, read with `Homey.getDeviceIds()`), 3 per row. `lib/QuickActionService.ts` owns it. The widget is `transparent`, so each tile sits on the dashboard like a native one.
 - The whole tile triggers the device's quick action and shows its state. The `activeStyle` setting picks how: `tint` (default; a blue-tinted tile with blue icons) or `lighter` (a lighter grey tile). There's no circle around the quick-action icon.
-- The name is 14/20 regular, like the native device tiles' name (measured from a phone screenshot).
-- Layout: 10 px padding and an 8 px gap between the icon row and the name (72 px tiles). The device icon (24 px) is masked `left center` so narrow icons line up with the name; the action icon (20 px) is masked `right center`.
+- The name is 14/20 bold, like the native temperature tiles' name and Sensor Alarms (measured from a phone screenshot).
+- Layout: 8/10 px padding and a 6 px gap between the icon row and the name (62 px tiles; the user asked for less tall). The device icon (20 px) is masked `left center` so narrow icons line up with the name; the action icon (18 px) is masked `right center`.
 - The built-in glyphs' viewBoxes are cropped to their ink, with a 1.2 stroke, so they fill their box and match the library icons' ~1 px line.
 - The quick action is `ui.quickActionOverride` (the user's choice; `.none` turns it off) or else `ui.quickAction`. Locks only have the override (`locked`).
 - Taps come from the touch events (a touch ending within 10 px of where it started), with `click` kept for mouse and keyboard. A drag is left alone, so the dashboard still scrolls. Tiles do nothing in the dashboard's edit mode.
@@ -105,7 +105,7 @@ How this project uses it:
 
 ## Sensor Alarms widget
 - Tiles for several devices (the `devices` setting, `singular: false`, no filter so custom alarm capabilities count), 2 per row, in the style of Homey's native temperature tiles. `lib/SensorAlarmService.ts` owns it. The widget is `transparent`, like Quick Actions.
-- A tile: the device icon (24 px, muted), the name (14 bold) and the alarm text (14 regular, muted), both on an 18px line: deliberate exceptions to Homey's scale, measured from the native tiles. The tile is `#2B2C36` in dark mode, flat, with a 10px radius and 52 px high, all measured from a phone screenshot of the native temperature tiles.
+- A tile: the device icon (24 px, muted), the name (14 bold) and the alarm text (14 regular, muted), both on an 18px line: deliberate exceptions to Homey's scale, measured from the native tiles. The tile is `#2B2C36` in dark mode, flat, with a 10px radius and 52 px high, and the text sits 1 px below centre (7/5 px padding), all measured from a phone screenshot of the native temperature tiles (matched on the phone, 2026-10-04).
 - Alarms are every boolean capability whose base id starts with `alarm_` (`alarmCaps()`), custom ones included (an Airthings' `alarm_radon`). Each one carries its `title` (localised by Homey) and `state`: true for `alarm_motion`/`alarm_contact` and the cameras' `alarm_person`/`alarm_vehicle`/`alarm_pet`. Those only count with the `includeStates` checkbox (off by default); the widget filters, not the service.
 - Active alarms are counted once per title without a trailing `(…)`: the Airthings reports radon three times (`Radon alarm`, `… (Bq/m³)`, `… (pCi/L)`).
 - Text: `No alarm`, the one active alarm's title, or `__count__ alarms` (the user chose a count over a list). Without counted alarm capabilities: `No alarm sensors`. Any active alarm makes the tile red (`.alarm`: a red-tinted tile, red icon and text); the user chose always red over a colour per alarm type.
@@ -175,6 +175,7 @@ How this project uses it:
 - The meter is a frient EMIZB-141 ("Electricity Meter", id `3450f8d3-…`). It reports `measure_power` about every 10 s, and Homey doesn't re-emit unchanged values.
 - Widget `devices` setting (`type: global, singular, filter capabilities measure_power`); read it with `Homey.getDeviceIds()`.
 - A widget can't open Homey's native device sheet. On the phone app (2026-10-03) the widget `Homey` object has only the documented methods (`ready api on getSettings getWidgetInstanceId getDeviceIds setHeight popup hapticFeedback __`); `popup(url)` just opens an in-app browser. A web search found no other route either. So the Sensor Alarms tiles are display-only.
+- Android text zoom (measured on a Galaxy Tab, 2026-10-04): Homey's tokens already include the system font scale (`--homey-font-size-small` = `calc(1.1 * 14px)`), and the WebView zooms all text by it again (a 100px font computes as 110px; `text-size-adjust: none` doesn't help). So token text was 1.21x against the native tiles' 1.1x. Each widget's `index.html` runs `undoTextZoom()` first in `onHomeyReady`: it divides the `--homey-font-size-*`/`--homey-line-height-*` tokens by the measured zoom (inline on `body`). Fixed px sizes keep the zoom once, like native text. iOS has no zoom (factor 1).
 - Widget preview images are 1024×1024. App images are 250×175, 500×350 and 1000×700.
 
 ## Localization

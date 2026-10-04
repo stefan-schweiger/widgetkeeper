@@ -12,7 +12,7 @@
   --qa-lighter: color-mix(in srgb, var(--qa-text) 9%, var(--qa-tile)); /* the "lighter tile" on-state */
   /* Homey's type scale: only these size/line-height pairs are used natively. */
   --qa-fs-small: var(--homey-font-size-small, 14px); --qa-lh-small: var(--homey-line-height-small, 20px);
-  --qa-regular: var(--homey-font-weight-regular, 400);
+  --qa-bold: var(--homey-font-weight-bold, 700);
   --qa-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
 }
 /* Dark mode: each tile looks like a native device tile, darker than the default widget background. */
@@ -32,11 +32,11 @@ html, body { background: transparent !important; }
 
 .qa-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--homey-su-3, 12px); }
 
-/* A compact device tile (72px): the icon row and the name, with room between them. */
+/* A compact device tile (62px): the icon row and the name, with room between them. */
 .qa-tile {
   position: relative; appearance: none; border: 0; margin: 0; font: inherit; color: var(--qa-text);
-  background: var(--qa-tile); border-radius: var(--qa-radius); padding: 10px; min-width: 0;
-  display: flex; flex-direction: column; align-items: stretch; gap: var(--homey-su-2, 8px); text-align: left;
+  background: var(--qa-tile); border-radius: var(--qa-radius); padding: 8px 10px; min-width: 0;
+  display: flex; flex-direction: column; align-items: stretch; gap: 6px; text-align: left;
   cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
   transition: background-color .15s, color .15s, transform .1s;
 }
@@ -49,7 +49,7 @@ html, body { background: transparent !important; }
 .qa-tile:disabled { cursor: default; }
 .qa-tile:disabled > * { opacity: .5; }
 
-.qa-top { display: flex; align-items: center; justify-content: space-between; height: 24px; }
+.qa-top { display: flex; align-items: center; justify-content: space-between; height: 20px; }
 /* Icons sit against the tile's padding (the device icon on the left, in line with the name; the action on
    the right), so a narrow icon like a door handle isn't centred away from the edge. */
 .qa-icon, .qa-action {
@@ -57,16 +57,16 @@ html, body { background: transparent !important; }
   -webkit-mask: var(--qa-mask) left center / contain no-repeat; mask: var(--qa-mask) left center / contain no-repeat;
 }
 .qa-action { -webkit-mask-position: right center; mask-position: right center; }
-.qa-icon { width: 24px; height: 24px; }
+.qa-icon { width: 20px; height: 20px; }
 .qa-icon.fallback {
   /* No device icon: a rounded square outline. */
   background: none; -webkit-mask: none; mask: none;
-  border: 2px solid currentColor; border-radius: 5px; width: 18px; height: 18px; margin: 3px 6px 3px 0;
+  border: 2px solid currentColor; border-radius: 4px; width: 16px; height: 16px; margin: 2px 4px 2px 0;
 }
-.qa-action { width: var(--homey-icon-size-medium, 20px); height: var(--homey-icon-size-medium, 20px); color: var(--qa-muted); }
+.qa-action { width: 18px; height: 18px; color: var(--qa-muted); }
 .qa-name {
-  /* Native device tiles' name: 14/20 regular, measured from a phone screenshot. */
-  font-size: var(--qa-fs-small); line-height: var(--qa-lh-small); font-weight: var(--qa-regular);
+  /* 14 bold like the native temperature tiles' name (and Sensor Alarms), measured from a phone screenshot. */
+  font-size: var(--qa-fs-small); line-height: var(--qa-lh-small); font-weight: var(--qa-bold);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
