@@ -212,15 +212,15 @@
       const wrap = el('div', { class: 'ew' }, root);
       const message = el('div', { class: 'ew-message', dir: 'auto' }, wrap);
       const header = el('div', { class: 'ew-header' }, wrap);
-      const chart = () => {
-        const box = el('div', { class: 'ew-chart' }, wrap);
+      const chart = (cls = '') => {
+        const box = el('div', { class: `ew-chart ${cls}`.trim() }, wrap);
         const chips = el('div', { class: 'ew-chips' }, box);
         const svg = el('svg:svg', null, box);
         return { box, chips, svg };
       };
       const live = chart();
       const noLive = el('div', { class: 'ew-message', dir: 'auto' }, wrap);
-      const usage = chart();
+      const usage = chart('ew-usage-chart');
       const price = chart();
       const noPrices = el('div', { class: 'ew-message', dir: 'auto' }, wrap);
       const footer = el('div', { class: 'ew-footer' }, wrap);

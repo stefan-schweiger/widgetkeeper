@@ -105,5 +105,8 @@ html, body { margin: 0; }
 
 /* Separate usage chart */
 .ew .usage-stop { stop-color: var(--ew-usage); }
-.ew .usage-line.solo { stroke-width: 1.5; stroke-opacity: .8; }
+/* As thick and opaque as the live line; the dimmer, thinner usage-line is for the trace on the price chart. */
+.ew .usage-line.solo { stroke-width: 2; stroke-opacity: 1; stroke-linecap: round; }
+.ew .ew-usage-chart .dot-ring.usage { stroke: var(--ew-usage); }
+.ew .ew-usage-chart .dot-core.usage { fill: var(--ew-usage); }
 .ew .midnight { stroke: var(--ew-axis); stroke-width: 1; stroke-dasharray: 2 3; fill: none; shape-rendering: crispEdges; }

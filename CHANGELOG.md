@@ -6,6 +6,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Electricity Overview
 - New setting: **Usage history colour**. Show the usage history in Homey's purple instead of the neutral colour.
+- The separate usage chart's line is now as thick as the live power line, with a full-colour dot.
 
 ## 0.6.0
 
