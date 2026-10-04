@@ -12,7 +12,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - `npx homey app run`: live logs and hot reload of the widget files. It needs Docker Desktop running, which usually isn't.
 - `npm run app-images`: renders the three app store PNGs from `dev/app-images.html` (the hero photo `dev/hero.webp`, cropped to 10:7) with headless Edge.
 - `npm run previews [-- qa-dark …]`: renders the widget preview PNGs (all, or the ids given) from `dev/widget-previews.html` (the "Widget Previews" Claude Design project) with headless Edge. Open the page without a query to see them all; `?p=elec-dark` and so on shows one frame.
-- `npm run screenshots [-- thermostat …]`: renders the README screenshots (`docs/screenshots/*.png`) from `dev/screenshots.html`: the real widgets with mock data on Homey's dark dashboard, 390 px at 3x. It downloads the Homey library icons the mock devices use into `temp/screenshot-icons.js` (not committed).
+- `npm run screenshots [-- thermostat …]`: renders the README screenshots (`docs/screenshots/*.png`) from `dev/screenshots.html`: the real widgets with mock data in Homey's dark mode, 358 px (a phone's widget width) at 3x, with no widget title and a transparent background so they sit flush with the README text. The README's overview table shows each widget's `preview-light/dark.png` through a `<picture>` that follows the GitHub theme. It downloads the Homey library icons the mock devices use into `temp/screenshot-icons.js` (not committed).
 - `dev/preview.html`: the widget with mock data in a plain browser. Its mock snapshot is in `dev/mock-electricity.js`.
   - Serve the repo root (`python -m http.server 8765`) and open `/dev/preview.html`.
   - `?snap=/temp/real-snapshot.json` loads a real captured snapshot.

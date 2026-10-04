@@ -4,18 +4,18 @@ Extra dashboard widgets for Homey Pro.
 
 I built these to replace a few native Homey widgets that didn't quite behave the way I wanted. The aim is widgets that sit naturally next to Homey's own: the same look, the same feel, and no sense that they came from somewhere else.
 
-| Widget | What it does |
-| --- | --- |
-| [Electricity Overview](#electricity-overview) | Live power use, hourly electricity prices and usage history on one card |
-| [Thermostat Shortcuts](#thermostat-shortcuts) | Three one-tap presets for a thermostat, heat pump or air conditioner |
-| [Device Quick Actions](#device-quick-actions) | Compact tiles that run a device's quick action with one tap |
-| [Sensor Alarms](#sensor-alarms) | Tiles that show a sensor's alarm and turn red when one is on |
-| [Weather Forecast](#weather-forecast) | The next 36 hours, hour by hour, from MET Norway (yr.no) |
-| [Insights Heatmap](#insights-heatmap) | A week of one value (light, temperature, motion …) as a grid of weekdays and hours |
-| [Cameras](#cameras) | Two to six cameras in one grid of snapshots; tap one to watch it live |
+| | Widget | What it does |
+| --- | --- | --- |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/electricity/preview-dark.png"><img src="widgets/electricity/preview-light.png" alt="" width="64"></picture> | [Electricity Overview](#electricity-overview) | Live power use, hourly electricity prices and usage history on one card |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/thermostat/preview-dark.png"><img src="widgets/thermostat/preview-light.png" alt="" width="64"></picture> | [Thermostat Shortcuts](#thermostat-shortcuts) | Three one-tap presets for a thermostat, heat pump or air conditioner |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/quickactions/preview-dark.png"><img src="widgets/quickactions/preview-light.png" alt="" width="64"></picture> | [Device Quick Actions](#device-quick-actions) | Compact tiles that run a device's quick action with one tap |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/sensoralarms/preview-dark.png"><img src="widgets/sensoralarms/preview-light.png" alt="" width="64"></picture> | [Sensor Alarms](#sensor-alarms) | Tiles that show a sensor's alarm and turn red when one is on |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/weather/preview-dark.png"><img src="widgets/weather/preview-light.png" alt="" width="64"></picture> | [Weather Forecast](#weather-forecast) | The next 36 hours, hour by hour, from MET Norway (yr.no) |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/heatmap/preview-dark.png"><img src="widgets/heatmap/preview-light.png" alt="" width="64"></picture> | [Insights Heatmap](#insights-heatmap) | A week of one value (light, temperature, motion …) as a grid of weekdays and hours |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/cameras/preview-dark.png"><img src="widgets/cameras/preview-light.png" alt="" width="64"></picture> | [Cameras](#cameras) | Two to six cameras in one grid of snapshots; tap one to watch it live |
 
 ## Electricity Overview
-<img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="390">
+<img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
 Your power use and electricity price together on one card:
 - **Live power**, updated every few seconds, over the last 30 seconds to 1 hour.
@@ -39,7 +39,7 @@ Tap or drag on a chart (or hover with a mouse) to see the exact value at any mom
 | Show lowest price | Off, next 12 hours, next 24 hours, or both |
 
 ## Thermostat Shortcuts
-<img src="docs/screenshots/thermostat.png" alt="Thermostat Shortcuts on a Homey dashboard" width="390">
+<img src="docs/screenshots/thermostat.png" alt="Thermostat Shortcuts on a Homey dashboard" width="358">
 
 Three one-tap presets for a thermostat, heat pump or air conditioner. For example: *Off*, *Heat 21° · Fan level 1* and *Heat 24° · Fan level 5*.
 
@@ -56,7 +56,7 @@ The button that matches the device's current state lights up. When no preset mat
 2. Configure each button. The temperature, mode and extra lists show only what your device supports. Pick the device first, then reopen these settings.
 
 ## Device Quick Actions
-<img src="docs/screenshots/quickactions.png" alt="Device Quick Actions on a Homey dashboard" width="390">
+<img src="docs/screenshots/quickactions.png" alt="Device Quick Actions on a Homey dashboard" width="358">
 
 Half-height device tiles for as many devices as you like. Tap anywhere on a tile to run the device's quick action, the same action as the round button on Homey's own device tile:
 - turn a light, plug or other device on or off
@@ -73,7 +73,7 @@ The whole tile shows the state: it's highlighted while the device is on, locked 
 The quick action is the one Homey uses for the device, including one you changed in the device's settings. Devices without a quick action, such as sensors, are shown dimmed. The tiles don't react while the dashboard is in edit mode.
 
 ## Sensor Alarms
-<img src="docs/screenshots/sensoralarms.png" alt="Sensor Alarms on a Homey dashboard" width="390">
+<img src="docs/screenshots/sensoralarms.png" alt="Sensor Alarms on a Homey dashboard" width="358">
 
 Tiles for as many sensors as you like, two per row, in the style of Homey's own temperature tiles. Each tile shows the device icon, its name and its alarm:
 - *No alarm* when everything is fine
@@ -87,7 +87,7 @@ The tile turns red while an alarm is on, and updates the moment it goes on or of
 2. Optionally switch on **Count motion and contact as alarms**. It's off by default, so an open door, detected motion or a camera spotting a person doesn't turn a tile red.
 
 ## Weather Forecast
-<img src="docs/screenshots/weather.png" alt="Weather Forecast on a Homey dashboard" width="390">
+<img src="docs/screenshots/weather.png" alt="Weather Forecast on a Homey dashboard" width="358">
 
 The next 36 hours for your Homey's location, hour by hour, from [MET Norway](https://www.met.no/en), the forecast behind [yr.no](https://www.yr.no). Each hour shows:
 - the weather icon
@@ -109,7 +109,7 @@ The forecast needs no other setup: the widget uses the location set for your Hom
 The forecast is shared by all weather widgets and only fetched while one is on screen, at most as often as MET Norway updates it. Weather data from MET Norway is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The weather icons are [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
 
 ## Insights Heatmap
-<img src="docs/screenshots/heatmap.png" alt="Insights Heatmap on a Homey dashboard" width="390">
+<img src="docs/screenshots/heatmap.png" alt="Insights Heatmap on a Homey dashboard" width="358">
 
 A week of one device value as a grid: a row per weekday and a column per 1, 2 or 3 hours, shaded from the lowest to the highest value shown. Under it, a scale from the lowest to the highest value with a marker at the current one. Hours with nothing reported are hatched, such as the rest of today.
 
@@ -124,7 +124,7 @@ It works with any number Homey logs in Insights, such as light, temperature, pow
 On/off values fill in over the first days. Homey's Insights only keep the last 50 changes of an on/off value, which for a busy motion sensor is less than a day. So the app records them itself from the moment the widget first loads, and keeps up to 14 days of them, until 8 days after the widget was last shown. Numbers come straight from Insights and show the whole week right away.
 
 ## Cameras
-<img src="docs/screenshots/cameras.png" alt="Cameras on a Homey dashboard" width="390">
+<img src="docs/screenshots/cameras.png" alt="Cameras on a Homey dashboard" width="358">
 
 Your cameras in one grid of snapshots, two per row, each with its name. With an odd number of cameras, the last one spans the full width. The snapshots refresh every few seconds while the dashboard is open, and pause while it's in the background. A snapshot that stops refreshing shows the time it was taken.
 
@@ -152,4 +152,4 @@ See [CHANGELOG.md](CHANGELOG.md) for what's new in each version.
 ## License
 [MIT](LICENSE)
 
-The screenshots show the real widgets with mock data, rendered by `npm run screenshots`.
+The screenshots show the real widgets with mock data, rendered by `npm run screenshots`. The small images in the overview are the widgets' previews from Homey's widget picker.

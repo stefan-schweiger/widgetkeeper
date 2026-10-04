@@ -1,5 +1,5 @@
 // Renders the README screenshots (docs/screenshots/*.png) from dev/screenshots.html with headless Edge:
-// the real widgets with mock data, on Homey's dark dashboard at phone width (390 px, 3x like an iPhone).
+// the real widgets with mock data, at a phone's widget width (358 px, 3x like an iPhone), on a transparent background.
 // Usage: `npm run screenshots [-- <id>…]` (set EDGE to the browser path if it isn't the default).
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
@@ -10,7 +10,7 @@ import { pathToFileURL } from 'node:url';
 const EDGE = process.env.EDGE || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const page = pathToFileURL(resolve('dev/screenshots.html')).href;
 const SHOTS = ['electricity', 'thermostat', 'quickactions', 'sensoralarms', 'weather', 'heatmap', 'cameras'];
-const WIDTH = 390;
+const WIDTH = 358;
 const SCALE = 3;
 
 // Homey's icon library, as the Homey app shows device icons. Not committed: fetched into temp/ (gitignored).
@@ -44,6 +44,6 @@ for (const id of SHOTS.filter(s => !only.length || only.includes(s))) {
   const height = Number(/data-height="(\d+)"/.exec(dom)?.[1]);
   if (!height) throw new Error(`No height for ${id}`);
   const out = `docs/screenshots/${id}.png`;
-  edge([`--window-size=${WIDTH},${height}`, `--force-device-scale-factor=${SCALE}`, `--screenshot=${resolve(out)}`, url]);
+  edge([`--window-size=${WIDTH},${height}`, `--force-device-scale-factor=${SCALE}`, '--default-background-color=00000000', `--screenshot=${resolve(out)}`, url]);
   console.log('wrote', out, `(${WIDTH}×${height} @${SCALE}x)`);
 }

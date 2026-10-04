@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Widget screenshots</title>
   <!--
-    The README screenshots: the real widget code with mock data, laid out like Homey's dark dashboard on a
-    phone (390 px wide, colours sampled from an iPhone screenshot). `?s=electricity|thermostat|quickactions|sensoralarms|weather|heatmap|cameras`
+    The README screenshots: the real widget code with mock data, at the width of a widget on Homey's dark dashboard
+    on a phone (358 px: a 390 px screen less the dashboard's 16 px margins; colours sampled from an iPhone screenshot).
+    No widget title and a transparent page, so the shots sit flush with the README text in either GitHub theme. `?s=electricity|thermostat|quickactions|sensoralarms|weather|heatmap|cameras`
     shows one, for scripts/render-screenshots.mjs; without it, all seven.
     Device icons come from Homey's icon library. The render script downloads them to temp/screenshot-icons.js;
     without that file the tiles fall back to plain squares.
@@ -32,27 +33,23 @@
   <script src="mock-cameras.js"></script>
   <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
   <style>
-    /* !important: the Quick Actions stylesheet makes the page transparent (it is a transparent widget). */
-    html, body { background: #111218 !important; }
-    body { width: 390px; margin: 0; padding: 20px 16px 24px; box-sizing: border-box; font-family: Roboto, sans-serif;
-      display: flex; flex-direction: column; gap: 32px; }
-    .shot { display: flex; flex-direction: column; gap: 12px; }
+    /* Transparent: the render script screenshots with a transparent default background. */
+    html, body { background: transparent !important; }
+    body { width: 358px; margin: 0; font-family: Roboto, sans-serif; display: flex; flex-direction: column; gap: 32px; }
     .shot[hidden] { display: none; }
-    /* The widget title Homey shows above a widget. */
-    .title { color: #E4E4E7; font-size: 20px; line-height: 28px; font-weight: 700; }
     /* A non-transparent widget's frame (default widget background, with Homey's widget padding). */
     .card { background: #1F2029; border-radius: 20px; padding: 16px; box-sizing: border-box; }
     .card.tw-frame, .card.wf-frame, .card.hm-frame { background: #181920; }
   </style>
 </head>
 <body>
-  <section class="shot" id="electricity"><div class="title">Electricity</div><div class="card"><div id="w-elec"></div></div></section>
-  <section class="shot" id="thermostat"><div class="title">Climate</div><div class="card tw-frame"><div id="w-thermo"></div></div></section>
-  <section class="shot" id="quickactions"><div class="title">Quick actions</div><div id="w-qa"></div></section>
-  <section class="shot" id="sensoralarms"><div class="title">Alarms</div><div id="w-sa"></div></section>
-  <section class="shot" id="weather"><div class="title">Weather</div><div class="card wf-frame"><div id="w-weather"></div></div></section>
-  <section class="shot" id="heatmap"><div class="title">Light</div><div class="card hm-frame"><div id="w-heatmap"></div></div></section>
-  <section class="shot" id="cameras"><div class="title">Cameras</div><div id="w-cameras"></div></section>
+  <section class="shot" id="electricity"><div class="card"><div id="w-elec"></div></div></section>
+  <section class="shot" id="thermostat"><div class="card tw-frame"><div id="w-thermo"></div></div></section>
+  <section class="shot" id="quickactions"><div id="w-qa"></div></section>
+  <section class="shot" id="sensoralarms"><div id="w-sa"></div></section>
+  <section class="shot" id="weather"><div class="card wf-frame"><div id="w-weather"></div></div></section>
+  <section class="shot" id="heatmap"><div class="card hm-frame"><div id="w-heatmap"></div></div></section>
+  <section class="shot" id="cameras"><div id="w-cameras"></div></section>
 
   <script>
     const icon = name => (window.ICONS && ICONS[name]) || null;
