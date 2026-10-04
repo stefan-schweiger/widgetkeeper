@@ -117,3 +117,59 @@ html, body { margin: 0; }
 .homey-dark-mode .wf, .wf.homey-dark-mode { --wf-cold: #5DB2FF; --wf-hot: #FF6B70; }
 .wf .cold { color: color-mix(in oklab, var(--wf-cold) calc(var(--k, 1) * 100%), var(--wf-text)); }
 .wf .warm { color: color-mix(in oklab, var(--wf-hot) calc(var(--k, 1) * 100%), var(--wf-text)); }
+
+/*
+ * Themes (the `theme` setting, a `wf-theme-*` class on .wf). They change colours and backgrounds only:
+ * the layout, icons and type are the same in every theme. `default` is the look above.
+ * The vivid and temperature themes have no neutral point: blue → gold (around 12°) → red, never
+ * through green (the user rejected a rainbow scale). The ends and gold pass 4.5:1 as text.
+ */
+.wf { --wf-mild: #9A6600; }
+.homey-dark-mode .wf, .wf.homey-dark-mode { --wf-mild: #F2C766; }
+
+/* Vivid: every temperature in colour, the "Now" column highlighted, the day labels and lines in blue. */
+.wf-theme-vivid .cold { color: color-mix(in oklab, var(--wf-cold) calc(var(--k, 1) * 100%), var(--wf-mild)); }
+.wf-theme-vivid .warm { color: color-mix(in oklab, var(--wf-hot) calc(var(--k, 1) * 100%), var(--wf-mild)); }
+.wf-theme-vivid .wf-strip > .wf-col:first-child, .wf-theme-vivid .wf-page:first-child > .wf-col:first-child {
+  background: color-mix(in srgb, var(--wf-rain) 16%, transparent); border-radius: 8px;
+}
+.wf-theme-vivid .wf-hour.strong { color: var(--wf-rain); }
+.wf-theme-vivid .wf-col.wf-newday { box-shadow: inset 1px 0 0 color-mix(in srgb, var(--wf-rain) 55%, transparent); }
+
+/* Temperature: each column tinted by its temperature (blue → gold → red), fading towards the bottom. */
+.wf-theme-temperature .wf-strip, .wf-theme-sky .wf-strip { border-radius: 8px; }
+.wf-theme-temperature .tint-cold { --wf-tint: color-mix(in oklab, var(--wf-cold) calc(var(--k, 1) * 100%), var(--wf-mild)); }
+.wf-theme-temperature .tint-warm { --wf-tint: color-mix(in oklab, var(--wf-hot) calc(var(--k, 1) * 100%), var(--wf-mild)); }
+.wf-theme-temperature .wf-col[class*="tint-"] {
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--wf-tint) 34%, transparent), color-mix(in srgb, var(--wf-tint) 6%, transparent));
+}
+/* The tint carries the colour, so the temperatures are plain text on it. */
+.wf-theme-temperature .wf-temp { color: var(--wf-text); }
+
+/* Sky: each column tinted by its weather (sun gold, clouds slate, rain blue, night indigo …). */
+.wf [data-sky="clear"] { --wf-sky: #F2B33D; }
+.wf [data-sky="partly"] { --wf-sky: #5AA9EC; }
+.wf [data-sky="cloudy"] { --wf-sky: #8C9AB3; }
+.wf [data-sky="fog"] { --wf-sky: #B0A898; }
+.wf [data-sky="rain"] { --wf-sky: #2F8DF6; }
+.wf [data-sky="snow"] { --wf-sky: #A9DCFF; }
+.wf [data-sky="thunder"] { --wf-sky: #9B6BFF; }
+.wf [data-sky="night"] { --wf-sky: #5B5FD6; }
+.wf-theme-sky .wf-col[data-sky] {
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--wf-sky) 34%, transparent), color-mix(in srgb, var(--wf-sky) 6%, transparent));
+}
+
+/* Card: the whole widget on a gradient for the current weather, with white text, in both modes. */
+.wf-frame.wf-card-frame { background: linear-gradient(160deg, var(--wf-card-a, #3A4352), var(--wf-card-b, #56627A)); border-radius: 10px; }
+.wf-card-frame[data-sky="clear"] { --wf-card-a: #1A5AA8; --wf-card-b: #2F7CC8; }
+.wf-card-frame[data-sky="partly"] { --wf-card-a: #2A5585; --wf-card-b: #4A76A6; }
+.wf-card-frame[data-sky="cloudy"] { --wf-card-a: #3A4352; --wf-card-b: #56627A; }
+.wf-card-frame[data-sky="fog"] { --wf-card-a: #4A4B52; --wf-card-b: #67676C; }
+.wf-card-frame[data-sky="rain"] { --wf-card-a: #1B314D; --wf-card-b: #2D5078; }
+.wf-card-frame[data-sky="snow"] { --wf-card-a: #3B5B7E; --wf-card-b: #5B7C9F; }
+.wf-card-frame[data-sky="thunder"] { --wf-card-a: #241D45; --wf-card-b: #42347A; }
+.wf-card-frame[data-sky="night"] { --wf-card-a: #0D1230; --wf-card-b: #262C66; }
+.wf.wf-theme-card {
+  --wf-text: #FFFFFF; --wf-muted: rgb(255 255 255 / .78); --wf-line: rgb(255 255 255 / .22);
+  --wf-rain: #A8D4FF; --wf-cold: #B5DCFF; --wf-hot: #FFB4A3;
+}

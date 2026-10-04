@@ -35,12 +35,31 @@
   const COLD = -5;
   const HOT = 28;
 
-  /** Colours a temperature element: a `cold`/`warm` class and how far (`--k`, 0-1) towards blue or red. */
-  function colorTemp(node, r) {
+  /**
+   * Colours a temperature element: a `cold`/`warm` class (with `prefix`) and how far (`--k`, 0-1)
+   * towards blue or red.
+   */
+  function colorTemp(node, r, prefix = '') {
     const warm = r > NEUTRAL;
     const k = warm ? (r - NEUTRAL) / (HOT - NEUTRAL) : (NEUTRAL - r) / (NEUTRAL - COLD);
-    node.classList.add(warm ? 'warm' : 'cold');
+    node.classList.add(prefix + (warm ? 'warm' : 'cold'));
     node.style.setProperty('--k', String(Math.round(Math.min(1, k) * 100) / 100));
+  }
+
+  // Colour themes (the `theme` setting). They only change colours and backgrounds, in widget.css.
+  const THEMES = ['default', 'vivid', 'temperature', 'sky', 'card'];
+
+  /** The kind of sky a MET symbol code shows, for the sky-coloured themes (`data-sky`). */
+  function skyOf(symbol) {
+    if (!symbol) return '';
+    if (symbol.includes('thunder')) return 'thunder';
+    if (symbol.includes('snow') || symbol.includes('sleet')) return 'snow';
+    if (symbol.includes('rain')) return 'rain';
+    if (symbol === 'fog') return 'fog';
+    if (symbol === 'cloudy') return 'cloudy';
+    if (/_(night|polartwilight)$/.test(symbol)) return 'night';
+    if (symbol.startsWith('partlycloudy')) return 'partly';
+    return 'clear';
   }
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -62,7 +81,8 @@
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, locale?: string, iconBase?: string,
    *   density?: 'compact' | 'detailed', rows?: number | string, step?: number | string,
-   *   now?: () => number, onHeight?: (h: number) => void }} opts
+   *   theme?: string, frame?: HTMLElement, now?: () => number, onHeight?: (h: number) => void }} opts
+   *   `frame`: the element that paints the card (the widget's body), for the `card` theme's background.
    */
   function createWeatherWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -91,6 +111,10 @@
 
     root.classList.add('wf', compact ? 'wf-compact' : 'wf-detailed');
     if (rows === 2) root.classList.add('wf-paged');
+    const theme = THEMES.includes(opts.theme) ? opts.theme : 'default';
+    root.classList.add(`wf-theme-${theme}`);
+    const frame = theme === 'card' ? opts.frame : null;
+    if (frame) frame.classList.add('wf-card-frame');
     // The strip stays the same element across renders, so its scroll position survives.
     const strip = el('div', { class: 'wf-strip' }, root);
     const messageEl = el('div', { class: 'wf-message', dir: 'auto' }, root);
@@ -163,6 +187,10 @@
       } else {
         list.forEach((h, i) => renderHour(h, i, strip));
       }
+      // The current sky, for the `card` theme's background.
+      const sky = list.length ? skyOf(list[0].symbol) : '';
+      root.setAttribute('data-sky', sky);
+      if (frame) frame.setAttribute('data-sky', sky);
       strip.hidden = !list.length;
       messageEl.hidden = !message;
       messageEl.textContent = message || '';
@@ -225,7 +253,7 @@
     function renderHour(h, i, parent) {
       const date = new Date(h.t);
       const midnight = date.getHours() === 0;
-      const col = el('div', { class: `wf-col${midnight && i > 0 ? ' wf-newday' : ''}`, 'data-t': h.t }, parent);
+      const col = el('div', { class: `wf-col${midnight && i > 0 ? ' wf-newday' : ''}`, 'data-t': h.t, 'data-sky': skyOf(h.symbol) || null }, parent);
       const label = i === 0 ? t('now') : midnight ? weekdayFmt.format(date) : String(date.getHours()).padStart(2, '0');
       el('div', { class: `wf-hour${i === 0 || midnight ? ' strong' : ''}`, dir: 'auto', text: label }, col);
       const iconBox = el('div', { class: 'wf-icon' }, col);
@@ -238,6 +266,8 @@
         const rounded = Math.round(h.temp);
         temp.textContent = `${intFmt.format(rounded === 0 ? 0 : rounded)}°`;
         colorTemp(temp, rounded);
+        // The column's own tint, for the `temperature` theme.
+        colorTemp(col, rounded, 'tint-');
       }
       el('div', { class: 'wf-precip', text: h.precip > 0 ? `${mmFmt.format(h.precip)}${compact ? '' : ' mm'}` : '' }, col);
       const wind = el('div', { class: 'wf-wind' }, col);

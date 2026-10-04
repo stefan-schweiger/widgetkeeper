@@ -57,6 +57,8 @@
         density: settings.density,
         rows: settings.rows,
         step: settings.step,
+        theme: settings.theme,
+        frame: document.body,
         // The widget reports its own height; Homey needs the body's, which adds the widget padding.
         onHeight: () => {
           if (!readySent) return;

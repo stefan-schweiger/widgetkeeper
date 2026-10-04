@@ -208,6 +208,118 @@
           }
         }
       ]
+    },
+    {
+      "id": "theme",
+      "type": "dropdown",
+      "title": {
+        "en": "Colours",
+        "nl": "Kleuren",
+        "de": "Farben",
+        "fr": "Couleurs",
+        "it": "Colori",
+        "sv": "Färger",
+        "no": "Farger",
+        "es": "Colores",
+        "da": "Farver",
+        "ru": "Цвета",
+        "pl": "Kolory",
+        "ko": "색상",
+        "ar": "الألوان"
+      },
+      "value": "default",
+      "values": [
+        {
+          "id": "default",
+          "title": {
+            "en": "Standard",
+            "nl": "Standaard",
+            "de": "Standard",
+            "fr": "Standard",
+            "it": "Standard",
+            "sv": "Standard",
+            "no": "Standard",
+            "es": "Estándar",
+            "da": "Standard",
+            "ru": "Стандартные",
+            "pl": "Standardowe",
+            "ko": "기본",
+            "ar": "قياسية"
+          }
+        },
+        {
+          "id": "vivid",
+          "title": {
+            "en": "Vivid",
+            "nl": "Levendig",
+            "de": "Kräftig",
+            "fr": "Vives",
+            "it": "Vivaci",
+            "sv": "Livfulla",
+            "no": "Livlige",
+            "es": "Vivos",
+            "da": "Livlige",
+            "ru": "Яркие",
+            "pl": "Żywe",
+            "ko": "선명하게",
+            "ar": "زاهية"
+          }
+        },
+        {
+          "id": "temperature",
+          "title": {
+            "en": "Tinted by temperature",
+            "nl": "Getint naar temperatuur",
+            "de": "Nach Temperatur getönt",
+            "fr": "Teintées selon la température",
+            "it": "Tinta per temperatura",
+            "sv": "Tonade efter temperatur",
+            "no": "Tonet etter temperatur",
+            "es": "Tintados por temperatura",
+            "da": "Tonet efter temperatur",
+            "ru": "Оттенок по температуре",
+            "pl": "Odcień wg temperatury",
+            "ko": "온도별 색조",
+            "ar": "تلوين حسب الحرارة"
+          }
+        },
+        {
+          "id": "sky",
+          "title": {
+            "en": "Tinted by sky",
+            "nl": "Getint naar lucht",
+            "de": "Nach Himmel getönt",
+            "fr": "Teintées selon le ciel",
+            "it": "Tinta per cielo",
+            "sv": "Tonade efter himmel",
+            "no": "Tonet etter himmel",
+            "es": "Tintados por el cielo",
+            "da": "Tonet efter himmel",
+            "ru": "Оттенок по небу",
+            "pl": "Odcień wg nieba",
+            "ko": "하늘별 색조",
+            "ar": "تلوين حسب السماء"
+          }
+        },
+        {
+          "id": "card",
+          "title": {
+            "en": "Weather background",
+            "nl": "Weerachtergrond",
+            "de": "Wetterhintergrund",
+            "fr": "Fond météo",
+            "it": "Sfondo meteo",
+            "sv": "Väderbakgrund",
+            "no": "Værbakgrunn",
+            "es": "Fondo del tiempo",
+            "da": "Vejrbaggrund",
+            "ru": "Фон по погоде",
+            "pl": "Tło pogodowe",
+            "ko": "날씨 배경",
+            "ar": "خلفية الطقس"
+          }
+        }
+      ]
     }
   ],
   "api": {

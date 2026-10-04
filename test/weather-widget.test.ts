@@ -215,3 +215,29 @@ describe('messages', () => {
     expect(root.querySelector('.wf-day-label')!.textContent).toBe('Today'); // untranslated keys fall back to English
   });
 });
+
+describe('themes', () => {
+  it('defaults to the default theme, and ignores an unknown one', () => {
+    expect(widget().root.classList.contains('wf-theme-default')).toBe(true);
+    expect(widget(undefined, { theme: 'neon' }).root.classList.contains('wf-theme-default')).toBe(true);
+  });
+
+  it('marks each column with its sky and temperature tint', () => {
+    const { cols, root } = widget(undefined, { theme: 'sky' });
+    expect(root.classList.contains('wf-theme-sky')).toBe(true);
+    expect(cols()[0].dataset.sky).toBe('partly');
+    expect(cols()[1].dataset.sky).toBe('rain');
+    expect(cols()[0].classList.contains('tint-cold')).toBe(true);
+    expect(root.dataset.sky).toBe('partly');
+  });
+
+  it('paints the frame with the current sky only in the card theme', () => {
+    const frame = document.createElement('div');
+    widget(undefined, { theme: 'card', frame });
+    expect(frame.classList.contains('wf-card-frame')).toBe(true);
+    expect(frame.dataset.sky).toBe('partly');
+    const other = document.createElement('div');
+    widget(undefined, { theme: 'vivid', frame: other });
+    expect(other.classList.contains('wf-card-frame')).toBe(false);
+  });
+});

@@ -108,18 +108,18 @@
     "ar": "أداة جديدة: الكاميرات، من كاميرتين إلى ست كاميرات في شبكة واحدة من اللقطات تتحدّث كل بضع ثوانٍ. المس كاميرا لمشاهدتها مباشرة."
   },
   "0.6.1": {
-    "en": "Electricity Overview: new setting to show the usage history in Homey's purple. The separate usage chart has a bolder line.",
-    "nl": "Elektriciteitsoverzicht: nieuwe instelling om de verbruiksgeschiedenis in het paars van Homey te tonen. De aparte verbruiksgrafiek heeft een dikkere lijn.",
-    "de": "Stromübersicht: neue Einstellung, um den Verbrauchsverlauf im Lila von Homey anzuzeigen. Das separate Verbrauchsdiagramm hat eine kräftigere Linie.",
-    "fr": "Aperçu de l'électricité : nouveau réglage pour afficher l'historique de consommation dans le violet de Homey. Le graphique de consommation séparé a une ligne plus épaisse.",
-    "it": "Panoramica elettricità: nuova impostazione per mostrare la cronologia dei consumi nel viola di Homey. Il grafico dei consumi separato ha una linea più spessa.",
-    "sv": "Elöversikt: ny inställning för att visa förbrukningshistoriken i Homeys lila. Det separata förbrukningsdiagrammet har en tydligare linje.",
-    "no": "Strømoversikt: ny innstilling for å vise forbrukshistorikken i Homeys lilla. Det separate forbruksdiagrammet har en tydeligere linje.",
-    "es": "Resumen de electricidad: nuevo ajuste para mostrar el historial de consumo en el morado de Homey. El gráfico de consumo separado tiene una línea más gruesa.",
-    "da": "Strømoverblik: ny indstilling til at vise forbrugshistorikken i Homeys lilla. Den separate forbrugsgraf har en tydeligere linje.",
-    "ru": "Обзор электроэнергии: новая настройка, чтобы показывать историю потребления фиолетовым цветом Homey. У отдельного графика потребления линия стала толще.",
-    "pl": "Przegląd energii: nowe ustawienie, aby pokazywać historię zużycia w fiolecie Homey. Osobny wykres zużycia ma grubszą linię.",
-    "ko": "전기 개요: 사용 기록을 Homey의 보라색으로 표시하는 새 설정. 별도 사용량 차트의 선이 더 굵어졌습니다.",
-    "ar": "نظرة عامة على الكهرباء: إعداد جديد لعرض سجل الاستهلاك بلون Homey البنفسجي. أصبح خط مخطط الاستهلاك المنفصل أعرض."
+    "en": "Electricity Overview: new setting to show the usage history in Homey's purple. The separate usage chart has a bolder line. Weather Forecast: a new Colours setting with four livelier themes.",
+    "nl": "Elektriciteitsoverzicht: nieuwe instelling om de verbruiksgeschiedenis in het paars van Homey te tonen. De aparte verbruiksgrafiek heeft een dikkere lijn. Weersverwachting: nieuwe instelling Kleuren met vier levendigere thema's.",
+    "de": "Stromübersicht: neue Einstellung, um den Verbrauchsverlauf im Lila von Homey anzuzeigen. Das separate Verbrauchsdiagramm hat eine kräftigere Linie. Wettervorhersage: neue Einstellung Farben mit vier lebhafteren Designs.",
+    "fr": "Aperçu de l'électricité : nouveau réglage pour afficher l'historique de consommation dans le violet de Homey. Le graphique de consommation séparé a une ligne plus épaisse. Prévisions météo : nouveau réglage Couleurs avec quatre thèmes plus vifs.",
+    "it": "Panoramica elettricità: nuova impostazione per mostrare la cronologia dei consumi nel viola di Homey. Il grafico dei consumi separato ha una linea più spessa. Previsioni meteo: nuova impostazione Colori con quattro temi più vivaci.",
+    "sv": "Elöversikt: ny inställning för att visa förbrukningshistoriken i Homeys lila. Det separata förbrukningsdiagrammet har en tydligare linje. Väderprognos: ny inställning Färger med fyra livligare teman.",
+    "no": "Strømoversikt: ny innstilling for å vise forbrukshistorikken i Homeys lilla. Det separate forbruksdiagrammet har en tydeligere linje. Værvarsel: ny innstilling Farger med fire livligere temaer.",
+    "es": "Resumen de electricidad: nuevo ajuste para mostrar el historial de consumo en el morado de Homey. El gráfico de consumo separado tiene una línea más gruesa. Previsión del tiempo: nuevo ajuste Colores con cuatro temas más vivos.",
+    "da": "Strømoverblik: ny indstilling til at vise forbrugshistorikken i Homeys lilla. Den separate forbrugsgraf har en tydeligere linje. Vejrudsigt: ny indstilling Farver med fire mere livlige temaer.",
+    "ru": "Обзор электроэнергии: новая настройка, чтобы показывать историю потребления фиолетовым цветом Homey. У отдельного графика потребления линия стала толще. Прогноз погоды: новая настройка «Цвета» с четырьмя более яркими темами.",
+    "pl": "Przegląd energii: nowe ustawienie, aby pokazywać historię zużycia w fiolecie Homey. Osobny wykres zużycia ma grubszą linię. Prognoza pogody: nowe ustawienie Kolory z czterema żywszymi motywami.",
+    "ko": "전기 개요: 사용 기록을 Homey의 보라색으로 표시하는 새 설정. 별도 사용량 차트의 선이 더 굵어졌습니다. 일기 예보: 더 생생한 네 가지 테마가 있는 새 색상 설정.",
+    "ar": "نظرة عامة على الكهرباء: إعداد جديد لعرض سجل الاستهلاك بلون Homey البنفسجي. أصبح خط مخطط الاستهلاك المنفصل أعرض. توقعات الطقس: إعداد ألوان جديد بأربع سمات أكثر حيوية."
   }
 }

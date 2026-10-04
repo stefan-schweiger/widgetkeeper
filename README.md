@@ -104,6 +104,7 @@ Swipe the hours sideways to see further ahead. A thin line marks each new day. U
 | Hour columns | **Compact** (the default: more hours, with the units shown once) or **Detailed** (larger, with units on every value) |
 | Rows | **One row**, or **Two rows**, which swipe a page at a time |
 | Interval | **Every hour**, or every **2** or **3 hours**. A combined column shows the average temperature and wind and the total precipitation for those hours, with the icon of the wettest one. |
+| Colours | **Standard** (the default), **Vivid** (every temperature in colour, blue → gold → red, and the current hour highlighted), **Tinted by temperature** (each hour's column shaded by its temperature), **Tinted by sky** (each column shaded by its weather: gold sun, slate clouds, blue rain, indigo night …) or **Weather background** (the whole widget on a gradient for the weather right now, with white text) |
 
 The forecast needs no other setup: the widget uses the location set for your Homey (Homey app → Settings → Location).
 

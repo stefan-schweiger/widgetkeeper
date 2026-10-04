@@ -116,7 +116,10 @@ How this project uses it:
 
 ## Weather Forecast widget
 - The next 36 hours for the Homey's location (`homey.geolocation`, which needs the `homey:manager:geolocation` permission), from MET Norway's Locationforecast 2.0 `compact` (the data behind yr.no).
-- Settings: `density` (`compact`, the default, or `detailed`), `rows` (`1` or `2`) and `step` (`1`, `2` or `3` hours per column). They're passed to `createWeatherWidget` as `opts.density`, `opts.rows` and `opts.step`.
+- Settings: `density` (`compact`, the default, or `detailed`), `rows` (`1` or `2`), `step` (`1`, `2` or `3` hours per column) and `theme`. They're passed to `createWeatherWidget` as `opts.density`, `opts.rows`, `opts.step` and `opts.theme`.
+- Themes (`theme`, "Colours"; the user asked for more "pop" when it's all overcast, dry and ~12°): colours and backgrounds only, never layout, icons or type. A `wf-theme-<id>` class on `.wf`; the CSS is at the end of `widget.css`.
+  - `default`: the original look. `vivid`: temperatures blue → gold (`--wf-mild`, at 12°) → red with no plain point, the "Now" column on a blue pill, the day labels and lines blue. `temperature`: each column a vertical gradient of its temperature colour (`tint-cold/warm` + `--k` on `.wf-col`), with plain temperature text. `sky`: each column a gradient of its weather (`data-sky` on `.wf-col`, from `skyOf()`: clear, partly, cloudy, fog, rain, snow, thunder, night). `card`: `opts.frame` (the body) gets `.wf-card-frame` and the current hour's `data-sky`, painted as a dark gradient with white text in both modes.
+  - No green anywhere (the user rejected a rainbow scale). `dev/weather-preview.html` shows every theme, dark and light, with the mock day and a bland overcast one; `?theme=` sets the first cards.
 - With `step` 2 or 3, the widget combines the hours (`group()`/`combine()` in `widget.js`) into columns on the clock (00, 03, 06 …); the first one runs from the current hour to the next boundary.
   - A combined column has the average temperature and wind speed, the summed precipitation (a total is more useful than an average), the wind direction averaged as vectors weighted by speed, and the icon of the wettest hour (the first hour's when dry).
   - The footer's day ranges always use the raw hours. `lib/WeatherService.ts` owns it.
