@@ -195,6 +195,64 @@
       "value": false
     },
     {
+      "id": "usageColor",
+      "type": "dropdown",
+      "title": {
+        "en": "Usage history colour",
+        "nl": "Kleur verbruiksgeschiedenis",
+        "de": "Farbe des Verbrauchsverlaufs",
+        "fr": "Couleur de l'historique",
+        "it": "Colore cronologia consumi",
+        "sv": "Färg på förbrukningshistorik",
+        "no": "Farge på forbrukshistorikk",
+        "es": "Color del historial de consumo",
+        "da": "Farve på forbrugshistorik",
+        "ru": "Цвет истории потребления",
+        "pl": "Kolor historii zużycia",
+        "ko": "사용 기록 색상",
+        "ar": "لون سجل الاستهلاك"
+      },
+      "value": "neutral",
+      "values": [
+        {
+          "id": "neutral",
+          "title": {
+            "en": "Neutral",
+            "nl": "Neutraal",
+            "de": "Neutral",
+            "fr": "Neutre",
+            "it": "Neutro",
+            "sv": "Neutral",
+            "no": "Nøytral",
+            "es": "Neutro",
+            "da": "Neutral",
+            "ru": "Нейтральный",
+            "pl": "Neutralny",
+            "ko": "중립",
+            "ar": "محايد"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라색",
+            "ar": "بنفسجي"
+          }
+        }
+      ]
+    },
+    {
       "id": "smooth",
       "type": "checkbox",
       "title": {

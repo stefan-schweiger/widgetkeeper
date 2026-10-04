@@ -25,6 +25,10 @@
   --ew-bold: var(--homey-font-weight-bold, 700);
 }
 
+/* `usageColor: purple`: Homey's own purple (--theme-color-purple in the Homey web app), lighter in dark mode. */
+.ew.usage-purple { --ew-usage: #7500FB; }
+.homey-dark-mode .ew.usage-purple { --ew-usage: #9033FC; }
+
 /* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
 html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
 html, body { margin: 0; }

@@ -2,6 +2,11 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 0.6.1
+
+### Electricity Overview
+- New setting: **Usage history colour**. Show the usage history in Homey's purple instead of the neutral colour.
+
 ## 0.6.0
 
 ### New: Cameras

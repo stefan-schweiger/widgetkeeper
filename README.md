@@ -35,6 +35,7 @@ Tap or drag on a chart (or hover with a mouse) to see the exact value at any mom
 | Power meter | Any device that reports power |
 | Live power window | 30 seconds, 1, 5, 10 or 30 minutes, or 1 hour |
 | Show usage history | On / off, and optionally as a separate chart |
+| Usage history colour | **Neutral** (the default: white in dark mode, black in light mode) or Homey's **Purple** |
 | Smooth chart lines | On / off: softer live and usage lines and rounded price steps |
 | Show lowest price | Off, next 12 hours, next 24 hours, or both |
 
@@ -115,11 +116,15 @@ A week of one device value as a grid: a row per weekday and a column per 1, 2 or
 
 It works with any number Homey logs in Insights, such as light, temperature, power or CO₂, and with on/off values such as motion, a door contact or a light being on. For those, each cell is the share of the hour they were on, and the scale starts at 0 %.
 
-**Setting it up**
-1. Add the widget to a dashboard and pick a device, then one of its values.
-2. Choose **Days**: *This week (Mon–Sun)*, or the last 3, 7, 10 or 14 days. With more than 7 days, each row also shows the date.
-3. Choose **Hours per column**: 1, 2 (the default) or 3.
-4. Optionally switch off **Show scale** or **Show legend** for a more compact widget.
+**Settings**
+| Setting | Options |
+| --- | --- |
+| Device | Any device with a value logged in Insights |
+| Value | Any of the device's numbers or on/off values in Insights. Pick the device first, then reopen the settings. |
+| Days | **This week (Mon–Sun)** (the default), or the last **3**, **7**, **10** or **14 days**. With more than 7 days, each row also shows the date. |
+| Hours per column | **1**, **2** (the default) or **3** |
+| Show scale | On (the default) / off |
+| Show legend | On (the default) / off |
 
 On/off values fill in over the first days. Homey's Insights only keep the last 50 changes of an on/off value, which for a busy motion sensor is less than a day. So the app records them itself from the moment the widget first loads, and keeps up to 14 days of them, until 8 days after the widget was last shown. Numbers come straight from Insights and show the whole week right away.
 
@@ -130,9 +135,11 @@ Your cameras in one grid of snapshots, two per row, each with its name. With an 
 
 Tap a camera to watch it live: it fills the whole widget, with a red **Live** label. Tap it again to go back to the snapshot. Live view ends on its own after 5 minutes, or when the camera stops sending video. It uses Homey's own live view, so it works for cameras that Homey can play live itself.
 
-**Setting it up**
-1. Add the widget to a dashboard and pick the cameras. They're shown in the order you pick them.
-2. Optionally change **Refresh snapshots every**: 5 s, 10 s (the default), 30 s or 1 min.
+**Settings**
+| Setting | Options |
+| --- | --- |
+| Cameras | Any cameras and doorbells, shown in the order you pick them |
+| Refresh snapshots every | **5 s**, **10 s** (the default), **30 s** or **1 min** |
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic. The widgets follow Homey's language.

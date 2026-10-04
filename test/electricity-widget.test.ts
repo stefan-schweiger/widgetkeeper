@@ -145,6 +145,12 @@ describe('usage', () => {
     expect(separate.root.innerHTML).not.toContain('NaN');
     expect(together.root.innerHTML).not.toContain('NaN');
   });
+
+  it('colours usage in Homey purple with usageColor: purple', () => {
+    const wrap = (s?: object) => widget(snapshot({ usage }), s).root.querySelector('.ew')!;
+    expect(wrap().classList.contains('usage-purple')).toBe(false);
+    expect(wrap({ usageColor: 'purple' }).classList.contains('usage-purple')).toBe(true);
+  });
 });
 
 describe('smooth lines', () => {

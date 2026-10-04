@@ -106,5 +106,20 @@
     "pl": "Nowy widżet: Kamery, od dwóch do sześciu kamer w jednej siatce zdjęć odświeżanych co kilka sekund. Dotknij kamery, aby oglądać ją na żywo.",
     "ko": "새 위젯: 카메라. 2~6대의 카메라를 몇 초마다 새로 고쳐지는 스냅샷 격자 하나로 보여 줍니다. 카메라를 탭하면 실시간으로 볼 수 있습니다.",
     "ar": "أداة جديدة: الكاميرات، من كاميرتين إلى ست كاميرات في شبكة واحدة من اللقطات تتحدّث كل بضع ثوانٍ. المس كاميرا لمشاهدتها مباشرة."
+  },
+  "0.6.1": {
+    "en": "Electricity Overview: new setting to show the usage history in Homey's purple.",
+    "nl": "Elektriciteitsoverzicht: nieuwe instelling om de verbruiksgeschiedenis in het paars van Homey te tonen.",
+    "de": "Stromübersicht: neue Einstellung, um den Verbrauchsverlauf im Lila von Homey anzuzeigen.",
+    "fr": "Aperçu de l'électricité : nouveau réglage pour afficher l'historique de consommation dans le violet de Homey.",
+    "it": "Panoramica elettricità: nuova impostazione per mostrare la cronologia dei consumi nel viola di Homey.",
+    "sv": "Elöversikt: ny inställning för att visa förbrukningshistoriken i Homeys lila.",
+    "no": "Strømoversikt: ny innstilling for å vise forbrukshistorikken i Homeys lilla.",
+    "es": "Resumen de electricidad: nuevo ajuste para mostrar el historial de consumo en el morado de Homey.",
+    "da": "Strømoverblik: ny indstilling til at vise forbrugshistorikken i Homeys lilla.",
+    "ru": "Обзор электроэнергии: новая настройка, чтобы показывать историю потребления фиолетовым цветом Homey.",
+    "pl": "Przegląd energii: nowe ustawienie, aby pokazywać historię zużycia w fiolecie Homey.",
+    "ko": "전기 개요: 사용 기록을 Homey의 보라색으로 표시하는 새 설정.",
+    "ar": "نظرة عامة على الكهرباء: إعداد جديد لعرض سجل الاستهلاك بلون Homey البنفسجي."
   }
 }

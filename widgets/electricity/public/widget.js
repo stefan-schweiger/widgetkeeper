@@ -194,7 +194,7 @@
 
     const state = {
       data: null, // snapshot from the app; data.live holds raw readings
-      settings: { showUsage: true, nextLow: '12', separateUsage: false, liveWindow: 10, smooth: false }, // nextLow: none/12/24/both
+      settings: { showUsage: true, nextLow: '12', separateUsage: false, liveWindow: 10, smooth: false, usageColor: 'neutral' }, // nextLow: none/12/24/both; usageColor: neutral/purple
       message: null,
       width: root.clientWidth || 368,
       lastHeight: 0,
@@ -224,7 +224,7 @@
       const price = chart();
       const noPrices = el('div', { class: 'ew-message', dir: 'auto' }, wrap);
       const footer = el('div', { class: 'ew-footer' }, wrap);
-      return { message, header, live, noLive, usage, price, noPrices, footer };
+      return { wrap, message, header, live, noLive, usage, price, noPrices, footer };
     })();
     const geom = { live: null, slots: null }; // geometry of the latest render, for pointer math
 
@@ -261,6 +261,7 @@
     // ------------------------------------------------------------------ render
 
     function render() {
+      ui.wrap.classList.toggle('usage-purple', state.settings.usageColor === 'purple');
       const ready = !state.message && !!state.data;
       show(ui.message, !!state.message);
       ui.message.textContent = state.message || '';
