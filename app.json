@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.thomassidor.widgetkeeper",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "compatibility": ">=12.6.0",
   "sdk": 3,
   "runtime": "nodejs",
@@ -67,6 +67,151 @@
   },
   "esm": true,
   "widgets": {
+    "cameras": {
+      "name": {
+        "en": "Cameras",
+        "nl": "Camera's",
+        "de": "Kameras",
+        "fr": "Caméras",
+        "it": "Telecamere",
+        "sv": "Kameror",
+        "no": "Kameraer",
+        "es": "Cámaras",
+        "da": "Kameraer",
+        "ru": "Камеры",
+        "pl": "Kamery",
+        "ko": "카메라",
+        "ar": "الكاميرات"
+      },
+      "height": 240,
+      "transparent": true,
+      "devices": {
+        "type": "global",
+        "singular": false,
+        "filter": {
+          "class": "camera|doorbell"
+        }
+      },
+      "settings": [
+        {
+          "id": "refresh",
+          "type": "dropdown",
+          "title": {
+            "en": "Refresh snapshots every",
+            "nl": "Snapshots vernieuwen elke",
+            "de": "Schnappschüsse aktualisieren alle",
+            "fr": "Actualiser les instantanés toutes les",
+            "it": "Aggiorna le istantanee ogni",
+            "sv": "Uppdatera bilder var",
+            "no": "Oppdater bilder hvert",
+            "es": "Actualizar instantáneas cada",
+            "da": "Opdater billeder hvert",
+            "ru": "Обновлять снимки каждые",
+            "pl": "Odświeżaj zdjęcia co",
+            "ko": "스냅샷 새로 고침 간격",
+            "ar": "تحديث اللقطات كل"
+          },
+          "value": "10",
+          "values": [
+            {
+              "id": "5",
+              "title": {
+                "en": "5 s",
+                "nl": "5 s",
+                "de": "5 s",
+                "fr": "5 s",
+                "it": "5 s",
+                "sv": "5 s",
+                "no": "5 s",
+                "es": "5 s",
+                "da": "5 s",
+                "ru": "5 с",
+                "pl": "5 s",
+                "ko": "5초",
+                "ar": "5 ث"
+              }
+            },
+            {
+              "id": "10",
+              "title": {
+                "en": "10 s",
+                "nl": "10 s",
+                "de": "10 s",
+                "fr": "10 s",
+                "it": "10 s",
+                "sv": "10 s",
+                "no": "10 s",
+                "es": "10 s",
+                "da": "10 s",
+                "ru": "10 с",
+                "pl": "10 s",
+                "ko": "10초",
+                "ar": "10 ث"
+              }
+            },
+            {
+              "id": "30",
+              "title": {
+                "en": "30 s",
+                "nl": "30 s",
+                "de": "30 s",
+                "fr": "30 s",
+                "it": "30 s",
+                "sv": "30 s",
+                "no": "30 s",
+                "es": "30 s",
+                "da": "30 s",
+                "ru": "30 с",
+                "pl": "30 s",
+                "ko": "30초",
+                "ar": "30 ث"
+              }
+            },
+            {
+              "id": "60",
+              "title": {
+                "en": "1 min",
+                "nl": "1 min",
+                "de": "1 Min.",
+                "fr": "1 min",
+                "it": "1 min",
+                "sv": "1 min",
+                "no": "1 min",
+                "es": "1 min",
+                "da": "1 min",
+                "ru": "1 мин",
+                "pl": "1 min",
+                "ko": "1분",
+                "ar": "1 د"
+              }
+            }
+          ]
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        },
+        "getSnapshot": {
+          "method": "GET",
+          "path": "/snapshot"
+        },
+        "postOffer": {
+          "method": "POST",
+          "path": "/video/offer"
+        },
+        "postKeepAlive": {
+          "method": "POST",
+          "path": "/video/keepalive"
+        },
+        "postReport": {
+          "method": "POST",
+          "path": "/report"
+        }
+      },
+      "id": "cameras"
+    },
     "electricity": {
       "name": {
         "en": "Electricity Overview",

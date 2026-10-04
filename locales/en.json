@@ -72,5 +72,13 @@
     "less": "Less",
     "more": "More",
     "nothing": "Nothing reported"
+  },
+  "cameras": {
+    "selectDevices": "Select cameras in the widget settings.",
+    "error": "Could not load the cameras.",
+    "noImage": "No snapshot",
+    "unavailable": "Unavailable",
+    "live": "Live",
+    "liveFailed": "Live view failed"
   }
 }

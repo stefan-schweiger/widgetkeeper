@@ -12,6 +12,7 @@ I built these to replace a few native Homey widgets that didn't quite behave the
 | [Sensor Alarms](#sensor-alarms) | Tiles that show a sensor's alarm and turn red when one is on |
 | [Weather Forecast](#weather-forecast) | The next 36 hours, hour by hour, from MET Norway (yr.no) |
 | [Insights Heatmap](#insights-heatmap) | A week of one value (light, temperature, motion …) as a grid of weekdays and hours |
+| [Cameras](#cameras) | Two to six cameras in one grid of snapshots; tap one to watch it live |
 
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="390">
@@ -121,6 +122,17 @@ It works with any number Homey logs in Insights, such as light, temperature, pow
 4. Optionally switch off **Show scale** or **Show legend** for a more compact widget.
 
 On/off values fill in over the first days. Homey's Insights only keep the last 50 changes of an on/off value, which for a busy motion sensor is less than a day. So the app records them itself from the moment the widget first loads, and keeps up to 14 days of them, until 8 days after the widget was last shown. Numbers come straight from Insights and show the whole week right away.
+
+## Cameras
+<img src="docs/screenshots/cameras.png" alt="Cameras on a Homey dashboard" width="390">
+
+Your cameras in one grid of snapshots, two per row, each with its name. With an odd number of cameras, the last one spans the full width. The snapshots refresh every few seconds while the dashboard is open, and pause while it's in the background. A snapshot that stops refreshing shows the time it was taken.
+
+Tap a camera to watch it live: it fills the whole widget, with a red **Live** label. Tap it again to go back to the snapshot. Live view ends on its own after 5 minutes, or when the camera stops sending video. It uses Homey's own live view, so it works for cameras that Homey can play live itself.
+
+**Setting it up**
+1. Add the widget to a dashboard and pick the cameras. They're shown in the order you pick them.
+2. Optionally change **Refresh snapshots every**: 5 s, 10 s (the default), 30 s or 1 min.
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic. The widgets follow Homey's language.

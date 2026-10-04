@@ -9,5 +9,6 @@ Inbegrepen widgets:
 - Sensoralarmen: tegels die laten zien of een sensor een alarm heeft, zoals rook, water of CO₂, en rood worden als dat zo is.
 - Weersverwachting: icoon, temperatuur, wind en neerslag per uur voor de komende 36 uur, van MET Norway (yr.no).
 - Insights-heatmap: een week van één waarde, zoals licht, temperatuur of beweging, als raster van weekdagen en uren.
+- Camera's: twee tot zes camera's in één raster van snapshots die elke paar seconden vernieuwen. Tik op een camera voor live beeld.
 
 Weergegevens van MET Norway, onder licentie CC BY 4.0.

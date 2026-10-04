@@ -72,5 +72,13 @@
     "less": "Minder",
     "more": "Meer",
     "nothing": "Niets gemeld"
+  },
+  "cameras": {
+    "selectDevices": "Kies camera's in de widgetinstellingen.",
+    "error": "Kan de camera's niet laden.",
+    "noImage": "Geen snapshot",
+    "unavailable": "Niet beschikbaar",
+    "live": "Live",
+    "liveFailed": "Live beeld mislukt"
   }
 }

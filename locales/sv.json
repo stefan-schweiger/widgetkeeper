@@ -72,5 +72,13 @@
     "less": "Mindre",
     "more": "Mer",
     "nothing": "Inget rapporterat"
+  },
+  "cameras": {
+    "selectDevices": "Välj kameror i widgetinställningarna.",
+    "error": "Kunde inte läsa in kamerorna.",
+    "noImage": "Ingen bild",
+    "unavailable": "Inte tillgänglig",
+    "live": "Live",
+    "liveFailed": "Livebild misslyckades"
   }
 }

@@ -9,5 +9,6 @@ Inkluderte widgeter:
 - Sensoralarmer: fliser som viser om en sensor har en alarm, som røyk, vann eller CO₂, og blir røde når den har det.
 - Værvarsel: symbol, temperatur, vind og nedbør time for time de neste 36 timene, fra MET Norway (yr.no).
 - Insights-varmekart: en uke av én verdi, som lys, temperatur eller bevegelse, som et rutenett av ukedager og timer.
+- Kameraer: to til seks kameraer i ett rutenett av bilder som oppdateres med noen sekunders mellomrom. Trykk på ett for å se det direkte.
 
 Værdata fra MET Norway, lisensiert under CC BY 4.0.

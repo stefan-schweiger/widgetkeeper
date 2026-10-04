@@ -9,5 +9,6 @@ Widgets inclus :
 - Alarmes des capteurs : des tuiles qui indiquent si un capteur est en alarme (fumée, eau, CO₂…) et deviennent rouges quand c'est le cas.
 - Prévisions météo : icône, température, vent et précipitations heure par heure pour les 36 prochaines heures, par MET Norway (yr.no).
 - Carte thermique Insights : une semaine d'une valeur, comme la lumière, la température ou le mouvement, en grille de jours et d'heures.
+- Caméras : deux à six caméras dans une grille d'instantanés actualisés toutes les quelques secondes. Touchez-en une pour la voir en direct.
 
 Données météo de MET Norway, sous licence CC BY 4.0.

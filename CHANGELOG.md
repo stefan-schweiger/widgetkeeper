@@ -2,6 +2,13 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 0.6.0
+
+### New: Cameras
+- Your cameras in one grid of snapshots, two per row, each with its name. With an odd number, the last one spans the full width.
+- The snapshots refresh every 5, 10 (the default), 30 or 60 seconds while the dashboard is open. A snapshot that stops refreshing shows the time it was taken.
+- Tap a camera to watch it live over the whole widget, through Homey's own live view. Tap again, or wait 5 minutes, to go back to the snapshot. Live view also ends when the camera stops sending video.
+
 ## 0.5.0
 
 ### New: Insights Heatmap

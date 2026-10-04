@@ -72,5 +72,13 @@
     "less": "Moins",
     "more": "Plus",
     "nothing": "Aucune donnée"
+  },
+  "cameras": {
+    "selectDevices": "Choisissez des caméras dans les réglages du widget.",
+    "error": "Impossible de charger les caméras.",
+    "noImage": "Pas d'image",
+    "unavailable": "Indisponible",
+    "live": "Direct",
+    "liveFailed": "Échec du direct"
   }
 }

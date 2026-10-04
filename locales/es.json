@@ -72,5 +72,13 @@
     "less": "Menos",
     "more": "Más",
     "nothing": "Sin datos"
+  },
+  "cameras": {
+    "selectDevices": "Elige cámaras en los ajustes del widget.",
+    "error": "No se pudieron cargar las cámaras.",
+    "noImage": "Sin imagen",
+    "unavailable": "No disponible",
+    "live": "En vivo",
+    "liveFailed": "Falló el vídeo en vivo"
   }
 }

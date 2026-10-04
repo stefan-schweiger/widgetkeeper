@@ -6,8 +6,8 @@
   <title>Widget screenshots</title>
   <!--
     The README screenshots: the real widget code with mock data, laid out like Homey's dark dashboard on a
-    phone (390 px wide, colours sampled from an iPhone screenshot). `?s=electricity|thermostat|quickactions|sensoralarms|weather|heatmap`
-    shows one, for scripts/render-screenshots.mjs; without it, all six.
+    phone (390 px wide, colours sampled from an iPhone screenshot). `?s=electricity|thermostat|quickactions|sensoralarms|weather|heatmap|cameras`
+    shows one, for scripts/render-screenshots.mjs; without it, all seven.
     Device icons come from Homey's icon library. The render script downloads them to temp/screenshot-icons.js;
     without that file the tiles fall back to plain squares.
   -->
@@ -18,15 +18,18 @@
   <link rel="stylesheet" href="../widgets/sensoralarms/public/widget.css">
   <link rel="stylesheet" href="../widgets/weather/public/widget.css">
   <link rel="stylesheet" href="../widgets/heatmap/public/widget.css">
+  <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
   <script src="../widgets/electricity/public/widget.js"></script>
   <script src="../widgets/thermostat/public/widget.js"></script>
   <script src="../widgets/quickactions/public/widget.js"></script>
   <script src="../widgets/sensoralarms/public/widget.js"></script>
   <script src="../widgets/weather/public/widget.js"></script>
   <script src="../widgets/heatmap/public/widget.js"></script>
+  <script src="../widgets/cameras/public/widget.js"></script>
   <script src="mock-electricity.js"></script>
   <script src="mock-weather.js"></script>
   <script src="mock-heatmap.js"></script>
+  <script src="mock-cameras.js"></script>
   <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
   <style>
     /* !important: the Quick Actions stylesheet makes the page transparent (it is a transparent widget). */
@@ -49,6 +52,7 @@
   <section class="shot" id="sensoralarms"><div class="title">Alarms</div><div id="w-sa"></div></section>
   <section class="shot" id="weather"><div class="title">Weather</div><div class="card wf-frame"><div id="w-weather"></div></div></section>
   <section class="shot" id="heatmap"><div class="title">Light</div><div class="card hm-frame"><div id="w-heatmap"></div></div></section>
+  <section class="shot" id="cameras"><div class="title">Cameras</div><div id="w-cameras"></div></section>
 
   <script>
     const icon = name => (window.ICONS && ICONS[name]) || null;
@@ -90,6 +94,10 @@
       { id: '5', name: 'Laundry', icon: icon('washing-machine'), alarms: [alarm('alarm_water', false, 'Water alarm')] },
       { id: '6', name: 'Front door', icon: icon('door'), alarms: [alarm('alarm_contact', true, 'Contact alarm', true), alarm('alarm_tamper', false, 'Tamper alarm')] },
     ]);
+
+    const cams = createCamerasWidget(document.getElementById('w-cameras'), {});
+    cams.setState(mockCameras().slice(0, 4));
+    cams.refresh();
 
     const lux = mockHeatmapLux('2026-10-04', 9);
     createHeatmapWidget(document.getElementById('w-heatmap'), { locale: 'en-GB', period: 'week', step: 2 })

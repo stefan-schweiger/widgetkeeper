@@ -9,5 +9,6 @@ Widgets incluidos:
 - Alarmas de sensores: mosaicos que muestran si un sensor tiene una alarma, como humo, agua o CO₂, y se ponen en rojo cuando la tiene.
 - Previsión del tiempo: icono, temperatura, viento y precipitación hora a hora para las próximas 36 horas, de MET Norway (yr.no).
 - Mapa de calor de Insights: una semana de un valor, como luz, temperatura o movimiento, en una cuadrícula de días y horas.
+- Cámaras: de dos a seis cámaras en una cuadrícula de instantáneas que se actualizan cada pocos segundos. Toca una para verla en vivo.
 
 Datos meteorológicos de MET Norway, con licencia CC BY 4.0.

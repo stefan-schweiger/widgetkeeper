@@ -72,5 +72,13 @@
     "less": "Mindre",
     "more": "Mer",
     "nothing": "Ingenting rapportert"
+  },
+  "cameras": {
+    "selectDevices": "Velg kameraer i widgetinnstillingene.",
+    "error": "Kunne ikke laste kameraene.",
+    "noImage": "Ikke noe bilde",
+    "unavailable": "Utilgjengelig",
+    "live": "Direkte",
+    "liveFailed": "Direktebilde feilet"
   }
 }

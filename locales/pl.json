@@ -72,5 +72,13 @@
     "less": "Mniej",
     "more": "Więcej",
     "nothing": "Brak danych"
+  },
+  "cameras": {
+    "selectDevices": "Wybierz kamery w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać kamer.",
+    "noImage": "Brak zdjęcia",
+    "unavailable": "Niedostępne",
+    "live": "Na żywo",
+    "liveFailed": "Błąd podglądu na żywo"
   }
 }

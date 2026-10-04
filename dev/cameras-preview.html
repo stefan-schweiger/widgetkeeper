@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cameras widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
+  <script src="../widgets/cameras/public/widget.js"></script>
+  <script src="mock-cameras.js"></script>
+  <script src="i18n.js"></script>
+  <style>
+    body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px;
+      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark · 6 cameras</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>300 px · dark · 3 cameras, one without a snapshot</span><div class="dash homey-dark-mode" style="width:300px"><div id="w2"></div></div></div>
+  <div class="col"><span>358 px · light · 2 cameras, one unavailable</span><div class="dash light" style="width:358px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · dark · live (a looping canvas stands in for the stream)</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
+  <div class="col"><span>358 px · dark · live, 6 cameras (the widget keeps its height)</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px · no cameras</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+
+  <script>
+    const make = (id, devices) => {
+      const w = createCamerasWidget(document.getElementById(id), { t: devT });
+      w.setState(devices);
+      w.refresh();
+      return w;
+    };
+    const all = mockCameras();
+    make('w1', all);
+    make('w2', [all[0], { ...all[2], image: null }, all[3]]);
+    make('w3', [all[1], { id: 'gone', missing: true }]);
+
+    // Live: a canvas stream plays over the widget, so the LIVE state can be checked without Homey.
+    window.RTCPeerConnection = class {
+      constructor() { this.iceGatheringState = 'complete'; this.localDescription = { sdp: 'mock' }; }
+      addTransceiver() {}
+      addEventListener() {}
+      removeEventListener() {}
+      async createOffer() { return {}; }
+      async setLocalDescription() {}
+      async setRemoteDescription() {
+        const c = Object.assign(document.createElement('canvas'), { width: 640, height: 360 });
+        const ctx = c.getContext('2d');
+        const img = new Image();
+        img.src = mockCameraScenes.GARDEN;
+        let x = 0;
+        setInterval(() => {
+          ctx.drawImage(img, 0, 0, 640, 360);
+          ctx.fillStyle = '#D9675B';
+          ctx.beginPath(); ctx.arc(80 + (x = (x + 4) % 480), 290, 14, 0, 7); ctx.fill();
+        }, 40);
+        this.ontrack({ streams: [c.captureStream(25)] });
+      }
+      close() {}
+    };
+    const live = createCamerasWidget(document.getElementById('w4'), {
+      t: devT, api: async () => ({ answer: 'mock', streamId: null }),
+    });
+    live.setState([all[2], all[0]]);
+    live.refresh().then(() => document.querySelector('#w4 .cw-tile').click());
+
+    const live6 = createCamerasWidget(document.getElementById('w6'), {
+      t: devT, api: async () => ({ answer: 'mock', streamId: null }),
+    });
+    live6.setState(all);
+    live6.refresh().then(() => document.querySelector('#w6 .cw-tile[data-device="garden"]').click());
+
+    const empty = createCamerasWidget(document.getElementById('w5'), { t: devT });
+    empty.setMessage(empty.t('selectDevices'));
+  </script>
+</body>
+</html>

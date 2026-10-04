@@ -1,0 +1,104 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/cameras-preview.html).
+ */
+.cw {
+  --cw-tile: var(--homey-background-color, #FFFFFF);
+  --cw-text: var(--homey-text-color, #EDEEF0);
+  --cw-muted: var(--homey-text-color-light, #9C9DA5);
+  --cw-red: var(--homey-color-red, #F25F5C);
+  --cw-fs-small: var(--homey-font-size-small, 14px); --cw-lh-small: var(--homey-line-height-small, 20px);
+  --cw-bold: var(--homey-font-weight-bold, 700);
+  --cw-radius: 10px; /* Homey's native tiles, as in Sensor Alarms */
+}
+/* Dark mode: the tile colour of Homey's native tiles, as in Sensor Alarms. */
+.homey-dark-mode .cw, .cw.homey-dark-mode { --cw-tile: #2B2C36; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, like Sensor Alarms: no white corners before the SDK sets .homey-dark-mode. */
+html, body { background: transparent !important; }
+
+.cw { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--cw-text); }
+.cw * { box-sizing: border-box; }
+.cw [dir="auto"] { text-align: left; }
+
+.cw-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--homey-su-2, 8px); }
+
+.cw-tile {
+  position: relative; overflow: hidden; aspect-ratio: 16 / 9; min-width: 0;
+  background: var(--cw-tile); border-radius: var(--cw-radius);
+  -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+}
+.cw-tile.wide { grid-column: 1 / -1; }
+.cw-tile.has-video { cursor: pointer; }
+
+.cw-img, .cw-video {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.cw-img:not([src]) { visibility: hidden; }
+/* The video covers the snapshot only once it plays, so connecting keeps the last snapshot. */
+.cw-video { opacity: 0; transition: opacity .2s; background: transparent; pointer-events: none; }
+.cw-tile.live .cw-video { opacity: 1; }
+
+/* Until the first snapshot (or without one): the device icon, centred and muted. */
+.cw-icon {
+  position: absolute; left: 50%; top: 50%; width: 28px; height: 28px; margin: -20px 0 0 -14px;
+  background: var(--cw-muted);
+  -webkit-mask: var(--cw-mask) center / contain no-repeat; mask: var(--cw-mask) center / contain no-repeat;
+}
+.cw-icon.fallback {
+  background: none; -webkit-mask: none; mask: none;
+  border: 2px solid var(--cw-muted); border-radius: 6px; width: 22px; height: 22px; margin: -17px 0 0 -11px;
+}
+.cw-tile.loaded .cw-icon { display: none; }
+/* "No snapshot" in the top-left corner, clear of the icon and the name even in a 300 px widget's half tile. */
+.cw-tile.no-image::after {
+  content: attr(data-empty); position: absolute; left: 10px; right: 10px; top: 6px;
+  font-size: 12px; line-height: 16px; color: var(--cw-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cw-tile.missing { opacity: .6; }
+
+/* The name sits on a dark gradient at the bottom, white in both themes, like a video player's caption. */
+.cw-overlay {
+  position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 6px;
+  padding: 16px 10px 6px; color: #FFFFFF;
+  background: linear-gradient(to top, rgba(0, 0, 0, .55), rgba(0, 0, 0, 0));
+}
+.cw-tile:not(.loaded):not(.live) .cw-overlay { background: none; color: var(--cw-text); }
+.cw-name {
+  flex: 1; min-width: 0; font-size: var(--cw-fs-small); line-height: var(--cw-lh-small); font-weight: var(--cw-bold);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+.cw-tile:not(.loaded):not(.live) .cw-name { text-shadow: none; }
+
+/* LIVE: shown while connecting (dimmed, pulsing) and while playing (red). */
+.cw-chip {
+  display: none; flex-shrink: 0; padding: 0 6px; border-radius: 4px;
+  font-size: 11px; line-height: 16px; font-weight: var(--cw-bold); letter-spacing: .04em; text-transform: uppercase;
+  color: #FFFFFF; background: rgba(0, 0, 0, .45);
+}
+.cw-tile.connecting .cw-chip { display: block; animation: cw-pulse 1s ease-in-out infinite alternate; }
+.cw-tile.live .cw-chip { display: block; background: var(--cw-red); animation: none; }
+@keyframes cw-pulse { from { opacity: .4; } to { opacity: 1; } }
+
+/* A stale snapshot: the time it was taken, top right. */
+.cw-badge, .cw-note {
+  position: absolute; top: 6px; right: 6px; padding: 0 6px; border-radius: 4px;
+  font-size: 12px; line-height: 16px; color: #FFFFFF; background: rgba(0, 0, 0, .55);
+}
+.cw-note { left: 6px; right: auto; max-width: calc(100% - 12px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cw-message { font-size: var(--cw-fs-small); line-height: var(--cw-lh-small); color: var(--cw-muted); }
+.cw-message.error { color: var(--cw-red); }
+
+/*
+ * Live: the camera covers the whole widget (the grid, which keeps its height), letterboxed on black so the
+ * whole picture shows; widget.js gives a single row of tiles a full-width 16:9 minimum first.
+ */
+.cw-grid { position: relative; }
+.cw-tile.expanded { position: absolute; inset: 0; z-index: 2; aspect-ratio: auto; background: #000000; }
+.cw-tile.expanded .cw-img, .cw-tile.expanded .cw-video { object-fit: contain; }
+.cw-grid.has-expanded > .cw-tile:not(.expanded) { visibility: hidden; }

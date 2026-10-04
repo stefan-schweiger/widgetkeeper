@@ -61,6 +61,7 @@ export default class Diagnostics {
           };
         })
         .sort((a, b) => a.name.localeCompare(b.name));
+      out.cameras = this.probeCameras(devices);
       if (device) {
         const q = device.toLowerCase();
         const d = devices.find(x => x.id === device) || devices.find(x => String(x.name).toLowerCase().includes(q));
@@ -71,6 +72,18 @@ export default class Diagnostics {
     }
     out.log = this.lines.slice();
     return out;
+  }
+
+  /** Devices with camera images or videos. Never includes `getVideoUrl`: it returns the RTSP URL with the camera's password. */
+  private probeCameras(devices: any[]) {
+    return devices
+      .filter(d => d.images?.some((i: any) => i.type === 'camera') || d.videos?.length || d.class === 'camera')
+      .map(d => ({
+        id: d.id, name: d.name, class: d.class,
+        images: (d.images || []).map((i: any) => ({ id: i.id, type: i.type, title: i.title, imageId: i.imageObj?.id, lastUpdated: i.imageObj?.lastUpdated })),
+        videos: (d.videos || []).map((v: any) => ({ id: v.id, type: v.type, title: v.title, videoId: v.videoObj?.id, videoType: v.videoObj?.type })),
+      }))
+      .sort((a, b) => String(a.name).localeCompare(String(b.name)));
   }
 
   private describeDevice(d: any) {

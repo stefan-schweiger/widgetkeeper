@@ -5,6 +5,7 @@ interface Window {
   createQuickActionsWidget: (root: HTMLElement, opts?: object) => object;
   createSensorAlarmsWidget: (root: HTMLElement, opts?: object) => object;
   createWeatherWidget: (root: HTMLElement, opts?: object) => object;
+  createCamerasWidget: (root: HTMLElement, opts?: object) => object;
   createHeatmapWidget: (root: HTMLElement, opts?: object) => object;
   heatmapPeriodDays: (period: string | undefined) => number;
   thermostatPresetsFromSettings: (settings: Record<string, any>) => { values: object[] }[];

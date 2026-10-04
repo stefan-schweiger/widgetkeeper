@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|weather-dark|weather-light|hm-dark|hm-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -141,6 +141,24 @@ function sensorAlarms(t, theme) {
   </div>`;
 }
 
+// Cameras: a 2×2 grid of 16:9 snapshot tiles (flat scenes), each with a name pill; one plays live.
+function cameras(t, theme) {
+  const shadow = theme === 'dark' ? '0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const scenes = [
+    '<rect width="160" height="90" fill="#9FB8C9"/><rect y="50" width="160" height="40" fill="#6E7F5A"/><path d="M70 90L88 50h10l40 40Z" fill="#8C8A85"/><rect x="14" y="26" width="44" height="30" fill="#B9A58A"/><path d="M10 28L36 12l26 16Z" fill="#6B4E3D"/>',
+    '<rect width="160" height="90" fill="#C9C1B4"/><rect y="76" width="160" height="14" fill="#8F8B84"/><rect x="62" y="16" width="36" height="60" fill="#2F4A3F"/><rect x="18" y="24" width="28" height="32" fill="#DCE6EC"/><rect x="114" y="24" width="28" height="32" fill="#DCE6EC"/>',
+    '<rect width="160" height="90" fill="#B7CEDB"/><rect y="44" width="160" height="46" fill="#7A9A55"/><circle cx="32" cy="34" r="20" fill="#4E7340"/><circle cx="128" cy="30" r="24" fill="#5C8048"/><circle cx="74" cy="72" r="5" fill="#D9675B"/>',
+    '<rect width="160" height="90" fill="#D8D0C4"/><rect y="62" width="160" height="28" fill="#A88B6C"/><rect x="96" y="14" width="50" height="34" fill="#9CB8CC"/><rect x="14" y="40" width="64" height="24" rx="5" fill="#56677A"/>',
+  ];
+  const tile = (scene, i) => `<div style="position:relative;aspect-ratio:16/9;border-radius:32px;overflow:hidden;box-shadow:${shadow}">
+      <svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">${scene}</svg>
+      <div style="position:absolute;left:0;right:0;bottom:0;height:45%;background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,0))"></div>
+      <div style="position:absolute;left:28px;bottom:26px">${pill(150, 26, '#FFFFFF', 'opacity:.95')}</div>
+      ${i === 2 ? `<div style="position:absolute;right:24px;bottom:22px;width:84px;height:34px;border-radius:10px;background:${theme === 'dark' ? '#F25F5C' : '#E5484D'}"></div>` : ''}
+    </div>`;
+  return `<div style="width:880px;display:grid;grid-template-columns:repeat(2,1fr);gap:28px">${scenes.map(tile).join('')}</div>`;
+}
+
 // Weather Forecast: an hour strip (icon, temperature, precipitation, wind), fading out to the right.
 function weather(t) {
   const YELLOW = '#FFC531', cloud = t.fg === '#EDEEF0' ? '#B9BAC2' : '#AEB0B8';
@@ -220,6 +238,8 @@ const PREVIEWS = [
   { id: 'weather-light', label: '1h · Weather Forecast — preview-light.png',     theme: 'light', render: weather },
   { id: 'hm-dark',      label: '1k · Insights Heatmap — preview-dark.png',       theme: 'dark',  render: heatmap },
   { id: 'hm-light',     label: '1l · Insights Heatmap — preview-light.png',      theme: 'light', render: heatmap },
+  { id: 'cam-dark',     label: '1m · Cameras — preview-dark.png',                theme: 'dark',  render: cameras },
+  { id: 'cam-light',    label: '1n · Cameras — preview-light.png',               theme: 'light', render: cameras },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');

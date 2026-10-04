@@ -72,5 +72,13 @@
     "less": "Weniger",
     "more": "Mehr",
     "nothing": "Nichts gemeldet"
+  },
+  "cameras": {
+    "selectDevices": "Wähle Kameras in den Widget-Einstellungen.",
+    "error": "Kameras konnten nicht geladen werden.",
+    "noImage": "Kein Bild",
+    "unavailable": "Nicht verfügbar",
+    "live": "Live",
+    "liveFailed": "Livebild fehlgeschlagen"
   }
 }

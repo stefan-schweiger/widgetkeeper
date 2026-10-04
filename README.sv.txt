@@ -9,5 +9,6 @@ Ingående widgetar:
 - Sensorlarm: rutor som visar om en sensor har ett larm, som rök, vatten eller CO₂, och blir röda när den har det.
 - Väderprognos: symbol, temperatur, vind och nederbörd timme för timme för de kommande 36 timmarna, från MET Norway (yr.no).
 - Insights-värmekarta: en vecka av ett värde, som ljus, temperatur eller rörelse, som ett rutnät av veckodagar och timmar.
+- Kameror: två till sex kameror i ett rutnät av bilder som uppdateras med några sekunders mellanrum. Tryck på en för att se den live.
 
 Väderdata från MET Norway, licensierad under CC BY 4.0.

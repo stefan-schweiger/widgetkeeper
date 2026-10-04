@@ -91,5 +91,20 @@
     "pl": "Nowy widżet: Mapa cieplna Insights, tydzień jednej wartości (światło, temperatura, ruch …) jako siatka dni i godzin.",
     "ko": "새 위젯: 인사이트 히트맵. 한 가지 값(조도, 온도, 동작 …)의 일주일을 요일과 시간의 격자로 보여 줍니다.",
     "ar": "أداة جديدة: خريطة حرارية للرؤى، أسبوع من قيمة واحدة (الإضاءة، درجة الحرارة، الحركة …) كشبكة من أيام الأسبوع والساعات."
+  },
+  "0.6.0": {
+    "en": "New widget: Cameras, two to six cameras in one grid of snapshots that refresh every few seconds. Tap one to watch it live.",
+    "nl": "Nieuwe widget: Camera's, twee tot zes camera's in één raster van snapshots die elke paar seconden vernieuwen. Tik op een camera voor live beeld.",
+    "de": "Neues Widget: Kameras, zwei bis sechs Kameras in einem Raster aus Schnappschüssen, die sich alle paar Sekunden erneuern. Tippe auf eine für das Livebild.",
+    "fr": "Nouveau widget : Caméras, deux à six caméras dans une grille d'instantanés actualisés toutes les quelques secondes. Touchez-en une pour la voir en direct.",
+    "it": "Nuovo widget: Telecamere, da due a sei telecamere in un'unica griglia di istantanee aggiornate ogni pochi secondi. Toccane una per vederla dal vivo.",
+    "sv": "Ny widget: Kameror, två till sex kameror i ett rutnät av bilder som uppdateras med några sekunders mellanrum. Tryck på en för att se den live.",
+    "no": "Ny widget: Kameraer, to til seks kameraer i ett rutenett av bilder som oppdateres med noen sekunders mellomrom. Trykk på ett for å se det direkte.",
+    "es": "Nuevo widget: Cámaras, de dos a seis cámaras en una cuadrícula de instantáneas que se actualizan cada pocos segundos. Toca una para verla en vivo.",
+    "da": "Ny widget: Kameraer, to til seks kameraer i ét gitter af billeder, der opdateres med få sekunders mellemrum. Tryk på et for at se det live.",
+    "ru": "Новый виджет «Камеры»: от двух до шести камер в одной сетке снимков, обновляемых каждые несколько секунд. Нажмите на камеру, чтобы смотреть её в реальном времени.",
+    "pl": "Nowy widżet: Kamery, od dwóch do sześciu kamer w jednej siatce zdjęć odświeżanych co kilka sekund. Dotknij kamery, aby oglądać ją na żywo.",
+    "ko": "새 위젯: 카메라. 2~6대의 카메라를 몇 초마다 새로 고쳐지는 스냅샷 격자 하나로 보여 줍니다. 카메라를 탭하면 실시간으로 볼 수 있습니다.",
+    "ar": "أداة جديدة: الكاميرات، من كاميرتين إلى ست كاميرات في شبكة واحدة من اللقطات تتحدّث كل بضع ثوانٍ. المس كاميرا لمشاهدتها مباشرة."
   }
 }

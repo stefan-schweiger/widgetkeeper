@@ -1,6 +1,7 @@
 import Homey from 'homey';
 import Diagnostics, { DEBUG_LOG_SETTING } from './lib/Diagnostics.js';
 import { getAppApi } from './lib/appApi.js';
+import CameraService from './lib/CameraService.js';
 import ElectricityService from './lib/ElectricityService.js';
 import HeatmapService from './lib/HeatmapService.js';
 import QuickActionService from './lib/QuickActionService.js';
@@ -17,6 +18,7 @@ export default class WidgetkeeperApp extends Homey.App {
   sensorAlarms!: SensorAlarmService;
   weather!: WeatherService;
   heatmap!: HeatmapService;
+  cameras!: CameraService;
 
   async onInit() {
     this.diagnostics = new Diagnostics(this.homey);
@@ -39,6 +41,7 @@ export default class WidgetkeeperApp extends Homey.App {
     this.heatmap = new HeatmapService(this.homey, log, debug);
     this.heatmap.start();
     this.registerHeatmapSettings();
+    this.cameras = new CameraService(this.homey, log, debug);
     this.debug('Widgetkeeper has been initialized');
   }
 
@@ -68,6 +71,7 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.sensorAlarms?.stop();
     await this.weather?.stop();
     await this.heatmap?.stop();
+    await this.cameras?.stop();
   }
 
   /** Autocomplete for the thermostat widget: the device, then per-button options read from it. */
