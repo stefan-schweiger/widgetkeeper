@@ -119,6 +119,12 @@ describe('scale', () => {
     expect(root.querySelector('.hm-marker')).toBeNull();
   });
 
+  it('an on/off value that was never on is the lowest level, not the middle', () => {
+    expect(widget(history(() => 0, { type: 'boolean' })).levels(0)).toBe('000000000000');
+    expect(widget(history(() => 1, { type: 'boolean' })).levels(0)).toBe('444444444444');
+    expect(widget(history(() => 0)).levels(0)).toBe('222222222222');
+  });
+
   it('has no scale when nothing was reported', () => {
     const { root, levels } = widget(history(() => null));
     expect(root.querySelector('.hm-scale')).toBeNull();

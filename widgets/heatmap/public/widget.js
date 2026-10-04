@@ -80,9 +80,12 @@
     return out;
   }
 
-  /** 0 … LEVELS-1, evenly between `min` and `max`; the middle level when they're equal. */
-  function level(v, min, max) {
-    if (!(max > min)) return Math.floor(LEVELS / 2);
+  /**
+   * 0 … LEVELS-1, evenly between `min` and `max`; the middle level when they're equal,
+   * except an on/off value that was never on (`fromZero` and all 0 %), which is the lowest.
+   */
+  function level(v, min, max, fromZero) {
+    if (!(max > min)) return fromZero && max === 0 ? 0 : Math.floor(LEVELS / 2);
     return Math.min(LEVELS - 1, Math.floor(((v - min) / (max - min)) * LEVELS));
   }
 
@@ -195,7 +198,7 @@
         el('div', { class: 'hm-day', dir: 'auto', text: weekdayName(row.date, withDay) }, grid);
         const cells = el('div', { class: 'hm-cells' }, grid);
         row.cells.forEach((v, i) => {
-          const c = el('div', { class: v == null ? 'hm-cell none' : `hm-cell l${level(v, min, max)}` }, cells);
+          const c = el('div', { class: v == null ? 'hm-cell none' : `hm-cell l${level(v, min, max, cap.type === 'boolean')}` }, cells);
           const from = String(i * step).padStart(2, '0');
           c.title = `${weekdayName(row.date, true)} ${from}:00${v == null ? '' : ` · ${numberFormat(cap, v, min, max)}`}`;
         });
