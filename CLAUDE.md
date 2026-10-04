@@ -36,9 +36,38 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
   - Homey's Android app (a React Native WebView) ignores it. The native dashboard takes the touch about 100 ms in, before the first `touchmove`, and sends `pointercancel`; this was verified with an on-screen event log on a Galaxy Tab. No widget message is sent during touches, so no widget-side fix is possible.
   - So a tap selects (on `pointerdown`). A touch selection stays for 3 s after `pointerup`/`pointercancel`. Mouse selections reset on `pointerleave`.
   - It resamples the raw live readings to 120 points for the selected window and re-renders on a timer so the chart scrolls.
-- Colours are Homey CSS tokens with spec-hex fallbacks, defined on `.ew` (not `:root`) so the light-mode overrides in the preview inherit.
-- Both widgets stick to Homey's widget type scale (`--homey-font-size-*` with its matching `--homey-line-height-*`, and only the allowed weights: 14 regular, 17 any, 20 medium, 24/32 bold), `--homey-line-color(-light)` and `--homey-border-radius-*`, each with a px fallback. The font is set on `html`, so Homey's own font on `body` wins.
-- Spacing that is a 4 px step uses `--homey-su-N` (a mixed padding like `8px 10px` stays px), a 20 px icon uses `--homey-icon-size-medium` and a 1px line uses `--homey-line(-light)`, each with its px fallback. Colours and radii without a documented value (`--homey-text-color-danger`, `--homey-icon-color-*`, `--homey-border-radius-small` for 3px) stay as they are, so the look doesn't change.
+- Styling follows Homey's widget guide; see Widget styling below.
+
+## Widget styling
+Homey's guide: https://apps.developer.homey.app/the-basics/widgets/styling. Homey injects its stylesheet into every widget frame. The guide documents these tokens; outside Homey (the dev previews and screenshots) none of them is defined.
+- **Frame:** `body.homey-widget` (16 px padding), `.homey-widget-small` (8) or `.homey-widget-full` (0). The two transparent tile widgets use `-full`; the rest use `homey-widget`. `.homey-dark-mode` is set on the frame in dark mode (about 1 s in, by the SDK).
+- **Spacing:** `--homey-su` = 4 px; `--homey-su-1` … `--homey-su-8` = 4 … 32 px.
+- **Type:** sizes `--homey-font-size-small/default/large/xlarge/xxlarge` = 14/17/20/24/32 px, with matching `--homey-line-height-*` = 20/24/28/32/40 px. Weights: `--homey-font-weight-regular/medium/bold` = 400/500/700. Natively, only 14 regular, 17 any weight, 20 medium and 24/32 bold are used.
+  - The text classes are `.homey-text-bold/medium/regular/small/small-light` and `.homey-text-align-left/center/right`. The guide doesn't give the size of each class, so the widgets set the variables themselves.
+- **Text colours:** `--homey-text-color`, `-light` (less important or disabled), `-white`, `-blue/green/orange/red`, `-highlight/success/warning/danger`.
+- **Colours:** `--homey-background-color`. The palette is `--homey-color-mono-000…1000`, `--homey-color-blue/green/red-050…900` and `--homey-color-orange-500`. The semantic colours are `--homey-color-white/blue/green/orange/red/highlight/success/warning/danger`. Use `transparent` in `widget.compose.json` for a see-through widget.
+- **Lines:** `--homey-line-color(-light)`, and `--homey-line(-light)` (= `1px solid` that colour). The border classes are `.homey-border(-top/right/bottom/left)`.
+- **Radius:** `--homey-border-radius-small` and `--homey-border-radius-default`. The guide gives no values; our fallbacks are 3 and 14 px.
+- **Icons:** an SVG used as `mask-image`, with `--homey-icon-color-dark/light/white/blue/green/orange/red` and `--homey-icon-size-small/regular/medium` = 14/16/20 px. Tables: `.homey-table`, `.homey-table-striped`.
+
+How this project uses it:
+- Every widget defines its own aliases on its root (`--ew-*`, `--tw-*`, `--qa-*` …; not `:root`, so the light-mode overrides in the previews inherit). Each alias maps to a Homey token with a px or hex fallback (the spec's dark-theme value).
+  - Spacing that is a 4 px step uses `--homey-su-N`; a mixed padding like `8px 10px` stays px.
+  - A 20 px icon uses `--homey-icon-size-medium`, and a 1 px line uses `--homey-line(-light)`.
+  - The font is set on `html`, so Homey's own font on `body` wins.
+- The settings page (`settings/index.html`) uses Homey's settings classes (`homey-header`, `homey-form-*`, `homey-button-*`).
+- Deliberate exceptions, each measured or chosen, and documented under its widget:
+  - the 12/16 label size (no token);
+  - the native-tile radius (10 px) and the dark tile fills (`#181920`, `#2B2C36`, `#2E3039`);
+  - Sensor Alarms' 14/18 text and the thermostat's 12/16 button text;
+  - the alarm and temperature colour pairs (picked to pass 4.5:1 contrast).
+- Not switched, because the real values are unknown and switching could change the look:
+  - `--homey-text-color-danger` for error text (which uses `--homey-color-red`);
+  - `--homey-icon-color-*` for icons (which use the text or muted colour);
+  - `--homey-border-radius-small` for the 3 px heatmap cells;
+  - the `.homey-text-*` classes.
+  Read the real values in a widget on the Homey before switching any of them.
+- Checking a styling change: render `npm run screenshots` before and after. Every image except `electricity.png`, which changes with the time, should be byte-identical.
 
 ## Thermostat Shortcuts widget
 - Three preset buttons for one device. `lib/ThermostatService.ts` owns it; `lib/appApi.ts` holds the shared `createAppAPI` instance.

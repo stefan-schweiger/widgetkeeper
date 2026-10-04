@@ -28,6 +28,9 @@ npm run screenshots                    # render the README screenshots (docs/scr
 ## How it's built
 - **App code** is TypeScript (ESM), compiled by `tsc` to `.homeybuild/`. Relative imports need `.js` extensions.
 - **Widget front ends** (`widgets/*/public`) are plain JS with no build step, because Homey serves those files as-is.
+- **Styling** follows [Homey's widget styling guide](https://apps.developer.homey.app/the-basics/widgets/styling):
+  - Use Homey's CSS variables (`--homey-text-color`, `--homey-font-size-*`, `--homey-su-*`, `--homey-line-light` …), each with a fallback value, so the widgets also render in the browser previews.
+  - Stay on Homey's type scale. CLAUDE.md lists the tokens and the few deliberate exceptions.
 
 ### Previewing widgets in a browser
 `dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/weather-preview.html` and `dev/heatmap-preview.html` render the widgets with mock data, outside Homey.
