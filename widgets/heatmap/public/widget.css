@@ -22,6 +22,7 @@
   --hm-regular: var(--homey-font-weight-regular, 400);
   --hm-medium: var(--homey-font-weight-medium, 500);
   --hm-bold: var(--homey-font-weight-bold, 700);
+  container: hm / inline-size;
 }
 
 /* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
@@ -105,11 +106,21 @@ html, body { margin: 0; }
 .hm-now.end { transform: translateX(calc(-100% + 2px)); }
 .hm-now.center { left: 50%; }
 
-/* Legend */
-.hm-legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
-.hm-legend-group { display: flex; align-items: center; gap: 4px; }
-.hm-legend-group:first-child > span:not(.hm-swatch) { text-transform: uppercase; letter-spacing: .06em; font-weight: var(--hm-medium); }
-.hm-legend-group:first-child > span:first-child { margin-right: 4px; }
-.hm-legend-group:first-child > span:last-child { margin-left: 4px; }
-.hm-legend-group:last-child .hm-swatch { margin-right: 4px; }
-.hm-swatch { width: 20px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+/* Legend: less → more and the hatched "nothing reported", on one line; the latter's text truncates if it must. */
+.hm-legend { display: flex; flex-wrap: nowrap; justify-content: space-between; align-items: center; gap: 12px; min-width: 0; }
+.hm-legend-group { display: flex; align-items: center; gap: 3px; min-width: 0; }
+.hm-legend-group:first-child { flex-shrink: 0; }
+.hm-legend-group > span:not(.hm-swatch) { white-space: nowrap; }
+.hm-legend-group:first-child > span:not(.hm-swatch) { text-transform: uppercase; letter-spacing: .04em; font-weight: var(--hm-medium); }
+.hm-legend-group:first-child > span:first-child { margin-right: 3px; }
+.hm-legend-group:first-child > span:last-child { margin-left: 3px; }
+.hm-legend-group:last-child .hm-swatch { margin-right: 3px; }
+.hm-legend-group:last-child > span:last-child { overflow: hidden; text-overflow: ellipsis; }
+.hm-swatch { width: 16px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+/* Narrow widgets (300 px, ~270 px of content): smaller swatches, so "Nothing reported" still fits beside the scale. */
+@container hm (max-width: 300px) {
+  .hm-legend { gap: 8px; }
+  .hm-legend-group { gap: 2px; }
+  .hm-swatch { width: 9px; }
+  .hm-legend-group:first-child > span:not(.hm-swatch) { letter-spacing: 0; }
+}
