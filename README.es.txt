@@ -8,5 +8,6 @@ Widgets incluidos:
 - Acciones rápidas de dispositivos: mosaicos compactos que ejecutan la acción rápida de un dispositivo, como encender una luz o cerrar una puerta.
 - Alarmas de sensores: mosaicos que muestran si un sensor tiene una alarma, como humo, agua o CO₂, y se ponen en rojo cuando la tiene.
 - Previsión del tiempo: icono, temperatura, viento y precipitación hora a hora para las próximas 36 horas, de MET Norway (yr.no).
+- Mapa de calor de Insights: una semana de un valor, como luz, temperatura o movimiento, en una cuadrícula de días y horas.
 
 Datos meteorológicos de MET Norway, con licencia CC BY 4.0.

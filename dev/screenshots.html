@@ -6,8 +6,8 @@
   <title>Widget screenshots</title>
   <!--
     The README screenshots: the real widget code with mock data, laid out like Homey's dark dashboard on a
-    phone (390 px wide, colours sampled from an iPhone screenshot). `?s=electricity|thermostat|quickactions|sensoralarms|weather`
-    shows one, for scripts/render-screenshots.mjs; without it, all five.
+    phone (390 px wide, colours sampled from an iPhone screenshot). `?s=electricity|thermostat|quickactions|sensoralarms|weather|heatmap`
+    shows one, for scripts/render-screenshots.mjs; without it, all six.
     Device icons come from Homey's icon library. The render script downloads them to temp/screenshot-icons.js;
     without that file the tiles fall back to plain squares.
   -->
@@ -17,13 +17,16 @@
   <link rel="stylesheet" href="../widgets/quickactions/public/widget.css">
   <link rel="stylesheet" href="../widgets/sensoralarms/public/widget.css">
   <link rel="stylesheet" href="../widgets/weather/public/widget.css">
+  <link rel="stylesheet" href="../widgets/heatmap/public/widget.css">
   <script src="../widgets/electricity/public/widget.js"></script>
   <script src="../widgets/thermostat/public/widget.js"></script>
   <script src="../widgets/quickactions/public/widget.js"></script>
   <script src="../widgets/sensoralarms/public/widget.js"></script>
   <script src="../widgets/weather/public/widget.js"></script>
+  <script src="../widgets/heatmap/public/widget.js"></script>
   <script src="mock-electricity.js"></script>
   <script src="mock-weather.js"></script>
+  <script src="mock-heatmap.js"></script>
   <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
   <style>
     /* !important: the Quick Actions stylesheet makes the page transparent (it is a transparent widget). */
@@ -36,7 +39,7 @@
     .title { color: #E4E4E7; font-size: 20px; line-height: 28px; font-weight: 700; }
     /* A non-transparent widget's frame (default widget background, with Homey's widget padding). */
     .card { background: #1F2029; border-radius: 20px; padding: 16px; box-sizing: border-box; }
-    .card.tw-frame, .card.wf-frame { background: #181920; }
+    .card.tw-frame, .card.wf-frame, .card.hm-frame { background: #181920; }
   </style>
 </head>
 <body>
@@ -45,6 +48,7 @@
   <section class="shot" id="quickactions"><div class="title">Quick actions</div><div id="w-qa"></div></section>
   <section class="shot" id="sensoralarms"><div class="title">Alarms</div><div id="w-sa"></div></section>
   <section class="shot" id="weather"><div class="title">Weather</div><div class="card wf-frame"><div id="w-weather"></div></div></section>
+  <section class="shot" id="heatmap"><div class="title">Light</div><div class="card hm-frame"><div id="w-heatmap"></div></div></section>
 
   <script>
     const icon = name => (window.ICONS && ICONS[name]) || null;
@@ -86,6 +90,10 @@
       { id: '5', name: 'Laundry', icon: icon('washing-machine'), alarms: [alarm('alarm_water', false, 'Water alarm')] },
       { id: '6', name: 'Front door', icon: icon('door'), alarms: [alarm('alarm_contact', true, 'Contact alarm', true), alarm('alarm_tamper', false, 'Tamper alarm')] },
     ]);
+
+    const lux = mockHeatmapLux('2026-10-04', 9);
+    createHeatmapWidget(document.getElementById('w-heatmap'), { locale: 'en-GB', period: 'week', step: 2 })
+      .setData({ ...lux, name: 'Living room sensor', icon: icon('motion-sensor') || lux.icon });
 
     // A fixed afternoon, so the shot doesn't change with the time it's rendered.
     const weatherNow = new Date().setHours(13, 20, 0, 0);

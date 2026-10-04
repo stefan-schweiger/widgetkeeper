@@ -1,0 +1,115 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/heatmap-preview.html).
+ */
+.hm {
+  --hm-card: var(--homey-background-color, #1F2029);
+  --hm-text: var(--homey-text-color, #EDEEF0);
+  --hm-muted: var(--homey-text-color-light, #9C9DA5);
+  --hm-accent: var(--homey-color-blue, #2F8DF6);
+  --hm-empty: color-mix(in srgb, var(--hm-text) 7%, var(--hm-card));
+  /* Five steps from "less" to "more": the accent mixed into the empty tile colour. */
+  --hm-l0: color-mix(in oklab, var(--hm-accent) 12%, var(--hm-empty));
+  --hm-l1: color-mix(in oklab, var(--hm-accent) 32%, var(--hm-empty));
+  --hm-l2: color-mix(in oklab, var(--hm-accent) 54%, var(--hm-empty));
+  --hm-l3: color-mix(in oklab, var(--hm-accent) 77%, var(--hm-empty));
+  --hm-l4: var(--hm-accent);
+  /* Homey's type scale: only these size/line-height pairs, and the weights noted, are used natively. */
+  --hm-fs-small: var(--homey-font-size-small, 14px); --hm-lh-small: var(--homey-line-height-small, 20px); /* regular */
+  --hm-fs-default: var(--homey-font-size-default, 17px); --hm-lh-default: var(--homey-line-height-default, 24px);
+  /* Weekdays, the hour axis, the scale and the legend: a step below Homey's scale, like the electricity chart labels. */
+  --hm-fs-label: 12px; --hm-lh-label: 16px;
+  --hm-regular: var(--homey-font-weight-regular, 400);
+  --hm-medium: var(--homey-font-weight-medium, 500);
+  --hm-bold: var(--homey-font-weight-bold, 700);
+}
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+
+/* Dark mode: the frame looks like Homey's native device tiles (see the thermostat widget's .tw-frame). */
+.homey-dark-mode .hm-frame, .hm-frame.homey-dark-mode {
+  background-color: #181920;
+  border-radius: 10px;
+}
+.homey-dark-mode .hm-frame::after, .hm-frame.homey-dark-mode::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.hm-frame { position: relative; }
+.homey-dark-mode body.hm-frame::after, body.hm-frame.homey-dark-mode::after { position: fixed; }
+
+.hm { display: flex; flex-direction: column; gap: var(--homey-su-3, 12px); min-width: 0; color: var(--hm-text); }
+.hm [dir="auto"] { text-align: left; }
+.hm * { box-sizing: border-box; }
+
+/* Header, as in the thermostat widget */
+.hm-header { display: flex; align-items: center; gap: var(--homey-su-3, 12px); min-height: 44px; min-width: 0; }
+.hm-icon {
+  width: 40px; height: 40px; flex-shrink: 0; background: var(--hm-text);
+  -webkit-mask: var(--hm-icon) center / 36px 36px no-repeat; mask: var(--hm-icon) center / 36px 36px no-repeat;
+}
+.hm-icon.fallback {
+  background: none; -webkit-mask: none; mask: none;
+  border: 2.5px solid var(--hm-text); border-radius: 8px; width: 28px; height: 28px; margin: 6px;
+}
+.hm-titles { display: flex; flex-direction: column; min-width: 0; }
+.hm-name, .hm-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hm-name { font-size: var(--hm-fs-default); line-height: var(--hm-lh-default); font-weight: var(--hm-bold); }
+.hm-sub { font-size: var(--hm-fs-small); line-height: var(--hm-lh-small); font-weight: var(--hm-regular); color: var(--hm-muted); }
+.hm-header.message-only .hm-sub, .hm-sub.error { white-space: normal; }
+.hm-sub.error { color: var(--homey-color-red, #F25F5C); }
+
+.hm-body { display: flex; flex-direction: column; gap: var(--homey-su-4, 16px); }
+.hm-body, .hm-legend { font-size: var(--hm-fs-label); line-height: var(--hm-lh-label); color: var(--hm-muted); }
+
+/* The grid: weekday labels, then one row of cells per day */
+.hm-grid { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--homey-su-3, 12px); row-gap: 6px; align-items: center; }
+.hm-day { white-space: nowrap; }
+.hm-cells { display: grid; grid-template-columns: repeat(var(--hm-cols, 12), minmax(0, 1fr)); gap: 4px; }
+.hm-dense .hm-cells { gap: 2px; }
+.hm-cell { height: 14px; border-radius: 3px; background: var(--hm-empty); }
+.hm-dense .hm-cell { border-radius: 2px; }
+.hm-cell.l0, .hm-swatch.l0 { background: var(--hm-l0); }
+.hm-cell.l1, .hm-swatch.l1 { background: var(--hm-l1); }
+.hm-cell.l2, .hm-swatch.l2 { background: var(--hm-l2); }
+.hm-cell.l3, .hm-swatch.l3 { background: var(--hm-l3); }
+.hm-cell.l4, .hm-swatch.l4 { background: var(--hm-l4); }
+/* Nothing reported: hatched, so it doesn't read as the lowest level. */
+.hm-cell.none, .hm-swatch.none {
+  background: repeating-linear-gradient(135deg, transparent 0 3px, color-mix(in srgb, var(--hm-muted) 28%, transparent) 3px 4.5px);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--hm-muted) 30%, transparent);
+}
+
+/* Hour axis under the cells */
+.hm-axis { position: relative; height: var(--hm-lh-label); margin-top: 2px; }
+.hm-axis span { position: absolute; top: 0; transform: translateX(-50%); }
+.hm-axis span.start { transform: none; }
+.hm-axis span.end { transform: translateX(-100%); }
+
+/* Scale: lowest … highest, with a marker at the current value */
+.hm-scale { display: flex; align-items: flex-end; gap: var(--homey-su-2, 8px); }
+.hm-scale-end { white-space: nowrap; margin-bottom: -4px; }
+.hm-track { position: relative; flex: 1; min-width: 0; padding-top: 22px; }
+.hm-bar { height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--hm-l0), var(--hm-l2), var(--hm-l4)); }
+.hm-marker {
+  position: absolute; bottom: -3px; width: 4px; height: 14px; border-radius: 2px; transform: translateX(-50%);
+  background: var(--hm-text); box-shadow: 0 0 0 2px var(--hm-card);
+}
+.hm-now {
+  position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap;
+  color: var(--hm-text); font-weight: var(--hm-bold);
+}
+.hm-now.start { transform: translateX(-2px); }
+.hm-now.end { transform: translateX(calc(-100% + 2px)); }
+.hm-now.center { left: 50%; }
+
+/* Legend */
+.hm-legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
+.hm-legend-group { display: flex; align-items: center; gap: 4px; }
+.hm-legend-group:first-child > span:not(.hm-swatch) { text-transform: uppercase; letter-spacing: .06em; font-weight: var(--hm-medium); }
+.hm-legend-group:first-child > span:first-child { margin-right: 4px; }
+.hm-legend-group:first-child > span:last-child { margin-left: 4px; }
+.hm-legend-group:last-child .hm-swatch { margin-right: 4px; }
+.hm-swatch { width: 20px; height: 12px; border-radius: 3px; flex-shrink: 0; }

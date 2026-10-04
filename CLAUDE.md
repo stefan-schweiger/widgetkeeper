@@ -1,6 +1,6 @@
 # Widgetkeeper — notes for Claude
 
-Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widgets: **Electricity Overview** (id `electricity`), **Thermostat Shortcuts** (id `thermostat`), **Device Quick Actions** (id `quickactions`), **Sensor Alarms** (id `sensoralarms`) and **Weather Forecast** (id `weather`). Keep the ids; renaming them would break widgets already on dashboards. Its design spec is in `temp/Homey electricity dashboard widget.zip`; `temp/` is gitignored.
+Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widgets: **Electricity Overview** (id `electricity`), **Thermostat Shortcuts** (id `thermostat`), **Device Quick Actions** (id `quickactions`), **Sensor Alarms** (id `sensoralarms`), **Weather Forecast** (id `weather`) and **Insights Heatmap** (id `heatmap`). Keep the ids; renaming them would break widgets already on dashboards. Its design spec is in `temp/Homey electricity dashboard widget.zip`; `temp/` is gitignored.
 
 ## Commands
 - Use the **project-local Homey CLI v4**: `npx homey …`. The global `homey` is an old 3.7.x.
@@ -18,6 +18,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
   - `?snap=/temp/real-snapshot.json` loads a real captured snapshot.
   - `#live=0.4` / `#price=0.3` simulates a scrub.
   - `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html` and `dev/weather-preview.html` do the same for the other widgets. The weather page takes `?snap=/temp/met-compact.json` (a real MET response); its mock is `dev/mock-weather.js`.
+  - `dev/heatmap-preview.html` takes `?snap=/temp/heatmap-lux.json` (the `heatmapHistory` of `npm run diagnostics -- --json --heatmap <deviceId>:<capabilityId>`) and `?today=&hour=`; its mock is `dev/mock-heatmap.js`.
   - `?lang=de` (either page) uses `locales/de.json`, through `dev/i18n.js`.
   - Headless screenshots: `msedge --headless=new --screenshot=… --user-data-dir=<fresh dir>`. A fresh profile avoids a stale cached CSS.
 
@@ -112,8 +113,18 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - Footer: today's and tomorrow's high and low (`Today ↑10° ↓4°  Tomorrow ↑8° ↓-2°`, coloured like the temperatures), worked out in the widget from all 48 hours in the device's local days. Today only counts from the current hour, because the forecast starts there. In compact, `mm · m/s` sits on the right.
 - The dark frame (`.wf-frame`) copies the thermostat's `.tw-frame`.
 
+## Insights Heatmap widget
+- One capability's last week as weekday rows × hour columns, like Homey's own insights heatmaps (the user's reference screenshot). `lib/HeatmapService.ts` owns it; the local-hour bucketing is in `lib/heatmap.ts`.
+- Settings: `device` and `capability` autocompletes (the capability listener reads `settings.device.id`; `app.ts` registers both), `period` (`week`, the default: Mon–Sun with the days to come hatched; or the last `3`, `rolling` (7: its original id, kept for widgets already placed), `10` or `14` days, today last; `heatmapPeriodDays()` in `widget.js` maps it) and `step` (`1`/`2`/`3` hours per column, default 2), and the checkboxes `showScale` and `showLegend` (both on by default; the user asked to be able to hide them).
+- Capabilities: `heatmapCaps()`, every `number` or `boolean` with `insights === true`.
+- Endpoint: `GET /history?deviceId=&capabilityId=` returns `{name, icon, capability: {id, title, type, units, decimals}, value, days, language}`. The widget sends `days=` (3/7/10/14); the app returns 7 or 14 local days ending today (`spanFor()`: up to 7 → 7, more → 14; Homey's timezone), each `{date, weekday, hours: (number|null)[24]}`. Every period is a view of those days; with more than 7 rows the labels add the day of the month (`25 Fri`, in the language's order); the widget arranges the rows and merges hours into columns (the average of the reported hours).
+- Numbers: Insights `last7Days` or `last14Days` (both hourly), one average per UTC hour, put on its local hour (two on the autumn DST hour are averaged). Cached 5 min per span, dropped after 10 min without a request.
+- Booleans: Insights can't do a week (see the API facts), so the app records them. From the first `/history` request, a capability instance logs each change as `[t, 0|1]`, backfilled with Insights' last 50 changes (`mergeChanges`). They're kept in the app setting `heatmapHistory` (saved at most once a minute, pruned to 15 days), resubscribed on app start, and forgotten 8 days after the last request. A cell is the share of the known part of the hour that was true (`hourlyShareTrue`, in 15-min slices so half-hour timezones work).
+- Scale: 5 levels between the lowest and highest cell shown (equal → the middle level); booleans start at 0 % (the user chose min–max, but a little motion then read as "less"). The bar shows min/max and a marker with `5.2 lx now`; booleans show `Active now`/`Inactive now` instead. Colours are Homey's blue mixed into the empty-cell colour (`--hm-l0…4`); the reference was purple, the project keeps Homey's blue.
+- Type: weekdays, axis, scale and legend are 12/16 like the electricity axis labels. The dark frame `.hm-frame` copies `.tw-frame`. No realtime; the widget refetches every 5 min.
+
 ## Diagnostics (no Docker needed)
-- **Read it yourself with `npm run diagnostics`** (`scripts/diagnostics.mjs`); don't ask the user to paste it. It calls the app's `GET /diagnostics` on the active Homey through `homey api raw`, which uses the CLI's login. Options: `-- --device <id|name>`, `--devices`, `--json`, `--debug on|off`. Right after an install the app may still be starting, so retry.
+- **Read it yourself with `npm run diagnostics`** (`scripts/diagnostics.mjs`); don't ask the user to paste it. It calls the app's `GET /diagnostics` on the active Homey through `homey api raw`, which uses the CLI's login. Options: `-- --device <id|name>`, `--devices`, `--json`, `--debug on|off`, `--heatmap <deviceId>:<capabilityId>[:<days>]` (adds the heatmap's `/history` for it; note this starts recording a boolean, as a widget would). Right after an install the app may still be starting, so retry.
 - `lib/Diagnostics.ts` keeps the last 500 log lines. The report's `weather` section has the rounded location, the last fetch, `Expires`, and the last status and error. `app.log`/`app.error` are overridden to feed it.
 - Errors and warnings always go to `log`. Routine detail (tracking, timings, applies, widget load marks) goes to `debug`, which logs only while the `debugLog` app setting is on (`npm run diagnostics -- --debug on`; off by default, and the report shows it). Services take `debug` as an optional third constructor argument.
 - Load timings (`lib/Timings.ts`, debug): each snapshot/state request logs its total and per-step ms. A widget's first request also sends `perf=` (frame start, HTML, SDK ready, request), logged as `<Widget> widget: frame started … SDK ready 1100 ms`.
@@ -125,6 +136,8 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - Dynamic prices: `energy.fetchDynamicElectricityPrices({ date: 'YYYY-MM-DD' })` returns `{ priceUnit: 'DKK', interval: 60, pricesPerInterval: [{ periodStart, periodEnd, value }] }`. Zone DK2. `getCurrency()` returns `"DKK"`.
 - Insights: `getLogEntries({ uri: 'homey:device:<id>', id: 'homey:device:<id>:<cap>', resolution })`. **The `id` is the full log id.**
   - `lastHour` has a 5 s step; `last24Hours` has a 5 min step.
+  - `last7Days` (and `last14Days`, `thisWeek`) on a **numeric** log: `{values, start, end, step: 3600000, …}`, one average per hour, `t` = the hour's start; the current hour is included.
+  - A **boolean** log ignores the resolution: it always returns just the last 50 changes (`{id, values}`, `v: true/false`), whatever `resolution`, `limit` etc. say (verified 2026-10-04). For a motion sensor that's under a day. Querying many logs quickly gets `Too many requests.`
   - The frient meter logs power as `energy_power`, not `measure_power`. The service reads `measure_power`, then `energy_power` (a missing log throws), and remembers the one that worked per device. Don't go back to `insights.getLogs()`: it lists every log on the Homey.
 - The meter is a frient EMIZB-141 ("Electricity Meter", id `3450f8d3-…`). It reports `measure_power` about every 10 s, and Homey doesn't re-emit unchanged values.
 - Widget `devices` setting (`type: global, singular, filter capabilities measure_power`); read it with `Homey.getDeviceIds()`.

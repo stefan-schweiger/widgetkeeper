@@ -60,5 +60,17 @@
     "updated": "Bijgewerkt om __time__",
     "copied": "Gekopieerd naar klembord",
     "shareTitle": "Widgetkeeper-diagnose"
+  },
+  "heatmap": {
+    "selectDevice": "Kies een apparaat en een waarde in de widgetinstellingen.",
+    "selectDeviceFirst": "Kies eerst een apparaat",
+    "onOff": "Aan/uit",
+    "error": "Kan de geschiedenis niet laden.",
+    "now": "Nu __value__",
+    "activeNow": "Nu actief",
+    "inactiveNow": "Nu inactief",
+    "less": "Minder",
+    "more": "Meer",
+    "nothing": "Niets gemeld"
   }
 }

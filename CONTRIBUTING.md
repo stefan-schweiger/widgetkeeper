@@ -30,7 +30,7 @@ npm run screenshots                    # render the README screenshots (docs/scr
 - **Widget front ends** (`widgets/*/public`) are plain JS with no build step, because Homey serves those files as-is.
 
 ### Previewing widgets in a browser
-`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html` and `dev/weather-preview.html` render the widgets with mock data, outside Homey.
+`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/weather-preview.html` and `dev/heatmap-preview.html` render the widgets with mock data, outside Homey.
 1. Serve the repo root, e.g. `python -m http.server 8765`.
 2. Open `/dev/preview.html`.
 3. Optionally add `#live=0.4` or `#price=0.3` to the URL to simulate scrubbing.
@@ -44,6 +44,8 @@ lib/ThermostatService.ts        thermostat state tracking and preset apply
 lib/QuickActionService.ts       quick-action state tracking and triggering
 lib/SensorAlarmService.ts       alarm capability tracking
 lib/WeatherService.ts           MET Norway forecast fetching and caching
+lib/HeatmapService.ts           Insights history and on/off recording for the heatmap
+lib/heatmap.ts                  local-hour bucketing for the heatmap
 lib/deviceIcon.ts               device and capability icons, as SVG data URLs
 lib/appApi.ts                   shared HomeyAPI instance
 lib/Diagnostics.ts              in-memory log buffer
@@ -53,6 +55,7 @@ widgets/thermostat/             widget manifest, api.ts, public/ (renderer)
 widgets/quickactions/           widget manifest, api.ts, public/ (renderer)
 widgets/sensoralarms/           widget manifest, api.ts, public/ (renderer)
 widgets/weather/                widget manifest, api.ts, public/ (renderer, vendored MET icons)
+widgets/heatmap/                widget manifest, api.ts, public/ (renderer)
 settings/                       app settings page (diagnostics)
 dev/                            browser previews with mock data; screenshots.html for the README
 scripts/                        app image, widget preview and screenshot generators

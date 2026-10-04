@@ -60,5 +60,17 @@
     "updated": "تم التحديث في __time__",
     "copied": "تم النسخ إلى الحافظة",
     "shareTitle": "تشخيص Widgetkeeper"
+  },
+  "heatmap": {
+    "selectDevice": "اختر جهازًا وقيمة في إعدادات الأداة.",
+    "selectDeviceFirst": "اختر جهازًا أولاً",
+    "onOff": "تشغيل/إيقاف",
+    "error": "تعذّر تحميل السجل.",
+    "now": "الآن __value__",
+    "activeNow": "نشط الآن",
+    "inactiveNow": "غير نشط الآن",
+    "less": "أقل",
+    "more": "أكثر",
+    "nothing": "لا بيانات"
   }
 }

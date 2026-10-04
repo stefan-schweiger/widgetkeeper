@@ -1,5 +1,6 @@
 import { inspect } from 'node:util';
 import type Homey from 'homey';
+import { heatmapCaps } from './HeatmapService.js';
 import { alarmCaps } from './SensorAlarmService.js';
 import { getAppApi } from './appApi.js';
 
@@ -38,6 +39,7 @@ export default class Diagnostics {
       uptimeMinutes: Math.round((Date.now() - this.startedAt) / 60e3),
       debugLog: this.homey.settings.get(DEBUG_LOG_SETTING) === true,
       weather: (this.homey.app as any)?.weather?.describe?.() ?? null,
+      heatmap: (this.homey.app as any)?.heatmap?.describe?.() ?? null,
     };
     try {
       const api = await getAppApi(this.homey);
@@ -55,6 +57,7 @@ export default class Diagnostics {
             qaType: cap?.type ?? null, qaSetable: cap?.setable ?? null, qaIconObj: cap?.iconObj ?? null,
             booleanCaps: (d.capabilities as string[] || []).filter(id => d.capabilitiesObj?.[id]?.type === 'boolean'),
             alarms: alarmCaps(d).map(a => `${a.capabilityId}=${a.value}`),
+            logged: heatmapCaps(d).map(c => c.id),
           };
         })
         .sort((a, b) => a.name.localeCompare(b.name));

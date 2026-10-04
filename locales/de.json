@@ -60,5 +60,17 @@
     "updated": "Aktualisiert um __time__",
     "copied": "In die Zwischenablage kopiert",
     "shareTitle": "Widgetkeeper-Diagnose"
+  },
+  "heatmap": {
+    "selectDevice": "Wähle ein Gerät und einen Wert in den Widget-Einstellungen.",
+    "selectDeviceFirst": "Wähle zuerst ein Gerät",
+    "onOff": "Ein/Aus",
+    "error": "Verlauf konnte nicht geladen werden.",
+    "now": "Jetzt __value__",
+    "activeNow": "Jetzt aktiv",
+    "inactiveNow": "Jetzt inaktiv",
+    "less": "Weniger",
+    "more": "Mehr",
+    "nothing": "Nichts gemeldet"
   }
 }

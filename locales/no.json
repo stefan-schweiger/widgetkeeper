@@ -60,5 +60,17 @@
     "updated": "Oppdatert __time__",
     "copied": "Kopiert til utklippstavlen",
     "shareTitle": "Widgetkeeper-diagnostikk"
+  },
+  "heatmap": {
+    "selectDevice": "Velg en enhet og en verdi i widgetinnstillingene.",
+    "selectDeviceFirst": "Velg en enhet først",
+    "onOff": "Av/på",
+    "error": "Kunne ikke laste inn historikken.",
+    "now": "__value__ nå",
+    "activeNow": "Aktiv nå",
+    "inactiveNow": "Inaktiv nå",
+    "less": "Mindre",
+    "more": "Mer",
+    "nothing": "Ingenting rapportert"
   }
 }

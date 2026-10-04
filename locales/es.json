@@ -60,5 +60,17 @@
     "updated": "Actualizado a las __time__",
     "copied": "Copiado al portapapeles",
     "shareTitle": "Diagnóstico de Widgetkeeper"
+  },
+  "heatmap": {
+    "selectDevice": "Elige un dispositivo y un valor en los ajustes del widget.",
+    "selectDeviceFirst": "Elige primero un dispositivo",
+    "onOff": "Encendido/apagado",
+    "error": "No se pudo cargar el historial.",
+    "now": "__value__ ahora",
+    "activeNow": "Activo ahora",
+    "inactiveNow": "Inactivo ahora",
+    "less": "Menos",
+    "more": "Más",
+    "nothing": "Sin datos"
   }
 }

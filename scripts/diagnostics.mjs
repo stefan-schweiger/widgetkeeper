@@ -5,6 +5,7 @@
 //   npm run diagnostics -- --device Aircon  plus one device's full capability details (id or part of a name)
 //   npm run diagnostics -- --devices        plus the device list (quick actions, thermostats)
 //   npm run diagnostics -- --json           the whole report as JSON
+//   npm run diagnostics -- --heatmap <deviceId>:<capabilityId>[:<days>]   plus the heatmap widget's history for it (JSON)
 //   npm run diagnostics -- --debug on|off   turns routine (debug) logging on or off first
 
 import { execFileSync } from 'node:child_process';
@@ -22,6 +23,7 @@ const { values: opts } = parseArgs({
     devices: { type: 'boolean' },
     json: { type: 'boolean' },
     debug: { type: 'string' },
+    heatmap: { type: 'string' },
   },
 });
 
@@ -49,19 +51,23 @@ if (opts.debug !== undefined) {
   homeyApi('PUT', `/api/manager/apps/app/${APP_ID}/setting/debugLog`, { value: opts.debug === 'on' });
 }
 
-const query = opts.device ? `?device=${encodeURIComponent(opts.device)}` : '';
+const params = new URLSearchParams();
+if (opts.device) params.set('device', opts.device);
+if (opts.heatmap) params.set('heatmap', opts.heatmap);
+const query = params.size ? `?${params}` : '';
 const report = homeyApi('GET', `/api/app/${APP_ID}/diagnostics${query}`);
 
 if (opts.json) {
   console.log(JSON.stringify(report, null, 2));
 } else {
-  const { log = [], devices, thermostats, device, ...status } = report;
+  const { log = [], devices, thermostats, device, heatmapHistory, ...status } = report;
   console.log(Object.entries(status).map(([k, v]) => `${k}: ${typeof v === 'string' ? v : JSON.stringify(v)}`).join('\n'));
   if (opts.devices) {
     console.log('\nthermostats:', JSON.stringify(thermostats, null, 2));
     console.log('\ndevices:', JSON.stringify(devices, null, 2));
   }
   if (device) console.log('\ndevice:', JSON.stringify(device, null, 2));
+  if (heatmapHistory) console.log('\nheatmapHistory:', JSON.stringify(heatmapHistory));
   console.log(`\nlog (${log.length} lines):`);
   for (const line of log) console.log(line);
 }

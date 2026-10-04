@@ -8,5 +8,6 @@ Enthaltene Widgets:
 - Geräte-Schnellaktionen: kompakte Kacheln, die die Schnellaktion eines Geräts ausführen, etwa ein Licht einschalten oder eine Tür abschließen.
 - Sensoralarme: Kacheln, die zeigen, ob ein Sensor einen Alarm hat, etwa Rauch, Wasser oder CO₂, und dann rot werden.
 - Wettervorhersage: Symbol, Temperatur, Wind und Niederschlag Stunde für Stunde für die nächsten 36 Stunden, von MET Norway (yr.no).
+- Insights-Heatmap: eine Woche eines Werts, etwa Licht, Temperatur oder Bewegung, als Raster aus Wochentagen und Stunden.
 
 Wetterdaten von MET Norway, lizenziert unter CC BY 4.0.

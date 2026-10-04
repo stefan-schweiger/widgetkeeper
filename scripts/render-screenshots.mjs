@@ -9,12 +9,12 @@ import { pathToFileURL } from 'node:url';
 
 const EDGE = process.env.EDGE || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const page = pathToFileURL(resolve('dev/screenshots.html')).href;
-const SHOTS = ['electricity', 'thermostat', 'quickactions', 'sensoralarms', 'weather'];
+const SHOTS = ['electricity', 'thermostat', 'quickactions', 'sensoralarms', 'weather', 'heatmap'];
 const WIDTH = 390;
 const SCALE = 3;
 
 // Homey's icon library, as the Homey app shows device icons. Not committed: fetched into temp/ (gitignored).
-const ICONS = ['climate', 'christmas-lights', 'lock', 'light-standing', 'speaker', 'light-hanging', 'smoke-detector', 'air-purifier', 'washing-machine', 'door'];
+const ICONS = ['climate', 'christmas-lights', 'lock', 'light-standing', 'speaker', 'light-hanging', 'smoke-detector', 'air-purifier', 'washing-machine', 'door', 'motion-sensor'];
 const icons = {};
 for (const name of ICONS) {
   const res = await fetch(`https://my.homey.app/img/devices/${name}.svg`);

@@ -19,6 +19,8 @@ const OUT = {
   'sa-light': 'widgets/sensoralarms/preview-light.png',
   'weather-dark': 'widgets/weather/preview-dark.png',
   'weather-light': 'widgets/weather/preview-light.png',
+  'hm-dark': 'widgets/heatmap/preview-dark.png',
+  'hm-light': 'widgets/heatmap/preview-light.png',
 };
 
 const only = process.argv.slice(2);

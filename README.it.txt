@@ -8,5 +8,6 @@ Widget inclusi:
 - Azioni rapide dispositivi: riquadri compatti che eseguono l'azione rapida di un dispositivo, come accendere una luce o chiudere una porta.
 - Allarmi sensori: riquadri che mostrano se un sensore ha un allarme, come fumo, acqua o CO₂, e diventano rossi quando lo ha.
 - Previsioni meteo: icona, temperatura, vento e precipitazioni ora per ora per le prossime 36 ore, da MET Norway (yr.no).
+- Mappa di calore Insights: una settimana di un valore, come luce, temperatura o movimento, in una griglia di giorni e ore.
 
 Dati meteo di MET Norway, con licenza CC BY 4.0.

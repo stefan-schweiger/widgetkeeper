@@ -8,5 +8,6 @@ Widgets inclus :
 - Actions rapides d'appareils : des tuiles compactes qui lancent l'action rapide d'un appareil, comme allumer une lampe ou verrouiller une porte.
 - Alarmes des capteurs : des tuiles qui indiquent si un capteur est en alarme (fumée, eau, CO₂…) et deviennent rouges quand c'est le cas.
 - Prévisions météo : icône, température, vent et précipitations heure par heure pour les 36 prochaines heures, par MET Norway (yr.no).
+- Carte thermique Insights : une semaine d'une valeur, comme la lumière, la température ou le mouvement, en grille de jours et d'heures.
 
 Données météo de MET Norway, sous licence CC BY 4.0.

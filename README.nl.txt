@@ -8,5 +8,6 @@ Inbegrepen widgets:
 - Snelle apparaatacties: compacte tegels die de snelle actie van een apparaat uitvoeren, zoals een lamp aanzetten of een deur op slot doen.
 - Sensoralarmen: tegels die laten zien of een sensor een alarm heeft, zoals rook, water of CO₂, en rood worden als dat zo is.
 - Weersverwachting: icoon, temperatuur, wind en neerslag per uur voor de komende 36 uur, van MET Norway (yr.no).
+- Insights-heatmap: een week van één waarde, zoals licht, temperatuur of beweging, als raster van weekdagen en uren.
 
 Weergegevens van MET Norway, onder licentie CC BY 4.0.

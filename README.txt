@@ -8,5 +8,6 @@ Included widgets:
 - Device Quick Actions: compact tiles that run a device's quick action, like turning on a light or locking a door.
 - Sensor Alarms: tiles that show whether a sensor has an alarm, like smoke, water or CO₂, and turn red when it does.
 - Weather Forecast: icon, temperature, wind and precipitation hour by hour for the next 36 hours, from MET Norway (yr.no).
+- Insights Heatmap: a week of one value, like light, temperature or motion, as a grid of weekdays and hours.
 
 Weather data from MET Norway, licensed under CC BY 4.0.

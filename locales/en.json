@@ -60,5 +60,17 @@
     "updated": "Updated __time__",
     "copied": "Copied to clipboard",
     "shareTitle": "Widgetkeeper diagnostics"
+  },
+  "heatmap": {
+    "selectDevice": "Select a device and a value in the widget settings.",
+    "selectDeviceFirst": "Select a device first",
+    "onOff": "On/off",
+    "error": "Could not load the history.",
+    "now": "__value__ now",
+    "activeNow": "Active now",
+    "inactiveNow": "Inactive now",
+    "less": "Less",
+    "more": "More",
+    "nothing": "Nothing reported"
   }
 }

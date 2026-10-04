@@ -76,5 +76,20 @@
     "pl": "Przegląd energii: nowe ustawienie Wygładzone linie wykresów rysuje moc na żywo i zużycie jako gładkie krzywe i zaokrągla stopnie ceny.",
     "ko": "전기 개요: 새 설정 \"차트 선 부드럽게\"는 실시간 전력과 사용량을 부드러운 곡선으로 그리고 가격 계단의 모서리를 둥글게 합니다.",
     "ar": "نظرة عامة على الكهرباء: إعداد جديد، تنعيم خطوط المخطط، يرسم القدرة المباشرة والاستهلاك كمنحنيات ناعمة ويدوّر درجات السعر."
+  },
+  "0.5.0": {
+    "en": "New widget: Insights Heatmap, a week of one value (light, temperature, motion …) as a grid of weekdays and hours.",
+    "nl": "Nieuwe widget: Insights-heatmap, een week van één waarde (licht, temperatuur, beweging …) als raster van weekdagen en uren.",
+    "de": "Neues Widget: Insights-Heatmap, eine Woche eines Werts (Licht, Temperatur, Bewegung …) als Raster aus Wochentagen und Stunden.",
+    "fr": "Nouveau widget : Carte thermique Insights, une semaine d'une valeur (lumière, température, mouvement …) en grille de jours et d'heures.",
+    "it": "Nuovo widget: Mappa di calore Insights, una settimana di un valore (luce, temperatura, movimento …) in una griglia di giorni e ore.",
+    "sv": "Ny widget: Insights-värmekarta, en vecka av ett värde (ljus, temperatur, rörelse …) som ett rutnät av veckodagar och timmar.",
+    "no": "Ny widget: Insights-varmekart, en uke av én verdi (lys, temperatur, bevegelse …) som et rutenett av ukedager og timer.",
+    "es": "Nuevo widget: Mapa de calor de Insights, una semana de un valor (luz, temperatura, movimiento …) en una cuadrícula de días y horas.",
+    "da": "Ny widget: Insights-heatmap, en uge af én værdi (lys, temperatur, bevægelse …) som et gitter af ugedage og timer.",
+    "ru": "Новый виджет «Тепловая карта Insights»: неделя одного значения (освещённость, температура, движение …) в виде сетки дней и часов.",
+    "pl": "Nowy widżet: Mapa cieplna Insights, tydzień jednej wartości (światło, temperatura, ruch …) jako siatka dni i godzin.",
+    "ko": "새 위젯: 인사이트 히트맵. 한 가지 값(조도, 온도, 동작 …)의 일주일을 요일과 시간의 격자로 보여 줍니다.",
+    "ar": "أداة جديدة: خريطة حرارية للرؤى، أسبوع من قيمة واحدة (الإضاءة، درجة الحرارة، الحركة …) كشبكة من أيام الأسبوع والساعات."
   }
 }

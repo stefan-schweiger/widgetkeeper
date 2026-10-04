@@ -60,5 +60,17 @@
     "updated": "Mis à jour à __time__",
     "copied": "Copié dans le presse-papiers",
     "shareTitle": "Diagnostic Widgetkeeper"
+  },
+  "heatmap": {
+    "selectDevice": "Choisissez un appareil et une valeur dans les réglages du widget.",
+    "selectDeviceFirst": "Choisissez d'abord un appareil",
+    "onOff": "Marche/arrêt",
+    "error": "Impossible de charger l'historique.",
+    "now": "__value__ maintenant",
+    "activeNow": "Actif maintenant",
+    "inactiveNow": "Inactif maintenant",
+    "less": "Moins",
+    "more": "Plus",
+    "nothing": "Aucune donnée"
   }
 }

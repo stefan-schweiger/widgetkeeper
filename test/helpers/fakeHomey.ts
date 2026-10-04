@@ -20,6 +20,9 @@ export type FakeCap = {
   max?: number,
   step?: number,
   iconObj?: { id?: string, url?: string } | null,
+  /** Whether Homey logs it in Insights. */
+  insights?: boolean,
+  decimals?: number,
 };
 
 export type FakeDeviceOptions = {
@@ -109,6 +112,7 @@ export function fakeApi(opts: FakeApiOptions = {}) {
 }
 
 export function fakeHomey(api: ReturnType<typeof fakeApi>) {
+  const settings = new Map<string, unknown>();
   return {
     fakeApi: api,
     setTimeout: (fn: () => void, ms: number) => setTimeout(fn, ms),
@@ -118,6 +122,10 @@ export function fakeHomey(api: ReturnType<typeof fakeApi>) {
     api: { realtime: vi.fn() },
     clock: { getTimezone: () => 'Europe/Copenhagen' },
     i18n: { getLanguage: () => 'en' },
+    settings: {
+      get: (key: string) => settings.get(key) ?? null,
+      set: vi.fn((key: string, value: unknown) => { settings.set(key, JSON.parse(JSON.stringify(value))); }),
+    },
     geolocation: { getLatitude: () => 55.6761234, getLongitude: () => 12.5683456, on: vi.fn(), off: vi.fn() },
     manifest: { id: 'com.thomassidor.widgetkeeper', version: '0.3.0' },
     __: () => undefined,

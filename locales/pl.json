@@ -60,5 +60,17 @@
     "updated": "Zaktualizowano o __time__",
     "copied": "Skopiowano do schowka",
     "shareTitle": "Diagnostyka Widgetkeeper"
+  },
+  "heatmap": {
+    "selectDevice": "Wybierz urządzenie i wartość w ustawieniach widżetu.",
+    "selectDeviceFirst": "Najpierw wybierz urządzenie",
+    "onOff": "Wł./wył.",
+    "error": "Nie udało się wczytać historii.",
+    "now": "Teraz __value__",
+    "activeNow": "Teraz aktywne",
+    "inactiveNow": "Teraz nieaktywne",
+    "less": "Mniej",
+    "more": "Więcej",
+    "nothing": "Brak danych"
   }
 }

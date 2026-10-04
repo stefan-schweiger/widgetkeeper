@@ -2,6 +2,14 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 0.5.0
+
+### New: Insights Heatmap
+- A week of one value as a grid: a row per weekday, a column per 1, 2 or 3 hours, shaded from the lowest to the highest value shown, like Homey's own heatmaps. Hours with nothing reported are hatched.
+- Works with any number Homey logs in Insights (light, temperature, power, CO₂ …) and with on/off values such as motion or a door contact, shown as the share of each hour they were on.
+- Shows *this week* (Monday to Sunday) or the last 3, 7, 10 or 14 days, with a scale from the lowest to the highest value and a marker at the current one. The scale and the legend can each be switched off.
+- Homey's Insights only keep the last 50 changes of an on/off value, so the app records those itself from when the widget is added; their history fills in over the first days.
+
 ## 0.4.1
 
 ### Electricity Overview

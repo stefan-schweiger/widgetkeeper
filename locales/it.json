@@ -60,5 +60,17 @@
     "updated": "Aggiornato alle __time__",
     "copied": "Copiato negli appunti",
     "shareTitle": "Diagnostica Widgetkeeper"
+  },
+  "heatmap": {
+    "selectDevice": "Scegli un dispositivo e un valore nelle impostazioni del widget.",
+    "selectDeviceFirst": "Scegli prima un dispositivo",
+    "onOff": "Acceso/spento",
+    "error": "Impossibile caricare la cronologia.",
+    "now": "Ora __value__",
+    "activeNow": "Attivo ora",
+    "inactiveNow": "Inattivo ora",
+    "less": "Meno",
+    "more": "Più",
+    "nothing": "Nessun dato"
   }
 }

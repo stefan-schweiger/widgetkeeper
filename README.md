@@ -11,6 +11,7 @@ I built these to replace a few native Homey widgets that didn't quite behave the
 | [Device Quick Actions](#device-quick-actions) | Compact tiles that run a device's quick action with one tap |
 | [Sensor Alarms](#sensor-alarms) | Tiles that show a sensor's alarm and turn red when one is on |
 | [Weather Forecast](#weather-forecast) | The next 36 hours, hour by hour, from MET Norway (yr.no) |
+| [Insights Heatmap](#insights-heatmap) | A week of one value (light, temperature, motion …) as a grid of weekdays and hours |
 
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="390">
@@ -105,6 +106,21 @@ Swipe the hours sideways to see further ahead. A thin line marks each new day. U
 The forecast needs no other setup: the widget uses the location set for your Homey (Homey app → Settings → Location).
 
 The forecast is shared by all weather widgets and only fetched while one is on screen, at most as often as MET Norway updates it. Weather data from MET Norway is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The weather icons are [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
+
+## Insights Heatmap
+<img src="docs/screenshots/heatmap.png" alt="Insights Heatmap on a Homey dashboard" width="390">
+
+A week of one device value as a grid: a row per weekday and a column per 1, 2 or 3 hours, shaded from the lowest to the highest value shown. Under it, a scale from the lowest to the highest value with a marker at the current one. Hours with nothing reported are hatched, such as the rest of today.
+
+It works with any number Homey logs in Insights, such as light, temperature, power or CO₂, and with on/off values such as motion, a door contact or a light being on. For those, each cell is the share of the hour they were on, and the scale starts at 0 %.
+
+**Setting it up**
+1. Add the widget to a dashboard and pick a device, then one of its values.
+2. Choose **Days**: *This week (Mon–Sun)*, or the last 3, 7, 10 or 14 days. With more than 7 days, each row also shows the date.
+3. Choose **Hours per column**: 1, 2 (the default) or 3.
+4. Optionally switch off **Show scale** or **Show legend** for a more compact widget.
+
+On/off values fill in over the first days. Homey's Insights only keep the last 50 changes of an on/off value, which for a busy motion sensor is less than a day. So the app records them itself from the moment the widget first loads, and keeps up to 14 days of them, until 8 days after the widget was last shown. Numbers come straight from Insights and show the whole week right away.
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic. The widgets follow Homey's language.

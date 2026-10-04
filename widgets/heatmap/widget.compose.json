@@ -1,0 +1,338 @@
+{
+  "name": {
+    "en": "Insights Heatmap",
+    "nl": "Insights-heatmap",
+    "de": "Insights-Heatmap",
+    "fr": "Carte thermique Insights",
+    "it": "Mappa di calore Insights",
+    "sv": "Insights-värmekarta",
+    "no": "Insights-varmekart",
+    "es": "Mapa de calor de Insights",
+    "da": "Insights-heatmap",
+    "ru": "Тепловая карта Insights",
+    "pl": "Mapa cieplna Insights",
+    "ko": "인사이트 히트맵",
+    "ar": "خريطة حرارية للرؤى"
+  },
+  "height": 320,
+  "transparent": false,
+  "settings": [
+    {
+      "id": "device",
+      "type": "autocomplete",
+      "title": {
+        "en": "Device",
+        "nl": "Apparaat",
+        "de": "Gerät",
+        "fr": "Appareil",
+        "it": "Dispositivo",
+        "sv": "Enhet",
+        "no": "Enhet",
+        "es": "Dispositivo",
+        "da": "Enhed",
+        "ru": "Устройство",
+        "pl": "Urządzenie",
+        "ko": "기기",
+        "ar": "الجهاز"
+      }
+    },
+    {
+      "id": "capability",
+      "type": "autocomplete",
+      "title": {
+        "en": "Value",
+        "nl": "Waarde",
+        "de": "Wert",
+        "fr": "Valeur",
+        "it": "Valore",
+        "sv": "Värde",
+        "no": "Verdi",
+        "es": "Valor",
+        "da": "Værdi",
+        "ru": "Значение",
+        "pl": "Wartość",
+        "ko": "값",
+        "ar": "القيمة"
+      },
+      "hint": {
+        "en": "A number (temperature, light …) or an on/off value (motion, contact …). The app records on/off values itself from when the widget is added, so their history builds up from then.",
+        "nl": "Een getal (temperatuur, licht …) of een aan/uit-waarde (beweging, contact …). Aan/uit-waarden legt de app zelf vast vanaf het toevoegen van de widget, dus hun geschiedenis bouwt zich vanaf dan op.",
+        "de": "Eine Zahl (Temperatur, Licht …) oder ein Ein/Aus-Wert (Bewegung, Kontakt …). Ein/Aus-Werte zeichnet die App ab dem Hinzufügen des Widgets selbst auf, ihr Verlauf baut sich also ab dann auf.",
+        "fr": "Un nombre (température, lumière …) ou une valeur marche/arrêt (mouvement, contact …). L'app enregistre elle-même les valeurs marche/arrêt dès l'ajout du widget : leur historique se construit à partir de là.",
+        "it": "Un numero (temperatura, luce …) o un valore acceso/spento (movimento, contatto …). L'app registra da sé i valori acceso/spento da quando il widget viene aggiunto, quindi la loro cronologia si costruisce da lì.",
+        "sv": "Ett tal (temperatur, ljus …) eller ett på/av-värde (rörelse, kontakt …). Appen registrerar själv på/av-värden från att widgeten läggs till, så deras historik byggs upp från då.",
+        "no": "Et tall (temperatur, lys …) eller en av/på-verdi (bevegelse, kontakt …). Appen registrerer selv av/på-verdier fra widgeten legges til, så historikken bygges opp fra da.",
+        "es": "Un número (temperatura, luz …) o un valor encendido/apagado (movimiento, contacto …). La app registra ella misma los valores encendido/apagado desde que se añade el widget, así que su historial se forma a partir de entonces.",
+        "da": "Et tal (temperatur, lys …) eller en tænd/sluk-værdi (bevægelse, kontakt …). Appen registrerer selv tænd/sluk-værdier fra widgetten tilføjes, så deres historik bygges op derfra.",
+        "ru": "Число (температура, освещённость …) или значение вкл/выкл (движение, контакт …). Значения вкл/выкл приложение записывает само с момента добавления виджета, поэтому их история накапливается с этого момента.",
+        "pl": "Liczba (temperatura, światło …) lub wartość wł./wył. (ruch, kontakt …). Wartości wł./wył. aplikacja zapisuje sama od dodania widżetu, więc ich historia narasta od tego momentu.",
+        "ko": "숫자(온도, 조도 …) 또는 켜짐/꺼짐 값(동작, 접촉 …). 켜짐/꺼짐 값은 위젯을 추가한 시점부터 앱이 직접 기록하므로 그때부터 기록이 쌓입니다.",
+        "ar": "رقم (درجة الحرارة، الإضاءة …) أو قيمة تشغيل/إيقاف (الحركة، التلامس …). يسجّل التطبيق بنفسه قيم التشغيل/الإيقاف منذ إضافة الأداة، لذا يتكوّن سجلها بدءًا من ذلك الحين."
+      }
+    },
+    {
+      "id": "period",
+      "type": "dropdown",
+      "title": {
+        "en": "Days",
+        "nl": "Dagen",
+        "de": "Tage",
+        "fr": "Jours",
+        "it": "Giorni",
+        "sv": "Dagar",
+        "no": "Dager",
+        "es": "Días",
+        "da": "Dage",
+        "ru": "Дни",
+        "pl": "Dni",
+        "ko": "기간",
+        "ar": "الأيام"
+      },
+      "value": "week",
+      "values": [
+        {
+          "id": "week",
+          "title": {
+            "en": "This week (Mon–Sun)",
+            "nl": "Deze week (ma–zo)",
+            "de": "Diese Woche (Mo–So)",
+            "fr": "Cette semaine (lun–dim)",
+            "it": "Questa settimana (lun–dom)",
+            "sv": "Den här veckan (mån–sön)",
+            "no": "Denne uken (man–søn)",
+            "es": "Esta semana (lun–dom)",
+            "da": "Denne uge (man–søn)",
+            "ru": "Эта неделя (пн–вс)",
+            "pl": "Ten tydzień (pon–niedz)",
+            "ko": "이번 주 (월–일)",
+            "ar": "هذا الأسبوع (الاثنين–الأحد)"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Last 3 days",
+            "nl": "Laatste 3 dagen",
+            "de": "Letzte 3 Tage",
+            "fr": "3 derniers jours",
+            "it": "Ultimi 3 giorni",
+            "sv": "Senaste 3 dagarna",
+            "no": "Siste 3 dager",
+            "es": "Últimos 3 días",
+            "da": "Seneste 3 dage",
+            "ru": "Последние 3 дня",
+            "pl": "Ostatnie 3 dni",
+            "ko": "최근 3일",
+            "ar": "آخر 3 أيام"
+          }
+        },
+        {
+          "id": "rolling",
+          "title": {
+            "en": "Last 7 days",
+            "nl": "Laatste 7 dagen",
+            "de": "Letzte 7 Tage",
+            "fr": "7 derniers jours",
+            "it": "Ultimi 7 giorni",
+            "sv": "Senaste 7 dagarna",
+            "no": "Siste 7 dager",
+            "es": "Últimos 7 días",
+            "da": "Seneste 7 dage",
+            "ru": "Последние 7 дней",
+            "pl": "Ostatnie 7 dni",
+            "ko": "최근 7일",
+            "ar": "آخر 7 أيام"
+          }
+        },
+        {
+          "id": "10",
+          "title": {
+            "en": "Last 10 days",
+            "nl": "Laatste 10 dagen",
+            "de": "Letzte 10 Tage",
+            "fr": "10 derniers jours",
+            "it": "Ultimi 10 giorni",
+            "sv": "Senaste 10 dagarna",
+            "no": "Siste 10 dager",
+            "es": "Últimos 10 días",
+            "da": "Seneste 10 dage",
+            "ru": "Последние 10 дней",
+            "pl": "Ostatnie 10 dni",
+            "ko": "최근 10일",
+            "ar": "آخر 10 أيام"
+          }
+        },
+        {
+          "id": "14",
+          "title": {
+            "en": "Last 14 days",
+            "nl": "Laatste 14 dagen",
+            "de": "Letzte 14 Tage",
+            "fr": "14 derniers jours",
+            "it": "Ultimi 14 giorni",
+            "sv": "Senaste 14 dagarna",
+            "no": "Siste 14 dager",
+            "es": "Últimos 14 días",
+            "da": "Seneste 14 dage",
+            "ru": "Последние 14 дней",
+            "pl": "Ostatnie 14 dni",
+            "ko": "최근 14일",
+            "ar": "آخر 14 يومًا"
+          }
+        }
+      ]
+    },
+    {
+      "id": "step",
+      "type": "dropdown",
+      "title": {
+        "en": "Hours per column",
+        "nl": "Uren per kolom",
+        "de": "Stunden pro Spalte",
+        "fr": "Heures par colonne",
+        "it": "Ore per colonna",
+        "sv": "Timmar per kolumn",
+        "no": "Timer per kolonne",
+        "es": "Horas por columna",
+        "da": "Timer pr. kolonne",
+        "ru": "Часов в столбце",
+        "pl": "Godzin na kolumnę",
+        "ko": "열당 시간",
+        "ar": "ساعات لكل عمود"
+      },
+      "value": "2",
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "1 hour",
+            "nl": "1 uur",
+            "de": "1 Stunde",
+            "fr": "1 heure",
+            "it": "1 ora",
+            "sv": "1 timme",
+            "no": "1 time",
+            "es": "1 hora",
+            "da": "1 time",
+            "ru": "1 час",
+            "pl": "1 godzina",
+            "ko": "1시간",
+            "ar": "ساعة واحدة"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "2 hours",
+            "nl": "2 uur",
+            "de": "2 Stunden",
+            "fr": "2 heures",
+            "it": "2 ore",
+            "sv": "2 timmar",
+            "no": "2 timer",
+            "es": "2 horas",
+            "da": "2 timer",
+            "ru": "2 часа",
+            "pl": "2 godziny",
+            "ko": "2시간",
+            "ar": "ساعتان"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "3 hours",
+            "nl": "3 uur",
+            "de": "3 Stunden",
+            "fr": "3 heures",
+            "it": "3 ore",
+            "sv": "3 timmar",
+            "no": "3 timer",
+            "es": "3 horas",
+            "da": "3 timer",
+            "ru": "3 часа",
+            "pl": "3 godziny",
+            "ko": "3시간",
+            "ar": "3 ساعات"
+          }
+        }
+      ]
+    },
+    {
+      "id": "showScale",
+      "type": "checkbox",
+      "title": {
+        "en": "Show scale",
+        "nl": "Schaal tonen",
+        "de": "Skala anzeigen",
+        "fr": "Afficher l'échelle",
+        "it": "Mostra scala",
+        "sv": "Visa skala",
+        "no": "Vis skala",
+        "es": "Mostrar escala",
+        "da": "Vis skala",
+        "ru": "Показывать шкалу",
+        "pl": "Pokaż skalę",
+        "ko": "눈금 표시",
+        "ar": "إظهار المقياس"
+      },
+      "hint": {
+        "en": "The bar from the lowest to the highest value, with the current value.",
+        "nl": "De balk van de laagste tot de hoogste waarde, met de huidige waarde.",
+        "de": "Der Balken vom niedrigsten bis zum höchsten Wert, mit dem aktuellen Wert.",
+        "fr": "La barre de la valeur la plus basse à la plus haute, avec la valeur actuelle.",
+        "it": "La barra dal valore più basso al più alto, con il valore attuale.",
+        "sv": "Stapeln från lägsta till högsta värdet, med det aktuella värdet.",
+        "no": "Linjen fra laveste til høyeste verdi, med gjeldende verdi.",
+        "es": "La barra del valor más bajo al más alto, con el valor actual.",
+        "da": "Bjælken fra laveste til højeste værdi, med den aktuelle værdi.",
+        "ru": "Полоса от наименьшего до наибольшего значения с текущим значением.",
+        "pl": "Pasek od najniższej do najwyższej wartości, z bieżącą wartością.",
+        "ko": "최저값부터 최고값까지의 막대와 현재 값.",
+        "ar": "الشريط من أدنى قيمة إلى أعلاها، مع القيمة الحالية."
+      },
+      "value": true
+    },
+    {
+      "id": "showLegend",
+      "type": "checkbox",
+      "title": {
+        "en": "Show legend",
+        "nl": "Legenda tonen",
+        "de": "Legende anzeigen",
+        "fr": "Afficher la légende",
+        "it": "Mostra legenda",
+        "sv": "Visa förklaring",
+        "no": "Vis tegnforklaring",
+        "es": "Mostrar leyenda",
+        "da": "Vis forklaring",
+        "ru": "Показывать легенду",
+        "pl": "Pokaż legendę",
+        "ko": "범례 표시",
+        "ar": "إظهار وسيلة الإيضاح"
+      },
+      "hint": {
+        "en": "Less to more, and what the hatched cells mean.",
+        "nl": "Minder tot meer, en wat de gearceerde vakjes betekenen.",
+        "de": "Weniger bis mehr und was die schraffierten Felder bedeuten.",
+        "fr": "De moins à plus, et ce que signifient les cases hachurées.",
+        "it": "Da meno a più, e cosa significano le celle tratteggiate.",
+        "sv": "Mindre till mer, och vad de streckade rutorna betyder.",
+        "no": "Mindre til mer, og hva de skraverte rutene betyr.",
+        "es": "De menos a más, y qué significan las celdas rayadas.",
+        "da": "Mindre til mere, og hvad de skraverede felter betyder.",
+        "ru": "От меньшего к большему и что означают заштрихованные ячейки.",
+        "pl": "Od mniej do więcej oraz co oznaczają zakreskowane pola.",
+        "ko": "적음에서 많음까지, 그리고 빗금 칸의 의미.",
+        "ar": "من الأقل إلى الأكثر، ومعنى الخلايا المظللة."
+      },
+      "value": true
+    }
+  ],
+  "api": {
+    "getHistory": {
+      "method": "GET",
+      "path": "/history"
+    }
+  }
+}
