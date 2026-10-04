@@ -9,6 +9,7 @@
   --wf-line: var(--homey-line-color-light, rgb(255 255 255 / .08));
   --wf-rain: var(--homey-color-blue, #2F8DF6);
   /* Homey's type scale: only these size/line-height pairs, and the weights noted, are used natively. */
+  --wf-fs-small: var(--homey-font-size-small, 14px); --wf-lh-small: var(--homey-line-height-small, 20px); /* regular */
   --wf-fs-default: var(--homey-font-size-default, 17px); --wf-lh-default: var(--homey-line-height-default, 24px);
   /* Hour labels, precipitation, wind and the footer: a step below Homey's scale, like the electricity chart labels. */
   --wf-fs-label: 12px; --wf-lh-label: 16px;
@@ -92,20 +93,20 @@ html, body { margin: 0; }
 .wf-wind { color: var(--wf-muted); display: flex; align-items: center; gap: 2px; white-space: nowrap; min-height: var(--wf-lh-label); }
 .wf-arrow { width: 9px; height: 9px; fill: currentColor; flex-shrink: 0; }
 
-.wf-footer { color: var(--wf-muted); display: flex; justify-content: space-between; gap: 8px; }
+.wf-footer { color: var(--wf-muted); display: flex; justify-content: space-between; gap: var(--homey-su-2, 8px); }
 .wf-footer > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.wf-summary { display: flex; gap: 12px; min-width: 0; }
-.wf-day { display: flex; gap: 4px; }
+.wf-summary { display: flex; gap: var(--homey-su-3, 12px); min-width: 0; }
+.wf-day { display: flex; gap: var(--homey-su-1, 4px); }
 .wf-range { font-weight: var(--wf-medium); }
 .wf-units { flex-shrink: 0; }
 
 /* Compact: smaller icons, and the temperature a step below Homey's 17 so "-12°" fits a ~34 px column. */
 .wf-compact .wf-col { padding: 0; }
 .wf-compact .wf-icon { width: 28px; height: 28px; margin: 2px 0 0; }
-.wf-compact .wf-temp { font-size: var(--homey-font-size-small, 14px); line-height: var(--homey-line-height-small, 20px); min-height: var(--homey-line-height-small, 20px); }
+.wf-compact .wf-temp { font-size: var(--wf-fs-small); line-height: var(--wf-lh-small); min-height: var(--wf-lh-small); }
 .wf-compact .wf-wind { gap: 1px; }
 .wf-compact .wf-arrow { width: 8px; height: 8px; }
-.wf-message { color: var(--wf-muted); font-size: var(--homey-font-size-small, 14px); line-height: var(--homey-line-height-small, 20px); padding: 12px 0; }
+.wf-message { color: var(--wf-muted); font-size: var(--wf-fs-small); line-height: var(--wf-lh-small); padding: var(--homey-su-3, 12px) 0; }
 
 /*
  * Temperature colours: blue for cold, the text colour around 12°, red for hot, blended by --k (0-1,

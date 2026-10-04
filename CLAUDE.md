@@ -38,6 +38,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
   - It resamples the raw live readings to 120 points for the selected window and re-renders on a timer so the chart scrolls.
 - Colours are Homey CSS tokens with spec-hex fallbacks, defined on `.ew` (not `:root`) so the light-mode overrides in the preview inherit.
 - Both widgets stick to Homey's widget type scale (`--homey-font-size-*` with its matching `--homey-line-height-*`, and only the allowed weights: 14 regular, 17 any, 20 medium, 24/32 bold), `--homey-line-color(-light)` and `--homey-border-radius-*`, each with a px fallback. The font is set on `html`, so Homey's own font on `body` wins.
+- Spacing that is a 4 px step uses `--homey-su-N` (a mixed padding like `8px 10px` stays px), a 20 px icon uses `--homey-icon-size-medium` and a 1px line uses `--homey-line(-light)`, each with its px fallback. Colours and radii without a documented value (`--homey-text-color-danger`, `--homey-icon-color-*`, `--homey-border-radius-small` for 3px) stay as they are, so the look doesn't change.
 
 ## Thermostat Shortcuts widget
 - Three preset buttons for one device. `lib/ThermostatService.ts` owns it; `lib/appApi.ts` holds the shared `createAppAPI` instance.

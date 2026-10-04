@@ -68,7 +68,7 @@ html, body { margin: 0; }
 /* The grid: weekday labels, then one row of cells per day */
 .hm-grid { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--homey-su-3, 12px); row-gap: 6px; align-items: center; }
 .hm-day { white-space: nowrap; }
-.hm-cells { display: grid; grid-template-columns: repeat(var(--hm-cols, 12), minmax(0, 1fr)); gap: 4px; }
+.hm-cells { display: grid; grid-template-columns: repeat(var(--hm-cols, 12), minmax(0, 1fr)); gap: var(--homey-su-1, 4px); }
 .hm-dense .hm-cells { gap: 2px; }
 .hm-cell { height: 14px; border-radius: 3px; background: var(--hm-empty); }
 .hm-dense .hm-cell { border-radius: 2px; }
@@ -107,7 +107,7 @@ html, body { margin: 0; }
 .hm-now.center { left: 50%; }
 
 /* Legend: less → more and the hatched "nothing reported", on one line; the latter's text truncates if it must. */
-.hm-legend { display: flex; flex-wrap: nowrap; justify-content: space-between; align-items: center; gap: 12px; min-width: 0; }
+.hm-legend { display: flex; flex-wrap: nowrap; justify-content: space-between; align-items: center; gap: var(--homey-su-3, 12px); min-width: 0; }
 .hm-legend-group { display: flex; align-items: center; gap: 3px; min-width: 0; }
 .hm-legend-group:first-child { flex-shrink: 0; }
 .hm-legend-group > span:not(.hm-swatch) { white-space: nowrap; }
@@ -119,7 +119,7 @@ html, body { margin: 0; }
 .hm-swatch { width: 16px; height: 12px; border-radius: 3px; flex-shrink: 0; }
 /* Narrow widgets (300 px, ~270 px of content): smaller swatches, so "Nothing reported" still fits beside the scale. */
 @container hm (max-width: 300px) {
-  .hm-legend { gap: 8px; }
+  .hm-legend { gap: var(--homey-su-2, 8px); }
   .hm-legend-group { gap: 2px; }
   .hm-swatch { width: 9px; }
   .hm-legend-group:first-child > span:not(.hm-swatch) { letter-spacing: 0; }

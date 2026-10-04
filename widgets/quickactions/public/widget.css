@@ -60,7 +60,7 @@ html, body { background: transparent !important; }
   background: none; -webkit-mask: none; mask: none;
   border: 2px solid currentColor; border-radius: 5px; width: 18px; height: 18px; margin: 3px;
 }
-.qa-action { width: 20px; height: 20px; color: var(--qa-muted); }
+.qa-action { width: var(--homey-icon-size-medium, 20px); height: var(--homey-icon-size-medium, 20px); color: var(--qa-muted); }
 .qa-name {
   /* Native device tiles' name: 14/20 regular, measured from a phone screenshot. */
   font-size: var(--qa-fs-small); line-height: var(--qa-lh-small); font-weight: var(--qa-regular);
