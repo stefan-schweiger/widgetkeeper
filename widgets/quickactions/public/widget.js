@@ -18,15 +18,18 @@
   };
 
   // Homey's standard capabilities carry no icon of their own (the Homey app draws them), so these
-  // stand in for the quick-action icon unless the capability has one.
-  const svg = body => `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`)}`;
+  // stand in for the quick-action icon unless the capability has one. Each viewBox is cropped to the ink
+  // (plus half the stroke), so the glyph fills its box like the library icons do and its edge lines up with
+  // the tile's padding. The thin stroke matches the library icons' line (about 1 px).
+  const svg = (viewBox, body) => `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none" stroke="#000" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`)}`;
+  const LOCK_BOX = '4.4 2.4 15.2 19.2'; // both padlocks, so the body doesn't move when it toggles
   const GLYPHS = {
-    power: svg('<path d="M12 3v9"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/>'),
-    locked: svg('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'),
-    unlocked: svg('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/>'),
-    play: svg('<path d="M8 5v14l11-7z" fill="#000"/>'),
-    pause: svg('<path d="M8 5v14M16 5v14" stroke-width="3"/>'),
-    button: svg('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="#000"/>'),
+    power: svg('3.4 2.4 17.2 18.6', '<path d="M12 3v9"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/>'),
+    locked: svg(LOCK_BOX, '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'),
+    unlocked: svg(LOCK_BOX, '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/>'),
+    play: svg('7.4 4.4 12.2 15.2', '<path d="M8 5v14l11-7z" fill="#000"/>'),
+    pause: svg('8 4 8 16', '<path d="M9 5v14M15 5v14" stroke-width="2"/>'),
+    button: svg('3.4 3.4 17.2 17.2', '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="#000"/>'),
   };
 
   /** The built-in glyph for a capability and its current value. */

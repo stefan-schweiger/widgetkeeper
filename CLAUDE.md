@@ -91,6 +91,8 @@ How this project uses it:
 - Half-height tiles for several devices (the `devices` setting with `singular: false`, read with `Homey.getDeviceIds()`), 3 per row. `lib/QuickActionService.ts` owns it. The widget is `transparent`, so each tile sits on the dashboard like a native one.
 - The whole tile triggers the device's quick action and shows its state. The `activeStyle` setting picks how: `tint` (default; a blue-tinted tile with blue icons) or `lighter` (a lighter grey tile). There's no circle around the quick-action icon.
 - The name is 14/20 regular, like the native device tiles' name (measured from a phone screenshot).
+- Layout: 10 px padding and an 8 px gap between the icon row and the name (72 px tiles). The device icon (24 px) is masked `left center` so narrow icons line up with the name; the action icon (20 px) is masked `right center`.
+- The built-in glyphs' viewBoxes are cropped to their ink, with a 1.2 stroke, so they fill their box and match the library icons' ~1 px line.
 - The quick action is `ui.quickActionOverride` (the user's choice; `.none` turns it off) or else `ui.quickAction`. Locks only have the override (`locked`).
 - Taps come from the touch events (a touch ending within 10 px of where it started), with `click` kept for mouse and keyboard. A drag is left alone, so the dashboard still scrolls. Tiles do nothing in the dashboard's edit mode.
 - Only settable booleans can be triggered. `button*` capabilities are momentary: always `true`, and the tile flashes.
