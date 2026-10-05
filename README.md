@@ -36,6 +36,10 @@ Two to six cameras in one grid of snapshots; tap one to watch it live<br clear="
 <a href="#device-values"><b>Device Values</b></a><br>
 Compact tiles that each show one value, such as a temperature, power or on/off<br clear="left"></p>
 
+<p><a href="#light-controls"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/lights-dark.png"><img src="docs/previews/lights-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#light-controls"><b>Light Controls</b></a><br>
+Compact light tiles with brightness and colour temperature: six lights in the space of three<br clear="left"></p>
+
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
@@ -176,6 +180,20 @@ Half-height tiles in the style of Device Quick Actions, three or two per row, ea
 4. Pick up to six values (**Tile 1** to **Tile 6**). Each list has every device's values as *Device · Value*, e.g. *Living room · Temperature*; type to search by device, zone or value. The same device can fill several tiles.
 
 The tiles only show values; tapping them does nothing.
+
+## Light Controls
+<img src="docs/screenshots/lights.png" alt="Light Controls on a Homey dashboard" width="358">
+
+Compact light tiles, two per row, so six lights fit in the space of three of Homey's own light cards. Each tile has the light's icon, its name and a brightness bar. A lit tile takes on the light's colour, like Homey's own card.
+- **Tap a tile** to turn the light on or off.
+- **Drag the bar** to set the brightness, or tap the bar where you want it. All the way to the left turns the light off.
+- **Tap the thermometer** (lights with a colour temperature) to switch the bar to colour temperature, from cool to warm. It switches back to brightness after a few seconds.
+
+**Setting it up**
+1. Add the widget to a dashboard.
+2. Pick the lights. Any device that can be dimmed is listed, and the tiles follow the order you pick them in.
+
+On Android, Homey's dashboard takes over a drag on the bar, so there you set the brightness by tapping the bar.
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic. The widgets follow Homey's language.

@@ -27,6 +27,8 @@ const OUT = {
   'cam-light': 'widgets/cameras/preview-light.png',
   'val-dark': 'widgets/values/preview-dark.png',
   'val-light': 'widgets/values/preview-light.png',
+  'lc-dark': 'widgets/lights/preview-dark.png',
+  'lc-light': 'widgets/lights/preview-light.png',
 };
 
 const only = process.argv.slice(2);

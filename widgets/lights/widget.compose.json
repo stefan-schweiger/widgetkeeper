@@ -1,0 +1,37 @@
+{
+  "name": {
+    "en": "Light Controls",
+    "nl": "Lichtbediening",
+    "de": "Lichtsteuerung",
+    "fr": "Commandes d'éclairage",
+    "it": "Controllo luci",
+    "sv": "Ljusreglage",
+    "no": "Lysstyring",
+    "es": "Control de luces",
+    "da": "Lysstyring",
+    "ru": "Управление светом",
+    "pl": "Sterowanie światłem",
+    "ko": "조명 제어",
+    "ar": "التحكم بالإضاءة"
+  },
+  "height": 88,
+  "transparent": true,
+  "devices": {
+    "type": "global",
+    "singular": false,
+    "filter": {
+      "capabilities": "dim"
+    }
+  },
+  "settings": [],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    },
+    "set": {
+      "method": "POST",
+      "path": "/set"
+    }
+  }
+}

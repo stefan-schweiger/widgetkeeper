@@ -87,5 +87,12 @@
     "unavailable": "Utilgjengelig",
     "on": "På",
     "off": "Av"
+  },
+  "lights": {
+    "selectDevices": "Velg lys i widgetinnstillingene.",
+    "error": "Kunne ikke laste inn lysene.",
+    "failed": "Kunne ikke endre __name__.",
+    "unavailable": "Utilgjengelig",
+    "temperature": "Fargetemperatur"
   }
 }

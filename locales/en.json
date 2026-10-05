@@ -87,5 +87,12 @@
     "unavailable": "Unavailable",
     "on": "On",
     "off": "Off"
+  },
+  "lights": {
+    "selectDevices": "Select lights in the widget settings.",
+    "error": "Could not load the lights.",
+    "failed": "Could not change __name__.",
+    "unavailable": "Unavailable",
+    "temperature": "Colour temperature"
   }
 }

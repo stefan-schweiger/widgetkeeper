@@ -87,5 +87,12 @@
     "unavailable": "No disponible",
     "on": "Encendido",
     "off": "Apagado"
+  },
+  "lights": {
+    "selectDevices": "Elige luces en los ajustes del widget.",
+    "error": "No se pudieron cargar las luces.",
+    "failed": "No se pudo cambiar __name__.",
+    "unavailable": "No disponible",
+    "temperature": "Temperatura de color"
   }
 }

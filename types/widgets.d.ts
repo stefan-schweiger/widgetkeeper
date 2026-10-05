@@ -8,6 +8,7 @@ interface Window {
   createCamerasWidget: (root: HTMLElement, opts?: object) => object;
   createHeatmapWidget: (root: HTMLElement, opts?: object) => object;
   createValuesWidget: (root: HTMLElement, opts?: object) => object;
+  createLightsWidget: (root: HTMLElement, opts?: object) => object;
   formatCapabilityValue: (cap: object, value: unknown, t: (key: string) => string) => string;
   heatmapPeriodDays: (period: string | undefined) => number;
   thermostatPresetsFromSettings: (settings: Record<string, any>) => { values: object[] }[];

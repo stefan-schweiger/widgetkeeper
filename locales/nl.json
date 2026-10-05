@@ -87,5 +87,12 @@
     "unavailable": "Niet beschikbaar",
     "on": "Aan",
     "off": "Uit"
+  },
+  "lights": {
+    "selectDevices": "Kies lampen in de widgetinstellingen.",
+    "error": "Kon de lampen niet laden.",
+    "failed": "Kon __name__ niet wijzigen.",
+    "unavailable": "Niet beschikbaar",
+    "temperature": "Kleurtemperatuur"
   }
 }

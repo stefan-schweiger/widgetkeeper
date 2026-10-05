@@ -87,5 +87,12 @@
     "unavailable": "Niedostępne",
     "on": "Wł.",
     "off": "Wył."
+  },
+  "lights": {
+    "selectDevices": "Wybierz światła w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać świateł.",
+    "failed": "Nie udało się zmienić __name__.",
+    "unavailable": "Niedostępne",
+    "temperature": "Temperatura barwowa"
   }
 }

@@ -87,5 +87,12 @@
     "unavailable": "Nicht verfügbar",
     "on": "Ein",
     "off": "Aus"
+  },
+  "lights": {
+    "selectDevices": "Wähle Lampen in den Widget-Einstellungen.",
+    "error": "Lampen konnten nicht geladen werden.",
+    "failed": "__name__ konnte nicht geändert werden.",
+    "unavailable": "Nicht verfügbar",
+    "temperature": "Farbtemperatur"
   }
 }

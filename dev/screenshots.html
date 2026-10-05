@@ -7,8 +7,8 @@
   <!--
     The README screenshots: the real widget code with mock data, at the width of a widget on Homey's dark dashboard
     on a phone (358 px: a 390 px screen less the dashboard's 16 px margins; colours sampled from an iPhone screenshot).
-    No widget title and a transparent page, so the shots sit flush with the README text in either GitHub theme. `?s=electricity|thermostat|quickactions|sensoralarms|weather|heatmap|cameras|values`
-    shows one, for scripts/render-screenshots.mjs; without it, all eight.
+    No widget title and a transparent page, so the shots sit flush with the README text in either GitHub theme. `?s=electricity|thermostat|quickactions|sensoralarms|weather|heatmap|cameras|values|lights`
+    shows one, for scripts/render-screenshots.mjs; without it, all nine.
     Device icons come from Homey's icon library. The render script downloads them to temp/screenshot-icons.js;
     without that file the tiles fall back to plain squares.
   -->
@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="../widgets/heatmap/public/widget.css">
   <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
   <link rel="stylesheet" href="../widgets/values/public/widget.css">
+  <link rel="stylesheet" href="../widgets/lights/public/widget.css">
   <script src="../widgets/electricity/public/widget.js"></script>
   <script src="../widgets/thermostat/public/widget.js"></script>
   <script src="../widgets/quickactions/public/widget.js"></script>
@@ -29,6 +30,7 @@
   <script src="../widgets/heatmap/public/widget.js"></script>
   <script src="../widgets/cameras/public/widget.js"></script>
   <script src="../widgets/values/public/widget.js"></script>
+  <script src="../widgets/lights/public/widget.js"></script>
   <script src="mock-electricity.js"></script>
   <script src="mock-weather.js"></script>
   <script src="mock-heatmap.js"></script>
@@ -53,6 +55,7 @@
   <section class="shot" id="heatmap"><div class="card hm-frame"><div id="w-heatmap"></div></div></section>
   <section class="shot" id="cameras"><div id="w-cameras"></div></section>
   <section class="shot" id="values"><div id="w-values"></div></section>
+  <section class="shot" id="lights"><div id="w-lights"></div></section>
 
   <script>
     const icon = name => (window.ICONS && ICONS[name]) || null;
@@ -94,6 +97,16 @@
       { deviceId: '3', capabilityId: 'measure_battery', name: 'Back door', capability: vcap('number', { units: '%', decimals: 0 }), value: 7 },
       { deviceId: '4', capabilityId: 'measure_battery', name: 'Hallway', capability: vcap('number', { units: '%', decimals: 0 }), value: 16 },
       { deviceId: '5', capabilityId: 'measure_power', name: 'Meter', capability: vcap('number', { units: 'W', decimals: 0 }), value: 812 },
+    ]);
+
+    const lcap = value => ({ value, setable: true });
+    createLightsWidget(document.getElementById('w-lights'), {}).setState([
+      { id: '1', name: 'Living Room', icon: icon('light-standing'), caps: { onoff: lcap(true), dim: lcap(0.35), light_temperature: lcap(0.8), light_mode: lcap('temperature') } },
+      { id: '2', name: 'Spots | Dining room', icon: icon('light-hanging'), caps: { onoff: lcap(false), dim: lcap(0.25), light_temperature: lcap(0.5) } },
+      { id: '3', name: 'Kitchen', icon: icon('light-hanging'), caps: { onoff: lcap(true), dim: lcap(0.2), light_temperature: lcap(0.9) } },
+      { id: '4', name: 'Hue Go', icon: icon('light-standing'), caps: { onoff: lcap(true), dim: lcap(0.6), light_hue: lcap(0.75), light_saturation: lcap(0.7), light_temperature: lcap(0.2), light_mode: lcap('color') } },
+      { id: '5', name: 'Office', icon: icon('light-hanging'), caps: { onoff: lcap(true), dim: lcap(1), light_temperature: lcap(0.1), light_mode: lcap('temperature') } },
+      { id: '6', name: 'Bedroom', icon: icon('light-standing'), caps: { onoff: lcap(false), dim: lcap(0.5) } },
     ]);
 
     createSensorAlarmsWidget(document.getElementById('w-sa'), {}).setState([

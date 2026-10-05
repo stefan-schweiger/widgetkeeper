@@ -10,5 +10,5 @@
     "types": [],
     "skipLibCheck": true
   },
-  "files": ["types/widgets.d.ts", "widgets/electricity/public/widget.js", "widgets/thermostat/public/widget.js", "widgets/quickactions/public/widget.js", "widgets/sensoralarms/public/widget.js", "widgets/weather/public/widget.js", "widgets/heatmap/public/widget.js", "widgets/cameras/public/widget.js", "widgets/values/public/widget.js"]
+  "files": ["types/widgets.d.ts", "widgets/electricity/public/widget.js", "widgets/thermostat/public/widget.js", "widgets/quickactions/public/widget.js", "widgets/sensoralarms/public/widget.js", "widgets/weather/public/widget.js", "widgets/heatmap/public/widget.js", "widgets/cameras/public/widget.js", "widgets/values/public/widget.js", "widgets/lights/public/widget.js"]
 }

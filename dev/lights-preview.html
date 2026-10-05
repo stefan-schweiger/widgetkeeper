@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Light controls widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/lights/public/widget.css">
+  <script src="../widgets/lights/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <style>
+    body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px;
+      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · light</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>300 px · dark</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
+
+  <script>
+    const cap = value => ({ value, setable: true });
+    const lights = () => [
+      { id: 'a', name: 'Living Room', icon: null, caps: { onoff: cap(true), dim: cap(0.35), light_temperature: cap(0.8), light_mode: cap('temperature') } },
+      { id: 'b', name: 'Spots | Dining room', icon: null, caps: { onoff: cap(false), dim: cap(0.25), light_temperature: cap(0.5) } },
+      { id: 'c', name: 'Kitchen', icon: null, caps: { onoff: cap(true), dim: cap(0.2) } },
+      { id: 'd', name: 'Hue Go', icon: null, caps: { onoff: cap(true), dim: cap(0.6), light_hue: cap(0.75), light_saturation: cap(0.8), light_temperature: cap(0.2), light_mode: cap('color') } },
+      { id: 'e', name: 'Office ceiling', icon: null, caps: { onoff: cap(true), dim: cap(1), light_temperature: cap(0.1), light_mode: cap('temperature') } },
+      { id: 'f', name: 'Bedroom', icon: null, caps: { dim: cap(0) } },
+      { id: 'g', missing: true },
+    ];
+    // Simulates the device: the change is reported back after a moment.
+    function mount(id) {
+      let w;
+      const onSet = (deviceId, change) => new Promise((resolve) => setTimeout(() => {
+        const push = (capabilityId, value) => w.pushChange({ deviceId, capabilityId, value });
+        if ('dim' in change) { if (change.dim === 0) push('onoff', false); else { push('dim', change.dim); push('onoff', true); } }
+        if ('onoff' in change) push('onoff', change.onoff);
+        if ('temperature' in change) { push('light_mode', 'temperature'); push('light_temperature', change.temperature); push('onoff', true); }
+        resolve();
+      }, 400));
+      w = createLightsWidget(document.getElementById(id), { t: devT, onSet });
+      w.setState(lights());
+    }
+    for (const id of ['w1', 'w2', 'w3']) mount(id);
+    const empty = createLightsWidget(document.getElementById('w4'), { t: devT });
+    empty.setMessage(empty.t('selectDevices'));
+  </script>
+</body>
+</html>

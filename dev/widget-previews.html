@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -148,6 +148,37 @@ function deviceValues(t, theme) {
   </div>`;
 }
 
+// Light Controls: 2 tiles per row, each an icon and the brightness on top, the name, and a slider bar; a lit
+// tile takes on the light's colour (warm amber, one in a cool white), fading towards the bottom.
+function lightControls(t, theme) {
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const mix = theme === 'dark' ? 26 : 22;
+  const tile = ([light, x]) => {
+    const on = !!light;
+    const bg = on ? `linear-gradient(to bottom, color-mix(in srgb, ${light} ${mix}%, ${tileBg}), color-mix(in srgb, ${light} ${mix / 2}%, ${tileBg}))` : tileBg;
+    const track = theme === 'dark' ? '#2E2F37' : '#E6E7EA', muted = theme === 'dark' ? '#9C9DA5' : '#6B6C75';
+    const fill = on ? `color-mix(in srgb, ${light} 85%, white)` : muted;
+    return `<div style="height:240px;border-radius:32px;background:${bg};box-shadow:${shadow};padding:36px 36px 30px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="width:52px;height:52px;border:7px solid ${on ? t.fg : muted};border-radius:14px;box-sizing:border-box"></div>
+        ${pill(on ? 90 : 70, 34, on ? t.fg : muted)}
+      </div>
+      ${pill(190, 30, t.fg, 'opacity:.85')}
+      <div style="position:relative;height:40px">
+        <div style="position:absolute;left:0;right:0;top:12px;height:16px;border-radius:8px;background:${track};overflow:hidden">
+          <div style="width:${x}%;height:100%;background:${fill}"></div>
+        </div>
+        <div style="position:absolute;top:0;left:calc(${x / 100} * (100% - 40px));width:40px;height:40px;border-radius:50%;background:${on ? '#FFFFFF' : track};box-shadow:${on ? '0 2px 6px rgba(0,0,0,.35)' : 'none'}"></div>
+      </div>
+    </div>`;
+  };
+  const WARM = '#FFB054', COOL = '#D6E8FF';
+  return `<div style="width:880px;display:grid;grid-template-columns:repeat(2,1fr);gap:32px">
+    ${[[WARM, 35], [null, 0], [WARM, 80], [COOL, 60], [null, 0], [WARM, 20]].map(tile).join('')}
+  </div>`;
+}
+
 // Sensor Alarms is transparent too: 2 tiles per row, each an icon, the name and the alarm text; an alarm turns it red.
 function sensorAlarms(t, theme) {
   const tileBg = theme === 'dark' ? '#2B2C36' : '#FFFFFF';
@@ -266,6 +297,8 @@ const PREVIEWS = [
   { id: 'cam-light',    label: '1n · Cameras — preview-light.png',               theme: 'light', render: cameras },
   { id: 'val-dark',     label: '1o · Device Values — preview-dark.png',          theme: 'dark',  render: deviceValues },
   { id: 'val-light',    label: '1p · Device Values — preview-light.png',         theme: 'light', render: deviceValues },
+  { id: 'lc-dark',      label: '1q · Light Controls — preview-dark.png',         theme: 'dark',  render: lightControls },
+  { id: 'lc-light',     label: '1r · Light Controls — preview-light.png',        theme: 'light', render: lightControls },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');

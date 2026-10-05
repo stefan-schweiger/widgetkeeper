@@ -87,5 +87,12 @@
     "unavailable": "Inte tillgänglig",
     "on": "På",
     "off": "Av"
+  },
+  "lights": {
+    "selectDevices": "Välj lampor i widgetinställningarna.",
+    "error": "Kunde inte läsa in lamporna.",
+    "failed": "Kunde inte ändra __name__.",
+    "unavailable": "Inte tillgänglig",
+    "temperature": "Färgtemperatur"
   }
 }

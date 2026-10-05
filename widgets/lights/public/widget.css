@@ -1,0 +1,131 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/lights-preview.html).
+ * The tile copies Device Quick Actions' (widgets/quickactions/public/widget.css).
+ */
+.lc {
+  --lc-tile: var(--homey-background-color, #FFFFFF);
+  --lc-text: var(--homey-text-color, #EDEEF0);
+  --lc-muted: var(--homey-text-color-light, #9C9DA5);
+  --lc-accent: var(--homey-color-blue, #2F8DF6);
+  --lc-track: color-mix(in srgb, var(--lc-text) 12%, var(--lc-tile));
+  --lc-tint: 22%; /* how much of the light's colour an "on" tile takes */
+  /* The bar's fill: the light's colour, darkened in light mode so a cool white still shows on the track. */
+  --lc-fill-with: var(--lc-text); --lc-fill-share: 70%;
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --lc-fs-small: var(--homey-font-size-small, 14px); --lc-lh-small: var(--homey-line-height-small, 20px);
+  --lc-bold: var(--homey-font-weight-bold, 700);
+  --lc-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+}
+/* Dark mode: each tile looks like a native device tile, darker than the default widget background. */
+.homey-dark-mode .lc, .lc.homey-dark-mode { --lc-tile: #181920; --lc-tint: 26%; --lc-fill-with: #FFFFFF; --lc-fill-share: 85%; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
+html, body { background: transparent !important; }
+
+.lc { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--lc-text); }
+.lc * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.lc [dir="auto"] { text-align: left; }
+
+.lc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--homey-su-3, 12px); }
+
+/* A light tile (88px): the icon row, the name and the bar. Half the width of Homey's light card. */
+.lc-tile {
+  --lc-light: rgb(255 176 84); --lc-x: 0;
+  position: relative; color: var(--lc-text);
+  background: var(--lc-tile); border-radius: var(--lc-radius); padding: 10px 12px 4px; min-width: 0;
+  display: flex; flex-direction: column; align-items: stretch;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+  transition: background .15s, transform .1s;
+}
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .lc-tile::after, .lc.homey-dark-mode .lc-tile::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.lc-tile.pressing { transform: scale(.97); }
+.lc-tile.missing { cursor: default; }
+.lc-tile.missing > * { opacity: .5; }
+.lc-tile.missing .lc-bar { visibility: hidden; }
+
+/* On: the tile takes on the light's colour, brightest at the top like Homey's own light card. */
+.lc-tile.on {
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--lc-light) var(--lc-tint), var(--lc-tile)),
+    color-mix(in srgb, var(--lc-light) calc(var(--lc-tint) / 2), var(--lc-tile)));
+}
+
+.lc-top { display: flex; align-items: center; gap: 6px; height: 20px; }
+.lc-icon, .lc-chip-glyph {
+  flex-shrink: 0; background: currentColor;
+  -webkit-mask: var(--lc-mask) left center / contain no-repeat; mask: var(--lc-mask) left center / contain no-repeat;
+}
+/* The device icon sits against the tile's padding, in line with the name. */
+.lc-icon { width: 20px; height: 20px; margin-right: auto; color: var(--lc-muted); }
+.lc-tile.on .lc-icon { color: var(--lc-text); }
+.lc-icon.fallback {
+  /* No device icon: a rounded square outline. */
+  background: none; -webkit-mask: none; mask: none;
+  border: 2px solid currentColor; border-radius: 4px; width: 16px; height: 16px; margin: 2px auto 2px 0;
+}
+/* The temperature chip: a thermometer in the top right corner, blue on a tinted pill while the bar sets the
+   temperature. The button reaches into the tile's padding (44 × 40 px) so it's easy to hit. */
+.lc-chip {
+  appearance: none; border: 0; padding: 0; background: none; font: inherit; cursor: pointer;
+  position: relative; flex-shrink: 0; width: 48px; height: 40px; margin: -10px -12px -10px 0;
+  display: flex; align-items: center; justify-content: center; color: var(--lc-muted);
+  -webkit-tap-highlight-color: transparent;
+}
+.lc-chip::before {
+  content: ''; position: absolute; inset: 6px 8px; border-radius: 8px; background: transparent;
+  transition: background-color .15s;
+}
+.lc-chip-glyph { position: relative; width: 16px; height: 22px; -webkit-mask-position: center; mask-position: center; }
+.lc-tile.on .lc-chip { color: var(--lc-text); }
+.lc-chip.active { color: var(--lc-accent); }
+.lc-chip.active::before { background: color-mix(in srgb, var(--lc-accent) 20%, transparent); }
+.lc-chip:active::before { background: color-mix(in srgb, var(--lc-text) 12%, transparent); }
+
+.lc-name {
+  /* 14 bold like the native tiles' name (and Quick Actions). */
+  margin-top: 4px;
+  font-size: var(--lc-fs-small); line-height: var(--lc-lh-small); font-weight: var(--lc-bold);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* The bar: a 28px hit area around a 6px track, with a knob at the value. Touches on it are the widget's. */
+.lc-bar { position: relative; height: 28px; margin: 2px 0 0; touch-action: none; cursor: ew-resize; }
+.lc-track {
+  position: absolute; left: 0; right: 0; top: 11px; height: 6px; border-radius: 3px; overflow: hidden;
+  background: var(--lc-track);
+}
+.lc-fill {
+  position: absolute; inset: 0 auto 0 0; width: calc(var(--lc-x) * 100%);
+  background: color-mix(in srgb, var(--lc-light) var(--lc-fill-share), var(--lc-fill-with)); border-radius: inherit;
+}
+.lc-tile:not(.on) .lc-fill { background: var(--lc-muted); }
+.lc-knob {
+  position: absolute; top: 7px; width: 14px; height: 14px; border-radius: 50%;
+  left: calc(var(--lc-x) * (100% - 14px)); background: #FFFFFF;
+  box-shadow: 0 1px 3px rgb(0 0 0 / .35);
+}
+.lc-tile:not(.on):not(.temp) .lc-knob { background: color-mix(in srgb, var(--lc-muted) 60%, var(--lc-tile)); box-shadow: none; }
+.lc-bar.dragging .lc-knob { transform: scale(1.2); }
+.lc-knob, .lc-fill { transition: left .15s, width .15s; }
+.lc-bar.dragging .lc-knob, .lc-bar.dragging .lc-fill { transition: none; }
+
+/* Temperature mode: the track runs cool → warm, and the fill is hidden (the knob marks the value). */
+.lc-tile.temp .lc-track { background: linear-gradient(to right, rgb(214 232 255), rgb(255 176 84)); }
+.lc-tile.temp .lc-fill { display: none; }
+
+.lc-message { font-size: var(--lc-fs-small); line-height: var(--lc-lh-small); color: var(--lc-muted); }
+.lc-message.error { color: var(--homey-color-red, #F25F5C); }
+
+.lc-tile.shake { animation: lc-shake .35s; }
+@keyframes lc-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
