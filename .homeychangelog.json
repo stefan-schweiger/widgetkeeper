@@ -136,5 +136,20 @@
     "pl": "Nowy widżet: Wartości urządzeń, kompaktowe kafelki, z których każdy pokazuje jedną wartość urządzenia, np. temperaturę, poziom baterii lub wł./wył., w 3 lub 2 kolumnach. Procenty mogą wypełniać kafelek na czerwono, żółto lub zielono.",
     "ko": "새 위젯: 기기 값. 온도, 배터리 잔량, 켜짐/꺼짐 같은 기기 값을 하나씩 보여 주는 작은 타일을 3열 또는 2열로 표시합니다. 백분율은 타일을 빨간색, 노란색 또는 초록색으로 채울 수 있습니다.",
     "ar": "أداة جديدة: قيم الأجهزة، بلاطات صغيرة تعرض كل منها قيمة واحدة لجهاز، مثل درجة الحرارة أو مستوى البطارية أو التشغيل/الإيقاف، في 3 أو 2 أعمدة. يمكن للنسب المئوية أن تملأ بلاطتها بالأحمر أو الأصفر أو الأخضر."
+  },
+  "0.8.0": {
+    "en": "New widget: Light Controls, compact light tiles, two per row, so six lights fit in the space of three. Tap a tile to turn the light on or off, drag or tap the bar to set the brightness (0 turns it off), and tap the thermometer to set the colour temperature.",
+    "nl": "Nieuwe widget: Lichtbediening, compacte lichttegels, twee per rij, zodat zes lampen in de ruimte van drie passen. Tik op een tegel om de lamp aan of uit te zetten, sleep of tik op de balk voor de helderheid (0 zet hem uit) en tik op de thermometer voor de kleurtemperatuur.",
+    "de": "Neues Widget: Lichtsteuerung, kompakte Lichtkacheln, zwei pro Reihe, sodass sechs Lampen auf den Platz von dreien passen. Tippe auf eine Kachel zum Ein- und Ausschalten, ziehe oder tippe auf den Balken für die Helligkeit (0 schaltet aus) und tippe auf das Thermometer für die Farbtemperatur.",
+    "fr": "Nouveau widget : Commandes d'éclairage, des tuiles compactes, deux par ligne, pour six lampes dans l'espace de trois. Touchez une tuile pour allumer ou éteindre, faites glisser ou touchez la barre pour la luminosité (0 éteint) et touchez le thermomètre pour la température de couleur.",
+    "it": "Nuovo widget: Controllo luci, riquadri compatti, due per riga, così sei luci stanno nello spazio di tre. Tocca un riquadro per accendere o spegnere, trascina o tocca la barra per la luminosità (0 spegne) e tocca il termometro per la temperatura colore.",
+    "sv": "Ny widget: Ljusreglage, kompakta ljusrutor, två per rad, så att sex lampor ryms där tre annars får plats. Tryck på en ruta för att tända eller släcka, dra eller tryck på stapeln för ljusstyrkan (0 släcker) och tryck på termometern för färgtemperaturen.",
+    "no": "Ny widget: Lysstyring, kompakte lysfliser, to per rad, så seks lys får plass der tre ellers gjør. Trykk på en flis for å slå lyset av eller på, dra eller trykk på linjen for lysstyrken (0 slår av), og trykk på termometeret for fargetemperaturen.",
+    "es": "Nuevo widget: Control de luces, mosaicos compactos, dos por fila, para seis luces en el espacio de tres. Toca un mosaico para encender o apagar, arrastra o toca la barra para el brillo (0 apaga) y toca el termómetro para la temperatura de color.",
+    "da": "Ny widget: Lysstyring, kompakte lysfelter, to pr. række, så seks lys fylder det samme som tre. Tryk på et felt for at tænde eller slukke, træk eller tryk på bjælken for lysstyrken (0 slukker), og tryk på termometeret for farvetemperaturen.",
+    "ru": "Новый виджет «Управление светом»: компактные плитки, по две в ряд, так что шесть светильников занимают место трёх. Нажмите на плитку, чтобы включить или выключить свет, перетащите или нажмите полосу для яркости (0 выключает), нажмите термометр для цветовой температуры.",
+    "pl": "Nowy widżet: Sterowanie światłem, kompaktowe kafelki, po dwa w rzędzie, więc sześć świateł mieści się w miejscu trzech. Dotknij kafelka, aby włączyć lub wyłączyć światło, przeciągnij lub dotknij paska, aby ustawić jasność (0 wyłącza), i dotknij termometru, aby ustawić temperaturę barwową.",
+    "ko": "새 위젯: 조명 제어. 한 줄에 두 개씩 놓이는 작은 조명 타일로, 세 개 자리에 여섯 개의 조명을 담습니다. 타일을 탭하면 켜고 끄며, 막대를 드래그하거나 탭해 밝기를 정하고(0은 끄기), 온도계를 탭해 색온도를 정합니다.",
+    "ar": "أداة جديدة: التحكم بالإضاءة، بلاطات إضاءة صغيرة، اثنتان في كل صف، فتتسع ستة أضواء في مساحة ثلاثة. اضغط على بلاطة للتشغيل أو الإيقاف، واسحب الشريط أو اضغط عليه لضبط السطوع (0 يطفئ)، واضغط على مقياس الحرارة لضبط درجة حرارة اللون."
   }
 }

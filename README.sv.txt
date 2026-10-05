@@ -11,5 +11,6 @@ Ingående widgetar:
 - Insights-värmekarta: en vecka av ett värde, som ljus, temperatur eller rörelse, som ett rutnät av veckodagar och timmar.
 - Kameror: två till sex kameror i ett rutnät av bilder som uppdateras med några sekunders mellanrum. Tryck på en för att se den live.
 - Enhetsvärden: kompakta rutor som visar ett värde var, som en temperatur, en batterinivå eller på/av.
+- Ljusreglage: kompakta ljusrutor med ljusstyrka och färgtemperatur, sex lampor på samma plats som tre.
 
 Väderdata från MET Norway, licensierad under CC BY 4.0.

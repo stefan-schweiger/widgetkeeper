@@ -2,6 +2,14 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 0.8.0
+
+### New: Light Controls
+- Compact light tiles, two per row, so six lights fit in the space of three of Homey's own light cards.
+- Tap a tile to turn the light on or off. Drag the bar to set the brightness, or tap it where you want it; all the way to the left turns the light off.
+- Lights with a colour temperature have a thermometer: tap it and the bar sets the colour temperature, from cool to warm.
+- A lit tile takes on the light's colour.
+
 ## 0.7.0
 
 ### New: Device Values

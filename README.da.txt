@@ -11,5 +11,6 @@ Inkluderede widgets:
 - Insights-heatmap: en uge af én værdi, fx lys, temperatur eller bevægelse, som et gitter af ugedage og timer.
 - Kameraer: to til seks kameraer i ét gitter af billeder, der opdateres med få sekunders mellemrum. Tryk på et for at se det live.
 - Enhedsværdier: kompakte felter, der hver viser én værdi, som en temperatur, et batteriniveau eller til/fra.
+- Lysstyring: kompakte lysfelter med lysstyrke og farvetemperatur, seks lys på pladsen af tre.
 
 Vejrdata fra MET Norway, licenseret under CC BY 4.0.

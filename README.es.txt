@@ -11,5 +11,6 @@ Widgets incluidos:
 - Mapa de calor de Insights: una semana de un valor, como luz, temperatura o movimiento, en una cuadrícula de días y horas.
 - Cámaras: de dos a seis cámaras en una cuadrícula de instantáneas que se actualizan cada pocos segundos. Toca una para verla en vivo.
 - Valores de dispositivos: mosaicos compactos que muestran cada uno un valor, como una temperatura, un nivel de batería o encendido/apagado.
+- Control de luces: mosaicos compactos con brillo y temperatura de color, seis luces en el espacio de tres.
 
 Datos meteorológicos de MET Norway, con licencia CC BY 4.0.
