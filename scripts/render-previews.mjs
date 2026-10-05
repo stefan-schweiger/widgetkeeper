@@ -1,10 +1,12 @@
 // Renders the widget preview PNGs (1024×1024, transparent outside the card) from dev/widget-previews.html
-// with headless Edge. Usage: `npm run previews [-- <id>…]` (set EDGE to the browser path if it isn't the default).
+// with headless Edge, plus a copy cropped to the card for the README (docs/previews/<widget>-<theme>.png).
+// Usage: `npm run previews [-- <id>…]` (set EDGE to the browser path if it isn't the default).
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import sharp from 'sharp';
 
 const EDGE = process.env.EDGE || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const page = pathToFileURL(resolve('dev/widget-previews.html')).href;
@@ -36,6 +38,17 @@ for (const [id, out] of Object.entries(OUT).filter(([id]) => !only.length || onl
       `--user-data-dir=${profile}`, `--screenshot=${resolve(out)}`, `${page}?p=${id}`,
     ], { stdio: 'ignore' });
     console.log('wrote', out);
+    // The README shows the previews small, floated left of the text; the 1024×1024 frame is mostly empty
+    // space, so crop to the card (its shadow included), scale to 480 px wide (120 px at 4x) and pad the
+    // bottom to 420 px, so every image is as tall and the text beside it doesn't wrap under a short one.
+    const [, widget, theme] = out.match(/^widgets\/(\w+)\/preview-(\w+)\.png$/);
+    const cropped = `docs/previews/${widget}-${theme}.png`;
+    mkdirSync('docs/previews', { recursive: true });
+    const card = await sharp(await sharp(out).trim({ threshold: 1 }).toBuffer()).resize({ width: 480 }).toBuffer();
+    const { height } = await sharp(card).metadata();
+    await sharp(card).extend({ bottom: Math.max(0, 420 - height), background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png({ compressionLevel: 9 }).toFile(cropped);
+    console.log('wrote', cropped);
   } finally {
     rmSync(profile, { recursive: true, force: true });
   }

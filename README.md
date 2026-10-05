@@ -4,15 +4,33 @@ Extra dashboard widgets for Homey Pro.
 
 I built these to replace a few native Homey widgets that didn't quite behave the way I wanted. The aim is widgets that sit naturally next to Homey's own: the same look, the same feel, and no sense that they came from somewhere else.
 
-| | Widget | What it does |
-| --- | --- | --- |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/electricity/preview-dark.png"><img src="widgets/electricity/preview-light.png" alt="" width="64"></picture> | [Electricity Overview](#electricity-overview) | Live power use, hourly electricity prices and usage history on one card |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/thermostat/preview-dark.png"><img src="widgets/thermostat/preview-light.png" alt="" width="64"></picture> | [Thermostat Shortcuts](#thermostat-shortcuts) | Three one-tap presets for a thermostat, heat pump or air conditioner |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/quickactions/preview-dark.png"><img src="widgets/quickactions/preview-light.png" alt="" width="64"></picture> | [Device Quick Actions](#device-quick-actions) | Compact tiles that run a device's quick action with one tap |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/sensoralarms/preview-dark.png"><img src="widgets/sensoralarms/preview-light.png" alt="" width="64"></picture> | [Sensor Alarms](#sensor-alarms) | Tiles that show a sensor's alarm and turn red when one is on |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/weather/preview-dark.png"><img src="widgets/weather/preview-light.png" alt="" width="64"></picture> | [Weather Forecast](#weather-forecast) | The next 36 hours, hour by hour, from MET Norway (yr.no) |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/heatmap/preview-dark.png"><img src="widgets/heatmap/preview-light.png" alt="" width="64"></picture> | [Insights Heatmap](#insights-heatmap) | A week of one value (light, temperature, motion …) as a grid of weekdays and hours |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="widgets/cameras/preview-dark.png"><img src="widgets/cameras/preview-light.png" alt="" width="64"></picture> | [Cameras](#cameras) | Two to six cameras in one grid of snapshots; tap one to watch it live |
+<p><a href="#electricity-overview"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/electricity-dark.png"><img src="docs/previews/electricity-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#electricity-overview"><b>Electricity Overview</b></a><br>
+Live power use, hourly electricity prices and usage history on one card<br clear="left"></p>
+
+<p><a href="#thermostat-shortcuts"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/thermostat-dark.png"><img src="docs/previews/thermostat-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#thermostat-shortcuts"><b>Thermostat Shortcuts</b></a><br>
+Three one-tap presets for a thermostat, heat pump or air conditioner<br clear="left"></p>
+
+<p><a href="#device-quick-actions"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/quickactions-dark.png"><img src="docs/previews/quickactions-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#device-quick-actions"><b>Device Quick Actions</b></a><br>
+Compact tiles that run a device's quick action with one tap<br clear="left"></p>
+
+<p><a href="#sensor-alarms"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/sensoralarms-dark.png"><img src="docs/previews/sensoralarms-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#sensor-alarms"><b>Sensor Alarms</b></a><br>
+Tiles that show a sensor's alarm and turn red when one is on<br clear="left"></p>
+
+<p><a href="#weather-forecast"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/weather-dark.png"><img src="docs/previews/weather-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#weather-forecast"><b>Weather Forecast</b></a><br>
+The next 36 hours, hour by hour, from MET Norway (yr.no)<br clear="left"></p>
+
+<p><a href="#insights-heatmap"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/heatmap-dark.png"><img src="docs/previews/heatmap-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#insights-heatmap"><b>Insights Heatmap</b></a><br>
+A week of one value (light, temperature, motion …) as a grid of weekdays and hours<br clear="left"></p>
+
+<p><a href="#cameras"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/cameras-dark.png"><img src="docs/previews/cameras-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#cameras"><b>Cameras</b></a><br>
+Two to six cameras in one grid of snapshots; tap one to watch it live<br clear="left"></p>
 
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
@@ -160,4 +178,4 @@ See [CHANGELOG.md](CHANGELOG.md) for what's new in each version.
 ## License
 [MIT](LICENSE)
 
-The screenshots show the real widgets with mock data, rendered by `npm run screenshots`. The small images in the overview are the widgets' previews from Homey's widget picker.
+The screenshots show the real widgets with mock data, rendered by `npm run screenshots`. The small images in the overview are the widgets' previews from Homey's widget picker, cropped to the card.
