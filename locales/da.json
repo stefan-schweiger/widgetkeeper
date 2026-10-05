@@ -80,5 +80,12 @@
     "unavailable": "Ikke tilgængelig",
     "live": "Live",
     "liveFailed": "Livebillede fejlede"
+  },
+  "values": {
+    "selectSlots": "Vælg enhedsværdier i widgetindstillingerne.",
+    "error": "Kunne ikke hente værdierne.",
+    "unavailable": "Utilgængelig",
+    "on": "Til",
+    "off": "Fra"
   }
 }

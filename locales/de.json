@@ -80,5 +80,12 @@
     "unavailable": "Nicht verfügbar",
     "live": "Live",
     "liveFailed": "Livebild fehlgeschlagen"
+  },
+  "values": {
+    "selectSlots": "Wähle Gerätewerte in den Widget-Einstellungen.",
+    "error": "Werte konnten nicht geladen werden.",
+    "unavailable": "Nicht verfügbar",
+    "on": "Ein",
+    "off": "Aus"
   }
 }

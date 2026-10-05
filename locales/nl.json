@@ -80,5 +80,12 @@
     "unavailable": "Niet beschikbaar",
     "live": "Live",
     "liveFailed": "Live beeld mislukt"
+  },
+  "values": {
+    "selectSlots": "Kies apparaatwaarden in de widgetinstellingen.",
+    "error": "Kan de waarden niet laden.",
+    "unavailable": "Niet beschikbaar",
+    "on": "Aan",
+    "off": "Uit"
   }
 }

@@ -80,5 +80,12 @@
     "unavailable": "Non disponibile",
     "live": "Live",
     "liveFailed": "Live non riuscito"
+  },
+  "values": {
+    "selectSlots": "Scegli i valori nelle impostazioni del widget.",
+    "error": "Impossibile caricare i valori.",
+    "unavailable": "Non disponibile",
+    "on": "Acceso",
+    "off": "Spento"
   }
 }

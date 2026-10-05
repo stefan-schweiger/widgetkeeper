@@ -80,5 +80,12 @@
     "unavailable": "No disponible",
     "live": "En vivo",
     "liveFailed": "Falló el vídeo en vivo"
+  },
+  "values": {
+    "selectSlots": "Elige valores en los ajustes del widget.",
+    "error": "No se pudieron cargar los valores.",
+    "unavailable": "No disponible",
+    "on": "Encendido",
+    "off": "Apagado"
   }
 }

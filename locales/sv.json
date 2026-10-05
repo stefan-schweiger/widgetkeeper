@@ -80,5 +80,12 @@
     "unavailable": "Inte tillgänglig",
     "live": "Live",
     "liveFailed": "Livebild misslyckades"
+  },
+  "values": {
+    "selectSlots": "Välj enhetsvärden i widgetinställningarna.",
+    "error": "Kunde inte läsa in värdena.",
+    "unavailable": "Inte tillgänglig",
+    "on": "På",
+    "off": "Av"
   }
 }

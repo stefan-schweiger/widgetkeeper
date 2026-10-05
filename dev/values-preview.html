@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Device values widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/values/public/widget.css">
+  <script src="../widgets/values/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <style>
+    body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px;
+      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · light</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>300 px · dark</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · dark · 2 columns</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · dark · percentage fill</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px · light · percentage fill</span><div class="dash light" style="width:358px"><div id="w7"></div></div></div>
+  <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
+
+  <script>
+    const cap = (type, extra = {}) => ({ title: '', type, units: null, decimals: null, values: null, icon: null, ...extra });
+    const slots = () => [
+      { deviceId: 'a', capabilityId: 'measure_temperature', name: 'Stue', capability: cap('number', { title: 'Temperature', units: '°C', decimals: 1 }), value: 21.46 },
+      { deviceId: 'a', capabilityId: 'measure_humidity', name: 'Stue', capability: cap('number', { title: 'Humidity', units: '%', decimals: 0 }), value: 48 },
+      { deviceId: 'b', capabilityId: 'onoff', name: 'Floor lamp | Living room', capability: cap('boolean', { title: 'Turned on' }), value: true },
+      { deviceId: 'c', capabilityId: 'measure_power', name: 'Electricity Meter', capability: cap('number', { title: 'Power', units: 'W', decimals: 0 }), value: 1234 },
+      { deviceId: 'd', capabilityId: 'measure_luminance', name: 'Hallway', capability: cap('number', { title: 'Luminance', units: 'lx' }), value: 5.2 },
+      { deviceId: 'e', capabilityId: 'thermostat_mode', name: 'Aircon', capability: cap('enum', { title: 'Mode', values: [{ id: 'heat', title: 'Heat' }, { id: 'cool', title: 'Cool' }] }), value: 'heat' },
+      { deviceId: 'f', capabilityId: 'measure_co2', name: 'Bedroom', capability: cap('number', { title: 'CO2', units: 'ppm', decimals: 0 }), value: 812 },
+      { deviceId: 'g', capabilityId: 'alarm_contact', name: 'Back door', capability: cap('boolean', { title: 'Contact alarm' }), value: false },
+      { deviceId: 'h', capabilityId: 'measure_temperature', missing: true },
+    ];
+    for (const id of ['w1', 'w2', 'w3']) createValuesWidget(document.getElementById(id), { t: devT }).setState(slots());
+    createValuesWidget(document.getElementById('w5'), { t: devT, columns: '2' }).setState(slots());
+    const pct = (name, capabilityId, value, extra = {}) => ({ deviceId: name, capabilityId, name, capability: cap('number', { units: '%', decimals: 0, ...extra }), value });
+    const percents = () => [
+      pct('Back door', 'measure_battery', 6), pct('Hallway', 'measure_battery', 14), pct('Kitchen', 'measure_battery', 72),
+      pct('Stue', 'measure_humidity', 48), pct('Ceiling', 'dim', 0.35, { min: 0, max: 1, decimals: 2 }), pct('Garage', 'measure_battery', 100),
+    ];
+    for (const id of ['w6', 'w7']) createValuesWidget(document.getElementById(id), { t: devT, percentFill: true }).setState(percents());
+    const empty = createValuesWidget(document.getElementById('w4'), { t: devT });
+    empty.setMessage(empty.t('selectSlots'));
+  </script>
+</body>
+</html>

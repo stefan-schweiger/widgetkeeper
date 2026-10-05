@@ -7,8 +7,8 @@
   <!--
     The README screenshots: the real widget code with mock data, at the width of a widget on Homey's dark dashboard
     on a phone (358 px: a 390 px screen less the dashboard's 16 px margins; colours sampled from an iPhone screenshot).
-    No widget title and a transparent page, so the shots sit flush with the README text in either GitHub theme. `?s=electricity|thermostat|quickactions|sensoralarms|weather|heatmap|cameras`
-    shows one, for scripts/render-screenshots.mjs; without it, all seven.
+    No widget title and a transparent page, so the shots sit flush with the README text in either GitHub theme. `?s=electricity|thermostat|quickactions|sensoralarms|weather|heatmap|cameras|values`
+    shows one, for scripts/render-screenshots.mjs; without it, all eight.
     Device icons come from Homey's icon library. The render script downloads them to temp/screenshot-icons.js;
     without that file the tiles fall back to plain squares.
   -->
@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="../widgets/weather/public/widget.css">
   <link rel="stylesheet" href="../widgets/heatmap/public/widget.css">
   <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
+  <link rel="stylesheet" href="../widgets/values/public/widget.css">
   <script src="../widgets/electricity/public/widget.js"></script>
   <script src="../widgets/thermostat/public/widget.js"></script>
   <script src="../widgets/quickactions/public/widget.js"></script>
@@ -27,6 +28,7 @@
   <script src="../widgets/weather/public/widget.js"></script>
   <script src="../widgets/heatmap/public/widget.js"></script>
   <script src="../widgets/cameras/public/widget.js"></script>
+  <script src="../widgets/values/public/widget.js"></script>
   <script src="mock-electricity.js"></script>
   <script src="mock-weather.js"></script>
   <script src="mock-heatmap.js"></script>
@@ -50,6 +52,7 @@
   <section class="shot" id="weather"><div class="card wf-frame"><div id="w-weather"></div></div></section>
   <section class="shot" id="heatmap"><div class="card hm-frame"><div id="w-heatmap"></div></div></section>
   <section class="shot" id="cameras"><div id="w-cameras"></div></section>
+  <section class="shot" id="values"><div id="w-values"></div></section>
 
   <script>
     const icon = name => (window.ICONS && ICONS[name]) || null;
@@ -83,6 +86,16 @@
     ]);
 
     const alarm = (capabilityId, value, title, state = false) => ({ capabilityId, title, value, state });
+    const vcap = (type, extra = {}) => ({ title: '', type, units: null, decimals: null, values: null, icon: null, ...extra });
+    createValuesWidget(document.getElementById('w-values'), { percentFill: true }).setState([
+      { deviceId: '1', capabilityId: 'measure_temperature', name: 'Living room', capability: vcap('number', { units: '°C', decimals: 1 }), value: 21.5 },
+      { deviceId: '1', capabilityId: 'measure_humidity', name: 'Living room', capability: vcap('number', { units: '%', decimals: 0 }), value: 48 },
+      { deviceId: '2', capabilityId: 'onoff', name: 'Floor lamp', capability: vcap('boolean'), value: true },
+      { deviceId: '3', capabilityId: 'measure_battery', name: 'Back door', capability: vcap('number', { units: '%', decimals: 0 }), value: 7 },
+      { deviceId: '4', capabilityId: 'measure_battery', name: 'Hallway', capability: vcap('number', { units: '%', decimals: 0 }), value: 16 },
+      { deviceId: '5', capabilityId: 'measure_power', name: 'Meter', capability: vcap('number', { units: 'W', decimals: 0 }), value: 812 },
+    ]);
+
     createSensorAlarmsWidget(document.getElementById('w-sa'), {}).setState([
       { id: '1', name: 'Kitchen', icon: icon('smoke-detector'), alarms: [alarm('alarm_smoke', false, 'Smoke alarm'), alarm('alarm_battery', false, 'Battery alarm')] },
       { id: '2', name: 'Hallway', icon: icon('smoke-detector'), alarms: [alarm('alarm_smoke', false, 'Smoke alarm')] },

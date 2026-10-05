@@ -1,0 +1,78 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/values-preview.html).
+ * The tile copies Device Quick Actions' (widgets/quickactions/public/widget.css).
+ */
+.vt {
+  --vt-tile: var(--homey-background-color, #FFFFFF);
+  --vt-text: var(--homey-text-color, #EDEEF0);
+  --vt-muted: var(--homey-text-color-light, #9C9DA5);
+  --vt-accent: var(--homey-color-blue, #2F8DF6);
+  --vt-accent-icon: var(--vt-accent); /* the icon on a blue-tinted tile */
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --vt-fs-small: var(--homey-font-size-small, 14px); --vt-lh-small: var(--homey-line-height-small, 20px);
+  --vt-bold: var(--homey-font-weight-bold, 700);
+  /* Percentage fills: Homey's red and green; yellow has no Homey token. Mixed into the tile so the text stays readable. */
+  --vt-red: var(--homey-color-red, #F25F5C);
+  --vt-yellow: #F5C518;
+  --vt-green: var(--homey-color-green, #71D51B);
+  --vt-fill-mix: 45%;
+  --vt-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+}
+/* Dark mode: each tile looks like a native device tile, darker than the default widget background. */
+.homey-dark-mode .vt, .vt.homey-dark-mode { --vt-tile: #181920; --vt-accent-icon: #5AA6FF; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
+html, body { background: transparent !important; }
+
+.vt { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--vt-text); }
+.vt * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.vt [dir="auto"] { text-align: left; }
+
+.vt-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--homey-su-3, 12px); }
+.vt[data-columns="2"] .vt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* A compact tile (62px): the icon and value row, then the name. */
+.vt-tile {
+  position: relative; color: var(--vt-text);
+  background: var(--vt-tile); border-radius: var(--vt-radius); padding: 8px 10px; min-width: 0;
+  display: flex; flex-direction: column; align-items: stretch; gap: 6px;
+  user-select: none; -webkit-user-select: none;
+  transition: background-color .15s, color .15s;
+}
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .vt-tile::after, .vt.homey-dark-mode .vt-tile::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.vt-tile.missing > * { opacity: .5; }
+
+.vt-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; height: 20px; }
+/* The icon sits against the tile's padding, in line with the name. */
+.vt-icon {
+  flex-shrink: 0; width: 20px; height: 20px; background: currentColor;
+  -webkit-mask: var(--vt-mask) left center / contain no-repeat; mask: var(--vt-mask) left center / contain no-repeat;
+}
+.vt-value, .vt-name {
+  /* 14 bold like the native temperature tiles' name (and Quick Actions). */
+  font-size: var(--vt-fs-small); line-height: var(--vt-lh-small); font-weight: var(--vt-bold);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+.vt .vt-value { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* A percentage filling the tile from the left: red, yellow or green by the thresholds in the settings. */
+.vt-tile.filled { --vt-level: var(--vt-green);
+  background: linear-gradient(to right, color-mix(in srgb, var(--vt-level) var(--vt-fill-mix), var(--vt-tile)) var(--vt-fill), var(--vt-tile) var(--vt-fill)); }
+.vt-tile.filled[data-level="red"] { --vt-level: var(--vt-red); }
+.vt-tile.filled[data-level="yellow"] { --vt-level: var(--vt-yellow); }
+
+/* A boolean that is on: Quick Actions' blue tint with a blue icon. */
+.vt-tile.active { background: color-mix(in srgb, var(--vt-accent) 22%, var(--vt-tile)); }
+.vt-tile.active .vt-icon { color: var(--vt-accent-icon); }
+
+.vt-message { font-size: var(--vt-fs-small); line-height: var(--vt-lh-small); color: var(--vt-muted); }
+.vt-message.error { color: var(--homey-color-red, #F25F5C); }

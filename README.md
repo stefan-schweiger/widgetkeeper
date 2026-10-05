@@ -32,6 +32,10 @@ A week of one value (light, temperature, motion …) as a grid of weekdays and h
 <a href="#cameras"><b>Cameras</b></a><br>
 Two to six cameras in one grid of snapshots; tap one to watch it live<br clear="left"></p>
 
+<p><a href="#device-values"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/values-dark.png"><img src="docs/previews/values-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#device-values"><b>Device Values</b></a><br>
+Compact tiles that each show one value, such as a temperature, power or on/off<br clear="left"></p>
+
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
@@ -159,6 +163,19 @@ Tap a camera to watch it live: it fills the whole widget, with a red **Live** la
 | --- | --- |
 | Cameras | Any cameras and doorbells, shown in the order you pick them |
 | Refresh snapshots every | **5 s**, **10 s** (the default), **30 s** or **1 min** |
+
+## Device Values
+<img src="docs/screenshots/values.png" alt="Device Values on a Homey dashboard" width="358">
+
+Half-height tiles in the style of Device Quick Actions, three or two per row, each showing one value of a device: its icon and the value on top, the device name below. Values update the moment they change. An on/off value is highlighted in blue while it's on.
+
+**Setting it up**
+1. Add the widget to a dashboard.
+2. Optionally pick **Columns**: **3** (the default) or **2**, for more room for long values.
+3. Optionally switch on **Fill percentages by level**: a percentage (battery, humidity, dim level …) fills its tile from the left, as far as the value goes, in red below 10 %, yellow below 20 % and green otherwise. **Red below** and **Yellow below** change those limits.
+4. Pick up to six values (**Tile 1** to **Tile 6**). Each list has every device's values as *Device · Value*, e.g. *Living room · Temperature*; type to search by device, zone or value. The same device can fill several tiles.
+
+The tiles only show values; tapping them does nothing.
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic. The widgets follow Homey's language.

@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -121,6 +121,30 @@ function quickActions(t, theme) {
   };
   return `<div style="width:880px;display:grid;grid-template-columns:repeat(3,1fr);gap:32px">
     ${[true, false, true, false, false, true].map(tile).join('')}
+  </div>`;
+}
+
+// Device Values: Quick Actions' tiles with an icon and a value on top, the name below; an "on" boolean is tinted,
+// and percentages fill the tile from the left in red, yellow or green (the widget's 45 % mix into the tile).
+function deviceValues(t, theme) {
+  const LEVEL = { red: '#F25F5C', yellow: '#F5C518', green: '#71D51B' };
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const tile = ([on, w, fill, level]) => {
+    const tint = theme === 'dark' ? '#1D3150' : '#DCEBFD', iconOn = theme === 'dark' ? '#5AA6FF' : BLUE;
+    const bg = on ? tint : fill != null
+      ? `linear-gradient(to right, color-mix(in srgb, ${LEVEL[level]} 45%, ${tileBg}) ${fill}%, ${tileBg} ${fill}%)`
+      : tileBg;
+    return `<div style="height:200px;border-radius:32px;background:${bg};box-shadow:${shadow};padding:36px 32px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="width:28px;height:60px;border:7px solid ${on ? iconOn : t.fg};border-radius:14px;box-sizing:border-box"></div>
+        ${pill(w, 36, t.fg)}
+      </div>
+      ${pill(150, 30, t.fg, 'opacity:.55')}
+    </div>`;
+  };
+  return `<div style="width:880px;display:grid;grid-template-columns:repeat(3,1fr);gap:32px">
+    ${[[false, 120], [false, 90, 8, 'red'], [true, 70], [false, 90, 72, 'green'], [false, 90, 16, 'yellow'], [false, 100]].map(tile).join('')}
   </div>`;
 }
 
@@ -240,6 +264,8 @@ const PREVIEWS = [
   { id: 'hm-light',     label: '1l · Insights Heatmap — preview-light.png',      theme: 'light', render: heatmap },
   { id: 'cam-dark',     label: '1m · Cameras — preview-dark.png',                theme: 'dark',  render: cameras },
   { id: 'cam-light',    label: '1n · Cameras — preview-light.png',               theme: 'light', render: cameras },
+  { id: 'val-dark',     label: '1o · Device Values — preview-dark.png',          theme: 'dark',  render: deviceValues },
+  { id: 'val-light',    label: '1p · Device Values — preview-light.png',         theme: 'light', render: deviceValues },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');

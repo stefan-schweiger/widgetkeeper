@@ -25,6 +25,8 @@ const OUT = {
   'hm-light': 'widgets/heatmap/preview-light.png',
   'cam-dark': 'widgets/cameras/preview-dark.png',
   'cam-light': 'widgets/cameras/preview-light.png',
+  'val-dark': 'widgets/values/preview-dark.png',
+  'val-light': 'widgets/values/preview-light.png',
 };
 
 const only = process.argv.slice(2);

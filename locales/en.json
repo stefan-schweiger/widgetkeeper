@@ -80,5 +80,12 @@
     "unavailable": "Unavailable",
     "live": "Live",
     "liveFailed": "Live view failed"
+  },
+  "values": {
+    "selectSlots": "Pick device values in the widget settings.",
+    "error": "Could not load the values.",
+    "unavailable": "Unavailable",
+    "on": "On",
+    "off": "Off"
   }
 }

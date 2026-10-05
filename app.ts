@@ -7,7 +7,10 @@ import HeatmapService from './lib/HeatmapService.js';
 import QuickActionService from './lib/QuickActionService.js';
 import SensorAlarmService from './lib/SensorAlarmService.js';
 import ThermostatService from './lib/ThermostatService.js';
+import ValueService from './lib/ValueService.js';
 import WeatherService from './lib/WeatherService.js';
+
+const VALUE_SLOTS = [1, 2, 3, 4, 5, 6];
 
 export default class WidgetkeeperApp extends Homey.App {
 
@@ -19,6 +22,7 @@ export default class WidgetkeeperApp extends Homey.App {
   weather!: WeatherService;
   heatmap!: HeatmapService;
   cameras!: CameraService;
+  values!: ValueService;
 
   async onInit() {
     this.diagnostics = new Diagnostics(this.homey);
@@ -42,6 +46,9 @@ export default class WidgetkeeperApp extends Homey.App {
     this.heatmap.start();
     this.registerHeatmapSettings();
     this.cameras = new CameraService(this.homey, log, debug);
+    this.values = new ValueService(this.homey, log, debug);
+    this.values.start();
+    this.registerValueSettings();
     this.debug('Widgetkeeper has been initialized');
   }
 
@@ -72,6 +79,7 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.weather?.stop();
     await this.heatmap?.stop();
     await this.cameras?.stop();
+    await this.values?.stop();
   }
 
   /** Autocomplete for the thermostat widget: the device, then per-button options read from it. */
@@ -91,6 +99,14 @@ export default class WidgetkeeperApp extends Homey.App {
     const widget = this.homey.dashboards.getWidget('heatmap');
     widget.registerSettingAutocompleteListener('device', query => this.heatmap.listDevices(query));
     widget.registerSettingAutocompleteListener('capability', (query, settings) => this.heatmap.listCapabilities(settings?.device?.id, query));
+  }
+
+  /** Autocomplete for the device values widget: every tile slot lists all `Device · Capability` pairs. */
+  private registerValueSettings() {
+    const widget = this.homey.dashboards.getWidget('values');
+    for (const n of VALUE_SLOTS) {
+      widget.registerSettingAutocompleteListener(`slot${n}`, query => this.values.listSlots(query));
+    }
   }
 
 }

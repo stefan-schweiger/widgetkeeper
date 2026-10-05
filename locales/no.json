@@ -80,5 +80,12 @@
     "unavailable": "Utilgjengelig",
     "live": "Direkte",
     "liveFailed": "Direktebilde feilet"
+  },
+  "values": {
+    "selectSlots": "Velg enhetsverdier i widgetinnstillingene.",
+    "error": "Kunne ikke laste inn verdiene.",
+    "unavailable": "Utilgjengelig",
+    "on": "På",
+    "off": "Av"
   }
 }

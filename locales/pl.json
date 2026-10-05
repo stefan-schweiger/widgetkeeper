@@ -80,5 +80,12 @@
     "unavailable": "Niedostępne",
     "live": "Na żywo",
     "liveFailed": "Błąd podglądu na żywo"
+  },
+  "values": {
+    "selectSlots": "Wybierz wartości w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać wartości.",
+    "unavailable": "Niedostępne",
+    "on": "Wł.",
+    "off": "Wył."
   }
 }
