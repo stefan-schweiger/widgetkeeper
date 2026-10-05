@@ -10,5 +10,6 @@ Widget inclusi:
 - Previsioni meteo: icona, temperatura, vento e precipitazioni ora per ora per le prossime 36 ore, da MET Norway (yr.no).
 - Mappa di calore Insights: una settimana di un valore, come luce, temperatura o movimento, in una griglia di giorni e ore.
 - Telecamere: da due a sei telecamere in un'unica griglia di istantanee aggiornate ogni pochi secondi. Toccane una per vederla dal vivo.
+- Valori dispositivi: riquadri compatti che mostrano ciascuno un valore, come una temperatura, un livello della batteria o acceso/spento.
 
 Dati meteo di MET Norway, con licenza CC BY 4.0.

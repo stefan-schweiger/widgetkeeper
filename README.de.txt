@@ -10,5 +10,6 @@ Enthaltene Widgets:
 - Wettervorhersage: Symbol, Temperatur, Wind und Niederschlag Stunde für Stunde für die nächsten 36 Stunden, von MET Norway (yr.no).
 - Insights-Heatmap: eine Woche eines Werts, etwa Licht, Temperatur oder Bewegung, als Raster aus Wochentagen und Stunden.
 - Kameras: zwei bis sechs Kameras in einem Raster aus Schnappschüssen, die sich alle paar Sekunden erneuern. Tippe auf eine für das Livebild.
+- Gerätewerte: kompakte Kacheln, die jeweils einen Wert zeigen, etwa eine Temperatur, einen Akkustand oder Ein/Aus.
 
 Wetterdaten von MET Norway, lizenziert unter CC BY 4.0.

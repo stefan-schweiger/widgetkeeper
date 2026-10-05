@@ -10,5 +10,6 @@ Ingående widgetar:
 - Väderprognos: symbol, temperatur, vind och nederbörd timme för timme för de kommande 36 timmarna, från MET Norway (yr.no).
 - Insights-värmekarta: en vecka av ett värde, som ljus, temperatur eller rörelse, som ett rutnät av veckodagar och timmar.
 - Kameror: två till sex kameror i ett rutnät av bilder som uppdateras med några sekunders mellanrum. Tryck på en för att se den live.
+- Enhetsvärden: kompakta rutor som visar ett värde var, som en temperatur, en batterinivå eller på/av.
 
 Väderdata från MET Norway, licensierad under CC BY 4.0.

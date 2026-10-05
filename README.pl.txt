@@ -10,5 +10,6 @@ Dołączone widżety:
 - Prognoza pogody: ikona, temperatura, wiatr i opady godzina po godzinie na najbliższe 36 godzin, z MET Norway (yr.no).
 - Mapa cieplna Insights: tydzień jednej wartości, np. światła, temperatury lub ruchu, jako siatka dni i godzin.
 - Kamery: od dwóch do sześciu kamer w jednej siatce zdjęć odświeżanych co kilka sekund. Dotknij kamery, aby oglądać ją na żywo.
+- Wartości urządzeń: kompaktowe kafelki, z których każdy pokazuje jedną wartość, np. temperaturę, poziom baterii lub wł./wył.
 
 Dane pogodowe: MET Norway, licencja CC BY 4.0.

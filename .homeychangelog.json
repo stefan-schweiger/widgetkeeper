@@ -121,5 +121,20 @@
     "pl": "Przegląd energii: nowe ustawienie, aby pokazywać historię zużycia w fiolecie Homey. Osobny wykres zużycia ma grubszą linię. Prognoza pogody: nowe ustawienie Kolory z czterema żywszymi motywami.",
     "ko": "전기 개요: 사용 기록을 Homey의 보라색으로 표시하는 새 설정. 별도 사용량 차트의 선이 더 굵어졌습니다. 일기 예보: 더 생생한 네 가지 테마가 있는 새 색상 설정.",
     "ar": "نظرة عامة على الكهرباء: إعداد جديد لعرض سجل الاستهلاك بلون Homey البنفسجي. أصبح خط مخطط الاستهلاك المنفصل أعرض. توقعات الطقس: إعداد ألوان جديد بأربع سمات أكثر حيوية."
+  },
+  "0.7.0": {
+    "en": "New widget: Device Values, compact tiles that each show one value of a device, such as a temperature, a battery level or on/off, in 3 or 2 columns. Percentages can fill their tile in red, yellow or green.",
+    "nl": "Nieuwe widget: Apparaatwaarden, compacte tegels die elk één waarde van een apparaat tonen, zoals een temperatuur, een batterijniveau of aan/uit, in 3 of 2 kolommen. Percentages kunnen hun tegel rood, geel of groen vullen.",
+    "de": "Neues Widget: Gerätewerte, kompakte Kacheln, die jeweils einen Wert eines Geräts zeigen, etwa eine Temperatur, einen Akkustand oder Ein/Aus, in 3 oder 2 Spalten. Prozentwerte können ihre Kachel rot, gelb oder grün füllen.",
+    "fr": "Nouveau widget : Valeurs d'appareils, des tuiles compactes qui affichent chacune une valeur d'un appareil, comme une température, un niveau de batterie ou marche/arrêt, sur 3 ou 2 colonnes. Les pourcentages peuvent remplir leur tuile en rouge, jaune ou vert.",
+    "it": "Nuovo widget: Valori dispositivi, riquadri compatti che mostrano ciascuno un valore di un dispositivo, come una temperatura, un livello della batteria o acceso/spento, su 3 o 2 colonne. Le percentuali possono riempire il riquadro di rosso, giallo o verde.",
+    "sv": "Ny widget: Enhetsvärden, kompakta rutor som visar ett värde var från en enhet, som en temperatur, en batterinivå eller på/av, i 3 eller 2 kolumner. Procentvärden kan fylla sin ruta i rött, gult eller grönt.",
+    "no": "Ny widget: Enhetsverdier, kompakte fliser som viser én verdi hver fra en enhet, som en temperatur, et batterinivå eller av/på, i 3 eller 2 kolonner. Prosentverdier kan fylle flisen i rødt, gult eller grønt.",
+    "es": "Nuevo widget: Valores de dispositivos, mosaicos compactos que muestran cada uno un valor de un dispositivo, como una temperatura, un nivel de batería o encendido/apagado, en 3 o 2 columnas. Los porcentajes pueden rellenar su mosaico en rojo, amarillo o verde.",
+    "da": "Ny widget: Enhedsværdier, kompakte felter, der hver viser én værdi fra en enhed, som en temperatur, et batteriniveau eller til/fra, i 3 eller 2 kolonner. Procenter kan udfylde deres felt med rødt, gult eller grønt.",
+    "ru": "Новый виджет «Значения устройств»: компактные плитки, каждая из которых показывает одно значение устройства, например температуру, заряд батареи или вкл./выкл., в 3 или 2 столбца. Проценты могут заливать плитку красным, жёлтым или зелёным.",
+    "pl": "Nowy widżet: Wartości urządzeń, kompaktowe kafelki, z których każdy pokazuje jedną wartość urządzenia, np. temperaturę, poziom baterii lub wł./wył., w 3 lub 2 kolumnach. Procenty mogą wypełniać kafelek na czerwono, żółto lub zielono.",
+    "ko": "새 위젯: 기기 값. 온도, 배터리 잔량, 켜짐/꺼짐 같은 기기 값을 하나씩 보여 주는 작은 타일을 3열 또는 2열로 표시합니다. 백분율은 타일을 빨간색, 노란색 또는 초록색으로 채울 수 있습니다.",
+    "ar": "أداة جديدة: قيم الأجهزة، بلاطات صغيرة تعرض كل منها قيمة واحدة لجهاز، مثل درجة الحرارة أو مستوى البطارية أو التشغيل/الإيقاف، في 3 أو 2 أعمدة. يمكن للنسب المئوية أن تملأ بلاطتها بالأحمر أو الأصفر أو الأخضر."
   }
 }

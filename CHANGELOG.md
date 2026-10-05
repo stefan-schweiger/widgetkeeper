@@ -2,6 +2,15 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 0.7.0
+
+### New: Device Values
+- Compact tiles in the style of Device Quick Actions, each showing one value of a device: its icon and the value on top, the device name below. Values update the moment they change.
+- Pick up to six values, each from a list of every device's values (*Living room · Temperature*). The same device can fill several tiles.
+- Show the tiles in **3** (the default) or **2** columns.
+- New setting, *Fill percentages by level*: a percentage (battery, humidity, dim level …) fills its tile from the left, red below 10 %, yellow below 20 % and green otherwise. Both limits can be changed.
+- An on/off value is highlighted in blue while it's on.
+
 ## 0.6.1
 
 ### Electricity Overview

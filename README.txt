@@ -10,5 +10,6 @@ Included widgets:
 - Weather Forecast: icon, temperature, wind and precipitation hour by hour for the next 36 hours, from MET Norway (yr.no).
 - Insights Heatmap: a week of one value, like light, temperature or motion, as a grid of weekdays and hours.
 - Cameras: two to six cameras in one grid of snapshots that refresh every few seconds. Tap one to watch it live.
+- Device Values: compact tiles that each show one value, like a temperature, a battery level or on/off.
 
 Weather data from MET Norway, licensed under CC BY 4.0.

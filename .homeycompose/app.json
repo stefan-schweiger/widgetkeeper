@@ -1,6 +1,6 @@
 {
   "id": "com.thomassidor.widgetkeeper",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "compatibility": ">=12.6.0",
   "sdk": 3,
   "runtime": "nodejs",
