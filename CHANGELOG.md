@@ -28,6 +28,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - New setting: **Usage history colour**. Show the usage history in Homey's purple instead of the neutral colour.
 - The separate usage chart's line is now as thick as the live power line, with a full-colour dot.
 
+### Weather Forecast
+- New setting: **Colours**. Besides the standard look: **Vivid**, **Tinted by temperature**, **Tinted by sky** and **Weather background**.
+
 ## 0.6.0
 
 ### New: Cameras
@@ -41,7 +44,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - A week of one value as a grid: a row per weekday, a column per 1, 2 or 3 hours, shaded from the lowest to the highest value shown, like Homey's own heatmaps. Hours with nothing reported are hatched.
 - Works with any number Homey logs in Insights (light, temperature, power, CO₂ …) and with on/off values such as motion or a door contact, shown as the share of each hour they were on.
 - Shows *this week* (Monday to Sunday) or the last 3, 7, 10 or 14 days, with a scale from the lowest to the highest value and a marker at the current one. The scale and the legend can each be switched off.
-- Homey's Insights only keep the last 50 changes of an on/off value, so the app records those itself from when the widget is added; their history fills in over the first days.
+- On/off history fills in over the first days, as Homey's Insights keep only their last 50 changes.
 
 ## 0.4.1
 
@@ -69,7 +72,6 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Show every hour, or every 2 or 3 hours with the hours averaged (precipitation is the total).
 - Compact columns (the default) fit 9 hours across a phone, or 18 with two rows. Detailed columns are larger, with units on every value.
 - Temperatures go from blue when it's cold, through plain text when it's mild, to red when it's hot.
-- The forecast is fetched only while a widget is on screen, and no more often than MET Norway updates it. The weather icons arrive with the forecast, so they don't pop in afterwards.
 
 ## 0.2.0
 
@@ -90,19 +92,17 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Both widgets
 - Renamed to **Electricity Overview** and **Thermostat Shortcuts**.
 - Available in 13 languages: English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic. The diagnostics page is translated too.
-- Text sizes, weights, lines and corners now follow Homey's widget styling, so the widgets sit more naturally next to Homey's own.
-- Homey's own font is used inside the Homey app.
+- Text sizes, weights, lines, corners and the font now follow Homey's widget styling.
 
 ### Thermostat Shortcuts
-- More compact buttons: the temperature is smaller but still bold, and the mode and fan text is smaller.
-- The device name is aligned with Homey's native device tiles.
-- In dark mode, the widget has the same darker frame with a subtle rim as Homey's device tiles.
+- More compact buttons, with smaller temperature, mode and fan text.
+- In dark mode, the widget has the same frame as Homey's device tiles.
 
 ### Electricity Overview
 - When the lowest price in the next 12 hours and in the next 24 hours is the same hour, it's shown only once.
 - Smaller chart titles and footer text.
 - The separate usage chart has a marker at the latest reading, like the live and price charts.
-- Tap a chart to see its values. A touch selection stays for 3 seconds. Dragging on a chart no longer scrolls the dashboard; on Android, Homey's dashboard still takes over drags, so tap there.
+- Tap a chart to see its values; they stay for 3 seconds. Dragging on a chart no longer scrolls the dashboard (except on Android, where Homey's dashboard takes over drags).
 
 ## 0.1.0
 - First release, with the Electricity and Thermostat shortcuts widgets.

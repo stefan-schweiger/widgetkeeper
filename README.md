@@ -1,8 +1,6 @@
 # Widgetkeeper
 
-Extra dashboard widgets for Homey Pro.
-
-I built these to replace a few native Homey widgets that didn't quite behave the way I wanted. The aim is widgets that sit naturally next to Homey's own: the same look, the same feel, and no sense that they came from somewhere else.
+Extra dashboard widgets for Homey Pro, made to sit naturally next to Homey's own with the same look and feel.
 
 <p><a href="#electricity-overview"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/electricity-dark.png"><img src="docs/previews/electricity-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#electricity-overview"><b>Electricity Overview</b></a><br>
@@ -138,7 +136,7 @@ Swipe the hours sideways to see further ahead. A thin line marks each new day. U
 
 The forecast needs no other setup: the widget uses the location set for your Homey (Homey app → Settings → Location).
 
-The forecast is shared by all weather widgets and only fetched while one is on screen, at most as often as MET Norway updates it. Weather data from MET Norway is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The weather icons are [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
+Weather data from MET Norway is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The weather icons are [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
 
 ## Insights Heatmap
 <img src="docs/screenshots/heatmap.png" alt="Insights Heatmap on a Homey dashboard" width="358">
@@ -157,7 +155,7 @@ It works with any number Homey logs in Insights, such as light, temperature, pow
 | Show scale | On (the default) / off |
 | Show legend | On (the default) / off |
 
-On/off values fill in over the first days. Homey's Insights only keep the last 50 changes of an on/off value, which for a busy motion sensor is less than a day. So the app records them itself from the moment the widget first loads, and keeps up to 14 days of them, until 8 days after the widget was last shown. Numbers come straight from Insights and show the whole week right away.
+Numbers come from Insights and show the whole period right away. On/off values fill in over the first days: Homey's Insights keep only their last 50 changes, so the app records them itself from when the widget is first shown, for up to 14 days.
 
 ## Cameras
 <img src="docs/screenshots/cameras.png" alt="Cameras on a Homey dashboard" width="358">
@@ -229,5 +227,3 @@ See [CHANGELOG.md](CHANGELOG.md) for what's new in each version.
 
 ## License
 [MIT](LICENSE)
-
-The screenshots show the real widgets with mock data, rendered by `npm run screenshots`. The small images in the overview are the widgets' previews from Homey's widget picker, cropped to the card.
