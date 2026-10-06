@@ -66,6 +66,24 @@ describe('apply', () => {
     expect(device.sent).toEqual(['fan_speed="high"']);
   });
 
+  it('checks each value against the device as it is after the previous one', async () => {
+    // Per-mode setpoints: switching to cool brings back the cool setpoint, 24°.
+    const device = aircon({ thermostat_mode: { ...MODE, value: 'heat' }, target_temperature: { value: 21, min: 16, max: 30, step: 0.5 } });
+    const report = device.report;
+    device.report = (id: string, value: unknown) => {
+      report(id, value);
+      if (id === 'thermostat_mode' && value === 'cool') report('target_temperature', 24);
+    };
+    const { service } = setup([device]);
+    const done = service.apply('dev1', [
+      { capabilityId: 'thermostat_mode', value: 'cool' },
+      { capabilityId: 'target_temperature', value: 21 },
+    ]);
+    await vi.runAllTimersAsync();
+    await done;
+    expect(device.sent).toEqual(['thermostat_mode="cool"', 'target_temperature=21']);
+  });
+
   it('rejects capabilities the device lacks or that cannot be set, before sending anything', async () => {
     const { service, device } = setup([aircon({ swing: { type: 'enum', setable: false, values: [{ id: 'on' }] } })]);
     await expect(service.apply('dev1', [
@@ -234,6 +252,36 @@ describe('state tracking', () => {
     device.report('target_temperature', 24);
     expect(homey.api.realtime).toHaveBeenCalledWith(STATE_EVENT, { deviceId: 'dev1', capabilityId: 'target_temperature', value: 24 });
     expect((await service.getState('dev1')).values.target_temperature).toBe(24);
+  });
+
+  it('re-reads a tracked device on each request', async () => {
+    const { service, device } = setup();
+    await service.getState('dev1');
+    device.name = 'Bedroom aircon';
+    device.capabilitiesObj.fan_speed.value = 'high'; // a change the capability instance missed
+    const state = await service.getState('dev1');
+    expect(state).toMatchObject({ name: 'Bedroom aircon', values: { fan_speed: 'high' } });
+    expect(device.listenerCount('onoff')).toBe(1);
+  });
+
+  it('tracks again when the capabilities changed', async () => {
+    const { service, device } = setup();
+    await service.getState('dev1');
+    device.capabilities.push('swing');
+    device.capabilitiesObj.swing = { id: 'swing', type: 'enum', values: [{ id: 'on' }, { id: 'off' }], value: 'off' };
+    const state = await service.getState('dev1');
+    expect('caps' in state && state.caps.swing).toBeTruthy();
+    expect(device.listenerCount('onoff')).toBe(1);
+    expect(device.listenerCount('swing')).toBe(1);
+  });
+
+  it('reports a deleted device as missing and stops tracking it', async () => {
+    const devices = [aircon()];
+    const { service, device } = setup(devices);
+    await service.getState('dev1');
+    devices.length = 0;
+    expect(await service.getState('dev1')).toEqual({ missing: true });
+    expect(device.listenerCount('onoff')).toBe(0);
   });
 
   it('tracks each device once, even with concurrent requests', async () => {

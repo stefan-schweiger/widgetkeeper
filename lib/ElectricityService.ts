@@ -252,7 +252,21 @@ export default class ElectricityService {
 
   private async getUsage(meter: Meter, from: number, now: number): Promise<Sample[]> {
     if (!meter.usage || now - meter.usage.at > USAGE_TTL) {
-      const data = meter.logId ? await this.readLog(await this.getApi(), meter.deviceId, meter.logId, 'last24Hours') : [];
+      const api = await this.getApi();
+      let data: Sample[];
+      if (meter.logId) {
+        data = await this.readLog(api, meter.deviceId, meter.logId, 'last24Hours');
+      } else {
+        // No power log was found when the meter was tracked (it may have been a passing error, such
+        // as `Too many requests.` or the API still starting), so look for it again.
+        const logs = await this.readPowerLogs(api, meter.deviceId);
+        meter.logId = logs.logId;
+        data = logs.last24Hours ?? [];
+        // Fill the live chart's history before the first reading this meter got.
+        const first = meter.live[0]?.t ?? Infinity;
+        meter.live.unshift(...logs.lastHour.filter(p => p.t < first).map(p => ({ t: p.t, w: Math.round(p.w) })));
+        if (meter.logId) this.debug(`Found the power log of ${meter.name}: ${meter.logId}`);
+      }
       meter.usage = { at: now, data };
     }
     const count = Math.floor((now - from) / USAGE_STEP) + 1;

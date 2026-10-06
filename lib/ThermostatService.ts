@@ -65,6 +65,11 @@ function matches(query: string, ...texts: (string | undefined)[]) {
   return !q || texts.some(t => t?.toLowerCase().includes(q));
 }
 
+/** A tracked device that can no longer be read. */
+class MissingError extends Error {
+  constructor(readonly reason: unknown) { super('Device unavailable'); }
+}
+
 export default class ThermostatService {
 
   private tracked = new Map<string, Tracked>();
@@ -96,9 +101,17 @@ export default class ThermostatService {
     if (!isThermostat(device)) throw new Error(`${device?.name ?? 'Device'} is not a thermostat`);
   }
 
-  async getState(deviceId: string): Promise<ThermostatState> {
+  /** The device's state, or `missing` when a tracked device can no longer be read (e.g. deleted). */
+  async getState(deviceId: string): Promise<ThermostatState | { missing: true }> {
     const tm = new Timings();
-    const t = await this.ensureTracked(deviceId, tm);
+    let t: Tracked;
+    try {
+      t = await this.current(deviceId, tm);
+    } catch (err) {
+      if (!(err instanceof MissingError)) throw err;
+      this.log(`Thermostat ${deviceId} unavailable:`, err.reason);
+      return { missing: true };
+    }
     t.lastRequested = Date.now();
     this.debug(`Thermostat state ${t.name}: ${tm.summary()}`);
     return { name: t.name, icon: t.icon, values: { ...t.values }, caps: t.caps };
@@ -144,6 +157,8 @@ export default class ThermostatService {
     const current: Record<string, unknown> = {};
     for (const id of Object.keys(obj)) current[id] = obj[id]?.value;
 
+    // `current` follows the device during the apply: a mode change can change other values too
+    // (many aircons keep a setpoint per mode), so a value is only skipped if it's there right now.
     const sent: string[] = [];
     for (const [i, v] of ordered.entries()) {
       if (current[v.capabilityId] === v.value) continue;
@@ -158,22 +173,29 @@ export default class ThermostatService {
         throw err;
       }
       sent.push(`${v.capabilityId}=${JSON.stringify(v.value)}`);
-      if (i < ordered.length - 1) await this.waitForValue(api, deviceId, v, superseded);
+      if (i < ordered.length - 1) {
+        const latest = await this.waitForValue(api, deviceId, v, superseded);
+        for (const id of Object.keys(latest ?? {})) current[id] = latest![id]?.value;
+      }
     }
     this.debug(`Applied to ${device.name}:`, sent.join(', ') || 'nothing to change');
   }
 
-  private async waitForValue(api: any, deviceId: string, v: CapValue, superseded: () => boolean) {
+  /** Waits for the device to report the value. Returns the last capabilities read (null if none could be). */
+  private async waitForValue(api: any, deviceId: string, v: CapValue, superseded: () => boolean): Promise<Record<string, any> | null> {
     const until = Date.now() + CONFIRM_TIMEOUT;
+    let latest: Record<string, any> | null = null;
     while (Date.now() < until) {
-      if (superseded()) return;
+      if (superseded()) return latest;
       try {
         const d = await api.devices.getDevice({ id: deviceId, $cache: false });
-        if (d.capabilitiesObj?.[v.capabilityId]?.value === v.value) return;
+        latest = d.capabilitiesObj ?? null;
+        if (latest?.[v.capabilityId]?.value === v.value) return latest;
       } catch (err) { /* keep waiting */ }
       await new Promise(resolve => this.homey.setTimeout(resolve, CONFIRM_POLL));
     }
     this.log(`${v.capabilityId}=${JSON.stringify(v.value)} not confirmed within ${CONFIRM_TIMEOUT} ms, continuing`);
+    return latest;
   }
 
   // ---------------------------------------------------------------- settings autocomplete
@@ -233,6 +255,37 @@ export default class ThermostatService {
 
   // ---------------------------------------------------------------- live state
 
+  /**
+   * The tracked entry, re-read from the device when it was already tracked: an open widget keeps the
+   * entry alive indefinitely, so a rename, changed capabilities or a deleted device would otherwise never show.
+   */
+  private async current(deviceId: string, tm: Timings): Promise<Tracked> {
+    const t = this.tracked.get(deviceId);
+    if (!t) return this.ensureTracked(deviceId, tm);
+    const api = await this.getApi();
+    let device: any;
+    try {
+      device = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId, $cache: false }));
+    } catch (err) {
+      this.dispose(t);
+      throw new MissingError(err);
+    }
+    const ids = relevantCaps(device);
+    if (!isThermostat(device) || ids.join() !== Object.keys(t.caps).join()) {
+      this.debug(`Capabilities of ${device.name} changed, tracking again`);
+      this.dispose(t);
+      return this.ensureTracked(deviceId, tm);
+    }
+    t.name = device.name;
+    t.icon = await tm.time('icon', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
+    for (const id of ids) {
+      const cap = device.capabilitiesObj[id];
+      t.caps[id] = capInfo(cap, id);
+      t.values[id] = cap?.value ?? null;
+    }
+    return t;
+  }
+
   private ensureTracked(deviceId: string, tm: Timings): Promise<Tracked> {
     const existing = this.tracked.get(deviceId);
     if (existing) return Promise.resolve(existing);
@@ -284,7 +337,7 @@ export default class ThermostatService {
     for (const i of t.instances) {
       try { i.destroy(); } catch (err) { /* ignore */ }
     }
-    this.tracked.delete(t.deviceId);
+    if (this.tracked.get(t.deviceId) === t) this.tracked.delete(t.deviceId);
     this.debug(`Stopped tracking ${t.name}`);
   }
 

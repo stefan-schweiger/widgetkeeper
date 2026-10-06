@@ -40,6 +40,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - Realtime: each meter reading goes out as `homey.api.realtime('electricity:live', {deviceId, t, w})`, throttled to 1/s, and the widget receives it with `Homey.on('electricity:live')`.
   - Meters are tracked lazily per requested device.
   - A meter is dropped after 10 min without a snapshot request. Widgets re-fetch every 5 min.
+  - A meter tracked without a readable power log looks for it again at the next usage refresh (5 min). A failed snapshot refresh keeps the last one on screen.
 - The widget front end (`widgets/electricity/public/`) is **plain JS**, with no build step, because Homey serves it as-is.
   - `widget.js` exposes `createElectricityWidget(root, opts)`; `index.html` wires it to `Homey`.
   - Keep the SVG elements persistent across re-renders; replacing them breaks touch scrubbing.
@@ -86,6 +87,8 @@ How this project uses it:
 - Per button: `bNPower` (keep/on/off) and the autocompletes `bNTemp`, `bNMode` and `bNExtra`. Each autocomplete item carries `{capabilityId, value}`, read from the device's `target_temperature` range and its settable enum capabilities.
 - Endpoints: `GET /state?deviceId=` and `POST /apply {deviceId, values}`. `apply` sets `onoff=true` first and `onoff=false` last.
 - Realtime: `thermostat:state` `{deviceId, capabilityId, value}`. Tracking is dropped after 10 min without `/state`; widgets re-fetch every 5 min.
+- `/state` re-reads a tracked device (`current()`, as in Quick Actions): renames show, changed capabilities re-track, and a device that can't be read returns `{missing: true}` (a persistent error). Any other failed refresh keeps the buttons with a transient error.
+- `apply` updates its view of the device after each confirmed value, so a value is only skipped if the device has it right then (aircons with a setpoint per mode bring back the mode's own setpoint).
 - The **Mode** field defines the mode capability (often the driver's own, not `thermostat_mode`). If the device has no `onoff`, "turn off" becomes that mode's `off` value and "turn on" is dropped (`deviceValues()` in the widget).
 - `apply` sends mode → temperature → extra one at a time. It waits up to 4 s for each value to be reported, because some drivers check the fan speed against the *current* mode. Values the device already has are skipped.
 - A button is highlighted while the device matches every value it sets. A preset that doesn't turn the device off never matches while the device is off.

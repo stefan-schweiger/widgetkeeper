@@ -51,6 +51,7 @@
       const settings = Homey.getSettings() || {};
       let deviceId = null;
       let readySent = false;
+      let loaded = false;
 
       const widget = createElectricityWidget(document.getElementById('root'), {
         t: (key, tokens) => Homey.__(key, tokens),
@@ -79,10 +80,14 @@
           const snapshot = await Homey.api('GET', `/snapshot?deviceId=${encodeURIComponent(deviceId || '')}${perfParam()}`);
           // Without readings (or with a meter error) the prices still show; the widget notes the meter.
           if (!deviceId) widget.setMessage(widget.t('selectMeter'));
-          else widget.setData(snapshot);
+          else {
+            widget.setData(snapshot);
+            loaded = true;
+          }
         } catch (err) {
           console.error(err);
-          widget.setMessage(widget.t('error'));
+          // A failed refresh keeps the last snapshot (the live readings still arrive); only a failed first load shows the error.
+          if (!loaded) widget.setMessage(widget.t('error'));
         }
         ready();
       }

@@ -229,4 +229,22 @@ describe('usage', () => {
     const reads = api.insights.getLogEntries.mock.calls.filter(([a]) => a.resolution === 'last24Hours').length;
     expect(reads).toBe(2); // cached for 5 minutes
   });
+
+  it('looks for the power log again when none could be read at first', async () => {
+    let busy = true;
+    const { service } = setup({
+      logEntries: ({ resolution }) => {
+        if (busy) throw new Error('Too many requests.');
+        return resolution === 'last24Hours'
+          ? { values: [{ t: new Date(NOW - 30 * MINUTE).toISOString(), v: 300 }] }
+          : { values: [{ t: new Date(NOW - 20 * MINUTE).toISOString(), v: 250 }] };
+      },
+    });
+    expect((await service.getSnapshot('m1')).usage).toEqual([]);
+    busy = false;
+    vi.setSystemTime(NOW + 6 * MINUTE);
+    const { usage, live } = await service.getSnapshot('m1');
+    expect(usage.at(-1)?.w).toBe(300);
+    expect(live[0]).toEqual({ t: NOW - 20 * MINUTE, w: 250 }); // the hour's history before the first reading
+  });
 });

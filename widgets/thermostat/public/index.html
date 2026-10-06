@@ -51,6 +51,7 @@
       const settings = Homey.getSettings() || {};
       const deviceId = (settings.device && settings.device.id) || null;
       let readySent = false;
+      let loaded = false;
 
       const widget = createThermostatWidget(document.getElementById('root'), {
         t: (key, tokens) => Homey.__(key, tokens),
@@ -82,10 +83,14 @@
           return;
         }
         try {
-          widget.setState(await Homey.api('GET', `/state?deviceId=${encodeURIComponent(deviceId)}${perfParam()}`));
+          const state = await Homey.api('GET', `/state?deviceId=${encodeURIComponent(deviceId)}${perfParam()}`);
+          loaded = !state.missing; // a deleted device: the buttons go, the next error is persistent too
+          if (state.missing) widget.setMessage(widget.t('error'));
+          else widget.setState(state);
         } catch (err) {
           console.error(err);
-          widget.setMessage(widget.t('error'));
+          // A failed refresh keeps the buttons; only a failed first load replaces them with the error.
+          widget.setMessage(widget.t('error'), loaded);
         }
         ready();
       }

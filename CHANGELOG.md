@@ -2,6 +2,17 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 0.7.1
+
+### Thermostat Shortcuts
+- A preset now always sets its temperature, also on aircons that keep a temperature per mode (switching mode used to bring back the mode's own temperature).
+- A renamed or deleted thermostat now shows without reopening the dashboard.
+- A brief connection problem no longer hides the buttons; the error shows for a moment instead.
+
+### Electricity Overview
+- A brief connection problem no longer hides the charts.
+- The usage history comes back by itself when Homey's Insights were briefly unavailable as the widget opened.
+
 ## 0.7.0
 
 ### New: Device Values
