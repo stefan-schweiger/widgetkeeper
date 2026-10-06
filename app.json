@@ -59,6 +59,7 @@
   "bugs": {
     "url": "https://github.com/thomassidor/widgetkeeper/issues"
   },
+  "homeyCommunityTopicId": 160453,
   "api": {
     "getDiagnostics": {
       "method": "GET",
