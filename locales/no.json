@@ -88,6 +88,11 @@
     "on": "På",
     "off": "Av"
   },
+  "sparklines": {
+    "selectSlots": "Velg enhetsverdier i widgetinnstillingene.",
+    "error": "Kunne ikke laste inn verdiene.",
+    "unavailable": "Utilgjengelig"
+  },
   "lights": {
     "selectDevices": "Velg lys i widgetinnstillingene.",
     "error": "Kunne ikke laste inn lysene.",

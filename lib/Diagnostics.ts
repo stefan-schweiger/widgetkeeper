@@ -40,6 +40,7 @@ export default class Diagnostics {
       debugLog: this.homey.settings.get(DEBUG_LOG_SETTING) === true,
       weather: (this.homey.app as any)?.weather?.describe?.() ?? null,
       heatmap: (this.homey.app as any)?.heatmap?.describe?.() ?? null,
+      sparklines: (this.homey.app as any)?.sparklines?.describe?.() ?? null,
     };
     try {
       const api = await getAppApi(this.homey);

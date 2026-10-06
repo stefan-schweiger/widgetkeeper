@@ -88,6 +88,11 @@
     "on": "Til",
     "off": "Fra"
   },
+  "sparklines": {
+    "selectSlots": "Vælg enhedsværdier i widgetindstillingerne.",
+    "error": "Kunne ikke hente værdierne.",
+    "unavailable": "Utilgængelig"
+  },
   "lights": {
     "selectDevices": "Vælg lys i widgetindstillingerne.",
     "error": "Kunne ikke indlæse lysene.",

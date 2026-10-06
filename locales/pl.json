@@ -88,6 +88,11 @@
     "on": "Wł.",
     "off": "Wył."
   },
+  "sparklines": {
+    "selectSlots": "Wybierz wartości w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać wartości.",
+    "unavailable": "Niedostępne"
+  },
   "lights": {
     "selectDevices": "Wybierz światła w ustawieniach widżetu.",
     "error": "Nie udało się wczytać świateł.",

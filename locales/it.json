@@ -88,6 +88,11 @@
     "on": "Acceso",
     "off": "Spento"
   },
+  "sparklines": {
+    "selectSlots": "Scegli i valori nelle impostazioni del widget.",
+    "error": "Impossibile caricare i valori.",
+    "unavailable": "Non disponibile"
+  },
   "lights": {
     "selectDevices": "Scegli le luci nelle impostazioni del widget.",
     "error": "Impossibile caricare le luci.",

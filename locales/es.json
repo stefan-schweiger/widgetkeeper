@@ -88,6 +88,11 @@
     "on": "Encendido",
     "off": "Apagado"
   },
+  "sparklines": {
+    "selectSlots": "Elige valores en los ajustes del widget.",
+    "error": "No se pudieron cargar los valores.",
+    "unavailable": "No disponible"
+  },
   "lights": {
     "selectDevices": "Elige luces en los ajustes del widget.",
     "error": "No se pudieron cargar las luces.",

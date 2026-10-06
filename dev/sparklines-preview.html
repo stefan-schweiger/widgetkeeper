@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sparklines widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/sparklines/public/widget.css">
+  <script src="../widgets/sparklines/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <style>
+    body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px;
+      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark · 24 h</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · light · 24 h</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>300 px · dark · 24 h</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · dark · 1 column · 7 days</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
+  <div class="col"><span>358 px · dark · 1 h, live every 2 s</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+
+  <script>
+    const HOUR = 3600e3;
+    const cap = (extra = {}) => ({ title: '', type: 'number', units: null, decimals: null, min: null, max: null, values: null, icon: null, ...extra });
+    /** 120 points over the span, from `f(x)` with x 0…1 (oldest → now). */
+    const series = (spanMs, f) => Array.from({ length: 120 }, (_, i) => [Date.now() - spanMs + (i + 0.5) * spanMs / 120, f(i / 119)]);
+    const round = (v, d) => Math.round(v * 10 ** d) / 10 ** d;
+    function slots(spanMs) {
+      const day = x => Math.sin((x * spanMs / (24 * HOUR) - 0.3) * 2 * Math.PI);
+      const temp = series(spanMs, x => round(21.2 + 1.6 * day(x) + 0.2 * Math.sin(x * 40), 1));
+      const power = series(spanMs, x => Math.round(450 + (Math.sin(x * 23) > 0.6 ? 2400 : 0) + 120 * Math.sin(x * 90)));
+      const hum = series(spanMs, x => Math.round(62 - 14 * x + 3 * Math.sin(x * 17)));
+      const co2 = series(spanMs, x => Math.round(620 + 380 * Math.max(0, day(x)) + 30 * Math.sin(x * 31)));
+      const last = s => s[s.length - 1][1];
+      return [
+        { deviceId: 'a', capabilityId: 'measure_temperature', name: 'Stue', capability: cap({ title: 'Temperature', units: '°C', decimals: 1 }), value: last(temp), points: temp },
+        { deviceId: 'c', capabilityId: 'measure_power', name: 'Electricity Meter', capability: cap({ title: 'Power', units: 'W', decimals: 0 }), value: last(power), points: power },
+        { deviceId: 'b', capabilityId: 'measure_humidity', name: 'Bathroom 1', capability: cap({ title: 'Humidity', units: '%', decimals: 0 }), value: last(hum), points: hum },
+        { deviceId: 'f', capabilityId: 'measure_co2', name: 'Bedroom', capability: cap({ title: 'CO2', units: 'ppm', decimals: 0 }), value: last(co2), points: co2 },
+        { deviceId: 'g', capabilityId: 'measure_temperature', name: 'Garage', capability: cap({ title: 'Temperature', units: '°C', decimals: 1 }), value: 15.9, points: [] },
+        { deviceId: 'h', capabilityId: 'measure_temperature', missing: true },
+      ];
+    }
+    for (const id of ['w1', 'w2', 'w3']) createSparklinesWidget(document.getElementById(id), { t: devT }).setState(slots(24 * HOUR));
+    createSparklinesWidget(document.getElementById('w4'), { t: devT, span: '7d', columns: '1' }).setState(slots(7 * 24 * HOUR).slice(0, 3));
+    const live = createSparklinesWidget(document.getElementById('w5'), { t: devT, span: '1h' });
+    const liveSlots = slots(HOUR).slice(0, 2);
+    live.setState(liveSlots);
+    let temp = liveSlots[0].value;
+    setInterval(() => {
+      temp = round(temp + (Math.random() - 0.5) * 0.4, 1);
+      live.pushChange({ deviceId: 'a', capabilityId: 'measure_temperature', value: temp });
+    }, 2000);
+    const empty = createSparklinesWidget(document.getElementById('w6'), { t: devT });
+    empty.setMessage(empty.t('selectSlots'));
+  </script>
+</body>
+</html>

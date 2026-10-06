@@ -9,7 +9,7 @@ import { pathToFileURL } from 'node:url';
 
 const EDGE = process.env.EDGE || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const page = pathToFileURL(resolve('dev/screenshots.html')).href;
-const SHOTS = ['electricity', 'thermostat', 'quickactions', 'sensoralarms', 'weather', 'heatmap', 'cameras', 'values', 'lights'];
+const SHOTS = ['electricity', 'thermostat', 'quickactions', 'sensoralarms', 'weather', 'heatmap', 'cameras', 'values', 'lights', 'sparklines'];
 const WIDTH = 358;
 const SCALE = 3;
 

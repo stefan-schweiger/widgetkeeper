@@ -55,7 +55,7 @@ export function valueCaps(device: any): string[] {
     .filter(id => caps[id] && SHOWN_TYPES.has(caps[id].type) && caps[id].getable !== false);
 }
 
-function describe(cap: any, id: string): Omit<ValueCapability, 'icon'> {
+export function describeCapability(cap: any, id: string): Omit<ValueCapability, 'icon'> {
   return {
     title: typeof cap.title === 'string' && cap.title ? cap.title : id,
     type: cap.type,
@@ -109,7 +109,7 @@ export default class ValueService {
     for (const d of Object.values(devices) as any[]) {
       const zone = (zones as any)[d.zone]?.name as string | undefined;
       for (const id of valueCaps(d)) {
-        const c = describe(d.capabilitiesObj[id], id);
+        const c = describeCapability(d.capabilitiesObj[id], id);
         const name = `${d.name} · ${c.title}`;
         if (!matches(query, name, zone, id)) continue;
         items.push({ name, description: [zone, c.units].filter(Boolean).join(' · ') || undefined, id: `${d.id}:${id}` });
@@ -157,7 +157,7 @@ export default class ValueService {
       throw new Error(`${device.name} has no capability ${capabilityId}`);
     }
     t.name = device.name;
-    t.capability = { ...describe(cap, capabilityId), icon: t.capability.icon };
+    t.capability = { ...describeCapability(cap, capabilityId), icon: t.capability.icon };
     t.value = cap.value ?? null;
     return t;
   }
@@ -186,7 +186,7 @@ export default class ValueService {
       deviceId,
       capabilityId,
       name: device.name,
-      capability: { ...describe(cap, capabilityId), icon },
+      capability: { ...describeCapability(cap, capabilityId), icon },
       value: cap.value ?? null,
       instance: null,
       lastRequested: Date.now(),

@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -280,6 +280,44 @@ function heatmap(t, theme) {
   </div>`;
 }
 
+// Sparklines: Device Values' tiles, 2 per row, each with a small blue line chart (and a faint area) between the
+// icon/value row and the name, and the min/max as two small muted labels at the chart's right edge.
+function sparklines(t, theme) {
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const muted = theme === 'dark' ? '#9C9DA5' : '#6B6C75';
+  const SERIES = [
+    [0.55, 0.5, 0.42, 0.3, 0.22, 0.2, 0.28, 0.45, 0.62, 0.78, 0.86, 0.8, 0.66, 0.6],
+    [0.3, 0.32, 0.9, 0.85, 0.3, 0.28, 0.25, 0.7, 0.75, 0.3, 0.32, 0.95, 0.4, 0.35],
+    [0.8, 0.78, 0.74, 0.7, 0.62, 0.58, 0.55, 0.5, 0.46, 0.4, 0.36, 0.3, 0.26, 0.24],
+    [0.4, 0.45, 0.5, 0.62, 0.55, 0.48, 0.5, 0.58, 0.7, 0.66, 0.6, 0.64, 0.72, 0.7],
+  ];
+  const tile = (series, i) => {
+    const W = 270, H = 96;
+    const xy = series.map((v, j) => [Math.round(j / (series.length - 1) * W), Math.round(6 + (1 - v) * (H - 12))]);
+    const line = xy.map(([x, y], j) => `${j ? 'L' : 'M'}${x} ${y}`).join('');
+    const [lx, ly] = xy[xy.length - 1];
+    return `<div style="border-radius:32px;background:${tileBg};box-shadow:${shadow};padding:30px 32px;box-sizing:border-box;display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="width:28px;height:60px;border:7px solid ${t.fg};border-radius:14px;box-sizing:border-box"></div>
+        ${pill([120, 90, 110, 100][i], 36, t.fg)}
+      </div>
+      <div style="display:flex;gap:20px;align-items:stretch;height:${H}px">
+        <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+          <path d="${line}L${W} ${H}L0 ${H}Z" fill="${BLUE}" fill-opacity=".18"/>
+          <path d="${line}" fill="none" stroke="${BLUE}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="${lx}" cy="${ly}" r="10" fill="${BLUE}"/>
+        </svg>
+        <div style="display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end">${pill(60, 20, muted)}${pill(60, 20, muted)}</div>
+      </div>
+      ${pill(150, 30, t.fg, 'opacity:.55')}
+    </div>`;
+  };
+  return `<div style="width:880px;display:grid;grid-template-columns:repeat(2,1fr);gap:32px">
+    ${SERIES.map(tile).join('')}
+  </div>`;
+}
+
 const PREVIEWS = [
   { id: 'elec-dark',    label: '1a · Electricity Overview — preview-dark.png', theme: 'dark',  render: electricity },
   { id: 'elec-light',   label: '1b · Electricity Overview — preview-light.png', theme: 'light', render: electricity },
@@ -299,6 +337,8 @@ const PREVIEWS = [
   { id: 'val-light',    label: '1p · Device Values — preview-light.png',         theme: 'light', render: deviceValues },
   { id: 'lc-dark',      label: '1q · Light Controls — preview-dark.png',         theme: 'dark',  render: lightControls },
   { id: 'lc-light',     label: '1r · Light Controls — preview-light.png',        theme: 'light', render: lightControls },
+  { id: 'spark-dark',   label: '1s · Sparklines — preview-dark.png',             theme: 'dark',  render: sparklines },
+  { id: 'spark-light',  label: '1t · Sparklines — preview-light.png',            theme: 'light', render: sparklines },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');

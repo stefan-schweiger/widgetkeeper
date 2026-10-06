@@ -88,6 +88,11 @@
     "on": "På",
     "off": "Av"
   },
+  "sparklines": {
+    "selectSlots": "Välj enhetsvärden i widgetinställningarna.",
+    "error": "Kunde inte läsa in värdena.",
+    "unavailable": "Inte tillgänglig"
+  },
   "lights": {
     "selectDevices": "Välj lampor i widgetinställningarna.",
     "error": "Kunde inte läsa in lamporna.",

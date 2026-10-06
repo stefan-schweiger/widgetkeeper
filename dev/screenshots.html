@@ -7,7 +7,7 @@
   <!--
     The README screenshots: the real widget code with mock data, at the width of a widget on Homey's dark dashboard
     on a phone (358 px: a 390 px screen less the dashboard's 16 px margins; colours sampled from an iPhone screenshot).
-    No widget title and a transparent page, so the shots sit flush with the README text in either GitHub theme. `?s=electricity|thermostat|quickactions|sensoralarms|weather|heatmap|cameras|values|lights`
+    No widget title and a transparent page, so the shots sit flush with the README text in either GitHub theme. `?s=electricity|thermostat|quickactions|sensoralarms|weather|heatmap|cameras|values|lights|sparklines`
     shows one, for scripts/render-screenshots.mjs; without it, all nine.
     Device icons come from Homey's icon library. The render script downloads them to temp/screenshot-icons.js;
     without that file the tiles fall back to plain squares.
@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
   <link rel="stylesheet" href="../widgets/values/public/widget.css">
   <link rel="stylesheet" href="../widgets/lights/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sparklines/public/widget.css">
   <script src="../widgets/electricity/public/widget.js"></script>
   <script src="../widgets/thermostat/public/widget.js"></script>
   <script src="../widgets/quickactions/public/widget.js"></script>
@@ -31,6 +32,7 @@
   <script src="../widgets/cameras/public/widget.js"></script>
   <script src="../widgets/values/public/widget.js"></script>
   <script src="../widgets/lights/public/widget.js"></script>
+  <script src="../widgets/sparklines/public/widget.js"></script>
   <script src="mock-electricity.js"></script>
   <script src="mock-weather.js"></script>
   <script src="mock-heatmap.js"></script>
@@ -56,6 +58,7 @@
   <section class="shot" id="cameras"><div id="w-cameras"></div></section>
   <section class="shot" id="values"><div id="w-values"></div></section>
   <section class="shot" id="lights"><div id="w-lights"></div></section>
+  <section class="shot" id="sparklines"><div id="w-sparklines"></div></section>
 
   <script>
     const icon = name => (window.ICONS && ICONS[name]) || null;
@@ -97,6 +100,21 @@
       { deviceId: '3', capabilityId: 'measure_battery', name: 'Back door', capability: vcap('number', { units: '%', decimals: 0 }), value: 7 },
       { deviceId: '4', capabilityId: 'measure_battery', name: 'Hallway', capability: vcap('number', { units: '%', decimals: 0 }), value: 16 },
       { deviceId: '5', capabilityId: 'measure_power', name: 'Meter', capability: vcap('number', { units: 'W', decimals: 0 }), value: 812 },
+    ]);
+
+    // A fixed clock and series built from formulas, so the shot is the same on every render.
+    const SPARK_NOW = Date.UTC(2026, 9, 6, 12);
+    const DAY = 24 * 3600e3;
+    const spark = f => Array.from({ length: 120 }, (_, i) => [SPARK_NOW - DAY + (i + 0.5) * DAY / 120, f(i / 119)]);
+    const sround = (v, d) => Math.round(v * 10 ** d) / 10 ** d;
+    const sday = x => Math.sin((x - 0.3) * 2 * Math.PI);
+    const sparkSlot = (deviceId, capabilityId, name, extra, points) =>
+      ({ deviceId, capabilityId, name, capability: vcap('number', extra), value: points[points.length - 1][1], points });
+    createSparklinesWidget(document.getElementById('w-sparklines'), { now: () => SPARK_NOW }).setState([
+      sparkSlot('1', 'measure_temperature', 'Living room', { units: '°C', decimals: 1 }, spark(x => sround(21.2 + 1.6 * sday(x) + 0.2 * Math.sin(x * 40), 1))),
+      sparkSlot('2', 'measure_power', 'Meter', { units: 'W', decimals: 0 }, spark(x => Math.round(450 + (Math.sin(x * 23) > 0.6 ? 2400 : 0) + 120 * Math.sin(x * 90)))),
+      sparkSlot('3', 'measure_humidity', 'Bathroom', { units: '%', decimals: 0 }, spark(x => Math.round(62 - 14 * x + 3 * Math.sin(x * 17)))),
+      sparkSlot('4', 'measure_co2', 'Bedroom', { units: 'ppm', decimals: 0 }, spark(x => Math.round(620 + 380 * Math.max(0, sday(x)) + 30 * Math.sin(x * 31)))),
     ]);
 
     const lcap = value => ({ value, setable: true });

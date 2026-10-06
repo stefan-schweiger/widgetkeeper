@@ -88,6 +88,11 @@
     "on": "On",
     "off": "Off"
   },
+  "sparklines": {
+    "selectSlots": "Pick device values in the widget settings.",
+    "error": "Could not load the values.",
+    "unavailable": "Unavailable"
+  },
   "lights": {
     "selectDevices": "Select lights in the widget settings.",
     "error": "Could not load the lights.",

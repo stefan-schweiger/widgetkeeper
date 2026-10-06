@@ -88,6 +88,11 @@
     "on": "Ein",
     "off": "Aus"
   },
+  "sparklines": {
+    "selectSlots": "Wähle Gerätewerte in den Widget-Einstellungen.",
+    "error": "Werte konnten nicht geladen werden.",
+    "unavailable": "Nicht verfügbar"
+  },
   "lights": {
     "selectDevices": "Wähle Lampen in den Widget-Einstellungen.",
     "error": "Lampen konnten nicht geladen werden.",

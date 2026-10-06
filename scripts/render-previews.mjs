@@ -29,6 +29,8 @@ const OUT = {
   'val-light': 'widgets/values/preview-light.png',
   'lc-dark': 'widgets/lights/preview-dark.png',
   'lc-light': 'widgets/lights/preview-light.png',
+  'spark-dark': 'widgets/sparklines/preview-dark.png',
+  'spark-light': 'widgets/sparklines/preview-light.png',
 };
 
 const only = process.argv.slice(2);

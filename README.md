@@ -40,6 +40,10 @@ Compact tiles that each show one value, such as a temperature, power or on/off<b
 <a href="#light-controls"><b>Light Controls</b></a><br>
 Compact light tiles with brightness and colour temperature: six lights in the space of three<br clear="left"></p>
 
+<p><a href="#sparklines"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/sparklines-dark.png"><img src="docs/previews/sparklines-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#sparklines"><b>Sparklines</b></a><br>
+Tiles with a small chart of a value over the last hour, day or week, with its lowest and highest<br clear="left"></p>
+
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
@@ -194,6 +198,19 @@ Compact light tiles, two per row, so six lights fit in the space of three of Hom
 2. Pick the lights. Any device that can be dimmed is listed, and the tiles follow the order you pick them in.
 
 On Android, Homey's dashboard takes over a drag on the bar, so there you set the brightness by tapping the bar.
+
+## Sparklines
+<img src="docs/screenshots/sparklines.png" alt="Sparklines on a Homey dashboard" width="358">
+
+Device Values' tiles with a small chart of each value's recent history: the icon and the current value on top, the chart with its highest (↑) and lowest (↓) value at the right, the device name below. The chart comes from Homey's Insights and keeps moving with the live value.
+
+**Setting it up**
+1. Add the widget to a dashboard.
+2. Optionally pick a **Time span**: **1 hour**, **6 hours**, **24 hours** (the default) or **7 days**.
+3. Optionally pick **Columns**: **2** (the default) or **1**, for wider charts.
+4. Pick up to six values (**Tile 1** to **Tile 6**). Each list has every number Homey logs in Insights, as *Device · Value*, e.g. *Living room · Temperature*; type to search by device, zone or value.
+
+The tiles only show values; tapping them does nothing.
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic. The widgets follow Homey's language.

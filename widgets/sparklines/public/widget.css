@@ -1,0 +1,75 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/sparklines-preview.html).
+ * The tile copies Device Values' (widgets/values/public/widget.css), with a chart between the rows.
+ */
+.sl {
+  --sl-tile: var(--homey-background-color, #FFFFFF);
+  --sl-text: var(--homey-text-color, #EDEEF0);
+  --sl-muted: var(--homey-text-color-light, #9C9DA5);
+  --sl-accent: var(--homey-color-blue, #2F8DF6);
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --sl-fs-small: var(--homey-font-size-small, 14px); --sl-lh-small: var(--homey-line-height-small, 20px);
+  --sl-bold: var(--homey-font-weight-bold, 700);
+  /* The min/max labels: 12/16 like the electricity axis labels, a step below Homey's scale (no token). */
+  --sl-fs-label: 12px; --sl-lh-label: 16px;
+  --sl-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+  --sl-chart-height: 36px;
+}
+/* Dark mode: each tile looks like a native device tile, darker than the default widget background. */
+.homey-dark-mode .sl, .sl.homey-dark-mode { --sl-tile: #181920; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
+html, body { background: transparent !important; }
+
+.sl { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--sl-text); }
+.sl * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.sl [dir="auto"] { text-align: left; }
+
+.sl-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--homey-su-3, 12px); }
+.sl[data-columns="1"] .sl-grid { grid-template-columns: minmax(0, 1fr); }
+
+/* A tile (104px): the icon and value row, the chart, then the name. */
+.sl-tile {
+  position: relative; color: var(--sl-text);
+  background: var(--sl-tile); border-radius: var(--sl-radius); padding: 8px 10px; min-width: 0;
+  display: flex; flex-direction: column; align-items: stretch; gap: 6px;
+  user-select: none; -webkit-user-select: none;
+}
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .sl-tile::after, .sl.homey-dark-mode .sl-tile::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.sl-tile.missing > * { opacity: .5; }
+
+.sl-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; height: 20px; }
+.sl-icon {
+  flex-shrink: 0; width: 20px; height: 20px; background: currentColor;
+  -webkit-mask: var(--sl-mask) left center / contain no-repeat; mask: var(--sl-mask) left center / contain no-repeat;
+}
+.sl-value, .sl-name {
+  font-size: var(--sl-fs-small); line-height: var(--sl-lh-small); font-weight: var(--sl-bold);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+.sl .sl-value { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* The chart, with the highest value at its top right and the lowest at its bottom right. */
+.sl-chart { display: flex; align-items: stretch; gap: 6px; height: var(--sl-chart-height); color: var(--sl-accent); }
+.sl-plot { flex: 1; min-width: 0; height: 100%; display: block; overflow: visible; }
+.sl-line { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
+.sl-area { fill: currentColor; fill-opacity: .15; stroke: none; }
+.sl-dot { fill: currentColor; }
+.sl-range {
+  flex-shrink: 0; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end;
+  font-size: var(--sl-fs-label); line-height: var(--sl-lh-label); color: var(--sl-muted);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.sl-range:empty, .sl-range span:empty { visibility: hidden; }
+
+.sl-message { font-size: var(--sl-fs-small); line-height: var(--sl-lh-small); color: var(--sl-muted); }
+.sl-message.error { color: var(--homey-color-red, #F25F5C); }

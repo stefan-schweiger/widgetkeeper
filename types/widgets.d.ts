@@ -9,6 +9,8 @@ interface Window {
   createHeatmapWidget: (root: HTMLElement, opts?: object) => object;
   createValuesWidget: (root: HTMLElement, opts?: object) => object;
   createLightsWidget: (root: HTMLElement, opts?: object) => object;
+  createSparklinesWidget: (root: HTMLElement, opts?: object) => object;
+  sparkPath: (points: [number, number][], from: number, to: number, w: number, h: number) => { line: string, area: string, dot: { x: number, y: number }, min: number, max: number } | null;
   formatCapabilityValue: (cap: object, value: unknown, t: (key: string) => string) => string;
   heatmapPeriodDays: (period: string | undefined) => number;
   thermostatPresetsFromSettings: (settings: Record<string, any>) => { values: object[] }[];

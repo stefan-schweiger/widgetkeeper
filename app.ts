@@ -7,6 +7,7 @@ import HeatmapService from './lib/HeatmapService.js';
 import LightService from './lib/LightService.js';
 import QuickActionService from './lib/QuickActionService.js';
 import SensorAlarmService from './lib/SensorAlarmService.js';
+import SparklineService from './lib/SparklineService.js';
 import ThermostatService from './lib/ThermostatService.js';
 import ValueService from './lib/ValueService.js';
 import WeatherService from './lib/WeatherService.js';
@@ -25,6 +26,7 @@ export default class WidgetkeeperApp extends Homey.App {
   cameras!: CameraService;
   values!: ValueService;
   lights!: LightService;
+  sparklines!: SparklineService;
 
   async onInit() {
     this.diagnostics = new Diagnostics(this.homey);
@@ -53,6 +55,9 @@ export default class WidgetkeeperApp extends Homey.App {
     this.registerValueSettings();
     this.lights = new LightService(this.homey, log, debug);
     this.lights.start();
+    this.sparklines = new SparklineService(this.homey, this.values, log, debug);
+    this.sparklines.start();
+    this.registerSparklineSettings();
     this.debug('Widgetkeeper has been initialized');
   }
 
@@ -85,6 +90,7 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.cameras?.stop();
     await this.values?.stop();
     await this.lights?.stop();
+    await this.sparklines?.stop();
   }
 
   /** Autocomplete for the thermostat widget: the device, then per-button options read from it. */
@@ -111,6 +117,14 @@ export default class WidgetkeeperApp extends Homey.App {
     const widget = this.homey.dashboards.getWidget('values');
     for (const n of VALUE_SLOTS) {
       widget.registerSettingAutocompleteListener(`slot${n}`, query => this.values.listSlots(query));
+    }
+  }
+
+  /** Autocomplete for the sparklines widget: every tile slot lists all logged `Device · Capability` numbers. */
+  private registerSparklineSettings() {
+    const widget = this.homey.dashboards.getWidget('sparklines');
+    for (const n of VALUE_SLOTS) {
+      widget.registerSettingAutocompleteListener(`slot${n}`, query => this.sparklines.listSlots(query));
     }
   }
 

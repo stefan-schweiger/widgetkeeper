@@ -88,6 +88,11 @@
     "on": "Aan",
     "off": "Uit"
   },
+  "sparklines": {
+    "selectSlots": "Kies apparaatwaarden in de widgetinstellingen.",
+    "error": "Kan de waarden niet laden.",
+    "unavailable": "Niet beschikbaar"
+  },
   "lights": {
     "selectDevices": "Kies lampen in de widgetinstellingen.",
     "error": "Kon de lampen niet laden.",

@@ -1127,6 +1127,300 @@
       },
       "id": "sensoralarms"
     },
+    "sparklines": {
+      "name": {
+        "en": "Sparklines",
+        "nl": "Sparklines",
+        "de": "Sparklines",
+        "fr": "Mini-graphiques",
+        "it": "Minigrafici",
+        "sv": "Minidiagram",
+        "no": "Minigrafer",
+        "es": "Minigráficos",
+        "da": "Minigrafer",
+        "ru": "Мини-графики",
+        "pl": "Miniwykresy",
+        "ko": "스파크라인",
+        "ar": "مخططات مصغرة"
+      },
+      "height": 104,
+      "transparent": true,
+      "settings": [
+        {
+          "id": "span",
+          "type": "dropdown",
+          "title": {
+            "en": "Time span",
+            "nl": "Periode",
+            "de": "Zeitraum",
+            "fr": "Période",
+            "it": "Periodo",
+            "sv": "Tidsperiod",
+            "no": "Tidsrom",
+            "es": "Periodo",
+            "da": "Tidsrum",
+            "ru": "Период",
+            "pl": "Okres",
+            "ko": "기간",
+            "ar": "الفترة الزمنية"
+          },
+          "value": "24h",
+          "values": [
+            {
+              "id": "1h",
+              "title": {
+                "en": "1 hour",
+                "nl": "1 uur",
+                "de": "1 Stunde",
+                "fr": "1 heure",
+                "it": "1 ora",
+                "sv": "1 timme",
+                "no": "1 time",
+                "es": "1 hora",
+                "da": "1 time",
+                "ru": "1 час",
+                "pl": "1 godzina",
+                "ko": "1시간",
+                "ar": "ساعة واحدة"
+              }
+            },
+            {
+              "id": "6h",
+              "title": {
+                "en": "6 hours",
+                "nl": "6 uur",
+                "de": "6 Stunden",
+                "fr": "6 heures",
+                "it": "6 ore",
+                "sv": "6 timmar",
+                "no": "6 timer",
+                "es": "6 horas",
+                "da": "6 timer",
+                "ru": "6 часов",
+                "pl": "6 godzin",
+                "ko": "6시간",
+                "ar": "6 ساعات"
+              }
+            },
+            {
+              "id": "24h",
+              "title": {
+                "en": "24 hours",
+                "nl": "24 uur",
+                "de": "24 Stunden",
+                "fr": "24 heures",
+                "it": "24 ore",
+                "sv": "24 timmar",
+                "no": "24 timer",
+                "es": "24 horas",
+                "da": "24 timer",
+                "ru": "24 часа",
+                "pl": "24 godziny",
+                "ko": "24시간",
+                "ar": "24 ساعة"
+              }
+            },
+            {
+              "id": "7d",
+              "title": {
+                "en": "7 days",
+                "nl": "7 dagen",
+                "de": "7 Tage",
+                "fr": "7 jours",
+                "it": "7 giorni",
+                "sv": "7 dagar",
+                "no": "7 dager",
+                "es": "7 días",
+                "da": "7 dage",
+                "ru": "7 дней",
+                "pl": "7 dni",
+                "ko": "7일",
+                "ar": "7 أيام"
+              }
+            }
+          ]
+        },
+        {
+          "id": "columns",
+          "type": "dropdown",
+          "title": {
+            "en": "Columns",
+            "nl": "Kolommen",
+            "de": "Spalten",
+            "fr": "Colonnes",
+            "it": "Colonne",
+            "sv": "Kolumner",
+            "no": "Kolonner",
+            "es": "Columnas",
+            "da": "Kolonner",
+            "ru": "Столбцы",
+            "pl": "Kolumny",
+            "ko": "열",
+            "ar": "الأعمدة"
+          },
+          "value": "2",
+          "values": [
+            {
+              "id": "2",
+              "title": {
+                "en": "2",
+                "nl": "2",
+                "de": "2",
+                "fr": "2",
+                "it": "2",
+                "sv": "2",
+                "no": "2",
+                "es": "2",
+                "da": "2",
+                "ru": "2",
+                "pl": "2",
+                "ko": "2",
+                "ar": "2"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "1",
+                "nl": "1",
+                "de": "1",
+                "fr": "1",
+                "it": "1",
+                "sv": "1",
+                "no": "1",
+                "es": "1",
+                "da": "1",
+                "ru": "1",
+                "pl": "1",
+                "ko": "1",
+                "ar": "1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "slot1",
+          "type": "autocomplete",
+          "title": {
+            "en": "Tile 1",
+            "nl": "Tegel 1",
+            "de": "Kachel 1",
+            "fr": "Tuile 1",
+            "it": "Riquadro 1",
+            "sv": "Ruta 1",
+            "no": "Flis 1",
+            "es": "Mosaico 1",
+            "da": "Felt 1",
+            "ru": "Плитка 1",
+            "pl": "Kafelek 1",
+            "ko": "타일 1",
+            "ar": "البلاطة 1"
+          }
+        },
+        {
+          "id": "slot2",
+          "type": "autocomplete",
+          "title": {
+            "en": "Tile 2",
+            "nl": "Tegel 2",
+            "de": "Kachel 2",
+            "fr": "Tuile 2",
+            "it": "Riquadro 2",
+            "sv": "Ruta 2",
+            "no": "Flis 2",
+            "es": "Mosaico 2",
+            "da": "Felt 2",
+            "ru": "Плитка 2",
+            "pl": "Kafelek 2",
+            "ko": "타일 2",
+            "ar": "البلاطة 2"
+          }
+        },
+        {
+          "id": "slot3",
+          "type": "autocomplete",
+          "title": {
+            "en": "Tile 3",
+            "nl": "Tegel 3",
+            "de": "Kachel 3",
+            "fr": "Tuile 3",
+            "it": "Riquadro 3",
+            "sv": "Ruta 3",
+            "no": "Flis 3",
+            "es": "Mosaico 3",
+            "da": "Felt 3",
+            "ru": "Плитка 3",
+            "pl": "Kafelek 3",
+            "ko": "타일 3",
+            "ar": "البلاطة 3"
+          }
+        },
+        {
+          "id": "slot4",
+          "type": "autocomplete",
+          "title": {
+            "en": "Tile 4",
+            "nl": "Tegel 4",
+            "de": "Kachel 4",
+            "fr": "Tuile 4",
+            "it": "Riquadro 4",
+            "sv": "Ruta 4",
+            "no": "Flis 4",
+            "es": "Mosaico 4",
+            "da": "Felt 4",
+            "ru": "Плитка 4",
+            "pl": "Kafelek 4",
+            "ko": "타일 4",
+            "ar": "البلاطة 4"
+          }
+        },
+        {
+          "id": "slot5",
+          "type": "autocomplete",
+          "title": {
+            "en": "Tile 5",
+            "nl": "Tegel 5",
+            "de": "Kachel 5",
+            "fr": "Tuile 5",
+            "it": "Riquadro 5",
+            "sv": "Ruta 5",
+            "no": "Flis 5",
+            "es": "Mosaico 5",
+            "da": "Felt 5",
+            "ru": "Плитка 5",
+            "pl": "Kafelek 5",
+            "ko": "타일 5",
+            "ar": "البلاطة 5"
+          }
+        },
+        {
+          "id": "slot6",
+          "type": "autocomplete",
+          "title": {
+            "en": "Tile 6",
+            "nl": "Tegel 6",
+            "de": "Kachel 6",
+            "fr": "Tuile 6",
+            "it": "Riquadro 6",
+            "sv": "Ruta 6",
+            "no": "Flis 6",
+            "es": "Mosaico 6",
+            "da": "Felt 6",
+            "ru": "Плитка 6",
+            "pl": "Kafelek 6",
+            "ko": "타일 6",
+            "ar": "البلاطة 6"
+          }
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        }
+      },
+      "id": "sparklines"
+    },
     "thermostat": {
       "name": {
         "en": "Thermostat Shortcuts",
