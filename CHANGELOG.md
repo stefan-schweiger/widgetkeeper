@@ -13,6 +13,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - A brief connection problem no longer hides the charts.
 - The usage history comes back by itself when Homey's Insights were briefly unavailable as the widget opened.
 
+### Light Controls
+- Plugs and wall switches set up as lights can now be picked too. They only turn on and off, so their tiles have no brightness bar.
+
 ## 0.7.0
 
 ### New: Device Values

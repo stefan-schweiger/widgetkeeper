@@ -32,9 +32,9 @@
     const LAMP = svg('<path d="M8 3h8l3 8H5zM12 11v9M8 21h8"/>');
     const qa = (capabilityId, value, extra = {}) => ({ capabilityId, value, actionable: true, momentary: capabilityId === 'button', icon: null, ...extra });
     const devices = () => [
-      { id: 'a', name: 'Dinoer', icon: LIGHTS, quickAction: qa('onoff', false) },
-      { id: 'b', name: 'Hoveddør', icon: DOOR, quickAction: qa('locked', true) },
-      { id: 'c', name: 'Bryggersdør', icon: DOOR, quickAction: qa('locked', false) },
+      { id: 'a', name: 'Fairy lights', icon: LIGHTS, quickAction: qa('onoff', false) },
+      { id: 'b', name: 'Front door', icon: DOOR, quickAction: qa('locked', true) },
+      { id: 'c', name: 'Back door', icon: DOOR, quickAction: qa('locked', false) },
       { id: 'd', name: 'Floor lamp | Living room', icon: LAMP, quickAction: qa('onoff', true) },
       { id: 'e', name: 'Kitchen', icon: null, quickAction: qa('speaker_playing', false) },
       { id: 'f', name: 'Alarm', icon: null, quickAction: qa('button', false) },

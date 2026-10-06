@@ -54,7 +54,7 @@
         onApply: (vals) => new Promise(r => setTimeout(() => { for (const v of vals) w.pushChange(v); r(); }, 600)),
       });
       w.setButtons(thermostatPresetsFromSettings(s));
-      w.setState({ name: 'Aircon | Garage', icon, values: { ...values }, caps });
+      w.setState({ name: 'Heat pump | Living room', icon, values: { ...values }, caps });
     }
     const empty = createThermostatWidget(document.getElementById('w6'), { t: devT });
     empty.setButtons(thermostatPresetsFromSettings(settings));

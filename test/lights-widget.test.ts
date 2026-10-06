@@ -99,6 +99,17 @@ describe('tap', () => {
     expect(value('spots')).toBe('100');
   });
 
+  it('toggles a light without dim (a plug or a switch), which has no bar', () => {
+    const plug = { id: 'plug', name: 'Socket', icon: null, caps: { onoff: cap(false) } };
+    const { tile, onSet, value } = widget([plug]);
+    expect(tile('plug').classList.contains('missing')).toBe(false);
+    expect(tile('plug').classList.contains('no-dim')).toBe(true);
+    tile('plug').click();
+    expect(onSet).toHaveBeenCalledWith('plug', { onoff: true });
+    expect(tile('plug').classList.contains('on')).toBe(true);
+    expect(value('plug')).toBe('100');
+  });
+
   it('turns a light without onoff back on to its last brightness', () => {
     const { w, tile, value } = widget([spots(0.4)]);
     tile('spots').click(); // off

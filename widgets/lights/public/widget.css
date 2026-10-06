@@ -50,7 +50,7 @@ html, body { background: transparent !important; }
 .lc-tile.pressing { transform: scale(.97); }
 .lc-tile.missing { cursor: default; }
 .lc-tile.missing > * { opacity: .5; }
-.lc-tile.missing .lc-bar { visibility: hidden; }
+.lc-tile.missing .lc-bar, .lc-tile.no-dim .lc-bar { visibility: hidden; }
 
 /* On: the tile takes on the light's colour, brightest at the top like Homey's own light card. */
 .lc-tile.on {

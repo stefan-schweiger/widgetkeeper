@@ -42,7 +42,7 @@ describe('getState', () => {
           light_mode: { value: 'color', setable: true },
         },
       },
-      { id: 'plug', missing: true }, // no dim
+      { id: 'plug', name: 'Plug', icon: null, zone: { id: 'z1', name: 'Køkken' }, caps: { onoff: { value: false, setable: true } } }, // on/off only
     ]);
   });
 });
@@ -144,14 +144,22 @@ describe('set', () => {
     expect(devices[1].sent).toEqual(['dim=0', 'dim=0.4', 'dim=0']);
   });
 
-  it('refuses bad values and devices without dim', async () => {
+  it('turns a light without dim on and off with the brightness', async () => {
+    const { service, devices: [, , p] } = setup();
+    await service.set('plug', { dim: 0.5 });
+    await service.set('plug', { dim: 0 });
+    await service.set('plug', { onoff: true });
+    expect(p.sent).toEqual(['onoff=true', 'onoff=false', 'onoff=true']);
+  });
+
+  it('refuses bad values and devices without dim or onoff', async () => {
     const { service } = setup();
     await expect(service.set('bulb', { dim: 2 })).rejects.toThrow(/Invalid brightness/);
     await expect(service.set('bulb', { onoff: 'on' })).rejects.toThrow(/Invalid on\/off/);
     await expect(service.set('dimmer', { temperature: 0.5 })).rejects.toThrow(/colour temperature/);
     await expect(service.set('dimmer', { hue: 0.5, saturation: 1 })).rejects.toThrow(/no colour/);
     await expect(service.set('bulb', { hue: 0.5, saturation: 3 })).rejects.toThrow(/Invalid saturation/);
-    await expect(service.set('plug', { dim: 0.5 })).rejects.toThrow(/no dim/);
+    await expect(service.set('plug', { temperature: 0.5 })).rejects.toThrow(/colour temperature/);
     await expect(service.set('bulb', {})).rejects.toThrow(/Nothing to set/);
   });
 });

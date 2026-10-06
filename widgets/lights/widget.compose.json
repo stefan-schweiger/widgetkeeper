@@ -20,7 +20,8 @@
     "type": "global",
     "singular": false,
     "filter": {
-      "capabilities": "dim"
+      "class": "light|socket",
+      "capabilities": "onoff|dim"
     }
   },
   "settings": [

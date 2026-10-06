@@ -1,7 +1,7 @@
 /*
  * Light Controls: compact light tiles, two per row (no brightness text: the bar shows it, and the space
  * goes to the colour chip's tap area). A tap on the tile turns the light on or off; the bar at the bottom
- * sets the brightness (0 = off). The chip opens a panel of colour and white swatches over the tile's row:
+ * sets the brightness (0 = off); lights without brightness (plugs, switches) have no bar. The chip opens a panel of colour and white swatches over the tile's row:
  * taps only, as Homey's Android app takes any drag. Plain browser JS (served as-is).
  */
 (function () {
@@ -197,7 +197,9 @@
       return typeof dim === 'number' && dim > 0;
     }
 
+    /** The brightness (0–1): a light without `dim` (a plug or a switch) is full while on. */
     function brightness(d) {
+      if (!d.caps.dim) return isOn(d) ? 1 : 0;
       const dim = shown(d, 'dim');
       return isOn(d) && typeof dim === 'number' ? dim : 0;
     }
@@ -502,7 +504,7 @@
 
     /** The tiles for the lights, grouped by room with `groupByZone`. */
     function buildItems() {
-      const usable = d => !('missing' in d) && d.caps && d.caps.dim;
+      const usable = d => !('missing' in d) && d.caps && (d.caps.dim || d.caps.onoff);
       const rooms = new Map(); // zone id → its usable lights
       if (opts.groupByZone) {
         for (const d of devices) {
@@ -570,6 +572,7 @@
         tile.chipGlyph.classList.toggle('hue', color);
         setMask(tile.chipGlyph, color ? HUE_GLYPH : TEMP_GLYPH);
         tile.tile.classList.toggle('on', on || (drag != null && x > 0));
+        tile.tile.classList.toggle('no-dim', !d.members.some(m => m.caps.dim)); // on/off only: no bar
         tile.tile.style.setProperty('--lc-light', lightColor(caps));
         tile.tile.style.setProperty('--lc-x', String(x));
         tile.bar.setAttribute('aria-valuenow', String(Math.round(x * 100)));

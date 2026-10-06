@@ -9,7 +9,7 @@ const IDLE_TIMEOUT = 10 * MINUTE;
 
 export const LIGHTS_STATE_EVENT = 'lights:state';
 
-/** The capabilities a light tile reads; `dim` is required. */
+/** The capabilities a light tile reads; it needs `dim` or `onoff` (a plug or a switch set to be a light). */
 export const LIGHT_CAPS = ['onoff', 'dim', 'light_temperature', 'light_hue', 'light_saturation', 'light_mode'] as const;
 
 export type LightCap = { value: unknown, setable: boolean };
@@ -98,13 +98,14 @@ export default class LightService {
 
   /**
    * One change from a tile. Brightness 0 means off: it turns `onoff` off (keeping the brightness), and
-   * brightness above 0 turns the light on. A light without `onoff` is turned off and on through `dim`.
+   * brightness above 0 turns the light on. A light without `onoff` is turned off and on through `dim`,
+   * and one without `dim` takes a brightness as on (above 0) or off.
    */
   async set(deviceId: string, change: LightChange) {
     const api = await getAppApi(this.homey);
     const device = await api.devices.getDevice({ id: deviceId, $cache: false });
     const caps = device.capabilitiesObj || {};
-    if (!caps.dim) throw new Error(`${device.name} has no dim capability`);
+    if (!caps.dim && !caps.onoff) throw new Error(`${device.name} has no dim or onoff capability`);
     const send = async (capabilityId: string, value: unknown) => {
       if (!caps[capabilityId]) throw new Error(`${device.name} has no ${capabilityId}`);
       await device.setCapabilityValue({ capabilityId, value });
@@ -117,6 +118,7 @@ export default class LightService {
     if (change.dim !== undefined) {
       const dim = fraction(change.dim, 'brightness');
       if (dim === 0) await send(caps.onoff ? 'onoff' : 'dim', caps.onoff ? false : 0);
+      else if (!caps.dim) await turnOn();
       else {
         await send('dim', dim);
         await turnOn();
@@ -191,7 +193,7 @@ export default class LightService {
   private async track(deviceId: string, tm: Timings): Promise<Tracked> {
     const api = await tm.time('api', () => getAppApi(this.homey));
     const device: any = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId }));
-    if (!device.capabilitiesObj?.dim) throw new Error(`${device.name} has no dim capability`);
+    if (!device.capabilitiesObj?.dim && !device.capabilitiesObj?.onoff) throw new Error(`${device.name} has no dim or onoff capability`);
     const icon = await tm.time('icons', () => fetchDeviceIcon(api, device, this.log));
     const t: Tracked = {
       deviceId,

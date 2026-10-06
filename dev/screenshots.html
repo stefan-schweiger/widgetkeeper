@@ -8,10 +8,22 @@
     The README screenshots: the real widget code with mock data, at the width of a widget on Homey's dark dashboard
     on a phone (358 px: a 390 px screen less the dashboard's 16 px margins; colours sampled from an iPhone screenshot).
     No widget title and a transparent page, so the shots sit flush with the README text in either GitHub theme. `?s=electricity|thermostat|quickactions|sensoralarms|weather|heatmap|cameras|values|lights|sparklines`
-    shows one, for scripts/render-screenshots.mjs; without it, all of them. The widgets and their mock data are in mock-dashboard.js, shared with showcase.html.
+    shows one, for scripts/render-screenshots.mjs; without it, all of them. The widgets are mounted by mock-dashboard.js with the made-up home of showcase-data.js.
     Device icons come from Homey's icon library. The render script downloads them to temp/screenshot-icons.js;
     without that file the tiles fall back to plain squares.
   -->
+  <script>
+    // The showcase's fixed clock (Tuesday 6 October 2026, 18:40), set before showcase-data.js builds its data.
+    (() => {
+      const Real = Date;
+      const offset = new Real(2026, 9, 6, 18, 40, 0).getTime() - Real.now();
+      class FixedDate extends Real {
+        constructor(...args) { if (args.length) super(...args); else super(Real.now() + offset); }
+        static now() { return Real.now() + offset; }
+      }
+      window.Date = FixedDate;
+    })();
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../widgets/electricity/public/widget.css">
   <link rel="stylesheet" href="../widgets/thermostat/public/widget.css">
@@ -33,11 +45,9 @@
   <script src="../widgets/values/public/widget.js"></script>
   <script src="../widgets/lights/public/widget.js"></script>
   <script src="../widgets/sparklines/public/widget.js"></script>
-  <script src="mock-electricity.js"></script>
-  <script src="mock-weather.js"></script>
-  <script src="mock-heatmap.js"></script>
   <script src="mock-cameras.js"></script>
   <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
+  <script src="showcase-data.js"></script>
   <style>
     /* Transparent: the render script screenshots with a transparent default background. */
     html, body { background: transparent !important; }
