@@ -38,7 +38,9 @@
     "noAlarm": "No alarm",
     "alarms": "__count__ alarms",
     "noSensors": "No alarm sensors",
-    "unavailable": "Unavailable"
+    "unavailable": "Unavailable",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "weather": {
     "now": "Now",

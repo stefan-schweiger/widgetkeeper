@@ -17,10 +17,16 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Lights with a colour temperature have a thermometer: tap it and the bar sets the colour temperature, from cool to warm.
 - A lit tile takes on the light's colour.
 
+### Sensor Alarms
+- Tap a tile to see every alarm of the sensor, active or not. Tap it again to close the list.
+
 ### New: Sparklines
 - Device Values' tiles with a small chart of each value's recent history, and its highest and lowest value at the chart's right edge.
 - Pick a **Time span**: 1 hour, 6 hours, 24 hours (the default) or 7 days. The chart comes from Homey's Insights and keeps moving with the live value.
 - Pick up to six values; every number Homey logs in Insights is listed. Show the tiles in **2** (the default) or **1** column.
+
+### Device Values and Sparklines
+- Each tile's list starts with **None**, to remove a tile again.
 
 ## 0.6.1
 

@@ -38,7 +38,9 @@
     "noAlarm": "Brak alarmu",
     "alarms": "Alarmy: __count__",
     "noSensors": "Brak czujników alarmu",
-    "unavailable": "Niedostępne"
+    "unavailable": "Niedostępne",
+    "active": "Aktywne",
+    "inactive": "Nieaktywne"
   },
   "weather": {
     "now": "Teraz",

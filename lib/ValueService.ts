@@ -115,7 +115,10 @@ export default class ValueService {
         items.push({ name, description: [zone, c.units].filter(Boolean).join(' · ') || undefined, id: `${d.id}:${id}` });
       }
     }
-    return items.sort((a, b) => a.name.localeCompare(b.name));
+    items.sort((a, b) => a.name.localeCompare(b.name));
+    // "None" first, so a tile can be emptied again. Its id has no colon, so the widget skips the slot.
+    const none = this.homey.__('values.none') || 'None';
+    return matches(query, none) ? [{ name: none, id: 'none' }, ...items] : items;
   }
 
   // ---------------------------------------------------------------- live state

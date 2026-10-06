@@ -38,7 +38,9 @@
     "noAlarm": "알람 없음",
     "alarms": "알람 __count__개",
     "noSensors": "알람 센서 없음",
-    "unavailable": "사용할 수 없음"
+    "unavailable": "사용할 수 없음",
+    "active": "활성",
+    "inactive": "비활성"
   },
   "weather": {
     "now": "지금",

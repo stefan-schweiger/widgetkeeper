@@ -38,7 +38,9 @@
     "noAlarm": "لا يوجد إنذار",
     "alarms": "__count__ إنذارات",
     "noSensors": "لا مستشعرات إنذار",
-    "unavailable": "غير متاح"
+    "unavailable": "غير متاح",
+    "active": "نشط",
+    "inactive": "غير نشط"
   },
   "weather": {
     "now": "الآن",

@@ -44,6 +44,9 @@
       w.setState(devices());
       return w;
     });
+    // ?open=hall opens that device's alarm panel in every widget, for screenshots.
+    const openId = new URLSearchParams(location.search).get('open');
+    if (openId) for (const tile of document.querySelectorAll(`.sa-tile[data-device="${openId}"]`)) tile.click();
     const empty = createSensorAlarmsWidget(document.getElementById('w4'), { t: devT });
     empty.setMessage(empty.t('selectDevices'));
     // Simulate the radon alarm coming and going.

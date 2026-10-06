@@ -38,7 +38,9 @@
     "noAlarm": "Нет тревоги",
     "alarms": "Тревог: __count__",
     "noSensors": "Нет датчиков тревоги",
-    "unavailable": "Недоступно"
+    "unavailable": "Недоступно",
+    "active": "Активно",
+    "inactive": "Неактивно"
   },
   "weather": {
     "now": "Сейчас",

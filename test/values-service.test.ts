@@ -48,6 +48,7 @@ describe('listSlots', () => {
   it('lists every device × capability pair, sorted, with zone and units', async () => {
     const { service } = setup();
     expect(await service.listSlots('')).toEqual([
+      { name: 'None', id: 'none' },
       { name: 'Aircon · Mode', description: 'Bedroom', id: 'ac:mode' },
       { name: 'Aircon · Turned on', description: 'Bedroom', id: 'ac:onoff' },
       { name: 'Stue · Humidity', description: 'Living room · %', id: 'sensor:measure_humidity' },
@@ -59,6 +60,7 @@ describe('listSlots', () => {
     const { service } = setup();
     expect((await service.listSlots('temp')).map(i => i.id)).toEqual(['sensor:measure_temperature']);
     expect((await service.listSlots('bedroom')).map(i => i.id)).toEqual(['ac:mode', 'ac:onoff']);
+    expect((await service.listSlots('non')).map(i => i.id)).toEqual(['none']);
   });
 });
 

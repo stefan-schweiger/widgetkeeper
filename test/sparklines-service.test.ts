@@ -72,6 +72,7 @@ describe('listSlots', () => {
   it('lists every logged number as Device · Capability, with zone and units', async () => {
     const { service } = setup();
     expect(await service.listSlots('')).toEqual([
+      { name: 'None', id: 'none' },
       { name: 'Stue · Humidity', description: 'Living room · %', id: 'sensor:measure_humidity' },
       { name: 'Stue · Temperature', description: 'Living room · °C', id: 'sensor:measure_temperature' },
     ]);

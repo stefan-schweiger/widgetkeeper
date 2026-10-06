@@ -125,3 +125,71 @@ describe('updates', () => {
     expect(root.querySelector('.sa-message')!.textContent).toBe('Select sensors');
   });
 });
+
+describe('alarm panel', () => {
+  const tap = (node: HTMLElement) => node.click();
+  const rows = (root: HTMLElement) => [...root.querySelectorAll<HTMLElement>('.sa-row')].map(r =>
+    `${r.querySelector('.sa-row-title')!.textContent}: ${r.querySelector('.sa-row-state')!.textContent}${r.classList.contains('alarm') ? ' !' : ''}`);
+
+  it('opens on a tap with every alarm, active or not, and closes on a second tap', () => {
+    const { root, tile } = widget([air(true), door()]);
+    tap(tile('air'));
+    expect(tile('air').classList.contains('open')).toBe(true);
+    expect(rows(root)).toEqual(['CO₂ Alarm: Active !', 'Radon alarm: Inactive']);
+    tap(tile('air'));
+    expect(root.querySelector('.sa-panel')).toBeNull();
+    expect(tile('air').classList.contains('open')).toBe(false);
+  });
+
+  it("sits after the tapped tile's row and moves to another tile", () => {
+    const { root, tile } = widget([air(), door(), thermo()]);
+    tap(tile('air'));
+    expect(root.querySelector('.sa-panel')!.previousElementSibling).toBe(tile('door'));
+    tap(tile('thermo'));
+    expect(root.querySelectorAll('.sa-panel')).toHaveLength(1);
+    expect(root.querySelector('.sa-panel')!.previousElementSibling).toBe(tile('thermo'));
+    expect(root.querySelector('.sa-empty')!.textContent).toBe('No alarm sensors');
+    expect(tile('air').classList.contains('open')).toBe(false);
+  });
+
+  it('lists motion and contact, red only when they count', () => {
+    const off = widget([door(true)]);
+    tap(off.tile('door'));
+    expect(rows(off.root)).toEqual(['Contact alarm: Active', 'Battery alarm: Inactive']);
+    document.body.innerHTML = '';
+    const on = widget([door(true)], true);
+    tap(on.tile('door'));
+    expect(rows(on.root)).toEqual(['Contact alarm: Active !', 'Battery alarm: Inactive']);
+  });
+
+  it('merges one alarm reported in several units', () => {
+    const { root, tile } = widget([{ id: 'aq', name: 'Air', icon: null,
+      alarms: [alarm('alarm_radon', false, 'Radon alarm (Bq/m³)'), alarm('alarm_radon_us', true, 'Radon alarm (pCi/L)'), alarm('alarm_x', null, 'X alarm')] }]);
+    tap(tile('aq'));
+    expect(rows(root)).toEqual(['Radon alarm: Active !', 'X alarm: –']);
+  });
+
+  it('follows realtime changes and closes when the device goes missing', () => {
+    const { w, root, tile } = widget([air()]);
+    tap(tile('air'));
+    w.pushChange({ deviceId: 'air', capabilityId: 'alarm_radon', value: true });
+    expect(rows(root)).toEqual(['CO₂ Alarm: Inactive', 'Radon alarm: Active !']);
+    w.setState([{ id: 'air', missing: true }]);
+    expect(root.querySelector('.sa-panel')).toBeNull();
+    tap(tile('air'));
+    expect(root.querySelector('.sa-panel')).toBeNull();
+  });
+
+  it('opens on a touch tap but not on a drag', () => {
+    const { root, tile } = widget([air()]);
+    const touch = (type: string, x: number) => {
+      const e = new win.Event(type, { bubbles: true, cancelable: true });
+      e.changedTouches = [{ clientX: x, clientY: 0 }];
+      tile('air').dispatchEvent(e);
+    };
+    touch('touchstart', 0); touch('touchmove', 30); touch('touchend', 30);
+    expect(root.querySelector('.sa-panel')).toBeNull();
+    touch('touchstart', 0); touch('touchend', 4);
+    expect(root.querySelector('.sa-panel')).not.toBeNull();
+  });
+});

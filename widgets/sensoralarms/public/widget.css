@@ -39,7 +39,7 @@ html, body { background: transparent !important; }
 .sa-tile {
   position: relative; display: flex; align-items: center; gap: 13px; min-width: 0; height: 52px;
   padding: 7px 12px 5px 10px; background: var(--sa-tile); border-radius: var(--sa-radius);
-  transition: background-color .2s;
+  transition: background-color .2s, transform .1s;
 }
 .sa-icon {
   flex-shrink: 0; width: 24px; height: 24px; background: var(--sa-muted);
@@ -65,6 +65,41 @@ html, body { background: transparent !important; }
 .sa-tile.alarm .sa-icon:not(.fallback) { background: var(--sa-red-text); }
 .sa-tile.alarm .sa-icon.fallback { border-color: var(--sa-red-text); }
 .sa-tile.alarm .sa-status { color: var(--sa-red-text); }
+
+/* Tapping a tile opens its alarm panel. */
+.sa-tile { cursor: pointer; -webkit-tap-highlight-color: transparent; outline: none; }
+.sa-tile.pressing { transform: scale(.97); }
+.sa-tile:focus-visible { box-shadow: 0 0 0 2px var(--homey-color-blue, #0091EA); }
+.sa-tile.missing { cursor: default; }
+.sa-tile.missing.pressing { transform: none; }
+/* The open tile: a rim in the muted colour. */
+.sa-tile.open { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sa-muted) 60%, transparent); }
+
+/*
+ * The alarm panel: right after the tapped tile's row, the full width of the grid, with every alarm of the
+ * device and its state. Active alarms are red; motion and contact that don't count as alarms are only bold.
+ */
+.sa-panel {
+  grid-column: 1 / -1; background: var(--sa-tile); border-radius: var(--sa-radius);
+  padding: 4px 12px; animation: sa-panel-in .15s ease-out;
+}
+@keyframes sa-panel-in { from { opacity: 0; transform: translateY(-4px); } }
+.sa-row, .sa-empty {
+  display: flex; align-items: center; gap: 10px; min-height: 36px;
+  font-size: var(--sa-fs-small); line-height: 18px;
+}
+.sa-row + .sa-row { border-top: var(--homey-line-light, 1px solid rgb(127 127 127 / .18)); }
+.sa-empty { color: var(--sa-muted); }
+.sa-dot {
+  flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%;
+  background: color-mix(in srgb, var(--sa-muted) 45%, transparent);
+}
+.sa-row-title { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sa-row-state { flex-shrink: 0; color: var(--sa-muted); }
+.sa-row.on .sa-dot { background: var(--sa-text); }
+.sa-row.on .sa-row-state { color: var(--sa-text); font-weight: var(--sa-bold); }
+.sa-row.alarm .sa-dot { background: var(--sa-red-text); }
+.sa-row.alarm .sa-row-title, .sa-row.alarm .sa-row-state { color: var(--sa-red-text); font-weight: var(--sa-bold); }
 
 .sa-message { font-size: var(--sa-fs-small); line-height: var(--sa-lh-small); color: var(--sa-muted); }
 .sa-message.error { color: var(--sa-red); }

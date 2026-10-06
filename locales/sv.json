@@ -38,7 +38,9 @@
     "noAlarm": "Inget larm",
     "alarms": "__count__ larm",
     "noSensors": "Inga larmsensorer",
-    "unavailable": "Inte tillgänglig"
+    "unavailable": "Inte tillgänglig",
+    "active": "Aktiv",
+    "inactive": "Inaktiv"
   },
   "weather": {
     "now": "Nu",
