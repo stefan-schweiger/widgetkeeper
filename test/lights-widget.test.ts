@@ -76,6 +76,15 @@ describe('tap', () => {
     expect(value('spots')).toBe('100');
   });
 
+  it('turns a light without onoff back on to its last brightness', () => {
+    const { w, tile, value } = widget([spots(0.4)]);
+    tile('spots').click(); // off
+    w.pushChange({ deviceId: 'spots', capabilityId: 'dim', value: 0 });
+    vi.advanceTimersByTime(11000);
+    tile('spots').click(); // on again
+    expect(value('spots')).toBe('40');
+  });
+
   it('shows the failure and goes back', async () => {
     const { tile, value, root } = widget([bulb(false)], vi.fn(async () => { throw new Error('no'); }));
     tile('bulb').click();
@@ -92,6 +101,18 @@ describe('bar', () => {
     expect(onSet).toHaveBeenCalledTimes(1);
     expect(onSet).toHaveBeenCalledWith('bulb', { dim: 0.62 });
     expect(value('bulb')).toBe('62');
+  });
+
+  it('keeps the tiles in place while rendering, so a drag keeps its pointer capture', () => {
+    const { w, root } = widget([bulb(), spots(0.5)]);
+    const first = root.querySelector('.lc-tile')!;
+    const inserted = vi.spyOn(first.parentNode!, 'insertBefore');
+    const appended = vi.spyOn(first.parentNode!, 'appendChild');
+    w.pushChange({ deviceId: 'bulb', capabilityId: 'dim', value: 0.8 });
+    expect(inserted).not.toHaveBeenCalled();
+    expect(appended).not.toHaveBeenCalled();
+    w.setState([spots(0.5), bulb()]); // a new order still applies
+    expect([...root.querySelectorAll('.lc-tile')].map(t => t.getAttribute('data-device'))).toEqual(['spots', 'bulb']);
   });
 
   it('turns off at 0', () => {

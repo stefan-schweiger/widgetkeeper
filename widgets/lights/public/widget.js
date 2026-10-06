@@ -88,10 +88,17 @@
     /** @type {Map<string, {tile: HTMLElement, icon: HTMLElement, chip: HTMLButtonElement,
      *   name: HTMLElement, bar: HTMLElement, fill: HTMLElement, knob: HTMLElement}>} */
     const tiles = new Map();
+    /** Each light's last brightness above 0, which the app restores on a light without `onoff`. */
+    const lastDim = new Map();
+
+    function noteDim(id, value) {
+      if (typeof value === 'number' && value > 0) lastDim.set(id, value);
+    }
 
     function setState(list) {
       devices = Array.isArray(list) ? list : [];
       messageText = null;
+      for (const d of devices) if (d.caps && d.caps.dim) noteDim(d.id, d.caps.dim.value);
       render();
     }
 
@@ -99,6 +106,7 @@
       const d = devices.find(x => x.id === deviceId);
       if (!d || !d.caps || !d.caps[capabilityId]) return;
       d.caps[capabilityId].value = value;
+      if (capabilityId === 'dim') noteDim(deviceId, value);
       const key = `${deviceId}:${capabilityId}`;
       const o = optimistic.get(key);
       if (o && o.value === value) optimistic.delete(key);
@@ -166,7 +174,7 @@
       if (!d || !d.caps) return;
       const on = !isOn(d);
       if (d.caps.onoff) hope(d, { onoff: on });
-      else hope(d, { dim: on ? (shown(d, 'dim') || 1) : 0 });
+      else hope(d, { dim: on ? (shown(d, 'dim') || lastDim.get(d.id) || 1) : 0 });
       render();
       send(d, { onoff: on });
     }
@@ -338,9 +346,14 @@
       for (const [id, tile] of tiles) {
         if (!ids.has(id)) { tile.tile.remove(); tiles.delete(id); }
       }
+      let prev = null;
       for (const d of devices) {
         const tile = tileFor(d.id);
-        grid.appendChild(tile.tile); // keeps the settings' order; a no-op when already in place
+        // Keeps the settings' order. Only moves a tile that is out of place: moving it would drop
+        // the bar's pointer capture during a drag.
+        const want = prev ? prev.nextSibling : grid.firstChild;
+        if (tile.tile !== want) grid.insertBefore(tile.tile, want);
+        prev = tile.tile;
         const missing = 'missing' in d || !d.caps || !d.caps.dim;
         tile.tile.classList.toggle('missing', missing);
         tile.name.textContent = missing ? t('unavailable') : d.name;
