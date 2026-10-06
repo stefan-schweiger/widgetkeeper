@@ -24,9 +24,8 @@
   const svg = (viewBox, body) => `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`)}`;
   // A thermometer with a sun ray, for the temperature chip.
   const TEMP_GLYPH = svg('6.3 1.3 11.4 21.4', '<path d="M10 14.5V4a2 2 0 0 1 4 0v10.5a4 4 0 1 1-4 0z"/><circle cx="12" cy="17.5" r="1.6" fill="#000"/><path d="M12 9.5v6"/>');
-  // A hue circle, for the chip of a light with colour: a ring with its right half filled, and a small circle
-  // inside filled on the left (the even-odd rule cuts its right half out).
-  const HUE_GLYPH = svg('2 2 20 20', '<circle cx="12" cy="12" r="9" stroke-width="1.6"/><path fill="#000" stroke="none" fill-rule="evenodd" d="M12 3a9 9 0 0 1 0 18zM12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8z"/>');
+  // A half-filled circle, for the chip of a light with colour: a ring with its right half filled.
+  const HUE_GLYPH = svg('2 2 20 20', '<circle cx="12" cy="12" r="9" stroke-width="1.6"/><path fill="#000" stroke="none" d="M12 3a9 9 0 0 1 0 18z"/>');
   const CLOSE_GLYPH =svg('5 5 14 14', '<path d="M6 6l12 12M18 6L6 18"/>');
 
   /** The panel's colours (hue in degrees, at full saturation) and whites (temperature, 0 = cool). */

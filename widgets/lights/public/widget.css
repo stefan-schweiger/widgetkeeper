@@ -71,7 +71,7 @@ html, body { background: transparent !important; }
   background: none; -webkit-mask: none; mask: none;
   border: 2px solid currentColor; border-radius: 4px; width: 16px; height: 16px; margin: 2px auto 2px 0;
 }
-/* The colour chip: a hue circle (a thermometer for a light with only colour temperature) in the top right
+/* The colour chip: a half-filled circle (a thermometer for a light with only colour temperature) in the top right
    corner, drawn in the light's current colour (the user's pick over a palette, a drop, RGB circles, a
    rainbow ring …), on a tinted pill while its swatch panel is open. The button reaches into the tile's
    padding (48 × 40 px) so it's easy to hit. */

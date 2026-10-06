@@ -103,7 +103,7 @@ Half-height tiles that each show one device value, such as a temperature, a batt
 ## Light Controls
 <img src="docs/screenshots/lights.png" alt="Light Controls on a Homey dashboard" width="358">
 
-Compact light tiles, six in the space of three of Homey's light cards. Tap a tile to turn the light on or off, drag or tap the bar to set the brightness, and tap the colour button (a hue circle, or a thermometer on white-only lights, in the light's colour) to pick a colour or a white from a row of swatches. On Android, tap the bar instead of dragging. Lights in the same room can share one tile that controls them all.
+Compact light tiles, six in the space of three of Homey's light cards. Tap a tile to turn the light on or off, drag or tap the bar to set the brightness, and tap the colour button (a half-filled circle, or a thermometer on white-only lights, in the light's colour) to pick a colour or a white from a row of swatches. On Android, tap the bar instead of dragging. Lights in the same room can share one tile that controls them all.
 
 **Settings:** lights, colour palette (bright colours, warm from red to cool white, or dusk), group by room.
 
