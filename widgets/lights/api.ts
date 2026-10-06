@@ -29,7 +29,7 @@ export default {
     const app = homey.app as WidgetkeeperApp;
     try {
       if (!body?.deviceId) throw new Error('Missing deviceId');
-      await app.lights.set(body.deviceId, { dim: body.dim, onoff: body.onoff, temperature: body.temperature });
+      await app.lights.set(body.deviceId, { dim: body.dim, onoff: body.onoff, temperature: body.temperature, hue: body.hue, saturation: body.saturation });
       return { ok: true };
     } catch (err) {
       app.log('Light change failed, body:', JSON.stringify(body), err);

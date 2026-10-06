@@ -98,6 +98,8 @@
     "error": "조명을 불러올 수 없습니다.",
     "failed": "__name__을(를) 변경할 수 없습니다.",
     "unavailable": "사용할 수 없음",
-    "temperature": "색온도"
+    "temperature": "색온도",
+    "color": "색상",
+    "close": "닫기"
   }
 }

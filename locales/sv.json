@@ -98,6 +98,8 @@
     "error": "Kunde inte läsa in lamporna.",
     "failed": "Kunde inte ändra __name__.",
     "unavailable": "Inte tillgänglig",
-    "temperature": "Färgtemperatur"
+    "temperature": "Färgtemperatur",
+    "color": "Färg",
+    "close": "Stäng"
   }
 }

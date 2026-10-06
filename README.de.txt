@@ -11,7 +11,7 @@ Enthaltene Widgets:
 - Insights-Heatmap: eine Woche eines Werts, etwa Licht, Temperatur oder Bewegung, als Raster aus Wochentagen und Stunden.
 - Kameras: zwei bis sechs Kameras in einem Raster aus Schnappschüssen, die sich alle paar Sekunden erneuern. Tippe auf eine für das Livebild.
 - Gerätewerte: kompakte Kacheln, die jeweils einen Wert zeigen, etwa eine Temperatur, einen Akkustand oder Ein/Aus.
-- Lichtsteuerung: kompakte Lichtkacheln mit Helligkeit und Farbtemperatur, sechs Lampen auf dem Platz von dreien.
+- Lichtsteuerung: kompakte Lichtkacheln mit Helligkeit, Farbe und Farbtemperatur, sechs Lampen auf dem Platz von dreien.
 - Sparklines: kompakte Kacheln mit einem kleinen Diagramm eines Werts über die letzte Stunde, 6 Stunden, den Tag oder die Woche, mit Tiefst- und Höchstwert.
 
 Wetterdaten von MET Norway, lizenziert unter CC BY 4.0.

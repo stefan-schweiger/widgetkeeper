@@ -98,6 +98,8 @@
     "error": "Kon de lampen niet laden.",
     "failed": "Kon __name__ niet wijzigen.",
     "unavailable": "Niet beschikbaar",
-    "temperature": "Kleurtemperatuur"
+    "temperature": "Kleurtemperatuur",
+    "color": "Kleur",
+    "close": "Sluiten"
   }
 }

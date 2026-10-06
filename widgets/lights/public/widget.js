@@ -1,14 +1,14 @@
 /*
  * Light Controls: compact light tiles, two per row (no brightness text: the bar shows it, and the space
- * goes to the temperature chip's tap area). A tap on the tile turns the light on or off; the bar
- * at the bottom sets the brightness (0 = off), or the colour temperature after a tap on the chip.
- * Plain browser JS (served as-is).
+ * goes to the colour chip's tap area). A tap on the tile turns the light on or off; the bar at the bottom
+ * sets the brightness (0 = off). The chip opens a panel of colour and white swatches over the tile's row:
+ * taps only, as Homey's Android app takes any drag. Plain browser JS (served as-is).
  */
 (function () {
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a changed tile shows its new value while waiting for the device
-  const TEMP_MODE_MS = 6e3; // the bar switches back to brightness after this long without a touch
+  const PANEL_MS = 8e3; // the swatch panel closes after this long without a touch
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
 
   const DEFAULT_STRINGS = {
@@ -17,11 +17,40 @@
     failed: 'Could not change __name__.',
     unavailable: 'Unavailable',
     temperature: 'Colour temperature',
+    color: 'Colour',
+    close: 'Close',
   };
 
   const svg = (viewBox, body) => `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`)}`;
   // A thermometer with a sun ray, for the temperature chip.
   const TEMP_GLYPH = svg('6.3 1.3 11.4 21.4', '<path d="M10 14.5V4a2 2 0 0 1 4 0v10.5a4 4 0 1 1-4 0z"/><circle cx="12" cy="17.5" r="1.6" fill="#000"/><path d="M12 9.5v6"/>');
+  // A hue circle, for the chip of a light with colour: a ring with its right half filled, and a small circle
+  // inside filled on the left (the even-odd rule cuts its right half out).
+  const HUE_GLYPH = svg('2 2 20 20', '<circle cx="12" cy="12" r="9" stroke-width="1.6"/><path fill="#000" stroke="none" fill-rule="evenodd" d="M12 3a9 9 0 0 1 0 18zM12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8z"/>');
+  const CLOSE_GLYPH =svg('5 5 14 14', '<path d="M6 6l12 12M18 6L6 18"/>');
+
+  /** The panel's colours (hue in degrees, at full saturation) and whites (temperature, 0 = cool). */
+  /**
+   * The swatch palettes (the `palette` setting): 7 colours for the first row (hue in degrees, saturation 0–1)
+   * and 5 whites for the second (colour temperature, 0 = cool), each row in the order shown.
+   */
+  const PALETTES = {
+    // Bright colours around the wheel, and whites from cool to warm.
+    default: {
+      colors: [[0, 1], [30, 1], [55, 1], [120, 1], [220, 1], [275, 1], [320, 1]],
+      whites: [0, 0.25, 0.5, 0.75, 1],
+    },
+    // Warm: from red through orange and amber, on to warm and then cool white.
+    warm: {
+      colors: [[0, 1], [10, 1], [20, 1], [28, 0.95], [35, 0.85], [40, 0.7], [44, 0.5]],
+      whites: [1, 0.75, 0.5, 0.25, 0],
+    },
+    // Dusk: the sky after sunset, indigo through violet and rose to coral and amber, with warm whites.
+    dusk: {
+      colors: [[240, 0.8], [262, 0.75], [285, 0.65], [320, 0.6], [345, 0.65], [12, 0.75], [30, 0.85]],
+      whites: [1, 0.85, 0.7, 0.55, 0.4],
+    },
+  };
 
   /** The colour of a temperature (0 = cool, 1 = warm), as on Homey's own light card. */
   function temperatureColor(k) {
@@ -31,6 +60,11 @@
     return `rgb(${mix.join(' ')})`;
   }
 
+  /** A colour light's hue and saturation (0–1); lighter as the saturation drops, so 0 is white. */
+  function hueColor(hue, sat) {
+    return `hsl(${Math.round(hue * 360)} ${Math.round(sat * 100)}% ${Math.round(62 + (1 - sat) * 38)}%)`;
+  }
+
   /** The colour a light shines in: its hue in colour mode, else its temperature (or a warm white). */
   function lightColor(caps) {
     const v = id => (caps[id] ? caps[id].value : null);
@@ -38,7 +72,7 @@
     const colourMode = v('light_mode') === 'color' || (!caps.light_mode && !caps.light_temperature);
     if (colourMode && typeof hue === 'number') {
       const sat = typeof v('light_saturation') === 'number' ? v('light_saturation') : 1;
-      return `hsl(${Math.round(hue * 360)} ${Math.round(sat * 100)}% 62%)`;
+      return hueColor(hue, sat);
     }
     const k = v('light_temperature');
     return temperatureColor(typeof k === 'number' ? k : 0.6);
@@ -64,8 +98,9 @@
   /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string,
-   *   onSet?: (deviceId: string, change: {dim?: number, onoff?: boolean, temperature?: number}) => Promise<any>,
-   *   onHeight?: (h: number) => void }} opts
+   *   onSet?: (deviceId: string, change: {dim?: number, onoff?: boolean, temperature?: number,
+   *     hue?: number, saturation?: number}) => Promise<any>,
+   *   onHeight?: (h: number) => void, groupByZone?: boolean, palette?: string }} opts
    */
   function createLightsWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -74,18 +109,34 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
 
-    let devices = []; // [{ id, name, icon, caps } | { id, missing }]
+    let devices = []; // [{ id, name, icon, zone, caps } | { id, missing }]
+    /**
+     * The tiles: one per light, or with `groupByZone` one per room that has two or more of the lights,
+     * placed where its first light is. `id` is the light's id or `zone:<zoneId>`.
+     * @type {({id: string, name: string, icon: string | null, members: any[]} | {id: string, missing: true})[]}
+     */
+    let items = [];
     const optimistic = new Map(); // `${deviceId}:${capabilityId}` → { value, until }
-    const tempMode = new Map(); // deviceId → timer, while the bar sets the temperature
-    const drags = new Map(); // deviceId → fraction, while a finger or the mouse is on the bar
+    const drags = new Map(); // tile id → fraction, while a finger or the mouse is on the bar
     let messageText = null;
     let messageTimer = null;
 
     root.classList.add('lc');
     const grid = el('div', { class: 'lc-grid' }, root);
+    // The swatch panel, over the row of the tile it's open for. In the grid (absolutely positioned) so it
+    // can cover the row; the tiles are kept before it.
+    const panel = el('div', { class: 'lc-panel' }, grid);
+    panel.style.display = 'none';
+    let panelFor = null; // the tile id the panel is open for
+    let panelKey = ''; // which swatches it holds, so it's only rebuilt when that changes
+    const palette = PALETTES[opts.palette] || PALETTES.default;
+    let panelTimer = null;
+    /** @type {{node: HTMLElement, swatch: {hue?: number, sat?: number, k?: number}}[]} */
+    let swatches = [];
+    for (const type of ['touchstart', 'pointerdown']) panel.addEventListener(type, () => armPanel(), { passive: true });
     const messageEl = el('div', { class: 'lc-message', dir: 'auto' }, root);
     let lastTouchTap = 0;
-    /** @type {Map<string, {tile: HTMLElement, icon: HTMLElement, chip: HTMLButtonElement,
+    /** @type {Map<string, {tile: HTMLElement, icon: HTMLElement, chip: HTMLButtonElement, chipGlyph: HTMLElement,
      *   name: HTMLElement, bar: HTMLElement, fill: HTMLElement, knob: HTMLElement}>} */
     const tiles = new Map();
     /** Each light's last brightness above 0, which the app restores on a light without `onoff`. */
@@ -152,14 +203,15 @@
       return isOn(d) && typeof dim === 'number' ? dim : 0;
     }
 
-    async function send(d, change) {
+    /** Sends one light's change; a failure shakes its tile (`item`) and shows a message. */
+    async function send(item, d, change) {
       if (!opts.onSet) return;
       try {
         await opts.onSet(d.id, change);
       } catch (err) {
         console.error(err);
-        for (const id of ['onoff', 'dim', 'light_temperature', 'light_mode']) optimistic.delete(`${d.id}:${id}`);
-        const tile = tiles.get(d.id);
+        for (const id of ['onoff', 'dim', 'light_temperature', 'light_mode', 'light_hue', 'light_saturation']) optimistic.delete(`${d.id}:${id}`);
+        const tile = tiles.get(item.id);
         if (tile) {
           tile.tile.classList.remove('shake');
           void tile.tile.offsetWidth; // restart the animation
@@ -169,47 +221,157 @@
       }
     }
 
-    function toggle(id) {
-      const d = devices.find(x => x.id === id);
-      if (!d || !d.caps) return;
-      const on = !isOn(d);
-      if (d.caps.onoff) hope(d, { onoff: on });
-      else hope(d, { dim: on ? (shown(d, 'dim') || lastDim.get(d.id) || 1) : 0 });
-      render();
-      send(d, { onoff: on });
+    /** The tile with this id, if it shows lights. */
+    function itemOf(id) {
+      const item = items.find(x => x.id === id);
+      return item && 'members' in item ? item : null;
     }
 
-    /** The bar was let go at `x` (0–1): brightness, or the temperature in temperature mode. */
+    /** A tile is on while any of its lights is. */
+    const itemOn = item => item.members.some(isOn);
+    /** A tile's brightness: its light's, or the average of a room's lights that are on. */
+    function itemBrightness(item) {
+      const on = item.members.filter(isOn);
+      return on.length ? on.reduce((sum, d) => sum + brightness(d), 0) / on.length : 0;
+    }
+    /** The light a tile's colour comes from: the first one that is on, else the first. */
+    const lead = item => item.members.find(isOn) || item.members[0];
+
+    /** A tap on a tile: turns all its lights off when any is on, else all on. */
+    function toggle(id) {
+      const item = itemOf(id);
+      if (!item) return;
+      const on = !itemOn(item);
+      for (const d of item.members) {
+        if (d.caps.onoff) hope(d, { onoff: on });
+        else hope(d, { dim: on ? (shown(d, 'dim') || lastDim.get(d.id) || 1) : 0 });
+      }
+      render();
+      for (const d of item.members) send(item, d, { onoff: on });
+    }
+
+    /** The bar was let go at `x` (0–1): the brightness of every light on the tile. */
     function commit(id, x) {
-      const d = devices.find(v => v.id === id);
-      if (!d || !d.caps) return;
+      const item = itemOf(id);
+      if (!item) return;
       const value = snap(x);
-      if (tempMode.has(id)) {
-        hope(d, { light_temperature: value, light_mode: 'temperature', onoff: true });
-        armTempMode(id);
-        render();
-        send(d, { temperature: value });
+      for (const d of item.members) {
+        if (value === 0) hope(d, d.caps.onoff ? { onoff: false } : { dim: 0 });
+        else hope(d, { dim: value, onoff: true });
+      }
+      render();
+      for (const d of item.members) send(item, d, { dim: value });
+    }
+
+    const settable = (d, id) => !!d.caps[id] && d.caps[id].setable !== false;
+    const hasColor = item => item.members.some(d => settable(d, 'light_hue'));
+    const hasTemp = item => item.members.some(d => settable(d, 'light_temperature'));
+
+    /**
+     * A swatch was tapped: sets the colour (or white) of each light on the tile that can show it, and
+     * closes the panel. In a room, a white also goes to colour lights without colour temperature, as
+     * saturation 0.
+     */
+    function pick(id, swatch) {
+      const item = itemOf(id);
+      closePanel();
+      if (!item) return;
+      const changes = [];
+      for (const d of item.members) {
+        if (swatch.k != null && settable(d, 'light_temperature')) {
+          hope(d, { light_temperature: swatch.k, light_mode: 'temperature', onoff: true });
+          changes.push([d, { temperature: swatch.k }]);
+        } else if (settable(d, 'light_hue') && (swatch.k == null || item.members.length > 1)) {
+          const hue = swatch.k != null ? 0 : swatch.hue / 360;
+          const saturation = swatch.k != null ? 0 : swatch.sat;
+          hope(d, { light_hue: hue, light_saturation: saturation, light_mode: 'color', onoff: true });
+          changes.push([d, { hue, saturation }]);
+        }
+      }
+      render();
+      for (const [d, change] of changes) send(item, d, change);
+    }
+
+    function armPanel() {
+      clearTimeout(panelTimer);
+      panelTimer = setTimeout(closePanel, PANEL_MS);
+    }
+
+    function closePanel() {
+      clearTimeout(panelTimer);
+      panelTimer = null;
+      if (panelFor == null) return;
+      panelFor = null;
+      render();
+    }
+
+    function togglePanel(id) {
+      if (panelFor === id) { closePanel(); return; }
+      panelFor = id;
+      armPanel();
+      render();
+    }
+
+    /**
+     * Fills the panel for `d` from the palette: the colours (with colour) in the first row, then the whites
+     * (the temperatures, or a plain white without them), and the close button in the last column.
+     */
+    function buildPanel(d) {
+      const color = hasColor(d);
+      const temp = hasTemp(d);
+      const key = `${color}:${temp}`;
+      if (key === panelKey) return;
+      panelKey = key;
+      panel.textContent = '';
+      swatches = [];
+      /** @type {{hue?: number, sat?: number, k?: number}[]} */
+      const list = [
+        ...(color ? palette.colors.map(([hue, sat]) => ({ hue, sat })) : []),
+        ...(temp ? palette.whites.map(k => ({ k })) : color ? [{ hue: 0, sat: 0 }] : []),
+      ];
+      for (const swatch of list) {
+        const node = el('button', { type: 'button', class: 'lc-swatch' }, panel);
+        node.style.setProperty('--lc-swatch', swatch.k != null ? temperatureColor(swatch.k) : hueColor(swatch.hue / 360, swatch.sat));
+        onTap(node, () => { if (panelFor != null) pick(panelFor, swatch); });
+        swatches.push({ node, swatch });
+      }
+      const close = el('button', { type: 'button', class: 'lc-close', 'aria-label': t('close') }, panel);
+      el('span', { class: 'lc-close-glyph' }, close).style.setProperty('--lc-mask', `url("${CLOSE_GLYPH}")`);
+      onTap(close, closePanel);
+    }
+
+    /** Whether a swatch is the current colour or white of the tile's lead light. */
+    function isCurrent(item, swatch) {
+      const d = lead(item);
+      const v = id => shown(d, id);
+      const colourMode = v('light_mode') === 'color' || (!d.caps.light_mode && !d.caps.light_temperature);
+      if (swatch.k != null) {
+        const k = v('light_temperature');
+        return !colourMode && typeof k === 'number' && Math.abs(k - swatch.k) < 0.05;
+      }
+      const hue = v('light_hue');
+      if (!colourMode || typeof hue !== 'number') return false;
+      const sat = typeof v('light_saturation') === 'number' ? v('light_saturation') : 1;
+      if (Math.abs(sat - swatch.sat) >= 0.03) return false;
+      if (swatch.sat === 0) return true;
+      const dh = Math.abs(hue - swatch.hue / 360);
+      return Math.min(dh, 1 - dh) < 0.03;
+    }
+
+    /** Places the panel over the row of its tile, or hides it. */
+    function renderPanel() {
+      const d = panelFor != null ? itemOf(panelFor) : null;
+      const tile = d ? tiles.get(d.id) : null;
+      if (!d || !tile || !(hasColor(d) || hasTemp(d))) {
+        if (panelFor != null) { panelFor = null; clearTimeout(panelTimer); }
+        panel.style.display = 'none';
         return;
       }
-      if (value === 0) hope(d, d.caps.onoff ? { onoff: false } : { dim: 0 });
-      else hope(d, { dim: value, onoff: true });
-      render();
-      send(d, { dim: value });
-    }
-
-    function armTempMode(id) {
-      clearTimeout(tempMode.get(id));
-      tempMode.set(id, setTimeout(() => { tempMode.delete(id); render(); }, TEMP_MODE_MS));
-    }
-
-    function toggleTempMode(id) {
-      if (tempMode.has(id)) {
-        clearTimeout(tempMode.get(id));
-        tempMode.delete(id);
-      } else {
-        armTempMode(id);
-      }
-      render();
+      buildPanel(d);
+      for (const s of swatches) s.node.classList.toggle('current', isCurrent(d, s.swatch));
+      panel.style.display = '';
+      panel.style.top = `${tile.tile.offsetTop}px`;
+      panel.style.height = `${tile.tile.offsetHeight}px`;
     }
 
     /** Taps on the tile body: a touch that ends within TAP_SLOP, or a click. Drags scroll the dashboard. */
@@ -253,7 +415,6 @@
       };
       const move = (clientX) => {
         drags.set(id, at(clientX));
-        if (tempMode.has(id)) armTempMode(id);
         render();
       };
       const end = (commitIt) => {
@@ -310,14 +471,14 @@
         const node = el('div', { class: 'lc-tile', 'data-device': id });
         const top = el('div', { class: 'lc-top' }, node);
         const icon = el('span', { class: 'lc-icon' }, top);
-        const chip = el('button', { type: 'button', class: 'lc-chip', 'aria-label': t('temperature') }, top);
-        el('span', { class: 'lc-chip-glyph' }, chip).style.setProperty('--lc-mask', `url("${TEMP_GLYPH}")`);
+        const chip = el('button', { type: 'button', class: 'lc-chip' }, top);
+        const chipGlyph = el('span', { class: 'lc-chip-glyph' }, chip);
         const name = el('span', { class: 'lc-name', dir: 'auto' }, node);
         const bar = el('div', { class: 'lc-bar', role: 'slider', 'aria-valuemin': '0', 'aria-valuemax': '100' }, node);
         const track = el('div', { class: 'lc-track' }, bar);
         const fill = el('div', { class: 'lc-fill' }, track);
         const knob = el('div', { class: 'lc-knob' }, bar);
-        tile = { tile: node, icon, chip, name, bar, fill, knob };
+        tile = { tile: node, icon, chip, chipGlyph, name, bar, fill, knob };
         onTap(node, () => toggle(id));
         // The chip is inside the tile: its own taps must not toggle the light.
         for (const type of ['touchstart', 'touchend', 'click']) {
@@ -326,7 +487,7 @@
             if (type === 'touchstart') return;
             if (type === 'touchend') { e.preventDefault(); lastTouchTap = Date.now(); }
             else if (Date.now() - lastTouchTap < 800) return;
-            toggleTempMode(id);
+            togglePanel(id);
           }, { passive: type !== 'touchend' });
         }
         wireBar(id, bar);
@@ -340,49 +501,81 @@
       if (node.style.getPropertyValue('--lc-mask') !== v) node.style.setProperty('--lc-mask', v);
     }
 
+    /** The tiles for the lights, grouped by room with `groupByZone`. */
+    function buildItems() {
+      const usable = d => !('missing' in d) && d.caps && d.caps.dim;
+      const rooms = new Map(); // zone id → its usable lights
+      if (opts.groupByZone) {
+        for (const d of devices) {
+          if (!usable(d) || !d.zone) continue;
+          if (!rooms.has(d.zone.id)) rooms.set(d.zone.id, []);
+          rooms.get(d.zone.id).push(d);
+        }
+      }
+      const out = [];
+      const placed = new Set();
+      for (const d of devices) {
+        if (!usable(d)) { out.push({ id: d.id, missing: true }); continue; }
+        const room = d.zone ? rooms.get(d.zone.id) : null;
+        if (room && room.length > 1) {
+          if (placed.has(d.zone.id)) continue;
+          placed.add(d.zone.id);
+          out.push({ id: `zone:${d.zone.id}`, name: d.zone.name, icon: room[0].icon, members: room });
+        } else {
+          out.push({ id: d.id, name: d.name, icon: d.icon, members: [d] });
+        }
+      }
+      return out;
+    }
+
     let lastHeight = 0;
     function render() {
-      const ids = new Set(devices.map(d => d.id));
+      items = buildItems();
+      const ids = new Set(items.map(d => d.id));
       for (const [id, tile] of tiles) {
         if (!ids.has(id)) { tile.tile.remove(); tiles.delete(id); }
       }
       let prev = null;
-      for (const d of devices) {
+      for (const d of items) {
         const tile = tileFor(d.id);
         // Keeps the settings' order. Only moves a tile that is out of place: moving it would drop
         // the bar's pointer capture during a drag.
         const want = prev ? prev.nextSibling : grid.firstChild;
         if (tile.tile !== want) grid.insertBefore(tile.tile, want);
         prev = tile.tile;
-        const missing = 'missing' in d || !d.caps || !d.caps.dim;
-        tile.tile.classList.toggle('missing', missing);
-        tile.name.textContent = missing ? t('unavailable') : d.name;
-        setMask(tile.icon, missing ? null : d.icon);
-        tile.icon.classList.toggle('fallback', missing || !d.icon);
-        if (missing) {
+        if (!('members' in d)) {
+          tile.tile.classList.add('missing');
+          tile.name.textContent = t('unavailable');
+          setMask(tile.icon, null);
+          tile.icon.classList.add('fallback');
           tile.chip.style.display = 'none';
-          tile.tile.classList.remove('on', 'temp');
+          tile.tile.classList.remove('on');
           tile.tile.style.removeProperty('--lc-light');
           tile.tile.style.setProperty('--lc-x', '0');
           continue;
         }
-        const hasTemp = !!d.caps.light_temperature && d.caps.light_temperature.setable !== false;
-        if (!hasTemp && tempMode.has(d.id)) { clearTimeout(tempMode.get(d.id)); tempMode.delete(d.id); }
-        const temp = tempMode.has(d.id);
-        const caps = Object.fromEntries(Object.keys(d.caps).map(k => [k, { value: shown(d, k) }]));
-        const on = isOn(d);
+        tile.tile.classList.remove('missing');
+        tile.name.textContent = d.name;
+        setMask(tile.icon, d.icon);
+        tile.icon.classList.toggle('fallback', !d.icon);
+        const color = hasColor(d);
+        const l = lead(d);
+        const caps = Object.fromEntries(Object.keys(l.caps).map(k => [k, { value: shown(l, k) }]));
+        const on = itemOn(d);
         const drag = drags.get(d.id);
-        const k = shown(d, 'light_temperature');
-        const x = drag != null ? snap(drag) : temp ? (typeof k === 'number' ? k : 0) : brightness(d);
+        const x = drag != null ? snap(drag) : itemBrightness(d);
 
-        tile.chip.style.display = hasTemp ? '' : 'none';
-        tile.chip.classList.toggle('active', temp);
-        tile.tile.classList.toggle('on', on || (drag != null && !temp && x > 0));
-        tile.tile.classList.toggle('temp', temp);
-        tile.tile.style.setProperty('--lc-light', temp && drag != null ? temperatureColor(x) : lightColor(caps));
+        tile.chip.style.display = color || hasTemp(d) ? '' : 'none';
+        tile.chip.setAttribute('aria-label', t(color ? 'color' : 'temperature'));
+        tile.chip.classList.toggle('active', panelFor === d.id);
+        tile.chipGlyph.classList.toggle('hue', color);
+        setMask(tile.chipGlyph, color ? HUE_GLYPH : TEMP_GLYPH);
+        tile.tile.classList.toggle('on', on || (drag != null && x > 0));
+        tile.tile.style.setProperty('--lc-light', lightColor(caps));
         tile.tile.style.setProperty('--lc-x', String(x));
         tile.bar.setAttribute('aria-valuenow', String(Math.round(x * 100)));
       }
+      renderPanel();
       grid.style.display = devices.length ? '' : 'none';
       messageEl.textContent = messageText || '';
       messageEl.style.display = messageText ? '' : 'none';

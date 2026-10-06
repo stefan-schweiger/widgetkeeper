@@ -98,6 +98,8 @@
     "error": "Lampen konnten nicht geladen werden.",
     "failed": "__name__ konnte nicht geändert werden.",
     "unavailable": "Nicht verfügbar",
-    "temperature": "Farbtemperatur"
+    "temperature": "Farbtemperatur",
+    "color": "Farbe",
+    "close": "Schließen"
   }
 }

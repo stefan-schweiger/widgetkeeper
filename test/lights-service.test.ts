@@ -19,7 +19,7 @@ const dimmer = (dim = 0.4) => fakeDevice({ id: 'dimmer', name: 'Spots', caps: { 
 const plug = () => fakeDevice({ id: 'plug', name: 'Plug', caps: { onoff: { type: 'boolean', value: false } } });
 
 function setup(devices = [bulb(), dimmer(), plug()]) {
-  const homey = fakeHomey(fakeApi({ devices }));
+  const homey = fakeHomey(fakeApi({ devices, zones: { z1: { name: 'Køkken' } } }));
   const service = new LightService(homey, () => {});
   return { homey, service, devices };
 }
@@ -31,10 +31,10 @@ describe('getState', () => {
   it('returns the light capabilities in the order asked, with missing ones marked', async () => {
     const { service } = setup();
     expect(await service.getState(['dimmer', 'nope', 'bulb', 'plug'])).toEqual([
-      { id: 'dimmer', name: 'Spots', icon: null, caps: { dim: { value: 0.4, setable: true } } },
+      { id: 'dimmer', name: 'Spots', icon: null, zone: { id: 'z1', name: 'Køkken' }, caps: { dim: { value: 0.4, setable: true } } },
       { id: 'nope', missing: true },
       {
-        id: 'bulb', name: 'Kitchen', icon: null, caps: {
+        id: 'bulb', name: 'Kitchen', icon: null, zone: { id: 'z1', name: 'Køkken' }, caps: {
           onoff: { value: true, setable: true },
           dim: { value: 0.5, setable: true },
           light_temperature: { value: 0.3, setable: true },
@@ -44,6 +44,14 @@ describe('getState', () => {
       },
       { id: 'plug', missing: true }, // no dim
     ]);
+  });
+});
+
+describe('zones', () => {
+  it('sends no zone when the zone is unknown or the zones fail', async () => {
+    const homey = fakeHomey(fakeApi({ devices: [fakeDevice({ id: 'd', zone: 'nowhere', caps: { dim: { type: 'number', value: 1 } } })] }));
+    const service = new LightService(homey, () => {});
+    expect((await service.getState(['d']))[0]).toMatchObject({ zone: null });
   });
 });
 
@@ -104,6 +112,28 @@ describe('set', () => {
     expect(devices[0].sent).toEqual(['light_mode="temperature"', 'light_temperature=0.8', 'onoff=true']);
   });
 
+  it('switches to colour mode before setting the hue and saturation', async () => {
+    const hueBulb = fakeDevice({
+      id: 'hue', name: 'Hue Go',
+      caps: {
+        onoff: { type: 'boolean', value: false },
+        dim: { type: 'number', value: 0.5 },
+        light_mode: { type: 'enum', value: 'temperature' },
+        light_hue: { type: 'number', value: 0.1 },
+        light_saturation: { type: 'number', value: 0.2 },
+      },
+    });
+    const { service, devices } = setup([hueBulb]);
+    await service.set('hue', { hue: 0.6, saturation: 1 });
+    expect(devices[0].sent).toEqual(['light_mode="color"', 'light_hue=0.6', 'light_saturation=1', 'onoff=true']);
+  });
+
+  it('sets only the hue on a light without saturation, already in colour mode', async () => {
+    const { service, devices } = setup();
+    await service.set('bulb', { hue: 0.3, saturation: 1 });
+    expect(devices[0].sent).toEqual(['light_hue=0.3']);
+  });
+
   it('turns lights without onoff off and on through dim, back to the last brightness', async () => {
     const { service, devices } = setup();
     await service.getState(['dimmer']);
@@ -119,6 +149,8 @@ describe('set', () => {
     await expect(service.set('bulb', { dim: 2 })).rejects.toThrow(/Invalid brightness/);
     await expect(service.set('bulb', { onoff: 'on' })).rejects.toThrow(/Invalid on\/off/);
     await expect(service.set('dimmer', { temperature: 0.5 })).rejects.toThrow(/colour temperature/);
+    await expect(service.set('dimmer', { hue: 0.5, saturation: 1 })).rejects.toThrow(/no colour/);
+    await expect(service.set('bulb', { hue: 0.5, saturation: 3 })).rejects.toThrow(/Invalid saturation/);
     await expect(service.set('plug', { dim: 0.5 })).rejects.toThrow(/no dim/);
     await expect(service.set('bulb', {})).rejects.toThrow(/Nothing to set/);
   });

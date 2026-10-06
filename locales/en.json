@@ -98,6 +98,8 @@
     "error": "Could not load the lights.",
     "failed": "Could not change __name__.",
     "unavailable": "Unavailable",
-    "temperature": "Colour temperature"
+    "temperature": "Colour temperature",
+    "color": "Colour",
+    "close": "Close"
   }
 }

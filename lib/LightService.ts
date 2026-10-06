@@ -15,15 +15,17 @@ export const LIGHT_CAPS = ['onoff', 'dim', 'light_temperature', 'light_hue', 'li
 export type LightCap = { value: unknown, setable: boolean };
 
 export type LightDevice =
-  | { id: string, name: string, icon: string | null, caps: Record<string, LightCap> }
+  | { id: string, name: string, icon: string | null, zone: { id: string, name: string } | null, caps: Record<string, LightCap> }
   | { id: string, missing: true };
 
-export type LightChange = { dim?: unknown, onoff?: unknown, temperature?: unknown };
+export type LightChange = { dim?: unknown, onoff?: unknown, temperature?: unknown, hue?: unknown, saturation?: unknown };
 
 type Tracked = {
   deviceId: string,
   name: string,
   icon: string | null,
+  /** The zone (room) id, for grouping the tiles by room. */
+  zone: string | null,
   caps: Record<string, LightCap>,
   /** The last brightness above 0, to turn a light without `onoff` back on. */
   lastDim: number,
@@ -51,7 +53,7 @@ function fraction(v: unknown, what: string): number {
   return v;
 }
 
-/** The Light Controls widget: brightness, on/off and colour temperature of several lights. */
+/** The Light Controls widget: brightness, on/off, colour and colour temperature of several lights. */
 export default class LightService {
 
   private tracked = new Map<string, Tracked>();
@@ -76,11 +78,15 @@ export default class LightService {
   /** One entry per device, in the order asked for. A deleted device doesn't fail the others. */
   async getState(deviceIds: string[]): Promise<LightDevice[]> {
     const tm = new Timings();
+    const zonesP = tm.time('zones', async () => (await getAppApi(this.homey)).zones.getZones())
+      .catch((err: unknown) => { this.log('Light zones unavailable:', err); return {}; });
     const out = await Promise.all(deviceIds.map(async (id): Promise<LightDevice> => {
       try {
         const t = await this.current(id, tm);
         t.lastRequested = Date.now();
-        return { id, name: t.name, icon: t.icon, caps: Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, { ...c }])) };
+        const zones: Record<string, any> = await zonesP;
+        const zone = t.zone && zones[t.zone] ? { id: t.zone, name: String(zones[t.zone].name) } : null;
+        return { id, name: t.name, icon: t.icon, zone, caps: Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, { ...c }])) };
       } catch (err) {
         this.log(`Light ${id} unavailable:`, err);
         return { id, missing: true };
@@ -119,6 +125,14 @@ export default class LightService {
       if (typeof change.onoff !== 'boolean') throw new Error(`Invalid on/off ${JSON.stringify(change.onoff)}`);
       if (caps.onoff) await send('onoff', change.onoff);
       else await send('dim', change.onoff ? this.lastDim(deviceId, caps.dim.value) : 0);
+    } else if (change.hue !== undefined) {
+      const hue = fraction(change.hue, 'hue');
+      const saturation = change.saturation === undefined ? undefined : fraction(change.saturation, 'saturation');
+      if (!caps.light_hue) throw new Error(`${device.name} has no colour`);
+      if (caps.light_mode && caps.light_mode.value !== 'color') await send('light_mode', 'color');
+      await send('light_hue', hue);
+      if (saturation !== undefined && caps.light_saturation) await send('light_saturation', saturation);
+      await turnOn();
     } else if (change.temperature !== undefined) {
       const temperature = fraction(change.temperature, 'temperature');
       if (!caps.light_temperature) throw new Error(`${device.name} has no colour temperature`);
@@ -156,6 +170,7 @@ export default class LightService {
       return this.ensureTracked(deviceId, tm);
     }
     t.name = device.name;
+    t.zone = device.zone ?? null;
     t.icon = await tm.time('icons', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
     t.caps = readCaps(device);
     this.noteDim(t);
@@ -182,6 +197,7 @@ export default class LightService {
       deviceId,
       name: device.name,
       icon,
+      zone: device.zone ?? null,
       caps: readCaps(device),
       lastDim: 1,
       instances: [],

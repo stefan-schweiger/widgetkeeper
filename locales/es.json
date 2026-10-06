@@ -98,6 +98,8 @@
     "error": "No se pudieron cargar las luces.",
     "failed": "No se pudo cambiar __name__.",
     "unavailable": "No disponible",
-    "temperature": "Temperatura de color"
+    "temperature": "Temperatura de color",
+    "color": "Color",
+    "close": "Cerrar"
   }
 }

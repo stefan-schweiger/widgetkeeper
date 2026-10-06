@@ -36,7 +36,7 @@ Compact tiles that each show one value, such as a temperature, power or on/off<b
 
 <p><a href="#light-controls"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/lights-dark.png"><img src="docs/previews/lights-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#light-controls"><b>Light Controls</b></a><br>
-Compact light tiles with brightness and colour temperature: six lights in the space of three<br clear="left"></p>
+Compact light tiles with brightness, colour and colour temperature: six lights in the space of three<br clear="left"></p>
 
 <p><a href="#sparklines"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/sparklines-dark.png"><img src="docs/previews/sparklines-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#sparklines"><b>Sparklines</b></a><br>
@@ -103,9 +103,9 @@ Half-height tiles that each show one device value, such as a temperature, a batt
 ## Light Controls
 <img src="docs/screenshots/lights.png" alt="Light Controls on a Homey dashboard" width="358">
 
-Compact light tiles, six in the space of three of Homey's light cards. Tap a tile to turn the light on or off, drag or tap the bar to set the brightness, and tap the thermometer to set the colour temperature. On Android, tap the bar instead of dragging.
+Compact light tiles, six in the space of three of Homey's light cards. Tap a tile to turn the light on or off, drag or tap the bar to set the brightness, and tap the colour button (a hue circle, or a thermometer on white-only lights, in the light's colour) to pick a colour or a white from a row of swatches. On Android, tap the bar instead of dragging. Lights in the same room can share one tile that controls them all.
 
-**Settings:** lights.
+**Settings:** lights, colour palette (bright colours, warm from red to cool white, or dusk), group by room.
 
 ## Sparklines
 <img src="docs/screenshots/sparklines.png" alt="Sparklines on a Homey dashboard" width="358">

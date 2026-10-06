@@ -98,6 +98,8 @@
     "error": "Kunne ikke laste inn lysene.",
     "failed": "Kunne ikke endre __name__.",
     "unavailable": "Utilgjengelig",
-    "temperature": "Fargetemperatur"
+    "temperature": "Fargetemperatur",
+    "color": "Farge",
+    "close": "Lukk"
   }
 }

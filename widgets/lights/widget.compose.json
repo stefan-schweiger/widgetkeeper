@@ -23,7 +23,119 @@
       "capabilities": "dim"
     }
   },
-  "settings": [],
+  "settings": [
+    {
+      "id": "palette",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour palette",
+        "nl": "Kleurenpalet",
+        "de": "Farbpalette",
+        "fr": "Palette de couleurs",
+        "it": "Tavolozza colori",
+        "sv": "Färgpalett",
+        "no": "Fargepalett",
+        "es": "Paleta de colores",
+        "da": "Farvepalet",
+        "ru": "Палитра",
+        "pl": "Paleta kolorów",
+        "ko": "색상 팔레트",
+        "ar": "لوحة الألوان"
+      },
+      "value": "default",
+      "values": [
+        {
+          "id": "default",
+          "title": {
+            "en": "Bright colours",
+            "nl": "Felle kleuren",
+            "de": "Kräftige Farben",
+            "fr": "Couleurs vives",
+            "it": "Colori vivaci",
+            "sv": "Klara färger",
+            "no": "Klare farger",
+            "es": "Colores vivos",
+            "da": "Klare farver",
+            "ru": "Яркие цвета",
+            "pl": "Żywe kolory",
+            "ko": "선명한 색상",
+            "ar": "ألوان زاهية"
+          }
+        },
+        {
+          "id": "warm",
+          "title": {
+            "en": "Warm: red to cool white",
+            "nl": "Warm: rood tot koel wit",
+            "de": "Warm: Rot bis Kaltweiß",
+            "fr": "Chaud : du rouge au blanc froid",
+            "it": "Caldo: dal rosso al bianco freddo",
+            "sv": "Varm: röd till kallvit",
+            "no": "Varm: rød til kaldhvit",
+            "es": "Cálido: del rojo al blanco frío",
+            "da": "Varm: rød til koldhvid",
+            "ru": "Тёплая: от красного до холодного белого",
+            "pl": "Ciepła: od czerwieni do zimnej bieli",
+            "ko": "따뜻한 색: 빨강에서 차가운 흰색까지",
+            "ar": "دافئة: من الأحمر إلى الأبيض البارد"
+          }
+        },
+        {
+          "id": "dusk",
+          "title": {
+            "en": "Dusk",
+            "nl": "Schemering",
+            "de": "Abenddämmerung",
+            "fr": "Crépuscule",
+            "it": "Crepuscolo",
+            "sv": "Skymning",
+            "no": "Skumring",
+            "es": "Atardecer",
+            "da": "Skumring",
+            "ru": "Сумерки",
+            "pl": "Zmierzch",
+            "ko": "해 질 녘",
+            "ar": "الغسق"
+          }
+        }
+      ]
+    },
+    {
+      "id": "groupByZone",
+      "type": "checkbox",
+      "title": {
+        "en": "Group lights by room",
+        "nl": "Lampen per ruimte groeperen",
+        "de": "Lampen nach Raum gruppieren",
+        "fr": "Grouper les lampes par pièce",
+        "it": "Raggruppa le luci per stanza",
+        "sv": "Gruppera lampor per rum",
+        "no": "Grupper lys etter rom",
+        "es": "Agrupar luces por habitación",
+        "da": "Gruppér lys efter rum",
+        "ru": "Группировать свет по комнатам",
+        "pl": "Grupuj światła według pomieszczeń",
+        "ko": "방별로 조명 묶기",
+        "ar": "تجميع الأضواء حسب الغرفة"
+      },
+      "hint": {
+        "en": "On: the selected lights in the same room share one tile, named after the room, that controls them all.",
+        "nl": "Aan: de gekozen lampen in dezelfde ruimte delen één tegel met de naam van de ruimte, die ze allemaal bedient.",
+        "de": "Ein: Die gewählten Lampen im selben Raum teilen sich eine Kachel mit dem Namen des Raums, die alle steuert.",
+        "fr": "Activé : les lampes choisies d'une même pièce partagent une tuile au nom de la pièce, qui les commande toutes.",
+        "it": "Attivo: le luci scelte nella stessa stanza condividono un riquadro con il nome della stanza, che le controlla tutte.",
+        "sv": "På: de valda lamporna i samma rum delar en ruta med rummets namn, som styr dem alla.",
+        "no": "På: de valgte lysene i samme rom deler én flis med rommets navn, som styrer alle.",
+        "es": "Activado: las luces elegidas de la misma habitación comparten un mosaico con el nombre de la habitación, que las controla todas.",
+        "da": "Til: de valgte lys i samme rum deler ét felt med rummets navn, som styrer dem alle.",
+        "ru": "Вкл.: выбранные светильники в одной комнате показаны одной плиткой с названием комнаты, которая управляет всеми.",
+        "pl": "Wł.: wybrane światła w tym samym pomieszczeniu mają jeden kafelek z nazwą pomieszczenia, który steruje nimi wszystkimi.",
+        "ko": "켬: 같은 방에 있는 선택한 조명이 방 이름의 타일 하나로 묶여 함께 제어됩니다.",
+        "ar": "تشغيل: الأضواء المختارة في الغرفة نفسها تشترك في بلاطة واحدة باسم الغرفة تتحكم فيها كلها."
+      },
+      "value": false
+    }
+  ],
   "api": {
     "getState": {
       "method": "GET",

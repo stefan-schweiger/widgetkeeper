@@ -11,7 +11,7 @@ Widgets inclus :
 - Carte thermique Insights : une semaine d'une valeur, comme la lumière, la température ou le mouvement, en grille de jours et d'heures.
 - Caméras : deux à six caméras dans une grille d'instantanés actualisés toutes les quelques secondes. Touchez-en une pour la voir en direct.
 - Valeurs d'appareils : des tuiles compactes qui affichent chacune une valeur, comme une température, un niveau de batterie ou marche/arrêt.
-- Commandes d'éclairage : des tuiles compactes avec luminosité et température de couleur, six lampes dans l'espace de trois.
+- Commandes d'éclairage : des tuiles compactes avec luminosité, couleur et température de couleur, six lampes dans l'espace de trois.
 - Mini-graphiques : des tuiles compactes avec un petit graphique d'une valeur sur la dernière heure, les 6 dernières heures, la journée ou la semaine, avec son minimum et son maximum.
 
 Données météo de MET Norway, sous licence CC BY 4.0.

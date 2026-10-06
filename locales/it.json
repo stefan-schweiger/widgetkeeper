@@ -98,6 +98,8 @@
     "error": "Impossibile caricare le luci.",
     "failed": "Impossibile modificare __name__.",
     "unavailable": "Non disponibile",
-    "temperature": "Temperatura colore"
+    "temperature": "Temperatura colore",
+    "color": "Colore",
+    "close": "Chiudi"
   }
 }

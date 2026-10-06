@@ -98,6 +98,8 @@
     "error": "Impossible de charger les lampes.",
     "failed": "Impossible de modifier __name__.",
     "unavailable": "Indisponible",
-    "temperature": "Température de couleur"
+    "temperature": "Température de couleur",
+    "color": "Couleur",
+    "close": "Fermer"
   }
 }

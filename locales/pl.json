@@ -98,6 +98,8 @@
     "error": "Nie udało się wczytać świateł.",
     "failed": "Nie udało się zmienić __name__.",
     "unavailable": "Niedostępne",
-    "temperature": "Temperatura barwowa"
+    "temperature": "Temperatura barwowa",
+    "color": "Kolor",
+    "close": "Zamknij"
   }
 }

@@ -22,33 +22,43 @@
   <div class="col"><span>358 px (phone) · dark</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
   <div class="col"><span>358 px · light</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
   <div class="col"><span>300 px · dark</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · grouped by room</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
   <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
 
   <script>
     const cap = value => ({ value, setable: true });
+    const stue = { id: 'z1', name: 'Living room' };
+    const kitchen = { id: 'z2', name: 'Kitchen' };
     const lights = () => [
-      { id: 'a', name: 'Living Room', icon: null, caps: { onoff: cap(true), dim: cap(0.35), light_temperature: cap(0.8), light_mode: cap('temperature') } },
-      { id: 'b', name: 'Spots | Dining room', icon: null, caps: { onoff: cap(false), dim: cap(0.25), light_temperature: cap(0.5) } },
-      { id: 'c', name: 'Kitchen', icon: null, caps: { onoff: cap(true), dim: cap(0.2) } },
-      { id: 'd', name: 'Hue Go', icon: null, caps: { onoff: cap(true), dim: cap(0.6), light_hue: cap(0.75), light_saturation: cap(0.8), light_temperature: cap(0.2), light_mode: cap('color') } },
+      { id: 'a', name: 'Living Room', icon: null, zone: stue, caps: { onoff: cap(true), dim: cap(0.35), light_temperature: cap(0.8), light_mode: cap('temperature') } },
+      { id: 'b', name: 'Spots | Dining room', icon: null, zone: kitchen, caps: { onoff: cap(false), dim: cap(0.25), light_temperature: cap(0.5) } },
+      { id: 'c', name: 'Kitchen', icon: null, zone: kitchen, caps: { onoff: cap(true), dim: cap(0.2) } },
+      { id: 'd', name: 'Hue Go', icon: null, zone: stue, caps: { onoff: cap(true), dim: cap(0.6), light_hue: cap(0.75), light_saturation: cap(0.8), light_temperature: cap(0.2), light_mode: cap('color') } },
       { id: 'e', name: 'Office ceiling', icon: null, caps: { onoff: cap(true), dim: cap(1), light_temperature: cap(0.1), light_mode: cap('temperature') } },
       { id: 'f', name: 'Bedroom', icon: null, caps: { dim: cap(0) } },
+      { id: 'h', name: 'LED strip', icon: null, zone: stue, caps: { onoff: cap(true), dim: cap(0.8), light_hue: cap(0.92), light_saturation: cap(1) } },
       { id: 'g', missing: true },
     ];
     // Simulates the device: the change is reported back after a moment.
-    function mount(id) {
+    function mount(id, groupByZone = false) {
       let w;
       const onSet = (deviceId, change) => new Promise((resolve) => setTimeout(() => {
         const push = (capabilityId, value) => w.pushChange({ deviceId, capabilityId, value });
         if ('dim' in change) { if (change.dim === 0) push('onoff', false); else { push('dim', change.dim); push('onoff', true); } }
         if ('onoff' in change) push('onoff', change.onoff);
+        if ('hue' in change) { push('light_mode', 'color'); push('light_hue', change.hue); push('light_saturation', change.saturation); push('onoff', true); }
         if ('temperature' in change) { push('light_mode', 'temperature'); push('light_temperature', change.temperature); push('onoff', true); }
         resolve();
       }, 400));
-      w = createLightsWidget(document.getElementById(id), { t: devT, onSet });
+      const palette = new URLSearchParams(location.search).get('palette') || undefined; // ?palette=warm|dusk
+      w = createLightsWidget(document.getElementById(id), { t: devT, onSet, groupByZone, palette });
       w.setState(lights());
     }
     for (const id of ['w1', 'w2', 'w3']) mount(id);
+    mount('w5', true);
+    // ?open=d opens that light's swatch panel in every widget, for screenshots.
+    const openId = new URLSearchParams(location.search).get('open');
+    if (openId) for (const chip of document.querySelectorAll(`.lc-tile[data-device="${openId}"] .lc-chip`)) chip.click();
     const empty = createLightsWidget(document.getElementById('w4'), { t: devT });
     empty.setMessage(empty.t('selectDevices'));
   </script>
