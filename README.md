@@ -45,185 +45,86 @@ Tiles with a small chart of a value over the last hour, day or week, with its lo
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
-Your power use and electricity price together on one card:
-- **Live power**, updated every few seconds, over the last 30 seconds to 1 hour.
-- **Hourly electricity price**, from yesterday to 12 hours ahead, with midnight marked.
-- **Usage history** for the last 24 hours, drawn on the price chart or as its own chart.
-- **Cheapest upcoming hour** in the next 12 hours, the next 24 hours, or both.
+Live power use (30 seconds to 1 hour), the hourly price from yesterday to 12 hours ahead, the last 24 hours of usage and the cheapest upcoming hour. Tap a chart, or hover with a mouse, to see the value at that moment.
 
-Tap or drag on a chart (or hover with a mouse) to see the exact value at any moment. On Android, Homey's dashboard takes over drags, so tap instead; the value stays for 3 seconds.
+Needs a device that reports power and dynamic prices switched on in Homey Energy (Homey Pro 12.6 or later).
 
-**What you need**
-- A power meter in Homey, such as a P1 meter or an energy-monitoring smart plug. Any device that reports power will work.
-- Dynamic electricity prices switched on in **Homey Energy**. This needs Homey Pro 12.6 or later. The widget shows the price Homey provides. Whether your own fees and tariffs are included depends on your Homey Energy price settings.
-
-**Settings**
-| Setting | Options |
-| --- | --- |
-| Power meter | Any device that reports power |
-| Live power window | 30 seconds, 1, 5, 10 or 30 minutes, or 1 hour |
-| Show usage history | On / off, and optionally as a separate chart |
-| Usage history colour | **Neutral** (the default: white in dark mode, black in light mode) or Homey's **Purple** |
-| Smooth chart lines | On / off: softer live and usage lines and rounded price steps |
-| Show lowest price | Off, next 12 hours, next 24 hours, or both |
+**Settings:** power meter, live power window, usage history (on the price chart or separate, neutral or purple), smooth lines, lowest price in the next 12 h, 24 h or both.
 
 ## Thermostat Shortcuts
 <img src="docs/screenshots/thermostat.png" alt="Thermostat Shortcuts on a Homey dashboard" width="358">
 
-Three one-tap presets for a thermostat, heat pump or air conditioner. For example: *Off*, *Heat 21° · Fan level 1* and *Heat 24° · Fan level 5*.
-
-Each button can:
-- turn the device on or off, or leave it as it is
-- set the target temperature
-- set the mode, such as heat, cool or auto
-- set one extra option, such as the fan speed
-
-The button that matches the device's current state lights up. When no preset matches, the widget shows what the device is doing right now.
-
-**Setting it up**
-1. Add the widget to a dashboard and pick your thermostat or aircon.
-2. Configure each button. The temperature, mode and extra lists show only what your device supports. Pick the device first, then reopen these settings.
+Three one-tap presets for a thermostat, heat pump or air conditioner, such as *Off*, *Heat 21°* and *Heat 24° · Fan level 5*. Each sets on/off, the target temperature, the mode and one extra option such as the fan speed. The matching preset lights up; otherwise the widget shows the device's current state.
 
 ## Device Quick Actions
 <img src="docs/screenshots/quickactions.png" alt="Device Quick Actions on a Homey dashboard" width="358">
 
-Half-height device tiles for as many devices as you like. Tap anywhere on a tile to run the device's quick action, the same action as the round button on Homey's own device tile:
-- turn a light, plug or other device on or off
-- lock or unlock a door
-- play or pause a speaker
-- press a button, such as a scene or alarm button
+Half-height tiles that run a device's quick action with one tap, the same as the round button on Homey's own tile: on/off, lock/unlock, play/pause or a button press. A tile is highlighted while the device is on, locked or playing.
 
-The whole tile shows the state: it's highlighted while the device is on, locked or playing. The tiles use the same icons as Homey's own tiles, including icons you picked for a device.
-
-**Setting it up**
-1. Add the widget to a dashboard and pick the devices. They're shown in the order you pick them.
-2. Optionally pick the active tile style: **Blue tint** (the default) or **Lighter tile**.
-
-The quick action is the one Homey uses for the device, including one you changed in the device's settings. Devices without a quick action, such as sensors, are shown dimmed. The tiles don't react while the dashboard is in edit mode.
+**Settings:** devices, active style (blue tint or lighter tile).
 
 ## Sensor Alarms
 <img src="docs/screenshots/sensoralarms.png" alt="Sensor Alarms on a Homey dashboard" width="358">
 
-Tiles for as many sensors as you like, two per row, in the style of Homey's own temperature tiles. Each tile shows the device icon, its name and its alarm:
-- *No alarm* when everything is fine
-- the alarm that's on, such as *Smoke alarm*, *Water alarm* or *CO₂ Alarm*
-- the number of alarms when several are on
+Tiles in the style of Homey's temperature tiles that show *No alarm*, the alarm that's on (such as *Smoke alarm*) or the number of alarms, and turn red while one is on. Every alarm counts, including those added by apps, such as radon.
 
-The tile turns red while an alarm is on, and updates the moment it goes on or off. Every alarm a device has counts, including those added by apps, such as an air quality monitor's radon or VOC alarm.
-
-**Setting it up**
-1. Add the widget to a dashboard and pick the sensors. They're shown in the order you pick them.
-2. Optionally switch on **Count motion and contact as alarms**. It's off by default, so an open door, detected motion or a camera spotting a person doesn't turn a tile red.
+**Settings:** sensors, count motion and contact as alarms (off by default).
 
 ## Weather Forecast
 <img src="docs/screenshots/weather.png" alt="Weather Forecast on a Homey dashboard" width="358">
 
-The next 36 hours for your Homey's location, hour by hour, from [MET Norway](https://www.met.no/en), the forecast behind [yr.no](https://www.yr.no). Each hour shows:
-- the weather icon
-- the temperature, blue when it's cold, plain around 12° and red when it's hot
-- the precipitation in mm, when there is any
-- the wind speed in m/s, with an arrow showing which way it blows
+The next 36 hours for your Homey's location from [MET Norway](https://www.met.no/en) ([yr.no](https://www.yr.no)): icon, temperature, precipitation and wind for each hour, with today's and tomorrow's high and low underneath. Swipe sideways to see further ahead.
 
-Swipe the hours sideways to see further ahead. A thin line marks each new day. Underneath, the highest and lowest temperature for the rest of today and for tomorrow. On a phone, compact columns show 9 hours at a time, or 18 with two rows; wider widgets show more.
+**Settings:** compact or detailed columns, one or two rows, every 1, 2 or 3 hours, colour theme.
 
-**Settings**
-| Setting | Options |
-| --- | --- |
-| Hour columns | **Compact** (the default: more hours, with the units shown once) or **Detailed** (larger, with units on every value) |
-| Rows | **One row**, or **Two rows**, which swipe a page at a time |
-| Interval | **Every hour**, or every **2** or **3 hours**. A combined column shows the average temperature and wind and the total precipitation for those hours, with the icon of the wettest one. |
-| Colours | **Standard** (the default), **Vivid** (every temperature in colour, blue → gold → red, and the current hour highlighted), **Tinted by temperature** (each hour's column shaded by its temperature), **Tinted by sky** (each column shaded by its weather: gold sun, slate clouds, blue rain, indigo night …) or **Weather background** (the whole widget on a gradient for the weather right now, with white text) |
-
-The forecast needs no other setup: the widget uses the location set for your Homey (Homey app → Settings → Location).
-
-Weather data from MET Norway is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The weather icons are [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
+Weather data from MET Norway, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Icons: [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
 
 ## Insights Heatmap
 <img src="docs/screenshots/heatmap.png" alt="Insights Heatmap on a Homey dashboard" width="358">
 
-A week of one device value as a grid: a row per weekday and a column per 1, 2 or 3 hours, shaded from the lowest to the highest value shown. Under it, a scale from the lowest to the highest value with a marker at the current one. Hours with nothing reported are hatched, such as the rest of today.
+A week of one Insights value as a grid of weekdays and hours, with a scale and a marker at the current value. Works with numbers (light, temperature, power …) and on/off values (motion, contact …), shown as the share of each hour they were on. On/off history fills in over the first days, as Insights keeps only their last 50 changes.
 
-It works with any number Homey logs in Insights, such as light, temperature, power or CO₂, and with on/off values such as motion, a door contact or a light being on. For those, each cell is the share of the hour they were on, and the scale starts at 0 %.
-
-**Settings**
-| Setting | Options |
-| --- | --- |
-| Device | Any device with a value logged in Insights |
-| Value | Any of the device's numbers or on/off values in Insights. Pick the device first, then reopen the settings. |
-| Days | **This week (Mon–Sun)** (the default), or the last **3**, **7**, **10** or **14 days**. With more than 7 days, each row also shows the date. |
-| Hours per column | **1**, **2** (the default) or **3** |
-| Show scale | On (the default) / off |
-| Show legend | On (the default) / off |
-
-Numbers come from Insights and show the whole period right away. On/off values fill in over the first days: Homey's Insights keep only their last 50 changes, so the app records them itself from when the widget is first shown, for up to 14 days.
+**Settings:** device and value, this week or the last 3–14 days, 1–3 hours per column, show scale, show legend.
 
 ## Cameras
 <img src="docs/screenshots/cameras.png" alt="Cameras on a Homey dashboard" width="358">
 
-Your cameras in one grid of snapshots, two per row, each with its name. With an odd number of cameras, the last one spans the full width. The snapshots refresh every few seconds while the dashboard is open, and pause while it's in the background. A snapshot that stops refreshing shows the time it was taken.
+Your cameras in a grid of snapshots that refresh every few seconds. Tap one to watch it live through Homey's own live view; tap again to go back.
 
-Tap a camera to watch it live: it fills the whole widget, with a red **Live** label. Tap it again to go back to the snapshot. Live view ends on its own after 5 minutes, or when the camera stops sending video. It uses Homey's own live view, so it works for cameras that Homey can play live itself.
-
-**Settings**
-| Setting | Options |
-| --- | --- |
-| Cameras | Any cameras and doorbells, shown in the order you pick them |
-| Refresh snapshots every | **5 s**, **10 s** (the default), **30 s** or **1 min** |
+**Settings:** cameras, refresh interval (5 s to 1 min).
 
 ## Device Values
 <img src="docs/screenshots/values.png" alt="Device Values on a Homey dashboard" width="358">
 
-Half-height tiles in the style of Device Quick Actions, three or two per row, each showing one value of a device: its icon and the value on top, the device name below. Values update the moment they change. An on/off value is highlighted in blue while it's on.
+Half-height tiles that each show one device value, such as a temperature, a battery level or on/off, updated live. Percentages can fill their tile in red, yellow or green.
 
-**Setting it up**
-1. Add the widget to a dashboard.
-2. Optionally pick **Columns**: **3** (the default) or **2**, for more room for long values.
-3. Optionally switch on **Fill percentages by level**: a percentage (battery, humidity, dim level …) fills its tile from the left, as far as the value goes, in red below 10 %, yellow below 20 % and green otherwise. **Red below** and **Yellow below** change those limits.
-4. Pick up to six values (**Tile 1** to **Tile 6**). Each list has every device's values as *Device · Value*, e.g. *Living room · Temperature*; type to search by device, zone or value. The same device can fill several tiles.
-
-The tiles only show values; tapping them does nothing.
+**Settings:** up to six values, 3 or 2 columns, fill percentages by level with adjustable limits.
 
 ## Light Controls
 <img src="docs/screenshots/lights.png" alt="Light Controls on a Homey dashboard" width="358">
 
-Compact light tiles, two per row, so six lights fit in the space of three of Homey's own light cards. Each tile has the light's icon, its name and a brightness bar. A lit tile takes on the light's colour, like Homey's own card.
-- **Tap a tile** to turn the light on or off.
-- **Drag the bar** to set the brightness, or tap the bar where you want it. All the way to the left turns the light off.
-- **Tap the thermometer** (lights with a colour temperature) to switch the bar to colour temperature, from cool to warm. It switches back to brightness after a few seconds.
+Compact light tiles, six in the space of three of Homey's light cards. Tap a tile to turn the light on or off, drag or tap the bar to set the brightness, and tap the thermometer to set the colour temperature. On Android, tap the bar instead of dragging.
 
-**Setting it up**
-1. Add the widget to a dashboard.
-2. Pick the lights. Any device that can be dimmed is listed, and the tiles follow the order you pick them in.
-
-On Android, Homey's dashboard takes over a drag on the bar, so there you set the brightness by tapping the bar.
+**Settings:** lights.
 
 ## Sparklines
 <img src="docs/screenshots/sparklines.png" alt="Sparklines on a Homey dashboard" width="358">
 
-Device Values' tiles with a small chart of each value's recent history: the icon and the current value on top, the chart with its highest (↑) and lowest (↓) value at the right, the device name below. The chart comes from Homey's Insights and keeps moving with the live value.
+Device Values' tiles with a small chart of each value from Insights, with its highest and lowest, following the live value.
 
-**Setting it up**
-1. Add the widget to a dashboard.
-2. Optionally pick a **Time span**: **1 hour**, **6 hours**, **24 hours** (the default) or **7 days**.
-3. Optionally pick **Columns**: **2** (the default) or **1**, for wider charts.
-4. Pick up to six values (**Tile 1** to **Tile 6**). Each list has every number Homey logs in Insights, as *Device · Value*, e.g. *Living room · Temperature*; type to search by device, zone or value.
-
-The tiles only show values; tapping them does nothing.
+**Settings:** up to six values, time span (1 h, 6 h, 24 h or 7 days), 2 or 1 columns.
 
 ## Languages
-English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic. The widgets follow Homey's language.
+English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic, following Homey's language.
 
 ## Installation
-Widgetkeeper isn't in the Homey App Store yet. For now you can install it from source with the Homey CLI. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Widgetkeeper isn't in the Homey App Store yet. Install it from source with the Homey CLI; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Troubleshooting
-- **"Select a power meter" / "Select a thermostat" / "Select devices"**: open the widget's settings and pick a device.
-- **"Set Homey's location to see the forecast"**: set your Homey's location in the Homey app, under **Settings → Location**.
-- **"No electricity prices available"**: switch on dynamic prices in Homey Energy.
-- **A thermostat preset or quick action doesn't apply**: open the Homey app, go to **Apps → Widgetkeeper → Configure**, and pick the device. The page shows recent log lines and your device's capabilities. Include that report when you [open an issue](https://github.com/thomassidor/widgetkeeper/issues).
+If a widget doesn't work as expected, open **Apps → Widgetkeeper → Configure** in the Homey app and pick the device. Include that report when you [open an issue](https://github.com/thomassidor/widgetkeeper/issues).
 
 ## Changelog
-See [CHANGELOG.md](CHANGELOG.md) for what's new in each version.
+See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 [MIT](LICENSE)
