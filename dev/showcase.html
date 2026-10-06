@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html class="homey-dark-mode">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Widget showcase</title>
+  <!--
+    Showcase dashboards: the real widgets with the made-up home of showcase-data.js, in three columns on Homey's dark
+    dashboard, on a drawn 16:10 tablet in landscape (a 1280 × 800 screen). `?d=home|energy|security` picks the dashboard
+    (default home). scripts/render-showcase.mjs (`npm run showcase [-- <id>…]`) renders them to docs/showcase/<id>.png
+    on a transparent background; the README shows home.png.
+    The clock is fixed (Date is replaced below), so every render is the same.
+    Device icons come from Homey's icon library, downloaded by the render scripts to temp/screenshot-icons.js.
+  -->
+  <script>
+    // A fixed clock: Tuesday 6 October 2026, 18:40 local time, still ticking so the widgets' timers behave.
+    (() => {
+      const Real = Date;
+      const offset = new Real(2026, 9, 6, 18, 40, 0).getTime() - Real.now();
+      class FixedDate extends Real {
+        constructor(...args) { if (args.length) super(...args); else super(Real.now() + offset); }
+        static now() { return Real.now() + offset; }
+      }
+      window.Date = FixedDate;
+    })();
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/electricity/public/widget.css">
+  <link rel="stylesheet" href="../widgets/thermostat/public/widget.css">
+  <link rel="stylesheet" href="../widgets/quickactions/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sensoralarms/public/widget.css">
+  <link rel="stylesheet" href="../widgets/weather/public/widget.css">
+  <link rel="stylesheet" href="../widgets/heatmap/public/widget.css">
+  <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
+  <link rel="stylesheet" href="../widgets/values/public/widget.css">
+  <link rel="stylesheet" href="../widgets/lights/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sparklines/public/widget.css">
+  <script src="../widgets/electricity/public/widget.js"></script>
+  <script src="../widgets/thermostat/public/widget.js"></script>
+  <script src="../widgets/quickactions/public/widget.js"></script>
+  <script src="../widgets/sensoralarms/public/widget.js"></script>
+  <script src="../widgets/weather/public/widget.js"></script>
+  <script src="../widgets/heatmap/public/widget.js"></script>
+  <script src="../widgets/cameras/public/widget.js"></script>
+  <script src="../widgets/values/public/widget.js"></script>
+  <script src="../widgets/lights/public/widget.js"></script>
+  <script src="../widgets/sparklines/public/widget.js"></script>
+  <script src="mock-cameras.js"></script>
+  <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
+  <script src="showcase-data.js"></script>
+  <style>
+    /* Transparent around the tablet: the render script screenshots with a transparent default background. */
+    html { background: transparent !important; }
+    body { margin: 0; padding: 20px 36px 56px; display: inline-block; background: transparent !important; font-family: Roboto, sans-serif; }
+
+    /* The tablet: a graphite bezel with a lighter metal rim, the front camera in the top bezel (landscape). */
+    .tablet {
+      position: relative; padding: 28px; border-radius: 46px;
+      background: linear-gradient(160deg, #2C2E35, #121317 55%, #1B1C21);
+      box-shadow:
+        0 0 0 2px #4A4C55,
+        0 0 0 3px #1A1B20,
+        inset 0 1px 1px rgba(255, 255, 255, 0.12),
+        0 28px 48px -12px rgba(0, 0, 0, 0.5),
+        0 8px 16px rgba(0, 0, 0, 0.25);
+    }
+    .camera {
+      position: absolute; top: 11px; left: 50%; width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #3C4A66, #0B0C10 70%);
+      box-shadow: 0 0 0 1.5px #1F2026;
+    }
+    /* Side buttons: power on the top edge, volume on the right. */
+    .button { position: absolute; background: #3A3C44; border-radius: 2px; }
+    .button.power { top: -5px; right: 140px; width: 60px; height: 3px; }
+    .button.vol1 { right: -5px; top: 120px; width: 3px; height: 48px; }
+    .button.vol2 { right: -5px; top: 176px; width: 3px; height: 48px; }
+
+    /* The screen: Homey's dark dashboard, 1280 × 800 (16:10). Anything taller is cut off, like a dashboard you'd scroll. */
+    .screen {
+      position: relative; overflow: hidden; width: 1280px; height: 800px; box-sizing: border-box;
+      border-radius: 18px; background: #111217; padding: 0 32px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
+    }
+    /* A faint reflection across the glass. */
+    .screen::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(115deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.012) 36%, transparent 36.2%);
+    }
+    .status { display: flex; justify-content: space-between; align-items: center; height: 30px; color: #FFFFFF; font-size: 13px; font-weight: 500; }
+    .status .left, .status .icons { display: flex; gap: 8px; align-items: center; }
+    .status svg { display: block; }
+    .title { margin: 6px 0 16px; color: #FFFFFF; font-size: 32px; line-height: 40px; font-weight: 700; }
+
+    .columns { display: flex; justify-content: space-between; align-items: flex-start; }
+    .column { width: 384px; display: flex; flex-direction: column; gap: 16px; }
+    /* A non-transparent widget's frame (default widget background, with Homey's widget padding), as in screenshots.html. */
+    .card { background: #1F2029; border-radius: 20px; padding: 16px; box-sizing: border-box; }
+    .card.tw-frame, .card.wf-frame, .card.hm-frame { background: #181920; }
+  </style>
+</head>
+<body>
+  <div class="tablet">
+    <span class="camera"></span>
+    <span class="button power"></span><span class="button vol1"></span><span class="button vol2"></span>
+    <div class="screen">
+      <div class="status">
+        <span class="left"><span id="clock"></span><span id="date"></span></span>
+        <span class="icons">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="#FFFFFF"><path d="M8 2.2c2.3 0 4.4.9 6 2.4l1.3-1.4A10.6 10.6 0 0 0 8 .3 10.6 10.6 0 0 0 .7 3.2L2 4.6a8.6 8.6 0 0 1 6-2.4Zm0 3.6c1.3 0 2.5.5 3.4 1.3l1.3-1.4A6.8 6.8 0 0 0 8 3.9a6.8 6.8 0 0 0-4.7 1.8l1.3 1.4C5.5 6.3 6.7 5.8 8 5.8Zm0 3.4a1.4 1.4 0 1 0 0 2.8 1.4 1.4 0 0 0 0-2.8Z"/></svg>
+          <span>84%</span>
+          <svg width="26" height="12" viewBox="0 0 26 12"><rect x="0.5" y="0.5" width="22" height="11" rx="3" fill="none" stroke="#FFFFFF" stroke-opacity="0.45"/><rect x="2" y="2" width="16" height="8" rx="1.5" fill="#FFFFFF"/><path d="M24 4v4c.8-.3 1.3-1 1.3-2s-.5-1.7-1.3-2Z" fill="#FFFFFF" fill-opacity="0.45"/></svg>
+        </span>
+      </div>
+      <div class="title" id="title"></div>
+      <div class="columns" id="columns"></div>
+    </div>
+  </div>
+
+  <script>
+    const LOCALE = 'en-GB';
+    // One mount per widget type: the element, then the widget's data from showcase-data.js.
+    const MOUNT = {
+      electricity: (el, w) => { const x = createElectricityWidget(el, { locale: LOCALE }); x.setSettings(w.settings || {}); x.setData(w.data); },
+      thermostat: (el, w) => { const x = createThermostatWidget(el, { locale: LOCALE }); x.setButtons(thermostatPresetsFromSettings(w.presets)); x.setState(w.state); },
+      quickactions: (el, w) => createQuickActionsWidget(el, w.opts || {}).setState(w.devices),
+      sensoralarms: (el, w) => createSensorAlarmsWidget(el, w.opts || {}).setState(w.devices),
+      values: (el, w) => createValuesWidget(el, w.opts || {}).setState(w.slots),
+      sparklines: (el, w) => createSparklinesWidget(el, w.opts || {}).setState(w.slots),
+      lights: (el, w) => createLightsWidget(el, w.opts || {}).setState(w.devices),
+      cameras: (el, w) => { const x = createCamerasWidget(el, w.opts || {}); x.setState(w.cameras); x.refresh(); },
+      heatmap: (el, w) => createHeatmapWidget(el, { locale: LOCALE, ...w.opts }).setData(w.data),
+      weather: (el, w) => createWeatherWidget(el, { locale: LOCALE, iconBase: '../widgets/weather/public/icons/', ...w.opts })
+        .setForecast({ hours: w.hours, language: 'en' }),
+    };
+    // The widgets drawn on Homey's default widget background; the rest are transparent tiles.
+    const FRAME = { electricity: 'card', thermostat: 'card tw-frame', weather: 'card wf-frame', heatmap: 'card hm-frame' };
+
+    const id = new URLSearchParams(location.search).get('d') || 'home';
+    const board = SHOWCASE[id];
+    document.getElementById('title').textContent = board.title;
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('date').textContent = now.toLocaleDateString(LOCALE, { weekday: 'short', day: 'numeric', month: 'short' });
+    for (const column of board.columns) {
+      const col = document.createElement('div');
+      col.className = 'column';
+      for (const w of column) {
+        const el = document.createElement('div');
+        if (FRAME[w.type]) {
+          const card = document.createElement('div');
+          card.className = FRAME[w.type];
+          card.append(el);
+          col.append(card);
+        } else col.append(el);
+        MOUNT[w.type](el, w);
+      }
+      document.getElementById('columns').append(col);
+    }
+
+    // The page's size and each column's height (to spot one that runs off the screen), for the render script.
+    document.fonts.ready.then(() => setTimeout(() => {
+      const r = document.body.getBoundingClientRect();
+      document.body.dataset.width = String(Math.ceil(r.width));
+      document.body.dataset.height = String(Math.ceil(r.height));
+      const bottom = document.querySelector('.screen').getBoundingClientRect().bottom;
+      document.body.dataset.overflow = [...document.querySelectorAll('.column')]
+        .map(c => Math.round(c.getBoundingClientRect().bottom - bottom)).join(',');
+    }, 300));
+  </script>
+</body>
+</html>

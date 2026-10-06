@@ -2,6 +2,8 @@
 
 Extra dashboard widgets for Homey Pro, made to sit naturally next to Homey's own with the same look and feel.
 
+<img src="docs/showcase/home.png" alt="Widgetkeeper widgets on a Homey dashboard on a tablet" width="100%">
+
 <p><a href="#electricity-overview"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/electricity-dark.png"><img src="docs/previews/electricity-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#electricity-overview"><b>Electricity Overview</b></a><br>
 Live power use, hourly electricity prices and usage history on one card<br clear="left"></p>

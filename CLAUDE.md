@@ -15,6 +15,12 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
   - It also writes the README's copies, `docs/previews/<widget>-<light|dark>.png`: cropped to the card with `sharp` (a dev dependency), 480 px wide, the bottom padded to 420 px.
   - The README overview is no table: in a table GitHub's `max-width: 100%` lets the image column collapse on a phone, so the previews were nearly invisible. Each widget is one HTML `<p>`: a 120 px preview floated left (`align="left"`, a `<picture>` that follows the GitHub theme), the bold linked name, the description and `<br clear="left">`. The equal heights keep the text beside the image at phone width (358 px of content).
 - `npm run screenshots [-- thermostat …]`: renders the README screenshots (`docs/screenshots/*.png`) from `dev/screenshots.html`: the real widgets with mock data in Homey's dark mode, 358 px (a phone's widget width) at 3x, with no widget title and a transparent background so they sit flush with the README text. It downloads the Homey library icons the mock devices use into `temp/screenshot-icons.js` (not committed).
+  - The widgets and their mock data are in `dev/mock-dashboard.js`.
+- `npm run showcase [-- home energy security]`: renders the showcase dashboards (`docs/showcase/<id>.png`; the README's top image is `home.png`) from `dev/showcase.html?d=<id>`: three columns of the real widgets on Homey's dark dashboard, on a drawn 16:10 tablet (a 1280 × 800 screen), at 2x on a transparent background.
+  - The data is a made-up house, "Solbakken", on Tuesday 6 October 2026 at 18:40 (`dev/showcase-data.js`); the page replaces `Date` to fix the clock, so every render is the same. The electricity widget uses `smooth`.
+  - A dashboard is `SHOWCASE[id] = { title, columns: [[{ type, … }]] }`; `MOUNT` in `showcase.html` creates each widget type. A new dashboard is a new entry.
+  - The script warns when a column runs off the screen (it's cut off, like a dashboard you'd scroll).
+  - `scripts/headless.mjs` (headless Edge, the icon download) is shared with the screenshots script.
 - `dev/preview.html`: the widget with mock data in a plain browser. Its mock snapshot is in `dev/mock-electricity.js`.
   - Serve the repo root (`python -m http.server 8765`) and open `/dev/preview.html`.
   - `?snap=/temp/real-snapshot.json` loads a real captured snapshot.

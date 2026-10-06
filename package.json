@@ -17,6 +17,7 @@
     "app-images": "node scripts/render-app-images.mjs",
     "previews": "node scripts/render-previews.mjs",
     "screenshots": "node scripts/render-screenshots.mjs",
+    "showcase": "node scripts/render-showcase.mjs",
     "diagnostics": "node scripts/diagnostics.mjs",
     "validate": "homey app validate --level debug",
     "start": "homey app run",
