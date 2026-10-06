@@ -12,5 +12,6 @@ Widget inclusi:
 - Telecamere: da due a sei telecamere in un'unica griglia di istantanee aggiornate ogni pochi secondi. Toccane una per vederla dal vivo.
 - Valori dispositivi: riquadri compatti che mostrano ciascuno un valore, come una temperatura, un livello della batteria o acceso/spento.
 - Controllo luci: riquadri compatti con luminosità e temperatura colore, sei luci nello spazio di tre.
+- Minigrafici: riquadri compatti con un piccolo grafico di un valore nell'ultima ora, nelle ultime 6 ore, nel giorno o nella settimana, con minimo e massimo.
 
 Dati meteo di MET Norway, con licenza CC BY 4.0.

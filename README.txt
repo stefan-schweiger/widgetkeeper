@@ -12,5 +12,6 @@ Included widgets:
 - Cameras: two to six cameras in one grid of snapshots that refresh every few seconds. Tap one to watch it live.
 - Device Values: compact tiles that each show one value, like a temperature, a battery level or on/off.
 - Light Controls: compact light tiles with brightness and colour temperature, six lights in the space of three.
+- Sparklines: compact tiles with a small chart of a value over the last hour, 6 hours, day or week, with its lowest and highest.
 
 Weather data from MET Norway, licensed under CC BY 4.0.

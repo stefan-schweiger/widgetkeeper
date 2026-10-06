@@ -12,5 +12,6 @@ Dołączone widżety:
 - Kamery: od dwóch do sześciu kamer w jednej siatce zdjęć odświeżanych co kilka sekund. Dotknij kamery, aby oglądać ją na żywo.
 - Wartości urządzeń: kompaktowe kafelki, z których każdy pokazuje jedną wartość, np. temperaturę, poziom baterii lub wł./wył.
 - Sterowanie światłem: kompaktowe kafelki z jasnością i temperaturą barwową, sześć świateł w miejscu trzech.
+- Miniwykresy: kompaktowe kafelki z małym wykresem wartości z ostatniej godziny, 6 godzin, doby lub tygodnia, z minimum i maksimum.
 
 Dane pogodowe: MET Norway, licencja CC BY 4.0.

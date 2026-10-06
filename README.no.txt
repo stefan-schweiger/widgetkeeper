@@ -12,5 +12,6 @@ Inkluderte widgeter:
 - Kameraer: to til seks kameraer i ett rutenett av bilder som oppdateres med noen sekunders mellomrom. Trykk på ett for å se det direkte.
 - Enhetsverdier: kompakte fliser som viser én verdi hver, som en temperatur, et batterinivå eller av/på.
 - Lysstyring: kompakte lysfliser med lysstyrke og fargetemperatur, seks lys på plassen til tre.
+- Minigrafer: kompakte fliser med en liten graf over en verdi den siste timen, de siste 6 timene, døgnet eller uken, med laveste og høyeste verdi.
 
 Værdata fra MET Norway, lisensiert under CC BY 4.0.
