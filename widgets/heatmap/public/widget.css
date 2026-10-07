@@ -25,6 +25,13 @@
   container: hm / inline-size;
 }
 
+/* The `color` setting (data-color; blue is the default): Device Values' Flow colours. Yellow and purple have no Homey token. */
+.hm[data-color="red"] { --hm-accent: var(--homey-color-red, #F25F5C); }
+.hm[data-color="orange"] { --hm-accent: var(--homey-color-orange, #F07A1F); }
+.hm[data-color="yellow"] { --hm-accent: #F5C518; }
+.hm[data-color="green"] { --hm-accent: var(--homey-color-green, #71D51B); }
+.hm[data-color="purple"] { --hm-accent: #9033FC; }
+
 /* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
 html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
 html, body { margin: 0; }

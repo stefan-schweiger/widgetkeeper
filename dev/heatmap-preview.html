@@ -44,7 +44,12 @@
       ['358 px · dark · lux · last 14 days', 358, 'dark', 'lux', '14', 2],
       ['358 px · dark · not set up', 358, 'dark', null, 'week', 2],
     ];
-    for (const [label, width, theme, kind, period, step, extras = true] of cases) {
+    // The colour setting: each colour dark and light.
+    for (const color of ['red', 'orange', 'yellow', 'green', 'purple']) {
+      cases.push([`358 px · dark · ${color}`, 358, 'dark', 'lux', 'week', 2, true, color]);
+      cases.push([`358 px · light · ${color}`, 358, 'light', 'motion', 'rolling', 2, true, color]);
+    }
+    for (const [label, width, theme, kind, period, step, extras = true, color] of cases) {
       const col = document.createElement('div');
       col.className = 'col';
       col.innerHTML = `<span>${label}</span>`;
@@ -55,7 +60,7 @@
       frame.appendChild(root);
       col.appendChild(frame);
       document.body.appendChild(col);
-      const w = createHeatmapWidget(root, { t: devT, period, step, showScale: extras, showLegend: extras });
+      const w = createHeatmapWidget(root, { t: devT, period, step, color, showScale: extras, showLegend: extras });
       if (!kind) w.setMessage(w.t('selectDevice'));
       // The app sends 14 days when more than 7 are shown.
       else w.setData(snap || (kind === 'lux' ? mockHeatmapLux(today, hour, heatmapPeriodDays(period) > 7 ? 14 : 7) : mockHeatmapMotion(today, hour)));

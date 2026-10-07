@@ -142,6 +142,12 @@ describe('settings', () => {
     expect(hidden.querySelector('.hm-legend')).toBeNull();
     expect(hidden.querySelectorAll('.hm-cells')).toHaveLength(7);
   });
+
+  it('sets the colour; blue and unknown colours are the default', () => {
+    expect(widget(history(() => 1), { color: 'purple' }).root.dataset.color).toBe('purple');
+    expect(widget(history(() => 1), { color: 'blue' }).root.dataset.color).toBeUndefined();
+    expect(widget(history(() => 1), { color: 'pink' }).root.dataset.color).toBeUndefined();
+  });
 });
 
 describe('messages', () => {

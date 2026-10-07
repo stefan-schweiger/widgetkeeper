@@ -89,10 +89,13 @@
     return Math.min(LEVELS - 1, Math.floor(((v - min) / (max - min)) * LEVELS));
   }
 
+  /** The `color` setting's values. Blue (Homey's) is the default and sets no `data-color`. */
+  const HEATMAP_COLORS = ['blue', 'red', 'orange', 'yellow', 'green', 'purple'];
+
   /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, locale?: string,
-   *   period?: string, step?: number, showScale?: boolean, showLegend?: boolean,
+   *   period?: string, step?: number, color?: string, showScale?: boolean, showLegend?: boolean,
    *   onHeight?: (h: number) => void }} opts
    */
   function createHeatmapWidget(root, opts = {}) {
@@ -106,6 +109,7 @@
     const cols = 24 / step;
     const showScale = opts.showScale !== false;
     const showLegend = opts.showLegend !== false;
+    const color = HEATMAP_COLORS.includes(opts.color) ? opts.color : 'blue';
 
     let data = null;
     let messageText = null;
@@ -115,6 +119,7 @@
     root.classList.add('hm');
     root.style.setProperty('--hm-cols', String(cols));
     root.classList.toggle('hm-dense', step === 1);
+    if (color !== 'blue') root.dataset.color = color;
     const header = el('div', { class: 'hm-header' }, root);
     const iconBox = el('div', { class: 'hm-icon' }, header);
     const titles = el('div', { class: 'hm-titles' }, header);

@@ -58,6 +58,7 @@
         t: (key, tokens) => Homey.__(key, tokens),
         period: settings.period,
         step: Number(settings.step) || 2,
+        color: settings.color,
         showScale: settings.showScale !== false,
         showLegend: settings.showLegend !== false,
         // The widget reports its own height; Homey needs the body's, which adds the widget padding.
