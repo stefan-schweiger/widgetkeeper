@@ -82,6 +82,8 @@ export type FakeApiOptions = {
   logEntries?: (args: { uri: string, id: string, resolution: string }) => unknown,
   prices?: (args: { date: string }) => unknown,
   currency?: unknown,
+  priceType?: unknown, // Homey's electricity price type: 'dynamic' (the default) or 'fixed'
+  fixedPrice?: unknown, // the `electricityPriceFixed` option
 };
 
 export function fakeApi(opts: FakeApiOptions = {}) {
@@ -107,6 +109,8 @@ export function fakeApi(opts: FakeApiOptions = {}) {
     energy: {
       fetchDynamicElectricityPrices: vi.fn(async (args: { date: string }) => opts.prices?.(args) ?? {}),
       getCurrency: vi.fn(async () => opts.currency ?? 'DKK'),
+      getElectricityPriceType: vi.fn(async () => opts.priceType ?? 'dynamic'),
+      getOptionElectricityPriceFixed: vi.fn(async () => opts.fixedPrice ?? { value: null }),
     },
   };
 }

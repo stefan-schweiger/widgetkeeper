@@ -1,7 +1,9 @@
 {
   "electricity": {
     "usingNow": "Forbruger nu",
+    "exporting": "Eksporterer nu",
     "minutesRemaining": "__minutes__ min tilbage",
+    "fixedPrice": "Fast pris",
     "livePower": "Live-effekt",
     "price": "Pris",
     "usage": "Forbrug",

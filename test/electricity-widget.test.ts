@@ -153,6 +153,95 @@ describe('usage', () => {
   });
 });
 
+describe('fixed price', () => {
+  const usage = Array.from({ length: 24 * 12 }, (_, i) => ({ t: HOUR_START - 24 * HOUR + i * 5 * MIN, w: 200 + (i % 7) * 50 }));
+  const fixed = (over: Record<string, any> = {}) => snapshot({ fixedPrice: 2, usage, ...over });
+  const charts = (root: HTMLElement) => [...root.querySelectorAll<HTMLElement>('.ew-chart')];
+
+  it('shows the price in the header, without the price chart or the lowest-price footer', () => {
+    const { q, root, shown, footer, messages } = widget(fixed(), { nextLow: 'both' });
+    expect(q('.ew-hval.price')!.textContent).toBe('2,00 kr./kWh');
+    expect([...q('.ew-header')!.querySelectorAll('.ew-hsub')].map(e => e.textContent)).toEqual(['Using now', 'Fixed price']);
+    const [live, usageChart, price] = charts(root);
+    expect([shown(live), shown(usageChart), shown(price)]).toEqual([true, true, false]); // usage on its own chart
+    expect(footer()).toBeNull();
+    expect(messages()).toEqual([]);
+    expect(root.innerHTML).not.toContain('NaN');
+  });
+
+  it('keeps the header price while the usage chart is scrubbed', () => {
+    const { q, root } = widget(fixed());
+    const svg = charts(root)[1].querySelector('svg')!;
+    svg.getBoundingClientRect = () => ({ left: 0, top: 0 }) as DOMRect;
+    svg.dispatchEvent(new win.PointerEvent('pointermove', { clientX: 100, pointerType: 'mouse' }));
+    expect([...q('.ew-header')!.querySelectorAll('.ew-hsub')].map(e => e.textContent)).toEqual(['17:00', 'Fixed price']);
+  });
+
+  it('shows only the live chart with usage off', () => {
+    const { root, shown } = widget(fixed(), { showUsage: false });
+    expect(charts(root).map(shown)).toEqual([true, false, false]);
+  });
+});
+
+describe('negative power (solar export)', () => {
+  // Midday export: -2 kW for 6 h of the last 24, else 200–500 W.
+  const usage = Array.from({ length: 24 * 12 }, (_, i) => ({
+    t: HOUR_START - 24 * HOUR + i * 5 * MIN, w: i >= 140 && i < 212 ? -2000 : 200 + (i % 7) * 50,
+  }));
+  const live = [{ t: NOW - 5 * MIN, w: 400 }, { t: NOW - 10e3, w: -1500 }];
+  const labels = (svg: Element) => [...svg.querySelectorAll('text')].map(e => e.textContent);
+  const ys = (d: string) => [...d.matchAll(/[ML][\d.-]+ ([\d.-]+)/g)].map(m => Number(m[1]));
+
+  it('says the header is exporting, with a minus sign', () => {
+    const { q } = widget(snapshot({ live }));
+    expect(q('.ew-hval.live')!.textContent).toBe('−1.500W');
+    expect(q('.ew-hval.live')!.classList.contains('export')).toBe(true);
+    expect(q('.ew-hsub')!.textContent).toBe('Exporting now');
+  });
+
+  it('extends the live scale below zero and draws the export part yellow', () => {
+    const { root } = widget(snapshot({ live }));
+    const svg = root.querySelector('svg')!;
+    expect(labels(svg)).toContain('0');
+    expect(labels(svg)).toContain('−2k'); // whole 1 kW steps below -1.5 kW
+    const lines = svg.querySelectorAll('.live-line');
+    expect(lines.length).toBe(2);
+    expect(lines[1].classList.contains('export')).toBe(true);
+    expect(lines[1].getAttribute('clip-path')).toMatch(/^url\(#/);
+    // Everything inside the plot (chip row 38 → base 121).
+    for (const y of ys(lines[0].getAttribute('d')!)) expect(y).toBeLessThanOrEqual(121);
+    expect(svg.querySelector('.dot-core.export')).not.toBeNull();
+    expect(root.innerHTML).not.toContain('NaN');
+  });
+
+  it('keeps negative usage inside the price chart, sharing the zero line', () => {
+    const { root } = widget(snapshot({ usage }));
+    const svg = root.querySelectorAll('svg')[2];
+    const line = svg.querySelector('.usage-line')!;
+    for (const y of ys(line.getAttribute('d')!)) expect(y).toBeLessThanOrEqual(38 + 122 + 2);
+    expect(svg.querySelector('.usage-line.export')).not.toBeNull();
+    const text = [...svg.querySelectorAll('text')];
+    const zeroPrice = text.find(e => e.textContent === '0,00')!, zeroUsage = text.find(e => e.textContent === '0')!;
+    expect(zeroUsage.getAttribute('y')).toBe(zeroPrice.getAttribute('y'));
+    expect(labels(svg).some(l => l!.startsWith('−'))).toBe(true);
+    expect(root.innerHTML).not.toContain('NaN');
+  });
+
+  it('extends the separate usage chart below zero', () => {
+    const { root } = widget(snapshot({ usage }), { separateUsage: true });
+    const svg = root.querySelectorAll('svg')[1];
+    expect(labels(svg)).toContain('−2k');
+    expect(svg.querySelector('.usage-line.export')).not.toBeNull();
+    expect(root.innerHTML).not.toContain('NaN');
+  });
+
+  it('adds nothing when no value is negative', () => {
+    const { root } = widget(snapshot({ usage: usage.map(u => ({ ...u, w: Math.abs(u.w) })) }), { separateUsage: true });
+    expect(root.querySelector('.export, clipPath')).toBeNull();
+    expect(root.querySelectorAll('.live-line').length).toBe(1);
+  });
+});
+
 describe('smooth lines', () => {
   const usage = Array.from({ length: 24 * 12 }, (_, i) => ({ t: HOUR_START - 24 * HOUR + i * 5 * MIN, w: 200 + (i % 7) * 50 }));
   const live = Array.from({ length: 60 }, (_, i) => ({ t: NOW - 10 * MIN + i * 10e3, w: i % 2 ? 300 : 900 }));

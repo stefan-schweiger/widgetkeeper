@@ -16,6 +16,9 @@
   --ew-future: color-mix(in srgb, var(--ew-card) 35%, transparent);
   --ew-usage: var(--ew-text);
   --ew-usage-dot: color-mix(in srgb, var(--ew-usage) 65%, var(--ew-card)); /* toned down, like the usage line */
+  /* Power below zero (solar export). No Homey token: Device Values' yellow in dark mode (9.9:1 on the
+     card), a darker amber in light mode (4.7:1 on white), so the header value passes as text. */
+  --ew-export: #9A6A00;
   /* Homey's type scale: only these size/line-height pairs, and the weights noted, are used natively. */
   --ew-fs-small: var(--homey-font-size-small, 14px); --ew-lh-small: var(--homey-line-height-small, 20px); /* regular */
   /* Labels (chart chips, footer): 12/16, like the axis labels; a deliberate step below Homey's scale. */
@@ -28,6 +31,7 @@
 /* `usageColor: purple`: Homey's own purple (--theme-color-purple in the Homey web app), lighter in dark mode. */
 .ew.usage-purple { --ew-usage: #7500FB; }
 .homey-dark-mode .ew.usage-purple { --ew-usage: #9033FC; }
+.homey-dark-mode .ew, .ew.homey-dark-mode { --ew-export: #F5C518; }
 
 /* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
 html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
@@ -47,6 +51,7 @@ html, body { margin: 0; }
 .ew-hval .u { font-size: var(--ew-fs-small); line-height: var(--ew-lh-small); font-weight: var(--ew-regular); }
 .ew-hval.live { color: var(--ew-green); gap: 3px; }
 .ew-hval.price { color: var(--ew-blue); gap: 1px; }
+.ew-hval.live.export { color: var(--ew-export); }
 .ew-hsub {
   font-size: var(--ew-fs-small); line-height: var(--ew-lh-small); color: var(--ew-muted);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -88,6 +93,11 @@ html, body { margin: 0; }
 .ew .dot-core.price { fill: var(--ew-blue); }
 .ew .dot-core.usage { fill: var(--ew-usage-dot); }
 .ew .usage-dot { fill: var(--ew-usage); stroke: var(--ew-card); stroke-width: 2; }
+/* The part of a trace below zero (solar export); `exportSplit()` in widget.js clips it. */
+.ew .live-line.export, .ew .usage-line.export { stroke: var(--ew-export); }
+.ew .live-stop.export, .ew .usage-stop.export { stop-color: var(--ew-export); }
+.ew .dot-ring.export { stroke: var(--ew-export); }
+.ew .dot-core.export, .ew .usage-dot.export { fill: var(--ew-export); }
 
 /* Footer */
 .ew-footer {
@@ -109,4 +119,6 @@ html, body { margin: 0; }
 .ew .usage-line.solo { stroke-width: 2; stroke-opacity: 1; stroke-linecap: round; }
 .ew .ew-usage-chart .dot-ring.usage { stroke: var(--ew-usage); }
 .ew .ew-usage-chart .dot-core.usage { fill: var(--ew-usage); }
+.ew .ew-usage-chart .dot-ring.export { stroke: var(--ew-export); }
+.ew .ew-usage-chart .dot-core.export { fill: var(--ew-export); }
 .ew .midnight { stroke: var(--ew-axis); stroke-width: 1; stroke-dasharray: 2 3; fill: none; shape-rendering: crispEdges; }

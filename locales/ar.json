@@ -1,7 +1,9 @@
 {
   "electricity": {
     "usingNow": "الاستهلاك الآن",
+    "exporting": "التصدير الآن",
     "minutesRemaining": "متبقٍ __minutes__ د",
+    "fixedPrice": "سعر ثابت",
     "livePower": "القدرة المباشرة",
     "price": "السعر",
     "usage": "الاستهلاك",

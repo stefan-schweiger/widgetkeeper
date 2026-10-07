@@ -1,7 +1,9 @@
 {
   "electricity": {
     "usingNow": "Using now",
+    "exporting": "Exporting now",
     "minutesRemaining": "__minutes__ min left",
+    "fixedPrice": "Fixed price",
     "livePower": "Live power",
     "price": "Price",
     "usage": "Usage",

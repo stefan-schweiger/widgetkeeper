@@ -108,6 +108,49 @@ describe('price slots', () => {
   });
 });
 
+describe('fixed price', () => {
+  const fixed = { priceType: 'fixed', fixedPrice: { value: { costs: { user_fixed_base: { value: 2 } } } } };
+
+  it("fills every slot with Homey's fixed price and skips the spot prices", async () => {
+    const { service, api } = setup(fixed);
+    const { prices, fixedPrice, currency } = await service.getSnapshot(null);
+    expect(fixedPrice).toBe(2);
+    expect(prices).toHaveLength(49);
+    expect(prices[24].start).toBe(HOUR_START);
+    expect(prices.every(p => p.price === 2)).toBe(true);
+    expect(currency).toBe('DKK');
+    expect(api.energy.fetchDynamicElectricityPrices).not.toHaveBeenCalled();
+  });
+
+  it("uses the spot prices with dynamic prices, or when the type can't be read", async () => {
+    const dynamic = setup();
+    expect((await dynamic.service.getSnapshot(null)).fixedPrice).toBeNull();
+    const failing = setup();
+    failing.api.energy.getElectricityPriceType.mockRejectedValue(new Error('Not supported'));
+    const snap = await failing.service.getSnapshot(null);
+    expect(snap.fixedPrice).toBeNull();
+    expect(snap.prices[24].price).toBe(1);
+  });
+
+  it('falls back to the spot prices when the fixed price is missing', async () => {
+    const { service } = setup({ priceType: 'fixed' });
+    const snap = await service.getSnapshot(null);
+    expect(snap.fixedPrice).toBeNull();
+    expect(snap.prices[24].price).toBe(1);
+  });
+
+  it('reads the price type again after 5 minutes', async () => {
+    const { service, api } = setup(fixed);
+    await service.getSnapshot(null);
+    await service.getSnapshot(null);
+    expect(api.energy.getElectricityPriceType).toHaveBeenCalledTimes(1);
+    api.energy.getElectricityPriceType.mockResolvedValue('dynamic');
+    vi.setSystemTime(NOW + 5 * MINUTE);
+    expect((await service.getSnapshot(null)).fixedPrice).toBeNull();
+    expect(api.energy.getElectricityPriceType).toHaveBeenCalledTimes(2);
+  });
+});
+
 describe('meter', () => {
   it('seeds the live readings from insights plus the current value', async () => {
     const { service, api } = setup({

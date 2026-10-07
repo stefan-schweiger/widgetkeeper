@@ -29,7 +29,9 @@
 
   const DEFAULT_STRINGS = {
     usingNow: 'Using now',
+    exporting: 'Exporting now',
     minutesRemaining: '__minutes__ min left',
+    fixedPrice: 'Fixed price',
     livePower: 'Live power',
     price: 'Price',
     usage: 'Usage',
@@ -134,6 +136,12 @@
     return v.length ? v[Math.min(v.length - 1, Math.floor(v.length * 0.985))] : 1;
   }
 
+  /** 1.5th percentile, or 0 when that's not negative: how far a usage scale reaches below zero (solar export). */
+  function p015(values) {
+    const v = [...values].sort((a, b) => a - b);
+    return v.length ? Math.min(0, v[Math.floor(v.length * 0.015)]) : 0;
+  }
+
   /**
    * Resample raw meter readings into LIVE_POINTS buckets ending at `now`. Buckets are aligned
    * to the step so values don't jitter as time passes; each is the average of its readings, or
@@ -181,7 +189,10 @@
         : { minimumFractionDigits: d, maximumFractionDigits: d });
       return nfCache[key].format(v);
     };
-    const kW = v => (v >= 1000 ? nf(v / 1000, v % 1000 ? 1 : 0) + 'k' : nf(Math.round(v)));
+    // Negative power (solar export) gets a real minus sign: −1,5k.
+    const kW = v => (v < 0 ? '−' + kW(-v)
+      : v >= 1000 ? nf(v / 1000, v % 1000 ? 1 : 0) + 'k' : nf(Math.round(v)));
+    const watts = v => (v < 0 ? '−' + nf(-v) : nf(v));
     const pad2 = n => String(n).padStart(2, '0');
     const hhmm = ms => { const d = new Date(ms); return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); };
     const hhmmss = ms => hhmm(ms) + ':' + pad2(new Date(ms).getSeconds());
@@ -246,15 +257,18 @@
       const firstSlot = slots.length ? slots[0].start : Math.floor(d.now / HOUR) * HOUR - NOW_SLOT * HOUR;
       const usageByIdx = new Map();
       for (const u of d.usage || []) usageByIdx.set(Math.round((u.t - firstSlot) / (5 * MIN)), u.w);
+      // A fixed price (Homey Energy set to one price for every hour) has no price chart or lowest-price
+      // footer: the header shows the price, and usage gets its own chart.
+      const fixed = d.fixedPrice != null;
       const showUsage = state.settings.showUsage !== false && usageByIdx.size > 0;
-      const separate = showUsage && state.settings.separateUsage === true;
+      const separate = showUsage && (fixed || state.settings.separateUsage === true);
       const usageOnPrice = showUsage && !separate; // trace + right scale on the price chart
       const pw = Math.max(40, w - L - (usageOnPrice ? R_USAGE : 4));
-      const hasPrices = slots.some(s => s.price != null);
+      const hasPrices = !fixed && slots.some(s => s.price != null);
       const liveTime = windowMs < 10 * MIN ? hhmmss : hhmm;
       return {
         d, w, now, windowMs, live, liveTime, slots, allSlots, firstSlot, usageByIdx,
-        showUsage, separate, usageOnPrice, pw, hasPrices,
+        showUsage, separate, usageOnPrice, pw, hasPrices, fixed,
       };
     }
 
@@ -282,7 +296,7 @@
       if (m.separate && m.slots.length) renderUsage(ui.usage, m);
       show(ui.price.box, m.hasPrices);
       if (m.hasPrices) renderPrice(ui.price, m);
-      show(ui.noPrices, !m.hasPrices);
+      show(ui.noPrices, !m.hasPrices && !m.fixed);
       ui.noPrices.textContent = t('noPrices');
       const nextLow = state.settings.nextLow || '12';
       show(ui.footer, m.hasPrices && nextLow !== 'none');
@@ -300,7 +314,7 @@
       const cur = currencyUnits(m.d.currency);
       const live = m.live;
       let leftVal = live.length ? live[live.length - 1].w : null;
-      let leftSub = t('usingNow');
+      let leftSub = leftVal != null && leftVal < 0 ? t('exporting') : t('usingNow');
       if (state.liveIdx != null && live[state.liveIdx]) {
         leftVal = live[state.liveIdx].w;
         leftSub = m.liveTime(live[state.liveIdx].t);
@@ -311,15 +325,16 @@
 
       const selIdx = state.slotIdx == null ? NOW_SLOT : state.slotIdx;
       const sel = m.slots[selIdx];
-      const price = sel ? sel.price : null;
-      const priceSub = state.slotIdx == null || !sel
-        ? t('minutesRemaining', { minutes: 60 - new Date().getMinutes() })
-        : `${weekday(sel.start, m.d.language)} ${hhmm(sel.start)}–${hhmm(sel.start + HOUR)}`;
+      const price = m.fixed ? m.d.fixedPrice : sel ? sel.price : null;
+      const priceSub = m.fixed ? t('fixedPrice')
+        : state.slotIdx == null || !sel
+          ? t('minutesRemaining', { minutes: 60 - new Date().getMinutes() })
+          : `${weekday(sel.start, m.d.language)} ${hhmm(sel.start)}–${hhmm(sel.start + HOUR)}`;
 
       clear(header);
       const lc = el('div', { class: 'ew-hcol' }, header);
-      const lv = el('div', { class: 'ew-hval live' }, lc);
-      el('span', { class: 'v ew-num', text: leftVal == null ? '–' : nf(leftVal) }, lv);
+      const lv = el('div', { class: `ew-hval live${leftVal < 0 ? ' export' : ''}` }, lc);
+      el('span', { class: 'v ew-num', text: leftVal == null ? '–' : watts(leftVal) }, lv);
       el('span', { class: 'u', text: 'W' }, lv);
       el('div', { class: 'ew-hsub', dir: 'auto', text: leftSub }, lc);
 
@@ -354,6 +369,22 @@
       el('svg:circle', { class: `dot-core ${kind}`, cx: f1(x), cy: f1(y), r: small ? 3.5 : 4 }, svg);
     }
 
+    /**
+     * Draws `draw(clip, exp)` twice when a power scale reaches below zero: clipped above `zeroY`
+     * as usual, and below it with the `export` look (solar export is yellow). Otherwise once, unclipped.
+     */
+    function exportSplit(svg, zeroY, base, draw) {
+      if (!(zeroY < base)) { draw(null, false); return; }
+      const defs = el('svg:defs', null, svg);
+      const clip = (y, h) => {
+        const id = `${uid}c${++gradientCounter}`;
+        el('svg:rect', { x: -1000, y: f1(y), width: 1e4, height: f1(h) }, el('svg:clipPath', { id }, defs));
+        return `url(#${id})`;
+      };
+      draw(clip(-1000, zeroY + 1000), false);
+      draw(clip(zeroY, 1000), true);
+    }
+
     function prepareSvg(svg, w, h) {
       clear(svg);
       svg.setAttribute('width', w);
@@ -361,18 +392,29 @@
       svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
     }
 
-    /** Left W scale for a plot of height `h` starting at `top`: grid, thinned labels, axis. */
-    function wattScale(svg, max, h, top, pw, rightExt) {
-      const step = niceStep(max / 3), k = Math.ceil(max / step - 1e-9), axisMax = step * k;
-      const y = v => top + h * (1 - Math.max(0, v) / axisMax);
+    /**
+     * Left W scale for a plot of height `h` starting at `top`: grid, thinned labels, axis.
+     * A negative `min` (solar export) extends it below zero in whole steps, like negative prices,
+     * with a zero line; `zeroY` is that line's y (the plot's base when nothing is negative).
+     */
+    function wattScale(svg, max, h, top, pw, rightExt, min = 0) {
+      const step = niceStep((max - min) / 3);
+      const kPos = Math.ceil(max / step - 1e-9), kNeg = Math.ceil(-min / step - 1e-9), k = kPos + kNeg;
+      const axisMax = step * kPos, axisMin = -step * kNeg;
+      const y = kNeg
+        ? v => Math.min(top + h + 2, top + h * (1 - (v - axisMin) / (axisMax - axisMin)))
+        : v => top + h * (1 - Math.max(0, v) / axisMax);
       let grid = '';
       const every = Math.max(1, Math.ceil(LABEL_MIN_GAP / (h / k)));
       for (let j = 0; j <= k; j++) {
-        if (j > 0) grid += `M${L - 6} ${f1(y(step * j))}H${L + pw + rightExt}`;
-        if ((k - j) % every === 0) text(svg, L - LABEL_PAD, y(step * j), kW(step * j), 'end', 'central');
+        const v = axisMin + step * j;
+        if (j > 0) grid += `M${L - 6} ${f1(y(v))}H${L + pw + rightExt}`;
+        if ((kNeg ? j - kNeg : k - j) % every === 0) text(svg, L - LABEL_PAD, y(v), kW(v), 'end', 'central');
       }
       el('svg:path', { class: 'grid', d: grid }, svg);
-      return { y, axisMax };
+      const zeroY = y(0);
+      if (kNeg) el('svg:path', { class: 'axis', d: `M${L - 6} ${f1(zeroY)}H${L + pw + rightExt}` }, svg);
+      return { y, axisMax, zeroY };
     }
 
     function renderLive(chart, m) {
@@ -389,7 +431,8 @@
       geom.live = { xs };
 
       const fill = gradient(svg, 'live-stop', [[0, 0.45], [1, 0]]);
-      const { y } = wattScale(svg, Math.max(1, ...live.map(p => p.w)), LIVE_H, top, pw, 0);
+      const { y, zeroY } = wattScale(svg, Math.max(1, ...live.map(p => p.w)), LIVE_H, top, pw, 0,
+        Math.min(0, ...live.map(p => p.w)));
       el('svg:path', { class: 'axis', d: `M${L} ${top - 6}V${base}H${L + pw}M${L - 6} ${base}H${L}` }, svg);
 
       // With `smooth`, the line (and the dot) follow the smoothed values; the header keeps the real ones.
@@ -397,12 +440,20 @@
       const pts = ws.map((w, i) => [xs[i], y(w)]);
       const line = `M${f1(pts[0][0])} ${f1(pts[0][1])}` + (state.settings.smooth
         ? monotonePath(pts) : pts.slice(1).map(([x, yy]) => `L${f1(x)} ${f1(yy)}`).join(''));
-      el('svg:path', { d: `${line}L${f1(xs[xs.length - 1])} ${base}L${f1(xs[0])} ${base}Z`, fill }, svg);
-      el('svg:path', { class: 'live-line', d: line }, svg);
+      const area = `${line}L${f1(xs[xs.length - 1])} ${f1(zeroY)}L${f1(xs[0])} ${f1(zeroY)}Z`;
+      exportSplit(svg, zeroY, base, (clip, exp) => {
+        // Split: each side fades towards the zero line.
+        const f = !clip ? fill : gradient(svg, exp ? 'live-stop export' : 'live-stop', [[0, exp ? 0 : 0.45], [1, exp ? 0.45 : 0]],
+          { gradientUnits: 'userSpaceOnUse', x1: 0, x2: 0, y1: f1(exp ? zeroY : top), y2: f1(exp ? base : zeroY) });
+        el('svg:path', { d: area, fill: f, 'clip-path': clip }, svg);
+      });
+      exportSplit(svg, zeroY, base, (clip, exp) => {
+        el('svg:path', { class: `live-line${exp ? ' export' : ''}`, d: line, 'clip-path': clip }, svg);
+      });
 
       const idx = state.liveIdx == null ? live.length - 1 : Math.min(state.liveIdx, live.length - 1);
       if (state.liveIdx != null) el('svg:path', { class: 'cursor', d: `M${f1(xs[idx])} ${top}V${base}` }, svg);
-      dot(svg, pts[idx][0], pts[idx][1], 'live');
+      dot(svg, pts[idx][0], pts[idx][1], ws[idx] < 0 ? 'live export' : 'live');
 
       const ly = base + X_LABEL_GAP;
       text(svg, L, ly, ago(m.windowMs), 'start', 'hanging');
@@ -430,7 +481,7 @@
      * Usage trace path(s), broken over gaps; returns { line, area, yAt }, where yAt maps a
      * 5-min index to the trace's y (the smoothed one with `smooth`), for the dots.
      */
-    function usagePaths(m, fx, y, base) {
+    function usagePaths(m, fx, y, base) { // base: where the area closes (the zero line)
       const smooth = state.settings.smooth;
       const entries = [...m.usageByIdx.entries()].sort((a, b) => a[0] - b[0]);
       const segs = [];
@@ -447,7 +498,7 @@
         const d = `M${f1(pts[0][0])} ${f1(pts[0][1])}` + (smooth
           ? monotonePath(pts) : pts.slice(1).map(([x, yy]) => `L${f1(x)} ${f1(yy)}`).join(''));
         line += d;
-        area += `${d}V${base}H${f1(pts[0][0])}Z`;
+        area += `${d}V${f1(base)}H${f1(pts[0][0])}Z`;
       }
       return { line, area, yAt };
     }
@@ -465,21 +516,30 @@
       prepareSvg(svg, m.w, H);
       geom.slots = { sw, n };
 
-      const scale = wattScale(svg, Math.max(1, p985(m.usageByIdx.values())), USAGE_H, top, pw, 0);
+      const scale = wattScale(svg, Math.max(1, p985(m.usageByIdx.values())), USAGE_H, top, pw, 0,
+        p015(m.usageByIdx.values()));
       const y = v => Math.max(top - 2, scale.y(v));
       const fx = j => L + (j + 0.5) / 12 * sw;
       midnightLines(svg, slots, sw, top, base);
       slotBand(svg, sw, top, USAGE_H);
       el('svg:path', { class: 'axis', d: `M${L} ${top - 6}V${base}H${L + pw}M${L - 6} ${base}H${L}` }, svg);
 
-      const { line, area, yAt } = usagePaths(m, fx, y, base);
-      el('svg:path', { d: area, fill: gradient(svg, 'usage-stop', [[0, 0.22], [1, 0.02]]) }, svg);
-      el('svg:path', { class: 'usage-line solo', d: line }, svg);
+      const { zeroY } = scale;
+      const { line, area, yAt } = usagePaths(m, fx, y, zeroY);
+      exportSplit(svg, zeroY, base, (clip, exp) => {
+        const f = !clip ? gradient(svg, 'usage-stop', [[0, 0.22], [1, 0.02]])
+          : gradient(svg, exp ? 'usage-stop export' : 'usage-stop', [[0, exp ? 0.02 : 0.22], [1, exp ? 0.22 : 0.02]],
+            { gradientUnits: 'userSpaceOnUse', x1: 0, x2: 0, y1: f1(exp ? zeroY : top), y2: f1(exp ? base : zeroY) });
+        el('svg:path', { d: area, fill: f, 'clip-path': clip }, svg);
+      });
+      exportSplit(svg, zeroY, base, (clip, exp) => {
+        el('svg:path', { class: `usage-line solo${exp ? ' export' : ''}`, d: line, 'clip-path': clip }, svg);
+      });
 
       // Marker at the scrubbed 5 min, else at the latest reading, like the live and price dots.
       const idx = state.fineIdx != null && m.usageByIdx.has(state.fineIdx)
         ? state.fineIdx : Math.max(-1, ...m.usageByIdx.keys());
-      if (idx >= 0) dot(svg, fx(idx), yAt.get(idx), 'usage', true);
+      if (idx >= 0) dot(svg, fx(idx), yAt.get(idx), yAt.get(idx) > zeroY ? 'usage export' : 'usage', true);
       slotLabels(svg, slots, sw, pw, base);
     }
 
@@ -502,13 +562,29 @@
       const known = slots.map(s => s.price).filter(p => p != null);
       const maxP = Math.max(0.01, ...known), minP = Math.min(0, ...known);
       const pst = niceStep((maxP - minP) / 3);
-      const kPos = Math.ceil(maxP / pst - 1e-9), kNeg = Math.ceil(-minP / pst - 1e-9);
-      const k = kPos + kNeg, pMax = pst * kPos, pMin = -pst * kNeg;
-      const py = p => top + PRICE_H * (1 - (p - pMin) / (pMax - pMin));
+      let kPos = Math.ceil(maxP / pst - 1e-9), kNeg = Math.ceil(-minP / pst - 1e-9);
+      let k = kPos + kNeg;
 
-      // Usage scale (right): same number of steps, sized from the 98.5th percentile.
-      const ust = niceStep(Math.max(1, p985(m.usageByIdx.values())) / k), uMax = ust * k;
-      const uy = v => Math.max(top - 2, top + PRICE_H * (1 - v / uMax));
+      // Usage scale (right): same number of steps, sized from the 98.5th percentile, 0 at the bottom.
+      // Negative usage (solar export) gets its own steps below zero, and the two scales then
+      // share the zero line: each side has as many steps as the price or the usage needs.
+      const uHi = Math.max(1, p985(m.usageByIdx.values())), uLo = showUsage ? p015(m.usageByIdx.values()) : 0;
+      let ust, uMin = 0;
+      if (uLo < 0) {
+        ust = niceStep((uHi - uLo) / 3);
+        kPos = Math.max(kPos, Math.ceil(uHi / ust - 1e-9));
+        kNeg = Math.max(kNeg, Math.ceil(-uLo / ust - 1e-9));
+        k = kPos + kNeg;
+        uMin = -ust * kNeg;
+      } else {
+        ust = niceStep(uHi / k);
+      }
+      const pMax = pst * kPos, pMin = -pst * kNeg, uMax = uMin + ust * k;
+      const py = p => top + PRICE_H * (1 - (p - pMin) / (pMax - pMin));
+      const uy = uMin < 0
+        ? v => Math.min(base + 2, Math.max(top - 2, top + PRICE_H * (1 - (v - uMin) / (uMax - uMin))))
+        : v => Math.max(top - 2, top + PRICE_H * (1 - v / uMax));
+      const uZero = uy(0);
       const fx = j => L + (j + 0.5) / 12 * sw;
 
       const fill = gradient(svg, 'price-stop', [[0, 0.24], [0.35, 0.16], [0.6, 0.096], [1, 0.02]],
@@ -521,7 +597,7 @@
         const yy = py(pMin + pst * j);
         if (j > 0) grid += `M${L - 6} ${f1(yy)}H${xr}`;
         text(svg, L - LABEL_PAD, yy, nf(pMin + pst * j, 2), 'end', 'central');
-        if (showUsage) text(svg, L + pw + LABEL_PAD, yy, kW(ust * j), 'start', 'central');
+        if (showUsage) text(svg, L + pw + LABEL_PAD, yy, kW(uMin + ust * j), 'start', 'central');
       }
       el('svg:path', { class: 'grid', d: grid }, svg);
 
@@ -538,7 +614,11 @@
 
       // 4. Usage trace
       const usage = showUsage ? usagePaths(m, fx, uy, base) : null;
-      if (usage) el('svg:path', { class: 'usage-line', d: usage.line }, svg);
+      if (usage) {
+        exportSplit(svg, uZero, base, (clip, exp) => {
+          el('svg:path', { class: `usage-line${exp ? ' export' : ''}`, d: usage.line, 'clip-path': clip }, svg);
+        });
+      }
 
       // 5–6. Price area + step line, broken where prices are missing. With `smooth`, the steps'
       // corners are rounded.
@@ -569,7 +649,8 @@
 
       // 8. Usage scrub dot
       if (usage && state.fineIdx != null && usage.yAt.has(state.fineIdx)) {
-        el('svg:circle', { class: 'usage-dot', cx: f1(fx(state.fineIdx)), cy: f1(usage.yAt.get(state.fineIdx)), r: 4 }, svg);
+        const cy = usage.yAt.get(state.fineIdx);
+        el('svg:circle', { class: `usage-dot${cy > uZero ? ' export' : ''}`, cx: f1(fx(state.fineIdx)), cy: f1(cy), r: 4 }, svg);
       }
 
       // 9. Price dot

@@ -15,6 +15,7 @@ const PRICE_PAST_HOURS = 24;
 const PRICE_FUTURE_HOURS = 24; // the chart shows 12; the lowest-price footer can look 24 ahead
 const IDLE_TIMEOUT = 10 * MINUTE;
 const POWER_LOGS = ['measure_power', 'energy_power']; // in order of preference
+const PRICE_TYPE_TTL = 5 * MINUTE; // a change in Homey's Energy settings shows within this
 
 export const LIVE_EVENT = 'electricity:live';
 
@@ -24,6 +25,7 @@ export type Snapshot = {
   meterError: string | null, // why the selected meter could not be read
   live: Sample[], // raw readings for the last hour, oldest first (the widget resamples)
   prices: ({ start: number, price: number | null })[], // 49 hourly slots, index 24 = current hour
+  fixedPrice: number | null, // Homey's fixed price per kWh, when Energy is set to a fixed price (every slot has it)
   usage: Sample[], // 5-min averages from the first price slot up to now
   currency: string | null,
   language: string, // Homey UI language, for weekday names
@@ -52,6 +54,8 @@ export default class ElectricityService {
   private pricePending = new Map<string, Promise<Map<number, number>>>();
   private currency: string | null = null;
   private currencyPending: Promise<void> | null = null;
+  private priceType: { at: number, fixed: number | null } | null = null;
+  private priceTypePending: Promise<number | null> | null = null;
   private tickTimer: NodeJS.Timeout | null = null;
   private loggedPriceSample = false;
 
@@ -74,7 +78,7 @@ export default class ElectricityService {
   warmUp() {
     const firstSlot = floorTo(Date.now(), HOUR) - PRICE_PAST_HOURS * HOUR;
     const tm = new Timings();
-    this.getPriceSlots(firstSlot, tm)
+    this.getFixedPrice().then(fixed => this.getPriceSlots(firstSlot, tm, fixed))
       .then(() => this.debug(`Prices warmed up: ${tm.summary()}`))
       .catch(err => this.log('Warm-up failed', err));
   }
@@ -90,13 +94,17 @@ export default class ElectricityService {
     const tm = new Timings();
 
     let meterError: string | null = null;
+    let fixedPrice: number | null = null;
     const [meter, prices] = await Promise.all([
       deviceId ? tm.time('meter', () => this.ensureMeter(deviceId, tm)).catch(err => {
         this.log('Meter error', err);
         meterError = err instanceof Error ? err.message : String(err);
         return null;
       }) : null,
-      tm.time('prices', () => this.getPriceSlots(firstSlot, tm)).catch(err => { this.log('Price error', err); return []; }),
+      tm.time('prices', async () => {
+        fixedPrice = await this.getFixedPrice();
+        return this.getPriceSlots(firstSlot, tm, fixedPrice);
+      }).catch(err => { this.log('Price error', err); return []; }),
     ]);
 
     let usage: Sample[] = [];
@@ -112,6 +120,7 @@ export default class ElectricityService {
       meterError,
       live: meter ? meter.live.slice() : [],
       prices,
+      fixedPrice,
       usage,
       currency: this.currency,
       language: this.homey.i18n.getLanguage(),
@@ -278,8 +287,43 @@ export default class ElectricityService {
 
   // ---------------------------------------------------------------- prices
 
-  private async getPriceSlots(firstSlot: number, tm: Timings): Promise<Snapshot['prices']> {
+  /**
+   * Homey's fixed price per kWh when Energy is set to a fixed price, else null (dynamic, or the type
+   * can't be read). Homey keeps one fixed price, with no peak/off-peak: its app says to enter an
+   * average. Spot prices are still returned in fixed mode, so the type has to be checked.
+   */
+  private getFixedPrice(): Promise<number | null> {
+    if (this.priceType && Date.now() - this.priceType.at < PRICE_TYPE_TTL) return Promise.resolve(this.priceType.fixed);
+    this.priceTypePending ??= (async () => {
+      let fixed: number | null = null;
+      try {
+        const api = await this.getApi();
+        if (await api.energy.getElectricityPriceType() === 'fixed') {
+          fixed = parseFixedPrice(await api.energy.getOptionElectricityPriceFixed());
+          if (fixed == null) this.log('Fixed electricity price set, but no price found');
+        }
+      } catch (err) {
+        this.log('Could not read the electricity price type', err);
+      }
+      if (fixed !== this.priceType?.fixed) this.debug(`Electricity price: ${fixed == null ? 'dynamic' : `fixed ${fixed}`}`);
+      this.priceType = { at: Date.now(), fixed };
+      return fixed;
+    })().finally(() => { this.priceTypePending = null; });
+    return this.priceTypePending;
+  }
+
+  /** Price type and fixed price, for the diagnostics report. */
+  async describe() {
+    const fixedPrice = await this.getFixedPrice();
+    return { priceType: fixedPrice == null ? 'dynamic' : 'fixed', fixedPrice, currency: this.currency };
+  }
+
+  private async getPriceSlots(firstSlot: number, tm: Timings, fixedPrice: number | null = null): Promise<Snapshot['prices']> {
     const count = PRICE_PAST_HOURS + 1 + PRICE_FUTURE_HOURS;
+    if (fixedPrice != null) {
+      if (this.currency == null) await tm.time('currency', () => this.loadCurrency());
+      return Array.from({ length: count }, (_, i) => ({ start: firstSlot + i * HOUR, price: fixedPrice }));
+    }
     const lastSlot = firstSlot + (count - 1) * HOUR;
     const days = new Set<string>();
     for (let t = firstSlot; t <= lastSlot; t += HOUR) days.add(this.localDate(t));
@@ -355,4 +399,10 @@ export default class ElectricityService {
     }).format(new Date(t));
   }
 
+}
+
+/** `{value: {costs: {user_fixed_base: {value: 2}}}}` (verified 2026-10-07) → 2. */
+export function parseFixedPrice(res: any): number | null {
+  const v = res?.value?.costs?.user_fixed_base?.value ?? res?.costs?.user_fixed_base?.value;
+  return typeof v === 'number' && Number.isFinite(v) ? v : null;
 }

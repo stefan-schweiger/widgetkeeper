@@ -38,6 +38,7 @@ export default class Diagnostics {
       homeyVersion: this.homey.version,
       uptimeMinutes: Math.round((Date.now() - this.startedAt) / 60e3),
       debugLog: this.homey.settings.get(DEBUG_LOG_SETTING) === true,
+      electricity: await (this.homey.app as any)?.electricity?.describe?.().catch((err: unknown) => String(err)) ?? null,
       weather: (this.homey.app as any)?.weather?.describe?.() ?? null,
       heatmap: (this.homey.app as any)?.heatmap?.describe?.() ?? null,
       sparklines: (this.homey.app as any)?.sparklines?.describe?.() ?? null,

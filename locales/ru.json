@@ -1,7 +1,9 @@
 {
   "electricity": {
     "usingNow": "Сейчас",
+    "exporting": "Отдача в сеть",
     "minutesRemaining": "ещё __minutes__ мин",
+    "fixedPrice": "Фикс. цена",
     "livePower": "Текущая мощность",
     "price": "Цена",
     "usage": "Потребление",

@@ -29,6 +29,9 @@
   <div class="col"><span>300 px · narrow (Homey tablet) · 12h + 24h</span><div class="card" style="width:300px"><div id="w7"></div></div></div>
   <div class="col"><span>400 px · smooth lines · separate usage · 1 h live</span><div class="card" style="width:400px"><div id="w8"></div></div></div>
   <div class="col"><span>352 px · lowest price 24h</span><div class="card" style="width:352px"><div id="w6"></div></div></div>
+  <div class="col"><span>400 px · solar export</span><div class="card homey-dark-mode" style="width:400px"><div id="w9"></div></div></div>
+  <div class="col"><span>400 px · light · solar export · separate usage · smooth</span><div class="card light" style="width:400px"><div id="w10"></div></div></div>
+  <div class="col"><span>400 px · fixed price (Homey Energy)</span><div class="card homey-dark-mode" style="width:400px"><div id="w11"></div></div></div>
 
   <script>
     const widgets = [
@@ -40,6 +43,9 @@
       [createElectricityWidget(document.getElementById('w7'), { locale: 'da-DK', t: devT }), mockSnapshot(), { nextLow: 'both', liveWindow: 10 }],
       [createElectricityWidget(document.getElementById('w8'), { locale: 'da-DK', t: devT }), mockSnapshot(), { smooth: true, separateUsage: true }],
       [createElectricityWidget(document.getElementById('w6'), { locale: 'da-DK', t: devT }), mockSnapshot(), { nextLow: '24', showUsage: false }],
+      [createElectricityWidget(document.getElementById('w9'), { locale: 'da-DK', t: devT }), mockSnapshot({ solar: true }), {}],
+      [createElectricityWidget(document.getElementById('w10'), { locale: 'da-DK', t: devT }), mockSnapshot({ solar: true }), { separateUsage: true, smooth: true }],
+      [createElectricityWidget(document.getElementById('w11'), { locale: 'da-DK', t: devT }), { ...mockSnapshot(), fixedPrice: 2 }, {}],
     ];
     for (const [w, snap, settings] of widgets) { w.setSettings({ liveWindow: 60, ...settings }); w.setData(snap); }
 

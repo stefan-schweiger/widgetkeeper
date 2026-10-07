@@ -1,7 +1,9 @@
 {
   "electricity": {
     "usingNow": "Verbrauch jetzt",
+    "exporting": "Einspeisung jetzt",
     "minutesRemaining": "noch __minutes__ Min.",
+    "fixedPrice": "Festpreis",
     "livePower": "Live-Leistung",
     "price": "Preis",
     "usage": "Verbrauch",

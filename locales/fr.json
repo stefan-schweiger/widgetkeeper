@@ -1,7 +1,9 @@
 {
   "electricity": {
     "usingNow": "Conso. actuelle",
+    "exporting": "Export actuel",
     "minutesRemaining": "encore __minutes__ min",
+    "fixedPrice": "Prix fixe",
     "livePower": "Puissance en direct",
     "price": "Prix",
     "usage": "Consommation",

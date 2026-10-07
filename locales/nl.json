@@ -1,7 +1,9 @@
 {
   "electricity": {
     "usingNow": "Nu in gebruik",
+    "exporting": "Nu teruglevering",
     "minutesRemaining": "nog __minutes__ min",
+    "fixedPrice": "Vaste prijs",
     "livePower": "Live vermogen",
     "price": "Prijs",
     "usage": "Verbruik",

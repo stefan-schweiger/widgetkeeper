@@ -1,7 +1,9 @@
 {
   "electricity": {
     "usingNow": "현재 사용량",
+    "exporting": "현재 송전량",
     "minutesRemaining": "__minutes__분 남음",
+    "fixedPrice": "고정 요금",
     "livePower": "실시간 전력",
     "price": "가격",
     "usage": "사용량",
