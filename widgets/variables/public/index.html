@@ -60,7 +60,11 @@
         t: (key, tokens) => Homey.__(key, tokens),
         columns: settings.columns,
         step: settings.step,
-        onSet: (id, value) => Homey.api('POST', '/set', { id, value }),
+        onSet: async (id, value) => {
+          const res = await Homey.api('POST', '/set', { id, value });
+          // No usable API key: the widget says what to do (see the app settings).
+          if (res && res.ok === false) throw Object.assign(new Error(res.reason), { reason: res.reason });
+        },
         onHeight: () => {
           if (!readySent) return;
           Homey.setHeight(bodyHeight());

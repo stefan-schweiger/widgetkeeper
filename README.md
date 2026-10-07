@@ -127,6 +127,8 @@ Homey's Logic variables as compact rows that show the full name: a switch for a 
 
 **Settings:** up to ten variables, 1 or 2 columns, and the step for − and +.
 
+Homey doesn't let apps change variables on their own, so changing them needs a Homey API key. In the Homey web app, create one under **Settings → API Keys** with permission to change variables. Then paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey. Without a key the widget shows the variables but can't change them.
+
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic, following Homey's language.
 

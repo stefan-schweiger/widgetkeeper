@@ -63,7 +63,19 @@
     "loadFailed": "Kunne ikke laste inn diagnostikk: __error__",
     "updated": "Oppdatert __time__",
     "copied": "Kopiert til utklippstavlen",
-    "shareTitle": "Widgetkeeper-diagnostikk"
+    "shareTitle": "Widgetkeeper-diagnostikk",
+    "varTitle": "Flytvariabler",
+    "varHelp": "Homey lar ikke apper endre flytvariabler selv. Lag en API-nøkkel som kan endre variabler i Homey-webappen under Innstillinger → API-nøkler, og lim den inn her. Den blir på din Homey.",
+    "varKey": "API-nøkkel",
+    "varSave": "Lagre",
+    "varRemove": "Fjern",
+    "varChecking": "Sjekker nøkkelen…",
+    "varSaved": "Lagret. Widgeten kan nå endre variabler.",
+    "varRemoved": "Fjernet.",
+    "varIsSet": "En nøkkel er lagret.",
+    "varNotSet": "Ingen nøkkel lagret: widgeten viser variabler, men kan ikke endre dem.",
+    "varKeyScope": "API-nøkkelen kan ikke endre variabler.",
+    "varKeyInvalid": "API-nøkkelen ble ikke godtatt."
   },
   "heatmap": {
     "selectDevice": "Velg en enhet og en verdi i widgetinnstillingene.",
@@ -116,6 +128,9 @@
     "no": "Nei",
     "typeBoolean": "Ja/Nei",
     "typeNumber": "Tall",
-    "typeString": "Tekst"
+    "typeString": "Tekst",
+    "noKey": "Legg til en API-nøkkel i appinnstillingene for å endre variabler.",
+    "keyScope": "API-nøkkelen kan ikke endre variabler.",
+    "keyInvalid": "API-nøkkelen ble ikke godtatt."
   }
 }

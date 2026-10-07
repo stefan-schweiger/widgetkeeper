@@ -21,4 +21,16 @@ export default {
     }
     return report;
   },
+
+  /** Used by the app settings page: whether a Flow Variables API key is saved (never the key itself). */
+  async getVariablesKey({ homey }: { homey: Homey }) {
+    const app = homey.app as WidgetkeeperApp;
+    return { set: app.variables.hasApiKey() };
+  },
+
+  /** Used by the app settings page: checks and saves the Flow Variables API key (`{key: ''}` removes it). */
+  async putVariablesKey({ homey, body }: { homey: Homey, body: { key?: unknown } }) {
+    const app = homey.app as WidgetkeeperApp;
+    return app.variables.saveApiKey(typeof body?.key === 'string' ? body.key : '');
+  },
 };

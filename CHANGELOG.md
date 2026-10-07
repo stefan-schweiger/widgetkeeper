@@ -10,6 +10,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - A number gets − and + buttons (the step is a setting, 1 by default); tap the number to type an exact value. A text variable shows its text; tap it to type a new one.
 - Pick up to ten variables, in the order you like, and show them **1** (the default) or **2** per line.
 - Changes made by flows show up the moment they happen.
+- Homey doesn't let apps change variables on their own, so changing them needs a Homey API key: create one under *Settings → API Keys* in the Homey web app with permission to change variables, and paste it in Widgetkeeper's app settings. Without a key the widget shows the variables, and a tap says how to add one.
 
 ### Electricity Overview
 - Supports a fixed electricity price set in Homey Energy: the price shows in the header, and usage gets its own chart instead of the price chart.

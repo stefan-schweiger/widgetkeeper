@@ -6,8 +6,19 @@ import { vi } from 'vitest';
  * `vi.mock('homey-api', () => homeyApiMock)` (vi.mock must be in the test file to be hoisted).
  */
 export const homeyApiMock = {
-  HomeyAPI: { createAppAPI: async ({ homey }: any) => homey.fakeApi },
+  HomeyAPI: {
+    createAppAPI: async ({ homey }: any) => homey.fakeApi,
+    /** A personal API key's API: the one registered in `keyApis` for the token, else a rejected key. */
+    createLocalAPI: async ({ token }: { address: string, token: string }) => {
+      const api = keyApis.get(token);
+      if (!api) throw new Error('Invalid token');
+      return api;
+    },
+  },
 };
+
+/** Personal API keys a test accepts: token → the API made with it (`HomeyAPI.createLocalAPI`). */
+export const keyApis = new Map<string, any>();
 
 export type FakeCap = {
   value?: unknown,
@@ -162,12 +173,13 @@ export function fakeHomey(api: ReturnType<typeof fakeApi>) {
     clearTimeout: (t: any) => clearTimeout(t),
     setInterval: (fn: () => void, ms: number) => setInterval(fn, ms),
     clearInterval: (t: any) => clearInterval(t),
-    api: { realtime: vi.fn() },
+    api: { realtime: vi.fn(), getLocalUrl: async () => 'http://127.0.0.1:80' },
     clock: { getTimezone: () => 'Europe/Copenhagen' },
     i18n: { getLanguage: () => 'en' },
     settings: {
       get: (key: string) => settings.get(key) ?? null,
       set: vi.fn((key: string, value: unknown) => { settings.set(key, JSON.parse(JSON.stringify(value))); }),
+      unset: vi.fn((key: string) => { settings.delete(key); }),
     },
     geolocation: { getLatitude: () => 55.6761234, getLongitude: () => 12.5683456, on: vi.fn(), off: vi.fn() },
     manifest: { id: 'com.thomassidor.widgetkeeper', version: '0.3.0' },

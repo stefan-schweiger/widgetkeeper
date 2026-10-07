@@ -63,7 +63,19 @@
     "loadFailed": "Could not load diagnostics: __error__",
     "updated": "Updated __time__",
     "copied": "Copied to clipboard",
-    "shareTitle": "Widgetkeeper diagnostics"
+    "shareTitle": "Widgetkeeper diagnostics",
+    "varTitle": "Flow Variables",
+    "varHelp": "Homey doesn't let apps change flow variables themselves. In the Homey web app, create an API key under Settings → API Keys that may change variables, and paste it here. It stays on your Homey.",
+    "varKey": "API key",
+    "varSave": "Save",
+    "varRemove": "Remove",
+    "varChecking": "Checking the key…",
+    "varSaved": "Saved. The widget can now change variables.",
+    "varRemoved": "Removed.",
+    "varIsSet": "A key is saved.",
+    "varNotSet": "No key saved: the widget shows variables but can't change them.",
+    "varKeyScope": "The API key may not change variables.",
+    "varKeyInvalid": "The API key was not accepted."
   },
   "heatmap": {
     "selectDevice": "Select a device and a value in the widget settings.",
@@ -116,6 +128,9 @@
     "no": "No",
     "typeBoolean": "Yes/No",
     "typeNumber": "Number",
-    "typeString": "Text"
+    "typeString": "Text",
+    "noKey": "To change variables, add an API key in the app settings.",
+    "keyScope": "The API key may not change variables.",
+    "keyInvalid": "The API key was not accepted."
   }
 }

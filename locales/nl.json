@@ -63,7 +63,19 @@
     "loadFailed": "Kan diagnose niet laden: __error__",
     "updated": "Bijgewerkt om __time__",
     "copied": "Gekopieerd naar klembord",
-    "shareTitle": "Widgetkeeper-diagnose"
+    "shareTitle": "Widgetkeeper-diagnose",
+    "varTitle": "Flowvariabelen",
+    "varHelp": "Homey laat apps zelf geen flowvariabelen wijzigen. Maak in de Homey-webapp onder Instellingen → API-sleutels een API-sleutel die variabelen mag wijzigen en plak die hier. Hij blijft op je Homey.",
+    "varKey": "API-sleutel",
+    "varSave": "Opslaan",
+    "varRemove": "Verwijderen",
+    "varChecking": "Sleutel controleren…",
+    "varSaved": "Opgeslagen. De widget kan nu variabelen wijzigen.",
+    "varRemoved": "Verwijderd.",
+    "varIsSet": "Er is een sleutel opgeslagen.",
+    "varNotSet": "Geen sleutel opgeslagen: de widget toont variabelen maar kan ze niet wijzigen.",
+    "varKeyScope": "De API-sleutel mag geen variabelen wijzigen.",
+    "varKeyInvalid": "De API-sleutel werd niet geaccepteerd."
   },
   "heatmap": {
     "selectDevice": "Kies een apparaat en een waarde in de widgetinstellingen.",
@@ -116,6 +128,9 @@
     "no": "Nee",
     "typeBoolean": "Ja/Nee",
     "typeNumber": "Getal",
-    "typeString": "Tekst"
+    "typeString": "Tekst",
+    "noKey": "Voeg een API-sleutel toe in de app-instellingen om variabelen te wijzigen.",
+    "keyScope": "De API-sleutel mag geen variabelen wijzigen.",
+    "keyInvalid": "De API-sleutel werd niet geaccepteerd."
   }
 }

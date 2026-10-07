@@ -63,7 +63,19 @@
     "loadFailed": "Nie można wczytać diagnostyki: __error__",
     "updated": "Zaktualizowano o __time__",
     "copied": "Skopiowano do schowka",
-    "shareTitle": "Diagnostyka Widgetkeeper"
+    "shareTitle": "Diagnostyka Widgetkeeper",
+    "varTitle": "Zmienne Flow",
+    "varHelp": "Homey nie pozwala aplikacjom samodzielnie zmieniać zmiennych Flow. W aplikacji webowej Homey utwórz w Ustawienia → Klucze API klucz, który może zmieniać zmienne, i wklej go tutaj. Zostaje na Twoim Homey.",
+    "varKey": "Klucz API",
+    "varSave": "Zapisz",
+    "varRemove": "Usuń",
+    "varChecking": "Sprawdzanie klucza…",
+    "varSaved": "Zapisano. Widżet może teraz zmieniać zmienne.",
+    "varRemoved": "Usunięto.",
+    "varIsSet": "Klucz jest zapisany.",
+    "varNotSet": "Brak klucza: widżet pokazuje zmienne, ale nie może ich zmieniać.",
+    "varKeyScope": "Klucz API nie może zmieniać zmiennych.",
+    "varKeyInvalid": "Klucz API nie został zaakceptowany."
   },
   "heatmap": {
     "selectDevice": "Wybierz urządzenie i wartość w ustawieniach widżetu.",
@@ -116,6 +128,9 @@
     "no": "Nie",
     "typeBoolean": "Tak/Nie",
     "typeNumber": "Liczba",
-    "typeString": "Tekst"
+    "typeString": "Tekst",
+    "noKey": "Aby zmieniać zmienne, dodaj klucz API w ustawieniach aplikacji.",
+    "keyScope": "Klucz API nie może zmieniać zmiennych.",
+    "keyInvalid": "Klucz API nie został zaakceptowany."
   }
 }

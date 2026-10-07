@@ -63,7 +63,19 @@
     "loadFailed": "Impossibile caricare la diagnostica: __error__",
     "updated": "Aggiornato alle __time__",
     "copied": "Copiato negli appunti",
-    "shareTitle": "Diagnostica Widgetkeeper"
+    "shareTitle": "Diagnostica Widgetkeeper",
+    "varTitle": "Variabili dei flow",
+    "varHelp": "Homey non permette alle app di cambiare da sole le variabili dei flow. Nella web app di Homey, crea in Impostazioni → Chiavi API una chiave API che può cambiare le variabili e incollala qui. Resta sul tuo Homey.",
+    "varKey": "Chiave API",
+    "varSave": "Salva",
+    "varRemove": "Rimuovi",
+    "varChecking": "Verifica della chiave…",
+    "varSaved": "Salvata. Il widget ora può cambiare le variabili.",
+    "varRemoved": "Rimossa.",
+    "varIsSet": "Una chiave è salvata.",
+    "varNotSet": "Nessuna chiave salvata: il widget mostra le variabili ma non può cambiarle.",
+    "varKeyScope": "La chiave API non può cambiare le variabili.",
+    "varKeyInvalid": "La chiave API non è stata accettata."
   },
   "heatmap": {
     "selectDevice": "Scegli un dispositivo e un valore nelle impostazioni del widget.",
@@ -116,6 +128,9 @@
     "no": "No",
     "typeBoolean": "Sì/No",
     "typeNumber": "Numero",
-    "typeString": "Testo"
+    "typeString": "Testo",
+    "noKey": "Per cambiare le variabili, aggiungi una chiave API nelle impostazioni dell'app.",
+    "keyScope": "La chiave API non può cambiare le variabili.",
+    "keyInvalid": "La chiave API non è stata accettata."
   }
 }

@@ -46,6 +46,8 @@ export default class Diagnostics {
     };
     try {
       const api = await getAppApi(this.homey);
+      // What the app's owner token may do (e.g. Logic variables: `homey.logic.readonly` but not `homey.logic`).
+      out.apiScopes = await (api as any).sessions.getSessionMe().then((s: any) => s?.scopes ?? null, (err: unknown) => String(err));
       const devices = Object.values(await api.devices.getDevices()) as any[];
       out.thermostats = devices
         .filter(d => d.capabilities?.includes('target_temperature') || d.capabilities?.includes('thermostat_mode'))

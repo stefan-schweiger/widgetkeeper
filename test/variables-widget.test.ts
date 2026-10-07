@@ -130,4 +130,12 @@ describe('editing', () => {
     vi.advanceTimersByTime(8100);
     expect(message().style.display).toBe('none');
   });
+
+  it("tells the user to add an API key when the app has none", async () => {
+    const { row, onSet, message } = widget([flag(false)]);
+    onSet.mockRejectedValueOnce(Object.assign(new Error('noKey'), { reason: 'noKey' }));
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    row(0).click();
+    await vi.waitFor(() => expect(message().textContent).toBe('To change variables, add an API key in the app settings.'));
+  });
 });

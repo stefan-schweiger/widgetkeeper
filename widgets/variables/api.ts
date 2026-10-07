@@ -1,6 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
 import { describeWidgetPerf } from '../../lib/Timings.js';
+import { VariableWriteError } from '../../lib/VariableService.js';
 
 type Homey = App['homey'];
 
@@ -22,7 +23,10 @@ export default {
     }
   },
 
-  /** `{id, value}`: the value must match the variable's type. */
+  /**
+   * `{id, value}`: the value must match the variable's type. Without a usable API key it answers
+   * `{ok: false, reason}` (`noKey`, `keyScope`, `keyInvalid`), so the widget can say what to do.
+   */
   async set({ homey, body }: {
     homey: Homey,
     body: { id?: unknown, value?: unknown },
@@ -33,6 +37,10 @@ export default {
       await app.variables.set(body.id, body.value);
       return { ok: true };
     } catch (err) {
+      if (err instanceof VariableWriteError) {
+        if (err.reason !== 'noKey') app.log(`Flow variable set failed (${err.reason}):`, err.message);
+        return { ok: false, reason: err.reason };
+      }
       app.log('Flow variable set failed:', err);
       throw err;
     }

@@ -63,7 +63,19 @@
     "loadFailed": "Diagnose konnte nicht geladen werden: __error__",
     "updated": "Aktualisiert um __time__",
     "copied": "In die Zwischenablage kopiert",
-    "shareTitle": "Widgetkeeper-Diagnose"
+    "shareTitle": "Widgetkeeper-Diagnose",
+    "varTitle": "Flow-Variablen",
+    "varHelp": "Homey lässt Apps Flow-Variablen nicht selbst ändern. Erstelle in der Homey-Web-App unter Einstellungen → API-Schlüssel einen API-Schlüssel, der Variablen ändern darf, und füge ihn hier ein. Er bleibt auf deinem Homey.",
+    "varKey": "API-Schlüssel",
+    "varSave": "Speichern",
+    "varRemove": "Entfernen",
+    "varChecking": "Schlüssel wird geprüft…",
+    "varSaved": "Gespeichert. Das Widget kann jetzt Variablen ändern.",
+    "varRemoved": "Entfernt.",
+    "varIsSet": "Ein Schlüssel ist gespeichert.",
+    "varNotSet": "Kein Schlüssel gespeichert: Das Widget zeigt Variablen, kann sie aber nicht ändern.",
+    "varKeyScope": "Der API-Schlüssel darf keine Variablen ändern.",
+    "varKeyInvalid": "Der API-Schlüssel wurde nicht akzeptiert."
   },
   "heatmap": {
     "selectDevice": "Wähle ein Gerät und einen Wert in den Widget-Einstellungen.",
@@ -116,6 +128,9 @@
     "no": "Nein",
     "typeBoolean": "Ja/Nein",
     "typeNumber": "Zahl",
-    "typeString": "Text"
+    "typeString": "Text",
+    "noKey": "Füge in den App-Einstellungen einen API-Schlüssel hinzu, um Variablen zu ändern.",
+    "keyScope": "Der API-Schlüssel darf keine Variablen ändern.",
+    "keyInvalid": "Der API-Schlüssel wurde nicht akzeptiert."
   }
 }

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fakeApi, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
-import VariableService, { checkValue, VARIABLES_STATE_EVENT } from '../lib/VariableService.js';
+import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
+import VariableService, { API_KEY_SETTING, checkValue, VARIABLES_STATE_EVENT } from '../lib/VariableService.js';
 
 vi.mock('homey-api', () => homeyApiMock);
 
@@ -104,27 +104,96 @@ describe('getState', () => {
   });
 });
 
+/** A personal API key's API: the scopes it has, and Logic writes that land in the app's fake Logic manager. */
+function keyApi(logic: any, scopes = ['homey.logic', 'homey.logic.readonly']) {
+  return {
+    sessions: { getSessionMe: vi.fn(async () => ({ scopes })) },
+    logic: {
+      updateVariable: vi.fn(async (args: any) => {
+        if (!scopes.includes('homey.logic')) throw new Error('Missing Scopes');
+        return logic.updateVariable(args);
+      }),
+    },
+  };
+}
+
 describe('set', () => {
-  it('sets a value of the right type', async () => {
-    const { service, logic } = setup();
+  afterEach(() => { keyApis.clear(); });
+
+  function withKey(scopes?: string[]) {
+    const s = setup();
+    const api = keyApi(s.logic, scopes);
+    keyApis.set('key-1', api);
+    s.homey.settings.set(API_KEY_SETTING, 'key-1');
+    return { ...s, keyApi: api };
+  }
+
+  it('writes through the API key, with a value of the right type', async () => {
+    const { service, logic, keyApi: api } = withKey();
     await service.getState(['v2']);
     await service.set('v2', 20.5);
-    expect(logic.updateVariable).toHaveBeenCalledWith({ id: 'v2', variable: { value: 20.5 } });
+    expect(api.logic.updateVariable).toHaveBeenCalledWith({ id: 'v2', variable: { value: 20.5 } });
+    expect(logic.vars.get('v2')!.value).toBe(20.5);
     expect((await service.getState(['v2']))[0]).toMatchObject({ value: 20.5 });
   });
 
   it('reads the variable when it is not cached yet', async () => {
-    const { service, logic } = setup();
+    const { service, keyApi: api } = withKey();
     await service.set('v1', true);
-    expect(logic.updateVariable).toHaveBeenCalledWith({ id: 'v1', variable: { value: true } });
+    expect(api.logic.updateVariable).toHaveBeenCalledWith({ id: 'v1', variable: { value: true } });
   });
 
   it('rejects a wrong type and an unknown variable', async () => {
-    const { service, logic } = setup();
+    const { service, keyApi: api } = withKey();
     await expect(service.set('v1', 'yes')).rejects.toThrow();
     await expect(service.set('v2', Number.NaN)).rejects.toThrow();
     await expect(service.set('gone', true)).rejects.toThrow();
     await expect(service.set('v4', {})).rejects.toThrow();
-    expect(logic.updateVariable).not.toHaveBeenCalled();
+    expect(api.logic.updateVariable).not.toHaveBeenCalled();
+  });
+
+  it("says why it can't write: no key, a key without the scope, a key Homey refuses", async () => {
+    const { service, homey } = setup();
+    await expect(service.set('v1', true)).rejects.toMatchObject({ reason: 'noKey' });
+    const { service: scoped } = withKey(['homey.logic.readonly']);
+    await expect(scoped.set('v1', true)).rejects.toMatchObject({ reason: 'keyScope' });
+    homey.settings.set(API_KEY_SETTING, 'unknown');
+    await expect(service.set('v1', true)).rejects.toMatchObject({ reason: 'keyInvalid' });
+    // The app's own token never writes: Homey refuses it (`homey.logic.readonly` only).
+    expect(homey.fakeApi.logic.updateVariable).not.toHaveBeenCalled();
+  });
+});
+
+describe('saveApiKey', () => {
+  afterEach(() => { keyApis.clear(); });
+
+  it('saves a key that may change variables, and removes it again', async () => {
+    const { service, homey, logic } = setup();
+    keyApis.set('good', keyApi(logic));
+    expect(await service.saveApiKey(' good ')).toEqual({ ok: true });
+    expect(homey.settings.get(API_KEY_SETTING)).toBe('good');
+    expect(service.hasApiKey()).toBe(true);
+    expect(await service.saveApiKey('')).toEqual({ ok: true });
+    expect(service.hasApiKey()).toBe(false);
+  });
+
+  it("doesn't save a key Homey refuses or one without the variables scope", async () => {
+    const { service, logic } = setup();
+    keyApis.set('readonly', keyApi(logic, ['homey.logic.readonly']));
+    expect(await service.saveApiKey('readonly')).toEqual({ ok: false, reason: 'keyScope' });
+    expect(await service.saveApiKey('nope')).toEqual({ ok: false, reason: 'keyInvalid' });
+    expect(service.hasApiKey()).toBe(false);
+  });
+
+  it('switches to a new key at once', async () => {
+    const { service, logic } = setup();
+    const a = keyApi(logic), b = keyApi(logic);
+    keyApis.set('a', a); keyApis.set('b', b);
+    await service.saveApiKey('a');
+    await service.set('v1', true);
+    await service.saveApiKey('b');
+    await service.set('v1', false);
+    expect(a.logic.updateVariable).toHaveBeenCalledTimes(1);
+    expect(b.logic.updateVariable).toHaveBeenCalledTimes(1);
   });
 });

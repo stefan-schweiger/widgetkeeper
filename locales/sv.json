@@ -63,7 +63,19 @@
     "loadFailed": "Kunde inte läsa in diagnostik: __error__",
     "updated": "Uppdaterad __time__",
     "copied": "Kopierat till urklipp",
-    "shareTitle": "Widgetkeeper-diagnostik"
+    "shareTitle": "Widgetkeeper-diagnostik",
+    "varTitle": "Flödesvariabler",
+    "varHelp": "Homey låter inte appar ändra flödesvariabler själva. Skapa i Homeys webbapp under Inställningar → API-nycklar en API-nyckel som får ändra variabler och klistra in den här. Den stannar på din Homey.",
+    "varKey": "API-nyckel",
+    "varSave": "Spara",
+    "varRemove": "Ta bort",
+    "varChecking": "Kontrollerar nyckeln…",
+    "varSaved": "Sparad. Widgeten kan nu ändra variabler.",
+    "varRemoved": "Borttagen.",
+    "varIsSet": "En nyckel är sparad.",
+    "varNotSet": "Ingen nyckel sparad: widgeten visar variabler men kan inte ändra dem.",
+    "varKeyScope": "API-nyckeln får inte ändra variabler.",
+    "varKeyInvalid": "API-nyckeln godkändes inte."
   },
   "heatmap": {
     "selectDevice": "Välj en enhet och ett värde i widgetens inställningar.",
@@ -116,6 +128,9 @@
     "no": "Nej",
     "typeBoolean": "Ja/Nej",
     "typeNumber": "Tal",
-    "typeString": "Text"
+    "typeString": "Text",
+    "noKey": "Lägg till en API-nyckel i appinställningarna för att ändra variabler.",
+    "keyScope": "API-nyckeln får inte ändra variabler.",
+    "keyInvalid": "API-nyckeln godkändes inte."
   }
 }

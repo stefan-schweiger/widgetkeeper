@@ -63,6 +63,14 @@
     "getDiagnostics": {
       "method": "GET",
       "path": "/diagnostics"
+    },
+    "getVariablesKey": {
+      "method": "GET",
+      "path": "/variables-key"
+    },
+    "putVariablesKey": {
+      "method": "PUT",
+      "path": "/variables-key"
     }
   }
 }

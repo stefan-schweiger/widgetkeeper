@@ -16,7 +16,12 @@
     error: 'Could not load the variables.',
     failed: 'Could not change __name__.',
     missing: 'Variable not found',
+    noKey: 'To change variables, add an API key in the app settings.',
+    keyScope: 'The API key may not change variables.',
+    keyInvalid: 'The API key was not accepted.',
   };
+  /** Why a change was refused, from the app (`{ok: false, reason}`): each has its own message. */
+  const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
 
   function el(tag, attrs, parent) {
     const node = document.createElement(tag);
@@ -177,7 +182,7 @@
         console.error(err);
         optimistic.delete(v.id);
         shake(v.id);
-        setMessage(t('failed', { name: v.name }), true);
+        setMessage(err && KEY_PROBLEMS.includes(err.reason) ? t(err.reason) : t('failed', { name: v.name }), true);
       }
     }
 

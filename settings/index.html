@@ -14,9 +14,23 @@
   </style>
 </head>
 <body>
+  <fieldset class="homey-form-fieldset">
+    <legend class="homey-form-legend" data-i18n="varTitle">Flow Variables</legend>
+    <p class="homey-form-help" data-i18n="varHelp"></p>
+    <div class="homey-form-group">
+      <label class="homey-form-label" for="varKey" data-i18n="varKey">API key</label>
+      <input class="homey-form-input" id="varKey" type="password" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="row">
+      <button class="homey-button-primary-shadow" id="varSave" data-i18n="varSave">Save</button>
+      <button class="homey-button-secondary-shadow" id="varRemove" data-i18n="varRemove">Remove</button>
+    </div>
+    <p class="homey-form-help" id="varStatus"></p>
+  </fieldset>
+
   <header class="homey-header">
-    <h1 class="homey-title" data-i18n="title">Diagnostics</h1>
-    <p class="homey-subtitle" data-i18n="subtitle">The app's recent log and device details. Copy or share the report to get help debugging.</p>
+    <h2 class="homey-title" data-i18n="title">Diagnostics</h2>
+    <p class="homey-subtitle" data-i18n="subtitle"></p>
   </header>
 
   <fieldset class="homey-form-fieldset">
@@ -84,6 +98,30 @@
           navigator.share({ title: t('shareTitle'), text: report.value }).catch(() => {});
         });
       }
+
+      // The Flow Variables API key: checked by the app before it's saved, and never sent back.
+      const varKey = document.getElementById('varKey');
+      const varStatus = document.getElementById('varStatus');
+      function showKeyState() {
+        Homey.api('GET', '/variables-key', null, (err, res) => {
+          if (!err) varStatus.textContent = t(res && res.set ? 'varIsSet' : 'varNotSet');
+        });
+      }
+      function saveKey(key) {
+        varStatus.textContent = t('varChecking');
+        Homey.api('PUT', '/variables-key', { key }, (err, res) => {
+          if (err) { varStatus.textContent = err.message || String(err); return; }
+          if (res && res.ok) {
+            varKey.value = '';
+            varStatus.textContent = t(key ? 'varSaved' : 'varRemoved');
+          } else {
+            varStatus.textContent = t(res && res.reason === 'keyScope' ? 'varKeyScope' : 'varKeyInvalid');
+          }
+        });
+      }
+      document.getElementById('varSave').addEventListener('click', () => { if (varKey.value.trim()) saveKey(varKey.value.trim()); });
+      document.getElementById('varRemove').addEventListener('click', () => saveKey(''));
+      showKeyState();
 
       select.addEventListener('change', load);
       document.getElementById('refresh').addEventListener('click', load);
