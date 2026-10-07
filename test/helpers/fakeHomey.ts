@@ -84,7 +84,45 @@ export type FakeApiOptions = {
   currency?: unknown,
   priceType?: unknown, // Homey's electricity price type: 'dynamic' (the default) or 'fixed'
   fixedPrice?: unknown, // the `electricityPriceFixed` option
+  variables?: FakeVariable[], // Logic variables
 };
+
+export type FakeVariable = { id: string, name: string, type: string, value: unknown };
+
+/** Homey's Logic manager: variables, a connection and the `variable.*` events. */
+export function fakeLogic(variables: FakeVariable[] = []) {
+  const vars = new Map(variables.map(v => [v.id, { ...v }]));
+  const listeners = new Map<string, ((data: any) => void)[]>();
+  const logic = {
+    vars,
+    connected: false,
+    connect: vi.fn(async () => { logic.connected = true; }),
+    disconnect: vi.fn(async () => { logic.connected = false; }),
+    getVariables: vi.fn(async (_opts?: object) => Object.fromEntries([...vars].map(([id, v]) => [id, { ...v }]))),
+    getVariable: vi.fn(async ({ id }: { id: string }) => {
+      const v = vars.get(id);
+      if (!v) throw new Error(`No variable ${id}`);
+      return { ...v };
+    }),
+    updateVariable: vi.fn(async ({ id, variable }: { id: string, variable: { value: unknown } }) => {
+      const v = vars.get(id);
+      if (!v) throw new Error(`No variable ${id}`);
+      v.value = variable.value;
+    }),
+    on: vi.fn((event: string, cb: (data: any) => void) => { listeners.set(event, [...(listeners.get(event) ?? []), cb]); }),
+    off: vi.fn((event: string, cb: (data: any) => void) => { listeners.set(event, (listeners.get(event) ?? []).filter(x => x !== cb)); }),
+    /** Homey sends a `variable.<op>` event (as if a flow changed it). */
+    emit(event: string, data: any) {
+      if (event === 'variable.update' || event === 'variable.create') vars.set(data.id, { ...vars.get(data.id), ...data });
+      if (event === 'variable.delete') vars.delete(data.id);
+      for (const cb of listeners.get(event) ?? []) cb(data);
+    },
+    listenerCount(event: string) {
+      return listeners.get(event)?.length ?? 0;
+    },
+  };
+  return logic;
+}
 
 export function fakeApi(opts: FakeApiOptions = {}) {
   const byId = () => Object.fromEntries((opts.devices ?? []).map(d => [d.id, d]));
@@ -112,6 +150,7 @@ export function fakeApi(opts: FakeApiOptions = {}) {
       getElectricityPriceType: vi.fn(async () => opts.priceType ?? 'dynamic'),
       getOptionElectricityPriceFixed: vi.fn(async () => opts.fixedPrice ?? { value: null }),
     },
+    logic: fakeLogic(opts.variables),
   };
 }
 

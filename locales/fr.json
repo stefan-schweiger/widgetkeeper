@@ -105,5 +105,17 @@
     "temperature": "Température de couleur",
     "color": "Couleur",
     "close": "Fermer"
+  },
+  "variables": {
+    "selectSlots": "Choisissez des variables dans les réglages.",
+    "error": "Impossible de charger les variables.",
+    "failed": "Impossible de modifier __name__.",
+    "missing": "Variable introuvable",
+    "none": "Aucune",
+    "yes": "Oui",
+    "no": "Non",
+    "typeBoolean": "Oui/Non",
+    "typeNumber": "Nombre",
+    "typeString": "Texte"
   }
 }

@@ -1,6 +1,6 @@
 # Widgetkeeper — notes for Claude
 
-Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widgets: **Electricity Overview** (id `electricity`), **Thermostat Shortcuts** (id `thermostat`), **Device Quick Actions** (id `quickactions`), **Sensor Alarms** (id `sensoralarms`), **Weather Forecast** (id `weather`), **Insights Heatmap** (id `heatmap`), **Cameras** (id `cameras`), **Device Values** (id `values`), **Light Controls** (id `lights`) and **Sparklines** (id `sparklines`). Keep the ids; renaming them would break widgets already on dashboards. Its design spec is in `temp/Homey electricity dashboard widget.zip`; `temp/` is gitignored.
+Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widgets: **Electricity Overview** (id `electricity`), **Thermostat Shortcuts** (id `thermostat`), **Device Quick Actions** (id `quickactions`), **Sensor Alarms** (id `sensoralarms`), **Weather Forecast** (id `weather`), **Insights Heatmap** (id `heatmap`), **Cameras** (id `cameras`), **Device Values** (id `values`), **Light Controls** (id `lights`), **Sparklines** (id `sparklines`) and **Flow Variables** (id `variables`). Keep the ids; renaming them would break widgets already on dashboards. Its design spec is in `temp/Homey electricity dashboard widget.zip`; `temp/` is gitignored.
 
 ## Commands
 - Use the **project-local Homey CLI v4**: `npx homey …`. The global `homey` is an old 3.7.x.
@@ -28,6 +28,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
   - `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html` and `dev/weather-preview.html` do the same for the other widgets. The weather page takes `?snap=/temp/met-compact.json` (a real MET response); its mock is `dev/mock-weather.js`.
   - `dev/cameras-preview.html`: 1–6 cameras, light, no snapshot, unavailable, and live (a canvas stream stands in for WebRTC). Its mock scenes are `dev/mock-cameras.js`: drawn SVGs, so no real camera images go in the repo.
   - `dev/values-preview.html`: the Device Values tiles, dark, light and 300 px.
+  - `dev/variables-preview.html`: the Flow Variables rows (see that section).
   - `dev/sparklines-preview.html`: the Sparklines tiles, dark, light, 300 px, 1 column with 7 days, and 1 h with a simulated live value every 2 s.
   - `dev/heatmap-preview.html` takes `?snap=/temp/heatmap-lux.json` (the `heatmapHistory` of `npm run diagnostics -- --json --heatmap <deviceId>:<capabilityId>`) and `?today=&hour=`; its mock is `dev/mock-heatmap.js`.
   - `?lang=de` (either page) uses `locales/de.json`, through `dev/i18n.js`.
@@ -223,6 +224,19 @@ How this project uses it:
 - Live: the service reuses `ValueService.getState()` for the name, icon and value, so tracking and the realtime events are Device Values' own (`values:state`, which the widget listens to). The widget appends each live number as a point and draws the line on to now at the current value. A refresh (with a history up to 5 min old) keeps the live points newer than its last point. It redraws every `span / 120` (10–60 s) so the line scrolls.
 - Endpoint: `GET /state?slots=a:cap,b:cap&span=24h`: Device Values' entries plus `points: [t, v][]`, or `{deviceId, capabilityId, missing: true}`.
 - The widget copies Device Values' glyphs and number formatting (Homey serves each widget's files separately); `sparkPath()` (on `window`) draws the paths. The SVG elements stay in place and are measured at each render (a `ResizeObserver` redraws on resize).
+
+## Flow Variables widget
+- Homey's Logic variables as compact rows, for flow flags (a user's request: the built-in variable widget gives each variable a big tile and cuts the name). `lib/VariableService.ts` owns it. Transparent, with Quick Actions' tile style (`#181920` dark fill, 10 px radius, the rim).
+- Settings: `columns` (`"1"` default or `"2"`; `data-columns` on `.vr`; 2 falls back to 1 below 340 px of content, `@container vr`), `step` (number, default 1: the −/+ step) and the autocompletes `slot1`…`slot10` (the user chose explicit slots over a name filter). Each lists every variable by name, described `Yes/No · No`; `None` (id `none`) first, which the widget skips.
+- A row (48 px min): the name (14/20 bold, up to 2 lines before it's cut) and the control on the right.
+  - Boolean: a switch (Homey's blue when on); a tap anywhere on the row toggles it.
+  - Number: `−` value `+` (32 px round buttons). A burst of taps is sent once, 700 ms after the last one (`variableStepValue()` rounds away float noise). A tap on the row opens an input (`inputmode="decimal"`, a decimal comma works: `parseVariableNumber()`).
+  - String: the text, muted, ellipsized at up to half the row; a tap opens a text input. Enter or leaving the input sends, Escape cancels; realtime changes don't overwrite an open input.
+  - Taps use Quick Actions' touch-tap logic (`onTap()`), so they work on Android. Optimistic values for 10 s; a failure shakes the row and shows a transient message.
+- API (homey-api, read from its source): `api.logic.getVariables()` → `{[id]: {id, name, type: boolean|number|string, value}}`, `updateVariable({id, variable: {value}})`. Realtime needs `api.logic.connect()` first (`on()` doesn't connect); the events are `variable.update`/`create` (an item when cached, else the raw, possibly partial data, so the service merges) and `variable.delete` (`{id}`). The owner token of `homey:manager:api` should cover the `homey.logic` scope; not yet verified on the Homey.
+- The service connects on the first `/state` and disconnects after 10 min without one. It re-reads every variable at most every 4 min (`$cache: false`) in case an event was missed. `set` checks the value against the type (finite numbers, strings up to 1000 characters).
+- Endpoints: `GET /state?ids=a,b` (`{id, name, type, value}` or `{id, missing: true}`, in order) and `POST /set {id, value}`. Realtime: `variables:state` with the same entry, only for ids asked for in the last 10 min. Widgets re-fetch every 5 min. The diagnostics report has a `variables` section (connection and counts, never values).
+- `dev/variables-preview.html`: 1 and 2 columns, dark, light, 300 px, with a simulated Homey (`Broken flag` fails). The showcase has one on the security dashboard (2 columns, made-up flags).
 
 ## Diagnostics (no Docker needed)
 - **Read it yourself with `npm run diagnostics`** (`scripts/diagnostics.mjs`); don't ask the user to paste it. It calls the app's `GET /diagnostics` on the active Homey through `homey api raw`, which uses the CLI's login. Options: `-- --device <id|name>`, `--devices`, `--json`, `--debug on|off`, `--heatmap <deviceId>:<capabilityId>[:<days>]` (adds the heatmap's `/history` for it; note this starts recording a boolean, as a widget would). Right after an install the app may still be starting, so retry.

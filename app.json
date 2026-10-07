@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.thomassidor.widgetkeeper",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "compatibility": ">=12.6.0",
   "sdk": 3,
   "runtime": "nodejs",
@@ -2321,6 +2321,308 @@
         }
       },
       "id": "values"
+    },
+    "variables": {
+      "name": {
+        "en": "Flow Variables",
+        "nl": "Flowvariabelen",
+        "de": "Flow-Variablen",
+        "fr": "Variables de flow",
+        "it": "Variabili dei flow",
+        "sv": "Flödesvariabler",
+        "no": "Flytvariabler",
+        "es": "Variables de flujo",
+        "da": "Flowvariabler",
+        "ru": "Переменные потоков",
+        "pl": "Zmienne Flow",
+        "ko": "플로우 변수",
+        "ar": "متغيرات التدفقات"
+      },
+      "height": 112,
+      "transparent": true,
+      "settings": [
+        {
+          "id": "columns",
+          "type": "dropdown",
+          "title": {
+            "en": "Columns",
+            "nl": "Kolommen",
+            "de": "Spalten",
+            "fr": "Colonnes",
+            "it": "Colonne",
+            "sv": "Kolumner",
+            "no": "Kolonner",
+            "es": "Columnas",
+            "da": "Kolonner",
+            "ru": "Столбцы",
+            "pl": "Kolumny",
+            "ko": "열",
+            "ar": "الأعمدة"
+          },
+          "value": "1",
+          "values": [
+            {
+              "id": "1",
+              "title": {
+                "en": "1",
+                "nl": "1",
+                "de": "1",
+                "fr": "1",
+                "it": "1",
+                "sv": "1",
+                "no": "1",
+                "es": "1",
+                "da": "1",
+                "ru": "1",
+                "pl": "1",
+                "ko": "1",
+                "ar": "1"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "2",
+                "nl": "2",
+                "de": "2",
+                "fr": "2",
+                "it": "2",
+                "sv": "2",
+                "no": "2",
+                "es": "2",
+                "da": "2",
+                "ru": "2",
+                "pl": "2",
+                "ko": "2",
+                "ar": "2"
+              }
+            }
+          ]
+        },
+        {
+          "id": "step",
+          "type": "number",
+          "title": {
+            "en": "Step for − and +",
+            "nl": "Stap voor − en +",
+            "de": "Schritt für − und +",
+            "fr": "Pas pour − et +",
+            "it": "Passo per − e +",
+            "sv": "Steg för − och +",
+            "no": "Steg for − og +",
+            "es": "Paso para − y +",
+            "da": "Trin for − og +",
+            "ru": "Шаг для − и +",
+            "pl": "Krok dla − i +",
+            "ko": "− 및 + 단계",
+            "ar": "خطوة − و +"
+          },
+          "value": 1,
+          "min": 0.001,
+          "max": 1000
+        },
+        {
+          "id": "slot1",
+          "type": "autocomplete",
+          "title": {
+            "en": "Variable 1",
+            "nl": "Variabele 1",
+            "de": "Variable 1",
+            "fr": "Variable 1",
+            "it": "Variabile 1",
+            "sv": "Variabel 1",
+            "no": "Variabel 1",
+            "es": "Variable 1",
+            "da": "Variabel 1",
+            "ru": "Переменная 1",
+            "pl": "Zmienna 1",
+            "ko": "변수 1",
+            "ar": "المتغير 1"
+          }
+        },
+        {
+          "id": "slot2",
+          "type": "autocomplete",
+          "title": {
+            "en": "Variable 2",
+            "nl": "Variabele 2",
+            "de": "Variable 2",
+            "fr": "Variable 2",
+            "it": "Variabile 2",
+            "sv": "Variabel 2",
+            "no": "Variabel 2",
+            "es": "Variable 2",
+            "da": "Variabel 2",
+            "ru": "Переменная 2",
+            "pl": "Zmienna 2",
+            "ko": "변수 2",
+            "ar": "المتغير 2"
+          }
+        },
+        {
+          "id": "slot3",
+          "type": "autocomplete",
+          "title": {
+            "en": "Variable 3",
+            "nl": "Variabele 3",
+            "de": "Variable 3",
+            "fr": "Variable 3",
+            "it": "Variabile 3",
+            "sv": "Variabel 3",
+            "no": "Variabel 3",
+            "es": "Variable 3",
+            "da": "Variabel 3",
+            "ru": "Переменная 3",
+            "pl": "Zmienna 3",
+            "ko": "변수 3",
+            "ar": "المتغير 3"
+          }
+        },
+        {
+          "id": "slot4",
+          "type": "autocomplete",
+          "title": {
+            "en": "Variable 4",
+            "nl": "Variabele 4",
+            "de": "Variable 4",
+            "fr": "Variable 4",
+            "it": "Variabile 4",
+            "sv": "Variabel 4",
+            "no": "Variabel 4",
+            "es": "Variable 4",
+            "da": "Variabel 4",
+            "ru": "Переменная 4",
+            "pl": "Zmienna 4",
+            "ko": "변수 4",
+            "ar": "المتغير 4"
+          }
+        },
+        {
+          "id": "slot5",
+          "type": "autocomplete",
+          "title": {
+            "en": "Variable 5",
+            "nl": "Variabele 5",
+            "de": "Variable 5",
+            "fr": "Variable 5",
+            "it": "Variabile 5",
+            "sv": "Variabel 5",
+            "no": "Variabel 5",
+            "es": "Variable 5",
+            "da": "Variabel 5",
+            "ru": "Переменная 5",
+            "pl": "Zmienna 5",
+            "ko": "변수 5",
+            "ar": "المتغير 5"
+          }
+        },
+        {
+          "id": "slot6",
+          "type": "autocomplete",
+          "title": {
+            "en": "Variable 6",
+            "nl": "Variabele 6",
+            "de": "Variable 6",
+            "fr": "Variable 6",
+            "it": "Variabile 6",
+            "sv": "Variabel 6",
+            "no": "Variabel 6",
+            "es": "Variable 6",
+            "da": "Variabel 6",
+            "ru": "Переменная 6",
+            "pl": "Zmienna 6",
+            "ko": "변수 6",
+            "ar": "المتغير 6"
+          }
+        },
+        {
+          "id": "slot7",
+          "type": "autocomplete",
+          "title": {
+            "en": "Variable 7",
+            "nl": "Variabele 7",
+            "de": "Variable 7",
+            "fr": "Variable 7",
+            "it": "Variabile 7",
+            "sv": "Variabel 7",
+            "no": "Variabel 7",
+            "es": "Variable 7",
+            "da": "Variabel 7",
+            "ru": "Переменная 7",
+            "pl": "Zmienna 7",
+            "ko": "변수 7",
+            "ar": "المتغير 7"
+          }
+        },
+        {
+          "id": "slot8",
+          "type": "autocomplete",
+          "title": {
+            "en": "Variable 8",
+            "nl": "Variabele 8",
+            "de": "Variable 8",
+            "fr": "Variable 8",
+            "it": "Variabile 8",
+            "sv": "Variabel 8",
+            "no": "Variabel 8",
+            "es": "Variable 8",
+            "da": "Variabel 8",
+            "ru": "Переменная 8",
+            "pl": "Zmienna 8",
+            "ko": "변수 8",
+            "ar": "المتغير 8"
+          }
+        },
+        {
+          "id": "slot9",
+          "type": "autocomplete",
+          "title": {
+            "en": "Variable 9",
+            "nl": "Variabele 9",
+            "de": "Variable 9",
+            "fr": "Variable 9",
+            "it": "Variabile 9",
+            "sv": "Variabel 9",
+            "no": "Variabel 9",
+            "es": "Variable 9",
+            "da": "Variabel 9",
+            "ru": "Переменная 9",
+            "pl": "Zmienna 9",
+            "ko": "변수 9",
+            "ar": "المتغير 9"
+          }
+        },
+        {
+          "id": "slot10",
+          "type": "autocomplete",
+          "title": {
+            "en": "Variable 10",
+            "nl": "Variabele 10",
+            "de": "Variable 10",
+            "fr": "Variable 10",
+            "it": "Variabile 10",
+            "sv": "Variabel 10",
+            "no": "Variabel 10",
+            "es": "Variable 10",
+            "da": "Variabel 10",
+            "ru": "Переменная 10",
+            "pl": "Zmienna 10",
+            "ko": "변수 10",
+            "ar": "المتغير 10"
+          }
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        },
+        "set": {
+          "method": "POST",
+          "path": "/set"
+        }
+      },
+      "id": "variables"
     },
     "weather": {
       "name": {

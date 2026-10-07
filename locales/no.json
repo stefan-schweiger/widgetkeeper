@@ -105,5 +105,17 @@
     "temperature": "Fargetemperatur",
     "color": "Farge",
     "close": "Lukk"
+  },
+  "variables": {
+    "selectSlots": "Velg variabler i widgetinnstillingene.",
+    "error": "Kunne ikke laste variablene.",
+    "failed": "Kunne ikke endre __name__.",
+    "missing": "Fant ikke variabelen",
+    "none": "Ingen",
+    "yes": "Ja",
+    "no": "Nei",
+    "typeBoolean": "Ja/Nei",
+    "typeNumber": "Tall",
+    "typeString": "Tekst"
   }
 }

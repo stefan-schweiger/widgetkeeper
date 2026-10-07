@@ -44,6 +44,10 @@ Compact light tiles with brightness, colour and colour temperature: six lights i
 <a href="#sparklines"><b>Sparklines</b></a><br>
 Tiles with a small chart of a value over the last hour, day or week, with its lowest and highest<br clear="left"></p>
 
+<p><a href="#flow-variables"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/variables-dark.png"><img src="docs/previews/variables-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#flow-variables"><b>Flow Variables</b></a><br>
+Compact rows to switch flow variables on and off or change a number or text, with the full name<br clear="left"></p>
+
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
@@ -115,6 +119,13 @@ Compact light tiles, six in the space of three of Homey's light cards. Tap a til
 Device Values' tiles with a small chart of each value from Insights, with its highest and lowest, following the live value.
 
 **Settings:** up to six values, time span (1 h, 6 h, 24 h or 7 days), 2 or 1 columns.
+
+## Flow Variables
+<img src="docs/screenshots/variables.png" alt="Flow Variables on a Homey dashboard" width="358">
+
+Homey's Logic variables as compact rows that show the full name: a switch for a yes/no variable, − and + for a number, and the text for a string. Tap a number or a text to type a new value. Changes made by flows show up live.
+
+**Settings:** up to ten variables, 1 or 2 columns, and the step for − and +.
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic, following Homey's language.

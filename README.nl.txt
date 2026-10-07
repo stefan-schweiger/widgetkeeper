@@ -13,5 +13,6 @@ Inbegrepen widgets:
 - Apparaatwaarden: compacte tegels die elk één waarde tonen, zoals een temperatuur, een batterijniveau of aan/uit.
 - Lichtbediening: compacte lichttegels met helderheid, kleur en kleurtemperatuur, zes lampen in de ruimte van drie.
 - Sparklines: compacte tegels met een kleine grafiek van een waarde over het laatste uur, de laatste 6 uur, dag of week, met het laagste en hoogste punt.
+- Flowvariabelen: compacte rijen om flowvariabelen aan en uit te zetten of een getal of tekst te wijzigen, met de volledige naam.
 
 Weergegevens van MET Norway, onder licentie CC BY 4.0.

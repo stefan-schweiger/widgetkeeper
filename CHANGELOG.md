@@ -2,6 +2,22 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 0.8.0
+
+### New: Flow Variables
+- Set Homey's flow variables from the dashboard: compact rows that show the full name, instead of big tiles that cut it off.
+- A yes/no variable gets a switch; tap anywhere on its row to flip it.
+- A number gets − and + buttons (the step is a setting, 1 by default); tap the number to type an exact value. A text variable shows its text; tap it to type a new one.
+- Pick up to ten variables, in the order you like, and show them **1** (the default) or **2** per line.
+- Changes made by flows show up the moment they happen.
+
+### Electricity Overview
+- Supports a fixed electricity price set in Homey Energy: the price shows in the header, and usage gets its own chart instead of the price chart.
+- Solar export: power below zero is drawn below the zero line in yellow, and the header says *Exporting now*.
+
+### Light Controls
+- New setting, *Brightness bar at the far left*: stop the bar at 1 % so the light stays on, instead of turning it off.
+
 ## 0.7.1
 
 ### Thermostat Shortcuts

@@ -105,5 +105,17 @@
     "temperature": "Colour temperature",
     "color": "Colour",
     "close": "Close"
+  },
+  "variables": {
+    "selectSlots": "Pick variables in the widget settings.",
+    "error": "Could not load the variables.",
+    "failed": "Could not change __name__.",
+    "missing": "Variable not found",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "typeBoolean": "Yes/No",
+    "typeNumber": "Number",
+    "typeString": "Text"
   }
 }

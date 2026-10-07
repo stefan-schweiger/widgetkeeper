@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|var-dark|var-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -318,6 +318,30 @@ function sparklines(t, theme) {
   </div>`;
 }
 
+// Flow Variables is transparent too: a list of full-width rows, each a long name and its control: a switch
+// for a yes/no variable (blue when on), − value + for a number.
+function flowVariables(t, theme) {
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const off = theme === 'dark' ? '#3A3B44' : '#D5D6DB', btn = theme === 'dark' ? '#2E3039' : '#EEEFF2';
+  const sw = on => `<div style="position:relative;width:110px;height:64px;border-radius:32px;background:${on ? BLUE : off};flex-shrink:0">
+      <div style="position:absolute;top:6px;left:${on ? 52 : 6}px;width:52px;height:52px;border-radius:50%;background:#FFFFFF;box-shadow:0 2px 6px rgba(0,0,0,.3)"></div>
+    </div>`;
+  const round = sign => `<div style="width:76px;height:76px;border-radius:50%;background:${btn};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <div style="position:relative;width:30px;height:30px">
+        <div style="position:absolute;left:0;right:0;top:12px;height:6px;border-radius:3px;background:${t.fg}"></div>
+        ${sign === '+' ? `<div style="position:absolute;top:0;bottom:0;left:12px;width:6px;border-radius:3px;background:${t.fg}"></div>` : ''}
+      </div>
+    </div>`;
+  const row = ([w, control]) => `<div style="height:116px;border-radius:32px;background:${tileBg};box-shadow:${shadow};padding:0 24px 0 40px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:32px">
+      ${pill(w, 34, t.fg)}
+      ${control === 'num' ? `<div style="display:flex;align-items:center;gap:16px">${round('-')}${pill(70, 34, t.fg)}${round('+')}</div>` : `<div style="padding-right:16px">${sw(control)}</div>`}
+    </div>`;
+  return `<div style="width:880px;display:flex;flex-direction:column;gap:24px">
+    ${[[420, true], [480, false], [360, false], [300, 'num'], [440, true]].map(row).join('')}
+  </div>`;
+}
+
 const PREVIEWS = [
   { id: 'elec-dark',    label: '1a · Electricity Overview — preview-dark.png', theme: 'dark',  render: electricity },
   { id: 'elec-light',   label: '1b · Electricity Overview — preview-light.png', theme: 'light', render: electricity },
@@ -339,6 +363,8 @@ const PREVIEWS = [
   { id: 'lc-light',     label: '1r · Light Controls — preview-light.png',        theme: 'light', render: lightControls },
   { id: 'spark-dark',   label: '1s · Sparklines — preview-dark.png',             theme: 'dark',  render: sparklines },
   { id: 'spark-light',  label: '1t · Sparklines — preview-light.png',            theme: 'light', render: sparklines },
+  { id: 'var-dark',     label: '1u · Flow Variables — preview-dark.png',         theme: 'dark',  render: flowVariables },
+  { id: 'var-light',    label: '1v · Flow Variables — preview-light.png',        theme: 'light', render: flowVariables },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');

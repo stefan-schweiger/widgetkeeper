@@ -33,7 +33,7 @@ npm run screenshots                    # render the README screenshots (docs/scr
   - Stay on Homey's type scale. CLAUDE.md lists the tokens and the few deliberate exceptions.
 
 ### Previewing widgets in a browser
-`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/weather-preview.html`, `dev/heatmap-preview.html`, `dev/values-preview.html`, `dev/lights-preview.html` and `dev/sparklines-preview.html` render the widgets with mock data, outside Homey.
+`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/weather-preview.html`, `dev/heatmap-preview.html`, `dev/values-preview.html`, `dev/lights-preview.html`, `dev/sparklines-preview.html` and `dev/variables-preview.html` render the widgets with mock data, outside Homey.
 1. Serve the repo root, e.g. `python -m http.server 8765`.
 2. Open `/dev/preview.html`.
 3. Optionally add `#live=0.4` or `#price=0.3` to the URL to simulate scrubbing.
@@ -51,6 +51,7 @@ lib/HeatmapService.ts           Insights history and on/off recording for the he
 lib/ValueService.ts             capability value tracking for Device Values
 lib/LightService.ts             light state tracking and control for Light Controls
 lib/SparklineService.ts         Insights history for Sparklines (live values through ValueService)
+lib/VariableService.ts          Logic variables for Flow Variables (read, set, live updates)
 lib/heatmap.ts                  local-hour bucketing for the heatmap
 lib/deviceIcon.ts               device and capability icons, as SVG data URLs
 lib/appApi.ts                   shared HomeyAPI instance
@@ -65,6 +66,7 @@ widgets/heatmap/                widget manifest, api.ts, public/ (renderer)
 widgets/values/                 widget manifest, api.ts, public/ (renderer)
 widgets/lights/                 widget manifest, api.ts, public/ (renderer)
 widgets/sparklines/             widget manifest, api.ts, public/ (renderer)
+widgets/variables/              widget manifest, api.ts, public/ (renderer)
 settings/                       app settings page (diagnostics)
 dev/                            browser previews with mock data; screenshots.html for the README
 scripts/                        app image, widget preview and screenshot generators

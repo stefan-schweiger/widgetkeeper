@@ -105,5 +105,17 @@
     "temperature": "Kleurtemperatuur",
     "color": "Kleur",
     "close": "Sluiten"
+  },
+  "variables": {
+    "selectSlots": "Kies variabelen in de widgetinstellingen.",
+    "error": "Kon de variabelen niet laden.",
+    "failed": "Kon __name__ niet wijzigen.",
+    "missing": "Variabele niet gevonden",
+    "none": "Geen",
+    "yes": "Ja",
+    "no": "Nee",
+    "typeBoolean": "Ja/Nee",
+    "typeNumber": "Getal",
+    "typeString": "Tekst"
   }
 }

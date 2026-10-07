@@ -307,6 +307,12 @@
             value('b5', 'measure_battery', 'Doorbell', { units: '%', decimals: 0 }, 61),
             value('b6', 'measure_battery', 'Garage', { units: '%', decimals: 0 }, 45),
           ] },
+          { type: 'variables', opts: { columns: '2' }, vars: [
+            { id: 'f1', name: 'Away mode', type: 'boolean', value: false },
+            { id: 'f2', name: 'Guests staying over', type: 'boolean', value: true },
+            { id: 'f3', name: 'Pause the hallway motion lights', type: 'boolean', value: false },
+            { id: 'f4', name: 'Night setpoint', type: 'number', value: 18.5 },
+          ] },
         ],
         [
           { type: 'lights', devices: outdoorLights },

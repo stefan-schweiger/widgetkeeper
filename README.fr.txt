@@ -13,5 +13,6 @@ Widgets inclus :
 - Valeurs d'appareils : des tuiles compactes qui affichent chacune une valeur, comme une température, un niveau de batterie ou marche/arrêt.
 - Commandes d'éclairage : des tuiles compactes avec luminosité, couleur et température de couleur, six lampes dans l'espace de trois.
 - Mini-graphiques : des tuiles compactes avec un petit graphique d'une valeur sur la dernière heure, les 6 dernières heures, la journée ou la semaine, avec son minimum et son maximum.
+- Variables de flow : des lignes compactes pour activer ou désactiver des variables de flow, ou changer un nombre ou un texte, avec le nom complet.
 
 Données météo de MET Norway, sous licence CC BY 4.0.

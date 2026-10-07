@@ -13,5 +13,6 @@ Inkluderede widgets:
 - Enhedsværdier: kompakte felter, der hver viser én værdi, som en temperatur, et batteriniveau eller til/fra.
 - Lysstyring: kompakte lysfelter med lysstyrke, farve og farvetemperatur, seks lys på pladsen af tre.
 - Minigrafer: kompakte felter med en lille graf over en værdi den seneste time, de seneste 6 timer, døgnet eller ugen, med laveste og højeste værdi.
+- Flowvariabler: kompakte rækker til at slå flowvariabler til og fra eller ændre et tal eller en tekst, med hele navnet.
 
 Vejrdata fra MET Norway, licenseret under CC BY 4.0.

@@ -13,5 +13,6 @@ Widgets incluidos:
 - Valores de dispositivos: mosaicos compactos que muestran cada uno un valor, como una temperatura, un nivel de batería o encendido/apagado.
 - Control de luces: mosaicos compactos con brillo, color y temperatura de color, seis luces en el espacio de tres.
 - Minigráficos: mosaicos compactos con un pequeño gráfico de un valor en la última hora, las últimas 6 horas, el día o la semana, con su mínimo y su máximo.
+- Variables de flujo: filas compactas para activar y desactivar variables de flujo o cambiar un número o un texto, con el nombre completo.
 
 Datos meteorológicos de MET Norway, con licencia CC BY 4.0.

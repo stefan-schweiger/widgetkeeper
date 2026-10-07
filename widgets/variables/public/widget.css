@@ -1,0 +1,121 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/variables-preview.html).
+ * The row copies Device Quick Actions' tile (widgets/quickactions/public/widget.css).
+ */
+.vr {
+  --vr-tile: var(--homey-background-color, #FFFFFF);
+  --vr-text: var(--homey-text-color, #EDEEF0);
+  --vr-muted: var(--homey-text-color-light, #9C9DA5);
+  --vr-accent: var(--homey-color-blue, #2F8DF6);
+  --vr-knob: var(--homey-color-white, #FFFFFF);
+  --vr-off: color-mix(in srgb, var(--vr-text) 22%, var(--vr-tile)); /* the switch's track when off */
+  --vr-button: color-mix(in srgb, var(--vr-text) 8%, var(--vr-tile)); /* the −/+ buttons */
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --vr-fs-small: var(--homey-font-size-small, 14px); --vr-lh-small: var(--homey-line-height-small, 20px);
+  --vr-fs-default: var(--homey-font-size-default, 17px); --vr-lh-default: var(--homey-line-height-default, 24px);
+  --vr-regular: var(--homey-font-weight-regular, 400);
+  --vr-bold: var(--homey-font-weight-bold, 700);
+  --vr-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+}
+/* Dark mode: each row looks like a native device tile, darker than the default widget background. */
+.homey-dark-mode .vr, .vr.homey-dark-mode { --vr-tile: #181920; --vr-button: #2E3039; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
+html, body { background: transparent !important; }
+
+.vr { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--vr-text);
+  container: vr / inline-size; }
+.vr * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.vr [dir="auto"] { text-align: left; }
+
+.vr-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--homey-su-2, 8px); }
+.vr[data-columns="2"] .vr-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Two columns need room for a name beside the control; a narrow widget (300 px) gets one. */
+@container vr (max-width: 339px) {
+  .vr[data-columns="2"] .vr-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* A compact row (48px): the name, then the control on the right. */
+.vr-row {
+  position: relative; color: var(--vr-text);
+  background: var(--vr-tile); border-radius: var(--vr-radius); padding: 4px 6px 4px 12px; min-width: 0; min-height: 48px;
+  display: flex; align-items: center; gap: var(--homey-su-2, 8px);
+  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+  transition: background-color .15s, transform .1s;
+}
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .vr-row::after, .vr.homey-dark-mode .vr-row::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.vr-row[data-type="boolean"].pressing { transform: scale(.98); }
+.vr-row.missing { cursor: default; }
+.vr-row.missing > * { opacity: .5; }
+
+.vr-name {
+  /* 14 bold like Quick Actions' names. Two lines before it's cut, so long flow flags stay readable. */
+  flex: 1 1 auto; min-width: 0;
+  font-size: var(--vr-fs-small); line-height: var(--vr-lh-small); font-weight: var(--vr-bold);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+  overflow: hidden; overflow-wrap: anywhere;
+}
+
+.vr-control { flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 2px; }
+.vr-row[data-type="boolean"] .vr-control { padding-right: 6px; }
+/* A string's text may take up to half the row. */
+.vr-row[data-type="string"] .vr-control { flex-shrink: 1; min-width: 0; max-width: 50%; padding-right: 6px; }
+
+.vr-value {
+  font-size: var(--vr-fs-small); line-height: var(--vr-lh-small); font-weight: var(--vr-regular);
+  color: var(--vr-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+.vr-row[data-type="number"] .vr-value {
+  color: var(--vr-text); font-weight: var(--vr-bold); font-variant-numeric: tabular-nums;
+  min-width: 36px; text-align: center; padding: 0 2px;
+}
+
+/* A yes/no switch: Homey's blue when on. */
+.vr-switch {
+  position: relative; flex-shrink: 0; width: 40px; height: 24px; border-radius: 12px;
+  background: var(--vr-off); transition: background-color .15s;
+}
+.vr-knob {
+  position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--vr-knob); box-shadow: 0 1px 2px rgb(0 0 0 / .25); transition: transform .15s;
+}
+.vr-row.active .vr-switch { background: var(--vr-accent); }
+.vr-row.active .vr-knob { transform: translateX(16px); }
+
+/* −/+: round 32px buttons. */
+.vr-step {
+  appearance: none; border: 0; margin: 0; padding: 0; font: inherit; flex-shrink: 0;
+  width: 32px; height: 32px; border-radius: 50%; background: var(--vr-button); color: var(--vr-text);
+  font-size: var(--vr-fs-default); line-height: 1; font-weight: var(--vr-bold);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform .1s;
+}
+.vr-step:active, .vr-step.pressing { transform: scale(.9); }
+
+/* The input that replaces a number or text while it's edited. */
+.vr-row.editing { cursor: default; }
+.vr-row.editing .vr-control { flex: 1 1 60%; max-width: none; padding-right: 0; }
+.vr-input {
+  width: 100%; min-width: 0; height: 36px; margin: 0; padding: 0 10px;
+  font: inherit; font-size: var(--vr-fs-small); color: var(--vr-text);
+  background: var(--vr-button); border: 1px solid var(--vr-accent); border-radius: 8px; outline: none;
+  user-select: text; -webkit-user-select: text;
+}
+
+.vr-message { font-size: var(--vr-fs-small); line-height: var(--vr-lh-small); color: var(--vr-muted); }
+.vr-message.error { color: var(--homey-color-red, #F25F5C); }
+
+.vr-row.shake { animation: vr-shake .35s; }
+@keyframes vr-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}

@@ -10,9 +10,11 @@ import SensorAlarmService from './lib/SensorAlarmService.js';
 import SparklineService from './lib/SparklineService.js';
 import ThermostatService from './lib/ThermostatService.js';
 import ValueService from './lib/ValueService.js';
+import VariableService from './lib/VariableService.js';
 import WeatherService from './lib/WeatherService.js';
 
 const VALUE_SLOTS = [1, 2, 3, 4, 5, 6];
+const VARIABLE_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 export default class WidgetkeeperApp extends Homey.App {
 
@@ -27,6 +29,7 @@ export default class WidgetkeeperApp extends Homey.App {
   values!: ValueService;
   lights!: LightService;
   sparklines!: SparklineService;
+  variables!: VariableService;
 
   async onInit() {
     this.diagnostics = new Diagnostics(this.homey);
@@ -58,6 +61,9 @@ export default class WidgetkeeperApp extends Homey.App {
     this.sparklines = new SparklineService(this.homey, this.values, log, debug);
     this.sparklines.start();
     this.registerSparklineSettings();
+    this.variables = new VariableService(this.homey, log, debug);
+    this.variables.start();
+    this.registerVariableSettings();
     this.debug('Widgetkeeper has been initialized');
   }
 
@@ -91,6 +97,7 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.values?.stop();
     await this.lights?.stop();
     await this.sparklines?.stop();
+    await this.variables?.stop();
   }
 
   /** Autocomplete for the thermostat widget: the device, then per-button options read from it. */
@@ -125,6 +132,14 @@ export default class WidgetkeeperApp extends Homey.App {
     const widget = this.homey.dashboards.getWidget('sparklines');
     for (const n of VALUE_SLOTS) {
       widget.registerSettingAutocompleteListener(`slot${n}`, query => this.sparklines.listSlots(query));
+    }
+  }
+
+  /** Autocomplete for the flow variables widget: every slot lists all Logic variables. */
+  private registerVariableSettings() {
+    const widget = this.homey.dashboards.getWidget('variables');
+    for (const n of VARIABLE_SLOTS) {
+      widget.registerSettingAutocompleteListener(`slot${n}`, query => this.variables.listVariables(query));
     }
   }
 

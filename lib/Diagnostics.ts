@@ -42,6 +42,7 @@ export default class Diagnostics {
       weather: (this.homey.app as any)?.weather?.describe?.() ?? null,
       heatmap: (this.homey.app as any)?.heatmap?.describe?.() ?? null,
       sparklines: (this.homey.app as any)?.sparklines?.describe?.() ?? null,
+      variables: (this.homey.app as any)?.variables?.describe?.() ?? null,
     };
     try {
       const api = await getAppApi(this.homey);

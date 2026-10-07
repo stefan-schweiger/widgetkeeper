@@ -105,5 +105,17 @@
     "temperature": "Farbtemperatur",
     "color": "Farbe",
     "close": "Schließen"
+  },
+  "variables": {
+    "selectSlots": "Wähle Variablen in den Widget-Einstellungen.",
+    "error": "Variablen konnten nicht geladen werden.",
+    "failed": "__name__ konnte nicht geändert werden.",
+    "missing": "Variable nicht gefunden",
+    "none": "Keine",
+    "yes": "Ja",
+    "no": "Nein",
+    "typeBoolean": "Ja/Nein",
+    "typeNumber": "Zahl",
+    "typeString": "Text"
   }
 }

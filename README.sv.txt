@@ -13,5 +13,6 @@ Ingående widgetar:
 - Enhetsvärden: kompakta rutor som visar ett värde var, som en temperatur, en batterinivå eller på/av.
 - Ljusreglage: kompakta ljusrutor med ljusstyrka, färg och färgtemperatur, sex lampor på samma plats som tre.
 - Minidiagram: kompakta rutor med ett litet diagram över ett värde den senaste timmen, de senaste 6 timmarna, dygnet eller veckan, med lägsta och högsta värde.
+- Flödesvariabler: kompakta rader för att slå på och av flödesvariabler eller ändra ett tal eller en text, med hela namnet.
 
 Väderdata från MET Norway, licensierad under CC BY 4.0.

@@ -31,6 +31,8 @@ const OUT = {
   'lc-light': 'widgets/lights/preview-light.png',
   'spark-dark': 'widgets/sparklines/preview-dark.png',
   'spark-light': 'widgets/sparklines/preview-light.png',
+  'var-dark': 'widgets/variables/preview-dark.png',
+  'var-light': 'widgets/variables/preview-light.png',
 };
 
 const only = process.argv.slice(2);

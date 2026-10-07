@@ -105,5 +105,17 @@
     "temperature": "درجة حرارة اللون",
     "color": "اللون",
     "close": "إغلاق"
+  },
+  "variables": {
+    "selectSlots": "اختر المتغيرات في إعدادات الأداة.",
+    "error": "تعذّر تحميل المتغيرات.",
+    "failed": "تعذّر تغيير __name__.",
+    "missing": "المتغير غير موجود",
+    "none": "لا شيء",
+    "yes": "نعم",
+    "no": "لا",
+    "typeBoolean": "نعم/لا",
+    "typeNumber": "رقم",
+    "typeString": "نص"
   }
 }

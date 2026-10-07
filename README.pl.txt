@@ -13,5 +13,6 @@ Dołączone widżety:
 - Wartości urządzeń: kompaktowe kafelki, z których każdy pokazuje jedną wartość, np. temperaturę, poziom baterii lub wł./wył.
 - Sterowanie światłem: kompaktowe kafelki z jasnością, kolorem i temperaturą barwową, sześć świateł w miejscu trzech.
 - Miniwykresy: kompaktowe kafelki z małym wykresem wartości z ostatniej godziny, 6 godzin, doby lub tygodnia, z minimum i maksimum.
+- Zmienne Flow: kompaktowe wiersze do włączania i wyłączania zmiennych Flow lub zmiany liczby albo tekstu, z pełną nazwą.
 
 Dane pogodowe: MET Norway, licencja CC BY 4.0.

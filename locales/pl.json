@@ -105,5 +105,17 @@
     "temperature": "Temperatura barwowa",
     "color": "Kolor",
     "close": "Zamknij"
+  },
+  "variables": {
+    "selectSlots": "Wybierz zmienne w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać zmiennych.",
+    "failed": "Nie udało się zmienić __name__.",
+    "missing": "Nie znaleziono zmiennej",
+    "none": "Brak",
+    "yes": "Tak",
+    "no": "Nie",
+    "typeBoolean": "Tak/Nie",
+    "typeNumber": "Liczba",
+    "typeString": "Tekst"
   }
 }

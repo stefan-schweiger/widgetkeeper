@@ -1,6 +1,6 @@
 // The widgets of dev/screenshots.html: the real widget code with the made-up home of showcase-data.js ("Solbakken",
 // the showcase dashboards' data, so no real home's names or readings end up in the README), mounted into the elements
-// with the ids w-elec, w-thermo, w-qa, w-sa, w-weather, w-heatmap, w-cameras, w-values, w-lights and w-sparklines.
+// with the ids w-elec, w-thermo, w-qa, w-sa, w-weather, w-heatmap, w-cameras, w-values, w-lights, w-sparklines and w-variables.
 // Needs the widget scripts, mock-cameras.js, temp/screenshot-icons.js and showcase-data.js loaded first, and the
 // showcase's fixed clock (screenshots.html sets it), so every render is the same.
 (function () {
@@ -30,6 +30,8 @@
   createValuesWidget(el('w-values'), values.opts || {}).setState(values.slots);
 
   createSparklinesWidget(el('w-sparklines'), {}).setState(find('sparklines').slots);
+
+  createVariablesWidget(el('w-variables'), {}).setState(find('variables').vars);
 
   createLightsWidget(el('w-lights'), {}).setState(find('lights').devices);
 

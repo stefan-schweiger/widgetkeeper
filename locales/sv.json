@@ -105,5 +105,17 @@
     "temperature": "Färgtemperatur",
     "color": "Färg",
     "close": "Stäng"
+  },
+  "variables": {
+    "selectSlots": "Välj variabler i widgetinställningarna.",
+    "error": "Kunde inte läsa in variablerna.",
+    "failed": "Kunde inte ändra __name__.",
+    "missing": "Variabeln hittades inte",
+    "none": "Ingen",
+    "yes": "Ja",
+    "no": "Nej",
+    "typeBoolean": "Ja/Nej",
+    "typeNumber": "Tal",
+    "typeString": "Text"
   }
 }
