@@ -29,6 +29,9 @@ export class VariableWriteError extends Error {
 }
 
 const isMissingScopes = (err: unknown) => /missing scopes/i.test(String((err as any)?.message ?? err));
+/** A key revoked after it was saved: `createLocalAPI` only pings, so it's the write that finds out. */
+const isUnauthorized = (err: unknown) => (err as any)?.statusCode === 401
+  || /invalid (session|token)|unauthori[sz]ed/i.test(String((err as any)?.message ?? err));
 
 export type VariableType = 'boolean' | 'number' | 'string';
 
@@ -158,6 +161,10 @@ export default class VariableService {
     } catch (err) {
       this.lastWriteError = String((err as any)?.message ?? err);
       if (isMissingScopes(err)) throw new VariableWriteError('keyScope', this.lastWriteError);
+      if (isUnauthorized(err)) {
+        if (this.writer?.key === this.homey.settings.get(API_KEY_SETTING)) this.writer = null;
+        throw new VariableWriteError('keyInvalid', this.lastWriteError);
+      }
       throw err;
     }
     this.lastWriteError = null;

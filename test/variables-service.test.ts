@@ -162,6 +162,18 @@ describe('set', () => {
     // The app's own token never writes: Homey refuses it (`homey.logic.readonly` only).
     expect(homey.fakeApi.logic.updateVariable).not.toHaveBeenCalled();
   });
+
+  it('says the key was not accepted when it is revoked after saving, and drops the cached API', async () => {
+    const { service, keyApi: api, logic } = withKey();
+    await service.set('v1', true);
+    api.logic.updateVariable.mockRejectedValueOnce(Object.assign(new Error('Invalid Session'), { statusCode: 401 }));
+    await expect(service.set('v1', false)).rejects.toMatchObject({ reason: 'keyInvalid' });
+    // The next write makes a new API with the key (here accepted again).
+    const fresh = keyApi(logic);
+    keyApis.set('key-1', fresh);
+    await service.set('v1', false);
+    expect(fresh.logic.updateVariable).toHaveBeenCalledWith({ id: 'v1', variable: { value: false } });
+  });
 });
 
 describe('saveApiKey', () => {
