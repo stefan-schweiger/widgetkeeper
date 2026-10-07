@@ -135,6 +135,79 @@
         "ar": "تشغيل: الأضواء المختارة في الغرفة نفسها تشترك في بلاطة واحدة باسم الغرفة تتحكم فيها كلها."
       },
       "value": false
+    },
+    {
+      "id": "barMin",
+      "type": "dropdown",
+      "title": {
+        "en": "Brightness bar at the far left",
+        "nl": "Helderheidsbalk helemaal links",
+        "de": "Helligkeitsbalken ganz links",
+        "fr": "Barre de luminosité tout à gauche",
+        "it": "Barra luminosità tutta a sinistra",
+        "sv": "Ljusstyrkereglaget längst till vänster",
+        "no": "Lysstyrkelinjen helt til venstre",
+        "es": "Barra de brillo a la izquierda del todo",
+        "da": "Lysstyrkebjælken helt til venstre",
+        "ru": "Ползунок яркости до упора влево",
+        "pl": "Pasek jasności maksymalnie w lewo",
+        "ko": "밝기 막대를 맨 왼쪽으로",
+        "ar": "شريط السطوع في أقصى اليسار"
+      },
+      "hint": {
+        "en": "With 1%, sliding all the way left dims the light as far as it goes without turning it off. A tap on the tile still turns it off.",
+        "nl": "Met 1% dimt helemaal naar links de lamp zo ver mogelijk zonder hem uit te zetten. Een tik op de tegel zet hem nog steeds uit.",
+        "de": "Mit 1 % dimmt ganz nach links die Lampe so weit wie möglich, ohne sie auszuschalten. Ein Tipp auf die Kachel schaltet sie weiterhin aus.",
+        "fr": "Avec 1 %, glisser tout à gauche baisse la lampe au minimum sans l'éteindre. Un appui sur la tuile l'éteint toujours.",
+        "it": "Con 1%, scorrere tutto a sinistra abbassa la luce al minimo senza spegnerla. Un tocco sul riquadro la spegne comunque.",
+        "sv": "Med 1 % dimmar längst till vänster lampan så långt det går utan att släcka den. Ett tryck på rutan släcker den fortfarande.",
+        "no": "Med 1 % dimmes lyset så langt det går uten å slå det av når du drar helt til venstre. Et trykk på flisen slår det fortsatt av.",
+        "es": "Con 1 %, deslizar del todo a la izquierda atenúa la luz al mínimo sin apagarla. Un toque en el mosaico la sigue apagando.",
+        "da": "Med 1 % dæmpes lyset så meget som muligt uden at slukke, når du trækker helt til venstre. Et tryk på feltet slukker det stadig.",
+        "ru": "При 1 % движение до упора влево приглушает свет до минимума, не выключая его. Касание плитки по-прежнему выключает свет.",
+        "pl": "Przy 1% przesunięcie maksymalnie w lewo przyciemnia światło najbardziej, jak się da, bez wyłączania. Dotknięcie kafelka nadal je wyłącza.",
+        "ko": "1%로 설정하면 맨 왼쪽으로 밀어도 조명이 꺼지지 않고 최대한 어두워집니다. 타일을 탭하면 여전히 꺼집니다.",
+        "ar": "مع 1%، يؤدي السحب إلى أقصى اليسار إلى خفض الضوء لأدنى حد دون إطفائه. النقر على البلاطة لا يزال يطفئه."
+      },
+      "value": "0",
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Turns the light off (0%)",
+            "nl": "Zet de lamp uit (0%)",
+            "de": "Schaltet die Lampe aus (0 %)",
+            "fr": "Éteint la lampe (0 %)",
+            "it": "Spegne la luce (0%)",
+            "sv": "Släcker lampan (0 %)",
+            "no": "Slår av lyset (0 %)",
+            "es": "Apaga la luz (0 %)",
+            "da": "Slukker lyset (0 %)",
+            "ru": "Выключает свет (0 %)",
+            "pl": "Wyłącza światło (0%)",
+            "ko": "조명 끄기 (0%)",
+            "ar": "يطفئ الضوء (0%)"
+          }
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "Dims to 1%, stays on",
+            "nl": "Dimt naar 1%, blijft aan",
+            "de": "Dimmt auf 1 %, bleibt an",
+            "fr": "Baisse à 1 %, reste allumée",
+            "it": "Abbassa all'1%, resta accesa",
+            "sv": "Dimmar till 1 %, förblir tänd",
+            "no": "Dimmer til 1 %, forblir på",
+            "es": "Atenúa al 1 %, sigue encendida",
+            "da": "Dæmper til 1 %, forbliver tændt",
+            "ru": "Приглушает до 1 %, не выключая",
+            "pl": "Przyciemnia do 1%, pozostaje włączone",
+            "ko": "1%로 어둡게, 켜진 상태 유지",
+            "ar": "يخفت إلى 1%، ويبقى مضاءً"
+          }
+        }
+      ]
     }
   ],
   "api": {

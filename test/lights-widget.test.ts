@@ -21,10 +21,10 @@ const hueGo = (temperature = true) => ({
   },
 });
 
-function widget(devices: any[], onSet: any = vi.fn(async () => {}), groupByZone = false, palette?: string) {
+function widget(devices: any[], onSet: any = vi.fn(async () => {}), groupByZone = false, palette?: string, barMin?: string) {
   const root = document.createElement('div');
   document.body.append(root);
-  const w = win.createLightsWidget(root, { onSet, groupByZone, palette });
+  const w = win.createLightsWidget(root, { onSet, groupByZone, palette, barMin });
   w.setState(devices);
   const tile = (id: string) => root.querySelector<HTMLElement>(`.lc-tile[data-device="${id}"]`)!;
   /** The bar's value in percent. */
@@ -154,6 +154,20 @@ describe('bar', () => {
     barAt('bulb', 0.002);
     expect(onSet).toHaveBeenCalledWith('bulb', { dim: 0 });
     expect(value('bulb')).toBe('0');
+  });
+
+  it('stops at 1 % with barMin 1, so the light stays on', () => {
+    const { barAt, onSet, value, tile } = widget([bulb(true)], undefined, false, undefined, '1');
+    barAt('bulb', 0.002);
+    expect(onSet).toHaveBeenCalledWith('bulb', { dim: 0.01 });
+    expect(value('bulb')).toBe('1');
+    expect(tile('bulb').classList.contains('on')).toBe(true);
+  });
+
+  it('still turns off from a tap on the tile with barMin 1', () => {
+    const { tile, onSet } = widget([bulb(true)], undefined, false, undefined, '1');
+    tile('bulb').click();
+    expect(onSet).toHaveBeenCalledWith('bulb', { onoff: false });
   });
 
 });

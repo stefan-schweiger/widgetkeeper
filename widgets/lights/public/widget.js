@@ -99,7 +99,7 @@
    * @param {{ t?: (key: string, tokens?: object) => string,
    *   onSet?: (deviceId: string, change: {dim?: number, onoff?: boolean, temperature?: number,
    *     hue?: number, saturation?: number}) => Promise<any>,
-   *   onHeight?: (h: number) => void, groupByZone?: boolean, palette?: string }} opts
+   *   onHeight?: (h: number) => void, groupByZone?: boolean, palette?: string, barMin?: string }} opts
    */
   function createLightsWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -129,6 +129,9 @@
     let panelFor = null; // the tile id the panel is open for
     let panelKey = ''; // which swatches it holds, so it's only rebuilt when that changes
     const palette = PALETTES[opts.palette] || PALETTES.default;
+    /** The bar's lowest value: 0 turns the light off (the default); `barMin: '1'` stops at 1 %, so it stays on. */
+    const barFloor = opts.barMin === '1' ? 0.01 : 0;
+    const level = x => Math.max(barFloor, snap(x));
     let panelTimer = null;
     /** @type {{node: HTMLElement, swatch: {hue?: number, sat?: number, k?: number}}[]} */
     let swatches = [];
@@ -255,7 +258,7 @@
     function commit(id, x) {
       const item = itemOf(id);
       if (!item) return;
-      const value = snap(x);
+      const value = level(x);
       for (const d of item.members) {
         if (value === 0) hope(d, d.caps.onoff ? { onoff: false } : { dim: 0 });
         else hope(d, { dim: value, onoff: true });
@@ -564,7 +567,7 @@
         const caps = Object.fromEntries(Object.keys(l.caps).map(k => [k, { value: shown(l, k) }]));
         const on = itemOn(d);
         const drag = drags.get(d.id);
-        const x = drag != null ? snap(drag) : itemBrightness(d);
+        const x = drag != null ? level(drag) : itemBrightness(d);
 
         tile.chip.style.display = color || hasTemp(d) ? '' : 'none';
         tile.chip.setAttribute('aria-label', t(color ? 'color' : 'temperature'));

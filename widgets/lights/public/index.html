@@ -57,6 +57,7 @@
         t: (key, tokens) => Homey.__(key, tokens),
         groupByZone: settings.groupByZone === true,
         palette: settings.palette,
+        barMin: settings.barMin,
         onSet: (deviceId, change) => Homey.api('POST', '/set', { deviceId, ...change }),
         onHeight: () => {
           if (!readySent) return;
