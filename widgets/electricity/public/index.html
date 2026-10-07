@@ -61,6 +61,7 @@
         },
       });
       widget.setSettings({
+        showPrices: settings.showPrices !== false,
         showUsage: settings.showUsage !== false,
         nextLow: settings.nextLow || (settings.showNextLow === false ? 'none' : '12'), // showNextLow: pre-dropdown setting
         separateUsage: settings.separateUsage === true,

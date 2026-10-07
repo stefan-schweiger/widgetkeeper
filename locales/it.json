@@ -14,7 +14,6 @@
     "selectMeter": "Seleziona un misuratore di energia nelle impostazioni del widget.",
     "noReadings": "Ancora nessuna lettura dal misuratore.",
     "meterError": "Impossibile leggere il misuratore.",
-    "noPrices": "Nessun prezzo dell'elettricità disponibile. Attiva i prezzi dinamici in Homey Energy.",
     "error": "Impossibile caricare i dati."
   },
   "thermostat": {

@@ -82,7 +82,7 @@ describe('lowest price footer', () => {
     expect(widget(snapshot(), { nextLow: 'none' }).footer()).toBeNull();
     const none = widget(snapshot({ prices: snapshot().prices.map(p => ({ ...p, price: null })) }));
     expect(none.footer()).toBeNull();
-    expect(none.messages()).toEqual(['No electricity prices available. Enable dynamic prices in Homey Energy.']);
+    expect(none.messages()).toEqual([]); // no price set up in Homey: the prices are left out silently
   });
 
   it('uses the currency unit', () => {
@@ -180,6 +180,45 @@ describe('fixed price', () => {
   it('shows only the live chart with usage off', () => {
     const { root, shown } = widget(fixed(), { showUsage: false });
     expect(charts(root).map(shown)).toEqual([true, false, false]);
+  });
+});
+
+describe('prices off', () => {
+  const usage = Array.from({ length: 24 * 12 }, (_, i) => ({ t: HOUR_START - 24 * HOUR + i * 5 * MIN, w: 200 + (i % 7) * 50 }));
+  const charts = (root: HTMLElement) => [...root.querySelectorAll<HTMLElement>('.ew-chart')];
+  const noPrices = () => snapshot({ usage, prices: snapshot().prices.map(p => ({ ...p, price: null })) });
+
+  function expectNoPrices({ q, root, shown, footer, messages }: ReturnType<typeof widget>) {
+    expect(q('.ew-hval.price')).toBeNull();
+    expect(q('.ew-header')!.classList.contains('one')).toBe(true);
+    expect([...q('.ew-header')!.querySelectorAll('.ew-hsub')].map(e => e.textContent)).toEqual(['Using now']);
+    expect(charts(root).map(shown)).toEqual([true, true, false]); // usage on its own chart
+    expect(footer()).toBeNull();
+    expect(messages()).toEqual([]);
+    expect(root.innerHTML).not.toContain('NaN');
+  }
+
+  it('leaves out the header price, the price chart and the footer', () => {
+    expectNoPrices(widget(snapshot({ usage }), { showPrices: false, nextLow: 'both' }));
+  });
+
+  it('leaves out a fixed price too', () => {
+    expectNoPrices(widget(snapshot({ usage, fixedPrice: 2 }), { showPrices: false }));
+  });
+
+  it('looks the same without any prices from Homey', () => {
+    expectNoPrices(widget(noPrices()));
+  });
+
+  it('shows only the live chart with usage off', () => {
+    const { root, shown } = widget(snapshot({ usage }), { showPrices: false, showUsage: false });
+    expect(charts(root).map(shown)).toEqual([true, false, false]);
+  });
+
+  it('keeps both header columns with prices on', () => {
+    const { q } = widget(snapshot({ usage }));
+    expect(q('.ew-header')!.classList.contains('one')).toBe(false);
+    expect(q('.ew-hval.price')!.textContent).toBe('2,00 kr./kWh');
   });
 });
 

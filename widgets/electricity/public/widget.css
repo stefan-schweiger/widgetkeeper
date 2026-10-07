@@ -45,6 +45,7 @@ html, body { margin: 0; }
 
 /* Header */
 .ew-header { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--homey-su-4, 16px); }
+.ew-header.one { grid-template-columns: minmax(0, 1fr); }
 .ew-hcol { display: flex; flex-direction: column; min-width: 0; }
 .ew-hval { display: flex; align-items: baseline; white-space: nowrap; }
 .ew-hval .v { font-size: var(--ew-fs-xlarge); line-height: var(--ew-lh-xlarge); font-weight: var(--ew-bold); }

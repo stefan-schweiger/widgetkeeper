@@ -42,7 +42,6 @@
     selectMeter: 'Select a power meter in the widget settings.',
     noReadings: 'No readings from the power meter yet.',
     meterError: 'Could not read the power meter.',
-    noPrices: 'No electricity prices available. Enable dynamic prices in Homey Energy.',
     error: 'Could not load data.',
   };
 
@@ -205,7 +204,7 @@
 
     const state = {
       data: null, // snapshot from the app; data.live holds raw readings
-      settings: { showUsage: true, nextLow: '12', separateUsage: false, liveWindow: 10, smooth: false, usageColor: 'neutral' }, // nextLow: none/12/24/both; usageColor: neutral/purple
+      settings: { showPrices: true, showUsage: true, nextLow: '12', separateUsage: false, liveWindow: 10, smooth: false, usageColor: 'neutral' }, // nextLow: none/12/24/both; usageColor: neutral/purple
       message: null,
       width: root.clientWidth || 368,
       lastHeight: 0,
@@ -233,9 +232,8 @@
       const noLive = el('div', { class: 'ew-message', dir: 'auto' }, wrap);
       const usage = chart('ew-usage-chart');
       const price = chart();
-      const noPrices = el('div', { class: 'ew-message', dir: 'auto' }, wrap);
       const footer = el('div', { class: 'ew-footer' }, wrap);
-      return { wrap, message, header, live, noLive, usage, price, noPrices, footer };
+      return { wrap, message, header, live, noLive, usage, price, footer };
     })();
     const geom = { live: null, slots: null }; // geometry of the latest render, for pointer math
 
@@ -257,18 +255,20 @@
       const firstSlot = slots.length ? slots[0].start : Math.floor(d.now / HOUR) * HOUR - NOW_SLOT * HOUR;
       const usageByIdx = new Map();
       for (const u of d.usage || []) usageByIdx.set(Math.round((u.t - firstSlot) / (5 * MIN)), u.w);
-      // A fixed price (Homey Energy set to one price for every hour) has no price chart or lowest-price
-      // footer: the header shows the price, and usage gets its own chart.
-      const fixed = d.fixedPrice != null;
+      // Prices show unless turned off; without any (no price set up in Homey Energy) they're left out
+      // silently, as if turned off. A fixed price (one price for every hour) has no price chart or
+      // lowest-price footer: the header shows the price. Without a price chart, usage gets its own chart.
+      const pricesOn = state.settings.showPrices !== false && (d.fixedPrice != null || slots.some(s => s.price != null));
+      const fixed = pricesOn && d.fixedPrice != null;
+      const hasPrices = pricesOn && !fixed;
       const showUsage = state.settings.showUsage !== false && usageByIdx.size > 0;
-      const separate = showUsage && (fixed || state.settings.separateUsage === true);
+      const separate = showUsage && (!hasPrices || state.settings.separateUsage === true);
       const usageOnPrice = showUsage && !separate; // trace + right scale on the price chart
       const pw = Math.max(40, w - L - (usageOnPrice ? R_USAGE : 4));
-      const hasPrices = !fixed && slots.some(s => s.price != null);
       const liveTime = windowMs < 10 * MIN ? hhmmss : hhmm;
       return {
         d, w, now, windowMs, live, liveTime, slots, allSlots, firstSlot, usageByIdx,
-        showUsage, separate, usageOnPrice, pw, hasPrices, fixed,
+        showUsage, separate, usageOnPrice, pw, pricesOn, hasPrices, fixed,
       };
     }
 
@@ -280,7 +280,7 @@
       show(ui.message, !!state.message);
       ui.message.textContent = state.message || '';
       if (!ready) {
-        [ui.header, ui.live.box, ui.noLive, ui.usage.box, ui.price.box, ui.noPrices, ui.footer].forEach(n => show(n, false));
+        [ui.header, ui.live.box, ui.noLive, ui.usage.box, ui.price.box, ui.footer].forEach(n => show(n, false));
         reportHeight();
         return;
       }
@@ -296,8 +296,6 @@
       if (m.separate && m.slots.length) renderUsage(ui.usage, m);
       show(ui.price.box, m.hasPrices);
       if (m.hasPrices) renderPrice(ui.price, m);
-      show(ui.noPrices, !m.hasPrices && !m.fixed);
-      ui.noPrices.textContent = t('noPrices');
       const nextLow = state.settings.nextLow || '12';
       show(ui.footer, m.hasPrices && nextLow !== 'none');
       if (m.hasPrices && nextLow !== 'none') renderFooter(ui.footer, m, nextLow);
@@ -332,12 +330,14 @@
           : `${weekday(sel.start, m.d.language)} ${hhmm(sel.start)}–${hhmm(sel.start + HOUR)}`;
 
       clear(header);
+      header.classList.toggle('one', !m.pricesOn);
       const lc = el('div', { class: 'ew-hcol' }, header);
       const lv = el('div', { class: `ew-hval live${leftVal < 0 ? ' export' : ''}` }, lc);
       el('span', { class: 'v ew-num', text: leftVal == null ? '–' : watts(leftVal) }, lv);
       el('span', { class: 'u', text: 'W' }, lv);
       el('div', { class: 'ew-hsub', dir: 'auto', text: leftSub }, lc);
 
+      if (!m.pricesOn) return;
       const rc = el('div', { class: 'ew-hcol' }, header);
       const rv = el('div', { class: 'ew-hval price' }, rc);
       el('span', { class: 'v ew-num', text: `${price == null ? '–' : nf(price, 2)} ${cur.value}` }, rv);

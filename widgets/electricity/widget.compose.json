@@ -155,6 +155,41 @@
       ]
     },
     {
+      "id": "showPrices",
+      "type": "checkbox",
+      "title": {
+        "en": "Show electricity prices",
+        "nl": "Elektriciteitsprijzen tonen",
+        "de": "Strompreise anzeigen",
+        "fr": "Afficher les prix de l'électricité",
+        "it": "Mostra prezzi dell'elettricità",
+        "sv": "Visa elpriser",
+        "no": "Vis strømpriser",
+        "es": "Mostrar precios de la electricidad",
+        "da": "Vis elpriser",
+        "ru": "Показывать цены на электроэнергию",
+        "pl": "Pokaż ceny energii",
+        "ko": "전기 요금 표시",
+        "ar": "عرض أسعار الكهرباء"
+      },
+      "hint": {
+        "en": "Needs a price set up in Homey Energy (dynamic or fixed). Without one, the prices stay hidden.",
+        "nl": "Vereist een prijs in Homey Energy (dynamisch of vast). Zonder prijs blijven de prijzen verborgen.",
+        "de": "Erfordert einen Preis in Homey Energy (dynamisch oder fest). Ohne Preis bleiben die Preise ausgeblendet.",
+        "fr": "Nécessite un prix configuré dans Homey Energy (dynamique ou fixe). Sans prix, les prix restent masqués.",
+        "it": "Richiede un prezzo impostato in Homey Energy (dinamico o fisso). Senza, i prezzi restano nascosti.",
+        "sv": "Kräver ett pris i Homey Energy (dynamiskt eller fast). Utan pris förblir priserna dolda.",
+        "no": "Krever en pris i Homey Energy (dynamisk eller fast). Uten pris forblir prisene skjult.",
+        "es": "Requiere un precio configurado en Homey Energy (dinámico o fijo). Sin él, los precios quedan ocultos.",
+        "da": "Kræver en pris i Homey Energy (dynamisk eller fast). Uden pris forbliver priserne skjult.",
+        "ru": "Нужна цена в Homey Energy (динамическая или фиксированная). Без неё цены скрыты.",
+        "pl": "Wymaga ceny ustawionej w Homey Energy (dynamicznej lub stałej). Bez niej ceny są ukryte.",
+        "ko": "Homey Energy에 요금(변동 또는 고정)이 설정되어 있어야 합니다. 없으면 요금이 표시되지 않습니다.",
+        "ar": "يتطلب ضبط سعر في Homey Energy (متغير أو ثابت). بدونه تبقى الأسعار مخفية."
+      },
+      "value": true
+    },
+    {
       "id": "showUsage",
       "type": "checkbox",
       "title": {

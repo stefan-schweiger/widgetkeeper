@@ -14,7 +14,6 @@
     "selectMeter": "Wybierz licznik energii w ustawieniach widżetu.",
     "noReadings": "Brak odczytów z licznika.",
     "meterError": "Nie można odczytać licznika.",
-    "noPrices": "Brak cen energii. Włącz ceny dynamiczne w Homey Energy.",
     "error": "Nie można wczytać danych."
   },
   "thermostat": {

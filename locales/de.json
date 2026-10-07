@@ -14,7 +14,6 @@
     "selectMeter": "Wähle in den Widget-Einstellungen einen Stromzähler aus.",
     "noReadings": "Noch keine Messwerte vom Stromzähler.",
     "meterError": "Der Stromzähler konnte nicht gelesen werden.",
-    "noPrices": "Keine Strompreise verfügbar. Aktiviere dynamische Preise in Homey Energy.",
     "error": "Daten konnten nicht geladen werden."
   },
   "thermostat": {

@@ -14,7 +14,6 @@
     "selectMeter": "Select a power meter in the widget settings.",
     "noReadings": "No readings from the power meter yet.",
     "meterError": "Could not read the power meter.",
-    "noPrices": "No electricity prices available. Enable dynamic prices in Homey Energy.",
     "error": "Could not load data."
   },
   "thermostat": {

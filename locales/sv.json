@@ -14,7 +14,6 @@
     "selectMeter": "Välj en elmätare i widgetinställningarna.",
     "noReadings": "Inga mätvärden från elmätaren ännu.",
     "meterError": "Kunde inte läsa elmätaren.",
-    "noPrices": "Inga elpriser tillgängliga. Aktivera dynamiska priser i Homey Energy.",
     "error": "Kunde inte läsa in data."
   },
   "thermostat": {
