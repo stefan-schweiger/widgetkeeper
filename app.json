@@ -120,6 +120,21 @@
             "ko": "스냅샷 새로 고침 간격",
             "ar": "تحديث اللقطات كل"
           },
+          "hint": {
+            "en": "Tap a camera for live video.",
+            "nl": "Tik op een camera voor live beeld.",
+            "de": "Tippe auf eine Kamera für Live-Video.",
+            "fr": "Touchez une caméra pour la vidéo en direct.",
+            "it": "Tocca una telecamera per il video in diretta.",
+            "sv": "Tryck på en kamera för livevideo.",
+            "no": "Trykk på et kamera for direktevideo.",
+            "es": "Toca una cámara para ver vídeo en directo.",
+            "da": "Tryk på et kamera for live-video.",
+            "ru": "Нажмите на камеру, чтобы смотреть видео в реальном времени.",
+            "pl": "Dotknij kamery, aby zobaczyć obraz na żywo.",
+            "ko": "카메라를 탭하면 실시간 영상을 볼 수 있습니다.",
+            "ar": "انقر على كاميرا لعرض الفيديو المباشر."
+          },
           "value": "10",
           "values": [
             {
@@ -251,19 +266,19 @@
           "id": "liveWindow",
           "type": "dropdown",
           "title": {
-            "en": "Live power window",
-            "nl": "Venster live vermogen",
-            "de": "Zeitfenster Live-Leistung",
-            "fr": "Fenêtre de puissance en direct",
-            "it": "Finestra potenza in tempo reale",
-            "sv": "Tidsfönster för live-effekt",
-            "no": "Tidsvindu for live-effekt",
-            "es": "Ventana de potencia en directo",
-            "da": "Tidsvindue for live-effekt",
-            "ru": "Окно текущей мощности",
-            "pl": "Okno mocy na żywo",
-            "ko": "실시간 전력 표시 범위",
-            "ar": "نافذة القدرة المباشرة"
+            "en": "Live chart time span",
+            "nl": "Tijdspanne live grafiek",
+            "de": "Zeitraum Live-Diagramm",
+            "fr": "Durée du graphique en direct",
+            "it": "Intervallo grafico in tempo reale",
+            "sv": "Tidsspann för livediagram",
+            "no": "Tidsrom for live-diagram",
+            "es": "Intervalo del gráfico en directo",
+            "da": "Tidsrum for live-graf",
+            "ru": "Период графика в реальном времени",
+            "pl": "Zakres wykresu na żywo",
+            "ko": "실시간 차트 기간",
+            "ar": "مدة المخطط المباشر"
           },
           "value": "10",
           "values": [
@@ -395,6 +410,21 @@
             "ko": "사용량 기록 표시",
             "ar": "عرض سجل الاستهلاك"
           },
+          "hint": {
+            "en": "Your power use over the last 24 hours, drawn on the price chart.",
+            "nl": "Je verbruik van de afgelopen 24 uur, op de prijsgrafiek.",
+            "de": "Dein Verbrauch der letzten 24 Stunden, im Preisdiagramm.",
+            "fr": "Votre consommation des dernières 24 heures, sur le graphique des prix.",
+            "it": "Il tuo consumo delle ultime 24 ore, sul grafico dei prezzi.",
+            "sv": "Din förbrukning de senaste 24 timmarna, i prisdiagrammet.",
+            "no": "Forbruket ditt de siste 24 timene, i prisdiagrammet.",
+            "es": "Tu consumo de las últimas 24 horas, en el gráfico de precios.",
+            "da": "Dit forbrug de seneste 24 timer, i prisgrafen.",
+            "ru": "Ваше потребление за последние 24 часа на графике цен.",
+            "pl": "Twoje zużycie z ostatnich 24 godzin na wykresie cen.",
+            "ko": "지난 24시간의 사용량을 가격 차트에 표시합니다.",
+            "ar": "استهلاكك خلال آخر 24 ساعة على مخطط الأسعار."
+          },
           "value": true
         },
         {
@@ -415,6 +445,21 @@
             "ko": "사용량 기록을 별도 차트로 표시",
             "ar": "عرض سجل الاستهلاك في مخطط منفصل"
           },
+          "hint": {
+            "en": "Only with “Show usage history” on.",
+            "nl": "Alleen als “Verbruiksgeschiedenis tonen” aan staat.",
+            "de": "Nur wenn „Verbrauchsverlauf anzeigen“ aktiv ist.",
+            "fr": "Seulement si « Afficher l'historique de consommation » est activé.",
+            "it": "Solo con “Mostra cronologia consumi” attivo.",
+            "sv": "Bara när ”Visa förbrukningshistorik” är på.",
+            "no": "Bare når «Vis forbrukshistorikk» er på.",
+            "es": "Solo con «Mostrar historial de consumo» activado.",
+            "da": "Kun når “Vis forbrugshistorik” er slået til.",
+            "ru": "Только если включено «Показывать историю потребления».",
+            "pl": "Tylko gdy „Pokaż historię zużycia” jest włączone.",
+            "ko": "“사용량 기록 표시”을(를) 켠 경우에만 적용됩니다.",
+            "ar": "فقط عند تفعيل «عرض سجل الاستهلاك»."
+          },
           "value": false
         },
         {
@@ -434,6 +479,21 @@
             "pl": "Kolor historii zużycia",
             "ko": "사용 기록 색상",
             "ar": "لون سجل الاستهلاك"
+          },
+          "hint": {
+            "en": "Only with “Show usage history” on.",
+            "nl": "Alleen als “Verbruiksgeschiedenis tonen” aan staat.",
+            "de": "Nur wenn „Verbrauchsverlauf anzeigen“ aktiv ist.",
+            "fr": "Seulement si « Afficher l'historique de consommation » est activé.",
+            "it": "Solo con “Mostra cronologia consumi” attivo.",
+            "sv": "Bara när ”Visa förbrukningshistorik” är på.",
+            "no": "Bare når «Vis forbrukshistorikk» er på.",
+            "es": "Solo con «Mostrar historial de consumo» activado.",
+            "da": "Kun når “Vis forbrugshistorik” er slået til.",
+            "ru": "Только если включено «Показывать историю потребления».",
+            "pl": "Tylko gdy „Pokaż historię zużycia” jest włączone.",
+            "ko": "“사용량 기록 표시”을(를) 켠 경우에만 적용됩니다.",
+            "ar": "فقط عند تفعيل «عرض سجل الاستهلاك»."
           },
           "value": "neutral",
           "values": [
@@ -493,25 +553,55 @@
             "ko": "차트 선 부드럽게",
             "ar": "تنعيم خطوط المخطط"
           },
+          "hint": {
+            "en": "Rounds off spikes in the lines. The numbers at the top stay exact.",
+            "nl": "Rondt pieken in de lijnen af. De getallen bovenaan blijven exact.",
+            "de": "Glättet Spitzen in den Linien. Die Zahlen oben bleiben exakt.",
+            "fr": "Adoucit les pics des courbes. Les valeurs en haut restent exactes.",
+            "it": "Smussa i picchi delle linee. I valori in alto restano esatti.",
+            "sv": "Rundar av toppar i linjerna. Siffrorna överst förblir exakta.",
+            "no": "Runder av topper i linjene. Tallene øverst forblir nøyaktige.",
+            "es": "Suaviza los picos de las líneas. Los valores de arriba siguen exactos.",
+            "da": "Runder spidser i linjerne af. Tallene øverst forbliver præcise.",
+            "ru": "Сглаживает пики линий. Значения вверху остаются точными.",
+            "pl": "Wygładza skoki na liniach. Liczby u góry pozostają dokładne.",
+            "ko": "선의 급격한 변화를 부드럽게 합니다. 위쪽 숫자는 정확하게 유지됩니다.",
+            "ar": "يخفف القمم في الخطوط. تبقى الأرقام في الأعلى دقيقة."
+          },
           "value": false
         },
         {
           "id": "nextLow",
           "type": "dropdown",
           "title": {
-            "en": "Show lowest price",
-            "nl": "Laagste prijs tonen",
-            "de": "Tiefstpreis anzeigen",
-            "fr": "Afficher le prix le plus bas",
-            "it": "Mostra prezzo più basso",
-            "sv": "Visa lägsta pris",
-            "no": "Vis laveste pris",
-            "es": "Mostrar precio más bajo",
-            "da": "Vis laveste pris",
-            "ru": "Показывать минимальную цену",
-            "pl": "Pokaż najniższą cenę",
-            "ko": "최저가 표시",
-            "ar": "عرض أدنى سعر"
+            "en": "Lowest price",
+            "nl": "Laagste prijs",
+            "de": "Tiefstpreis",
+            "fr": "Prix le plus bas",
+            "it": "Prezzo più basso",
+            "sv": "Lägsta pris",
+            "no": "Laveste pris",
+            "es": "Precio más bajo",
+            "da": "Laveste pris",
+            "ru": "Минимальная цена",
+            "pl": "Najniższa cena",
+            "ko": "최저가",
+            "ar": "أدنى سعر"
+          },
+          "hint": {
+            "en": "The cheapest hour ahead, at the bottom of the widget. Hidden with a fixed price.",
+            "nl": "Het goedkoopste komende uur, onderaan de widget. Verborgen bij een vaste prijs.",
+            "de": "Die günstigste kommende Stunde, unten im Widget. Bei einem Festpreis ausgeblendet.",
+            "fr": "L'heure la moins chère à venir, en bas du widget. Masqué avec un prix fixe.",
+            "it": "L'ora più economica in arrivo, in fondo al widget. Nascosto con un prezzo fisso.",
+            "sv": "Den billigaste kommande timmen, längst ned i widgeten. Döljs vid fast pris.",
+            "no": "Den billigste kommende timen, nederst i widgeten. Skjult ved fast pris.",
+            "es": "La hora más barata próxima, abajo del widget. Oculto con precio fijo.",
+            "da": "Den billigste kommende time, nederst i widgetten. Skjult ved fast pris.",
+            "ru": "Самый дешёвый час впереди, внизу виджета. Скрыто при фиксированной цене.",
+            "pl": "Najtańsza nadchodząca godzina, na dole widżetu. Ukryte przy stałej cenie.",
+            "ko": "앞으로 가장 저렴한 시간을 위젯 아래쪽에 표시합니다. 고정 요금에서는 숨겨집니다.",
+            "ar": "أرخص ساعة قادمة، أسفل الأداة. مخفي مع السعر الثابت."
           },
           "value": "12",
           "values": [
@@ -674,19 +764,19 @@
           "id": "period",
           "type": "dropdown",
           "title": {
-            "en": "Days",
-            "nl": "Dagen",
-            "de": "Tage",
-            "fr": "Jours",
-            "it": "Giorni",
-            "sv": "Dagar",
-            "no": "Dager",
-            "es": "Días",
-            "da": "Dage",
-            "ru": "Дни",
-            "pl": "Dni",
+            "en": "Period",
+            "nl": "Periode",
+            "de": "Zeitraum",
+            "fr": "Période",
+            "it": "Periodo",
+            "sv": "Period",
+            "no": "Periode",
+            "es": "Periodo",
+            "da": "Periode",
+            "ru": "Период",
+            "pl": "Okres",
             "ko": "기간",
-            "ar": "الأيام"
+            "ar": "الفترة"
           },
           "value": "week",
           "values": [
@@ -965,82 +1055,6 @@
       },
       "settings": [
         {
-          "id": "palette",
-          "type": "dropdown",
-          "title": {
-            "en": "Colour palette",
-            "nl": "Kleurenpalet",
-            "de": "Farbpalette",
-            "fr": "Palette de couleurs",
-            "it": "Tavolozza colori",
-            "sv": "Färgpalett",
-            "no": "Fargepalett",
-            "es": "Paleta de colores",
-            "da": "Farvepalet",
-            "ru": "Палитра",
-            "pl": "Paleta kolorów",
-            "ko": "색상 팔레트",
-            "ar": "لوحة الألوان"
-          },
-          "value": "default",
-          "values": [
-            {
-              "id": "default",
-              "title": {
-                "en": "Bright colours",
-                "nl": "Felle kleuren",
-                "de": "Kräftige Farben",
-                "fr": "Couleurs vives",
-                "it": "Colori vivaci",
-                "sv": "Klara färger",
-                "no": "Klare farger",
-                "es": "Colores vivos",
-                "da": "Klare farver",
-                "ru": "Яркие цвета",
-                "pl": "Żywe kolory",
-                "ko": "선명한 색상",
-                "ar": "ألوان زاهية"
-              }
-            },
-            {
-              "id": "warm",
-              "title": {
-                "en": "Warm: red to cool white",
-                "nl": "Warm: rood tot koel wit",
-                "de": "Warm: Rot bis Kaltweiß",
-                "fr": "Chaud : du rouge au blanc froid",
-                "it": "Caldo: dal rosso al bianco freddo",
-                "sv": "Varm: röd till kallvit",
-                "no": "Varm: rød til kaldhvit",
-                "es": "Cálido: del rojo al blanco frío",
-                "da": "Varm: rød til koldhvid",
-                "ru": "Тёплая: от красного до холодного белого",
-                "pl": "Ciepła: od czerwieni do zimnej bieli",
-                "ko": "따뜻한 색: 빨강에서 차가운 흰색까지",
-                "ar": "دافئة: من الأحمر إلى الأبيض البارد"
-              }
-            },
-            {
-              "id": "dusk",
-              "title": {
-                "en": "Dusk",
-                "nl": "Schemering",
-                "de": "Abenddämmerung",
-                "fr": "Crépuscule",
-                "it": "Crepuscolo",
-                "sv": "Skymning",
-                "no": "Skumring",
-                "es": "Atardecer",
-                "da": "Skumring",
-                "ru": "Сумерки",
-                "pl": "Zmierzch",
-                "ko": "해 질 녘",
-                "ar": "الغسق"
-              }
-            }
-          ]
-        },
-        {
           "id": "groupByZone",
           "type": "checkbox",
           "title": {
@@ -1147,6 +1161,97 @@
               }
             }
           ]
+        },
+        {
+          "id": "palette",
+          "type": "dropdown",
+          "title": {
+            "en": "Colour palette",
+            "nl": "Kleurenpalet",
+            "de": "Farbpalette",
+            "fr": "Palette de couleurs",
+            "it": "Tavolozza colori",
+            "sv": "Färgpalett",
+            "no": "Fargepalett",
+            "es": "Paleta de colores",
+            "da": "Farvepalet",
+            "ru": "Палитра",
+            "pl": "Paleta kolorów",
+            "ko": "색상 팔레트",
+            "ar": "لوحة الألوان"
+          },
+          "hint": {
+            "en": "The colours offered by a light’s colour button.",
+            "nl": "De kleuren die de kleurknop van een lamp aanbiedt.",
+            "de": "Die Farben, die die Farbtaste einer Lampe anbietet.",
+            "fr": "Les couleurs proposées par le bouton couleur d'une lampe.",
+            "it": "I colori offerti dal pulsante colore di una luce.",
+            "sv": "Färgerna som en lampas färgknapp erbjuder.",
+            "no": "Fargene som en lampes fargeknapp tilbyr.",
+            "es": "Los colores que ofrece el botón de color de una luz.",
+            "da": "Farverne, som en lampes farveknap tilbyder.",
+            "ru": "Цвета, которые предлагает кнопка цвета светильника.",
+            "pl": "Kolory dostępne pod przyciskiem koloru lampy.",
+            "ko": "조명의 색상 버튼에 표시되는 색상입니다.",
+            "ar": "الألوان التي يعرضها زر لون المصباح."
+          },
+          "value": "default",
+          "values": [
+            {
+              "id": "default",
+              "title": {
+                "en": "Bright colours",
+                "nl": "Felle kleuren",
+                "de": "Kräftige Farben",
+                "fr": "Couleurs vives",
+                "it": "Colori vivaci",
+                "sv": "Klara färger",
+                "no": "Klare farger",
+                "es": "Colores vivos",
+                "da": "Klare farver",
+                "ru": "Яркие цвета",
+                "pl": "Żywe kolory",
+                "ko": "선명한 색상",
+                "ar": "ألوان زاهية"
+              }
+            },
+            {
+              "id": "warm",
+              "title": {
+                "en": "Warm: red to cool white",
+                "nl": "Warm: rood tot koel wit",
+                "de": "Warm: Rot bis Kaltweiß",
+                "fr": "Chaud : du rouge au blanc froid",
+                "it": "Caldo: dal rosso al bianco freddo",
+                "sv": "Varm: röd till kallvit",
+                "no": "Varm: rød til kaldhvit",
+                "es": "Cálido: del rojo al blanco frío",
+                "da": "Varm: rød til koldhvid",
+                "ru": "Тёплая: от красного до холодного белого",
+                "pl": "Ciepła: od czerwieni do zimnej bieli",
+                "ko": "따뜻한 색: 빨강에서 차가운 흰색까지",
+                "ar": "دافئة: من الأحمر إلى الأبيض البارد"
+              }
+            },
+            {
+              "id": "dusk",
+              "title": {
+                "en": "Dusk",
+                "nl": "Schemering",
+                "de": "Abenddämmerung",
+                "fr": "Crépuscule",
+                "it": "Crepuscolo",
+                "sv": "Skymning",
+                "no": "Skumring",
+                "es": "Atardecer",
+                "da": "Skumring",
+                "ru": "Сумерки",
+                "pl": "Zmierzch",
+                "ko": "해 질 녘",
+                "ar": "الغسق"
+              }
+            }
+          ]
         }
       ],
       "api": {
@@ -1201,6 +1306,21 @@
             "pl": "Styl aktywnych kafelków",
             "ko": "활성 타일 스타일",
             "ar": "نمط البلاطات النشطة"
+          },
+          "hint": {
+            "en": "A tap runs the device’s quick action, which you can change on the device in the Homey app.",
+            "nl": "Een tik voert de snelle actie van het apparaat uit; die kun je bij het apparaat in de Homey-app wijzigen.",
+            "de": "Ein Tippen führt die Schnellaktion des Geräts aus; diese kannst du beim Gerät in der Homey-App ändern.",
+            "fr": "Un appui lance l'action rapide de l'appareil, modifiable sur l'appareil dans l'app Homey.",
+            "it": "Un tocco esegue l'azione rapida del dispositivo, modificabile sul dispositivo nell'app Homey.",
+            "sv": "Ett tryck kör enhetens snabbåtgärd, som du kan ändra på enheten i Homey-appen.",
+            "no": "Et trykk kjører enhetens hurtighandling, som du kan endre på enheten i Homey-appen.",
+            "es": "Un toque ejecuta la acción rápida del dispositivo, que puedes cambiar en el dispositivo en la app Homey.",
+            "da": "Et tryk kører enhedens hurtighandling, som du kan ændre på enheden i Homey-appen.",
+            "ru": "Нажатие выполняет быстрое действие устройства; его можно изменить в устройстве в приложении Homey.",
+            "pl": "Dotknięcie uruchamia szybką akcję urządzenia, którą zmienisz w urządzeniu w aplikacji Homey.",
+            "ko": "탭하면 기기의 빠른 동작이 실행됩니다. Homey 앱의 기기에서 변경할 수 있습니다.",
+            "ar": "النقر يشغّل الإجراء السريع للجهاز، ويمكنك تغييره من الجهاز في تطبيق Homey."
           },
           "value": "tint",
           "values": [
@@ -1439,19 +1559,19 @@
           "id": "columns",
           "type": "dropdown",
           "title": {
-            "en": "Columns",
-            "nl": "Kolommen",
-            "de": "Spalten",
-            "fr": "Colonnes",
-            "it": "Colonne",
-            "sv": "Kolumner",
-            "no": "Kolonner",
-            "es": "Columnas",
-            "da": "Kolonner",
-            "ru": "Столбцы",
-            "pl": "Kolumny",
-            "ko": "열",
-            "ar": "الأعمدة"
+            "en": "Tiles per row",
+            "nl": "Tegels per rij",
+            "de": "Kacheln pro Zeile",
+            "fr": "Tuiles par ligne",
+            "it": "Riquadri per riga",
+            "sv": "Rutor per rad",
+            "no": "Fliser per rad",
+            "es": "Mosaicos por fila",
+            "da": "Felter pr. række",
+            "ru": "Плиток в ряду",
+            "pl": "Kafelków w rzędzie",
+            "ko": "행당 타일",
+            "ar": "البلاطات في كل صف"
           },
           "value": "2",
           "values": [
@@ -1510,6 +1630,21 @@
             "pl": "Kafelek 1",
             "ko": "타일 1",
             "ar": "البلاطة 1"
+          },
+          "hint": {
+            "en": "Pick a value for each tile. Only numbers with Insights history are listed; empty tiles are left out.",
+            "nl": "Kies per tegel een waarde. Alleen getallen met Insights-geschiedenis staan in de lijst; lege tegels worden weggelaten.",
+            "de": "Wähle für jede Kachel einen Wert. Nur Zahlen mit Insights-Verlauf stehen zur Auswahl; leere Kacheln werden ausgelassen.",
+            "fr": "Choisissez une valeur par tuile. Seuls les nombres avec un historique Insights sont proposés ; les tuiles vides sont ignorées.",
+            "it": "Scegli un valore per ogni riquadro. Sono elencati solo i numeri con cronologia Insights; i riquadri vuoti vengono omessi.",
+            "sv": "Välj ett värde för varje ruta. Bara tal med Insights-historik visas; tomma rutor utelämnas.",
+            "no": "Velg en verdi for hver flis. Bare tall med Insights-historikk vises; tomme fliser utelates.",
+            "es": "Elige un valor para cada mosaico. Solo aparecen números con historial de Insights; los vacíos se omiten.",
+            "da": "Vælg en værdi for hvert felt. Kun tal med Insights-historik vises; tomme felter udelades.",
+            "ru": "Выберите значение для каждой плитки. В списке только числа с историей Insights; пустые плитки не показываются.",
+            "pl": "Wybierz wartość dla każdego kafelka. Lista zawiera tylko liczby z historią Insights; puste kafelki są pomijane.",
+            "ko": "타일마다 값을 선택하세요. Insights 기록이 있는 숫자만 나열되며, 빈 타일은 표시되지 않습니다.",
+            "ar": "اختر قيمة لكل بلاطة. تظهر فقط الأرقام التي لها سجل في Insights، وتُحذف البلاطات الفارغة."
           }
         },
         {
@@ -1652,6 +1787,21 @@
             "pl": "Termostat lub klimatyzator",
             "ko": "온도 조절기 또는 에어컨",
             "ar": "منظم حرارة أو مكيف"
+          },
+          "hint": {
+            "en": "Pick this first: the button options below list this device’s temperatures, modes and settings.",
+            "nl": "Kies dit eerst: de knopopties hieronder tonen de temperaturen, modi en instellingen van dit apparaat.",
+            "de": "Zuerst auswählen: Die Tastenoptionen darunter zeigen Temperaturen, Modi und Einstellungen dieses Geräts.",
+            "fr": "À choisir d'abord : les options des boutons ci-dessous proposent les températures, modes et réglages de cet appareil.",
+            "it": "Sceglilo per primo: le opzioni dei pulsanti qui sotto elencano temperature, modalità e impostazioni di questo dispositivo.",
+            "sv": "Välj den först: knappalternativen nedan visar enhetens temperaturer, lägen och inställningar.",
+            "no": "Velg denne først: knappevalgene under viser enhetens temperaturer, moduser og innstillinger.",
+            "es": "Elígelo primero: las opciones de los botones de abajo muestran las temperaturas, modos y ajustes de este dispositivo.",
+            "da": "Vælg den først: knapvalgene nedenfor viser enhedens temperaturer, tilstande og indstillinger.",
+            "ru": "Выберите его первым: варианты кнопок ниже берут температуры, режимы и настройки этого устройства.",
+            "pl": "Wybierz najpierw: opcje przycisków poniżej pokazują temperatury, tryby i ustawienia tego urządzenia.",
+            "ko": "먼저 선택하세요. 아래 버튼 옵션에 이 기기의 온도, 모드, 설정이 나열됩니다.",
+            "ar": "اختره أولًا: تعرض خيارات الأزرار أدناه درجات حرارة هذا الجهاز وأوضاعه وإعداداته."
           }
         },
         {
@@ -1671,6 +1821,21 @@
             "pl": "Przycisk 1 – zasilanie",
             "ko": "버튼 1 – 전원",
             "ar": "الزر 1 – التشغيل"
+          },
+          "hint": {
+            "en": "Leave mode, temperature or fan empty to keep them as they are.",
+            "nl": "Laat modus, temperatuur of ventilator leeg om ze ongewijzigd te laten.",
+            "de": "Modus, Temperatur oder Lüfter leer lassen, um sie unverändert zu lassen.",
+            "fr": "Laissez le mode, la température ou le ventilateur vides pour ne pas les changer.",
+            "it": "Lascia vuoti modalità, temperatura o ventola per non cambiarli.",
+            "sv": "Lämna läge, temperatur eller fläkt tomma för att behålla dem.",
+            "no": "La modus, temperatur eller vifte stå tomme for å beholde dem.",
+            "es": "Deja vacíos el modo, la temperatura o el ventilador para no cambiarlos.",
+            "da": "Lad tilstand, temperatur eller blæser stå tomme for at beholde dem.",
+            "ru": "Оставьте режим, температуру или вентилятор пустыми, чтобы не менять их.",
+            "pl": "Zostaw tryb, temperaturę lub wentylator puste, aby ich nie zmieniać.",
+            "ko": "모드, 온도, 팬을 비워 두면 그대로 유지됩니다.",
+            "ar": "اترك الوضع أو درجة الحرارة أو المروحة فارغة لإبقائها كما هي."
           },
           "value": "off",
           "values": [
@@ -1731,25 +1896,6 @@
           ]
         },
         {
-          "id": "b1Temp",
-          "type": "autocomplete",
-          "title": {
-            "en": "Button 1 – target temperature",
-            "nl": "Knop 1 – doeltemperatuur",
-            "de": "Taste 1 – Zieltemperatur",
-            "fr": "Bouton 1 – température cible",
-            "it": "Pulsante 1 – temperatura target",
-            "sv": "Knapp 1 – måltemperatur",
-            "no": "Knapp 1 – måltemperatur",
-            "es": "Botón 1 – temperatura objetivo",
-            "da": "Knap 1 – måltemperatur",
-            "ru": "Кнопка 1 – целевая температура",
-            "pl": "Przycisk 1 – temperatura docelowa",
-            "ko": "버튼 1 – 목표 온도",
-            "ar": "الزر 1 – درجة الحرارة المستهدفة"
-          }
-        },
-        {
           "id": "b1Mode",
           "type": "autocomplete",
           "title": {
@@ -1766,6 +1912,25 @@
             "pl": "Przycisk 1 – tryb",
             "ko": "버튼 1 – 모드",
             "ar": "الزر 1 – الوضع"
+          }
+        },
+        {
+          "id": "b1Temp",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 1 – temperature",
+            "nl": "Knop 1 – temperatuur",
+            "de": "Taste 1 – Temperatur",
+            "fr": "Bouton 1 – température",
+            "it": "Pulsante 1 – temperatura",
+            "sv": "Knapp 1 – temperatur",
+            "no": "Knapp 1 – temperatur",
+            "es": "Botón 1 – temperatura",
+            "da": "Knap 1 – temperatur",
+            "ru": "Кнопка 1 – температура",
+            "pl": "Przycisk 1 – temperatura",
+            "ko": "버튼 1 – 온도",
+            "ar": "الزر 1 – درجة الحرارة"
           }
         },
         {
@@ -1864,25 +2029,6 @@
           ]
         },
         {
-          "id": "b2Temp",
-          "type": "autocomplete",
-          "title": {
-            "en": "Button 2 – target temperature",
-            "nl": "Knop 2 – doeltemperatuur",
-            "de": "Taste 2 – Zieltemperatur",
-            "fr": "Bouton 2 – température cible",
-            "it": "Pulsante 2 – temperatura target",
-            "sv": "Knapp 2 – måltemperatur",
-            "no": "Knapp 2 – måltemperatur",
-            "es": "Botón 2 – temperatura objetivo",
-            "da": "Knap 2 – måltemperatur",
-            "ru": "Кнопка 2 – целевая температура",
-            "pl": "Przycisk 2 – temperatura docelowa",
-            "ko": "버튼 2 – 목표 온도",
-            "ar": "الزر 2 – درجة الحرارة المستهدفة"
-          }
-        },
-        {
           "id": "b2Mode",
           "type": "autocomplete",
           "title": {
@@ -1899,6 +2045,25 @@
             "pl": "Przycisk 2 – tryb",
             "ko": "버튼 2 – 모드",
             "ar": "الزر 2 – الوضع"
+          }
+        },
+        {
+          "id": "b2Temp",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 2 – temperature",
+            "nl": "Knop 2 – temperatuur",
+            "de": "Taste 2 – Temperatur",
+            "fr": "Bouton 2 – température",
+            "it": "Pulsante 2 – temperatura",
+            "sv": "Knapp 2 – temperatur",
+            "no": "Knapp 2 – temperatur",
+            "es": "Botón 2 – temperatura",
+            "da": "Knap 2 – temperatur",
+            "ru": "Кнопка 2 – температура",
+            "pl": "Przycisk 2 – temperatura",
+            "ko": "버튼 2 – 온도",
+            "ar": "الزر 2 – درجة الحرارة"
           }
         },
         {
@@ -1997,25 +2162,6 @@
           ]
         },
         {
-          "id": "b3Temp",
-          "type": "autocomplete",
-          "title": {
-            "en": "Button 3 – target temperature",
-            "nl": "Knop 3 – doeltemperatuur",
-            "de": "Taste 3 – Zieltemperatur",
-            "fr": "Bouton 3 – température cible",
-            "it": "Pulsante 3 – temperatura target",
-            "sv": "Knapp 3 – måltemperatur",
-            "no": "Knapp 3 – måltemperatur",
-            "es": "Botón 3 – temperatura objetivo",
-            "da": "Knap 3 – måltemperatur",
-            "ru": "Кнопка 3 – целевая температура",
-            "pl": "Przycisk 3 – temperatura docelowa",
-            "ko": "버튼 3 – 목표 온도",
-            "ar": "الزر 3 – درجة الحرارة المستهدفة"
-          }
-        },
-        {
           "id": "b3Mode",
           "type": "autocomplete",
           "title": {
@@ -2032,6 +2178,25 @@
             "pl": "Przycisk 3 – tryb",
             "ko": "버튼 3 – 모드",
             "ar": "الزر 3 – الوضع"
+          }
+        },
+        {
+          "id": "b3Temp",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 3 – temperature",
+            "nl": "Knop 3 – temperatuur",
+            "de": "Taste 3 – Temperatur",
+            "fr": "Bouton 3 – température",
+            "it": "Pulsante 3 – temperatura",
+            "sv": "Knapp 3 – temperatur",
+            "no": "Knapp 3 – temperatur",
+            "es": "Botón 3 – temperatura",
+            "da": "Knap 3 – temperatur",
+            "ru": "Кнопка 3 – температура",
+            "pl": "Przycisk 3 – temperatura",
+            "ko": "버튼 3 – 온도",
+            "ar": "الزر 3 – درجة الحرارة"
           }
         },
         {
@@ -2089,19 +2254,19 @@
           "id": "columns",
           "type": "dropdown",
           "title": {
-            "en": "Columns",
-            "nl": "Kolommen",
-            "de": "Spalten",
-            "fr": "Colonnes",
-            "it": "Colonne",
-            "sv": "Kolumner",
-            "no": "Kolonner",
-            "es": "Columnas",
-            "da": "Kolonner",
-            "ru": "Столбцы",
-            "pl": "Kolumny",
-            "ko": "열",
-            "ar": "الأعمدة"
+            "en": "Tiles per row",
+            "nl": "Tegels per rij",
+            "de": "Kacheln pro Zeile",
+            "fr": "Tuiles par ligne",
+            "it": "Riquadri per riga",
+            "sv": "Rutor per rad",
+            "no": "Fliser per rad",
+            "es": "Mosaicos por fila",
+            "da": "Felter pr. række",
+            "ru": "Плиток в ряду",
+            "pl": "Kafelków w rzędzie",
+            "ko": "행당 타일",
+            "ar": "البلاطات في كل صف"
           },
           "value": "3",
           "values": [
@@ -2161,6 +2326,21 @@
             "ko": "백분율을 수준별로 채우기",
             "ar": "تعبئة النسب حسب المستوى"
           },
+          "hint": {
+            "en": "Percentages (battery, humidity …) fill the tile up to their value, in red, yellow or green.",
+            "nl": "Percentages (batterij, vochtigheid …) vullen de tegel tot hun waarde, in rood, geel of groen.",
+            "de": "Prozentwerte (Batterie, Feuchte …) füllen die Kachel bis zu ihrem Wert, in Rot, Gelb oder Grün.",
+            "fr": "Les pourcentages (batterie, humidité …) remplissent la tuile jusqu'à leur valeur, en rouge, jaune ou vert.",
+            "it": "Le percentuali (batteria, umidità …) riempiono il riquadro fino al loro valore, in rosso, giallo o verde.",
+            "sv": "Procentvärden (batteri, luftfuktighet …) fyller rutan upp till sitt värde, i rött, gult eller grönt.",
+            "no": "Prosentverdier (batteri, fuktighet …) fyller flisen opp til verdien, i rødt, gult eller grønt.",
+            "es": "Los porcentajes (batería, humedad …) rellenan el mosaico hasta su valor, en rojo, amarillo o verde.",
+            "da": "Procenter (batteri, luftfugtighed …) udfylder feltet op til deres værdi, i rød, gul eller grøn.",
+            "ru": "Проценты (батарея, влажность …) заполняют плитку до своего значения красным, жёлтым или зелёным.",
+            "pl": "Procenty (bateria, wilgotność …) wypełniają kafelek do swojej wartości na czerwono, żółto lub zielono.",
+            "ko": "백분율 값(배터리, 습도 …)이 값만큼 타일을 빨강, 노랑, 초록으로 채웁니다.",
+            "ar": "تملأ النسب المئوية (البطارية، الرطوبة …) البلاطة حتى قيمتها بالأحمر أو الأصفر أو الأخضر."
+          },
           "value": false
         },
         {
@@ -2180,6 +2360,21 @@
             "pl": "Czerwony poniżej (%)",
             "ko": "빨간색 기준 미만 (%)",
             "ar": "أحمر أقل من (%)"
+          },
+          "hint": {
+            "en": "Only with “Fill percentages by level” on.",
+            "nl": "Alleen als “Percentages vullen per niveau” aan staat.",
+            "de": "Nur wenn „Prozentwerte nach Stufe füllen“ aktiv ist.",
+            "fr": "Seulement si « Remplir les pourcentages par niveau » est activé.",
+            "it": "Solo con “Riempi le percentuali per livello” attivo.",
+            "sv": "Bara när ”Fyll procentvärden efter nivå” är på.",
+            "no": "Bare når «Fyll prosentverdier etter nivå» er på.",
+            "es": "Solo con «Rellenar porcentajes por nivel» activado.",
+            "da": "Kun når “Udfyld procenter efter niveau” er slået til.",
+            "ru": "Только если включено «Заливка процентов по уровню».",
+            "pl": "Tylko gdy „Wypełniaj procenty według poziomu” jest włączone.",
+            "ko": "“백분율을 수준별로 채우기”을(를) 켠 경우에만 적용됩니다.",
+            "ar": "فقط عند تفعيل «تعبئة النسب حسب المستوى»."
           },
           "value": 10,
           "min": 0,
@@ -2203,6 +2398,21 @@
             "ko": "노란색 기준 미만 (%)",
             "ar": "أصفر أقل من (%)"
           },
+          "hint": {
+            "en": "Only with “Fill percentages by level” on.",
+            "nl": "Alleen als “Percentages vullen per niveau” aan staat.",
+            "de": "Nur wenn „Prozentwerte nach Stufe füllen“ aktiv ist.",
+            "fr": "Seulement si « Remplir les pourcentages par niveau » est activé.",
+            "it": "Solo con “Riempi le percentuali per livello” attivo.",
+            "sv": "Bara när ”Fyll procentvärden efter nivå” är på.",
+            "no": "Bare når «Fyll prosentverdier etter nivå» er på.",
+            "es": "Solo con «Rellenar porcentajes por nivel» activado.",
+            "da": "Kun når “Udfyld procenter efter niveau” er slået til.",
+            "ru": "Только если включено «Заливка процентов по уровню».",
+            "pl": "Tylko gdy „Wypełniaj procenty według poziomu” jest włączone.",
+            "ko": "“백분율을 수준별로 채우기”을(를) 켠 경우에만 적용됩니다.",
+            "ar": "فقط عند تفعيل «تعبئة النسب حسب المستوى»."
+          },
           "value": 20,
           "min": 0,
           "max": 100
@@ -2224,6 +2434,21 @@
             "pl": "Kafelek 1",
             "ko": "타일 1",
             "ar": "البلاطة 1"
+          },
+          "hint": {
+            "en": "Pick a device value for each tile. Empty tiles are left out.",
+            "nl": "Kies per tegel een apparaatwaarde. Lege tegels worden weggelaten.",
+            "de": "Wähle für jede Kachel einen Gerätewert. Leere Kacheln werden ausgelassen.",
+            "fr": "Choisissez une valeur d'appareil par tuile. Les tuiles vides sont ignorées.",
+            "it": "Scegli un valore del dispositivo per ogni riquadro. I riquadri vuoti vengono omessi.",
+            "sv": "Välj ett enhetsvärde för varje ruta. Tomma rutor utelämnas.",
+            "no": "Velg en enhetsverdi for hver flis. Tomme fliser utelates.",
+            "es": "Elige un valor de dispositivo para cada mosaico. Los vacíos se omiten.",
+            "da": "Vælg en enhedsværdi for hvert felt. Tomme felter udelades.",
+            "ru": "Выберите значение устройства для каждой плитки. Пустые плитки не показываются.",
+            "pl": "Wybierz wartość urządzenia dla każdego kafelka. Puste kafelki są pomijane.",
+            "ko": "타일마다 기기 값을 선택하세요. 빈 타일은 표시되지 않습니다.",
+            "ar": "اختر قيمة جهاز لكل بلاطة. تُحذف البلاطات الفارغة."
           }
         },
         {
@@ -2411,19 +2636,19 @@
           "id": "step",
           "type": "number",
           "title": {
-            "en": "Step for − and +",
-            "nl": "Stap voor − en +",
-            "de": "Schritt für − und +",
-            "fr": "Pas pour − et +",
-            "it": "Passo per − e +",
-            "sv": "Steg för − och +",
-            "no": "Steg for − og +",
-            "es": "Paso para − y +",
-            "da": "Trin for − og +",
-            "ru": "Шаг для − и +",
-            "pl": "Krok dla − i +",
-            "ko": "− 및 + 단계",
-            "ar": "خطوة − و +"
+            "en": "Step for − and + on numbers",
+            "nl": "Stap voor − en + bij getallen",
+            "de": "Schritt für − und + bei Zahlen",
+            "fr": "Pas pour − et + sur les nombres",
+            "it": "Passo per − e + sui numeri",
+            "sv": "Steg för − och + på tal",
+            "no": "Steg for − og + på tall",
+            "es": "Paso para − y + en números",
+            "da": "Trin for − og + på tal",
+            "ru": "Шаг для − и + у чисел",
+            "pl": "Krok dla − i + przy liczbach",
+            "ko": "숫자의 − 및 + 단계",
+            "ar": "خطوة − و + للأرقام"
           },
           "value": 1,
           "min": 0.001,
@@ -2446,6 +2671,21 @@
             "pl": "Zmienna 1",
             "ko": "변수 1",
             "ar": "المتغير 1"
+          },
+          "hint": {
+            "en": "To change variables from the widget, add an API key in Widgetkeeper’s app settings.",
+            "nl": "Voeg in de app-instellingen van Widgetkeeper een API-sleutel toe om variabelen vanuit de widget te wijzigen.",
+            "de": "Um Variablen im Widget zu ändern, füge in den App-Einstellungen von Widgetkeeper einen API-Schlüssel hinzu.",
+            "fr": "Pour modifier les variables depuis le widget, ajoutez une clé API dans les réglages de l'app Widgetkeeper.",
+            "it": "Per modificare le variabili dal widget, aggiungi una chiave API nelle impostazioni dell'app Widgetkeeper.",
+            "sv": "Lägg till en API-nyckel i Widgetkeepers appinställningar för att ändra variabler från widgeten.",
+            "no": "Legg til en API-nøkkel i Widgetkeepers appinnstillinger for å endre variabler fra widgeten.",
+            "es": "Para cambiar variables desde el widget, añade una clave API en los ajustes de la app Widgetkeeper.",
+            "da": "Tilføj en API-nøgle i Widgetkeepers app-indstillinger for at ændre variabler fra widgetten.",
+            "ru": "Чтобы менять переменные из виджета, добавьте ключ API в настройках приложения Widgetkeeper.",
+            "pl": "Aby zmieniać zmienne z widżetu, dodaj klucz API w ustawieniach aplikacji Widgetkeeper.",
+            "ko": "위젯에서 변수를 변경하려면 Widgetkeeper 앱 설정에서 API 키를 추가하세요.",
+            "ar": "لتغيير المتغيرات من الأداة، أضف مفتاح API في إعدادات تطبيق Widgetkeeper."
           }
         },
         {
@@ -2669,6 +2909,21 @@
             "ko": "시간 열",
             "ar": "أعمدة الساعات"
           },
+          "hint": {
+            "en": "Compact fits more hours. Detailed has bigger icons and units on every value.",
+            "nl": "Compact toont meer uren. Gedetailleerd heeft grotere iconen en eenheden bij elke waarde.",
+            "de": "Kompakt zeigt mehr Stunden. Ausführlich hat größere Symbole und Einheiten bei jedem Wert.",
+            "fr": "Compactes : plus d'heures. Détaillées : icônes plus grandes et unités sur chaque valeur.",
+            "it": "Compatte: più ore. Dettagliate: icone più grandi e unità su ogni valore.",
+            "sv": "Kompakta visar fler timmar. Detaljerade har större ikoner och enheter på varje värde.",
+            "no": "Kompakte viser flere timer. Detaljerte har større ikoner og enheter på hver verdi.",
+            "es": "Compactas muestra más horas. Detalladas tiene iconos más grandes y unidades en cada valor.",
+            "da": "Kompakte viser flere timer. Detaljerede har større ikoner og enheder på hver værdi.",
+            "ru": "Компактные вмещают больше часов. Подробные — крупные значки и единицы у каждого значения.",
+            "pl": "Kompaktowe mieszczą więcej godzin. Szczegółowe mają większe ikony i jednostki przy każdej wartości.",
+            "ko": "간단히는 더 많은 시간을 표시합니다. 자세히는 더 큰 아이콘과 모든 값에 단위를 표시합니다.",
+            "ar": "المضغوطة تعرض ساعات أكثر. المفصلة فيها أيقونات أكبر ووحدات لكل قيمة."
+          },
           "value": "compact",
           "values": [
             {
@@ -2710,6 +2965,97 @@
           ]
         },
         {
+          "id": "step",
+          "type": "dropdown",
+          "title": {
+            "en": "Hours per column",
+            "nl": "Uren per kolom",
+            "de": "Stunden pro Spalte",
+            "fr": "Heures par colonne",
+            "it": "Ore per colonna",
+            "sv": "Timmar per kolumn",
+            "no": "Timer per kolonne",
+            "es": "Horas por columna",
+            "da": "Timer pr. kolonne",
+            "ru": "Часов в столбце",
+            "pl": "Godzin na kolumnę",
+            "ko": "열당 시간",
+            "ar": "ساعات لكل عمود"
+          },
+          "hint": {
+            "en": "With 2 or 3 hours, a column shows the average temperature and wind, and the total precipitation.",
+            "nl": "Bij 2 of 3 uur toont een kolom de gemiddelde temperatuur en wind en de totale neerslag.",
+            "de": "Bei 2 oder 3 Stunden zeigt eine Spalte die mittlere Temperatur und den Wind sowie den gesamten Niederschlag.",
+            "fr": "Avec 2 ou 3 heures, une colonne affiche la température et le vent moyens, et le total des précipitations.",
+            "it": "Con 2 o 3 ore, una colonna mostra temperatura e vento medi e le precipitazioni totali.",
+            "sv": "Med 2 eller 3 timmar visar en kolumn medeltemperatur och medelvind samt total nederbörd.",
+            "no": "Med 2 eller 3 timer viser en kolonne gjennomsnittlig temperatur og vind, og total nedbør.",
+            "es": "Con 2 o 3 horas, cada columna muestra la temperatura y el viento medios y la precipitación total.",
+            "da": "Med 2 eller 3 timer viser en kolonne gennemsnitlig temperatur og vind samt den samlede nedbør.",
+            "ru": "При 2 или 3 часах столбец показывает среднюю температуру и ветер и сумму осадков.",
+            "pl": "Przy 2 lub 3 godzinach kolumna pokazuje średnią temperaturę i wiatr oraz łączny opad.",
+            "ko": "2시간 또는 3시간이면 한 열에 평균 기온과 바람, 총 강수량을 표시합니다.",
+            "ar": "مع ساعتين أو 3 ساعات، يعرض كل عمود متوسط الحرارة والرياح وإجمالي الهطول."
+          },
+          "value": "1",
+          "values": [
+            {
+              "id": "1",
+              "title": {
+                "en": "1 hour",
+                "nl": "1 uur",
+                "de": "1 Stunde",
+                "fr": "1 heure",
+                "it": "1 ora",
+                "sv": "1 timme",
+                "no": "1 time",
+                "es": "1 hora",
+                "da": "1 time",
+                "ru": "1 час",
+                "pl": "1 godzina",
+                "ko": "1시간",
+                "ar": "ساعة واحدة"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "2 hours",
+                "nl": "2 uur",
+                "de": "2 Stunden",
+                "fr": "2 heures",
+                "it": "2 ore",
+                "sv": "2 timmar",
+                "no": "2 timer",
+                "es": "2 horas",
+                "da": "2 timer",
+                "ru": "2 часа",
+                "pl": "2 godziny",
+                "ko": "2시간",
+                "ar": "ساعتان"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "3 hours",
+                "nl": "3 uur",
+                "de": "3 Stunden",
+                "fr": "3 heures",
+                "it": "3 ore",
+                "sv": "3 timmar",
+                "no": "3 timer",
+                "es": "3 horas",
+                "da": "3 timer",
+                "ru": "3 часа",
+                "pl": "3 godziny",
+                "ko": "3시간",
+                "ar": "3 ساعات"
+              }
+            }
+          ]
+        },
+        {
           "id": "rows",
           "type": "dropdown",
           "title": {
@@ -2726,6 +3072,21 @@
             "pl": "Wiersze",
             "ko": "행",
             "ar": "الصفوف"
+          },
+          "hint": {
+            "en": "Two rows show twice as many hours at a time. Swipe for more.",
+            "nl": "Twee rijen tonen twee keer zoveel uren tegelijk. Veeg voor meer.",
+            "de": "Zwei Zeilen zeigen doppelt so viele Stunden auf einmal. Wischen für mehr.",
+            "fr": "Deux rangées affichent deux fois plus d'heures. Balayez pour en voir plus.",
+            "it": "Due righe mostrano il doppio delle ore. Scorri per vederne altre.",
+            "sv": "Två rader visar dubbelt så många timmar åt gången. Svep för fler.",
+            "no": "To rader viser dobbelt så mange timer om gangen. Sveip for flere.",
+            "es": "Dos filas muestran el doble de horas a la vez. Desliza para ver más.",
+            "da": "To rækker viser dobbelt så mange timer ad gangen. Stryg for flere.",
+            "ru": "Две строки показывают вдвое больше часов. Проведите, чтобы увидеть больше.",
+            "pl": "Dwa wiersze pokazują dwa razy więcej godzin naraz. Przesuń, aby zobaczyć więcej.",
+            "ko": "두 줄은 한 번에 두 배의 시간을 표시합니다. 밀어서 더 보기.",
+            "ar": "صفّان يعرضان ضعف عدد الساعات في المرة الواحدة. اسحب للمزيد."
           },
           "value": "1",
           "values": [
@@ -2763,82 +3124,6 @@
                 "pl": "Dwa wiersze",
                 "ko": "두 행",
                 "ar": "صفان"
-              }
-            }
-          ]
-        },
-        {
-          "id": "step",
-          "type": "dropdown",
-          "title": {
-            "en": "Interval",
-            "nl": "Interval",
-            "de": "Intervall",
-            "fr": "Intervalle",
-            "it": "Intervallo",
-            "sv": "Intervall",
-            "no": "Intervall",
-            "es": "Intervalo",
-            "da": "Interval",
-            "ru": "Интервал",
-            "pl": "Odstęp",
-            "ko": "간격",
-            "ar": "الفاصل الزمني"
-          },
-          "value": "1",
-          "values": [
-            {
-              "id": "1",
-              "title": {
-                "en": "Every hour",
-                "nl": "Elk uur",
-                "de": "Jede Stunde",
-                "fr": "Chaque heure",
-                "it": "Ogni ora",
-                "sv": "Varje timme",
-                "no": "Hver time",
-                "es": "Cada hora",
-                "da": "Hver time",
-                "ru": "Каждый час",
-                "pl": "Co godzinę",
-                "ko": "1시간마다",
-                "ar": "كل ساعة"
-              }
-            },
-            {
-              "id": "2",
-              "title": {
-                "en": "Every 2 hours (averaged)",
-                "nl": "Elke 2 uur (gemiddeld)",
-                "de": "Alle 2 Stunden (gemittelt)",
-                "fr": "Toutes les 2 heures (moyenne)",
-                "it": "Ogni 2 ore (media)",
-                "sv": "Varannan timme (medel)",
-                "no": "Annenhver time (snitt)",
-                "es": "Cada 2 horas (promedio)",
-                "da": "Hver 2. time (gennemsnit)",
-                "ru": "Каждые 2 часа (среднее)",
-                "pl": "Co 2 godziny (średnia)",
-                "ko": "2시간마다 (평균)",
-                "ar": "كل ساعتين (متوسط)"
-              }
-            },
-            {
-              "id": "3",
-              "title": {
-                "en": "Every 3 hours (averaged)",
-                "nl": "Elke 3 uur (gemiddeld)",
-                "de": "Alle 3 Stunden (gemittelt)",
-                "fr": "Toutes les 3 heures (moyenne)",
-                "it": "Ogni 3 ore (media)",
-                "sv": "Var tredje timme (medel)",
-                "no": "Hver tredje time (snitt)",
-                "es": "Cada 3 horas (promedio)",
-                "da": "Hver 3. time (gennemsnit)",
-                "ru": "Каждые 3 часа (среднее)",
-                "pl": "Co 3 godziny (średnia)",
-                "ko": "3시간마다 (평균)",
-                "ar": "كل 3 ساعات (متوسط)"
               }
             }
           ]

@@ -35,6 +35,21 @@
         "ko": "시간 열",
         "ar": "أعمدة الساعات"
       },
+      "hint": {
+        "en": "Compact fits more hours. Detailed has bigger icons and units on every value.",
+        "nl": "Compact toont meer uren. Gedetailleerd heeft grotere iconen en eenheden bij elke waarde.",
+        "de": "Kompakt zeigt mehr Stunden. Ausführlich hat größere Symbole und Einheiten bei jedem Wert.",
+        "fr": "Compactes : plus d'heures. Détaillées : icônes plus grandes et unités sur chaque valeur.",
+        "it": "Compatte: più ore. Dettagliate: icone più grandi e unità su ogni valore.",
+        "sv": "Kompakta visar fler timmar. Detaljerade har större ikoner och enheter på varje värde.",
+        "no": "Kompakte viser flere timer. Detaljerte har større ikoner og enheter på hver verdi.",
+        "es": "Compactas muestra más horas. Detalladas tiene iconos más grandes y unidades en cada valor.",
+        "da": "Kompakte viser flere timer. Detaljerede har større ikoner og enheder på hver værdi.",
+        "ru": "Компактные вмещают больше часов. Подробные — крупные значки и единицы у каждого значения.",
+        "pl": "Kompaktowe mieszczą więcej godzin. Szczegółowe mają większe ikony i jednostki przy każdej wartości.",
+        "ko": "간단히는 더 많은 시간을 표시합니다. 자세히는 더 큰 아이콘과 모든 값에 단위를 표시합니다.",
+        "ar": "المضغوطة تعرض ساعات أكثر. المفصلة فيها أيقونات أكبر ووحدات لكل قيمة."
+      },
       "value": "compact",
       "values": [
         {
@@ -76,6 +91,97 @@
       ]
     },
     {
+      "id": "step",
+      "type": "dropdown",
+      "title": {
+        "en": "Hours per column",
+        "nl": "Uren per kolom",
+        "de": "Stunden pro Spalte",
+        "fr": "Heures par colonne",
+        "it": "Ore per colonna",
+        "sv": "Timmar per kolumn",
+        "no": "Timer per kolonne",
+        "es": "Horas por columna",
+        "da": "Timer pr. kolonne",
+        "ru": "Часов в столбце",
+        "pl": "Godzin na kolumnę",
+        "ko": "열당 시간",
+        "ar": "ساعات لكل عمود"
+      },
+      "hint": {
+        "en": "With 2 or 3 hours, a column shows the average temperature and wind, and the total precipitation.",
+        "nl": "Bij 2 of 3 uur toont een kolom de gemiddelde temperatuur en wind en de totale neerslag.",
+        "de": "Bei 2 oder 3 Stunden zeigt eine Spalte die mittlere Temperatur und den Wind sowie den gesamten Niederschlag.",
+        "fr": "Avec 2 ou 3 heures, une colonne affiche la température et le vent moyens, et le total des précipitations.",
+        "it": "Con 2 o 3 ore, una colonna mostra temperatura e vento medi e le precipitazioni totali.",
+        "sv": "Med 2 eller 3 timmar visar en kolumn medeltemperatur och medelvind samt total nederbörd.",
+        "no": "Med 2 eller 3 timer viser en kolonne gjennomsnittlig temperatur og vind, og total nedbør.",
+        "es": "Con 2 o 3 horas, cada columna muestra la temperatura y el viento medios y la precipitación total.",
+        "da": "Med 2 eller 3 timer viser en kolonne gennemsnitlig temperatur og vind samt den samlede nedbør.",
+        "ru": "При 2 или 3 часах столбец показывает среднюю температуру и ветер и сумму осадков.",
+        "pl": "Przy 2 lub 3 godzinach kolumna pokazuje średnią temperaturę i wiatr oraz łączny opad.",
+        "ko": "2시간 또는 3시간이면 한 열에 평균 기온과 바람, 총 강수량을 표시합니다.",
+        "ar": "مع ساعتين أو 3 ساعات، يعرض كل عمود متوسط الحرارة والرياح وإجمالي الهطول."
+      },
+      "value": "1",
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "1 hour",
+            "nl": "1 uur",
+            "de": "1 Stunde",
+            "fr": "1 heure",
+            "it": "1 ora",
+            "sv": "1 timme",
+            "no": "1 time",
+            "es": "1 hora",
+            "da": "1 time",
+            "ru": "1 час",
+            "pl": "1 godzina",
+            "ko": "1시간",
+            "ar": "ساعة واحدة"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "2 hours",
+            "nl": "2 uur",
+            "de": "2 Stunden",
+            "fr": "2 heures",
+            "it": "2 ore",
+            "sv": "2 timmar",
+            "no": "2 timer",
+            "es": "2 horas",
+            "da": "2 timer",
+            "ru": "2 часа",
+            "pl": "2 godziny",
+            "ko": "2시간",
+            "ar": "ساعتان"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "3 hours",
+            "nl": "3 uur",
+            "de": "3 Stunden",
+            "fr": "3 heures",
+            "it": "3 ore",
+            "sv": "3 timmar",
+            "no": "3 timer",
+            "es": "3 horas",
+            "da": "3 timer",
+            "ru": "3 часа",
+            "pl": "3 godziny",
+            "ko": "3시간",
+            "ar": "3 ساعات"
+          }
+        }
+      ]
+    },
+    {
       "id": "rows",
       "type": "dropdown",
       "title": {
@@ -92,6 +198,21 @@
         "pl": "Wiersze",
         "ko": "행",
         "ar": "الصفوف"
+      },
+      "hint": {
+        "en": "Two rows show twice as many hours at a time. Swipe for more.",
+        "nl": "Twee rijen tonen twee keer zoveel uren tegelijk. Veeg voor meer.",
+        "de": "Zwei Zeilen zeigen doppelt so viele Stunden auf einmal. Wischen für mehr.",
+        "fr": "Deux rangées affichent deux fois plus d'heures. Balayez pour en voir plus.",
+        "it": "Due righe mostrano il doppio delle ore. Scorri per vederne altre.",
+        "sv": "Två rader visar dubbelt så många timmar åt gången. Svep för fler.",
+        "no": "To rader viser dobbelt så mange timer om gangen. Sveip for flere.",
+        "es": "Dos filas muestran el doble de horas a la vez. Desliza para ver más.",
+        "da": "To rækker viser dobbelt så mange timer ad gangen. Stryg for flere.",
+        "ru": "Две строки показывают вдвое больше часов. Проведите, чтобы увидеть больше.",
+        "pl": "Dwa wiersze pokazują dwa razy więcej godzin naraz. Przesuń, aby zobaczyć więcej.",
+        "ko": "두 줄은 한 번에 두 배의 시간을 표시합니다. 밀어서 더 보기.",
+        "ar": "صفّان يعرضان ضعف عدد الساعات في المرة الواحدة. اسحب للمزيد."
       },
       "value": "1",
       "values": [
@@ -129,82 +250,6 @@
             "pl": "Dwa wiersze",
             "ko": "두 행",
             "ar": "صفان"
-          }
-        }
-      ]
-    },
-    {
-      "id": "step",
-      "type": "dropdown",
-      "title": {
-        "en": "Interval",
-        "nl": "Interval",
-        "de": "Intervall",
-        "fr": "Intervalle",
-        "it": "Intervallo",
-        "sv": "Intervall",
-        "no": "Intervall",
-        "es": "Intervalo",
-        "da": "Interval",
-        "ru": "Интервал",
-        "pl": "Odstęp",
-        "ko": "간격",
-        "ar": "الفاصل الزمني"
-      },
-      "value": "1",
-      "values": [
-        {
-          "id": "1",
-          "title": {
-            "en": "Every hour",
-            "nl": "Elk uur",
-            "de": "Jede Stunde",
-            "fr": "Chaque heure",
-            "it": "Ogni ora",
-            "sv": "Varje timme",
-            "no": "Hver time",
-            "es": "Cada hora",
-            "da": "Hver time",
-            "ru": "Каждый час",
-            "pl": "Co godzinę",
-            "ko": "1시간마다",
-            "ar": "كل ساعة"
-          }
-        },
-        {
-          "id": "2",
-          "title": {
-            "en": "Every 2 hours (averaged)",
-            "nl": "Elke 2 uur (gemiddeld)",
-            "de": "Alle 2 Stunden (gemittelt)",
-            "fr": "Toutes les 2 heures (moyenne)",
-            "it": "Ogni 2 ore (media)",
-            "sv": "Varannan timme (medel)",
-            "no": "Annenhver time (snitt)",
-            "es": "Cada 2 horas (promedio)",
-            "da": "Hver 2. time (gennemsnit)",
-            "ru": "Каждые 2 часа (среднее)",
-            "pl": "Co 2 godziny (średnia)",
-            "ko": "2시간마다 (평균)",
-            "ar": "كل ساعتين (متوسط)"
-          }
-        },
-        {
-          "id": "3",
-          "title": {
-            "en": "Every 3 hours (averaged)",
-            "nl": "Elke 3 uur (gemiddeld)",
-            "de": "Alle 3 Stunden (gemittelt)",
-            "fr": "Toutes les 3 heures (moyenne)",
-            "it": "Ogni 3 ore (media)",
-            "sv": "Var tredje timme (medel)",
-            "no": "Hver tredje time (snitt)",
-            "es": "Cada 3 horas (promedio)",
-            "da": "Hver 3. time (gennemsnit)",
-            "ru": "Каждые 3 часа (среднее)",
-            "pl": "Co 3 godziny (średnia)",
-            "ko": "3시간마다 (평균)",
-            "ar": "كل 3 ساعات (متوسط)"
           }
         }
       ]

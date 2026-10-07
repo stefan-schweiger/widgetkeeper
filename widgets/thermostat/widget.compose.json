@@ -34,6 +34,21 @@
         "pl": "Termostat lub klimatyzator",
         "ko": "온도 조절기 또는 에어컨",
         "ar": "منظم حرارة أو مكيف"
+      },
+      "hint": {
+        "en": "Pick this first: the button options below list this device’s temperatures, modes and settings.",
+        "nl": "Kies dit eerst: de knopopties hieronder tonen de temperaturen, modi en instellingen van dit apparaat.",
+        "de": "Zuerst auswählen: Die Tastenoptionen darunter zeigen Temperaturen, Modi und Einstellungen dieses Geräts.",
+        "fr": "À choisir d'abord : les options des boutons ci-dessous proposent les températures, modes et réglages de cet appareil.",
+        "it": "Sceglilo per primo: le opzioni dei pulsanti qui sotto elencano temperature, modalità e impostazioni di questo dispositivo.",
+        "sv": "Välj den först: knappalternativen nedan visar enhetens temperaturer, lägen och inställningar.",
+        "no": "Velg denne først: knappevalgene under viser enhetens temperaturer, moduser og innstillinger.",
+        "es": "Elígelo primero: las opciones de los botones de abajo muestran las temperaturas, modos y ajustes de este dispositivo.",
+        "da": "Vælg den først: knapvalgene nedenfor viser enhedens temperaturer, tilstande og indstillinger.",
+        "ru": "Выберите его первым: варианты кнопок ниже берут температуры, режимы и настройки этого устройства.",
+        "pl": "Wybierz najpierw: opcje przycisków poniżej pokazują temperatury, tryby i ustawienia tego urządzenia.",
+        "ko": "먼저 선택하세요. 아래 버튼 옵션에 이 기기의 온도, 모드, 설정이 나열됩니다.",
+        "ar": "اختره أولًا: تعرض خيارات الأزرار أدناه درجات حرارة هذا الجهاز وأوضاعه وإعداداته."
       }
     },
     {
@@ -53,6 +68,21 @@
         "pl": "Przycisk 1 – zasilanie",
         "ko": "버튼 1 – 전원",
         "ar": "الزر 1 – التشغيل"
+      },
+      "hint": {
+        "en": "Leave mode, temperature or fan empty to keep them as they are.",
+        "nl": "Laat modus, temperatuur of ventilator leeg om ze ongewijzigd te laten.",
+        "de": "Modus, Temperatur oder Lüfter leer lassen, um sie unverändert zu lassen.",
+        "fr": "Laissez le mode, la température ou le ventilateur vides pour ne pas les changer.",
+        "it": "Lascia vuoti modalità, temperatura o ventola per non cambiarli.",
+        "sv": "Lämna läge, temperatur eller fläkt tomma för att behålla dem.",
+        "no": "La modus, temperatur eller vifte stå tomme for å beholde dem.",
+        "es": "Deja vacíos el modo, la temperatura o el ventilador para no cambiarlos.",
+        "da": "Lad tilstand, temperatur eller blæser stå tomme for at beholde dem.",
+        "ru": "Оставьте режим, температуру или вентилятор пустыми, чтобы не менять их.",
+        "pl": "Zostaw tryb, temperaturę lub wentylator puste, aby ich nie zmieniać.",
+        "ko": "모드, 온도, 팬을 비워 두면 그대로 유지됩니다.",
+        "ar": "اترك الوضع أو درجة الحرارة أو المروحة فارغة لإبقائها كما هي."
       },
       "value": "off",
       "values": [
@@ -113,25 +143,6 @@
       ]
     },
     {
-      "id": "b1Temp",
-      "type": "autocomplete",
-      "title": {
-        "en": "Button 1 – target temperature",
-        "nl": "Knop 1 – doeltemperatuur",
-        "de": "Taste 1 – Zieltemperatur",
-        "fr": "Bouton 1 – température cible",
-        "it": "Pulsante 1 – temperatura target",
-        "sv": "Knapp 1 – måltemperatur",
-        "no": "Knapp 1 – måltemperatur",
-        "es": "Botón 1 – temperatura objetivo",
-        "da": "Knap 1 – måltemperatur",
-        "ru": "Кнопка 1 – целевая температура",
-        "pl": "Przycisk 1 – temperatura docelowa",
-        "ko": "버튼 1 – 목표 온도",
-        "ar": "الزر 1 – درجة الحرارة المستهدفة"
-      }
-    },
-    {
       "id": "b1Mode",
       "type": "autocomplete",
       "title": {
@@ -148,6 +159,25 @@
         "pl": "Przycisk 1 – tryb",
         "ko": "버튼 1 – 모드",
         "ar": "الزر 1 – الوضع"
+      }
+    },
+    {
+      "id": "b1Temp",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 1 – temperature",
+        "nl": "Knop 1 – temperatuur",
+        "de": "Taste 1 – Temperatur",
+        "fr": "Bouton 1 – température",
+        "it": "Pulsante 1 – temperatura",
+        "sv": "Knapp 1 – temperatur",
+        "no": "Knapp 1 – temperatur",
+        "es": "Botón 1 – temperatura",
+        "da": "Knap 1 – temperatur",
+        "ru": "Кнопка 1 – температура",
+        "pl": "Przycisk 1 – temperatura",
+        "ko": "버튼 1 – 온도",
+        "ar": "الزر 1 – درجة الحرارة"
       }
     },
     {
@@ -246,25 +276,6 @@
       ]
     },
     {
-      "id": "b2Temp",
-      "type": "autocomplete",
-      "title": {
-        "en": "Button 2 – target temperature",
-        "nl": "Knop 2 – doeltemperatuur",
-        "de": "Taste 2 – Zieltemperatur",
-        "fr": "Bouton 2 – température cible",
-        "it": "Pulsante 2 – temperatura target",
-        "sv": "Knapp 2 – måltemperatur",
-        "no": "Knapp 2 – måltemperatur",
-        "es": "Botón 2 – temperatura objetivo",
-        "da": "Knap 2 – måltemperatur",
-        "ru": "Кнопка 2 – целевая температура",
-        "pl": "Przycisk 2 – temperatura docelowa",
-        "ko": "버튼 2 – 목표 온도",
-        "ar": "الزر 2 – درجة الحرارة المستهدفة"
-      }
-    },
-    {
       "id": "b2Mode",
       "type": "autocomplete",
       "title": {
@@ -281,6 +292,25 @@
         "pl": "Przycisk 2 – tryb",
         "ko": "버튼 2 – 모드",
         "ar": "الزر 2 – الوضع"
+      }
+    },
+    {
+      "id": "b2Temp",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 2 – temperature",
+        "nl": "Knop 2 – temperatuur",
+        "de": "Taste 2 – Temperatur",
+        "fr": "Bouton 2 – température",
+        "it": "Pulsante 2 – temperatura",
+        "sv": "Knapp 2 – temperatur",
+        "no": "Knapp 2 – temperatur",
+        "es": "Botón 2 – temperatura",
+        "da": "Knap 2 – temperatur",
+        "ru": "Кнопка 2 – температура",
+        "pl": "Przycisk 2 – temperatura",
+        "ko": "버튼 2 – 온도",
+        "ar": "الزر 2 – درجة الحرارة"
       }
     },
     {
@@ -379,25 +409,6 @@
       ]
     },
     {
-      "id": "b3Temp",
-      "type": "autocomplete",
-      "title": {
-        "en": "Button 3 – target temperature",
-        "nl": "Knop 3 – doeltemperatuur",
-        "de": "Taste 3 – Zieltemperatur",
-        "fr": "Bouton 3 – température cible",
-        "it": "Pulsante 3 – temperatura target",
-        "sv": "Knapp 3 – måltemperatur",
-        "no": "Knapp 3 – måltemperatur",
-        "es": "Botón 3 – temperatura objetivo",
-        "da": "Knap 3 – måltemperatur",
-        "ru": "Кнопка 3 – целевая температура",
-        "pl": "Przycisk 3 – temperatura docelowa",
-        "ko": "버튼 3 – 목표 온도",
-        "ar": "الزر 3 – درجة الحرارة المستهدفة"
-      }
-    },
-    {
       "id": "b3Mode",
       "type": "autocomplete",
       "title": {
@@ -414,6 +425,25 @@
         "pl": "Przycisk 3 – tryb",
         "ko": "버튼 3 – 모드",
         "ar": "الزر 3 – الوضع"
+      }
+    },
+    {
+      "id": "b3Temp",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 3 – temperature",
+        "nl": "Knop 3 – temperatuur",
+        "de": "Taste 3 – Temperatur",
+        "fr": "Bouton 3 – température",
+        "it": "Pulsante 3 – temperatura",
+        "sv": "Knapp 3 – temperatur",
+        "no": "Knapp 3 – temperatur",
+        "es": "Botón 3 – temperatura",
+        "da": "Knap 3 – temperatur",
+        "ru": "Кнопка 3 – температура",
+        "pl": "Przycisk 3 – temperatura",
+        "ko": "버튼 3 – 온도",
+        "ar": "الزر 3 – درجة الحرارة"
       }
     },
     {

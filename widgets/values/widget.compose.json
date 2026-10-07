@@ -21,19 +21,19 @@
       "id": "columns",
       "type": "dropdown",
       "title": {
-        "en": "Columns",
-        "nl": "Kolommen",
-        "de": "Spalten",
-        "fr": "Colonnes",
-        "it": "Colonne",
-        "sv": "Kolumner",
-        "no": "Kolonner",
-        "es": "Columnas",
-        "da": "Kolonner",
-        "ru": "Столбцы",
-        "pl": "Kolumny",
-        "ko": "열",
-        "ar": "الأعمدة"
+        "en": "Tiles per row",
+        "nl": "Tegels per rij",
+        "de": "Kacheln pro Zeile",
+        "fr": "Tuiles par ligne",
+        "it": "Riquadri per riga",
+        "sv": "Rutor per rad",
+        "no": "Fliser per rad",
+        "es": "Mosaicos por fila",
+        "da": "Felter pr. række",
+        "ru": "Плиток в ряду",
+        "pl": "Kafelków w rzędzie",
+        "ko": "행당 타일",
+        "ar": "البلاطات في كل صف"
       },
       "value": "3",
       "values": [
@@ -93,6 +93,21 @@
         "ko": "백분율을 수준별로 채우기",
         "ar": "تعبئة النسب حسب المستوى"
       },
+      "hint": {
+        "en": "Percentages (battery, humidity …) fill the tile up to their value, in red, yellow or green.",
+        "nl": "Percentages (batterij, vochtigheid …) vullen de tegel tot hun waarde, in rood, geel of groen.",
+        "de": "Prozentwerte (Batterie, Feuchte …) füllen die Kachel bis zu ihrem Wert, in Rot, Gelb oder Grün.",
+        "fr": "Les pourcentages (batterie, humidité …) remplissent la tuile jusqu'à leur valeur, en rouge, jaune ou vert.",
+        "it": "Le percentuali (batteria, umidità …) riempiono il riquadro fino al loro valore, in rosso, giallo o verde.",
+        "sv": "Procentvärden (batteri, luftfuktighet …) fyller rutan upp till sitt värde, i rött, gult eller grönt.",
+        "no": "Prosentverdier (batteri, fuktighet …) fyller flisen opp til verdien, i rødt, gult eller grønt.",
+        "es": "Los porcentajes (batería, humedad …) rellenan el mosaico hasta su valor, en rojo, amarillo o verde.",
+        "da": "Procenter (batteri, luftfugtighed …) udfylder feltet op til deres værdi, i rød, gul eller grøn.",
+        "ru": "Проценты (батарея, влажность …) заполняют плитку до своего значения красным, жёлтым или зелёным.",
+        "pl": "Procenty (bateria, wilgotność …) wypełniają kafelek do swojej wartości na czerwono, żółto lub zielono.",
+        "ko": "백분율 값(배터리, 습도 …)이 값만큼 타일을 빨강, 노랑, 초록으로 채웁니다.",
+        "ar": "تملأ النسب المئوية (البطارية، الرطوبة …) البلاطة حتى قيمتها بالأحمر أو الأصفر أو الأخضر."
+      },
       "value": false
     },
     {
@@ -112,6 +127,21 @@
         "pl": "Czerwony poniżej (%)",
         "ko": "빨간색 기준 미만 (%)",
         "ar": "أحمر أقل من (%)"
+      },
+      "hint": {
+        "en": "Only with “Fill percentages by level” on.",
+        "nl": "Alleen als “Percentages vullen per niveau” aan staat.",
+        "de": "Nur wenn „Prozentwerte nach Stufe füllen“ aktiv ist.",
+        "fr": "Seulement si « Remplir les pourcentages par niveau » est activé.",
+        "it": "Solo con “Riempi le percentuali per livello” attivo.",
+        "sv": "Bara när ”Fyll procentvärden efter nivå” är på.",
+        "no": "Bare når «Fyll prosentverdier etter nivå» er på.",
+        "es": "Solo con «Rellenar porcentajes por nivel» activado.",
+        "da": "Kun når “Udfyld procenter efter niveau” er slået til.",
+        "ru": "Только если включено «Заливка процентов по уровню».",
+        "pl": "Tylko gdy „Wypełniaj procenty według poziomu” jest włączone.",
+        "ko": "“백분율을 수준별로 채우기”을(를) 켠 경우에만 적용됩니다.",
+        "ar": "فقط عند تفعيل «تعبئة النسب حسب المستوى»."
       },
       "value": 10,
       "min": 0,
@@ -135,6 +165,21 @@
         "ko": "노란색 기준 미만 (%)",
         "ar": "أصفر أقل من (%)"
       },
+      "hint": {
+        "en": "Only with “Fill percentages by level” on.",
+        "nl": "Alleen als “Percentages vullen per niveau” aan staat.",
+        "de": "Nur wenn „Prozentwerte nach Stufe füllen“ aktiv ist.",
+        "fr": "Seulement si « Remplir les pourcentages par niveau » est activé.",
+        "it": "Solo con “Riempi le percentuali per livello” attivo.",
+        "sv": "Bara när ”Fyll procentvärden efter nivå” är på.",
+        "no": "Bare når «Fyll prosentverdier etter nivå» er på.",
+        "es": "Solo con «Rellenar porcentajes por nivel» activado.",
+        "da": "Kun når “Udfyld procenter efter niveau” er slået til.",
+        "ru": "Только если включено «Заливка процентов по уровню».",
+        "pl": "Tylko gdy „Wypełniaj procenty według poziomu” jest włączone.",
+        "ko": "“백분율을 수준별로 채우기”을(를) 켠 경우에만 적용됩니다.",
+        "ar": "فقط عند تفعيل «تعبئة النسب حسب المستوى»."
+      },
       "value": 20,
       "min": 0,
       "max": 100
@@ -156,6 +201,21 @@
         "pl": "Kafelek 1",
         "ko": "타일 1",
         "ar": "البلاطة 1"
+      },
+      "hint": {
+        "en": "Pick a device value for each tile. Empty tiles are left out.",
+        "nl": "Kies per tegel een apparaatwaarde. Lege tegels worden weggelaten.",
+        "de": "Wähle für jede Kachel einen Gerätewert. Leere Kacheln werden ausgelassen.",
+        "fr": "Choisissez une valeur d'appareil par tuile. Les tuiles vides sont ignorées.",
+        "it": "Scegli un valore del dispositivo per ogni riquadro. I riquadri vuoti vengono omessi.",
+        "sv": "Välj ett enhetsvärde för varje ruta. Tomma rutor utelämnas.",
+        "no": "Velg en enhetsverdi for hver flis. Tomme fliser utelates.",
+        "es": "Elige un valor de dispositivo para cada mosaico. Los vacíos se omiten.",
+        "da": "Vælg en enhedsværdi for hvert felt. Tomme felter udelades.",
+        "ru": "Выберите значение устройства для каждой плитки. Пустые плитки не показываются.",
+        "pl": "Wybierz wartość urządzenia dla każdego kafelka. Puste kafelki są pomijane.",
+        "ko": "타일마다 기기 값을 선택하세요. 빈 타일은 표시되지 않습니다.",
+        "ar": "اختر قيمة جهاز لكل بلاطة. تُحذف البلاطات الفارغة."
       }
     },
     {

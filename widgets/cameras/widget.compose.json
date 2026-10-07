@@ -42,6 +42,21 @@
         "ko": "스냅샷 새로 고침 간격",
         "ar": "تحديث اللقطات كل"
       },
+      "hint": {
+        "en": "Tap a camera for live video.",
+        "nl": "Tik op een camera voor live beeld.",
+        "de": "Tippe auf eine Kamera für Live-Video.",
+        "fr": "Touchez une caméra pour la vidéo en direct.",
+        "it": "Tocca una telecamera per il video in diretta.",
+        "sv": "Tryck på en kamera för livevideo.",
+        "no": "Trykk på et kamera for direktevideo.",
+        "es": "Toca una cámara para ver vídeo en directo.",
+        "da": "Tryk på et kamera for live-video.",
+        "ru": "Нажмите на камеру, чтобы смотреть видео в реальном времени.",
+        "pl": "Dotknij kamery, aby zobaczyć obraz na żywo.",
+        "ko": "카메라를 탭하면 실시간 영상을 볼 수 있습니다.",
+        "ar": "انقر على كاميرا لعرض الفيديو المباشر."
+      },
       "value": "10",
       "values": [
         { "id": "5", "title": { "en": "5 s", "nl": "5 s", "de": "5 s", "fr": "5 s", "it": "5 s", "sv": "5 s", "no": "5 s", "es": "5 s", "da": "5 s", "ru": "5 с", "pl": "5 s", "ko": "5초", "ar": "5 ث" } },

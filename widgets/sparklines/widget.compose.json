@@ -115,19 +115,19 @@
       "id": "columns",
       "type": "dropdown",
       "title": {
-        "en": "Columns",
-        "nl": "Kolommen",
-        "de": "Spalten",
-        "fr": "Colonnes",
-        "it": "Colonne",
-        "sv": "Kolumner",
-        "no": "Kolonner",
-        "es": "Columnas",
-        "da": "Kolonner",
-        "ru": "Столбцы",
-        "pl": "Kolumny",
-        "ko": "열",
-        "ar": "الأعمدة"
+        "en": "Tiles per row",
+        "nl": "Tegels per rij",
+        "de": "Kacheln pro Zeile",
+        "fr": "Tuiles par ligne",
+        "it": "Riquadri per riga",
+        "sv": "Rutor per rad",
+        "no": "Fliser per rad",
+        "es": "Mosaicos por fila",
+        "da": "Felter pr. række",
+        "ru": "Плиток в ряду",
+        "pl": "Kafelków w rzędzie",
+        "ko": "행당 타일",
+        "ar": "البلاطات في كل صف"
       },
       "value": "2",
       "values": [
@@ -186,6 +186,21 @@
         "pl": "Kafelek 1",
         "ko": "타일 1",
         "ar": "البلاطة 1"
+      },
+      "hint": {
+        "en": "Pick a value for each tile. Only numbers with Insights history are listed; empty tiles are left out.",
+        "nl": "Kies per tegel een waarde. Alleen getallen met Insights-geschiedenis staan in de lijst; lege tegels worden weggelaten.",
+        "de": "Wähle für jede Kachel einen Wert. Nur Zahlen mit Insights-Verlauf stehen zur Auswahl; leere Kacheln werden ausgelassen.",
+        "fr": "Choisissez une valeur par tuile. Seuls les nombres avec un historique Insights sont proposés ; les tuiles vides sont ignorées.",
+        "it": "Scegli un valore per ogni riquadro. Sono elencati solo i numeri con cronologia Insights; i riquadri vuoti vengono omessi.",
+        "sv": "Välj ett värde för varje ruta. Bara tal med Insights-historik visas; tomma rutor utelämnas.",
+        "no": "Velg en verdi for hver flis. Bare tall med Insights-historikk vises; tomme fliser utelates.",
+        "es": "Elige un valor para cada mosaico. Solo aparecen números con historial de Insights; los vacíos se omiten.",
+        "da": "Vælg en værdi for hvert felt. Kun tal med Insights-historik vises; tomme felter udelades.",
+        "ru": "Выберите значение для каждой плитки. В списке только числа с историей Insights; пустые плитки не показываются.",
+        "pl": "Wybierz wartość dla każdego kafelka. Lista zawiera tylko liczby z historią Insights; puste kafelki są pomijane.",
+        "ko": "타일마다 값을 선택하세요. Insights 기록이 있는 숫자만 나열되며, 빈 타일은 표시되지 않습니다.",
+        "ar": "اختر قيمة لكل بلاطة. تظهر فقط الأرقام التي لها سجل في Insights، وتُحذف البلاطات الفارغة."
       }
     },
     {

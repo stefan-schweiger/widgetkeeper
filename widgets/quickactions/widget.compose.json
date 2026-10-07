@@ -39,6 +39,21 @@
         "ko": "활성 타일 스타일",
         "ar": "نمط البلاطات النشطة"
       },
+      "hint": {
+        "en": "A tap runs the device’s quick action, which you can change on the device in the Homey app.",
+        "nl": "Een tik voert de snelle actie van het apparaat uit; die kun je bij het apparaat in de Homey-app wijzigen.",
+        "de": "Ein Tippen führt die Schnellaktion des Geräts aus; diese kannst du beim Gerät in der Homey-App ändern.",
+        "fr": "Un appui lance l'action rapide de l'appareil, modifiable sur l'appareil dans l'app Homey.",
+        "it": "Un tocco esegue l'azione rapida del dispositivo, modificabile sul dispositivo nell'app Homey.",
+        "sv": "Ett tryck kör enhetens snabbåtgärd, som du kan ändra på enheten i Homey-appen.",
+        "no": "Et trykk kjører enhetens hurtighandling, som du kan endre på enheten i Homey-appen.",
+        "es": "Un toque ejecuta la acción rápida del dispositivo, que puedes cambiar en el dispositivo en la app Homey.",
+        "da": "Et tryk kører enhedens hurtighandling, som du kan ændre på enheden i Homey-appen.",
+        "ru": "Нажатие выполняет быстрое действие устройства; его можно изменить в устройстве в приложении Homey.",
+        "pl": "Dotknięcie uruchamia szybką akcję urządzenia, którą zmienisz w urządzeniu w aplikacji Homey.",
+        "ko": "탭하면 기기의 빠른 동작이 실행됩니다. Homey 앱의 기기에서 변경할 수 있습니다.",
+        "ar": "النقر يشغّل الإجراء السريع للجهاز، ويمكنك تغييره من الجهاز في تطبيق Homey."
+      },
       "value": "tint",
       "values": [
         {

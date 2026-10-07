@@ -28,19 +28,19 @@
       "id": "liveWindow",
       "type": "dropdown",
       "title": {
-        "en": "Live power window",
-        "nl": "Venster live vermogen",
-        "de": "Zeitfenster Live-Leistung",
-        "fr": "Fenêtre de puissance en direct",
-        "it": "Finestra potenza in tempo reale",
-        "sv": "Tidsfönster för live-effekt",
-        "no": "Tidsvindu for live-effekt",
-        "es": "Ventana de potencia en directo",
-        "da": "Tidsvindue for live-effekt",
-        "ru": "Окно текущей мощности",
-        "pl": "Okno mocy na żywo",
-        "ko": "실시간 전력 표시 범위",
-        "ar": "نافذة القدرة المباشرة"
+        "en": "Live chart time span",
+        "nl": "Tijdspanne live grafiek",
+        "de": "Zeitraum Live-Diagramm",
+        "fr": "Durée du graphique en direct",
+        "it": "Intervallo grafico in tempo reale",
+        "sv": "Tidsspann för livediagram",
+        "no": "Tidsrom for live-diagram",
+        "es": "Intervalo del gráfico en directo",
+        "da": "Tidsrum for live-graf",
+        "ru": "Период графика в реальном времени",
+        "pl": "Zakres wykresu na żywo",
+        "ko": "실시간 차트 기간",
+        "ar": "مدة المخطط المباشر"
       },
       "value": "10",
       "values": [
@@ -172,6 +172,21 @@
         "ko": "사용량 기록 표시",
         "ar": "عرض سجل الاستهلاك"
       },
+      "hint": {
+        "en": "Your power use over the last 24 hours, drawn on the price chart.",
+        "nl": "Je verbruik van de afgelopen 24 uur, op de prijsgrafiek.",
+        "de": "Dein Verbrauch der letzten 24 Stunden, im Preisdiagramm.",
+        "fr": "Votre consommation des dernières 24 heures, sur le graphique des prix.",
+        "it": "Il tuo consumo delle ultime 24 ore, sul grafico dei prezzi.",
+        "sv": "Din förbrukning de senaste 24 timmarna, i prisdiagrammet.",
+        "no": "Forbruket ditt de siste 24 timene, i prisdiagrammet.",
+        "es": "Tu consumo de las últimas 24 horas, en el gráfico de precios.",
+        "da": "Dit forbrug de seneste 24 timer, i prisgrafen.",
+        "ru": "Ваше потребление за последние 24 часа на графике цен.",
+        "pl": "Twoje zużycie z ostatnich 24 godzin na wykresie cen.",
+        "ko": "지난 24시간의 사용량을 가격 차트에 표시합니다.",
+        "ar": "استهلاكك خلال آخر 24 ساعة على مخطط الأسعار."
+      },
       "value": true
     },
     {
@@ -192,6 +207,21 @@
         "ko": "사용량 기록을 별도 차트로 표시",
         "ar": "عرض سجل الاستهلاك في مخطط منفصل"
       },
+      "hint": {
+        "en": "Only with “Show usage history” on.",
+        "nl": "Alleen als “Verbruiksgeschiedenis tonen” aan staat.",
+        "de": "Nur wenn „Verbrauchsverlauf anzeigen“ aktiv ist.",
+        "fr": "Seulement si « Afficher l'historique de consommation » est activé.",
+        "it": "Solo con “Mostra cronologia consumi” attivo.",
+        "sv": "Bara när ”Visa förbrukningshistorik” är på.",
+        "no": "Bare når «Vis forbrukshistorikk» er på.",
+        "es": "Solo con «Mostrar historial de consumo» activado.",
+        "da": "Kun når “Vis forbrugshistorik” er slået til.",
+        "ru": "Только если включено «Показывать историю потребления».",
+        "pl": "Tylko gdy „Pokaż historię zużycia” jest włączone.",
+        "ko": "“사용량 기록 표시”을(를) 켠 경우에만 적용됩니다.",
+        "ar": "فقط عند تفعيل «عرض سجل الاستهلاك»."
+      },
       "value": false
     },
     {
@@ -211,6 +241,21 @@
         "pl": "Kolor historii zużycia",
         "ko": "사용 기록 색상",
         "ar": "لون سجل الاستهلاك"
+      },
+      "hint": {
+        "en": "Only with “Show usage history” on.",
+        "nl": "Alleen als “Verbruiksgeschiedenis tonen” aan staat.",
+        "de": "Nur wenn „Verbrauchsverlauf anzeigen“ aktiv ist.",
+        "fr": "Seulement si « Afficher l'historique de consommation » est activé.",
+        "it": "Solo con “Mostra cronologia consumi” attivo.",
+        "sv": "Bara när ”Visa förbrukningshistorik” är på.",
+        "no": "Bare når «Vis forbrukshistorikk» er på.",
+        "es": "Solo con «Mostrar historial de consumo» activado.",
+        "da": "Kun når “Vis forbrugshistorik” er slået til.",
+        "ru": "Только если включено «Показывать историю потребления».",
+        "pl": "Tylko gdy „Pokaż historię zużycia” jest włączone.",
+        "ko": "“사용량 기록 표시”을(를) 켠 경우에만 적용됩니다.",
+        "ar": "فقط عند تفعيل «عرض سجل الاستهلاك»."
       },
       "value": "neutral",
       "values": [
@@ -270,25 +315,55 @@
         "ko": "차트 선 부드럽게",
         "ar": "تنعيم خطوط المخطط"
       },
+      "hint": {
+        "en": "Rounds off spikes in the lines. The numbers at the top stay exact.",
+        "nl": "Rondt pieken in de lijnen af. De getallen bovenaan blijven exact.",
+        "de": "Glättet Spitzen in den Linien. Die Zahlen oben bleiben exakt.",
+        "fr": "Adoucit les pics des courbes. Les valeurs en haut restent exactes.",
+        "it": "Smussa i picchi delle linee. I valori in alto restano esatti.",
+        "sv": "Rundar av toppar i linjerna. Siffrorna överst förblir exakta.",
+        "no": "Runder av topper i linjene. Tallene øverst forblir nøyaktige.",
+        "es": "Suaviza los picos de las líneas. Los valores de arriba siguen exactos.",
+        "da": "Runder spidser i linjerne af. Tallene øverst forbliver præcise.",
+        "ru": "Сглаживает пики линий. Значения вверху остаются точными.",
+        "pl": "Wygładza skoki na liniach. Liczby u góry pozostają dokładne.",
+        "ko": "선의 급격한 변화를 부드럽게 합니다. 위쪽 숫자는 정확하게 유지됩니다.",
+        "ar": "يخفف القمم في الخطوط. تبقى الأرقام في الأعلى دقيقة."
+      },
       "value": false
     },
     {
       "id": "nextLow",
       "type": "dropdown",
       "title": {
-        "en": "Show lowest price",
-        "nl": "Laagste prijs tonen",
-        "de": "Tiefstpreis anzeigen",
-        "fr": "Afficher le prix le plus bas",
-        "it": "Mostra prezzo più basso",
-        "sv": "Visa lägsta pris",
-        "no": "Vis laveste pris",
-        "es": "Mostrar precio más bajo",
-        "da": "Vis laveste pris",
-        "ru": "Показывать минимальную цену",
-        "pl": "Pokaż najniższą cenę",
-        "ko": "최저가 표시",
-        "ar": "عرض أدنى سعر"
+        "en": "Lowest price",
+        "nl": "Laagste prijs",
+        "de": "Tiefstpreis",
+        "fr": "Prix le plus bas",
+        "it": "Prezzo più basso",
+        "sv": "Lägsta pris",
+        "no": "Laveste pris",
+        "es": "Precio más bajo",
+        "da": "Laveste pris",
+        "ru": "Минимальная цена",
+        "pl": "Najniższa cena",
+        "ko": "최저가",
+        "ar": "أدنى سعر"
+      },
+      "hint": {
+        "en": "The cheapest hour ahead, at the bottom of the widget. Hidden with a fixed price.",
+        "nl": "Het goedkoopste komende uur, onderaan de widget. Verborgen bij een vaste prijs.",
+        "de": "Die günstigste kommende Stunde, unten im Widget. Bei einem Festpreis ausgeblendet.",
+        "fr": "L'heure la moins chère à venir, en bas du widget. Masqué avec un prix fixe.",
+        "it": "L'ora più economica in arrivo, in fondo al widget. Nascosto con un prezzo fisso.",
+        "sv": "Den billigaste kommande timmen, längst ned i widgeten. Döljs vid fast pris.",
+        "no": "Den billigste kommende timen, nederst i widgeten. Skjult ved fast pris.",
+        "es": "La hora más barata próxima, abajo del widget. Oculto con precio fijo.",
+        "da": "Den billigste kommende time, nederst i widgetten. Skjult ved fast pris.",
+        "ru": "Самый дешёвый час впереди, внизу виджета. Скрыто при фиксированной цене.",
+        "pl": "Najtańsza nadchodząca godzina, na dole widżetu. Ukryte przy stałej cenie.",
+        "ko": "앞으로 가장 저렴한 시간을 위젯 아래쪽에 표시합니다. 고정 요금에서는 숨겨집니다.",
+        "ar": "أرخص ساعة قادمة، أسفل الأداة. مخفي مع السعر الثابت."
       },
       "value": "12",
       "values": [
