@@ -15,23 +15,27 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Electricity Overview
 - Supports a fixed electricity price set in Homey Energy: the price shows in the header, and usage gets its own chart instead of the price chart.
 - Solar export: power below zero is drawn below the zero line in yellow, and the header says *Exporting now*.
+- New setting, *Show electricity prices*: turn it off to leave out the price, the price chart and the lowest price, for a card with only power and usage.
+- A brief connection problem no longer hides the charts.
+- The usage history comes back by itself when Homey's Insights were briefly unavailable as the widget opened.
+
+### Device Values
+- A Flow can colour the tiles: the new action card *Set the tile colour of … to …* makes every tile showing that value red, orange, yellow, green, blue or purple, and *Default* resets it. For example, a fridge thermometer blue while it's cold and red when it's too warm.
+
+### Insights Heatmap
+- New setting, *Colour*: blue (the default), red, orange, yellow, green or purple.
 
 ### Light Controls
 - New setting, *Brightness bar at the far left*: stop the bar at 1 % so the light stays on, instead of turning it off.
-
-## 0.7.1
+- Plugs and wall switches set up as lights can now be picked too. They only turn on and off, so their tiles have no brightness bar.
 
 ### Thermostat Shortcuts
 - A preset now always sets its temperature, also on aircons that keep a temperature per mode (switching mode used to bring back the mode's own temperature).
 - A renamed or deleted thermostat now shows without reopening the dashboard.
 - A brief connection problem no longer hides the buttons; the error shows for a moment instead.
 
-### Electricity Overview
-- A brief connection problem no longer hides the charts.
-- The usage history comes back by itself when Homey's Insights were briefly unavailable as the widget opened.
-
-### Light Controls
-- Plugs and wall switches set up as lights can now be picked too. They only turn on and off, so their tiles have no brightness bar.
+### All widgets
+- Clearer setting names, in a more logical order, with help texts.
 
 ## 0.7.0
 

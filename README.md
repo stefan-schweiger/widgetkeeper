@@ -53,14 +53,16 @@ Compact rows to switch flow variables on and off or change a number or text, wit
 
 Live power use (30 seconds to 1 hour), the hourly price from yesterday to 12 hours ahead, the last 24 hours of usage and the cheapest upcoming hour. Tap a chart, or hover with a mouse, to see the value at that moment.
 
-Needs a device that reports power and dynamic prices switched on in Homey Energy (Homey Pro 12.6 or later).
+Works with dynamic prices or a fixed price set in Homey Energy (Homey Pro 12.6 or later); with a fixed price the header shows it and usage gets its own chart. Solar export shows below zero in yellow. Needs a device that reports power.
 
-**Settings:** power meter, live power window, usage history (on the price chart or separate, neutral or purple), smooth lines, lowest price in the next 12 h, 24 h or both.
+**Settings:** power meter, live chart time span, show electricity prices, usage history (on the price chart or separate, neutral or purple), smooth lines, lowest price in the next 12 h, 24 h or both.
 
 ## Thermostat Shortcuts
 <img src="docs/screenshots/thermostat.png" alt="Thermostat Shortcuts on a Homey dashboard" width="358">
 
 Three one-tap presets for a thermostat, heat pump or air conditioner, such as *Off*, *Heat 21°* and *Heat 24° · Fan level 5*. Each sets on/off, the target temperature, the mode and one extra option such as the fan speed. The matching preset lights up; otherwise the widget shows the device's current state.
+
+**Settings:** thermostat or aircon, and per button: power (on, off or unchanged), mode, temperature, and a fan or other setting.
 
 ## Device Quick Actions
 <img src="docs/screenshots/quickactions.png" alt="Device Quick Actions on a Homey dashboard" width="358">
@@ -90,7 +92,7 @@ Weather data from MET Norway, licensed under [CC BY 4.0](https://creativecommons
 
 A week of one Insights value as a grid of weekdays and hours, with a scale and a marker at the current value. Works with numbers (light, temperature, power …) and on/off values (motion, contact …), shown as the share of each hour they were on. On/off history fills in over the first days, as Insights keeps only their last 50 changes.
 
-**Settings:** device and value, this week or the last 3–14 days, 1–3 hours per column, show scale, show legend.
+**Settings:** device and value, this week or the last 3–14 days, 1–3 hours per column, colour (blue, red, orange, yellow, green or purple), show scale, show legend.
 
 ## Cameras
 <img src="docs/screenshots/cameras.png" alt="Cameras on a Homey dashboard" width="358">
@@ -106,21 +108,21 @@ Half-height tiles that each show one device value, such as a temperature, a batt
 
 A Flow can colour the tiles: the action card **Set the tile colour of … to …** gives every tile showing that value red, orange, yellow, green, blue or purple, and Default resets it. For example, a fridge thermometer blue below 5 °C and red above, or an internet check green while it passes and red when its alarm goes off.
 
-**Settings:** up to six values, 3 or 2 columns, fill percentages by level with adjustable limits.
+**Settings:** up to six values, 3 or 2 tiles per row, fill percentages by level with adjustable limits.
 
 ## Light Controls
 <img src="docs/screenshots/lights.png" alt="Light Controls on a Homey dashboard" width="358">
 
 Compact light tiles, six in the space of three of Homey's light cards. Tap a tile to turn the light on or off, drag or tap the bar to set the brightness, and tap the colour button (a half-filled circle, or a thermometer on white-only lights, in the light's colour) to pick a colour or a white from a row of swatches. On Android, tap the bar instead of dragging. Lights in the same room can share one tile that controls them all. Plugs and switches that only turn on and off get a tile without the bar.
 
-**Settings:** lights, colour palette (bright colours, warm from red to cool white, or dusk), group by room.
+**Settings:** lights, group by room, the brightness bar's far left (turns the light off, or dims to 1 % and stays on), colour palette (bright colours, warm from red to cool white, or dusk).
 
 ## Sparklines
 <img src="docs/screenshots/sparklines.png" alt="Sparklines on a Homey dashboard" width="358">
 
 Device Values' tiles with a small chart of each value from Insights, with its highest and lowest, following the live value.
 
-**Settings:** up to six values, time span (1 h, 6 h, 24 h or 7 days), 2 or 1 columns.
+**Settings:** up to six values, time span (1 h, 6 h, 24 h or 7 days), 2 or 1 tiles per row.
 
 ## Flow Variables
 <img src="docs/screenshots/variables.png" alt="Flow Variables on a Homey dashboard" width="358">
@@ -130,6 +132,21 @@ Homey's Logic variables as compact rows that show the full name: a switch for a 
 **Settings:** up to ten variables, 1 or 2 columns, and the step for − and +.
 
 Homey doesn't let apps change variables on their own, so changing them needs a Homey API key. In the Homey web app, create one under **Settings → API Keys** with permission to change variables. Then paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey. Without a key the widget shows the variables but can't change them.
+
+## Dashboard examples
+Three dashboards from a made-up house, on a tablet in Homey's dark mode.
+
+**Home:** electricity, the heat pump, flow variables, the weather, lights, quick actions, sensor alarms, cameras, sparklines and a motion heatmap.
+
+<img src="docs/showcase/home.png" alt="A home dashboard with Widgetkeeper widgets on a tablet" width="100%">
+
+**Energy:** electricity with a separate purple usage chart, a power heatmap in orange, sparklines of the big consumers, the heat pump, the weather in detail, appliance quick actions, device values (*Today* coloured green by a Flow) and the car charging flags.
+
+<img src="docs/showcase/energy.png" alt="An energy dashboard with Widgetkeeper widgets on a tablet" width="100%">
+
+**Security:** six cameras, sensor alarms with motion and contact counted, door locks, a motion heatmap, battery levels filled by level, flow variables, outdoor lights and the weather.
+
+<img src="docs/showcase/security.png" alt="A security dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic, following Homey's language.

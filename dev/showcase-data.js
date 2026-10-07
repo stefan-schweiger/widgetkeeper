@@ -218,8 +218,12 @@
       title: 'Home',
       columns: [
         [
-          { type: 'electricity', settings: { liveWindow: 30, nextLow: 'both', smooth: true }, data: electricity() },
+          { type: 'electricity', settings: { liveWindow: 30, nextLow: 'none', smooth: true }, data: electricity() },
           heatPump,
+          { type: 'variables', opts: { columns: '2' }, vars: [
+            { id: 'f1', name: 'Away mode', type: 'boolean', value: false },
+            { id: 'f2', name: 'Guests staying over', type: 'boolean', value: true },
+          ] },
         ],
         [
           { type: 'weather', hours: weatherHours() },
@@ -246,7 +250,7 @@
           { type: 'electricity', settings: { liveWindow: 60, nextLow: '24', smooth: true, separateUsage: true, usageColor: 'purple' }, data: electricity() },
         ],
         [
-          { type: 'heatmap', opts: { period: 'rolling', step: 2 }, data: heatPower() },
+          { type: 'heatmap', opts: { period: 'rolling', step: 2, color: 'orange' }, data: heatPower() },
           { type: 'sparklines', slots: [
             sparkSlot('m1', 'measure_power', 'Main meter', { units: 'W', decimals: 0 }, spark((t, r) => (t > NOW - DAY / 120 ? powerNow() : Math.round(houseLoad(t, r) + (t > NOW - 40 * MIN ? 1500 : 0))), 11)),
             sparkSlot('w1', 'measure_power', 'Heat pump', { units: 'W', decimals: 0 }, spark((t, r) => Math.round(520 + 260 * Math.sin(t / (41 * MIN)) + 40 * r()), 13)),
@@ -255,6 +259,10 @@
               const h = hourOf(t) + new Date(t).getMinutes() / 60;
               return Math.round(h >= 7.1 && h < 7.5 ? 62 - 50 * (h - 7.1) : h >= 7.5 && h < 13 ? 42 + 0.6 * (h - 7.5) : h >= 13 && h < 15 ? 45 + 8.5 * (h - 13) : 62 - 0.2 * ((h + 9) % 24) + r());
             }, 17)),
+          ] },
+          { type: 'variables', opts: { columns: '2' }, vars: [
+            { id: 'e1', name: 'Charge at the cheapest hours', type: 'boolean', value: true },
+            { id: 'e2', name: 'Price cap', type: 'number', value: 2.5 },
           ] },
         ],
         [
@@ -271,7 +279,8 @@
           { type: 'values', opts: { percentFill: true }, slots: [
             value('c1', 'measure_battery', 'Car', { units: '%', decimals: 0 }, 86),
             value('c2', 'measure_power', 'Car charger', { units: 'W', decimals: 0 }, 0),
-            value('m1', 'meter_power', 'Today', { units: 'kWh', decimals: 1 }, 31.4),
+            // Green from a Flow while today's use stays under budget.
+            { ...value('m1', 'meter_power', 'Today', { units: 'kWh', decimals: 1 }, 31.4), color: 'green' },
           ] },
         ],
       ],
