@@ -17,6 +17,11 @@
   --vt-yellow: #F5C518;
   --vt-green: var(--homey-color-green, #71D51B);
   --vt-fill-mix: 45%;
+  /* Tile colours set by a Flow: Homey's tokens; yellow and purple have none (purple is Homey's web-app purple). */
+  --vt-orange: var(--homey-color-orange, #F07A1F);
+  --vt-blue: var(--homey-color-blue, #2F8DF6);
+  --vt-purple: #9033FC;
+  --vt-tint-mix: 22%;
   --vt-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
 }
 /* Dark mode: each tile looks like a native device tile, darker than the default widget background. */
@@ -73,6 +78,19 @@ html, body { background: transparent !important; }
 /* A boolean that is on: Quick Actions' blue tint with a blue icon. */
 .vt-tile.active { background: color-mix(in srgb, var(--vt-accent) 22%, var(--vt-tile)); }
 .vt-tile.active .vt-icon { color: var(--vt-accent-icon); }
+
+/* A colour set by a Flow (data-color): it wins over the blue on-tint, and a percentage fill takes it instead of its level. */
+.vt-tile[data-color="red"] { --vt-color: var(--vt-red); }
+.vt-tile[data-color="orange"] { --vt-color: var(--vt-orange); }
+.vt-tile[data-color="yellow"] { --vt-color: var(--vt-yellow); }
+.vt-tile[data-color="green"] { --vt-color: var(--vt-green); }
+.vt-tile[data-color="blue"] { --vt-color: var(--vt-blue); }
+.vt-tile[data-color="purple"] { --vt-color: var(--vt-purple); }
+.vt-tile[data-color] { background: color-mix(in srgb, var(--vt-color) var(--vt-tint-mix), var(--vt-tile)); }
+/* Mixed with the text colour, so a yellow icon still reads on a light tile. */
+.vt-tile[data-color] .vt-icon { color: color-mix(in srgb, var(--vt-color) 80%, var(--vt-text)); }
+.vt-tile.filled[data-color] { --vt-level: var(--vt-color);
+  background: linear-gradient(to right, color-mix(in srgb, var(--vt-level) var(--vt-fill-mix), var(--vt-tile)) var(--vt-fill), var(--vt-tile) var(--vt-fill)); }
 
 .vt-message { font-size: var(--vt-fs-small); line-height: var(--vt-lh-small); color: var(--vt-muted); }
 .vt-message.error { color: var(--homey-color-red, #F25F5C); }

@@ -10,7 +10,7 @@ Enthaltene Widgets:
 - Wettervorhersage: Symbol, Temperatur, Wind und Niederschlag Stunde für Stunde für die nächsten 36 Stunden, von MET Norway (yr.no).
 - Insights-Heatmap: eine Woche eines Werts, etwa Licht, Temperatur oder Bewegung, als Raster aus Wochentagen und Stunden.
 - Kameras: zwei bis sechs Kameras in einem Raster aus Schnappschüssen, die sich alle paar Sekunden erneuern. Tippe auf eine für das Livebild.
-- Gerätewerte: kompakte Kacheln, die jeweils einen Wert zeigen, etwa eine Temperatur, einen Akkustand oder Ein/Aus.
+- Gerätewerte: kompakte Kacheln, die jeweils einen Wert zeigen, etwa eine Temperatur, einen Akkustand oder Ein/Aus. Ein Flow kann die Kacheln einfärben, etwa rot, wenn ein Sensor zu warm ist.
 - Lichtsteuerung: kompakte Lichtkacheln mit Helligkeit, Farbe und Farbtemperatur, sechs Lampen auf dem Platz von dreien.
 - Sparklines: kompakte Kacheln mit einem kleinen Diagramm eines Werts über die letzte Stunde, 6 Stunden, den Tag oder die Woche, mit Tiefst- und Höchstwert.
 - Flow-Variablen: kompakte Zeilen, um Flow-Variablen ein- und auszuschalten oder eine Zahl oder einen Text zu ändern, mit vollem Namen.

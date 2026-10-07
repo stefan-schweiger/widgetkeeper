@@ -52,6 +52,9 @@
     return GLYPHS.gauge;
   }
 
+  /** The tile colours a Flow can set (the `values_set_color` card). */
+  const COLORS = new Set(['red', 'orange', 'yellow', 'green', 'blue', 'purple']);
+
   /** Units written without a space, as the Homey app does (`21.5°C`, `45%`). */
   const TIGHT_UNITS = /^(°|%)/;
 
@@ -126,7 +129,7 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
 
-    let slots = []; // [{ deviceId, capabilityId, name, capability, value } | { deviceId, capabilityId, missing }]
+    let slots = []; // [{ deviceId, capabilityId, name, capability, value, color? } | { deviceId, capabilityId, missing }]
     let messageText = null;
     let messageTimer = null;
 
@@ -150,6 +153,18 @@
       for (const s of slots) {
         if (s.deviceId === deviceId && s.capabilityId === capabilityId && !('missing' in s)) {
           s.value = value;
+          changed = true;
+        }
+      }
+      if (changed) render();
+    }
+
+    /** A tile colour set by a Flow (`color` null resets it), for every tile showing that value. */
+    function pushColor({ deviceId, capabilityId, color }) {
+      let changed = false;
+      for (const s of slots) {
+        if (s.deviceId === deviceId && s.capabilityId === capabilityId && !('missing' in s)) {
+          s.color = color || undefined;
           changed = true;
         }
       }
@@ -213,6 +228,10 @@
           tile.tile.style.removeProperty('--vt-fill');
           delete tile.tile.dataset.level;
         }
+        // A colour set by a Flow tints the tile (and colours a percentage fill instead of its level).
+        const color = !missing && COLORS.has(s.color) ? s.color : null;
+        if (color) tile.tile.dataset.color = color;
+        else delete tile.tile.dataset.color;
         tile.tile.classList.toggle('missing', missing);
         tile.tile.dataset.capability = s.capabilityId;
         tile.tile.title = missing ? '' : s.capability.title;
@@ -226,7 +245,7 @@
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    return { setState, pushChange, setMessage, render, t };
+    return { setState, pushChange, pushColor, setMessage, render, t };
   }
 
   window.createValuesWidget = createValuesWidget;

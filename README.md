@@ -104,6 +104,8 @@ Your cameras in a grid of snapshots that refresh every few seconds. Tap one to w
 
 Half-height tiles that each show one device value, such as a temperature, a battery level or on/off, updated live. Percentages can fill their tile in red, yellow or green.
 
+A Flow can colour the tiles: the action card **Set the tile colour of … to …** gives every tile showing that value red, orange, yellow, green, blue or purple, and Default resets it. For example, a fridge thermometer blue below 5 °C and red above, or an internet check green while it passes and red when its alarm goes off.
+
 **Settings:** up to six values, 3 or 2 columns, fill percentages by level with adjustable limits.
 
 ## Light Controls

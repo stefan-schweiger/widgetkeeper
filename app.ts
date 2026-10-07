@@ -56,6 +56,7 @@ export default class WidgetkeeperApp extends Homey.App {
     this.values = new ValueService(this.homey, log, debug);
     this.values.start();
     this.registerValueSettings();
+    this.registerValueFlows();
     this.lights = new LightService(this.homey, log, debug);
     this.lights.start();
     this.sparklines = new SparklineService(this.homey, this.values, log, debug);
@@ -125,6 +126,15 @@ export default class WidgetkeeperApp extends Homey.App {
     for (const n of VALUE_SLOTS) {
       widget.registerSettingAutocompleteListener(`slot${n}`, query => this.values.listSlots(query));
     }
+  }
+
+  /** The Flow card that colours the device values tiles showing one value. */
+  private registerValueFlows() {
+    const card = this.homey.flow.getActionCard('values_set_color');
+    card.registerArgumentAutocompleteListener('slot', query => this.values.listColorSlots(query));
+    card.registerRunListener(async (args: { slot?: { id?: string }, color: string }) => {
+      this.values.setColor(args.slot?.id ?? '', args.color);
+    });
   }
 
   /** Autocomplete for the sparklines widget: every tile slot lists all logged `Device · Capability` numbers. */

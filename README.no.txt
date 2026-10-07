@@ -10,7 +10,7 @@ Inkluderte widgeter:
 - Værvarsel: symbol, temperatur, vind og nedbør time for time de neste 36 timene, fra MET Norway (yr.no).
 - Insights-varmekart: en uke av én verdi, som lys, temperatur eller bevegelse, som et rutenett av ukedager og timer.
 - Kameraer: to til seks kameraer i ett rutenett av bilder som oppdateres med noen sekunders mellomrom. Trykk på ett for å se det direkte.
-- Enhetsverdier: kompakte fliser som viser én verdi hver, som en temperatur, et batterinivå eller av/på.
+- Enhetsverdier: kompakte fliser som viser én verdi hver, som en temperatur, et batterinivå eller av/på. En flow kan farge flisene, f.eks. røde når en sensor er for varm.
 - Lysstyring: kompakte lysfliser med lysstyrke, farge og fargetemperatur, seks lys på plassen til tre.
 - Minigrafer: kompakte fliser med en liten graf over en verdi den siste timen, de siste 6 timene, døgnet eller uken, med laveste og høyeste verdi.
 - Flytvariabler: kompakte rader for å slå flytvariabler av og på eller endre et tall eller en tekst, med hele navnet.

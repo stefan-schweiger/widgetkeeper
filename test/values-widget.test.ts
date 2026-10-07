@@ -99,6 +99,29 @@ describe('render', () => {
     expect(tiles().map(t => t.classList.contains('active'))).toEqual([false, true, false]);
   });
 
+  describe('colour set by a Flow', () => {
+    const color = (t: HTMLElement) => t.dataset.color ?? null;
+
+    it('marks the tiles with their colour, ignoring unknown ones and missing slots', () => {
+      const { tiles } = widget([{ ...temp(), color: 'red' }, { ...lamp(), color: 'pink' }, temp(), { deviceId: 'x', capabilityId: 'onoff', missing: true, color: 'red' }]);
+      expect(tiles().map(color)).toEqual(['red', null, null, null]);
+    });
+
+    it('follows realtime colours on every tile showing the value, and resets with null', () => {
+      const { w, tiles } = widget([temp(), lamp(), temp()]);
+      w.pushColor({ deviceId: 'a', capabilityId: 'measure_temperature', color: 'blue' });
+      expect(tiles().map(color)).toEqual(['blue', null, 'blue']);
+      w.pushColor({ deviceId: 'a', capabilityId: 'measure_temperature', color: null });
+      expect(tiles().map(color)).toEqual([null, null, null]);
+    });
+
+    it('drops the colour when a refresh no longer has it', () => {
+      const { w, tiles } = widget([{ ...temp(), color: 'green' }]);
+      w.setState([temp()]);
+      expect(color(tiles()[0])).toBeNull();
+    });
+  });
+
   it("uses the capability's own icon, else a built-in glyph", () => {
     const icon = 'data:image/svg+xml;base64,QUJD';
     const { tiles } = widget([{ ...temp(), capability: cap('number', { icon }) }, temp()]);

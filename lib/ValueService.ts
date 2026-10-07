@@ -9,6 +9,12 @@ const TICK = MINUTE;
 const IDLE_TIMEOUT = 10 * MINUTE;
 
 export const VALUES_STATE_EVENT = 'values:state';
+export const VALUES_COLOR_EVENT = 'values:color';
+/** The app setting holding the tile colours set by Flows: `{ '<deviceId>:<capabilityId>': colour }`. */
+export const VALUE_COLORS_SETTING = 'valueColors';
+/** The colours a Flow can give a tile. `default` (not stored) resets it. */
+export const TILE_COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'] as const;
+export type TileColor = typeof TILE_COLORS[number];
 
 const SHOWN_TYPES = new Set(['number', 'boolean', 'enum', 'string']);
 
@@ -27,7 +33,7 @@ export type ValueCapability = {
 };
 
 export type ValueSlot =
-  | { deviceId: string, capabilityId: string, name: string, capability: ValueCapability, value: unknown }
+  | { deviceId: string, capabilityId: string, name: string, capability: ValueCapability, value: unknown, color?: TileColor }
   | { deviceId: string, capabilityId: string, missing: true };
 
 type Tracked = {
@@ -121,18 +127,50 @@ export default class ValueService {
     return matches(query, none) ? [{ name: none, id: 'none' }, ...items] : items;
   }
 
+  // ---------------------------------------------------------------- tile colours (Flow)
+
+  /** The colours set by Flows, per `<deviceId>:<capabilityId>`. Kept in an app setting, so they survive restarts. */
+  private colors(): Record<string, TileColor> {
+    const v = this.homey.settings.get(VALUE_COLORS_SETTING);
+    return v && typeof v === 'object' ? v : {};
+  }
+
+  /**
+   * The Flow card "Set the tile colour of … to …": every tile showing that device value takes the colour
+   * (a Flow can't address a widget instance). `default` removes it.
+   */
+  setColor(slot: string, color: string) {
+    const s = parseSlot(slot);
+    if (!s) throw new Error(`Not a device value: ${slot}`);
+    const next = color === 'default' ? null : (TILE_COLORS as readonly string[]).includes(color) ? color as TileColor : undefined;
+    if (next === undefined) throw new Error(`Unknown colour: ${color}`);
+    const colors = { ...this.colors() };
+    if (next) colors[slot] = next;
+    else delete colors[slot];
+    this.homey.settings.set(VALUE_COLORS_SETTING, colors);
+    this.homey.api.realtime(VALUES_COLOR_EVENT, { ...s, color: next });
+    this.debug(`Tile colour of ${slot} set to ${color}`);
+  }
+
+  /** The Flow card's device value argument: the settings' list without `None`. */
+  async listColorSlots(query: string): Promise<AutocompleteItem[]> {
+    return (await this.listSlots(query)).filter(i => i.id !== 'none');
+  }
+
   // ---------------------------------------------------------------- live state
 
   /** One entry per slot, in the order asked for. A deleted device or capability doesn't fail the others. */
   async getState(slots: string[]): Promise<ValueSlot[]> {
     const tm = new Timings();
+    const colors = this.colors();
     const out = await Promise.all(slots.map(async (slot): Promise<ValueSlot | null> => {
       const s = parseSlot(slot);
       if (!s) return null;
       try {
         const t = await this.current(s.deviceId, s.capabilityId, tm);
         t.lastRequested = Date.now();
-        return { deviceId: t.deviceId, capabilityId: t.capabilityId, name: t.name, capability: { ...t.capability }, value: t.value };
+        const color = colors[t.key];
+        return { deviceId: t.deviceId, capabilityId: t.capabilityId, name: t.name, capability: { ...t.capability }, value: t.value, ...(color ? { color } : {}) };
       } catch (err) {
         this.log(`Value ${slot} unavailable:`, err);
         return { ...s, missing: true };

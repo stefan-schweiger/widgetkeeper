@@ -105,6 +105,11 @@
         if (data) widget.pushChange(data);
       });
 
+      // A Flow set (or reset) the colour of a value's tiles.
+      Homey.on('values:color', (data) => {
+        if (data) widget.pushColor(data);
+      });
+
       perf = loadMarks(sdkAt);
       setInterval(load, REFRESH_MS);
       load();

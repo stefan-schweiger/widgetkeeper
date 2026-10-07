@@ -10,7 +10,7 @@ Ingående widgetar:
 - Väderprognos: symbol, temperatur, vind och nederbörd timme för timme för de kommande 36 timmarna, från MET Norway (yr.no).
 - Insights-värmekarta: en vecka av ett värde, som ljus, temperatur eller rörelse, som ett rutnät av veckodagar och timmar.
 - Kameror: två till sex kameror i ett rutnät av bilder som uppdateras med några sekunders mellanrum. Tryck på en för att se den live.
-- Enhetsvärden: kompakta rutor som visar ett värde var, som en temperatur, en batterinivå eller på/av.
+- Enhetsvärden: kompakta rutor som visar ett värde var, som en temperatur, en batterinivå eller på/av. Ett flöde kan färga rutorna, t.ex. röda när en sensor är för varm.
 - Ljusreglage: kompakta ljusrutor med ljusstyrka, färg och färgtemperatur, sex lampor på samma plats som tre.
 - Minidiagram: kompakta rutor med ett litet diagram över ett värde den senaste timmen, de senaste 6 timmarna, dygnet eller veckan, med lägsta och högsta värde.
 - Flödesvariabler: kompakta rader för att slå på och av flödesvariabler eller ändra ett tal eller en text, med hela namnet.

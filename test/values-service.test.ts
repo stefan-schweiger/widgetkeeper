@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeDevice, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
-import ValueService, { parseSlot, VALUES_STATE_EVENT, valueCaps } from '../lib/ValueService.js';
+import ValueService, { parseSlot, VALUE_COLORS_SETTING, VALUES_COLOR_EVENT, VALUES_STATE_EVENT, valueCaps } from '../lib/ValueService.js';
 
 vi.mock('homey-api', () => homeyApiMock);
 
@@ -113,5 +113,45 @@ describe('getState', () => {
     vi.advanceTimersByTime(12 * 60e3);
     expect(devices[0].listenerCount('measure_humidity')).toBe(0);
     await service.stop();
+  });
+});
+
+describe('setColor (the Flow card)', () => {
+  it('stores the colour, sends it over realtime and serves it with the state', async () => {
+    const { service, homey } = setup();
+    service.setColor('sensor:measure_temperature', 'red');
+    expect(homey.settings.get(VALUE_COLORS_SETTING)).toEqual({ 'sensor:measure_temperature': 'red' });
+    expect(homey.api.realtime).toHaveBeenCalledWith(VALUES_COLOR_EVENT, { deviceId: 'sensor', capabilityId: 'measure_temperature', color: 'red' });
+    const [temp, hum] = await service.getState(['sensor:measure_temperature', 'sensor:measure_humidity']);
+    expect(temp).toMatchObject({ color: 'red' });
+    expect(hum).not.toHaveProperty('color');
+  });
+
+  it('keeps the colours for a new service (an app restart)', async () => {
+    const { service, homey } = setup();
+    service.setColor('ac:onoff', 'green');
+    const [s] = await new ValueService(homey, () => {}).getState(['ac:onoff']);
+    expect(s).toMatchObject({ color: 'green' });
+  });
+
+  it('removes the colour with default', async () => {
+    const { service, homey } = setup();
+    service.setColor('ac:onoff', 'green');
+    service.setColor('ac:onoff', 'default');
+    expect(homey.settings.get(VALUE_COLORS_SETTING)).toEqual({});
+    expect(homey.api.realtime).toHaveBeenLastCalledWith(VALUES_COLOR_EVENT, { deviceId: 'ac', capabilityId: 'onoff', color: null });
+    const [s] = await service.getState(['ac:onoff']);
+    expect(s).not.toHaveProperty('color');
+  });
+
+  it('rejects an unknown colour or slot', () => {
+    const { service } = setup();
+    expect(() => service.setColor('ac:onoff', 'pink')).toThrow();
+    expect(() => service.setColor('none', 'red')).toThrow();
+  });
+
+  it("lists the device values without the settings' None", async () => {
+    const { service } = setup();
+    expect((await service.listColorSlots('')).map(i => i.id)).toEqual(['ac:mode', 'ac:onoff', 'sensor:measure_humidity', 'sensor:measure_temperature']);
   });
 });

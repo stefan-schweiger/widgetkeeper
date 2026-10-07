@@ -10,7 +10,7 @@ Widget inclusi:
 - Previsioni meteo: icona, temperatura, vento e precipitazioni ora per ora per le prossime 36 ore, da MET Norway (yr.no).
 - Mappa di calore Insights: una settimana di un valore, come luce, temperatura o movimento, in una griglia di giorni e ore.
 - Telecamere: da due a sei telecamere in un'unica griglia di istantanee aggiornate ogni pochi secondi. Toccane una per vederla dal vivo.
-- Valori dispositivi: riquadri compatti che mostrano ciascuno un valore, come una temperatura, un livello della batteria o acceso/spento.
+- Valori dispositivi: riquadri compatti che mostrano ciascuno un valore, come una temperatura, un livello della batteria o acceso/spento. Un Flow può colorare i riquadri, ad esempio di rosso quando un sensore è troppo caldo.
 - Controllo luci: riquadri compatti con luminosità, colore e temperatura colore, sei luci nello spazio di tre.
 - Minigrafici: riquadri compatti con un piccolo grafico di un valore nell'ultima ora, nelle ultime 6 ore, nel giorno o nella settimana, con minimo e massimo.
 - Variabili dei flow: righe compatte per attivare e disattivare le variabili dei flow o cambiare un numero o un testo, con il nome completo.

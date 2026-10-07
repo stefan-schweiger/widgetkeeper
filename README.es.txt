@@ -10,7 +10,7 @@ Widgets incluidos:
 - Previsión del tiempo: icono, temperatura, viento y precipitación hora a hora para las próximas 36 horas, de MET Norway (yr.no).
 - Mapa de calor de Insights: una semana de un valor, como luz, temperatura o movimiento, en una cuadrícula de días y horas.
 - Cámaras: de dos a seis cámaras en una cuadrícula de instantáneas que se actualizan cada pocos segundos. Toca una para verla en vivo.
-- Valores de dispositivos: mosaicos compactos que muestran cada uno un valor, como una temperatura, un nivel de batería o encendido/apagado.
+- Valores de dispositivos: mosaicos compactos que muestran cada uno un valor, como una temperatura, un nivel de batería o encendido/apagado. Un Flow puede colorear los mosaicos, por ejemplo de rojo cuando un sensor está demasiado caliente.
 - Control de luces: mosaicos compactos con brillo, color y temperatura de color, seis luces en el espacio de tres.
 - Minigráficos: mosaicos compactos con un pequeño gráfico de un valor en la última hora, las últimas 6 horas, el día o la semana, con su mínimo y su máximo.
 - Variables de flujo: filas compactas para activar y desactivar variables de flujo o cambiar un número o un texto, con el nombre completo.

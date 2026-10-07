@@ -25,6 +25,8 @@
   <div class="col"><span>358 px · dark · 2 columns</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
   <div class="col"><span>358 px · dark · percentage fill</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
   <div class="col"><span>358 px · light · percentage fill</span><div class="dash light" style="width:358px"><div id="w7"></div></div></div>
+  <div class="col"><span>358 px · dark · colours set by a Flow</span><div class="dash homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
+  <div class="col"><span>358 px · light · colours set by a Flow</span><div class="dash light" style="width:358px"><div id="w9"></div></div></div>
   <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
 
   <script>
@@ -48,6 +50,25 @@
       pct('Stue', 'measure_humidity', 48), pct('Ceiling', 'dim', 0.35, { min: 0, max: 1, decimals: 2 }), pct('Garage', 'measure_battery', 100),
     ];
     for (const id of ['w6', 'w7']) createValuesWidget(document.getElementById(id), { t: devT, percentFill: true }).setState(percents());
+    // Tiles coloured by the "Set the tile colour" Flow card; the first one cycles as if a Flow ran every 2 s.
+    const temperature = (deviceId, name, value, color) => ({ deviceId, capabilityId: 'measure_temperature', name, capability: cap('number', { title: 'Temperature', units: '°C', decimals: 1 }), value, color });
+    const alarm = (deviceId, name, value, color) => ({ deviceId, capabilityId: 'alarm_generic', name, capability: cap('boolean', { title: 'Generic alarm' }), value, color });
+    const colored = () => [
+      temperature('fridge', 'Fridge', 4.2, 'blue'), temperature('freezer', 'Freezer', -16.5, 'red'), alarm('wan', 'Internet', false, 'green'),
+      alarm('dns', 'DNS check', true, 'red'), alarm('vpn', 'VPN', false, 'yellow'), pct('Back door', 'measure_battery', 64),
+      { ...pct('Hallway', 'measure_battery', 30), color: 'purple' }, { ...pct('Kitchen', 'measure_battery', 80), color: 'orange' },
+    ];
+    const flowWidgets = ['w8', 'w9'].map(id => {
+      const w = createValuesWidget(document.getElementById(id), { t: devT, percentFill: true });
+      w.setState(colored());
+      return w;
+    });
+    const cycle = ['blue', 'red', null, 'green'];
+    let step = 0;
+    setInterval(() => {
+      const color = cycle[step++ % cycle.length];
+      for (const w of flowWidgets) w.pushColor({ deviceId: 'fridge', capabilityId: 'measure_temperature', color });
+    }, 2000);
     const empty = createValuesWidget(document.getElementById('w4'), { t: devT });
     empty.setMessage(empty.t('selectSlots'));
   </script>
