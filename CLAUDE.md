@@ -19,6 +19,7 @@ Homey Pro app (`com.thomassidor.widgetkeeper`) that hosts custom dashboard widge
 - `npm run showcase [-- home energy security]`: renders the showcase dashboards (`docs/showcase/<id>.png`; the README's top image is `home.png`, and its Dashboard examples section shows all three) from `dev/showcase.html?d=<id>`: three columns of the real widgets on Homey's dark dashboard, on a drawn 16:10 tablet (a 1280 × 800 screen), at 2x on a transparent background.
   - The data is a made-up house, "Solbakken", on Tuesday 6 October 2026 at 18:40 (`dev/showcase-data.js`); the page replaces `Date` to fix the clock, so every render is the same. The electricity widget uses `smooth`.
   - A dashboard is `SHOWCASE[id] = { title, columns: [[{ type, … }]] }`; `MOUNT` in `showcase.html` creates each widget type. A new dashboard is a new entry.
+  - The cameras (showcase and README screenshots) show `dev/cameras/<id>.webp`: AI-generated snapshots of the made-up house, cut from one picture to 640 × 360 with the timestamp baked in. The dev previews keep the drawn scenes of `dev/mock-cameras.js`.
   - The script warns when a column runs off the screen (it's cut off, like a dashboard you'd scroll).
   - `scripts/headless.mjs` (headless Edge, the icon download) is shared with the screenshots script.
 - `dev/preview.html`: the widget with mock data in a plain browser. Its mock snapshot is in `dev/mock-electricity.js`.

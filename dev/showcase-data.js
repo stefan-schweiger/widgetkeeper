@@ -16,7 +16,6 @@
   const hourOf = t => new Date(t).getHours();
   const pad = n => String(n).padStart(2, '0');
   const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-  const STAMP = (() => { const d = new Date(NOW - 4e3); return `${ymd(d)} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; })();
 
   // ---- Electricity: Danish spot prices with the evening peak, a heat pump, a night of car charging, cooking now.
 
@@ -157,7 +156,9 @@
   const qa = (capabilityId, value) => ({ capabilityId, value, actionable: true, momentary: false, icon: null });
   const alarm = (capabilityId, value, title, state = false) => ({ capabilityId, title, value, state });
   const lcap = v => ({ value: v, setable: true });
-  const cam = (id, name, scene, dusk = 0.35) => ({ id, name, icon: null, image: { id: `img-${id}`, url: mockCameraScene(scene, STAMP, dusk), lastUpdated: 0 }, video: `vid-${id}` });
+  // Snapshots of the made-up house (AI-generated, cut from one picture, the timestamp baked in): dev/cameras/<id>.webp,
+  // relative to the dev page that loads this file.
+  const cam = (id, name) => ({ id, name, icon: null, image: { id: `img-${id}`, url: `cameras/${id}.webp`, lastUpdated: 0 }, video: `vid-${id}` });
 
   const FAN = { title: 'Fan speed', units: null, values: ['auto', 'low', 'medium', 'high'].map(id => ({ id, title: id[0].toUpperCase() + id.slice(1) })) };
   const MODE = { title: 'Mode', units: null, values: [['heat', 'Heat'], ['cool', 'Cool'], ['auto', 'Auto'], ['dry', 'Dry']].map(([id, title]) => ({ id, title })) };
@@ -236,7 +237,7 @@
           { type: 'sensoralarms', devices: smokeAndWater },
         ],
         [
-          { type: 'cameras', cameras: [cam('drive', 'Driveway', 'DRIVEWAY'), cam('door', 'Front door', 'FRONT_DOOR')] },
+          { type: 'cameras', cameras: [cam('drive', 'Driveway'), cam('door', 'Hallway')] },
           { type: 'sparklines', slots: indoorSparks },
           { type: 'heatmap', opts: { period: 'rolling', step: 2 }, data: heatMotion() },
         ],
@@ -291,9 +292,9 @@
       columns: [
         [
           { type: 'cameras', cameras: [
-            cam('drive', 'Driveway', 'DRIVEWAY'), cam('door', 'Front door', 'FRONT_DOOR'),
-            cam('garden', 'Garden', 'GARDEN'), cam('shed', 'Shed', 'SHED'),
-            cam('living', 'Living room', 'LIVING_ROOM', 0.15), cam('side', 'Side path', 'NIGHT', 0),
+            cam('drive', 'Driveway'), cam('door', 'Hallway'),
+            cam('garden', 'Terrace'), cam('shed', 'Shed'),
+            cam('living', 'Kitchen'), cam('side', 'Side path'),
           ] },
           { type: 'sensoralarms', opts: { includeStates: true }, devices: [
             ...smokeAndWater,
