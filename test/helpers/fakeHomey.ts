@@ -34,6 +34,8 @@ export type FakeCap = {
   /** Whether Homey logs it in Insights. */
   insights?: boolean,
   decimals?: number,
+  /** When the value last changed, an ISO string as Homey sends it. */
+  lastUpdated?: string,
 };
 
 export type FakeDeviceOptions = {
@@ -69,6 +71,7 @@ export function fakeDevice({ id = 'dev1', name = 'Aircon', zone = 'z1', caps, ui
     /** The device reports a new value (as if it changed on its own or confirmed a set). */
     report(capabilityId: string, value: unknown) {
       device.capabilitiesObj[capabilityId].value = value;
+      device.capabilitiesObj[capabilityId].lastUpdated = new Date().toISOString();
       for (const cb of listeners.get(capabilityId) ?? []) cb(value);
     },
     makeCapabilityInstance: vi.fn((capabilityId: string, cb: (value: unknown) => void) => {

@@ -43,6 +43,17 @@
     "active": "Attivo",
     "inactive": "Inattivo"
   },
+  "sensordots": {
+    "selectDevices": "Scegli i sensori nelle impostazioni del widget.",
+    "error": "Impossibile caricare i sensori.",
+    "unavailable": "Non disponibile",
+    "open": "Aperto",
+    "closed": "Chiuso",
+    "motion": "Movimento",
+    "noMotion": "Nessun movimento",
+    "nothingDetected": "Nulla rilevato",
+    "since": "da __time__"
+  },
   "weather": {
     "now": "Ora",
     "error": "Impossibile caricare le previsioni.",

@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|var-dark|var-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|sd-dark|sd-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|var-dark|var-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -196,6 +196,25 @@ function sensorAlarms(t, theme) {
   </div>`;
 }
 
+// Sensor Dots is transparent: one tile (with an optional header) of dots, grey while idle and blue while active
+// (the default colours).
+function sensorDots(t, theme) {
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const rim = theme === 'dark' ? ',inset 0 3px 0 rgba(255,255,255,.05),inset 0 0 0 3px rgba(255,255,255,.03)' : '';
+  const shadow = theme === 'dark' ? '0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const GREY = theme === 'dark' ? '#757680' : '#B3B4BA';
+  const dot = on => `<div style="display:flex;align-items:center;justify-content:center;height:120px">
+      <div style="width:44px;height:44px;border-radius:50%;background:${on ? BLUE : GREY}"></div>
+    </div>`;
+  const row = ons => `<div style="display:grid;grid-template-columns:repeat(6,1fr)">${ons.map(dot).join('')}</div>`;
+  return `<div style="width:880px;border-radius:32px;background:${tileBg};box-shadow:${shadow}${rim};padding:12px;box-sizing:border-box">
+    <div style="padding:24px 28px 4px">${pill(300, 30, t.fg, 'opacity:.85')}</div>
+    ${row([0, 0, 1, 0, 0, 0])}
+    ${row([0, 0, 0, 0, 0, 1])}
+    ${row([0, 1, 0, 0, 0, 0])}
+  </div>`;
+}
+
 // Cameras: a 2×2 grid of 16:9 snapshot tiles (flat scenes), each with a name pill; one plays live.
 function cameras(t, theme) {
   const shadow = theme === 'dark' ? '0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
@@ -351,6 +370,8 @@ const PREVIEWS = [
   { id: 'qa-light',     label: '1f · Device Quick Actions — preview-light.png', theme: 'light', render: quickActions },
   { id: 'sa-dark',      label: '1i · Sensor Alarms — preview-dark.png',          theme: 'dark',  render: sensorAlarms },
   { id: 'sa-light',     label: '1j · Sensor Alarms — preview-light.png',         theme: 'light', render: sensorAlarms },
+  { id: 'sd-dark',      label: '1w · Sensor Dots — preview-dark.png',            theme: 'dark',  render: sensorDots },
+  { id: 'sd-light',     label: '1x · Sensor Dots — preview-light.png',           theme: 'light', render: sensorDots },
   { id: 'weather-dark',  label: '1g · Weather Forecast — preview-dark.png',      theme: 'dark',  render: weather },
   { id: 'weather-light', label: '1h · Weather Forecast — preview-light.png',     theme: 'light', render: weather },
   { id: 'hm-dark',      label: '1k · Insights Heatmap — preview-dark.png',       theme: 'dark',  render: heatmap },

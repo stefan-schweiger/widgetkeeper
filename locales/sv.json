@@ -43,6 +43,17 @@
     "active": "Aktiv",
     "inactive": "Inaktiv"
   },
+  "sensordots": {
+    "selectDevices": "Välj sensorer i widgetinställningarna.",
+    "error": "Kunde inte läsa in sensorerna.",
+    "unavailable": "Inte tillgänglig",
+    "open": "Öppen",
+    "closed": "Stängd",
+    "motion": "Rörelse",
+    "noMotion": "Ingen rörelse",
+    "nothingDetected": "Inget upptäckt",
+    "since": "sedan __time__"
+  },
   "weather": {
     "now": "Nu",
     "error": "Kunde inte hämta prognosen.",

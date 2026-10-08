@@ -43,6 +43,17 @@
     "active": "Actif",
     "inactive": "Inactif"
   },
+  "sensordots": {
+    "selectDevices": "Choisissez des capteurs dans les réglages.",
+    "error": "Impossible de charger les capteurs.",
+    "unavailable": "Indisponible",
+    "open": "Ouvert",
+    "closed": "Fermé",
+    "motion": "Mouvement",
+    "noMotion": "Aucun mouvement",
+    "nothingDetected": "Rien détecté",
+    "since": "depuis __time__"
+  },
   "weather": {
     "now": "Actuel",
     "error": "Impossible de charger les prévisions.",

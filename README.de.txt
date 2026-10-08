@@ -7,6 +7,7 @@ Enthaltene Widgets:
 - Thermostat-Schnelltasten: drei Voreinstellungen per Tippen für Thermostat, Wärmepumpe oder Klimaanlage.
 - Geräte-Schnellaktionen: kompakte Kacheln, die die Schnellaktion eines Geräts ausführen, etwa ein Licht einschalten oder eine Tür abschließen.
 - Sensoralarme: Kacheln, die zeigen, ob ein Sensor einen Alarm hat, etwa Rauch, Wasser oder CO₂, und dann rot werden.
+- Sensorpunkte: Bewegungs- und Kontaktsensoren als Punkteraster, grau in Ruhe und blau, wenn aktiv (beide Farben lassen sich ändern). Tippe auf einen Punkt, um Name, Zustand und seit wann zu sehen.
 - Wettervorhersage: Symbol, Temperatur, Wind und Niederschlag Stunde für Stunde für die nächsten 36 Stunden, von MET Norway (yr.no).
 - Insights-Heatmap: eine Woche eines Werts, etwa Licht, Temperatur oder Bewegung, als Raster aus Wochentagen und Stunden.
 - Kameras: zwei bis sechs Kameras in einem Raster aus Schnappschüssen, die sich alle paar Sekunden erneuern. Tippe auf eine für das Livebild.

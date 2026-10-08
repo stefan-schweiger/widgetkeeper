@@ -19,6 +19,8 @@ const OUT = {
   'qa-light': 'widgets/quickactions/preview-light.png',
   'sa-dark': 'widgets/sensoralarms/preview-dark.png',
   'sa-light': 'widgets/sensoralarms/preview-light.png',
+  'sd-dark': 'widgets/sensordots/preview-dark.png',
+  'sd-light': 'widgets/sensordots/preview-light.png',
   'weather-dark': 'widgets/weather/preview-dark.png',
   'weather-light': 'widgets/weather/preview-light.png',
   'hm-dark': 'widgets/heatmap/preview-dark.png',

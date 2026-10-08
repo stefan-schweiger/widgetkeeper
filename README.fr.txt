@@ -7,6 +7,7 @@ Widgets inclus :
 - Raccourcis thermostat : trois préréglages en un toucher pour un thermostat, une pompe à chaleur ou un climatiseur.
 - Actions rapides d'appareils : des tuiles compactes qui lancent l'action rapide d'un appareil, comme allumer une lampe ou verrouiller une porte.
 - Alarmes des capteurs : des tuiles qui indiquent si un capteur est en alarme (fumée, eau, CO₂…) et deviennent rouges quand c'est le cas.
+- Points capteurs : les capteurs de mouvement et de contact sous forme de grille de points, gris au repos et bleus lorsqu'ils sont actifs (les deux couleurs sont modifiables). Touchez un point pour voir le nom du capteur, son état et depuis quand.
 - Prévisions météo : icône, température, vent et précipitations heure par heure pour les 36 prochaines heures, par MET Norway (yr.no).
 - Carte thermique Insights : une semaine d'une valeur, comme la lumière, la température ou le mouvement, en grille de jours et d'heures.
 - Caméras : deux à six caméras dans une grille d'instantanés actualisés toutes les quelques secondes. Touchez-en une pour la voir en direct.

@@ -1,6 +1,6 @@
 // The widgets of dev/screenshots.html: the real widget code with the made-up home of showcase-data.js ("Solbakken",
 // the showcase dashboards' data, so no real home's names or readings end up in the README), mounted into the elements
-// with the ids w-elec, w-thermo, w-qa, w-sa, w-weather, w-heatmap, w-cameras, w-values, w-lights, w-sparklines and w-variables.
+// with the ids w-elec, w-thermo, w-qa, w-sa, w-sd, w-weather, w-heatmap, w-cameras, w-values, w-lights, w-sparklines and w-variables.
 // Needs the widget scripts, temp/screenshot-icons.js and showcase-data.js loaded first, and the
 // showcase's fixed clock (screenshots.html sets it), so every render is the same.
 (function () {
@@ -25,6 +25,11 @@
 
   const alarms = find('sensoralarms', 1); // security: with the door contacts
   createSensorAlarmsWidget(el('w-sa'), alarms.opts || {}).setState(alarms.devices);
+
+  const dots = find('sensordots'); // security: the garage door open, its overlay showing
+  const sd = createSensorDotsWidget(el('w-sd'), { ...dots.opts, locale: LOCALE });
+  sd.setState({ devices: dots.devices, language: 'en' });
+  sd.open(dots.open);
 
   const values = find('values', 1); // security: batteries in red, yellow and green
   createValuesWidget(el('w-values'), values.opts || {}).setState(values.slots);

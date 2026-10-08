@@ -7,6 +7,7 @@ Dołączone widżety:
 - Skróty termostatu: trzy ustawienia jednym dotknięciem dla termostatu, pompy ciepła lub klimatyzatora.
 - Szybkie akcje urządzeń: kompaktowe kafelki, które wykonują szybką akcję urządzenia, np. włączają światło lub zamykają drzwi.
 - Alarmy czujników: kafelki, które pokazują, czy czujnik ma alarm, np. dymu, wody lub CO₂, i zmieniają kolor na czerwony, gdy go ma.
+- Kropki czujników: czujniki ruchu i kontaktu jako siatka kropek, szarych w spoczynku i niebieskich, gdy są aktywne (oba kolory można zmienić). Dotknij kropki, aby zobaczyć nazwę czujnika, jego stan i od kiedy.
 - Prognoza pogody: ikona, temperatura, wiatr i opady godzina po godzinie na najbliższe 36 godzin, z MET Norway (yr.no).
 - Mapa cieplna Insights: tydzień jednej wartości, np. światła, temperatury lub ruchu, jako siatka dni i godzin.
 - Kamery: od dwóch do sześciu kamer w jednej siatce zdjęć odświeżanych co kilka sekund. Dotknij kamery, aby oglądać ją na żywo.

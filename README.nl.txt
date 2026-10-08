@@ -7,6 +7,7 @@ Inbegrepen widgets:
 - Thermostaatsnelkoppelingen: drie voorinstellingen met één tik voor een thermostaat, warmtepomp of airco.
 - Snelle apparaatacties: compacte tegels die de snelle actie van een apparaat uitvoeren, zoals een lamp aanzetten of een deur op slot doen.
 - Sensoralarmen: tegels die laten zien of een sensor een alarm heeft, zoals rook, water of CO₂, en rood worden als dat zo is.
+- Sensorstippen: bewegings- en contactsensoren als een raster van stippen, grijs in rust en blauw wanneer actief (beide kleuren zijn aan te passen). Tik op een stip om de naam van de sensor, de status en sinds wanneer te zien.
 - Weersverwachting: icoon, temperatuur, wind en neerslag per uur voor de komende 36 uur, van MET Norway (yr.no).
 - Insights-heatmap: een week van één waarde, zoals licht, temperatuur of beweging, als raster van weekdagen en uren.
 - Camera's: twee tot zes camera's in één raster van snapshots die elke paar seconden vernieuwen. Tik op een camera voor live beeld.

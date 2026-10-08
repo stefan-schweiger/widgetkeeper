@@ -43,6 +43,17 @@
     "active": "نشط",
     "inactive": "غير نشط"
   },
+  "sensordots": {
+    "selectDevices": "اختر المستشعرات في إعدادات الأداة.",
+    "error": "تعذّر تحميل المستشعرات.",
+    "unavailable": "غير متاح",
+    "open": "مفتوح",
+    "closed": "مغلق",
+    "motion": "حركة",
+    "noMotion": "لا حركة",
+    "nothingDetected": "لم يُكتشف شيء",
+    "since": "منذ __time__"
+  },
   "weather": {
     "now": "الآن",
     "error": "تعذر تحميل التوقعات.",

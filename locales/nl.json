@@ -43,6 +43,17 @@
     "active": "Actief",
     "inactive": "Inactief"
   },
+  "sensordots": {
+    "selectDevices": "Kies sensoren in de widgetinstellingen.",
+    "error": "Kon de sensoren niet laden.",
+    "unavailable": "Niet beschikbaar",
+    "open": "Open",
+    "closed": "Dicht",
+    "motion": "Beweging",
+    "noMotion": "Geen beweging",
+    "nothingDetected": "Niets gedetecteerd",
+    "since": "sinds __time__"
+  },
   "weather": {
     "now": "Nu",
     "error": "Kon de verwachting niet laden.",

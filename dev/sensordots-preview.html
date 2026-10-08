@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sensor dots widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/sensordots/public/widget.css">
+  <script src="../widgets/sensordots/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <style>
+    body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px;
+      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · light</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>300 px · dark · no title</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · no devices</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
+
+  <script>
+    const now = Date.now();
+    const ago = min => now - min * 60e3;
+    const a = (capabilityId, value, title, min) => ({ capabilityId, title, value, state: true, lastUpdated: min == null ? null : ago(min) });
+    const contact = (id, name, open, min) => ({ id, name, icon: null, alarms: [a('alarm_contact', open, 'Contact alarm', min)] });
+    const motion = (id, name, on, min) => ({ id, name, icon: null, alarms: [a('alarm_motion', on, 'Motion alarm', min)] });
+    const devices = () => [
+      contact('front', 'Front door', false, 95),
+      contact('back', 'Back door', true, 8),
+      contact('garage', 'Garage door', false, 60 * 26),
+      contact('kw', 'Kitchen window', false, 60 * 24 * 9),
+      contact('bw', 'Bedroom window', false, 300),
+      motion('hall', 'Hall', true, 1),
+      motion('living', 'Living room', false, 14),
+      motion('kitchen', 'Kitchen', false, 40),
+      motion('office', 'Office', false, 180),
+      { id: 'cam', name: 'Driveway camera', icon: null, alarms: [a('alarm_motion', false, 'Motion alarm', 3), a('alarm_person', true, 'Person Detected', 3)] },
+      contact('shed', 'Shed', null, null),
+      { id: 'gone', missing: true },
+    ];
+    const widgets = ['w1', 'w2', 'w3'].map((id) => {
+      const w = createSensorDotsWidget(document.getElementById(id), { t: devT, title: id === 'w3' ? '' : 'Doors and motion' });
+      w.setState({ devices: devices(), language: new URLSearchParams(location.search).get('lang') || 'en' });
+      return w;
+    });
+    // ?open=hall opens that device's overlay in every widget, for screenshots.
+    const openId = new URLSearchParams(location.search).get('open');
+    if (openId) for (const w of widgets) w.open(openId);
+    const empty = createSensorDotsWidget(document.getElementById('w4'), { t: devT });
+    empty.setMessage(empty.t('selectDevices'));
+    // Simulate the front door opening and closing.
+    let open = false;
+    setInterval(() => {
+      open = !open;
+      for (const w of widgets) w.pushChange({ deviceId: 'front', capabilityId: 'alarm_contact', value: open, t: Date.now() });
+    }, 3000);
+  </script>
+</body>
+</html>

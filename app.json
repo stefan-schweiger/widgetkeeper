@@ -1842,6 +1842,372 @@
       },
       "id": "sensoralarms"
     },
+    "sensordots": {
+      "name": {
+        "en": "Sensor Dots",
+        "nl": "Sensorstippen",
+        "de": "Sensorpunkte",
+        "fr": "Points capteurs",
+        "it": "Punti sensori",
+        "sv": "Sensorprickar",
+        "no": "Sensorprikker",
+        "es": "Puntos de sensores",
+        "da": "Sensorprikker",
+        "ru": "Точки датчиков",
+        "pl": "Kropki czujników",
+        "ko": "센서 점",
+        "ar": "نقاط المستشعرات"
+      },
+      "height": 52,
+      "transparent": true,
+      "devices": {
+        "type": "global",
+        "singular": false,
+        "filter": {
+          "capabilities": "alarm_motion|alarm_contact|alarm_person|alarm_vehicle|alarm_pet"
+        }
+      },
+      "settings": [
+        {
+          "id": "title",
+          "type": "text",
+          "title": {
+            "en": "Title",
+            "nl": "Titel",
+            "de": "Titel",
+            "fr": "Titre",
+            "it": "Titolo",
+            "sv": "Rubrik",
+            "no": "Tittel",
+            "es": "Título",
+            "da": "Titel",
+            "ru": "Заголовок",
+            "pl": "Tytuł",
+            "ko": "제목",
+            "ar": "العنوان"
+          },
+          "hint": {
+            "en": "Shown at the top of the tile. Leave empty for none.",
+            "nl": "Bovenaan de tegel getoond. Laat leeg voor geen titel.",
+            "de": "Wird oben in der Kachel angezeigt. Leer lassen für keinen Titel.",
+            "fr": "Affiché en haut de la tuile. Laissez vide pour aucun titre.",
+            "it": "Mostrato in cima al riquadro. Lascia vuoto per nessun titolo.",
+            "sv": "Visas överst i rutan. Lämna tomt för ingen rubrik.",
+            "no": "Vises øverst i flisen. La stå tomt for ingen tittel.",
+            "es": "Se muestra en la parte superior del mosaico. Déjalo vacío para no mostrar título.",
+            "da": "Vises øverst i feltet. Lad den være tom for ingen titel.",
+            "ru": "Показывается вверху плитки. Оставьте пустым, чтобы не показывать.",
+            "pl": "Wyświetlany u góry kafelka. Zostaw puste, aby go nie było.",
+            "ko": "타일 상단에 표시됩니다. 비워 두면 표시하지 않습니다.",
+            "ar": "يظهر أعلى البلاطة. اتركه فارغًا لعدم إظهار عنوان."
+          },
+          "value": ""
+        },
+        {
+          "id": "idleColor",
+          "type": "dropdown",
+          "title": {
+            "en": "Colour when idle",
+            "nl": "Kleur in rust",
+            "de": "Farbe in Ruhe",
+            "fr": "Couleur au repos",
+            "it": "Colore a riposo",
+            "sv": "Färg i vila",
+            "no": "Farge i ro",
+            "es": "Color en reposo",
+            "da": "Farve i ro",
+            "ru": "Цвет в покое",
+            "pl": "Kolor w spoczynku",
+            "ko": "평상시 색상",
+            "ar": "اللون عند السكون"
+          },
+          "value": "grey",
+          "values": [
+            {
+              "id": "grey",
+              "title": {
+                "en": "Grey",
+                "nl": "Grijs",
+                "de": "Grau",
+                "fr": "Gris",
+                "it": "Grigio",
+                "sv": "Grå",
+                "no": "Grå",
+                "es": "Gris",
+                "da": "Grå",
+                "ru": "Серый",
+                "pl": "Szary",
+                "ko": "회색",
+                "ar": "رمادي"
+              }
+            },
+            {
+              "id": "blue",
+              "title": {
+                "en": "Blue",
+                "nl": "Blauw",
+                "de": "Blau",
+                "fr": "Bleu",
+                "it": "Blu",
+                "sv": "Blå",
+                "no": "Blå",
+                "es": "Azul",
+                "da": "Blå",
+                "ru": "Синий",
+                "pl": "Niebieski",
+                "ko": "파랑",
+                "ar": "أزرق"
+              }
+            },
+            {
+              "id": "red",
+              "title": {
+                "en": "Red",
+                "nl": "Rood",
+                "de": "Rot",
+                "fr": "Rouge",
+                "it": "Rosso",
+                "sv": "Röd",
+                "no": "Rød",
+                "es": "Rojo",
+                "da": "Rød",
+                "ru": "Красный",
+                "pl": "Czerwony",
+                "ko": "빨강",
+                "ar": "أحمر"
+              }
+            },
+            {
+              "id": "orange",
+              "title": {
+                "en": "Orange",
+                "nl": "Oranje",
+                "de": "Orange",
+                "fr": "Orange",
+                "it": "Arancione",
+                "sv": "Orange",
+                "no": "Oransje",
+                "es": "Naranja",
+                "da": "Orange",
+                "ru": "Оранжевый",
+                "pl": "Pomarańczowy",
+                "ko": "주황",
+                "ar": "برتقالي"
+              }
+            },
+            {
+              "id": "yellow",
+              "title": {
+                "en": "Yellow",
+                "nl": "Geel",
+                "de": "Gelb",
+                "fr": "Jaune",
+                "it": "Giallo",
+                "sv": "Gul",
+                "no": "Gul",
+                "es": "Amarillo",
+                "da": "Gul",
+                "ru": "Жёлтый",
+                "pl": "Żółty",
+                "ko": "노랑",
+                "ar": "أصفر"
+              }
+            },
+            {
+              "id": "green",
+              "title": {
+                "en": "Green",
+                "nl": "Groen",
+                "de": "Grün",
+                "fr": "Vert",
+                "it": "Verde",
+                "sv": "Grön",
+                "no": "Grønn",
+                "es": "Verde",
+                "da": "Grøn",
+                "ru": "Зелёный",
+                "pl": "Zielony",
+                "ko": "초록",
+                "ar": "أخضر"
+              }
+            },
+            {
+              "id": "purple",
+              "title": {
+                "en": "Purple",
+                "nl": "Paars",
+                "de": "Lila",
+                "fr": "Violet",
+                "it": "Viola",
+                "sv": "Lila",
+                "no": "Lilla",
+                "es": "Morado",
+                "da": "Lilla",
+                "ru": "Фиолетовый",
+                "pl": "Fioletowy",
+                "ko": "보라",
+                "ar": "بنفسجي"
+              }
+            }
+          ]
+        },
+        {
+          "id": "activeColor",
+          "type": "dropdown",
+          "title": {
+            "en": "Colour when active",
+            "nl": "Kleur bij activiteit",
+            "de": "Farbe bei Aktivität",
+            "fr": "Couleur si actif",
+            "it": "Colore se attivo",
+            "sv": "Färg vid aktivitet",
+            "no": "Farge ved aktivitet",
+            "es": "Color si está activo",
+            "da": "Farve ved aktivitet",
+            "ru": "Цвет при срабатывании",
+            "pl": "Kolor przy aktywności",
+            "ko": "감지 시 색상",
+            "ar": "اللون عند النشاط"
+          },
+          "value": "blue",
+          "values": [
+            {
+              "id": "grey",
+              "title": {
+                "en": "Grey",
+                "nl": "Grijs",
+                "de": "Grau",
+                "fr": "Gris",
+                "it": "Grigio",
+                "sv": "Grå",
+                "no": "Grå",
+                "es": "Gris",
+                "da": "Grå",
+                "ru": "Серый",
+                "pl": "Szary",
+                "ko": "회색",
+                "ar": "رمادي"
+              }
+            },
+            {
+              "id": "blue",
+              "title": {
+                "en": "Blue",
+                "nl": "Blauw",
+                "de": "Blau",
+                "fr": "Bleu",
+                "it": "Blu",
+                "sv": "Blå",
+                "no": "Blå",
+                "es": "Azul",
+                "da": "Blå",
+                "ru": "Синий",
+                "pl": "Niebieski",
+                "ko": "파랑",
+                "ar": "أزرق"
+              }
+            },
+            {
+              "id": "red",
+              "title": {
+                "en": "Red",
+                "nl": "Rood",
+                "de": "Rot",
+                "fr": "Rouge",
+                "it": "Rosso",
+                "sv": "Röd",
+                "no": "Rød",
+                "es": "Rojo",
+                "da": "Rød",
+                "ru": "Красный",
+                "pl": "Czerwony",
+                "ko": "빨강",
+                "ar": "أحمر"
+              }
+            },
+            {
+              "id": "orange",
+              "title": {
+                "en": "Orange",
+                "nl": "Oranje",
+                "de": "Orange",
+                "fr": "Orange",
+                "it": "Arancione",
+                "sv": "Orange",
+                "no": "Oransje",
+                "es": "Naranja",
+                "da": "Orange",
+                "ru": "Оранжевый",
+                "pl": "Pomarańczowy",
+                "ko": "주황",
+                "ar": "برتقالي"
+              }
+            },
+            {
+              "id": "yellow",
+              "title": {
+                "en": "Yellow",
+                "nl": "Geel",
+                "de": "Gelb",
+                "fr": "Jaune",
+                "it": "Giallo",
+                "sv": "Gul",
+                "no": "Gul",
+                "es": "Amarillo",
+                "da": "Gul",
+                "ru": "Жёлтый",
+                "pl": "Żółty",
+                "ko": "노랑",
+                "ar": "أصفر"
+              }
+            },
+            {
+              "id": "green",
+              "title": {
+                "en": "Green",
+                "nl": "Groen",
+                "de": "Grün",
+                "fr": "Vert",
+                "it": "Verde",
+                "sv": "Grön",
+                "no": "Grønn",
+                "es": "Verde",
+                "da": "Grøn",
+                "ru": "Зелёный",
+                "pl": "Zielony",
+                "ko": "초록",
+                "ar": "أخضر"
+              }
+            },
+            {
+              "id": "purple",
+              "title": {
+                "en": "Purple",
+                "nl": "Paars",
+                "de": "Lila",
+                "fr": "Violet",
+                "it": "Viola",
+                "sv": "Lila",
+                "no": "Lilla",
+                "es": "Morado",
+                "da": "Lilla",
+                "ru": "Фиолетовый",
+                "pl": "Fioletowy",
+                "ko": "보라",
+                "ar": "بنفسجي"
+              }
+            }
+          ]
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        }
+      },
+      "id": "sensordots"
+    },
     "sparklines": {
       "name": {
         "en": "Sparklines",

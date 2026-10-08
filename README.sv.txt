@@ -7,6 +7,7 @@ Ingående widgetar:
 - Termostatgenvägar: tre förval med ett tryck för en termostat, värmepump eller luftkonditionering.
 - Snabbåtgärder för enheter: kompakta rutor som kör en enhets snabbåtgärd, som att tända en lampa eller låsa en dörr.
 - Sensorlarm: rutor som visar om en sensor har ett larm, som rök, vatten eller CO₂, och blir röda när den har det.
+- Sensorprickar: rörelse- och kontaktsensorer som ett rutnät av prickar, grå i vila och blå när de är aktiva (båda färgerna kan ändras). Tryck på en prick för att se sensorns namn, läge och sedan när.
 - Väderprognos: symbol, temperatur, vind och nederbörd timme för timme för de kommande 36 timmarna, från MET Norway (yr.no).
 - Insights-värmekarta: en vecka av ett värde, som ljus, temperatur eller rörelse, som ett rutnät av veckodagar och timmar.
 - Kameror: två till sex kameror i ett rutnät av bilder som uppdateras med några sekunders mellanrum. Tryck på en för att se den live.

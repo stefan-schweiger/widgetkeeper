@@ -155,6 +155,10 @@
 
   const qa = (capabilityId, value) => ({ capabilityId, value, actionable: true, momentary: false, icon: null });
   const alarm = (capabilityId, value, title, state = false) => ({ capabilityId, title, value, state });
+  /** A motion, contact or camera detection for Sensor Dots, changed `min` minutes ago. */
+  const sensor = (capabilityId, value, title, min) => ({ ...alarm(capabilityId, value, title, true), lastUpdated: NOW - min * MIN });
+  const contactDot = (id, name, open, min) => ({ id, name, icon: null, alarms: [sensor('alarm_contact', open, 'Contact alarm', min)] });
+  const motionDot = (id, name, on, min) => ({ id, name, icon: null, alarms: [sensor('alarm_motion', on, 'Motion alarm', min)] });
   const lcap = v => ({ value: v, setable: true });
   // Snapshots of the made-up house (AI-generated, cut from one picture, the timestamp baked in): dev/cameras/<id>.webp,
   // relative to the dev page that loads this file.
@@ -330,6 +334,16 @@
             { id: 'g1', name: 'Garage door', icon: icon('garage-door'), quickAction: qa('onoff', true) },
             { id: 'g2', name: 'Doorbell', icon: icon('doorbell'), quickAction: { capabilityId: 'button', value: true, actionable: true, momentary: true, icon: null } },
             { id: 'g3', name: 'Router', icon: icon('router'), quickAction: qa('onoff', true) },
+          ] },
+          // The open garage is in the second row (7 or 8 dots per row), so its overlay leaves the hallway's red dot showing.
+          { type: 'sensordots', opts: { locale: 'en-GB', title: 'Doors and motion' }, open: 'd9', devices: [
+            contactDot('d1', 'Front door', false, 52), motionDot('d2', 'Hallway', true, 1),
+            contactDot('d3', 'Back door', false, 95), motionDot('d4', 'Kitchen', false, 6),
+            contactDot('d5', 'Kitchen window', false, 310), motionDot('d6', 'Living room', false, 14),
+            contactDot('d7', 'Bedroom window', false, 640), motionDot('d8', 'Office', false, 180),
+            contactDot('d9', 'Garage', true, 23), contactDot('d10', 'Shed', false, 1500),
+            { id: 'd11', name: 'Driveway', icon: null, alarms: [sensor('alarm_motion', false, 'Motion alarm', 9), sensor('alarm_person', false, 'Person Detected', 9)] },
+            motionDot('d12', 'Terrace', false, 75),
           ] },
           { type: 'weather', hours: weatherHours() },
         ],

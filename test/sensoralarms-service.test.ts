@@ -14,7 +14,7 @@ const air = () => fakeDevice({
 });
 const door = () => fakeDevice({
   id: 'door', name: 'Back door',
-  caps: { alarm_contact: { type: 'boolean', value: true, title: 'Contact alarm' }, alarm_battery: { type: 'boolean', value: false } },
+  caps: { alarm_contact: { type: 'boolean', value: true, title: 'Contact alarm', lastUpdated: '2026-10-08T05:00:17.875Z' }, alarm_battery: { type: 'boolean', value: false } },
 });
 const thermo = () => fakeDevice({ id: 'thermo', name: 'Bedroom', caps: { measure_temperature: { type: 'number', value: 24.1 } } });
 
@@ -40,10 +40,10 @@ describe('alarmCaps', () => {
       },
     });
     expect(alarmCaps(d)).toEqual([
-      { capabilityId: 'alarm_smoke', title: 'Smoke alarm', value: false, state: false },
-      { capabilityId: 'alarm_generic.leak', title: 'alarm_generic.leak', value: true, state: false },
-      { capabilityId: 'alarm_motion', title: 'alarm_motion', value: null, state: true },
-      { capabilityId: 'alarm_person', title: 'Person Detected', value: false, state: true },
+      { capabilityId: 'alarm_smoke', title: 'Smoke alarm', value: false, state: false, lastUpdated: null },
+      { capabilityId: 'alarm_generic.leak', title: 'alarm_generic.leak', value: true, state: false, lastUpdated: null },
+      { capabilityId: 'alarm_motion', title: 'alarm_motion', value: null, state: true, lastUpdated: null },
+      { capabilityId: 'alarm_person', title: 'Person Detected', value: false, state: true, lastUpdated: null },
     ]);
   });
 });
@@ -54,15 +54,15 @@ describe('getState', () => {
     expect(await service.getState(['door', 'nope', 'air', 'thermo'])).toEqual([
       {
         id: 'door', name: 'Back door', icon: null, alarms: [
-          { capabilityId: 'alarm_contact', title: 'Contact alarm', value: true, state: true },
-          { capabilityId: 'alarm_battery', title: 'alarm_battery', value: false, state: false },
+          { capabilityId: 'alarm_contact', title: 'Contact alarm', value: true, state: true, lastUpdated: Date.parse('2026-10-08T05:00:17.875Z') },
+          { capabilityId: 'alarm_battery', title: 'alarm_battery', value: false, state: false, lastUpdated: null },
         ],
       },
       { id: 'nope', missing: true },
       {
         id: 'air', name: 'Air quality', icon: null, alarms: [
-          { capabilityId: 'alarm_co2', title: 'CO₂ Alarm', value: false, state: false },
-          { capabilityId: 'alarm_radon', title: 'Radon alarm', value: true, state: false },
+          { capabilityId: 'alarm_co2', title: 'CO₂ Alarm', value: false, state: false, lastUpdated: null },
+          { capabilityId: 'alarm_radon', title: 'Radon alarm', value: true, state: false, lastUpdated: null },
         ],
       },
       { id: 'thermo', name: 'Bedroom', icon: null, alarms: [] },
@@ -71,13 +71,15 @@ describe('getState', () => {
 });
 
 describe('tracking', () => {
-  it('sends alarm changes as realtime events', async () => {
+  it('sends alarm changes as realtime events, with when they changed', async () => {
     const { service, homey, devices } = setup();
+    vi.setSystemTime(new Date('2026-10-08T06:00:00Z'));
     await service.getState(['air']);
     devices[0].report('alarm_co2', true);
-    expect(homey.api.realtime).toHaveBeenCalledWith(SA_STATE_EVENT, { deviceId: 'air', capabilityId: 'alarm_co2', value: true });
+    const t = Date.parse('2026-10-08T06:00:00Z');
+    expect(homey.api.realtime).toHaveBeenCalledWith(SA_STATE_EVENT, { deviceId: 'air', capabilityId: 'alarm_co2', value: true, t });
     const [s] = await service.getState(['air']);
-    expect(s).toMatchObject({ alarms: [{ capabilityId: 'alarm_co2', value: true }, { value: true }] });
+    expect(s).toMatchObject({ alarms: [{ capabilityId: 'alarm_co2', value: true, lastUpdated: t }, { value: true, lastUpdated: null }] });
   });
 
   it('tracks each device once, and only its alarms', async () => {

@@ -21,6 +21,8 @@ export type SensorAlarm = {
   value: boolean | null,
   /** Motion, contact or a camera detection: only counted when the widget's `includeStates` setting is on. */
   state: boolean,
+  /** When the value last changed (ms), from the capability's `lastUpdated`. */
+  lastUpdated: number | null,
 };
 
 export type SensorAlarmDevice =
@@ -36,6 +38,12 @@ type Tracked = {
   lastRequested: number,
 };
 
+/** `lastUpdated` as ms: Homey sends an ISO string. */
+function updatedAt(v: unknown): number | null {
+  const ms = typeof v === 'number' ? v : typeof v === 'string' ? Date.parse(v) : NaN;
+  return Number.isFinite(ms) ? ms : null;
+}
+
 /** Every boolean `alarm_*` capability of the device, custom ones (e.g. `alarm_radon`) included. */
 export function alarmCaps(device: any): SensorAlarm[] {
   const caps = device?.capabilitiesObj || {};
@@ -46,6 +54,7 @@ export function alarmCaps(device: any): SensorAlarm[] {
       title: typeof caps[id].title === 'string' && caps[id].title ? caps[id].title : id,
       value: typeof caps[id].value === 'boolean' ? caps[id].value : null,
       state: STATE_ALARMS.has(id.split('.')[0]),
+      lastUpdated: updatedAt(caps[id].lastUpdated),
     }));
 }
 
@@ -144,9 +153,13 @@ export default class SensorAlarmService {
     };
     for (const { capabilityId } of t.alarms) {
       t.instances.push(device.makeCapabilityInstance(capabilityId, (value: unknown) => {
+        const now = Date.now();
         const a = t.alarms.find(x => x.capabilityId === capabilityId);
-        if (a) a.value = typeof value === 'boolean' ? value : null;
-        this.homey.api.realtime(SA_STATE_EVENT, { deviceId, capabilityId, value });
+        if (a) {
+          a.value = typeof value === 'boolean' ? value : null;
+          a.lastUpdated = now;
+        }
+        this.homey.api.realtime(SA_STATE_EVENT, { deviceId, capabilityId, value, t: now });
       }));
     }
     this.tracked.set(deviceId, t);

@@ -4,6 +4,7 @@ interface Window {
   createThermostatWidget: (root: HTMLElement, opts?: object) => object;
   createQuickActionsWidget: (root: HTMLElement, opts?: object) => object;
   createSensorAlarmsWidget: (root: HTMLElement, opts?: object) => object;
+  createSensorDotsWidget: (root: HTMLElement, opts?: object) => object;
   createWeatherWidget: (root: HTMLElement, opts?: object) => object;
   createCamerasWidget: (root: HTMLElement, opts?: object) => object;
   createHeatmapWidget: (root: HTMLElement, opts?: object) => object;

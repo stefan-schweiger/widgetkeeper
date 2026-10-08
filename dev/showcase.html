@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="../widgets/thermostat/public/widget.css">
   <link rel="stylesheet" href="../widgets/quickactions/public/widget.css">
   <link rel="stylesheet" href="../widgets/sensoralarms/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sensordots/public/widget.css">
   <link rel="stylesheet" href="../widgets/weather/public/widget.css">
   <link rel="stylesheet" href="../widgets/heatmap/public/widget.css">
   <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
@@ -40,6 +41,7 @@
   <script src="../widgets/thermostat/public/widget.js"></script>
   <script src="../widgets/quickactions/public/widget.js"></script>
   <script src="../widgets/sensoralarms/public/widget.js"></script>
+  <script src="../widgets/sensordots/public/widget.js"></script>
   <script src="../widgets/weather/public/widget.js"></script>
   <script src="../widgets/heatmap/public/widget.js"></script>
   <script src="../widgets/cameras/public/widget.js"></script>
@@ -124,6 +126,7 @@
       thermostat: (el, w) => { const x = createThermostatWidget(el, { locale: LOCALE }); x.setButtons(thermostatPresetsFromSettings(w.presets)); x.setState(w.state); },
       quickactions: (el, w) => createQuickActionsWidget(el, w.opts || {}).setState(w.devices),
       sensoralarms: (el, w) => createSensorAlarmsWidget(el, w.opts || {}).setState(w.devices),
+      sensordots: (el, w) => { const x = createSensorDotsWidget(el, w.opts || {}); x.setState({ devices: w.devices, language: 'en' }); if (w.open) x.open(w.open); },
       values: (el, w) => createValuesWidget(el, w.opts || {}).setState(w.slots),
       variables: (el, w) => createVariablesWidget(el, w.opts || {}).setState(w.vars),
       sparklines: (el, w) => createSparklinesWidget(el, w.opts || {}).setState(w.slots),

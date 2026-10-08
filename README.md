@@ -20,6 +20,10 @@ Compact tiles that run a device's quick action with one tap<br clear="left"></p>
 <a href="#sensor-alarms"><b>Sensor Alarms</b></a><br>
 Tiles that show a sensor's alarm and turn red when one is on<br clear="left"></p>
 
+<p><a href="#sensor-dots"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/sensordots-dark.png"><img src="docs/previews/sensordots-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#sensor-dots"><b>Sensor Dots</b></a><br>
+Many motion and contact sensors at a glance, as dots that change colour when active<br clear="left"></p>
+
 <p><a href="#weather-forecast"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/weather-dark.png"><img src="docs/previews/weather-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#weather-forecast"><b>Weather Forecast</b></a><br>
 The next 36 hours, hour by hour, from MET Norway (yr.no)<br clear="left"></p>
@@ -77,6 +81,13 @@ Half-height tiles that run a device's quick action with one tap, the same as the
 Tiles in the style of Homey's temperature tiles that show *No alarm*, the alarm that's on (such as *Smoke alarm*) or the number of alarms, and turn red while one is on. Every alarm counts, including those added by apps, such as radon.
 
 **Settings:** sensors, count motion and contact as alarms (off by default).
+
+## Sensor Dots
+<img src="docs/screenshots/sensordots.png" alt="Sensor Dots on a Homey dashboard" width="358">
+
+Motion sensors, door and window contacts and camera detections (person, vehicle, pet) as a grid of dots: grey while quiet, blue while active, as many per row as fit. Tap a dot to show its name, what's active and since when, such as *Garage · Open since 18:17*, over its row; tap that line to close it.
+
+**Settings:** sensors, title (an optional header inside the tile), colour when idle (grey by default) and when active (blue by default): grey, blue, red, orange, yellow, green or purple.
 
 ## Weather Forecast
 <img src="docs/screenshots/weather.png" alt="Weather Forecast on a Homey dashboard" width="358">
@@ -144,7 +155,7 @@ Three dashboards from a made-up house, on a tablet in Homey's dark mode.
 
 <img src="docs/showcase/energy.png" alt="An energy dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
-**Security:** six cameras, sensor alarms with motion and contact counted, door locks, a motion heatmap, battery levels filled by level, flow variables, outdoor lights and the weather.
+**Security:** six cameras, sensor alarms with motion and contact counted, door locks, a motion heatmap, battery levels filled by level, flow variables, outdoor lights, sensor dots with the garage door open and the weather.
 
 <img src="docs/showcase/security.png" alt="A security dashboard with Widgetkeeper widgets on a tablet" width="100%">
 

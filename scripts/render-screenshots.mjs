@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url';
 import { downloadIcons, edge } from './headless.mjs';
 
 const page = pathToFileURL(resolve('dev/screenshots.html')).href;
-const SHOTS = ['electricity', 'thermostat', 'quickactions', 'sensoralarms', 'weather', 'heatmap', 'cameras', 'values', 'lights', 'sparklines', 'variables'];
+const SHOTS = ['electricity', 'thermostat', 'quickactions', 'sensoralarms', 'sensordots', 'weather', 'heatmap', 'cameras', 'values', 'lights', 'sparklines', 'variables'];
 const WIDTH = 358;
 const SCALE = 3;
 

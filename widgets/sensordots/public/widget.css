@@ -1,0 +1,118 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/sensordots-preview.html).
+ */
+.sd {
+  --sd-tile: var(--homey-background-color, #FFFFFF);
+  --sd-raised: color-mix(in srgb, var(--sd-text) 7%, var(--sd-tile)); /* the overlay */
+  --sd-text: var(--homey-text-color, #EDEEF0);
+  --sd-muted: var(--homey-text-color-light, #9C9DA5);
+  --sd-blue: var(--homey-color-blue, #0091EA);
+  --sd-red: var(--homey-color-red, #F25F5C);
+  /* The colour settings (data-idle / data-active on .sd): Device Values' Flow colours plus grey. */
+  --sd-c-grey: color-mix(in srgb, var(--sd-muted) 70%, var(--sd-tile));
+  --sd-c-blue: var(--sd-blue);
+  --sd-c-red: var(--sd-red);
+  --sd-c-orange: var(--homey-color-orange, #F07A1F);
+  --sd-c-yellow: #F5C518;
+  --sd-c-green: var(--homey-color-green, #71D51B);
+  --sd-c-purple: #9033FC;
+  --sd-idle: var(--sd-c-grey);
+  --sd-active: var(--sd-c-blue);
+  --sd-fs-small: var(--homey-font-size-small, 14px);
+  --sd-regular: var(--homey-font-weight-regular, 400);
+  --sd-bold: var(--homey-font-weight-bold, 700);
+  --sd-radius: 10px; /* Homey's native sensor tiles, measured from a phone screenshot */
+  --sd-cell: 44px; /* each dot's touch target */
+}
+/* Dark mode: Homey's native device tiles, as Device Quick Actions. */
+.homey-dark-mode .sd, .sd.homey-dark-mode { --sd-tile: #181920; --sd-raised: #2E3039; }
+.sd[data-idle="blue"] { --sd-idle: var(--sd-c-blue); }
+.sd[data-idle="red"] { --sd-idle: var(--sd-c-red); }
+.sd[data-idle="orange"] { --sd-idle: var(--sd-c-orange); }
+.sd[data-idle="yellow"] { --sd-idle: var(--sd-c-yellow); }
+.sd[data-idle="green"] { --sd-idle: var(--sd-c-green); }
+.sd[data-idle="purple"] { --sd-idle: var(--sd-c-purple); }
+.sd[data-active="grey"] { --sd-active: var(--sd-c-grey); }
+.sd[data-active="red"] { --sd-active: var(--sd-c-red); }
+.sd[data-active="orange"] { --sd-active: var(--sd-c-orange); }
+.sd[data-active="yellow"] { --sd-active: var(--sd-c-yellow); }
+.sd[data-active="green"] { --sd-active: var(--sd-c-green); }
+.sd[data-active="purple"] { --sd-active: var(--sd-c-purple); }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* The widget is transparent, but until the SDK adds .homey-dark-mode (~1 s in) Homey's stylesheet paints body
+   in its light background, which shows as white corners around Homey's rounded loading overlay. */
+html, body { background: transparent !important; }
+
+.sd { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--sd-text); }
+.sd * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.sd [dir="auto"] { text-align: left; }
+
+/* One device tile: an optional header, then the dots, as many per row as fit. */
+.sd-tile { position: relative; padding: var(--homey-su-1, 4px); background: var(--sd-tile); border-radius: var(--sd-radius); }
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .sd-tile::after, .sd.homey-dark-mode .sd-tile::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+/* The header: the device tiles' name type (14/20 bold) and 10 px inset. */
+.sd-header {
+  padding: 6px 10px 0; font-size: var(--sd-fs-small); line-height: 20px; font-weight: var(--sd-bold);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sd-grid {
+  position: relative; display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--sd-cell), 1fr)); grid-auto-rows: var(--sd-cell);
+}
+
+.sd-cell {
+  display: flex; align-items: center; justify-content: center; min-width: 0;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; outline: none;
+}
+.sd-dot {
+  width: 16px; height: 16px; border-radius: 50%; background: var(--sd-idle);
+  transition: background-color .2s, box-shadow .2s, transform .1s;
+}
+.sd-cell.pressing .sd-dot { transform: scale(.85); }
+.sd-cell:focus-visible .sd-dot { box-shadow: 0 0 0 2px var(--sd-tile), 0 0 0 4px var(--sd-blue); }
+/* Active: the active colour. */
+.sd-cell[data-level="active"] .sd-dot { background: var(--sd-active); }
+/* No value reported yet: the idle colour, faded. A device that's gone: a hollow grey ring. */
+.sd-cell[data-level="unknown"] .sd-dot { background: color-mix(in srgb, var(--sd-idle) 40%, transparent); }
+.sd-cell[data-level="missing"] .sd-dot { background: none; box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--sd-muted) 55%, transparent); }
+.sd-cell.open .sd-dot { transform: scale(1.1); }
+
+/*
+ * The overlay: covers the row of the tapped dot, the grid's full width, with one line: a small dot in the
+ * sensor's colour, the name (14 bold) and what's active since when (14 regular, muted). A tap closes it.
+ */
+.sd-panel {
+  position: absolute; left: 0; right: 0; z-index: 1;
+  display: flex; align-items: center; gap: 10px; padding: 0 12px;
+  background: var(--sd-raised); border-radius: 8px;
+  box-shadow: 0 2px 10px rgb(0 0 0 / .25);
+  cursor: pointer; -webkit-tap-highlight-color: transparent; outline: none;
+  animation: sd-panel-in .15s ease-out;
+}
+.sd-panel:focus-visible { box-shadow: 0 0 0 2px var(--sd-blue); }
+@keyframes sd-panel-in { from { opacity: 0; transform: scale(.98); } }
+.sd-panel-dot { flex-shrink: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--sd-idle); }
+.sd-panel[data-level="active"] .sd-panel-dot { background: var(--sd-active); }
+.sd-panel[data-level="unknown"] .sd-panel-dot,
+.sd-panel[data-level="missing"] .sd-panel-dot { background: color-mix(in srgb, var(--sd-muted) 55%, transparent); }
+.sd-panel-text {
+  flex: 1; min-width: 0; font-size: var(--sd-fs-small); line-height: 18px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sd-panel-name { font-weight: var(--sd-bold); }
+.sd-panel-name::after { content: ' · '; font-weight: var(--sd-regular); color: var(--sd-muted); }
+.sd-panel-state { font-weight: var(--sd-regular); color: var(--sd-muted); }
+/* Mixed with the text colour, so yellow and grey still read on a light overlay. */
+.sd-panel[data-level="active"] .sd-panel-state { color: color-mix(in srgb, var(--sd-active) 75%, var(--sd-text)); }
+
+.sd-message { font-size: var(--sd-fs-small); line-height: var(--homey-line-height-small, 20px); color: var(--sd-muted); }
+.sd-message.error { color: var(--sd-red); }

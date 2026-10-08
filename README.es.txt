@@ -7,6 +7,7 @@ Widgets incluidos:
 - Accesos directos de termostato: tres ajustes de un toque para un termostato, bomba de calor o aire acondicionado.
 - Acciones rápidas de dispositivos: mosaicos compactos que ejecutan la acción rápida de un dispositivo, como encender una luz o cerrar una puerta.
 - Alarmas de sensores: mosaicos que muestran si un sensor tiene una alarma, como humo, agua o CO₂, y se ponen en rojo cuando la tiene.
+- Puntos de sensores: sensores de movimiento y contacto como una cuadrícula de puntos, grises en reposo y azules cuando están activos (ambos colores se pueden cambiar). Toca un punto para ver el nombre del sensor, su estado y desde cuándo.
 - Previsión del tiempo: icono, temperatura, viento y precipitación hora a hora para las próximas 36 horas, de MET Norway (yr.no).
 - Mapa de calor de Insights: una semana de un valor, como luz, temperatura o movimiento, en una cuadrícula de días y horas.
 - Cámaras: de dos a seis cámaras en una cuadrícula de instantáneas que se actualizan cada pocos segundos. Toca una para verla en vivo.

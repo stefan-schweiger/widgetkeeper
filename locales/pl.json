@@ -43,6 +43,17 @@
     "active": "Aktywne",
     "inactive": "Nieaktywne"
   },
+  "sensordots": {
+    "selectDevices": "Wybierz czujniki w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać czujników.",
+    "unavailable": "Niedostępne",
+    "open": "Otwarte",
+    "closed": "Zamknięte",
+    "motion": "Ruch",
+    "noMotion": "Brak ruchu",
+    "nothingDetected": "Nic nie wykryto",
+    "since": "od __time__"
+  },
   "weather": {
     "now": "Teraz",
     "error": "Nie udało się wczytać prognozy.",

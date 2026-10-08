@@ -43,6 +43,17 @@
     "active": "Aktiv",
     "inactive": "Inaktiv"
   },
+  "sensordots": {
+    "selectDevices": "Velg sensorer i widgetinnstillingene.",
+    "error": "Kunne ikke laste inn sensorene.",
+    "unavailable": "Utilgjengelig",
+    "open": "Åpen",
+    "closed": "Lukket",
+    "motion": "Bevegelse",
+    "noMotion": "Ingen bevegelse",
+    "nothingDetected": "Ingenting registrert",
+    "since": "siden __time__"
+  },
   "weather": {
     "now": "Nå",
     "error": "Kunne ikke hente værvarselet.",

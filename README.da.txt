@@ -7,6 +7,7 @@ Inkluderede widgets:
 - Termostatgenveje: tre forvalg med ét tryk til en termostat, varmepumpe eller aircondition.
 - Hurtighandlinger for enheder: kompakte felter, der udfører en enheds hurtighandling, fx at tænde et lys eller låse en dør.
 - Sensoralarmer: felter, der viser, om en sensor har en alarm, fx røg, vand eller CO₂, og bliver røde, når den har.
+- Sensorprikker: bevægelses- og kontaktsensorer som et gitter af prikker, grå i ro og blå, når de er aktive (begge farver kan ændres). Tryk på en prik for at se sensorens navn, tilstand og siden hvornår.
 - Vejrudsigt: ikon, temperatur, vind og nedbør time for time de næste 36 timer, fra MET Norway (yr.no).
 - Insights-heatmap: en uge af én værdi, fx lys, temperatur eller bevægelse, som et gitter af ugedage og timer.
 - Kameraer: to til seks kameraer i ét gitter af billeder, der opdateres med få sekunders mellemrum. Tryk på et for at se det live.

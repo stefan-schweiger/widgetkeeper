@@ -7,6 +7,7 @@ Widget inclusi:
 - Scorciatoie termostato: tre preimpostazioni con un tocco per termostato, pompa di calore o condizionatore.
 - Azioni rapide dispositivi: riquadri compatti che eseguono l'azione rapida di un dispositivo, come accendere una luce o chiudere una porta.
 - Allarmi sensori: riquadri che mostrano se un sensore ha un allarme, come fumo, acqua o CO₂, e diventano rossi quando lo ha.
+- Punti sensori: sensori di movimento e di contatto come una griglia di punti, grigi a riposo e blu quando attivi (entrambi i colori si possono cambiare). Tocca un punto per vedere il nome del sensore, lo stato e da quando.
 - Previsioni meteo: icona, temperatura, vento e precipitazioni ora per ora per le prossime 36 ore, da MET Norway (yr.no).
 - Mappa di calore Insights: una settimana di un valore, come luce, temperatura o movimento, in una griglia di giorni e ore.
 - Telecamere: da due a sei telecamere in un'unica griglia di istantanee aggiornate ogni pochi secondi. Toccane una per vederla dal vivo.

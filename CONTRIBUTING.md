@@ -33,7 +33,7 @@ npm run screenshots                    # render the README screenshots (docs/scr
   - Stay on Homey's type scale. CLAUDE.md lists the tokens and the few deliberate exceptions.
 
 ### Previewing widgets in a browser
-`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/weather-preview.html`, `dev/heatmap-preview.html`, `dev/values-preview.html`, `dev/lights-preview.html`, `dev/sparklines-preview.html` and `dev/variables-preview.html` render the widgets with mock data, outside Homey.
+`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/sensordots-preview.html`, `dev/weather-preview.html`, `dev/heatmap-preview.html`, `dev/values-preview.html`, `dev/lights-preview.html`, `dev/sparklines-preview.html` and `dev/variables-preview.html` render the widgets with mock data, outside Homey.
 1. Serve the repo root, e.g. `python -m http.server 8765`.
 2. Open `/dev/preview.html`.
 3. Optionally add `#live=0.4` or `#price=0.3` to the URL to simulate scrubbing.
@@ -45,7 +45,7 @@ api.ts                          App API (diagnostics for the settings page)
 lib/ElectricityService.ts       live buffer, insights usage, Homey Energy prices
 lib/ThermostatService.ts        thermostat state tracking and preset apply
 lib/QuickActionService.ts       quick-action state tracking and triggering
-lib/SensorAlarmService.ts       alarm capability tracking
+lib/SensorAlarmService.ts       alarm capability tracking (Sensor Alarms and Sensor Dots)
 lib/WeatherService.ts           MET Norway forecast fetching and caching
 lib/HeatmapService.ts           Insights history and on/off recording for the heatmap
 lib/ValueService.ts             capability value tracking for Device Values
@@ -61,6 +61,7 @@ widgets/electricity/            widget manifest, api.ts, public/ (renderer)
 widgets/thermostat/             widget manifest, api.ts, public/ (renderer)
 widgets/quickactions/           widget manifest, api.ts, public/ (renderer)
 widgets/sensoralarms/           widget manifest, api.ts, public/ (renderer)
+widgets/sensordots/             widget manifest, api.ts (Sensor Alarms' state), public/ (renderer)
 widgets/weather/                widget manifest, api.ts, public/ (renderer, vendored MET icons)
 widgets/heatmap/                widget manifest, api.ts, public/ (renderer)
 widgets/values/                 widget manifest, api.ts, public/ (renderer)

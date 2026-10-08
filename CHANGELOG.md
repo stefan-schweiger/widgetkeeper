@@ -12,6 +12,13 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Changes made by flows show up the moment they happen.
 - Homey doesn't let apps change variables on their own, so changing them needs a Homey API key: create one under *Settings → API Keys* in the Homey web app with permission to change variables, and paste it in Widgetkeeper's app settings. Without a key the widget shows the variables, and a tap says how to add one.
 
+### New: Sensor Dots
+- Many motion and contact sensors at a glance: each one is a dot, grey while quiet and blue while active, as many per row as fit.
+- Pick the colours for quiet and active: grey, blue, red, orange, yellow, green or purple.
+- An optional title shows at the top of the tile.
+- Camera detections (person, vehicle, pet) count too.
+- Tap a dot to see its name, what's active and since when (*Garage · Open since 18:17*) on a line over its row; tap the line to close it.
+
 ### Electricity Overview
 - Supports a fixed electricity price set in Homey Energy: the price shows in the header, and usage gets its own chart instead of the price chart.
 - Solar export: power below zero is drawn below the zero line in yellow, and the header says *Exporting now*.
