@@ -181,5 +181,58 @@
       "star": "Stjerne",
       "heart": "Hjerte"
     }
+  },
+  "price": {
+    "now": "Nu",
+    "low": "Lav",
+    "medium": "Middel",
+    "high": "Høj",
+    "nextHour": "Næste time",
+    "lowest12": "Lavest 12 t",
+    "lowest24": "Lavest 24 t",
+    "fixedPrice": "Fast pris",
+    "noPrices": "Ingen elpriser. Sæt dem op i Homey Energi.",
+    "error": "Kunne ikke indlæse priserne."
+  },
+  "timers": {
+    "selectPresets": "Opsæt timere i widgetindstillingerne.",
+    "error": "Kunne ikke indlæse timerne.",
+    "failed": "Kunne ikke ændre timeren.",
+    "minutes": "__minutes__ min",
+    "hours": "__hours__ t",
+    "seconds": "__seconds__ s",
+    "endsAt": "Færdig __time__",
+    "paused": "På pause",
+    "done": "Færdig",
+    "pause": "Pause",
+    "resume": "Fortsæt",
+    "dismiss": "Luk",
+    "addMinute": "Læg et minut til",
+    "cancel": "Annuller"
+  },
+  "locks": {
+    "selectDevices": "Vælg låse og døre i widgetindstillingerne.",
+    "error": "Kunne ikke indlæse låsene.",
+    "failed": "Kunne ikke ændre __name__.",
+    "unavailable": "Utilgængelig",
+    "locked": "Låst",
+    "unlocked": "Ulåst",
+    "open": "Åben",
+    "closed": "Lukket",
+    "allLocked": "Alt låst",
+    "allClosed": "Alt lukket",
+    "allSecure": "Alt låst og lukket",
+    "countUnlocked": "__count__ ulåst",
+    "countOpen": "__count__ åbne",
+    "countInsecure": "__count__ åbne eller ulåst",
+    "noStatus": "Ingen status endnu",
+    "since": "siden __time__",
+    "sinceStart": "Siden __time__",
+    "countUnavailable": "__count__ utilgængelige",
+    "lock": "Lås",
+    "unlock": "Lås op",
+    "close": "Luk",
+    "openAction": "Åbn",
+    "lockAll": "Lås alle"
   }
 }

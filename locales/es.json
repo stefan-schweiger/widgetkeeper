@@ -181,5 +181,58 @@
       "star": "Estrella",
       "heart": "Corazón"
     }
+  },
+  "price": {
+    "now": "Ahora",
+    "low": "Bajo",
+    "medium": "Medio",
+    "high": "Alto",
+    "nextHour": "Próxima hora",
+    "lowest12": "Mín. 12 h",
+    "lowest24": "Mín. 24 h",
+    "fixedPrice": "Precio fijo",
+    "noPrices": "No hay precios de la electricidad. Configúralos en Homey Energía.",
+    "error": "No se pudieron cargar los precios."
+  },
+  "timers": {
+    "selectPresets": "Configura temporizadores en los ajustes del widget.",
+    "error": "No se pudieron cargar los temporizadores.",
+    "failed": "No se pudo cambiar el temporizador.",
+    "minutes": "__minutes__ min",
+    "hours": "__hours__ h",
+    "seconds": "__seconds__ s",
+    "endsAt": "Termina a las __time__",
+    "paused": "En pausa",
+    "done": "Terminado",
+    "pause": "Pausar",
+    "resume": "Reanudar",
+    "dismiss": "Cerrar",
+    "addMinute": "Añadir un minuto",
+    "cancel": "Cancelar"
+  },
+  "locks": {
+    "selectDevices": "Elige cerraduras y puertas en los ajustes del widget.",
+    "error": "No se pudieron cargar las cerraduras.",
+    "failed": "No se pudo cambiar __name__.",
+    "unavailable": "No disponible",
+    "locked": "Cerrado con llave",
+    "unlocked": "Desbloqueado",
+    "open": "Abierto",
+    "closed": "Cerrado",
+    "allLocked": "Todo cerrado con llave",
+    "allClosed": "Todo cerrado",
+    "allSecure": "Todo cerrado y con llave",
+    "countUnlocked": "__count__ desbloqueados",
+    "countOpen": "__count__ abiertos",
+    "countInsecure": "__count__ abiertos o desbloqueados",
+    "noStatus": "Aún sin estado",
+    "since": "desde __time__",
+    "sinceStart": "Desde __time__",
+    "countUnavailable": "__count__ no disponibles",
+    "lock": "Cerrar",
+    "unlock": "Abrir",
+    "close": "Cerrar",
+    "openAction": "Abrir",
+    "lockAll": "Cerrar todas"
   }
 }

@@ -16,5 +16,8 @@ Dołączone widżety:
 - Miniwykresy: kompaktowe kafelki z małym wykresem wartości z ostatniej godziny, 6 godzin, doby lub tygodnia, z minimum i maksimum.
 - Zmienne Flow: kompaktowe wiersze do włączania i wyłączania zmiennych Flow lub zmiany liczby albo tekstu, z pełną nazwą.
 - Przyciski Flow: uruchamiaj Flow jednym dotknięciem, każdy jako okrągły przycisk w wybranym kolorze i z wybraną ikoną, z nazwą Flow, w 1 lub 2 kolumnach.
+- Plakietka ceny: cena prądu teraz, w następnej godzinie i najtańsza nadchodząca godzina na jednym kompaktowym kafelku, w kolorze zielonym, żółtym lub czerwonym wg dzisiejszych cen.
+- Minutniki: minutniki kuchenne z przyciskami ustawień, z pozostałym czasem, pauzą, dodatkową minutą i sygnałem na koniec. Gdy minutnik się skończy, uruchamia się karta Flow.
+- Zamki i drzwi: jeden wiersz mówi, czy wszystkie zamki, drzwi i bramy garażowe są zamknięte. Dotknij go, by zobaczyć każde urządzenie i je zamknąć.
 
 Dane pogodowe: MET Norway, licencja CC BY 4.0.

@@ -4,6 +4,25 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ## 0.8.0
 
+### New: Price Badge
+- The electricity price now, the next hour's (with an arrow up or down) and the cheapest hour ahead, in one compact tile.
+- The tile is green, yellow or red by where the price now sits among today's prices; this can be turned off.
+- Pick whether to show the next hour, and the cheapest hour in the next 12 or 24 hours (or neither).
+- Uses the Electricity Overview's prices from Homey Energy, and needs no meter. With a fixed price it shows that price.
+
+### New: Timers
+- Up to four preset buttons, each with its minutes and an optional name, such as *Eggs · 7 min*. Tap one to start the timer.
+- The running timer takes the buttons' place, so the widget always takes the same space. It shows its time left and when it ends, filling down as it runs. Tap it to pause or resume, **+1** adds a minute, **✕** cancels and brings the buttons back.
+- When it runs out it turns red and the screen beeps for a minute (can be turned off); tap it to dismiss.
+- The timer runs on your Homey: every screen showing the dashboard sees the same one, and it keeps going when the app restarts.
+- New Flow card **A timer finished**, with the timer's name and minutes, so Homey can announce it or flash a light.
+
+### New: Locks and Doors
+- Locks, door and window contacts and garage doors in one line: *All locked and closed*, or what isn't, on a red tile.
+- Tap it for every device and its state, with **Lock** or **Close** for one that isn't secure, and **Lock all** for several.
+- Unlocking and opening from the dashboard is off unless you allow it in the settings.
+- Can also show the list all the time.
+
 ### New: Flow Variables
 - Set Homey's flow variables from the dashboard: compact rows that show the full name, instead of big tiles that cut it off.
 - A yes/no variable gets a switch; tap anywhere on its row to flip it.

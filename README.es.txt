@@ -16,5 +16,8 @@ Widgets incluidos:
 - Minigráficos: mosaicos compactos con un pequeño gráfico de un valor en la última hora, las últimas 6 horas, el día o la semana, con su mínimo y su máximo.
 - Variables de flujo: filas compactas para activar y desactivar variables de flujo o cambiar un número o un texto, con el nombre completo.
 - Botones de flujo: inicia flujos con un toque, cada uno un botón redondo con el color y el icono que elijas y el nombre del flujo, en 1 o 2 columnas.
+- Insignia de precio: el precio de la electricidad ahora, el de la próxima hora y la hora más barata próxima en un mosaico compacto, en verde, amarillo o rojo según los precios de hoy.
+- Temporizadores: temporizadores de cocina con botones predefinidos, con el tiempo restante, pausa, un minuto más y un pitido al terminar. Una tarjeta de flujo se activa cuando termina un temporizador.
+- Cerraduras y puertas: una línea que dice si todas las cerraduras, puertas y puertas de garaje están cerradas. Tócala para ver cada una y cerrarla.
 
 Datos meteorológicos de MET Norway, con licencia CC BY 4.0.

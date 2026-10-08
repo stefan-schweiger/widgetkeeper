@@ -16,5 +16,8 @@ Inkluderte widgeter:
 - Minigrafer: kompakte fliser med en liten graf over en verdi den siste timen, de siste 6 timene, døgnet eller uken, med laveste og høyeste verdi.
 - Flytvariabler: kompakte rader for å slå flytvariabler av og på eller endre et tall eller en tekst, med hele navnet.
 - Flytknapper: start flyter med ett trykk, hver en rund knapp i fargen og med ikonet du velger, og flytens navn, i 1 eller 2 kolonner.
+- Prismerke: strømprisen nå, neste times pris og den billigste kommende timen i én kompakt flis, farget grønn, gul eller rød etter dagens priser.
+- Tidtakere: kjøkkentidtakere med hurtigknapper, med tid igjen, pause, ett minutt til og et pip når de er ferdige. Et Flyt-kort utløses når en tidtaker er ferdig.
+- Låser og dører: én linje som sier om alle låser, dører og garasjeporter er låst og lukket. Trykk for å se hver av dem og låse eller lukke den.
 
 Værdata fra MET Norway, lisensiert under CC BY 4.0.

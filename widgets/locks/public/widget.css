@@ -1,0 +1,115 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/locks-preview.html).
+ * The tile copies Sensor Dots' (Device Quick Actions' fill, radius and rim); the red tint is Sensor Alarms'.
+ */
+.lk {
+  --lk-tile: var(--homey-background-color, #FFFFFF);
+  --lk-text: var(--homey-text-color, #EDEEF0);
+  --lk-muted: var(--homey-text-color-light, #9C9DA5);
+  --lk-neutral: color-mix(in srgb, var(--lk-text) 8%, var(--lk-tile)); /* an unlock button: Flow Variables' −/+ */
+  --lk-blue: var(--homey-color-blue, #2F8DF6);
+  --lk-red: var(--homey-color-red, #F25F5C);
+  --lk-red-text: #D93B37; /* Sensor Alarms' red text on a red-tinted light tile */
+  --lk-green: #2E9A0C; /* the secure padlock on a light tile (Homey's green is too light for 3:1 there) */
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --lk-fs-small: var(--homey-font-size-small, 14px); --lk-lh-small: var(--homey-line-height-small, 20px);
+  --lk-regular: var(--homey-font-weight-regular, 400);
+  --lk-bold: var(--homey-font-weight-bold, 700);
+  --lk-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+}
+/* Dark mode: Homey's native device tiles, as Device Quick Actions; the red and green of the dark theme. */
+.homey-dark-mode .lk, .lk.homey-dark-mode {
+  --lk-tile: #181920; --lk-neutral: #2E3039; --lk-red-text: var(--lk-red); --lk-green: var(--homey-color-green, #71D51B);
+}
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
+html, body { background: transparent !important; }
+
+.lk { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--lk-text); }
+.lk * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.lk [dir="auto"] { text-align: left; }
+
+.lk-tile { position: relative; background: var(--lk-tile); border-radius: var(--lk-radius); transition: background-color .15s; }
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .lk-tile::after, .lk.homey-dark-mode .lk-tile::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+/* Something open or unlocked: Sensor Alarms' red-tinted tile. */
+.lk-tile[data-level="insecure"] { background: color-mix(in srgb, var(--lk-red) 22%, var(--lk-tile)); }
+
+/* The summary: a 24 px padlock, the title (14 bold) over the detail (14 regular, muted), and a chevron. */
+.lk-summary {
+  display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 12px;
+  -webkit-tap-highlight-color: transparent; outline: none; user-select: none; -webkit-user-select: none;
+}
+.lk-summary[role="button"] { cursor: pointer; }
+.lk-summary:focus-visible { box-shadow: inset 0 0 0 2px var(--lk-blue); border-radius: var(--lk-radius); }
+.lk-icon { flex: 0 0 auto; width: 24px; height: 24px; color: var(--lk-muted); transition: transform .1s; }
+.lk-summary.pressing .lk-icon { transform: scale(.9); }
+.lk-tile[data-level="secure"] .lk-icon { color: var(--lk-green); }
+.lk-tile[data-level="insecure"] .lk-icon { color: var(--lk-red-text); }
+.lk-glyph { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lk-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.lk-title, .lk-sub { font-size: var(--lk-fs-small); line-height: var(--lk-lh-small); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lk-title { font-weight: var(--lk-bold); }
+.lk-sub { color: var(--lk-muted); }
+.lk-tile[data-level="insecure"] .lk-sub { color: var(--lk-red-text); }
+.lk-chevron { flex: 0 0 auto; width: 18px; height: 18px; fill: none; stroke: var(--lk-muted); stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round; transition: transform .2s; }
+.lk-tile.expanded .lk-chevron { transform: rotate(180deg); }
+
+/* The list: one row per device, under a line. */
+.lk-list { border-top: var(--homey-line-light, 1px solid color-mix(in srgb, var(--lk-text) 10%, transparent)); padding: 4px 0; }
+.lk-row { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 12px; }
+.lk-dev-icon {
+  flex: 0 0 auto; width: 20px; height: 20px; background: var(--lk-muted);
+  -webkit-mask: var(--lk-mask) center / contain no-repeat; mask: var(--lk-mask) center / contain no-repeat;
+}
+.lk-dev-icon.fallback {
+  /* No device icon: a rounded square outline. */
+  background: none; -webkit-mask: none; mask: none;
+  border: 2px solid var(--lk-muted); border-radius: 4px; width: 16px; height: 16px; margin: 2px;
+}
+.lk-row-text { flex: 1 1 auto; min-width: 0; display: flex; align-items: baseline; gap: 12px; }
+.lk-name, .lk-state { font-size: var(--lk-fs-small); line-height: var(--lk-lh-small); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lk-name { flex: 1 1 auto; min-width: 0; font-weight: var(--lk-bold); }
+.lk-state { flex: 0 1 auto; min-width: 0; max-width: 60%; color: var(--lk-muted); }
+.lk .lk-state { text-align: right; }
+.lk-row[data-level="insecure"] .lk-state { color: var(--lk-red-text); font-weight: var(--lk-bold); }
+.lk-row[data-level="insecure"] .lk-dev-icon:not(.fallback) { background: var(--lk-red-text); }
+.lk-row[data-level="missing"] > * { opacity: .5; }
+
+/* Lock / Close: a blue pill; Unlock / Open (with the setting) a grey one. 32 px high, like Flow Variables' buttons. */
+.lk-action, .lk-all {
+  flex: 0 0 auto; height: 32px; padding: 0 14px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--lk-fs-small); line-height: var(--lk-lh-small); font-weight: var(--lk-bold);
+  background: var(--lk-neutral); color: var(--lk-text);
+  cursor: pointer; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; -webkit-user-select: none;
+  transition: transform .1s, opacity .15s;
+}
+.lk-action.secures, .lk-all { background: var(--lk-blue); color: #FFFFFF; }
+.lk-action.pressing, .lk-all.pressing { transform: scale(.95); }
+.lk-action:focus-visible, .lk-all:focus-visible { box-shadow: 0 0 0 2px var(--lk-tile), 0 0 0 4px var(--lk-blue); }
+/* Waiting for the lock to report back: faded, with a pulse. */
+.lk-action.busy, .lk-all.busy { opacity: .55; pointer-events: none; animation: lk-pulse 1s ease-in-out infinite alternate; }
+@keyframes lk-pulse { to { opacity: .3; } }
+.lk-all { margin: 0 12px 12px; }
+
+.lk-message { font-size: var(--lk-fs-small); line-height: var(--lk-lh-small); color: var(--lk-muted); }
+.lk-message.error { color: var(--lk-red); }
+
+.lk-row.shake { animation: lk-shake .35s; }
+@keyframes lk-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lk-action.busy, .lk-all.busy, .lk-row.shake { animation: none; }
+}

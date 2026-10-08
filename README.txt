@@ -16,5 +16,8 @@ Included widgets:
 - Sparklines: compact tiles with a small chart of a value over the last hour, 6 hours, day or week, with its lowest and highest.
 - Flow Variables: compact rows to switch flow variables on and off, or change a number or text, with the full name.
 - Flow Buttons: start flows with one tap, each a round button in the colour and icon you pick, with the flow's name, in 1 or 2 columns.
+- Price Badge: the electricity price now, the next hour's and the cheapest hour ahead in one compact tile, tinted green, yellow or red by today's prices.
+- Timers: kitchen timers from one-tap presets, with the time left, pause, one more minute and a beep when they're done. A Flow card fires when a timer runs out.
+- Locks and Doors: one line that says whether every lock, door and garage door is locked and closed. Tap it to see each one and lock or close it.
 
 Weather data from MET Norway, licensed under CC BY 4.0.

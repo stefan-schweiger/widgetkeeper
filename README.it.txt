@@ -16,5 +16,8 @@ Widget inclusi:
 - Minigrafici: riquadri compatti con un piccolo grafico di un valore nell'ultima ora, nelle ultime 6 ore, nel giorno o nella settimana, con minimo e massimo.
 - Variabili dei flow: righe compatte per attivare e disattivare le variabili dei flow o cambiare un numero o un testo, con il nome completo.
 - Pulsanti dei flow: avvia i flow con un tocco, ognuno un pulsante rotondo del colore e con l'icona che scegli, con il nome del flow, in 1 o 2 colonne.
+- Badge prezzo: il prezzo dell'elettricità ora, quello dell'ora successiva e l'ora più economica in arrivo in un riquadro compatto, colorato di verde, giallo o rosso in base ai prezzi di oggi.
+- Timer: timer da cucina con pulsanti preimpostati, con il tempo rimanente, pausa, un minuto in più e un bip alla fine. Una scheda Flow scatta quando un timer termina.
+- Serrature e porte: una riga che dice se tutte le serrature, le porte e le porte del garage sono bloccate e chiuse. Toccala per vederle una per una e bloccarle o chiuderle.
 
 Dati meteo di MET Norway, con licenza CC BY 4.0.

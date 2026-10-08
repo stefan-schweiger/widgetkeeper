@@ -181,5 +181,58 @@
       "star": "Ster",
       "heart": "Hart"
     }
+  },
+  "price": {
+    "now": "Nu",
+    "low": "Laag",
+    "medium": "Gemiddeld",
+    "high": "Hoog",
+    "nextHour": "Volgend uur",
+    "lowest12": "Laagst 12u",
+    "lowest24": "Laagst 24u",
+    "fixedPrice": "Vaste prijs",
+    "noPrices": "Geen elektriciteitsprijzen. Stel ze in bij Homey Energie.",
+    "error": "Kan de prijzen niet laden."
+  },
+  "timers": {
+    "selectPresets": "Stel timers in bij de widgetinstellingen.",
+    "error": "Kan de timers niet laden.",
+    "failed": "Kan de timer niet wijzigen.",
+    "minutes": "__minutes__ min",
+    "hours": "__hours__ u",
+    "seconds": "__seconds__ s",
+    "endsAt": "Klaar om __time__",
+    "paused": "Gepauzeerd",
+    "done": "Klaar",
+    "pause": "Pauzeren",
+    "resume": "Hervatten",
+    "dismiss": "Sluiten",
+    "addMinute": "Een minuut erbij",
+    "cancel": "Annuleren"
+  },
+  "locks": {
+    "selectDevices": "Kies sloten en deuren in de widgetinstellingen.",
+    "error": "Kan de sloten niet laden.",
+    "failed": "Kan __name__ niet wijzigen.",
+    "unavailable": "Niet beschikbaar",
+    "locked": "Vergrendeld",
+    "unlocked": "Ontgrendeld",
+    "open": "Open",
+    "closed": "Dicht",
+    "allLocked": "Alles vergrendeld",
+    "allClosed": "Alles dicht",
+    "allSecure": "Alles vergrendeld en dicht",
+    "countUnlocked": "__count__ ontgrendeld",
+    "countOpen": "__count__ open",
+    "countInsecure": "__count__ open of ontgrendeld",
+    "noStatus": "Nog geen status",
+    "since": "sinds __time__",
+    "sinceStart": "Sinds __time__",
+    "countUnavailable": "__count__ niet beschikbaar",
+    "lock": "Vergrendel",
+    "unlock": "Ontgrendel",
+    "close": "Sluit",
+    "openAction": "Open",
+    "lockAll": "Alles vergrendelen"
   }
 }

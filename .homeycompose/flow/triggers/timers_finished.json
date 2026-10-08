@@ -1,0 +1,89 @@
+{
+  "id": "timers_finished",
+  "title": {
+    "en": "A timer finished",
+    "nl": "Een timer is afgelopen",
+    "de": "Ein Timer ist abgelaufen",
+    "fr": "Un minuteur est terminé",
+    "it": "Un timer è terminato",
+    "sv": "En timer har gått ut",
+    "no": "En tidtaker er ferdig",
+    "es": "Un temporizador ha terminado",
+    "da": "En timer er færdig",
+    "ru": "Таймер завершён",
+    "pl": "Minutnik się skończył",
+    "ko": "타이머가 끝났을 때",
+    "ar": "انتهى مؤقت"
+  },
+  "hint": {
+    "en": "A timer started from the Timers widget ran out, even with no dashboard open.",
+    "nl": "Een timer uit de Timers-widget is afgelopen, ook als er geen dashboard open is.",
+    "de": "Ein Timer aus dem Timer-Widget ist abgelaufen, auch ohne offenes Dashboard.",
+    "fr": "Un minuteur lancé depuis le widget Minuteurs est arrivé à zéro, même sans tableau de bord ouvert.",
+    "it": "Un timer avviato dal widget Timer è terminato, anche senza una dashboard aperta.",
+    "sv": "En timer från widgeten Timers har gått ut, även utan öppen instrumentpanel.",
+    "no": "En tidtaker fra Tidtakere-widgeten er ferdig, også uten et åpent dashbord.",
+    "es": "Un temporizador iniciado desde el widget Temporizadores ha terminado, aunque no haya ningún panel abierto.",
+    "da": "En timer fra Timere-widgetten er færdig, også uden et åbent dashboard.",
+    "ru": "Таймер, запущенный в виджете «Таймеры», истёк, даже если панель не открыта.",
+    "pl": "Minutnik uruchomiony w widżecie Minutniki się skończył, nawet bez otwartego pulpitu.",
+    "ko": "타이머 위젯에서 시작한 타이머가 끝났습니다. 대시보드가 열려 있지 않아도 됩니다.",
+    "ar": "انتهى مؤقت بدأ من أداة المؤقتات، حتى دون فتح لوحة تحكم."
+  },
+  "tokens": [
+    {
+      "name": "timer",
+      "type": "string",
+      "title": {
+        "en": "Timer",
+        "nl": "Timer",
+        "de": "Timer",
+        "fr": "Minuteur",
+        "it": "Timer",
+        "sv": "Timer",
+        "no": "Tidtaker",
+        "es": "Temporizador",
+        "da": "Timer",
+        "ru": "Таймер",
+        "pl": "Minutnik",
+        "ko": "타이머",
+        "ar": "المؤقت"
+      },
+      "example": {
+        "en": "Eggs",
+        "nl": "Eieren",
+        "de": "Eier",
+        "fr": "Œufs",
+        "it": "Uova",
+        "sv": "Ägg",
+        "no": "Egg",
+        "es": "Huevos",
+        "da": "Æg",
+        "ru": "Яйца",
+        "pl": "Jajka",
+        "ko": "달걀",
+        "ar": "البيض"
+      }
+    },
+    {
+      "name": "minutes",
+      "type": "number",
+      "title": {
+        "en": "Minutes",
+        "nl": "Minuten",
+        "de": "Minuten",
+        "fr": "Minutes",
+        "it": "Minuti",
+        "sv": "Minuter",
+        "no": "Minutter",
+        "es": "Minutos",
+        "da": "Minutter",
+        "ru": "Минуты",
+        "pl": "Minuty",
+        "ko": "분",
+        "ar": "الدقائق"
+      },
+      "example": 7
+    }
+  ]
+}

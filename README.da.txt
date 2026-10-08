@@ -16,5 +16,8 @@ Inkluderede widgets:
 - Minigrafer: kompakte felter med en lille graf over en værdi den seneste time, de seneste 6 timer, døgnet eller ugen, med laveste og højeste værdi.
 - Flowvariabler: kompakte rækker til at slå flowvariabler til og fra eller ændre et tal eller en tekst, med hele navnet.
 - Flowknapper: start flows med ét tryk, hver en rund knap i den farve og med det ikon, du vælger, og flowets navn, i 1 eller 2 kolonner.
+- Prismærke: elprisen nu, næste times pris og den billigste kommende time i ét kompakt felt, farvet grønt, gult eller rødt efter dagens priser.
+- Timere: køkkentimere med genvejsknapper, med tid tilbage, pause, et minut mere og et bip, når de er færdige. Et Flow-kort udløses, når en timer er færdig.
+- Låse og døre: én linje, der siger, om alle låse, døre og garageporte er låst og lukket. Tryk for at se hver enkelt og låse eller lukke den.
 
 Vejrdata fra MET Norway, licenseret under CC BY 4.0.

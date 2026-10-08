@@ -1,0 +1,131 @@
+{
+  "name": {
+    "en": "Locks and Doors",
+    "nl": "Sloten en deuren",
+    "de": "Schlösser und Türen",
+    "fr": "Serrures et portes",
+    "it": "Serrature e porte",
+    "sv": "Lås och dörrar",
+    "no": "Låser og dører",
+    "es": "Cerraduras y puertas",
+    "da": "Låse og døre",
+    "ru": "Замки и двери",
+    "pl": "Zamki i drzwi",
+    "ko": "잠금장치 및 문",
+    "ar": "الأقفال والأبواب"
+  },
+  "height": 56,
+  "transparent": true,
+  "devices": {
+    "type": "global",
+    "singular": false,
+    "filter": {
+      "capabilities": "locked|alarm_contact|garagedoor_closed"
+    }
+  },
+  "settings": [
+    {
+      "id": "view",
+      "type": "dropdown",
+      "title": {
+        "en": "Show",
+        "nl": "Tonen",
+        "de": "Anzeigen",
+        "fr": "Afficher",
+        "it": "Mostra",
+        "sv": "Visa",
+        "no": "Vis",
+        "es": "Mostrar",
+        "da": "Vis",
+        "ru": "Показывать",
+        "pl": "Pokaż",
+        "ko": "표시",
+        "ar": "إظهار"
+      },
+      "value": "summary",
+      "values": [
+        {
+          "id": "summary",
+          "title": {
+            "en": "One line, tap for the list",
+            "nl": "Eén regel, tik voor de lijst",
+            "de": "Eine Zeile, tippen für die Liste",
+            "fr": "Une ligne, touchez pour la liste",
+            "it": "Una riga, tocca per l'elenco",
+            "sv": "En rad, tryck för listan",
+            "no": "Én linje, trykk for listen",
+            "es": "Una línea, toca para ver la lista",
+            "da": "Én linje, tryk for listen",
+            "ru": "Одна строка, нажмите для списка",
+            "pl": "Jeden wiersz, dotknij, by zobaczyć listę",
+            "ko": "한 줄, 탭하면 목록",
+            "ar": "سطر واحد، المس لعرض القائمة"
+          }
+        },
+        {
+          "id": "list",
+          "title": {
+            "en": "Every device",
+            "nl": "Elk apparaat",
+            "de": "Jedes Gerät",
+            "fr": "Chaque appareil",
+            "it": "Ogni dispositivo",
+            "sv": "Varje enhet",
+            "no": "Hver enhet",
+            "es": "Cada dispositivo",
+            "da": "Hver enhed",
+            "ru": "Каждое устройство",
+            "pl": "Każde urządzenie",
+            "ko": "모든 기기",
+            "ar": "كل جهاز"
+          }
+        }
+      ]
+    },
+    {
+      "id": "allowUnlock",
+      "type": "checkbox",
+      "title": {
+        "en": "Allow unlocking and opening",
+        "nl": "Ontgrendelen en openen toestaan",
+        "de": "Entriegeln und Öffnen erlauben",
+        "fr": "Autoriser le déverrouillage et l'ouverture",
+        "it": "Consenti sblocco e apertura",
+        "sv": "Tillåt upplåsning och öppning",
+        "no": "Tillat opplåsing og åpning",
+        "es": "Permitir desbloquear y abrir",
+        "da": "Tillad oplåsning og åbning",
+        "ru": "Разрешить отпирание и открытие",
+        "pl": "Zezwól na odblokowanie i otwieranie",
+        "ko": "잠금 해제 및 열기 허용",
+        "ar": "السماح بفتح القفل والفتح"
+      },
+      "hint": {
+        "en": "Off: the widget can only lock locks and close garage doors.",
+        "nl": "Uit: de widget kan sloten alleen vergrendelen en garagedeuren alleen sluiten.",
+        "de": "Aus: Das Widget kann Schlösser nur verriegeln und Garagentore nur schließen.",
+        "fr": "Désactivé : le widget peut seulement verrouiller les serrures et fermer les portes de garage.",
+        "it": "Disattivato: il widget può solo bloccare le serrature e chiudere le porte del garage.",
+        "sv": "Av: widgeten kan bara låsa lås och stänga garageportar.",
+        "no": "Av: widgeten kan bare låse låser og lukke garasjeporter.",
+        "es": "Desactivado: el widget solo puede cerrar cerraduras y puertas de garaje.",
+        "da": "Fra: widgetten kan kun låse låse og lukke garageporte.",
+        "ru": "Выкл.: виджет может только запирать замки и закрывать гаражные ворота.",
+        "pl": "Wył.: widżet może tylko zamykać zamki i bramy garażowe.",
+        "ko": "끄면 위젯은 잠그기와 차고 문 닫기만 할 수 있습니다.",
+        "ar": "إيقاف: يمكن للأداة قفل الأقفال وإغلاق أبواب المرآب فقط."
+      },
+      "value": false
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    },
+    "set": {
+      "method": "POST",
+      "path": "/set"
+    }
+  }
+}

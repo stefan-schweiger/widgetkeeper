@@ -181,5 +181,58 @@
       "star": "Gwiazda",
       "heart": "Serce"
     }
+  },
+  "price": {
+    "now": "Teraz",
+    "low": "Niska",
+    "medium": "Średnia",
+    "high": "Wysoka",
+    "nextHour": "Następna godzina",
+    "lowest12": "Min. 12 h",
+    "lowest24": "Min. 24 h",
+    "fixedPrice": "Stała cena",
+    "noPrices": "Brak cen prądu. Ustaw je w Homey Energia.",
+    "error": "Nie udało się wczytać cen."
+  },
+  "timers": {
+    "selectPresets": "Ustaw minutniki w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać minutników.",
+    "failed": "Nie udało się zmienić minutnika.",
+    "minutes": "__minutes__ min",
+    "hours": "__hours__ h",
+    "seconds": "__seconds__ s",
+    "endsAt": "Koniec o __time__",
+    "paused": "Wstrzymany",
+    "done": "Koniec",
+    "pause": "Wstrzymaj",
+    "resume": "Wznów",
+    "dismiss": "Zamknij",
+    "addMinute": "Dodaj minutę",
+    "cancel": "Anuluj"
+  },
+  "locks": {
+    "selectDevices": "Wybierz zamki i drzwi w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać zamków.",
+    "failed": "Nie udało się zmienić: __name__.",
+    "unavailable": "Niedostępne",
+    "locked": "Zamknięte",
+    "unlocked": "Otwarte",
+    "open": "Otwarte",
+    "closed": "Zamknięte",
+    "allLocked": "Wszystko zamknięte",
+    "allClosed": "Wszystko zamknięte",
+    "allSecure": "Wszystko zamknięte",
+    "countUnlocked": "Otwarte zamki: __count__",
+    "countOpen": "Otwarte: __count__",
+    "countInsecure": "Otwarte lub odblokowane: __count__",
+    "noStatus": "Brak stanu",
+    "since": "od __time__",
+    "sinceStart": "Od __time__",
+    "countUnavailable": "Niedostępne: __count__",
+    "lock": "Zamknij",
+    "unlock": "Otwórz",
+    "close": "Zamknij",
+    "openAction": "Otwórz",
+    "lockAll": "Zamknij wszystkie"
   }
 }

@@ -44,6 +44,7 @@ export default class Diagnostics {
       sparklines: (this.homey.app as any)?.sparklines?.describe?.() ?? null,
       variables: (this.homey.app as any)?.variables?.describe?.() ?? null,
       flows: (this.homey.app as any)?.flows?.describe?.() ?? null,
+      timers: (this.homey.app as any)?.timers?.describe?.() ?? null,
     };
     try {
       const api = await getAppApi(this.homey);

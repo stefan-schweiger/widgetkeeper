@@ -181,5 +181,58 @@
       "star": "نجمة",
       "heart": "قلب"
     }
+  },
+  "price": {
+    "now": "الآن",
+    "low": "منخفض",
+    "medium": "متوسط",
+    "high": "مرتفع",
+    "nextHour": "الساعة التالية",
+    "lowest12": "الأدنى 12 س",
+    "lowest24": "الأدنى 24 س",
+    "fixedPrice": "سعر ثابت",
+    "noPrices": "لا توجد أسعار كهرباء. اضبطها في Homey Energy.",
+    "error": "تعذّر تحميل الأسعار."
+  },
+  "timers": {
+    "selectPresets": "اضبط المؤقتات في إعدادات الأداة.",
+    "error": "تعذّر تحميل المؤقتات.",
+    "failed": "تعذّر تغيير المؤقت.",
+    "minutes": "__minutes__ د",
+    "hours": "__hours__ س",
+    "seconds": "__seconds__ ث",
+    "endsAt": "ينتهي __time__",
+    "paused": "متوقف مؤقتًا",
+    "done": "انتهى",
+    "pause": "إيقاف مؤقت",
+    "resume": "استئناف",
+    "dismiss": "إغلاق",
+    "addMinute": "إضافة دقيقة",
+    "cancel": "إلغاء"
+  },
+  "locks": {
+    "selectDevices": "اختر الأقفال والأبواب في إعدادات الأداة.",
+    "error": "تعذّر تحميل الأقفال.",
+    "failed": "تعذّر تغيير __name__.",
+    "unavailable": "غير متاح",
+    "locked": "مقفل",
+    "unlocked": "غير مقفل",
+    "open": "مفتوح",
+    "closed": "مغلق",
+    "allLocked": "الكل مقفل",
+    "allClosed": "الكل مغلق",
+    "allSecure": "الكل مقفل ومغلق",
+    "countUnlocked": "__count__ غير مقفلة",
+    "countOpen": "__count__ مفتوحة",
+    "countInsecure": "__count__ مفتوحة أو غير مقفلة",
+    "noStatus": "لا حالة بعد",
+    "since": "منذ __time__",
+    "sinceStart": "منذ __time__",
+    "countUnavailable": "__count__ غير متاحة",
+    "lock": "قفل",
+    "unlock": "فتح القفل",
+    "close": "إغلاق",
+    "openAction": "فتح",
+    "lockAll": "قفل الكل"
   }
 }

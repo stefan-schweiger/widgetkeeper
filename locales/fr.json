@@ -181,5 +181,58 @@
       "star": "Étoile",
       "heart": "Cœur"
     }
+  },
+  "price": {
+    "now": "Maint.",
+    "low": "Bas",
+    "medium": "Moyen",
+    "high": "Élevé",
+    "nextHour": "Heure suivante",
+    "lowest12": "Min. 12 h",
+    "lowest24": "Min. 24 h",
+    "fixedPrice": "Prix fixe",
+    "noPrices": "Aucun prix de l'électricité. Configurez-les dans Homey Énergie.",
+    "error": "Impossible de charger les prix."
+  },
+  "timers": {
+    "selectPresets": "Configurez des minuteurs dans les réglages du widget.",
+    "error": "Impossible de charger les minuteurs.",
+    "failed": "Impossible de modifier le minuteur.",
+    "minutes": "__minutes__ min",
+    "hours": "__hours__ h",
+    "seconds": "__seconds__ s",
+    "endsAt": "Fin à __time__",
+    "paused": "En pause",
+    "done": "Terminé",
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "dismiss": "Fermer",
+    "addMinute": "Ajouter une minute",
+    "cancel": "Annuler"
+  },
+  "locks": {
+    "selectDevices": "Choisissez des serrures et des portes dans les réglages.",
+    "error": "Impossible de charger les serrures.",
+    "failed": "Impossible de modifier __name__.",
+    "unavailable": "Indisponible",
+    "locked": "Verrouillé",
+    "unlocked": "Déverrouillé",
+    "open": "Ouvert",
+    "closed": "Fermé",
+    "allLocked": "Tout est verrouillé",
+    "allClosed": "Tout est fermé",
+    "allSecure": "Tout est verrouillé et fermé",
+    "countUnlocked": "__count__ déverrouillés",
+    "countOpen": "__count__ ouverts",
+    "countInsecure": "__count__ ouverts ou déverrouillés",
+    "noStatus": "Pas encore d'état",
+    "since": "depuis __time__",
+    "sinceStart": "Depuis __time__",
+    "countUnavailable": "__count__ indisponibles",
+    "lock": "Verrouiller",
+    "unlock": "Déverrouiller",
+    "close": "Fermer",
+    "openAction": "Ouvrir",
+    "lockAll": "Tout verrouiller"
   }
 }

@@ -181,5 +181,58 @@
       "star": "Звезда",
       "heart": "Сердце"
     }
+  },
+  "price": {
+    "now": "Сейчас",
+    "low": "Низкая",
+    "medium": "Средняя",
+    "high": "Высокая",
+    "nextHour": "Следующий час",
+    "lowest12": "Мин. 12 ч",
+    "lowest24": "Мин. 24 ч",
+    "fixedPrice": "Фикс. цена",
+    "noPrices": "Нет цен на электроэнергию. Настройте их в Homey Энергия.",
+    "error": "Не удалось загрузить цены."
+  },
+  "timers": {
+    "selectPresets": "Настройте таймеры в настройках виджета.",
+    "error": "Не удалось загрузить таймеры.",
+    "failed": "Не удалось изменить таймер.",
+    "minutes": "__minutes__ мин",
+    "hours": "__hours__ ч",
+    "seconds": "__seconds__ с",
+    "endsAt": "Закончится в __time__",
+    "paused": "На паузе",
+    "done": "Готово",
+    "pause": "Пауза",
+    "resume": "Продолжить",
+    "dismiss": "Закрыть",
+    "addMinute": "Добавить минуту",
+    "cancel": "Отменить"
+  },
+  "locks": {
+    "selectDevices": "Выберите замки и двери в настройках виджета.",
+    "error": "Не удалось загрузить замки.",
+    "failed": "Не удалось изменить __name__.",
+    "unavailable": "Недоступно",
+    "locked": "Заперто",
+    "unlocked": "Не заперто",
+    "open": "Открыто",
+    "closed": "Закрыто",
+    "allLocked": "Всё заперто",
+    "allClosed": "Всё закрыто",
+    "allSecure": "Всё заперто и закрыто",
+    "countUnlocked": "Не заперто: __count__",
+    "countOpen": "Открыто: __count__",
+    "countInsecure": "Открыто или не заперто: __count__",
+    "noStatus": "Пока нет статуса",
+    "since": "с __time__",
+    "sinceStart": "С __time__",
+    "countUnavailable": "Недоступно: __count__",
+    "lock": "Запереть",
+    "unlock": "Отпереть",
+    "close": "Закрыть",
+    "openAction": "Открыть",
+    "lockAll": "Запереть все"
   }
 }

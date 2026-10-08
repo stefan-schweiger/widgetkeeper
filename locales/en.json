@@ -181,5 +181,58 @@
       "star": "Star",
       "heart": "Heart"
     }
+  },
+  "price": {
+    "now": "Now",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "nextHour": "Next hour",
+    "lowest12": "Lowest 12h",
+    "lowest24": "Lowest 24h",
+    "fixedPrice": "Fixed price",
+    "noPrices": "No electricity prices. Set them up in Homey Energy.",
+    "error": "Could not load the prices."
+  },
+  "timers": {
+    "selectPresets": "Set up timers in the widget settings.",
+    "error": "Could not load the timers.",
+    "failed": "Could not change the timer.",
+    "minutes": "__minutes__ min",
+    "hours": "__hours__ h",
+    "seconds": "__seconds__ s",
+    "endsAt": "Ends __time__",
+    "paused": "Paused",
+    "done": "Done",
+    "pause": "Pause",
+    "resume": "Resume",
+    "dismiss": "Dismiss",
+    "addMinute": "Add a minute",
+    "cancel": "Cancel"
+  },
+  "locks": {
+    "selectDevices": "Select locks and doors in the widget settings.",
+    "error": "Could not load the locks.",
+    "failed": "Could not change __name__.",
+    "unavailable": "Unavailable",
+    "locked": "Locked",
+    "unlocked": "Unlocked",
+    "open": "Open",
+    "closed": "Closed",
+    "allLocked": "All locked",
+    "allClosed": "All closed",
+    "allSecure": "All locked and closed",
+    "countUnlocked": "__count__ unlocked",
+    "countOpen": "__count__ open",
+    "countInsecure": "__count__ open or unlocked",
+    "noStatus": "No status yet",
+    "since": "since __time__",
+    "sinceStart": "Since __time__",
+    "countUnavailable": "__count__ unavailable",
+    "lock": "Lock",
+    "unlock": "Unlock",
+    "close": "Close",
+    "openAction": "Open",
+    "lockAll": "Lock all"
   }
 }

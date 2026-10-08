@@ -16,5 +16,8 @@ Inbegrepen widgets:
 - Sparklines: compacte tegels met een kleine grafiek van een waarde over het laatste uur, de laatste 6 uur, dag of week, met het laagste en hoogste punt.
 - Flowvariabelen: compacte rijen om flowvariabelen aan en uit te zetten of een getal of tekst te wijzigen, met de volledige naam.
 - Flowknoppen: start flows met één tik, elk een ronde knop in de kleur en met het pictogram dat je kiest, met de naam van de flow, in 1 of 2 kolommen.
+- Prijsbadge: de stroomprijs nu, die van het volgende uur en het goedkoopste komende uur in één compacte tegel, groen, geel of rood gekleurd naar de prijzen van vandaag.
+- Timers: keukentimers met voorkeuzeknoppen, met de resterende tijd, pauze, een minuut erbij en een piep als ze klaar zijn. Een Flow-kaart gaat af als een timer afloopt.
+- Sloten en deuren: één regel die zegt of alle sloten, deuren en garagedeuren vergrendeld en dicht zijn. Tik erop om ze allemaal te zien en te vergrendelen of te sluiten.
 
 Weergegevens van MET Norway, onder licentie CC BY 4.0.

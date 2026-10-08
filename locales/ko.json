@@ -181,5 +181,58 @@
       "star": "별",
       "heart": "하트"
     }
+  },
+  "price": {
+    "now": "지금",
+    "low": "낮음",
+    "medium": "보통",
+    "high": "높음",
+    "nextHour": "다음 시간",
+    "lowest12": "최저가 12h",
+    "lowest24": "최저가 24h",
+    "fixedPrice": "고정 요금",
+    "noPrices": "전기 요금이 없습니다. Homey 에너지에서 설정하세요.",
+    "error": "가격을 불러올 수 없습니다."
+  },
+  "timers": {
+    "selectPresets": "위젯 설정에서 타이머를 설정하세요.",
+    "error": "타이머를 불러올 수 없습니다.",
+    "failed": "타이머를 변경할 수 없습니다.",
+    "minutes": "__minutes__분",
+    "hours": "__hours__시간",
+    "seconds": "__seconds__초",
+    "endsAt": "__time__에 끝남",
+    "paused": "일시 정지됨",
+    "done": "완료",
+    "pause": "일시 정지",
+    "resume": "계속",
+    "dismiss": "닫기",
+    "addMinute": "1분 추가",
+    "cancel": "취소"
+  },
+  "locks": {
+    "selectDevices": "위젯 설정에서 잠금장치와 문을 선택하세요.",
+    "error": "잠금장치를 불러올 수 없습니다.",
+    "failed": "__name__을(를) 변경할 수 없습니다.",
+    "unavailable": "사용할 수 없음",
+    "locked": "잠김",
+    "unlocked": "잠금 해제됨",
+    "open": "열림",
+    "closed": "닫힘",
+    "allLocked": "모두 잠김",
+    "allClosed": "모두 닫힘",
+    "allSecure": "모두 잠기고 닫힘",
+    "countUnlocked": "__count__개 잠금 해제됨",
+    "countOpen": "__count__개 열림",
+    "countInsecure": "__count__개 열림 또는 잠금 해제됨",
+    "noStatus": "아직 상태 없음",
+    "since": "__time__부터",
+    "sinceStart": "__time__부터",
+    "countUnavailable": "__count__개 사용 불가",
+    "lock": "잠그기",
+    "unlock": "잠금 해제",
+    "close": "닫기",
+    "openAction": "열기",
+    "lockAll": "모두 잠그기"
   }
 }

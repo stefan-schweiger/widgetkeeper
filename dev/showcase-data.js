@@ -114,6 +114,11 @@
       };
     });
   }
+  /** A Locks and Doors device: `caps` is `{capabilityId: [value, minutes ago]}`; a contact sensor can't be set. */
+  const lockDevice = (id, name, iconName, caps) => ({
+    id, name, icon: icon(iconName),
+    caps: Object.fromEntries(Object.entries(caps).map(([cap, [value, ago]]) => [cap, { value, setable: cap !== 'alarm_contact', lastUpdated: NOW - ago * MIN }])),
+  });
   const powerNow = () => { const live = electricity().live; return live[live.length - 1].w; };
   const heatPower = () => ({
     name: 'Main meter', icon: icon('inverter'), language: 'en', value: powerNow(),
@@ -323,6 +328,8 @@
           ] },
         ],
         [
+          // 18:40, the evening peak: high, cheaper from 19, the low at 03 tonight.
+          { type: 'price', state: { prices: electricity().prices, fixedPrice: null, currency: 'DKK' } },
           heatPump,
           { type: 'weather', opts: { density: 'detailed' }, hours: weatherHours() },
           { type: 'quickactions', devices: [
@@ -356,6 +363,13 @@
             ...smokeAndWater,
             { id: 's5', name: 'Back door', icon: icon('door'), alarms: [alarm('alarm_contact', false, 'Contact alarm', true), alarm('alarm_tamper', false, 'Tamper alarm')] },
             { id: 's6', name: 'Garage', icon: icon('garage-door'), alarms: [alarm('alarm_contact', true, 'Contact alarm', true)] },
+          ] },
+          // One line (the default view): the shed is unlocked and the garage open. The README shows the list.
+          { type: 'locks', opts: { locale: 'en-GB' }, devices: [
+            lockDevice('k1', 'Front door', 'lock', { locked: [true, 52], alarm_contact: [false, 53] }),
+            lockDevice('k2', 'Back door', 'lock', { locked: [true, 95] }),
+            lockDevice('k3', 'Shed', 'lock', { locked: [false, 41] }),
+            lockDevice('k4', 'Garage', 'garage-door', { garagedoor_closed: [false, 23] }),
           ] },
         ],
         [
@@ -540,13 +554,15 @@
             value('kv3', 'measure_power', 'Oven', { units: 'W', decimals: 0 }, 2300),
           ] },
           { type: 'sensoralarms', devices: [smokeAndWater[0], smokeAndWater[3]] },
+          { type: 'timers', presets: [{ minutes: 7, label: 'Eggs' }, { minutes: 12, label: 'Pizza' }, { minutes: 5, label: '' }, { minutes: 20, label: '' }], timers: [
+            { id: 'kt1', label: 'Pizza', duration: 12 * MIN, endsAt: NOW + 8 * MIN + 24e3, remaining: null, doneAt: null },
+          ] },
         ],
         [
           { type: 'lights', devices: [lights[2], lights[3], lights[0], lights[1]] },
           { type: 'variables', opts: { columns: '1' }, vars: [
             { id: 'kx1', name: 'Shopping list', type: 'string', value: 'Milk, eggs, rye bread' },
             { id: 'kx2', name: 'Dishwasher emptied', type: 'boolean', value: false },
-            { id: 'kx3', name: 'Pizza timer (min)', type: 'number', value: 12 },
           ] },
           { type: 'cameras', cameras: [cam('door', 'Hallway')] },
         ],

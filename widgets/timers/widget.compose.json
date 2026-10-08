@@ -1,0 +1,268 @@
+{
+  "name": {
+    "en": "Timers",
+    "nl": "Timers",
+    "de": "Timer",
+    "fr": "Minuteurs",
+    "it": "Timer",
+    "sv": "Timers",
+    "no": "Tidtakere",
+    "es": "Temporizadores",
+    "da": "Timere",
+    "ru": "Таймеры",
+    "pl": "Minutniki",
+    "ko": "타이머",
+    "ar": "المؤقتات"
+  },
+  "height": 56,
+  "transparent": true,
+  "settings": [
+    {
+      "id": "minutes1",
+      "type": "number",
+      "title": {
+        "en": "Timer 1: minutes",
+        "nl": "Timer 1: minuten",
+        "de": "Timer 1: Minuten",
+        "fr": "Minuteur 1 : minutes",
+        "it": "Timer 1: minuti",
+        "sv": "Timer 1: minuter",
+        "no": "Tidtaker 1: minutter",
+        "es": "Temporizador 1: minutos",
+        "da": "Timer 1: minutter",
+        "ru": "Таймер 1: минуты",
+        "pl": "Minutnik 1: minuty",
+        "ko": "타이머 1: 분",
+        "ar": "المؤقت 1: الدقائق"
+      },
+      "hint": {
+        "en": "0 hides the button. Decimals work: 0.5 is 30 seconds.",
+        "nl": "0 verbergt de knop. Decimalen werken: 0,5 is 30 seconden.",
+        "de": "0 blendet die Taste aus. Dezimalzahlen gehen: 0,5 sind 30 Sekunden.",
+        "fr": "0 masque le bouton. Les décimales fonctionnent : 0,5 = 30 secondes.",
+        "it": "0 nasconde il pulsante. I decimali funzionano: 0,5 sono 30 secondi.",
+        "sv": "0 döljer knappen. Decimaler fungerar: 0,5 är 30 sekunder.",
+        "no": "0 skjuler knappen. Desimaler fungerer: 0,5 er 30 sekunder.",
+        "es": "0 oculta el botón. Se admiten decimales: 0,5 son 30 segundos.",
+        "da": "0 skjuler knappen. Decimaler virker: 0,5 er 30 sekunder.",
+        "ru": "0 скрывает кнопку. Можно дроби: 0,5 — это 30 секунд.",
+        "pl": "0 ukrywa przycisk. Działają ułamki: 0,5 to 30 sekund.",
+        "ko": "0이면 버튼을 숨깁니다. 소수도 됩니다: 0.5는 30초입니다.",
+        "ar": "0 يخفي الزر. تعمل الكسور: 0.5 تعني 30 ثانية."
+      },
+      "value": 5,
+      "min": 0,
+      "max": 1440
+    },
+    {
+      "id": "label1",
+      "type": "text",
+      "title": {
+        "en": "Timer 1: name",
+        "nl": "Timer 1: naam",
+        "de": "Timer 1: Name",
+        "fr": "Minuteur 1 : nom",
+        "it": "Timer 1: nome",
+        "sv": "Timer 1: namn",
+        "no": "Tidtaker 1: navn",
+        "es": "Temporizador 1: nombre",
+        "da": "Timer 1: navn",
+        "ru": "Таймер 1: название",
+        "pl": "Minutnik 1: nazwa",
+        "ko": "타이머 1: 이름",
+        "ar": "المؤقت 1: الاسم"
+      },
+      "hint": {
+        "en": "Optional, such as Eggs. Shown on the button and sent to the Flow card “A timer finished”.",
+        "nl": "Optioneel, zoals Eieren. Getoond op de knop en meegegeven aan de Flow-kaart „Een timer is afgelopen”.",
+        "de": "Optional, etwa Eier. Steht auf der Taste und geht an die Flow-Karte „Ein Timer ist abgelaufen“.",
+        "fr": "Facultatif, par exemple Œufs. Affiché sur le bouton et transmis à la carte Flow « Un minuteur est terminé ».",
+        "it": "Facoltativo, ad esempio Uova. Mostrato sul pulsante e passato alla scheda Flow “Un timer è terminato”.",
+        "sv": "Valfritt, till exempel Ägg. Visas på knappen och skickas till flödeskortet ”En timer har gått ut”.",
+        "no": "Valgfritt, for eksempel Egg. Vises på knappen og sendes til Flyt-kortet «En tidtaker er ferdig».",
+        "es": "Opcional, por ejemplo Huevos. Se muestra en el botón y se pasa a la tarjeta de flujo «Un temporizador ha terminado».",
+        "da": "Valgfrit, fx Æg. Vises på knappen og sendes til Flow-kortet “En timer er færdig”.",
+        "ru": "Необязательно, например «Яйца». Показывается на кнопке и передаётся в карточку потока «Таймер завершён».",
+        "pl": "Opcjonalnie, np. Jajka. Widoczne na przycisku i przekazywane do karty Flow „Minutnik się skończył”.",
+        "ko": "선택 사항입니다(예: 달걀). 버튼에 표시되고 플로우 카드 “타이머가 끝났을 때”로 전달됩니다.",
+        "ar": "اختياري، مثل البيض. يظهر على الزر ويُرسل إلى بطاقة التدفق «انتهى مؤقت»."
+      },
+      "value": ""
+    },
+    {
+      "id": "minutes2",
+      "type": "number",
+      "title": {
+        "en": "Timer 2: minutes",
+        "nl": "Timer 2: minuten",
+        "de": "Timer 2: Minuten",
+        "fr": "Minuteur 2 : minutes",
+        "it": "Timer 2: minuti",
+        "sv": "Timer 2: minuter",
+        "no": "Tidtaker 2: minutter",
+        "es": "Temporizador 2: minutos",
+        "da": "Timer 2: minutter",
+        "ru": "Таймер 2: минуты",
+        "pl": "Minutnik 2: minuty",
+        "ko": "타이머 2: 분",
+        "ar": "المؤقت 2: الدقائق"
+      },
+      "value": 10,
+      "min": 0,
+      "max": 1440
+    },
+    {
+      "id": "label2",
+      "type": "text",
+      "title": {
+        "en": "Timer 2: name",
+        "nl": "Timer 2: naam",
+        "de": "Timer 2: Name",
+        "fr": "Minuteur 2 : nom",
+        "it": "Timer 2: nome",
+        "sv": "Timer 2: namn",
+        "no": "Tidtaker 2: navn",
+        "es": "Temporizador 2: nombre",
+        "da": "Timer 2: navn",
+        "ru": "Таймер 2: название",
+        "pl": "Minutnik 2: nazwa",
+        "ko": "타이머 2: 이름",
+        "ar": "المؤقت 2: الاسم"
+      },
+      "value": ""
+    },
+    {
+      "id": "minutes3",
+      "type": "number",
+      "title": {
+        "en": "Timer 3: minutes",
+        "nl": "Timer 3: minuten",
+        "de": "Timer 3: Minuten",
+        "fr": "Minuteur 3 : minutes",
+        "it": "Timer 3: minuti",
+        "sv": "Timer 3: minuter",
+        "no": "Tidtaker 3: minutter",
+        "es": "Temporizador 3: minutos",
+        "da": "Timer 3: minutter",
+        "ru": "Таймер 3: минуты",
+        "pl": "Minutnik 3: minuty",
+        "ko": "타이머 3: 분",
+        "ar": "المؤقت 3: الدقائق"
+      },
+      "value": 15,
+      "min": 0,
+      "max": 1440
+    },
+    {
+      "id": "label3",
+      "type": "text",
+      "title": {
+        "en": "Timer 3: name",
+        "nl": "Timer 3: naam",
+        "de": "Timer 3: Name",
+        "fr": "Minuteur 3 : nom",
+        "it": "Timer 3: nome",
+        "sv": "Timer 3: namn",
+        "no": "Tidtaker 3: navn",
+        "es": "Temporizador 3: nombre",
+        "da": "Timer 3: navn",
+        "ru": "Таймер 3: название",
+        "pl": "Minutnik 3: nazwa",
+        "ko": "타이머 3: 이름",
+        "ar": "المؤقت 3: الاسم"
+      },
+      "value": ""
+    },
+    {
+      "id": "minutes4",
+      "type": "number",
+      "title": {
+        "en": "Timer 4: minutes",
+        "nl": "Timer 4: minuten",
+        "de": "Timer 4: Minuten",
+        "fr": "Minuteur 4 : minutes",
+        "it": "Timer 4: minuti",
+        "sv": "Timer 4: minuter",
+        "no": "Tidtaker 4: minutter",
+        "es": "Temporizador 4: minutos",
+        "da": "Timer 4: minutter",
+        "ru": "Таймер 4: минуты",
+        "pl": "Minutnik 4: minuty",
+        "ko": "타이머 4: 분",
+        "ar": "المؤقت 4: الدقائق"
+      },
+      "value": 30,
+      "min": 0,
+      "max": 1440
+    },
+    {
+      "id": "label4",
+      "type": "text",
+      "title": {
+        "en": "Timer 4: name",
+        "nl": "Timer 4: naam",
+        "de": "Timer 4: Name",
+        "fr": "Minuteur 4 : nom",
+        "it": "Timer 4: nome",
+        "sv": "Timer 4: namn",
+        "no": "Tidtaker 4: navn",
+        "es": "Temporizador 4: nombre",
+        "da": "Timer 4: navn",
+        "ru": "Таймер 4: название",
+        "pl": "Minutnik 4: nazwa",
+        "ko": "타이머 4: 이름",
+        "ar": "المؤقت 4: الاسم"
+      },
+      "value": ""
+    },
+    {
+      "id": "sound",
+      "type": "checkbox",
+      "title": {
+        "en": "Beep when a timer is done",
+        "nl": "Piepen als een timer klaar is",
+        "de": "Piepen, wenn ein Timer abgelaufen ist",
+        "fr": "Bip à la fin d'un minuteur",
+        "it": "Bip quando un timer finisce",
+        "sv": "Pip när en timer är klar",
+        "no": "Pip når en tidtaker er ferdig",
+        "es": "Pitido al terminar un temporizador",
+        "da": "Bip, når en timer er færdig",
+        "ru": "Сигнал по окончании таймера",
+        "pl": "Sygnał po końcu minutnika",
+        "ko": "타이머가 끝나면 알림음",
+        "ar": "صفير عند انتهاء المؤقت"
+      },
+      "hint": {
+        "en": "On the screen that shows the widget, for a minute or until you tap it. Phones and tablets only play sound after you've touched the widget once.",
+        "nl": "Op het scherm met de widget, een minuut lang of tot je erop tikt. Telefoons en tablets spelen pas geluid af als je de widget een keer hebt aangeraakt.",
+        "de": "Auf dem Bildschirm mit dem Widget, eine Minute lang oder bis du tippst. Handys und Tablets spielen erst Ton ab, nachdem du das Widget einmal berührt hast.",
+        "fr": "Sur l'écran qui affiche le widget, pendant une minute ou jusqu'à ce que vous le touchiez. Téléphones et tablettes ne jouent le son qu'après un premier contact avec le widget.",
+        "it": "Sullo schermo che mostra il widget, per un minuto o finché non lo tocchi. Telefoni e tablet riproducono suoni solo dopo che hai toccato il widget una volta.",
+        "sv": "På skärmen som visar widgeten, i en minut eller tills du trycker. Telefoner och surfplattor spelar bara ljud efter att du rört widgeten en gång.",
+        "no": "På skjermen som viser widgeten, i ett minutt eller til du trykker. Telefoner og nettbrett spiller bare lyd etter at du har rørt widgeten én gang.",
+        "es": "En la pantalla que muestra el widget, durante un minuto o hasta que lo toques. Los móviles y tabletas solo reproducen sonido después de tocar el widget una vez.",
+        "da": "På skærmen med widgetten, i et minut eller til du trykker. Telefoner og tablets afspiller kun lyd, når du har rørt widgetten én gang.",
+        "ru": "На экране с виджетом, минуту или пока вы не нажмёте. Телефоны и планшеты воспроизводят звук только после первого касания виджета.",
+        "pl": "Na ekranie z widżetem, przez minutę lub do dotknięcia. Telefony i tablety odtwarzają dźwięk dopiero po pierwszym dotknięciu widżetu.",
+        "ko": "위젯이 표시된 화면에서 1분 동안 또는 탭할 때까지 울립니다. 휴대폰과 태블릿은 위젯을 한 번 터치한 후에만 소리를 냅니다.",
+        "ar": "على الشاشة التي تعرض الأداة، لمدة دقيقة أو حتى تلمسها. لا تشغّل الهواتف والأجهزة اللوحية الصوت إلا بعد لمس الأداة مرة."
+      },
+      "value": true
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    },
+    "start": {
+      "method": "POST",
+      "path": "/start"
+    },
+    "action": {
+      "method": "POST",
+      "path": "/action"
+    }
+  }
+}

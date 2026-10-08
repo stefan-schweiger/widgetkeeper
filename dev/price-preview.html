@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Price badge widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/price/public/widget.css">
+  <script src="../widgets/price/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <style>
+    body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px;
+      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark · high</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · light · high</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>358 px · dark · low, lowest 24h</span><div class="dash homey-dark-mode" style="width:358px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · light · medium</span><div class="dash light" style="width:358px"><div id="w4"></div></div></div>
+  <div class="col"><span>300 px · dark</span><div class="dash homey-dark-mode" style="width:300px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · dark · no tint</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px · dark · now only</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
+  <div class="col"><span>358 px · dark · fixed price</span><div class="dash homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
+  <div class="col"><span>358 px · dark · no prices</span><div class="dash homey-dark-mode" style="width:358px"><div id="w9"></div></div></div>
+
+  <script>
+    // A made-up Danish spot-price day: cheap at night, peaks at 8 and 18.
+    const DAY = [1.30, 1.25, 1.22, 1.20, 1.22, 1.35, 1.75, 2.25, 2.38, 2.05, 1.75, 1.50, 1.30, 1.22, 1.25, 1.40, 1.85, 2.30, 2.58, 2.50, 2.15, 1.80, 1.60, 1.42];
+    /** 49 slots around `hour` today, as `/price` sends them. */
+    function snapshot(hour) {
+      const at = new Date(); at.setHours(hour, 20, 0, 0);
+      const first = new Date(at); first.setMinutes(0); first.setHours(first.getHours() - 24);
+      const prices = Array.from({ length: 49 }, (_, i) => {
+        const start = first.getTime() + i * 36e5;
+        return { start, price: Math.round(DAY[new Date(start).getHours()] * (i > 36 ? 0.9 : 1) * 100) / 100 };
+      });
+      return { at: at.getTime(), state: { prices, fixedPrice: null, currency: 'DKK', language: 'en' } };
+    }
+    function mount(id, hour, opts = {}, edit) {
+      const s = snapshot(hour);
+      if (edit) edit(s.state);
+      const w = createPriceWidget(document.getElementById(id), { t: devT, now: () => s.at, ...opts });
+      w.setState(s.state);
+      return w;
+    }
+    mount('w1', 18); mount('w2', 18);
+    mount('w3', 2, { nextLow: '24' });
+    mount('w4', 16);
+    mount('w5', 18);
+    mount('w6', 18, { tint: false });
+    mount('w7', 18, { showNext: false, nextLow: 'none' });
+    mount('w8', 18, {}, s => { s.fixedPrice = 2.1; });
+    mount('w9', 18, {}, s => { s.prices.forEach(p => { p.price = null; }); });
+  </script>
+</body>
+</html>

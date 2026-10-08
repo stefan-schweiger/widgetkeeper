@@ -1,0 +1,132 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/timers-preview.html).
+ * The rows copy Flow Buttons' (widgets/flows/public/widget.css), which copy Device Quick Actions' tile.
+ */
+.tm {
+  --tm-tile: var(--homey-background-color, #FFFFFF);
+  --tm-text: var(--homey-text-color, #EDEEF0);
+  --tm-muted: var(--homey-text-color-light, #9C9DA5);
+  --tm-neutral: color-mix(in srgb, var(--tm-text) 8%, var(--tm-tile)); /* the small buttons: Flow Variables' −/+ */
+  --tm-blue: var(--homey-color-blue, #2F8DF6);
+  --tm-red: var(--homey-color-red, #F25F5C);
+  --tm-fill-mix: 22%; /* the time left, as a Device Values tile's tint */
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --tm-fs-small: var(--homey-font-size-small, 14px); --tm-lh-small: var(--homey-line-height-small, 20px);
+  --tm-fs-large: var(--homey-font-size-large, 20px); --tm-lh-large: var(--homey-line-height-large, 28px);
+  --tm-fs-label: 12px; --tm-lh-label: 16px; /* the Electricity Overview's labels: a step below Homey's scale */
+  --tm-medium: var(--homey-font-weight-medium, 500);
+  --tm-bold: var(--homey-font-weight-bold, 700);
+  --tm-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+}
+/* Dark mode: each row looks like a native device tile, darker than the default widget background. */
+.homey-dark-mode .tm, .tm.homey-dark-mode { --tm-tile: #181920; --tm-neutral: #2E3039; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
+html, body { background: transparent !important; }
+
+.tm { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--tm-text);
+  container: tm / inline-size; }
+.tm * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL labels get their punctuation right; the layout itself stays LTR. */
+.tm [dir="auto"] { text-align: left; }
+
+.tm-row, .tm-preset {
+  position: relative; color: var(--tm-text); outline: none; min-width: 0;
+  background: var(--tm-tile); border-radius: var(--tm-radius);
+  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+  transition: transform .1s;
+}
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .tm-row::after, .tm.homey-dark-mode .tm-row::after,
+.homey-dark-mode .tm-preset::after, .tm.homey-dark-mode .tm-preset::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.tm-row:focus-visible, .tm-preset:focus-visible { box-shadow: 0 0 0 2px var(--tm-blue); }
+.tm-row.pressing, .tm-preset.pressing { transform: scale(.98); }
+
+/* The presets: up to four buttons side by side, as high as the timer that takes their place (56 px). */
+.tm-presets { display: grid; grid-template-columns: repeat(var(--tm-presets, 4), minmax(0, 1fr)); gap: var(--homey-su-2, 8px); }
+.tm-preset {
+  height: 56px; padding: 6px 8px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.tm-preset-top { display: flex; align-items: center; justify-content: center; gap: 4px; min-width: 0; max-width: 100%; }
+.tm-preset .tm-glyph { flex: 0 0 auto; width: 14px; height: 14px; color: var(--tm-blue); stroke-width: 2.6; }
+.tm-preset-name {
+  /* 14 bold like Flow Buttons' names. */
+  font-size: var(--tm-fs-small); line-height: var(--tm-lh-small); font-weight: var(--tm-bold);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+.tm .tm-preset-name { text-align: center; }
+.tm-preset-time { font-size: var(--tm-fs-label); line-height: var(--tm-lh-label); color: var(--tm-muted); white-space: nowrap; }
+
+/*
+ * The timer, in the presets' place: the round button (pause, play or a bell), the name over when it ends, the time left, +1 and ✕.
+ * The tile fills from the left with the time left, in blue, as a Device Values percentage.
+ */
+.tm-row {
+  --tm-color: var(--tm-blue);
+  height: 56px; padding: 8px 8px 8px 10px; display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(to right, color-mix(in srgb, var(--tm-color) var(--tm-fill-mix), var(--tm-tile)) var(--tm-left, 0%), var(--tm-tile) var(--tm-left, 0%));
+}
+.tm-row[data-state="paused"] { --tm-color: var(--tm-muted); }
+/* Done: the whole row red, pulsing gently until it's dismissed. */
+.tm-row[data-state="done"] { --tm-color: var(--tm-red);
+  background: color-mix(in srgb, var(--tm-red) 30%, var(--tm-tile)); animation: tm-ring 1s ease-in-out infinite alternate; }
+@keyframes tm-ring { to { background: color-mix(in srgb, var(--tm-red) 16%, var(--tm-tile)); } }
+
+.tm-button {
+  flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--tm-color); color: #FFFFFF;
+  display: flex; align-items: center; justify-content: center; transition: transform .1s;
+}
+.tm-row[data-state="paused"] .tm-button { background: var(--tm-neutral); color: var(--tm-text); }
+.tm-row.pressing .tm-button { transform: scale(.9); }
+.tm-glyph { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round; }
+.tm-glyph .filled { fill: currentColor; stroke: none; }
+.tm-row[data-state="done"] .tm-button .tm-glyph { animation: tm-shake-bell 1s ease-in-out infinite; transform-origin: 50% 20%; }
+@keyframes tm-shake-bell { 0%, 50%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(14deg); } 20%, 40% { transform: rotate(-14deg); } }
+
+.tm-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.tm-name {
+  font-size: var(--tm-fs-small); line-height: var(--tm-lh-small); font-weight: var(--tm-bold);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.tm-sub { font-size: var(--tm-fs-label); line-height: var(--tm-lh-label); color: var(--tm-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tm-row[data-state="done"] .tm-sub { color: var(--tm-text); font-weight: var(--tm-bold); }
+/* The time left: 20 medium, Homey's large size, in fixed-width digits so it doesn't jitter. */
+.tm-time { flex: 0 0 auto; font-size: var(--tm-fs-large); line-height: var(--tm-lh-large); font-weight: var(--tm-medium);
+  font-variant-numeric: tabular-nums; }
+.tm-row[data-state="paused"] .tm-time { color: var(--tm-muted); }
+
+/* +1 and ✕: 32 px round buttons like Flow Variables' −/+. A finished timer only has its dismiss tap. */
+.tm-small {
+  flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%; background: var(--tm-neutral); color: var(--tm-text);
+  display: flex; align-items: center; justify-content: center; outline: none; transition: transform .1s;
+}
+.tm-small.pressing { transform: scale(.9); }
+.tm-small:focus-visible { box-shadow: 0 0 0 2px var(--tm-blue); }
+.tm-small .tm-glyph { width: 16px; height: 16px; }
+.tm-add-text { font-size: var(--tm-fs-label); line-height: var(--tm-lh-label); font-weight: var(--tm-bold); }
+.tm-row[data-state="done"] .tm-small { display: none; }
+/* Very narrow widgets: the +1 goes, so the name keeps some room. */
+@container tm (max-width: 279px) { .tm-add { display: none; } }
+
+.tm-message { font-size: var(--tm-fs-small); line-height: var(--tm-lh-small); color: var(--tm-muted); }
+.tm-message.error { color: var(--tm-red); }
+
+.tm-row.shake { animation: tm-shake .35s; }
+@keyframes tm-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tm-row[data-state="done"], .tm-row[data-state="done"] .tm-button .tm-glyph, .tm-row.shake { animation: none; }
+}

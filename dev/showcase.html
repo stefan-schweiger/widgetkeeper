@@ -36,6 +36,9 @@
   <link rel="stylesheet" href="../widgets/values/public/widget.css">
   <link rel="stylesheet" href="../widgets/variables/public/widget.css">
   <link rel="stylesheet" href="../widgets/flows/public/widget.css">
+  <link rel="stylesheet" href="../widgets/price/public/widget.css">
+  <link rel="stylesheet" href="../widgets/timers/public/widget.css">
+  <link rel="stylesheet" href="../widgets/locks/public/widget.css">
   <link rel="stylesheet" href="../widgets/lights/public/widget.css">
   <link rel="stylesheet" href="../widgets/sparklines/public/widget.css">
   <script src="../widgets/electricity/public/widget.js"></script>
@@ -49,6 +52,9 @@
   <script src="../widgets/values/public/widget.js"></script>
   <script src="../widgets/variables/public/widget.js"></script>
   <script src="../widgets/flows/public/widget.js"></script>
+  <script src="../widgets/price/public/widget.js"></script>
+  <script src="../widgets/timers/public/widget.js"></script>
+  <script src="../widgets/locks/public/widget.js"></script>
   <script src="../widgets/lights/public/widget.js"></script>
   <script src="../widgets/sparklines/public/widget.js"></script>
   <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
@@ -122,6 +128,7 @@
 
   <script>
     const LOCALE = 'en-GB';
+    const SHOWCASE_NOW = Date.now(); // the timers count from this, so every render shows the same time left
     // One mount per widget type: the element, then the widget's data from showcase-data.js.
     const MOUNT = {
       electricity: (el, w) => { const x = createElectricityWidget(el, { locale: LOCALE }); x.setSettings(w.settings || {}); x.setData(w.data); },
@@ -132,6 +139,9 @@
       values: (el, w) => createValuesWidget(el, w.opts || {}).setState(w.slots),
       variables: (el, w) => createVariablesWidget(el, w.opts || {}).setState(w.vars),
       flows: (el, w) => createFlowsWidget(el, w.opts || {}).setState(w.flows),
+      price: (el, w) => createPriceWidget(el, { locale: LOCALE, ...w.opts }).setState(w.state),
+      timers: (el, w) => createTimersWidget(el, { sound: false, now: () => SHOWCASE_NOW, presets: w.presets, ...w.opts }).setState({ timers: w.timers, now: SHOWCASE_NOW }),
+      locks: (el, w) => createLocksWidget(el, w.opts || {}).setState({ devices: w.devices, language: 'en' }),
       sparklines: (el, w) => createSparklinesWidget(el, w.opts || {}).setState(w.slots),
       lights: (el, w) => createLightsWidget(el, w.opts || {}).setState(w.devices),
       cameras: (el, w) => { const x = createCamerasWidget(el, w.opts || {}); x.setState(w.cameras); x.refresh(); },

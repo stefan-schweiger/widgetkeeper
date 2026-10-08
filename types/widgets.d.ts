@@ -16,6 +16,13 @@ interface Window {
   parseVariableNumber: (text: string) => number | null;
   createFlowsWidget: (root: HTMLElement, opts?: object) => object;
   FLOW_BUTTON_ICONS: string[];
+  createPriceWidget: (root: HTMLElement, opts?: object) => object;
+  electricityPriceLevel: (price: number | null, prices: (number | null)[]) => 'low' | 'medium' | 'high' | null;
+  createTimersWidget: (root: HTMLElement, opts?: object) => object;
+  formatTimerRemaining: (ms: number) => string;
+  timerPresetsFromSettings: (settings: Record<string, any>) => { minutes: number, label: string }[];
+  createLocksWidget: (root: HTMLElement, opts?: object) => object;
+  lockLevel: (device: object) => 'secure' | 'insecure' | 'unknown' | 'missing';
   sparkPath: (points: [number, number][], from: number, to: number, w: number, h: number) => { line: string, area: string, dot: { x: number, y: number }, min: number, max: number } | null;
   formatCapabilityValue: (cap: object, value: unknown, t: (key: string) => string) => string;
   heatmapPeriodDays: (period: string | undefined) => number;

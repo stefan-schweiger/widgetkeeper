@@ -1,0 +1,188 @@
+{
+  "name": {
+    "en": "Price Badge",
+    "nl": "Prijsbadge",
+    "de": "Preis-Badge",
+    "fr": "Badge de prix",
+    "it": "Badge prezzo",
+    "sv": "Prisbricka",
+    "no": "Prismerke",
+    "es": "Insignia de precio",
+    "da": "Prismærke",
+    "ru": "Значок цены",
+    "pl": "Plakietka ceny",
+    "ko": "가격 배지",
+    "ar": "شارة السعر"
+  },
+  "height": 60,
+  "transparent": true,
+  "settings": [
+    {
+      "id": "showNext",
+      "type": "checkbox",
+      "title": {
+        "en": "Show the next hour",
+        "nl": "Volgend uur tonen",
+        "de": "Nächste Stunde anzeigen",
+        "fr": "Afficher l'heure suivante",
+        "it": "Mostra l'ora successiva",
+        "sv": "Visa nästa timme",
+        "no": "Vis neste time",
+        "es": "Mostrar la próxima hora",
+        "da": "Vis næste time",
+        "ru": "Показывать следующий час",
+        "pl": "Pokaż następną godzinę",
+        "ko": "다음 시간 표시",
+        "ar": "إظهار الساعة التالية"
+      },
+      "hint": {
+        "en": "The next hour's price, with an arrow up or down. Hidden with a fixed price.",
+        "nl": "De prijs van het volgende uur, met een pijl omhoog of omlaag. Verborgen bij een vaste prijs.",
+        "de": "Der Preis der nächsten Stunde, mit einem Pfeil nach oben oder unten. Bei einem Festpreis ausgeblendet.",
+        "fr": "Le prix de l'heure suivante, avec une flèche vers le haut ou le bas. Masqué avec un prix fixe.",
+        "it": "Il prezzo dell'ora successiva, con una freccia su o giù. Nascosto con un prezzo fisso.",
+        "sv": "Nästa timmes pris, med en pil upp eller ned. Döljs vid fast pris.",
+        "no": "Prisen for neste time, med en pil opp eller ned. Skjult ved fast pris.",
+        "es": "El precio de la próxima hora, con una flecha arriba o abajo. Oculto con precio fijo.",
+        "da": "Prisen for næste time, med en pil op eller ned. Skjult ved fast pris.",
+        "ru": "Цена следующего часа со стрелкой вверх или вниз. Скрыто при фиксированной цене.",
+        "pl": "Cena następnej godziny ze strzałką w górę lub w dół. Ukryte przy stałej cenie.",
+        "ko": "다음 시간의 가격을 위아래 화살표와 함께 표시합니다. 고정 요금에서는 숨겨집니다.",
+        "ar": "سعر الساعة التالية مع سهم لأعلى أو لأسفل. مخفي مع السعر الثابت."
+      },
+      "value": true
+    },
+    {
+      "id": "nextLow",
+      "type": "dropdown",
+      "title": {
+        "en": "Lowest price",
+        "nl": "Laagste prijs",
+        "de": "Tiefstpreis",
+        "fr": "Prix le plus bas",
+        "it": "Prezzo più basso",
+        "sv": "Lägsta pris",
+        "no": "Laveste pris",
+        "es": "Precio más bajo",
+        "da": "Laveste pris",
+        "ru": "Минимальная цена",
+        "pl": "Najniższa cena",
+        "ko": "최저가",
+        "ar": "أدنى سعر"
+      },
+      "hint": {
+        "en": "The cheapest hour ahead. Hidden with a fixed price.",
+        "nl": "Het goedkoopste komende uur. Verborgen bij een vaste prijs.",
+        "de": "Die günstigste kommende Stunde. Bei einem Festpreis ausgeblendet.",
+        "fr": "L'heure la moins chère à venir. Masqué avec un prix fixe.",
+        "it": "L'ora più economica in arrivo. Nascosto con un prezzo fisso.",
+        "sv": "Den billigaste kommande timmen. Döljs vid fast pris.",
+        "no": "Den billigste kommende timen. Skjult ved fast pris.",
+        "es": "La hora más barata próxima. Oculto con precio fijo.",
+        "da": "Den billigste kommende time. Skjult ved fast pris.",
+        "ru": "Самый дешёвый час впереди. Скрыто при фиксированной цене.",
+        "pl": "Najtańsza nadchodząca godzina. Ukryte przy stałej cenie.",
+        "ko": "앞으로 가장 저렴한 시간입니다. 고정 요금에서는 숨겨집니다.",
+        "ar": "أرخص ساعة قادمة. مخفي مع السعر الثابت."
+      },
+      "value": "12",
+      "values": [
+        {
+          "id": "none",
+          "title": {
+            "en": "Off",
+            "nl": "Uit",
+            "de": "Aus",
+            "fr": "Désactivé",
+            "it": "Disattivato",
+            "sv": "Av",
+            "no": "Av",
+            "es": "Desactivado",
+            "da": "Fra",
+            "ru": "Выкл.",
+            "pl": "Wyłączone",
+            "ko": "끄기",
+            "ar": "إيقاف"
+          }
+        },
+        {
+          "id": "12",
+          "title": {
+            "en": "Next 12 hours",
+            "nl": "Komende 12 uur",
+            "de": "Nächste 12 Stunden",
+            "fr": "12 prochaines heures",
+            "it": "Prossime 12 ore",
+            "sv": "Kommande 12 timmar",
+            "no": "Neste 12 timer",
+            "es": "Próximas 12 horas",
+            "da": "Næste 12 timer",
+            "ru": "Следующие 12 часов",
+            "pl": "Następne 12 godzin",
+            "ko": "향후 12시간",
+            "ar": "الـ 12 ساعة القادمة"
+          }
+        },
+        {
+          "id": "24",
+          "title": {
+            "en": "Next 24 hours",
+            "nl": "Komende 24 uur",
+            "de": "Nächste 24 Stunden",
+            "fr": "24 prochaines heures",
+            "it": "Prossime 24 ore",
+            "sv": "Kommande 24 timmar",
+            "no": "Neste 24 timer",
+            "es": "Próximas 24 horas",
+            "da": "Næste 24 timer",
+            "ru": "Следующие 24 часа",
+            "pl": "Następne 24 godziny",
+            "ko": "향후 24시간",
+            "ar": "الـ 24 ساعة القادمة"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tint",
+      "type": "checkbox",
+      "title": {
+        "en": "Colour by price level",
+        "nl": "Kleur naar prijsniveau",
+        "de": "Nach Preisniveau färben",
+        "fr": "Couleur selon le niveau de prix",
+        "it": "Colore in base al livello di prezzo",
+        "sv": "Färg efter prisnivå",
+        "no": "Farge etter prisnivå",
+        "es": "Color según el nivel de precio",
+        "da": "Farve efter prisniveau",
+        "ru": "Цвет по уровню цены",
+        "pl": "Kolor wg poziomu ceny",
+        "ko": "가격 수준별 색상",
+        "ar": "اللون حسب مستوى السعر"
+      },
+      "hint": {
+        "en": "Tints the tile green, yellow or red by where the price now sits in today's range.",
+        "nl": "Kleurt de tegel groen, geel of rood, naargelang de huidige prijs binnen de prijzen van vandaag valt.",
+        "de": "Färbt die Kachel grün, gelb oder rot, je nachdem, wo der aktuelle Preis in der heutigen Spanne liegt.",
+        "fr": "Teinte la tuile en vert, jaune ou rouge selon la place du prix actuel dans la plage du jour.",
+        "it": "Colora il riquadro di verde, giallo o rosso in base a dove si trova il prezzo attuale nella fascia di oggi.",
+        "sv": "Färgar rutan grön, gul eller röd efter var priset just nu ligger bland dagens priser.",
+        "no": "Farger flisen grønn, gul eller rød etter hvor prisen nå ligger blant dagens priser.",
+        "es": "Tiñe el mosaico de verde, amarillo o rojo según dónde quede el precio actual en el rango de hoy.",
+        "da": "Farver feltet grønt, gult eller rødt efter, hvor prisen lige nu ligger blandt dagens priser.",
+        "ru": "Окрашивает плитку в зелёный, жёлтый или красный в зависимости от того, где текущая цена в диапазоне за сегодня.",
+        "pl": "Barwi kafelek na zielono, żółto lub czerwono zależnie od tego, gdzie bieżąca cena wypada w dzisiejszym zakresie.",
+        "ko": "현재 가격이 오늘의 가격 범위에서 어디에 있는지에 따라 타일을 녹색, 노란색 또는 빨간색으로 표시합니다.",
+        "ar": "يلوّن البلاطة بالأخضر أو الأصفر أو الأحمر حسب موقع السعر الحالي ضمن نطاق اليوم."
+      },
+      "value": true
+    }
+  ],
+  "api": {
+    "getPrice": {
+      "method": "GET",
+      "path": "/price"
+    }
+  }
+}

@@ -56,6 +56,18 @@ Compact rows to switch flow variables on and off or change a number or text, wit
 <a href="#flow-buttons"><b>Flow Buttons</b></a><br>
 Start flows with one tap: a round button in the colour and icon you pick, with the flow's name<br clear="left"></p>
 
+<p><a href="#price-badge"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/price-dark.png"><img src="docs/previews/price-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#price-badge"><b>Price Badge</b></a><br>
+The electricity price now, the next hour's and the cheapest hour ahead in one compact tile<br clear="left"></p>
+
+<p><a href="#timers"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/timers-dark.png"><img src="docs/previews/timers-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#timers"><b>Timers</b></a><br>
+Kitchen timers from one-tap presets, with a Flow card when one runs out<br clear="left"></p>
+
+<p><a href="#locks-and-doors"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/locks-dark.png"><img src="docs/previews/locks-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#locks-and-doors"><b>Locks and Doors</b></a><br>
+One line that says whether every lock and door is locked and closed<br clear="left"></p>
+
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
@@ -157,6 +169,29 @@ Flows and Advanced Flows as compact rows, the size of Flow Variables' rows: a ro
 
 Like changing variables, starting flows needs a Homey API key, here with permission to start flows. One key can do both: create it under **Settings → API Keys** in the Homey web app and paste it under **Apps → Widgetkeeper → Configure**. Without a key the widget shows the flows, and a tap says how to add one.
 
+## Price Badge
+<img src="docs/screenshots/price.png" alt="Price Badge on a Homey dashboard" width="358">
+
+The electricity price now, the next hour's (with an arrow up or down) and the cheapest hour in the next 12 or 24 hours, in one compact tile. The tile is green, yellow or red by where the price now sits among today's prices. It uses the same prices as the Electricity Overview, from Homey Energy, and needs no meter. With a fixed price it shows just that price.
+
+**Settings:** show the next hour (on by default), the lowest price (next 12 hours by default, next 24 hours or off), colour by price level (on by default).
+
+## Timers
+<img src="docs/screenshots/timers.png" alt="Timers on a Homey dashboard" width="358">
+
+Up to four preset buttons, such as *5 min* or *Eggs · 7 min*. Tap one to start the timer: it takes the buttons' place, so the widget always takes the same space, and shows the time left, filling down as it runs. Tap it to pause or resume it, **+1** adds a minute and **✕** cancels it (the buttons come back). When it runs out it turns red and the screen beeps for a minute; tap it to dismiss it. One timer runs at a time; for two, add a second widget.
+
+The timer runs on your Homey, not on the screen: every phone or tablet showing the dashboard sees the same timer, and the Flow card **A timer finished** (with the timer's name and minutes) fires even with no dashboard open, so Homey can announce it or flash a light.
+
+**Settings:** four timers, each with its minutes (0 hides it; 0.5 is 30 seconds) and an optional name, and whether to beep (on by default; phones and tablets only play sound after the widget has been touched once).
+
+## Locks and Doors
+<img src="docs/screenshots/locks.png" alt="Locks and Doors on a Homey dashboard" width="358">
+
+Locks, door and window contacts and garage doors in one line: *All locked and closed* with a green padlock, or the device that isn't (*Back door · Unlocked since 18:12*), or how many aren't (*2 open or unlocked*) on a red tile. Tap it for the list of every device and its state, with a **Lock** or **Close** button for a lock or garage door that isn't secure, and **Lock all** for several.
+
+**Settings:** devices, show one line (tap for the list; the default) or every device, and allow unlocking and opening (off by default: the widget can only lock and close).
+
 ## Dashboard examples
 Seven dashboards from a made-up house, on a tablet in Homey's dark mode.
 
@@ -164,11 +199,11 @@ Seven dashboards from a made-up house, on a tablet in Homey's dark mode.
 
 <img src="docs/showcase/home.png" alt="A home dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
-**Energy:** electricity with a separate purple usage chart, a power heatmap in orange, sparklines of the big consumers, the heat pump, the weather in detail, appliance quick actions, device values (*Today* coloured green by a Flow) and the car charging flags.
+**Energy:** electricity with a separate purple usage chart, a power heatmap in orange, sparklines of the big consumers, the price badge at the evening peak, the heat pump, the weather in detail, appliance quick actions, device values (*Today* coloured green by a Flow) and the car charging flags.
 
 <img src="docs/showcase/energy.png" alt="An energy dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
-**Security:** six cameras, sensor alarms with motion and contact counted, door locks, a motion heatmap, battery levels filled by level, flow variables, outdoor lights, sensor dots with the garage door open and the weather.
+**Security:** six cameras, sensor alarms with motion and contact counted, locks and doors with the shed unlocked, door locks, a motion heatmap, battery levels filled by level, flow variables, outdoor lights, sensor dots with the garage door open and the weather.
 
 <img src="docs/showcase/security.png" alt="A security dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
@@ -184,7 +219,7 @@ Seven dashboards from a made-up house, on a tablet in Homey's dark mode.
 
 <img src="docs/showcase/garden.png" alt="A garden dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
-**Kitchen:** electricity with the cheapest hours in the next 12 and 24, flow buttons such as *Dinner's ready*, appliance quick actions, the fridge and freezer coloured by a Flow, smoke and water alarms, the kitchen lights, a shopping list and a timer, and the hallway camera.
+**Kitchen:** electricity with the cheapest hours in the next 12 and 24, flow buttons such as *Dinner's ready*, appliance quick actions, the fridge and freezer coloured by a Flow, smoke and water alarms, a pizza timer, the kitchen lights, a shopping list and the hallway camera.
 
 <img src="docs/showcase/kitchen.png" alt="A kitchen dashboard with Widgetkeeper widgets on a tablet" width="100%">
 

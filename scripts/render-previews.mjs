@@ -37,6 +37,12 @@ const OUT = {
   'var-light': 'widgets/variables/preview-light.png',
   'fb-dark': 'widgets/flows/preview-dark.png',
   'fb-light': 'widgets/flows/preview-light.png',
+  'pb-dark': 'widgets/price/preview-dark.png',
+  'pb-light': 'widgets/price/preview-light.png',
+  'tm-dark': 'widgets/timers/preview-dark.png',
+  'tm-light': 'widgets/timers/preview-light.png',
+  'lk-dark': 'widgets/locks/preview-dark.png',
+  'lk-light': 'widgets/locks/preview-light.png',
 };
 
 const only = process.argv.slice(2);

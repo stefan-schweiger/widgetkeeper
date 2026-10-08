@@ -1,0 +1,80 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/price-preview.html).
+ * The tile copies Device Values' (widgets/values/public/widget.css), which copies Device Quick Actions'.
+ */
+.pb {
+  --pb-tile: var(--homey-background-color, #FFFFFF);
+  --pb-text: var(--homey-text-color, #EDEEF0);
+  --pb-muted: var(--homey-text-color-light, #9C9DA5);
+  /* The levels: Device Values' red and green (Homey's tokens) and its yellow, which has no token. */
+  --pb-green: var(--homey-color-green, #71D51B);
+  --pb-yellow: #F5C518;
+  --pb-red: var(--homey-color-red, #F25F5C);
+  --pb-tint-mix: 22%; /* Device Values' Flow colour tint */
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --pb-fs-small: var(--homey-font-size-small, 14px); --pb-lh-small: var(--homey-line-height-small, 20px);
+  --pb-fs-default: var(--homey-font-size-default, 17px); --pb-lh-default: var(--homey-line-height-default, 24px);
+  --pb-fs-label: 12px; --pb-lh-label: 16px; /* the Electricity Overview's labels: a step below Homey's scale */
+  --pb-bold: var(--homey-font-weight-bold, 700);
+  --pb-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+}
+/* Dark mode: the tile looks like a native device tile, darker than the default widget background. */
+.homey-dark-mode .pb, .pb.homey-dark-mode { --pb-tile: #181920; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
+html, body { background: transparent !important; }
+
+.pb { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--pb-text);
+  container: pb / inline-size; }
+.pb * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL labels get their punctuation right; the layout itself stays LTR. */
+.pb [dir="auto"] { text-align: left; }
+
+/* One compact tile (60 px): up to three cells, each a label over a value. */
+.pb-tile {
+  position: relative; display: flex; gap: var(--homey-su-3, 12px); min-width: 0;
+  background: var(--pb-tile); border-radius: var(--pb-radius); padding: 10px 12px;
+  user-select: none; -webkit-user-select: none; transition: background-color .15s;
+}
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .pb-tile::after, .pb.homey-dark-mode .pb-tile::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+/* The price now: tinted by its level in today's range, like a Device Values tile coloured by a Flow. */
+.pb-tile[data-level="low"] { --pb-level: var(--pb-green); }
+.pb-tile[data-level="medium"] { --pb-level: var(--pb-yellow); }
+.pb-tile[data-level="high"] { --pb-level: var(--pb-red); }
+.pb-tile[data-level] { background: color-mix(in srgb, var(--pb-level) var(--pb-tint-mix), var(--pb-tile)); }
+.pb.no-tint .pb-tile[data-level] { background: var(--pb-tile); }
+
+.pb-cell { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+.pb-now { flex-grow: 1.2; }
+.pb-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: var(--pb-fs-label); line-height: var(--pb-lh-label); color: var(--pb-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* The level dot before "Now · High": the only level cue when the tint is off. Mixed with the text colour, so
+   yellow still reads on a light tile. */
+.pb-tile[data-level] .pb-now .pb-label::before {
+  content: ''; flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%;
+  background: color-mix(in srgb, var(--pb-level) 85%, var(--pb-text));
+}
+.pb-value {
+  /* 17 bold, Homey's own value size. */
+  font-size: var(--pb-fs-default); line-height: var(--pb-lh-default); font-weight: var(--pb-bold);
+  font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* Three values don't fit at 17 on a narrow widget (300 px): 14/20, Homey's small size. */
+@container pb (max-width: 339px) {
+  .pb-value { font-size: var(--pb-fs-small); line-height: var(--pb-lh-small); }
+  .pb-tile { padding: 12px 10px; gap: var(--homey-su-2, 8px); }
+}
+
+.pb-message { font-size: var(--pb-fs-small); line-height: var(--pb-lh-small); color: var(--pb-muted); }
+.pb-message.error { color: var(--pb-red); }

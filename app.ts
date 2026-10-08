@@ -6,11 +6,13 @@ import ElectricityService from './lib/ElectricityService.js';
 import FlowService from './lib/FlowService.js';
 import HeatmapService from './lib/HeatmapService.js';
 import LightService from './lib/LightService.js';
+import LockService from './lib/LockService.js';
 import PersonalApiKey from './lib/PersonalApiKey.js';
 import QuickActionService from './lib/QuickActionService.js';
 import SensorAlarmService from './lib/SensorAlarmService.js';
 import SparklineService from './lib/SparklineService.js';
 import ThermostatService from './lib/ThermostatService.js';
+import TimerService, { TIMER_FINISHED_CARD, type Timer } from './lib/TimerService.js';
 import ValueService from './lib/ValueService.js';
 import VariableService from './lib/VariableService.js';
 import WeatherService from './lib/WeatherService.js';
@@ -34,6 +36,8 @@ export default class WidgetkeeperApp extends Homey.App {
   sparklines!: SparklineService;
   variables!: VariableService;
   flows!: FlowService;
+  timers!: TimerService;
+  locks!: LockService;
   /** The user's personal API key, shared by Flow Variables and Flow Buttons (the app's token may only read). */
   apiKey!: PersonalApiKey;
 
@@ -74,6 +78,10 @@ export default class WidgetkeeperApp extends Homey.App {
     this.registerVariableSettings();
     this.flows = new FlowService(this.homey, log, debug, this.apiKey);
     this.registerFlowSettings();
+    this.timers = new TimerService(this.homey, log, debug, timer => this.timerFinished(timer));
+    this.timers.start();
+    this.locks = new LockService(this.homey, log, debug);
+    this.locks.start();
     this.debug('Widgetkeeper has been initialized');
   }
 
@@ -108,6 +116,8 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.lights?.stop();
     await this.sparklines?.stop();
     await this.variables?.stop();
+    await this.timers?.stop();
+    await this.locks?.stop();
   }
 
   /** Autocomplete for the thermostat widget: the device, then per-button options read from it. */
@@ -169,6 +179,13 @@ export default class WidgetkeeperApp extends Homey.App {
       widget.registerSettingAutocompleteListener(`flow${n}`, query => this.flows.listFlows(query));
       widget.registerSettingAutocompleteListener(`icon${n}`, async query => this.flows.listIcons(query));
     }
+  }
+
+  /** The Flow card *A timer finished*: the timer's name (or its duration, as the widget shows it) and its minutes. */
+  private timerFinished(timer: Timer) {
+    const minutes = Math.round(timer.duration / 6e3) / 10;
+    const name = timer.label || this.homey.__('timers.minutes', { minutes: String(minutes) }) || `${minutes} min`;
+    return this.homey.flow.getTriggerCard(TIMER_FINISHED_CARD).trigger({ timer: name, minutes });
   }
 
 }

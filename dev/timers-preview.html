@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timers widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/timers/public/widget.css">
+  <script src="../widgets/timers/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <style>
+    body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px;
+      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · light</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>300 px · dark · paused</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · dark · presets (nothing running)</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
+  <div class="col"><span>358 px · light · named presets</span><div class="dash light" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px · dark · done</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
+  <div class="col"><span>358 px · dark · runs out 12 s in</span><div class="dash homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
+  <div class="col"><span>358 px · no presets</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+
+  <script>
+    // A simulated Homey: the timers live here, as lib/TimerService.ts keeps them, and finish on their own.
+    const MIN = 60e3;
+    function fakeHomey(timers) {
+      let n = 0;
+      const widgets = [];
+      const state = () => ({ timers: timers.map(t => ({ ...t })), now: Date.now() });
+      const changed = () => { const s = state(); widgets.forEach(w => w.setState(s)); return s; };
+      setInterval(() => {
+        let any = false;
+        for (const t of timers) if (t.doneAt == null && t.endsAt != null && t.endsAt <= Date.now()) { t.doneAt = t.endsAt; any = true; }
+        if (any) changed();
+      }, 500);
+      const later = () => new Promise(r => setTimeout(r, 300));
+      return {
+        widgets, state,
+        onStart: async (minutes, label) => {
+          await later();
+          timers.splice(0, timers.length, { id: `t${++n}`, label, duration: minutes * MIN, endsAt: Date.now() + minutes * MIN, remaining: null, doneAt: null });
+          return changed();
+        },
+        onAction: async (id, action) => {
+          await later();
+          const t = timers.find(x => x.id === id);
+          if (!t) return state();
+          if (action === 'pause') { t.remaining = t.endsAt - Date.now(); t.endsAt = null; }
+          if (action === 'resume') { t.endsAt = Date.now() + t.remaining; t.remaining = null; }
+          if (action === 'add') { t.duration += MIN; if (t.endsAt) t.endsAt += MIN; else t.remaining += MIN; }
+          if (action === 'cancel' || action === 'dismiss') timers.splice(timers.indexOf(t), 1);
+          return changed();
+        },
+      };
+    }
+    const now = Date.now();
+    // One timer per widget: running, paused, done, and one that runs out 12 s in.
+    const running = () => [{ id: 'a', label: 'Pasta', duration: 10 * MIN, endsAt: now + 6.2 * MIN, remaining: null, doneAt: null }];
+    const paused = () => [{ id: 'b', label: '', duration: 15 * MIN, endsAt: null, remaining: 9 * MIN + 12e3, doneAt: null }];
+    const done = () => [{ id: 'c', label: 'Eggs', duration: 7 * MIN, endsAt: now - 30e3, remaining: null, doneAt: now - 30e3 }];
+    const soon = () => [{ id: 'd', label: '', duration: 0.25 * MIN, endsAt: now + 12e3, remaining: null, doneAt: null }];
+    const PRESETS = [{ minutes: 5, label: '' }, { minutes: 10, label: '' }, { minutes: 15, label: '' }, { minutes: 30, label: '' }];
+    const NAMED = [{ minutes: 7, label: 'Eggs' }, { minutes: 10, label: 'Pasta' }, { minutes: 90, label: 'Bread' }];
+    function mount(id, presets, timers, opts = {}) {
+      const h = fakeHomey(timers);
+      const w = createTimersWidget(document.getElementById(id), { t: devT, presets, sound: false, onStart: h.onStart, onAction: h.onAction, ...opts });
+      h.widgets.push(w);
+      w.setState(h.state());
+      return w;
+    }
+    mount('w1', PRESETS, running());
+    mount('w2', PRESETS, running());
+    mount('w3', NAMED, paused());
+    mount('w4', PRESETS, []);
+    mount('w6', NAMED, []);
+    mount('w7', PRESETS, done());
+    mount('w8', PRESETS, soon());
+    mount('w5', [], []);
+  </script>
+</body>
+</html>

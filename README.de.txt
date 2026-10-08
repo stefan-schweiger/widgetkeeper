@@ -16,5 +16,8 @@ Enthaltene Widgets:
 - Sparklines: kompakte Kacheln mit einem kleinen Diagramm eines Werts über die letzte Stunde, 6 Stunden, den Tag oder die Woche, mit Tiefst- und Höchstwert.
 - Flow-Variablen: kompakte Zeilen, um Flow-Variablen ein- und auszuschalten oder eine Zahl oder einen Text zu ändern, mit vollem Namen.
 - Flow-Tasten: Flows mit einem Tippen starten, jeder eine runde Taste in der gewählten Farbe und mit dem gewählten Symbol, dazu der Name des Flows, in 1 oder 2 Spalten.
+- Preis-Badge: der Strompreis jetzt, der der nächsten Stunde und die günstigste kommende Stunde in einer kompakten Kachel, grün, gelb oder rot nach den heutigen Preisen.
+- Timer: Küchentimer mit Schnellwahltasten, mit der Restzeit, Pause, einer Minute mehr und einem Piepton am Ende. Eine Flow-Karte löst aus, wenn ein Timer abläuft.
+- Schlösser und Türen: eine Zeile, die sagt, ob alle Schlösser, Türen und Garagentore verriegelt und geschlossen sind. Tippe darauf, um jedes zu sehen und zu verriegeln oder zu schließen.
 
 Wetterdaten von MET Norway, lizenziert unter CC BY 4.0.

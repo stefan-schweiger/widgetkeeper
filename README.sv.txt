@@ -16,5 +16,8 @@ Ingående widgetar:
 - Minidiagram: kompakta rutor med ett litet diagram över ett värde den senaste timmen, de senaste 6 timmarna, dygnet eller veckan, med lägsta och högsta värde.
 - Flödesvariabler: kompakta rader för att slå på och av flödesvariabler eller ändra ett tal eller en text, med hela namnet.
 - Flödesknappar: starta flöden med ett tryck, varje en rund knapp i den färg och med den ikon du väljer, med flödets namn, i 1 eller 2 kolumner.
+- Prisbricka: elpriset nu, nästa timmes och den billigaste kommande timmen i en kompakt ruta, grön, gul eller röd efter dagens priser.
+- Timers: köksklockor med snabbknappar, med tid kvar, paus, en minut till och ett pip när de är klara. Ett flödeskort körs när en timer går ut.
+- Lås och dörrar: en rad som säger om alla lås, dörrar och garageportar är låsta och stängda. Tryck för att se var och en och låsa eller stänga den.
 
 Väderdata från MET Norway, licensierad under CC BY 4.0.

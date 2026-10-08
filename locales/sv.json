@@ -181,5 +181,58 @@
       "star": "Stjärna",
       "heart": "Hjärta"
     }
+  },
+  "price": {
+    "now": "Nu",
+    "low": "Lågt",
+    "medium": "Medel",
+    "high": "Högt",
+    "nextHour": "Nästa timme",
+    "lowest12": "Lägst 12 h",
+    "lowest24": "Lägst 24 h",
+    "fixedPrice": "Fast pris",
+    "noPrices": "Inga elpriser. Ställ in dem i Homey Energi.",
+    "error": "Kunde inte läsa in priserna."
+  },
+  "timers": {
+    "selectPresets": "Ställ in timers i widgetinställningarna.",
+    "error": "Kunde inte läsa in timrarna.",
+    "failed": "Kunde inte ändra timern.",
+    "minutes": "__minutes__ min",
+    "hours": "__hours__ h",
+    "seconds": "__seconds__ s",
+    "endsAt": "Klar __time__",
+    "paused": "Pausad",
+    "done": "Klar",
+    "pause": "Pausa",
+    "resume": "Fortsätt",
+    "dismiss": "Stäng",
+    "addMinute": "Lägg till en minut",
+    "cancel": "Avbryt"
+  },
+  "locks": {
+    "selectDevices": "Välj lås och dörrar i widgetinställningarna.",
+    "error": "Kunde inte läsa in låsen.",
+    "failed": "Kunde inte ändra __name__.",
+    "unavailable": "Inte tillgänglig",
+    "locked": "Låst",
+    "unlocked": "Olåst",
+    "open": "Öppen",
+    "closed": "Stängd",
+    "allLocked": "Allt låst",
+    "allClosed": "Allt stängt",
+    "allSecure": "Allt låst och stängt",
+    "countUnlocked": "__count__ olåsta",
+    "countOpen": "__count__ öppna",
+    "countInsecure": "__count__ öppna eller olåsta",
+    "noStatus": "Ingen status än",
+    "since": "sedan __time__",
+    "sinceStart": "Sedan __time__",
+    "countUnavailable": "__count__ otillgängliga",
+    "lock": "Lås",
+    "unlock": "Lås upp",
+    "close": "Stäng",
+    "openAction": "Öppna",
+    "lockAll": "Lås alla"
   }
 }

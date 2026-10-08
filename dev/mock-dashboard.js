@@ -1,6 +1,6 @@
 // The widgets of dev/screenshots.html: the real widget code with the made-up home of showcase-data.js ("Solbakken",
 // the showcase dashboards' data, so no real home's names or readings end up in the README), mounted into the elements
-// with the ids w-elec, w-thermo, w-qa, w-sa, w-sd, w-weather, w-heatmap, w-cameras, w-values, w-lights, w-sparklines, w-variables and w-flows.
+// with the ids w-elec, w-thermo, w-qa, w-sa, w-sd, w-weather, w-heatmap, w-cameras, w-values, w-lights, w-sparklines, w-variables, w-flows, w-price, w-timers and w-locks.
 // Needs the widget scripts, temp/screenshot-icons.js and showcase-data.js loaded first, and the
 // showcase's fixed clock (screenshots.html sets it), so every render is the same.
 (function () {
@@ -54,6 +54,19 @@
     .setState([...flows.flows, ...more.map(m => m[1])]);
 
   createLightsWidget(el('w-lights'), {}).setState(find('lights').devices);
+
+  const price = find('price'); // energy: the evening peak
+  createPriceWidget(el('w-price'), { locale: LOCALE, ...price.opts }).setState(price.state);
+
+  // Kitchen's timer twice for the README: its presets, then its pizza timer in their place. Counted from a fixed now,
+  // so the shot stays the same.
+  const kitchen = find('timers');
+  const now = Date.now();
+  createTimersWidget(el('w-timers'), { sound: false, now: () => now, presets: kitchen.presets }).setState({ timers: [], now });
+  createTimersWidget(el('w-timers-running'), { sound: false, now: () => now, presets: kitchen.presets }).setState({ timers: kitchen.timers, now });
+
+  const doors = find('locks'); // security: the shed unlocked and the garage open, here with the list showing
+  createLocksWidget(el('w-locks'), { ...doors.opts, view: 'list' }).setState({ devices: doors.devices, language: 'en' });
 
   const cams = createCamerasWidget(el('w-cameras'), {});
   cams.setState(find('cameras', 1).cameras.slice(0, 4));

@@ -181,5 +181,58 @@
       "star": "Stern",
       "heart": "Herz"
     }
+  },
+  "price": {
+    "now": "Jetzt",
+    "low": "Niedrig",
+    "medium": "Mittel",
+    "high": "Hoch",
+    "nextHour": "Nächste Stunde",
+    "lowest12": "Tiefst 12h",
+    "lowest24": "Tiefst 24h",
+    "fixedPrice": "Festpreis",
+    "noPrices": "Keine Strompreise. Richte sie in Homey Energie ein.",
+    "error": "Die Preise konnten nicht geladen werden."
+  },
+  "timers": {
+    "selectPresets": "Richte Timer in den Widget-Einstellungen ein.",
+    "error": "Die Timer konnten nicht geladen werden.",
+    "failed": "Der Timer konnte nicht geändert werden.",
+    "minutes": "__minutes__ Min.",
+    "hours": "__hours__ Std.",
+    "seconds": "__seconds__ s",
+    "endsAt": "Endet __time__",
+    "paused": "Pausiert",
+    "done": "Abgelaufen",
+    "pause": "Pausieren",
+    "resume": "Fortsetzen",
+    "dismiss": "Schließen",
+    "addMinute": "Eine Minute mehr",
+    "cancel": "Abbrechen"
+  },
+  "locks": {
+    "selectDevices": "Wähle Schlösser und Türen in den Widget-Einstellungen.",
+    "error": "Die Schlösser konnten nicht geladen werden.",
+    "failed": "__name__ konnte nicht geändert werden.",
+    "unavailable": "Nicht verfügbar",
+    "locked": "Verriegelt",
+    "unlocked": "Entriegelt",
+    "open": "Offen",
+    "closed": "Geschlossen",
+    "allLocked": "Alles verriegelt",
+    "allClosed": "Alles geschlossen",
+    "allSecure": "Alles verriegelt und geschlossen",
+    "countUnlocked": "__count__ entriegelt",
+    "countOpen": "__count__ offen",
+    "countInsecure": "__count__ offen oder entriegelt",
+    "noStatus": "Noch kein Status",
+    "since": "seit __time__",
+    "sinceStart": "Seit __time__",
+    "countUnavailable": "__count__ nicht verfügbar",
+    "lock": "Verriegeln",
+    "unlock": "Entriegeln",
+    "close": "Schließen",
+    "openAction": "Öffnen",
+    "lockAll": "Alle verriegeln"
   }
 }

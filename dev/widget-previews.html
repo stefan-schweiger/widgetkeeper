@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|sd-dark|sd-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|var-dark|var-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|sd-dark|sd-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|var-dark|var-light|sd-dark|sd-light|fb-dark|fb-light|pb-dark|pb-light|tm-dark|tm-light|lk-dark|lk-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -378,6 +378,73 @@ function flowButtons(t, theme) {
   </div>`;
 }
 
+// Price Badge: one tile tinted by the price level, with three cells (a label over a value); the first has the level dot.
+function priceBadge(t, theme) {
+  const RED = '#F25F5C';
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const bg = `color-mix(in srgb, ${RED} 22%, ${tileBg})`;
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const label = theme === 'dark' ? 'rgba(237,238,240,.45)' : 'rgba(31,32,41,.4)';
+  const cell = ([lw, vw, dot]) => `<div style="flex:1;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:14px">${dot ? `<div style="width:22px;height:22px;border-radius:50%;background:${RED}"></div>` : ''}${pill(lw, 22, label)}</div>
+      ${pill(vw, 40, t.fg)}
+    </div>`;
+  return `<div style="width:880px;height:168px;border-radius:32px;background:${bg};box-shadow:${shadow};padding:0 40px;box-sizing:border-box;display:flex;align-items:center;gap:40px">
+    ${[[120, 200, true], [90, 150], [150, 220]].map(cell).join('')}
+  </div>`;
+}
+
+// Timers: its two looks, one above the other: the four preset buttons, and a running timer (filling down in blue) in their place.
+function timers(t, theme) {
+  const RED = '#F25F5C';
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const small = theme === 'dark' ? '#2E3039' : '#EDEEF1';
+  const chip = `<div style="flex:1;height:140px;border-radius:28px;background:${tileBg};box-shadow:${shadow};display:flex;align-items:center;justify-content:center;gap:16px">
+      <div style="font:700 44px Roboto,sans-serif;color:${BLUE};margin-top:-6px">+</div>${pill(90, 30, t.fg)}
+    </div>`;
+  const pause = '<div style="display:flex;gap:9px"><div style="width:9px;height:30px;background:#FFF;border-radius:2px"></div><div style="width:9px;height:30px;background:#FFF;border-radius:2px"></div></div>';
+  const row = ([left, color, w, tw, done]) => {
+    const bg = done ? `color-mix(in srgb, ${RED} 30%, ${tileBg})`
+      : `linear-gradient(to right, color-mix(in srgb, ${color} 22%, ${tileBg}) ${left}%, ${tileBg} ${left}%)`;
+    return `<div style="height:140px;border-radius:28px;background:${bg};box-shadow:${shadow};padding:0 22px;box-sizing:border-box;display:flex;align-items:center;gap:24px">
+      <div style="width:80px;height:80px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;flex-shrink:0">${done ? '<div style="width:30px;height:30px;border-radius:50% 50% 6px 6px;background:#FFF"></div>' : pause}</div>
+      <div style="flex:1">${pill(w, 32, t.fg)}</div>
+      ${pill(tw, 48, t.fg)}
+      ${done ? '' : `<div style="width:80px;height:80px;border-radius:50%;background:${small}"></div><div style="width:80px;height:80px;border-radius:50%;background:${small}"></div>`}
+    </div>`;
+  };
+  return `<div style="width:880px;display:flex;flex-direction:column;gap:56px">
+    <div style="display:flex;gap:22px">${chip}${chip}${chip}${chip}</div>
+    ${row([62, BLUE, 170, 120])}
+  </div>`;
+}
+
+// Locks and Doors: the summary (a padlock, the title over the detail), then the list with a Lock button.
+function locks(t, theme) {
+  const RED = '#F25F5C';
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const muted = theme === 'dark' ? 'rgba(237,238,240,.45)' : 'rgba(31,32,41,.4)';
+  const line = theme === 'dark' ? 'rgba(255,255,255,.08)' : 'rgba(31,32,41,.08)';
+  const padlock = `<svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="${RED}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 11h11a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 18.5v-6A1.5 1.5 0 0 1 6.5 11zM8 11V7.5a4 4 0 0 1 7.8-1.25"/></svg>`;
+  const row = ([w, sw, red, button]) => `<div style="height:116px;display:flex;align-items:center;gap:28px;padding:0 36px">
+      <div style="width:40px;height:40px;border-radius:10px;border:5px solid ${muted};box-sizing:border-box;flex-shrink:0"></div>
+      <div style="flex:1">${pill(w, 30, t.fg)}</div>
+      ${pill(sw, 26, red ? RED : muted)}
+      ${button ? `<div style="width:150px;height:80px;border-radius:40px;background:${BLUE};display:flex;align-items:center;justify-content:center">${pill(70, 24, '#FFFFFF')}</div>` : ''}
+    </div>`;
+  return `<div style="width:880px;border-radius:32px;background:color-mix(in srgb, ${RED} 22%, ${tileBg});box-shadow:${shadow};overflow:hidden">
+    <div style="height:150px;display:flex;align-items:center;gap:30px;padding:0 36px">
+      ${padlock}
+      <div style="flex:1;display:flex;flex-direction:column;gap:18px">${pill(260, 34, t.fg)}${pill(200, 28, RED, 'opacity:.85')}</div>
+    </div>
+    <div style="border-top:3px solid ${line};padding:12px 0">
+      ${[[200, 150], [180, 120, true, true], [220, 120]].map(row).join('')}
+    </div>
+  </div>`;
+}
+
 const PREVIEWS = [
   { id: 'elec-dark',    label: '1a · Electricity Overview — preview-dark.png', theme: 'dark',  render: electricity },
   { id: 'elec-light',   label: '1b · Electricity Overview — preview-light.png', theme: 'light', render: electricity },
@@ -405,6 +472,12 @@ const PREVIEWS = [
   { id: 'var-light',    label: '1v · Flow Variables — preview-light.png',        theme: 'light', render: flowVariables },
   { id: 'fb-dark',      label: '1y · Flow Buttons — preview-dark.png',           theme: 'dark',  render: flowButtons },
   { id: 'fb-light',     label: '1z · Flow Buttons — preview-light.png',          theme: 'light', render: flowButtons },
+  { id: 'pb-dark',      label: '2a · Price Badge — preview-dark.png',            theme: 'dark',  render: priceBadge },
+  { id: 'pb-light',     label: '2b · Price Badge — preview-light.png',           theme: 'light', render: priceBadge },
+  { id: 'tm-dark',      label: '2c · Timers — preview-dark.png',                 theme: 'dark',  render: timers },
+  { id: 'tm-light',     label: '2d · Timers — preview-light.png',                theme: 'light', render: timers },
+  { id: 'lk-dark',      label: '2e · Locks and Doors — preview-dark.png',        theme: 'dark',  render: locks },
+  { id: 'lk-light',     label: '2f · Locks and Doors — preview-light.png',       theme: 'light', render: locks },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');
