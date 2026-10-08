@@ -36,7 +36,6 @@
     pause: { fill: true, d: 'M7 5h3.5v14H7zM13.5 5H17v14h-3.5z' },
     play: { fill: true, d: 'M8 5.6v12.8a1 1 0 0 0 1.5.86l10.2-6.4a1 1 0 0 0 0-1.72L9.5 4.74A1 1 0 0 0 8 5.6z' },
     bell: { d: 'M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 21h4' },
-    plus: { d: 'M12 6v12M6 12h12' },
     close: { d: 'M7 7l10 10M17 7 7 17' },
   };
 
@@ -168,7 +167,7 @@
     for (const p of presets) {
       const chip = el('div', { class: 'tm-preset', role: 'button', tabindex: '0' }, presetsEl);
       const top = el('div', { class: 'tm-preset-top' }, chip);
-      top.appendChild(glyph('plus'));
+      top.appendChild(glyph('play'));
       el('span', { class: 'tm-preset-name', dir: 'auto', text: p.label || durationText(p.minutes) }, top);
       if (p.label) el('div', { class: 'tm-preset-time', text: durationText(p.minutes) }, chip);
       onTap(chip, () => start(p));

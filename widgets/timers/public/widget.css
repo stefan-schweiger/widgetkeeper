@@ -56,7 +56,7 @@ html, body { background: transparent !important; }
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 .tm-preset-top { display: flex; align-items: center; justify-content: center; gap: 4px; min-width: 0; max-width: 100%; }
-.tm-preset .tm-glyph { flex: 0 0 auto; width: 14px; height: 14px; color: var(--tm-blue); stroke-width: 2.6; }
+.tm-preset .tm-glyph { flex: 0 0 auto; width: 12px; height: 12px; color: var(--tm-blue); }
 .tm-preset-name {
   /* 14 bold like Flow Buttons' names. */
   font-size: var(--tm-fs-small); line-height: var(--tm-lh-small); font-weight: var(--tm-bold);
