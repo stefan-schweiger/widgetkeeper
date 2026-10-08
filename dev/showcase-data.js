@@ -218,6 +218,56 @@
     }, 9)),
   ];
 
+  // ---- More of the house, for the Climate, Evening, Garden and Kitchen dashboards.
+
+  /** A thermostat with three temperature presets and no mode (a radiator valve, the floor heating). */
+  const thermo = (name, iconName, temps, current, onoff = true) => ({
+    type: 'thermostat',
+    presets: Object.fromEntries(temps.flatMap((v, i) => [[`b${i + 1}Power`, 'keep'], [`b${i + 1}Temp`, { capabilityId: 'target_temperature', value: v }]])),
+    state: {
+      name, icon: icon(iconName),
+      values: { onoff, target_temperature: current },
+      caps: { onoff: { title: 'Turned on', units: null, values: null }, target_temperature: { title: 'Target temperature', units: '°C', values: null } },
+    },
+  });
+  /** Flow Buttons from `[id, name, colour, icon, enabled?]` rows. */
+  const flowButtons = (columns, list) => ({
+    type: 'flows',
+    opts: { columns, buttons: list.map(([id, , color, iconId]) => ({ id, color, icon: iconId })) },
+    flows: list.map(([id, name, , , enabled = true]) => ({ id, name, enabled, triggerable: true, advanced: id.startsWith('advanced:') })),
+  });
+  /** A week of a room's temperature: the heating's day and night setpoints, and the sun through the windows. */
+  const heatTemp = (name, base, seed) => ({
+    name, icon: icon('climate'), language: 'en', value: base + 0.4,
+    capability: { id: 'measure_temperature', title: 'Temperature', type: 'number', units: '°C', decimals: 1 },
+    days: heatDays((t, wd, h, r) => {
+      const night = h < 6 || h >= 23 ? -2.2 : 0;
+      const sun = h >= 11 && h < 16 && (wd === 0 || wd === 2 || wd === 6) ? 1.4 * Math.sin(((h - 11) / 5) * Math.PI) : 0;
+      return round(base + night + sun + 0.3 * r(), 1);
+    }, seed),
+  });
+  /** A week of daylight in the garden: bright days, a grey Thursday and Friday. */
+  const heatLux = () => ({
+    name: 'Garden sensor', icon: icon('motion-sensor'), language: 'en', value: 4,
+    capability: { id: 'measure_luminance', title: 'Light', type: 'number', units: 'lx', decimals: 0 },
+    days: heatDays((t, wd, h, r) => {
+      if (h < 7 || h >= 19) return 0;
+      const cloudy = wd === 4 || wd === 5 ? 0.35 : 1;
+      return Math.round(9000 * cloudy * Math.sin(((h + 0.5 - 7) / 12) * Math.PI) * (0.75 + 0.25 * r()));
+    }, 41),
+  });
+
+  const eveningLights = [
+    { id: 'v1', name: 'Ceiling', icon: icon('light-hanging'), zone: { id: 'z1', name: 'Living room' }, caps: { onoff: lcap(true), dim: lcap(0.35), light_temperature: lcap(0.95), light_mode: lcap('temperature') } },
+    { id: 'v2', name: 'Sofa lamp', icon: icon('light-standing'), zone: { id: 'z1', name: 'Living room' }, caps: { onoff: lcap(true), dim: lcap(0.4), light_hue: lcap(0.07), light_saturation: lcap(0.75), light_temperature: lcap(0.9), light_mode: lcap('color') } },
+    { id: 'v3', name: 'TV backlight', icon: icon('light-spot'), zone: { id: 'z1', name: 'Living room' }, caps: { onoff: lcap(true), dim: lcap(0.6), light_hue: lcap(0.78), light_saturation: lcap(0.7), light_mode: lcap('color') } },
+    { id: 'v4', name: 'Dining table', icon: icon('light-hanging'), zone: { id: 'z3', name: 'Dining room' }, caps: { onoff: lcap(true), dim: lcap(0.7), light_temperature: lcap(0.95) } },
+    { id: 'v5', name: 'Kitchen spots', icon: icon('light-spot'), zone: { id: 'z2', name: 'Kitchen' }, caps: { onoff: lcap(true), dim: lcap(1), light_temperature: lcap(0.35), light_mode: lcap('temperature') } },
+    { id: 'v6', name: 'Window', icon: icon('christmas-lights'), zone: { id: 'z6', name: 'Window' }, caps: { onoff: lcap(true), dim: lcap(0.5), light_hue: lcap(0.11), light_saturation: lcap(0.85), light_mode: lcap('color') } },
+    { id: 'v7', name: 'Bedside left', icon: icon('light-table'), zone: { id: 'b1', name: 'Bedroom' }, caps: { onoff: lcap(false), dim: lcap(0.2), light_temperature: lcap(1) } },
+    { id: 'v8', name: 'Bedside right', icon: icon('light-table'), zone: { id: 'b1', name: 'Bedroom' }, caps: { onoff: lcap(false), dim: lcap(0.2), light_temperature: lcap(1) } },
+  ];
+
   window.SHOWCASE = {
     home: {
       title: 'Home',
@@ -348,6 +398,157 @@
             motionDot('d12', 'Terrace', false, 75),
           ] },
           { type: 'weather', hours: weatherHours() },
+        ],
+      ],
+    },
+
+    climate: {
+      title: 'Climate',
+      columns: [
+        [
+          heatPump,
+          thermo('Bedroom | Radiator', 'thermostat', [16, 18, 20], 18),
+          thermo('Bathroom | Floor heating', 'thermostat', [20, 23, 26], 23),
+          { type: 'values', opts: { columns: '3' }, slots: [
+            value('r1', 'measure_temperature', 'Living room', { units: '°C', decimals: 1 }, 21.4),
+            value('r2', 'measure_temperature', 'Bedroom', { units: '°C', decimals: 1 }, 18.2),
+            value('r3', 'measure_temperature', "Emma's room", { units: '°C', decimals: 1 }, 20.6),
+            value('r4', 'measure_humidity', 'Bathroom', { units: '%', decimals: 0 }, 56),
+            value('r5', 'measure_co2', "Emma's room", { units: 'ppm', decimals: 0 }, 783),
+            value('r6', 'measure_humidity', 'Bedroom', { units: '%', decimals: 0 }, 48),
+          ] },
+        ],
+        [
+          { type: 'heatmap', opts: { period: 'rolling', step: 2, color: 'red' }, data: heatTemp('Living room', 21.2, 51) },
+          { type: 'sparklines', slots: indoorSparks },
+        ],
+        [
+          { type: 'weather', opts: { density: 'detailed', theme: 'temperature' }, hours: weatherHours() },
+          flowButtons('2', [
+            ['flow:c1', 'Air out', 'blue', 'fan'], ['flow:c2', 'Eco mode', 'green', 'drop'],
+            ['flow:c3', 'Warm bathroom', 'orange', 'flame'], ['advanced:c4', 'Frost guard', 'grey', 'snowflake'],
+          ]),
+          { type: 'variables', opts: { columns: '2' }, vars: [
+            { id: 'cv1', name: 'Night setpoint', type: 'number', value: 18.5 },
+            { id: 'cv2', name: 'Heating season', type: 'boolean', value: true },
+          ] },
+        ],
+      ],
+    },
+
+    evening: {
+      title: 'Evening',
+      columns: [
+        [
+          { type: 'lights', opts: { groupByZone: true, palette: 'dusk' }, devices: eveningLights },
+          flowButtons('2', [
+            ['advanced:v1', 'Movie time', 'purple', 'tv'], ['flow:v2', 'Dinner', 'orange', 'bulb'],
+            ['flow:v3', 'Reading light', 'yellow', 'star'], ['flow:v4', 'Good night', 'blue', 'moon'],
+          ]),
+          { type: 'sparklines', slots: indoorSparks.slice(0, 2) },
+        ],
+        [
+          { type: 'quickactions', devices: [
+            { id: 'eq1', name: 'TV', icon: icon('tv'), quickAction: qa('onoff', true) },
+            { id: 'eq2', name: 'Speaker', icon: icon('speaker'), quickAction: qa('onoff', true) },
+            { id: 'eq3', name: 'Kettle', icon: icon('kettle'), quickAction: qa('onoff', false) },
+            { id: 'eq4', name: 'Front door', icon: icon('lock'), quickAction: qa('locked', true) },
+            { id: 'eq5', name: 'Back door', icon: icon('lock'), quickAction: qa('locked', false) },
+            { id: 'eq6', name: 'Dishwasher', icon: icon('socket'), quickAction: qa('onoff', false) },
+          ] },
+          heatPump,
+          { type: 'cameras', cameras: [cam('door', 'Hallway'), cam('drive', 'Driveway')] },
+          { type: 'values', opts: { columns: '3' }, slots: [
+            value('ew1', 'measure_power', 'House', { units: 'W', decimals: 0 }, 3536),
+            value('ew2', 'measure_humidity', 'Living room', { units: '%', decimals: 0 }, 47),
+            { ...value('ew3', 'measure_co2', "Emma's room", { units: 'ppm', decimals: 0 }, 783), color: 'green' },
+          ] },
+        ],
+        [
+          { type: 'weather', opts: { rows: 2, step: 2 }, hours: weatherHours() },
+          { type: 'variables', opts: { columns: '1' }, vars: [
+            { id: 'ev1', name: 'Guests staying over', type: 'boolean', value: true },
+            { id: 'ev2', name: 'Kids in bed', type: 'boolean', value: false },
+            { id: 'ev3', name: 'Note on the hallway screen', type: 'string', value: 'Pizza at 19!' },
+          ] },
+          { type: 'sensoralarms', devices: smokeAndWater.slice(0, 2) },
+        ],
+      ],
+    },
+
+    garden: {
+      title: 'Garden',
+      columns: [
+        [
+          { type: 'cameras', cameras: [cam('garden', 'Terrace'), cam('shed', 'Shed'), cam('side', 'Side path'), cam('drive', 'Driveway')] },
+          { type: 'lights', devices: outdoorLights },
+        ],
+        [
+          { type: 'weather', opts: { density: 'detailed', rows: 2, theme: 'sky' }, hours: weatherHours() },
+          { type: 'heatmap', opts: { period: 'rolling', step: 2, color: 'yellow' }, data: heatLux() },
+        ],
+        [
+          { type: 'sparklines', slots: [
+            sparkSlot('g1', 'measure_temperature', 'Outdoor', { units: '°C', decimals: 1 }, spark((t, r) => round(10.4 + 3 * dayCurve(t, 14) + 0.2 * r(), 1), 5)),
+            sparkSlot('g2', 'measure_wind_strength', 'Wind', { units: 'm/s', decimals: 1 }, spark((t, r) => round(4.2 + 1.4 * dayCurve(t, 16) + 1.2 * r(), 1), 19)),
+          ] },
+          { type: 'values', opts: { columns: '3', percentFill: true }, slots: [
+            value('gv1', 'measure_humidity', 'Lawn soil', { units: '%', decimals: 0 }, 38),
+            value('gv2', 'measure_humidity', 'Greenhouse', { units: '%', decimals: 0 }, 71),
+            value('gv3', 'measure_battery', 'Mower', { units: '%', decimals: 0 }, 100),
+          ] },
+          flowButtons('1', [
+            ['flow:gb1', 'Water the vegetable beds', 'blue', 'drop'],
+            ['flow:gb2', 'Mow the lawn', 'green', 'play'],
+            ['flow:gb3', 'Garden lights for an hour', 'yellow', 'bulb'],
+          ]),
+          // The driveway (a person, just now) has its overlay open; the open greenhouse stays blue below it.
+          { type: 'sensordots', opts: { locale: 'en-GB', title: 'Outside' }, open: 'gd3', devices: [
+            contactDot('gd1', 'Gate', false, 47), motionDot('gd2', 'Terrace', false, 75),
+            { id: 'gd3', name: 'Driveway', icon: null, alarms: [sensor('alarm_motion', true, 'Motion alarm', 2), sensor('alarm_person', true, 'Person Detected', 2)] },
+            contactDot('gd4', 'Shed', false, 1500), motionDot('gd5', 'Side path', false, 33),
+            contactDot('gd6', 'Greenhouse', true, 260), contactDot('gd7', 'Carport', false, 1100),
+          ] },
+        ],
+      ],
+    },
+
+    kitchen: {
+      title: 'Kitchen',
+      columns: [
+        [
+          { type: 'electricity', settings: { liveWindow: 10, nextLow: 'both', smooth: true }, data: electricity() },
+          flowButtons('2', [
+            ['flow:k1', "Dinner's ready", 'orange', 'bell'], ['flow:k2', 'Good morning', 'yellow', 'sun'],
+            ['flow:k3', 'Leaving home', 'blue', 'leave'], ['flow:k4', 'Party mode', 'purple', 'music'],
+          ]),
+        ],
+        [
+          { type: 'weather', opts: { theme: 'vivid' }, hours: weatherHours() },
+          { type: 'quickactions', devices: [
+            { id: 'kq1', name: 'Oven', icon: icon('oven'), quickAction: qa('onoff', true) },
+            { id: 'kq2', name: 'Kettle', icon: icon('kettle'), quickAction: qa('onoff', false) },
+            { id: 'kq3', name: 'Coffee', icon: icon('coffee-machine'), quickAction: qa('onoff', false) },
+            { id: 'kq4', name: 'Fridge', icon: icon('fridge'), quickAction: qa('onoff', true) },
+            { id: 'kq5', name: 'Dishwasher', icon: icon('socket'), quickAction: qa('onoff', false) },
+            { id: 'kq6', name: 'Radio', icon: icon('speaker'), quickAction: qa('onoff', true) },
+          ] },
+          { type: 'values', opts: { columns: '3' }, slots: [
+            // Blue from a Flow while they're cold enough.
+            { ...value('kv1', 'measure_temperature', 'Fridge', { units: '°C', decimals: 1 }, 3.8), color: 'blue' },
+            { ...value('kv2', 'measure_temperature', 'Freezer', { units: '°C', decimals: 0 }, -19), color: 'blue' },
+            value('kv3', 'measure_power', 'Oven', { units: 'W', decimals: 0 }, 2300),
+          ] },
+          { type: 'sensoralarms', devices: [smokeAndWater[0], smokeAndWater[3]] },
+        ],
+        [
+          { type: 'lights', devices: [lights[2], lights[3], lights[0], lights[1]] },
+          { type: 'variables', opts: { columns: '1' }, vars: [
+            { id: 'kx1', name: 'Shopping list', type: 'string', value: 'Milk, eggs, rye bread' },
+            { id: 'kx2', name: 'Dishwasher emptied', type: 'boolean', value: false },
+            { id: 'kx3', name: 'Pizza timer (min)', type: 'number', value: 12 },
+          ] },
+          { type: 'cameras', cameras: [cam('door', 'Hallway')] },
         ],
       ],
     },

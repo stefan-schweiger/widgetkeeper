@@ -21,7 +21,7 @@ export function edge(args) {
 // Homey's icon library, as the Homey app shows device icons. Not committed: fetched into temp/ (gitignored).
 const ICONS = ['climate', 'christmas-lights', 'lock', 'light-standing', 'speaker', 'light-hanging', 'smoke-detector', 'air-purifier',
   'washing-machine', 'door', 'motion-sensor', 'light-spot', 'light-table', 'light-outdoor', 'coffee-machine', 'tv', 'inverter',
-  'car-charger', 'dryer', 'socket', 'fridge', 'kettle', 'oven', 'garage-door', 'doorbell', 'router'];
+  'car-charger', 'dryer', 'socket', 'fridge', 'kettle', 'oven', 'garage-door', 'doorbell', 'router', 'thermostat'];
 
 /** Downloads the icons into temp/screenshot-icons.js (`window.ICONS`), which the dev pages load. */
 export async function downloadIcons() {

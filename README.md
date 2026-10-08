@@ -158,7 +158,7 @@ Flows and Advanced Flows as compact rows, the size of Flow Variables' rows: a ro
 Like changing variables, starting flows needs a Homey API key, here with permission to start flows. One key can do both: create it under **Settings → API Keys** in the Homey web app and paste it under **Apps → Widgetkeeper → Configure**. Without a key the widget shows the flows, and a tap says how to add one.
 
 ## Dashboard examples
-Three dashboards from a made-up house, on a tablet in Homey's dark mode.
+Seven dashboards from a made-up house, on a tablet in Homey's dark mode.
 
 **Home:** electricity, the heat pump, flow buttons, the weather, lights, quick actions, sensor alarms, cameras, sparklines and a motion heatmap.
 
@@ -171,6 +171,22 @@ Three dashboards from a made-up house, on a tablet in Homey's dark mode.
 **Security:** six cameras, sensor alarms with motion and contact counted, door locks, a motion heatmap, battery levels filled by level, flow variables, outdoor lights, sensor dots with the garage door open and the weather.
 
 <img src="docs/showcase/security.png" alt="A security dashboard with Widgetkeeper widgets on a tablet" width="100%">
+
+**Climate:** the heat pump, a bedroom radiator and the bathroom floor heating, room temperatures and humidity as device values, a week of the living room's temperature in red, sparklines, the weather coloured by temperature, flow buttons for airing out and frost guard, and the night setpoint.
+
+<img src="docs/showcase/climate.png" alt="A climate dashboard with Widgetkeeper widgets on a tablet" width="100%">
+
+**Evening:** lights grouped by room with the dusk palette, flow buttons for movie time, dinner and good night, quick actions for the TV, speaker and locks, the heat pump, two cameras, the weather in two rows of 2-hour steps, and the evening's flags.
+
+<img src="docs/showcase/evening.png" alt="An evening dashboard with Widgetkeeper widgets on a tablet" width="100%">
+
+**Garden:** four garden cameras, outdoor lights, a detailed two-row forecast with sky colours, a week of daylight in yellow, temperature and wind sparklines, soil moisture filled by level, flow buttons for watering and mowing, and sensor dots with someone on the driveway.
+
+<img src="docs/showcase/garden.png" alt="A garden dashboard with Widgetkeeper widgets on a tablet" width="100%">
+
+**Kitchen:** electricity with the cheapest hours in the next 12 and 24, flow buttons such as *Dinner's ready*, appliance quick actions, the fridge and freezer coloured by a Flow, smoke and water alarms, the kitchen lights, a shopping list and a timer, and the hallway camera.
+
+<img src="docs/showcase/kitchen.png" alt="A kitchen dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic, following Homey's language.
