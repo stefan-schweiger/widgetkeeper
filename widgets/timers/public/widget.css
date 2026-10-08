@@ -53,17 +53,18 @@ html, body { background: transparent !important; }
 .tm-presets { display: grid; grid-template-columns: repeat(var(--tm-presets, 4), minmax(0, 1fr)); gap: var(--homey-su-2, 8px); }
 .tm-preset {
   height: 56px; padding: 6px 8px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  /* The play icon, vertically centred, left of the name and duration, which align left; the pair is centred. */
+  display: flex; align-items: center; justify-content: center; gap: 6px;
 }
-.tm-preset-top { display: flex; align-items: center; justify-content: center; gap: 4px; min-width: 0; max-width: 100%; }
+.tm-preset-text { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
 .tm-preset .tm-glyph { flex: 0 0 auto; width: 12px; height: 12px; color: var(--tm-blue); }
 .tm-preset-name {
   /* 14 bold like Flow Buttons' names. */
   font-size: var(--tm-fs-small); line-height: var(--tm-lh-small); font-weight: var(--tm-bold);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
 }
-.tm .tm-preset-name { text-align: center; }
-.tm-preset-time { font-size: var(--tm-fs-label); line-height: var(--tm-lh-label); color: var(--tm-muted); white-space: nowrap; }
+.tm-preset-time { font-size: var(--tm-fs-label); line-height: var(--tm-lh-label); color: var(--tm-muted); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
 /*
  * The timer, in the presets' place: the round button (pause, play or a bell), the name over when it ends, the time left, +1 and ✕.

@@ -158,14 +158,14 @@
       const next = slots[i + 1];
       if (showNext && next && typeof next.price === 'number') {
         const arrow = next.price > price + 1e-9 ? '↑' : next.price < price - 1e-9 ? '↓' : '→';
-        m.next = { label: t('nextHour'), value: `${arrow} ${nf(next.price, 2)}` };
+        m.next = { label: t('nextHour'), value: `${arrow} ${nf(next.price, 2)} ${unit}` };
       }
       if (nextLow !== 'none') {
         const low = lowestSlot(slots, i, Number(nextLow));
         if (low >= 0) {
           m.low = {
             label: t(nextLow === '24' ? 'lowest24' : 'lowest12'),
-            value: `${low === i ? t('now') : hhmm(slots[low].start)} · ${nf(slots[low].price, 2)}`,
+            value: `${low === i ? t('now') : hhmm(slots[low].start)} · ${nf(slots[low].price, 2)} ${unit}`,
           };
         }
       }

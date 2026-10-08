@@ -12,7 +12,7 @@ import QuickActionService from './lib/QuickActionService.js';
 import SensorAlarmService from './lib/SensorAlarmService.js';
 import SparklineService from './lib/SparklineService.js';
 import ThermostatService from './lib/ThermostatService.js';
-import TimerService, { TIMER_FINISHED_CARD, type Timer } from './lib/TimerService.js';
+import TimerService, { TIMER_FINISHED_CARD, timerDurationText, type Timer } from './lib/TimerService.js';
 import ValueService from './lib/ValueService.js';
 import VariableService from './lib/VariableService.js';
 import WeatherService from './lib/WeatherService.js';
@@ -72,7 +72,7 @@ export default class WidgetkeeperApp extends Homey.App {
     this.sparklines = new SparklineService(this.homey, this.values, log, debug);
     this.sparklines.start();
     this.registerSparklineSettings();
-    this.apiKey = new PersonalApiKey(this.homey, log);
+    this.apiKey = PersonalApiKey.for(this.homey, log);
     this.variables = new VariableService(this.homey, log, debug, this.apiKey);
     this.variables.start();
     this.registerVariableSettings();
@@ -184,7 +184,8 @@ export default class WidgetkeeperApp extends Homey.App {
   /** The Flow card *A timer finished*: the timer's name (or its duration, as the widget shows it) and its minutes. */
   private timerFinished(timer: Timer) {
     const minutes = Math.round(timer.duration / 6e3) / 10;
-    const name = timer.label || this.homey.__('timers.minutes', { minutes: String(minutes) }) || `${minutes} min`;
+    const name = timer.label
+      || timerDurationText(timer.duration / 60e3, (key, tokens) => this.homey.__(key, tokens), this.homey.i18n.getLanguage());
     return this.homey.flow.getTriggerCard(TIMER_FINISHED_CARD).trigger({ timer: name, minutes });
   }
 

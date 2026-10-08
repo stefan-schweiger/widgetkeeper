@@ -227,7 +227,7 @@ Seven dashboards from a made-up house, on a tablet in Homey's dark mode.
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic, following Homey's language.
 
 ## Installation
-Widgetkeeper isn't in the Homey App Store yet. Install it from source with the Homey CLI; see [CONTRIBUTING.md](CONTRIBUTING.md).
+Install Widgetkeeper from the [Homey App Store](https://homey.app/a/com.thomassidor.widgetkeeper/). The [test version](https://homey.app/a/com.thomassidor.widgetkeeper/test/) has the next version's widgets before they go live. To install it from source with the Homey CLI, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Troubleshooting
 If a widget doesn't work as expected, open **Apps → Widgetkeeper → Configure** in the Homey app and pick the device. Include that report when you [open an issue](https://github.com/thomassidor/widgetkeeper/issues).

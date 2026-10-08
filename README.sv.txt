@@ -1,23 +1,5 @@
-Widgetkeeper lägger till widgets för instrumentpanelen som känns som en del av Homey.
+Widgetkeeper lägger till widgets för instrumentpanelen som känns som en del av Homey. Var och en är utformad för att passa naturligt bredvid Homeys inbyggda widgets, med samma utseende och känsla.
 
-Var och en är utformad för att passa naturligt bredvid Homeys inbyggda widgets, med samma utseende och känsla.
-
-Ingående widgetar:
-- Elöversikt: aktuell förbrukning, timpriser och förbrukningshistorik på ett kort.
-- Termostatgenvägar: tre förval med ett tryck för en termostat, värmepump eller luftkonditionering.
-- Snabbåtgärder för enheter: kompakta rutor som kör en enhets snabbåtgärd, som att tända en lampa eller låsa en dörr.
-- Sensorlarm: rutor som visar om en sensor har ett larm, som rök, vatten eller CO₂, och blir röda när den har det.
-- Sensorprickar: rörelse- och kontaktsensorer som ett rutnät av prickar, grå i vila och blå när de är aktiva (båda färgerna kan ändras). Tryck på en prick för att se sensorns namn, läge och sedan när.
-- Väderprognos: symbol, temperatur, vind och nederbörd timme för timme för de kommande 36 timmarna, från MET Norway (yr.no).
-- Insights-värmekarta: en vecka av ett värde, som ljus, temperatur eller rörelse, som ett rutnät av veckodagar och timmar.
-- Kameror: två till sex kameror i ett rutnät av bilder som uppdateras med några sekunders mellanrum. Tryck på en för att se den live.
-- Enhetsvärden: kompakta rutor som visar ett värde var, som en temperatur, en batterinivå eller på/av. Ett flöde kan färga rutorna, t.ex. röda när en sensor är för varm.
-- Ljusreglage: kompakta ljusrutor med ljusstyrka, färg och färgtemperatur, sex lampor på samma plats som tre.
-- Minidiagram: kompakta rutor med ett litet diagram över ett värde den senaste timmen, de senaste 6 timmarna, dygnet eller veckan, med lägsta och högsta värde.
-- Flödesvariabler: kompakta rader för att slå på och av flödesvariabler eller ändra ett tal eller en text, med hela namnet.
-- Flödesknappar: starta flöden med ett tryck, varje en rund knapp i den färg och med den ikon du väljer, med flödets namn, i 1 eller 2 kolumner.
-- Prisbricka: elpriset nu, nästa timmes och den billigaste kommande timmen i en kompakt ruta, grön, gul eller röd efter dagens priser.
-- Timers: köksklockor med snabbknappar, med tid kvar, paus, en minut till och ett pip när de är klara. Ett flödeskort körs när en timer går ut.
-- Lås och dörrar: en rad som säger om alla lås, dörrar och garageportar är låsta och stängda. Tryck för att se var och en och låsa eller stänga den.
+Widgetarna täcker energi, med aktuell elförbrukning, timpriser och en kompakt prisbricka; klimat, med termostatförval, en väderprognos för 36 timmar, värmekartor och små diagram över valfritt sensorvärde; säkerhet, med sensorlarm, rörelse- och dörrsensorer i en blick, kameror med livevisning samt lås och dörrar; och vardaglig styrning, med snabbåtgärder, ljusstyrning med färger, enhetsvärden, flödesvariabler, flödesknappar och köksklockor. Många av dem är kompakta rutor, så det får plats mer på en instrumentpanel.
 
 Väderdata från MET Norway, licensierad under CC BY 4.0.

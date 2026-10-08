@@ -18,6 +18,7 @@
     "previews": "node scripts/render-previews.mjs",
     "screenshots": "node scripts/render-screenshots.mjs",
     "showcase": "node scripts/render-showcase.mjs",
+    "flow-icons": "node scripts/render-flow-icons.mjs",
     "diagnostics": "node scripts/diagnostics.mjs",
     "validate": "homey app validate --level debug",
     "start": "homey app run",

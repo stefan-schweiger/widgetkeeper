@@ -14,6 +14,28 @@ export const TIMERS_SETTING = 'timers';
 export const TIMERS_STATE_EVENT = 'timers:state';
 export const TIMER_FINISHED_CARD = 'timers_finished';
 
+/**
+ * A duration as the Timers widget shows it (`durationText()` in its widget.js): `10 min`, `1 h 30 min`, `30 s`.
+ * `translate` is `homey.__`; the numbers follow `locale` (Homey's language).
+ */
+export function timerDurationText(minutes: number, translate: (key: string, tokens: Record<string, string>) => string | undefined,
+  locale?: string): string {
+  let nf: (v: number) => string;
+  try {
+    const f = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+    nf = v => f.format(v);
+  } catch (err) {
+    nf = v => String(Math.round(v * 10) / 10);
+  }
+  const text = (key: 'seconds' | 'minutes' | 'hours', v: number) => translate(`timers.${key}`, { [key]: nf(v) })
+    || `${nf(v)} ${{ seconds: 's', minutes: 'min', hours: 'h' }[key]}`;
+  if (minutes < 1) return text('seconds', Math.round(minutes * 60));
+  if (minutes < 60) return text('minutes', minutes);
+  const h = Math.floor(minutes / 60);
+  const m = minutes - h * 60;
+  return m ? `${text('hours', h)} ${text('minutes', m)}` : text('hours', h);
+}
+
 export type Timer = {
   id: string,
   /** The preset's label, or empty (the widget then shows the duration). */

@@ -84,3 +84,13 @@ describe('run', () => {
     await expect(key.run(async () => { throw err; })).rejects.toBe(err);
   });
 });
+
+describe('shared instance', () => {
+  it('is one per app, also for services built without one', () => {
+    const { homey } = setup();
+    const key = PersonalApiKey.for(homey, () => {});
+    expect(PersonalApiKey.for(homey, () => {})).toBe(key);
+    expect((new VariableService(homey, () => {}) as any).key).toBe(key);
+    expect(PersonalApiKey.for(setup().homey, () => {})).not.toBe(key);
+  });
+});

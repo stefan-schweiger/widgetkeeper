@@ -28,6 +28,7 @@
     countOpen: '__count__ open',
     countInsecure: '__count__ open or unlocked',
     noStatus: 'No status yet',
+    countNoStatus: '__count__ without status',
     since: 'since __time__',
     sinceStart: 'Since __time__',
     countUnavailable: '__count__ unavailable',
@@ -132,12 +133,15 @@
   const isSecure = (id, v) => v === SECURE[id];
   const isInsecure = (id, v) => typeof v === 'boolean' && v !== SECURE[id];
 
-  /** 'secure', 'insecure', 'unknown' (nothing reported yet) or 'missing'. */
+  /**
+   * 'secure' (every capability says so), 'insecure' (any says otherwise), 'unknown' (one hasn't reported yet:
+   * a lock without a value on a closed door isn't known to be locked) or 'missing'.
+   */
   function lockLevel(d) {
     if ('missing' in d) return 'missing';
     const caps = capsOf(d);
     if (caps.some(([id, c]) => isInsecure(id, c.value))) return 'insecure';
-    return caps.some(([id, c]) => isSecure(id, c.value)) ? 'secure' : 'unknown';
+    return caps.length && caps.every(([id, c]) => isSecure(id, c.value)) ? 'secure' : 'unknown';
   }
 
   /**
@@ -305,6 +309,10 @@
       }
       const known = present.filter(d => lockLevel(d) === 'secure');
       if (!known.length) return { level: present.length ? 'unknown' : 'missing', title: present.length ? t('noStatus') : t('unavailable'), sub: unavailable };
+      // "All locked" only when every device says so: one that hasn't reported yet may well be open.
+      const unknown = present.filter(d => lockLevel(d) === 'unknown');
+      if (unknown.length === 1) return { level: 'unknown', title: unknown[0].name, sub: join(t('noStatus'), unavailable) };
+      if (unknown.length > 1) return { level: 'unknown', title: t('countNoStatus', { count: unknown.length }), sub: join(unknown.map(d => d.name).join(', '), unavailable) };
       const caps = known.flatMap(d => capsOf(d).map(([id, c]) => [id, c]));
       const hasLock = caps.some(([id]) => id === 'locked');
       const hasDoor = caps.some(([id]) => id !== 'locked');

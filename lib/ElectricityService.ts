@@ -23,6 +23,7 @@ export type Snapshot = {
   now: number,
   deviceName: string | null,
   meterError: string | null, // why the selected meter could not be read
+  priceError: string | null, // why the current hour's price could not be read (null when it's simply not set up)
   live: Sample[], // raw readings for the last hour, oldest first (the widget resamples)
   prices: ({ start: number, price: number | null })[], // 49 hourly slots, index 24 = current hour
   fixedPrice: number | null, // Homey's fixed price per kWh, when Energy is set to a fixed price (every slot has it)
@@ -94,17 +95,21 @@ export default class ElectricityService {
     const tm = new Timings();
 
     let meterError: string | null = null;
+    let priceError: string | null = null;
     let fixedPrice: number | null = null;
+    const message = (err: unknown) => (err instanceof Error ? err.message : String(err));
     const [meter, prices] = await Promise.all([
       deviceId ? tm.time('meter', () => this.ensureMeter(deviceId, tm)).catch(err => {
         this.log('Meter error', err);
-        meterError = err instanceof Error ? err.message : String(err);
+        meterError = message(err);
         return null;
       }) : null,
       tm.time('prices', async () => {
         fixedPrice = await this.getFixedPrice();
-        return this.getPriceSlots(firstSlot, tm, fixedPrice);
-      }).catch(err => { this.log('Price error', err); return []; }),
+        return this.getPriceSlots(firstSlot, tm, fixedPrice, (day, err) => {
+          if (day === this.localDate(hourStart)) priceError = message(err);
+        });
+      }).catch(err => { this.log('Price error', err); priceError = message(err); return []; }),
     ]);
 
     let usage: Sample[] = [];
@@ -118,6 +123,7 @@ export default class ElectricityService {
       now,
       deviceName: meter?.name ?? null,
       meterError,
+      priceError,
       live: meter ? meter.live.slice() : [],
       prices,
       fixedPrice,
@@ -318,7 +324,8 @@ export default class ElectricityService {
     return { priceType: fixedPrice == null ? 'dynamic' : 'fixed', fixedPrice, currency: this.currency };
   }
 
-  private async getPriceSlots(firstSlot: number, tm: Timings, fixedPrice: number | null = null): Promise<Snapshot['prices']> {
+  private async getPriceSlots(firstSlot: number, tm: Timings, fixedPrice: number | null = null,
+    onDayError?: (day: string, err: unknown) => void): Promise<Snapshot['prices']> {
     const count = PRICE_PAST_HOURS + 1 + PRICE_FUTURE_HOURS;
     if (fixedPrice != null) {
       if (this.currency == null) await tm.time('currency', () => this.loadCurrency());
@@ -332,6 +339,7 @@ export default class ElectricityService {
     const [dayHours] = await Promise.all([
       Promise.all([...days].map(day => tm.time(day, () => this.getPriceDay(day)).catch(err => {
         this.log(`Price error for ${day}`, err);
+        onDayError?.(day, err);
         return null;
       }))),
       this.currency == null ? tm.time('currency', () => this.loadCurrency()) : null,

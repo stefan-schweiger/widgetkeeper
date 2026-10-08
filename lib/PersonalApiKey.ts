@@ -33,11 +33,24 @@ export const isUnauthorized = (err: unknown) => (err as any)?.statusCode === 401
 
 export type SaveResult = { ok: true, variables: boolean, flows: boolean } | { ok: false, reason: KeyProblem };
 
+const shared = new WeakMap<object, PersonalApiKey>();
+
 /**
  * The user's personal API key (Flow Variables and Flow Buttons): checked when saved, kept in the app settings,
- * never sent back or logged. Each service has its own instance; they share the setting.
+ * never sent back or logged. The services share one instance (`PersonalApiKey.for(homey)`), so a save resets
+ * the API they all use.
  */
 export default class PersonalApiKey {
+
+  /** The app's one instance. */
+  static for(homey: Homey.App['homey'], log: (...args: any[]) => void): PersonalApiKey {
+    let key = shared.get(homey);
+    if (!key) {
+      key = new PersonalApiKey(homey, log);
+      shared.set(homey, key);
+    }
+    return key;
+  }
 
   /** The API made with the key, rebuilt when the key changes. */
   private cached: { key: string, api: Promise<any> } | null = null;

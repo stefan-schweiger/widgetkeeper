@@ -74,6 +74,24 @@ describe('getState', () => {
     expect((await service.getState(['v1']))[0]).toMatchObject({ value: true });
   });
 
+  it('keeps an event that comes in while a re-read is on its way', async () => {
+    const { service, logic } = setup();
+    await service.getState(['v1', 'v3']);
+    vi.advanceTimersByTime(5 * 60e3);
+    let answer: (v: any) => void = () => {};
+    logic.getVariables.mockImplementationOnce(() => new Promise(res => { answer = res; }));
+    const pending = service.getState(['v1', 'v3']);
+    await vi.advanceTimersByTimeAsync(0);
+    const before = Object.fromEntries([...logic.vars].map(([id, v]) => [id, { ...v }])); // read before the events
+    logic.emit('variable.update', { id: 'v1', value: true });
+    logic.emit('variable.delete', { id: 'v3' });
+    answer(before);
+    expect(await pending).toEqual([
+      { id: 'v1', name: 'Guest mode', type: 'boolean', value: true },
+      { id: 'v3', missing: true },
+    ]);
+  });
+
   it('sends updates of requested variables as realtime events', async () => {
     const { service, homey, logic } = setup();
     await service.getState(['v1']);

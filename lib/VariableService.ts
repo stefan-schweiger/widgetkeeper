@@ -58,11 +58,15 @@ export default class VariableService {
   private lastError: string | null = null;
   private tickTimer: NodeJS.Timeout | null = null;
   private lastWriteError: string | null = null;
+  private reading: Promise<void> | null = null;
+  /** Ids changed (by an event or a write) while a full read is on its way: newer than what it brings back. */
+  private changedDuringRead: Set<string> | null = null;
 
   private onUpdate = (data: any) => this.received(data);
   private onDelete = (data: any) => {
     const id = data?.id;
     if (typeof id !== 'string') return;
+    this.changedDuringRead?.add(id);
     this.vars.delete(id);
     if (this.requested.has(id)) this.homey.api.realtime(VARIABLES_STATE_EVENT, { id, missing: true });
   };
@@ -72,7 +76,7 @@ export default class VariableService {
     private log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
     /** Writes go through the user's personal API key (the app's token may only read variables). */
-    private key = new PersonalApiKey(homey, log),
+    private key = PersonalApiKey.for(homey, log),
   ) {}
 
   start() {
@@ -148,6 +152,7 @@ export default class VariableService {
     // The update event follows, but the next /state shouldn't show the old value until it does.
     const cached = this.vars.get(id);
     if (cached) cached.value = checked;
+    this.changedDuringRead?.add(id);
   }
 
   /** For the diagnostics report: never the values. */
@@ -184,13 +189,31 @@ export default class VariableService {
     return this.connecting;
   }
 
-  private async readAll(tm: Timings) {
+  /** Re-reads every variable; concurrent requests share one read. */
+  private readAll(tm: Timings): Promise<void> {
+    this.reading ??= this.fetchAll(tm).finally(() => { this.reading = null; });
+    return this.reading;
+  }
+
+  private async fetchAll(tm: Timings) {
     const api = await this.ensureConnected(tm);
-    const all = await tm.time('getVariables', () => api.logic.getVariables({ $cache: false })) as Record<string, any>;
-    this.vars.clear();
-    for (const raw of Object.values(all)) {
-      const v = toVariable(raw);
-      if (v) this.vars.set(v.id, v);
+    const changed = new Set<string>();
+    this.changedDuringRead = changed;
+    try {
+      const all = await tm.time('getVariables', () => api.logic.getVariables({ $cache: false })) as Record<string, any>;
+      const next = new Map<string, Variable>();
+      for (const raw of Object.values(all)) {
+        const v = toVariable(raw);
+        if (v && !changed.has(v.id)) next.set(v.id, v);
+      }
+      // An event that came in during the read is newer than the read's answer (a delete stays deleted).
+      for (const id of changed) {
+        const v = this.vars.get(id);
+        if (v) next.set(id, v);
+      }
+      this.vars = next;
+    } finally {
+      if (this.changedDuringRead === changed) this.changedDuringRead = null;
     }
     this.lastRead = Date.now();
     this.lastError = null;
@@ -203,6 +226,7 @@ export default class VariableService {
     const prev = this.vars.get(id);
     const v = toVariable({ ...prev, ...data }); // an item's properties are its own enumerable fields
     if (!v) return;
+    this.changedDuringRead?.add(id);
     this.vars.set(id, v);
     if (this.requested.has(id)) this.homey.api.realtime(VARIABLES_STATE_EVENT, { ...v });
   }

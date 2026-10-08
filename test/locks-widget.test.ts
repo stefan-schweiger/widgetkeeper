@@ -73,6 +73,18 @@ describe('summary', () => {
     expect(widget([back(), { id: 'x', missing: true }]).sub()).toBe('Since 18:12 · 1 unavailable');
     expect(widget([back(null)]).title()).toBe('No status yet');
   });
+
+  it('never says all is locked while a device has no status yet', () => {
+    const one = widget([front(), back(null)]);
+    expect(one.title()).toBe('Back door');
+    expect(one.sub()).toBe('No status yet');
+    expect(one.tile().dataset.level).toBe('unknown');
+    const two = widget([front(null), back(null), garage(), { id: 'x', missing: true }]);
+    expect(two.title()).toBe('2 without status');
+    expect(two.sub()).toBe('Front door, Back door · 1 unavailable');
+    // Something open still comes first.
+    expect(widget([back(null), garage(false)]).title()).toBe('Garage');
+  });
 });
 
 describe('list', () => {
@@ -147,6 +159,7 @@ describe('level', () => {
     expect(win.lockLevel(front())).toBe('secure');
     expect(win.lockLevel(back(false))).toBe('insecure');
     expect(win.lockLevel(back(null))).toBe('unknown');
+    expect(win.lockLevel(front(null))).toBe('unknown'); // the door is closed, but is it locked?
     expect(win.lockLevel({ id: 'x', missing: true })).toBe('missing');
   });
 });

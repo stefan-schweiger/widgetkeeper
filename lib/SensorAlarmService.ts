@@ -1,5 +1,5 @@
 import type Homey from 'homey';
-import { getAppApi } from './appApi.js';
+import { getAppApi, lastUpdatedMs } from './appApi.js';
 import { fetchDeviceIcon } from './deviceIcon.js';
 import Timings from './Timings.js';
 
@@ -38,12 +38,6 @@ type Tracked = {
   lastRequested: number,
 };
 
-/** `lastUpdated` as ms: Homey sends an ISO string. */
-function updatedAt(v: unknown): number | null {
-  const ms = typeof v === 'number' ? v : typeof v === 'string' ? Date.parse(v) : NaN;
-  return Number.isFinite(ms) ? ms : null;
-}
-
 /** Every boolean `alarm_*` capability of the device, custom ones (e.g. `alarm_radon`) included. */
 export function alarmCaps(device: any): SensorAlarm[] {
   const caps = device?.capabilitiesObj || {};
@@ -54,7 +48,7 @@ export function alarmCaps(device: any): SensorAlarm[] {
       title: typeof caps[id].title === 'string' && caps[id].title ? caps[id].title : id,
       value: typeof caps[id].value === 'boolean' ? caps[id].value : null,
       state: STATE_ALARMS.has(id.split('.')[0]),
-      lastUpdated: updatedAt(caps[id].lastUpdated),
+      lastUpdated: lastUpdatedMs(caps[id].lastUpdated),
     }));
 }
 

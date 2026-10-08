@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey } from './helpers/fakeHomey.js';
-import TimerService, { TIMERS_SETTING, TIMERS_STATE_EVENT } from '../lib/TimerService.js';
+import TimerService, { timerDurationText, TIMERS_SETTING, TIMERS_STATE_EVENT } from '../lib/TimerService.js';
+import { readFileSync } from 'node:fs';
+
+const en = JSON.parse(readFileSync('locales/en.json', 'utf8'));
+const da = JSON.parse(readFileSync('locales/da.json', 'utf8'));
 
 const MIN = 60e3;
 
@@ -18,6 +22,19 @@ beforeEach(() => {
   vi.setSystemTime(new Date('2026-10-06T18:40:00+02:00'));
 });
 afterEach(() => { vi.useRealTimers(); });
+
+describe('timerDurationText', () => {
+  const tr = (strings: Record<string, string>) => (key: string, tokens: Record<string, string>) =>
+    strings[key.replace('timers.', '')].replace(/__(\w+)__/g, (_, k) => tokens[k]);
+  it('names a duration as the widget does, for the Flow token', () => {
+    const t = tr(en.timers);
+    expect(timerDurationText(10, t, 'en')).toBe('10 min');
+    expect(timerDurationText(90, t, 'en')).toBe('1 h 30 min');
+    expect(timerDurationText(120, t, 'en')).toBe('2 h');
+    expect(timerDurationText(0.5, t, 'en')).toBe('30 s');
+    expect(timerDurationText(2.5, tr(da.timers), 'da')).toBe(`2,5 ${da.timers.minutes.replace('__minutes__ ', '')}`);
+  });
+});
 
 describe('timers', () => {
   it('starts a timer that rings after its minutes and fires the Flow card', async () => {

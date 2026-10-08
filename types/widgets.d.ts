@@ -16,6 +16,7 @@ interface Window {
   parseVariableNumber: (text: string) => number | null;
   createFlowsWidget: (root: HTMLElement, opts?: object) => object;
   FLOW_BUTTON_ICONS: string[];
+  FLOW_BUTTON_ICON_PATHS: Record<string, { d: string, fill?: boolean }>;
   createPriceWidget: (root: HTMLElement, opts?: object) => object;
   electricityPriceLevel: (price: number | null, prices: (number | null)[]) => 'low' | 'medium' | 'high' | null;
   createTimersWidget: (root: HTMLElement, opts?: object) => object;

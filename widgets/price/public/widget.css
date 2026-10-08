@@ -52,19 +52,26 @@ html, body { background: transparent !important; }
 .pb-tile[data-level] { background: color-mix(in srgb, var(--pb-level) var(--pb-tint-mix), var(--pb-tile)); }
 .pb.no-tint .pb-tile[data-level] { background: var(--pb-tile); }
 
-.pb-cell { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
-.pb-now { flex-grow: 1.2; }
+/* Sized by their content, then the spare room shared out. The lowest (`03:00 · 1.20 kr.`) is the widest value,
+   so it never shrinks and its label doesn't size it (width 0 with a 100 % minimum); the other two give way,
+   cutting a long label (Russian's `Следующий час`) before their price. */
+.pb-cell { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.pb-low { flex-shrink: 0; max-width: 100%; }
+.pb-low .pb-label { width: 0; min-width: 100%; }
 .pb-label {
   display: flex; align-items: center; gap: 6px;
   font-size: var(--pb-fs-label); line-height: var(--pb-lh-label); color: var(--pb-muted);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-/* The level dot before "Now · High": the only level cue when the tint is off. Mixed with the text colour, so
-   yellow still reads on a light tile. */
-.pb-tile[data-level] .pb-now .pb-label::before {
-  content: ''; flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%;
-  background: color-mix(in srgb, var(--pb-level) 85%, var(--pb-text));
+/* A lightning bolt before "Now · High", so the tile reads as electricity at a glance (no room for a title in
+   60 px). It takes the level's colour: the only level cue when the tint is off. Mixed with the text colour, so
+   yellow still reads on a light tile; muted without a level (a fixed price). Device Values' bolt, filled. */
+.pb-now .pb-label::before {
+  content: ''; flex: 0 0 auto; width: 10px; height: 13px; margin-right: -2px; background: var(--pb-muted);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='3.4 1.4 16.2 21.2'%3E%3Cpath d='M13 2 4 14h7l-1 8 9-12h-7z' stroke='%23000' stroke-width='1.2' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='3.4 1.4 16.2 21.2'%3E%3Cpath d='M13 2 4 14h7l-1 8 9-12h-7z' stroke='%23000' stroke-width='1.2' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
 }
+.pb-tile[data-level] .pb-now .pb-label::before { background: color-mix(in srgb, var(--pb-level) 85%, var(--pb-text)); }
 .pb-value {
   /* 17 bold, Homey's own value size. */
   font-size: var(--pb-fs-default); line-height: var(--pb-lh-default); font-weight: var(--pb-bold);

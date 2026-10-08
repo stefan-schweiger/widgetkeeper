@@ -16,7 +16,10 @@ export default {
     const app = homey.app as WidgetkeeperApp;
     const perf = describeWidgetPerf(query.perf);
     if (perf) app.debug(`Price badge widget: ${perf}`);
-    const { prices, fixedPrice, currency, language } = await app.electricity.getSnapshot(null);
+    const { prices, priceError, fixedPrice, currency, language } = await app.electricity.getSnapshot(null);
+    // A failed read is an error (the widget keeps the last prices), not "set them up in Homey Energy".
+    const current = prices[Math.floor(prices.length / 2)];
+    if (priceError && current?.price == null) throw new Error(`Could not read the prices: ${priceError}`);
     return { prices, fixedPrice, currency, language };
   },
 };

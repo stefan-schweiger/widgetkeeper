@@ -53,8 +53,9 @@ describe('render', () => {
   });
 
   it('knows every icon the settings offer', async () => {
-    const { FLOW_ICONS } = await import('../lib/FlowService.js');
-    expect(win.FLOW_BUTTON_ICONS.sort()).toEqual([...FLOW_ICONS].sort());
+    const { FLOW_ICON_PATHS } = await import('../lib/FlowService.js');
+    // The same paths too: the settings' previews are drawn from the service's copy.
+    expect(win.FLOW_BUTTON_ICON_PATHS).toEqual(FLOW_ICON_PATHS);
   });
 });
 

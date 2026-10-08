@@ -127,6 +127,38 @@ describe('taps', () => {
     expect(root.querySelector<HTMLElement>('.tm-presets')!.style.display).toBe(''); // the presets are back
   });
 
+  it('puts the timer back when an action fails', async () => {
+    const { rows, onAction, message } = widget([running('a', 5)]);
+    onAction.mockRejectedValueOnce(new Error('nope'));
+    rows()[0].querySelector<HTMLElement>('.tm-cancel')!.click();
+    expect(rows()).toHaveLength(0);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(rows()).toHaveLength(1);
+    expect(rows()[0].dataset.state).toBe('running');
+    expect(rows()[0].classList.contains('shake')).toBe(true);
+    expect(message().textContent).toBe('Could not change the timer.');
+    onAction.mockRejectedValueOnce(new Error('nope'));
+    rows()[0].click();
+    expect(rows()[0].dataset.state).toBe('paused');
+    await vi.advanceTimersByTimeAsync(0);
+    expect(rows()[0].dataset.state).toBe('running');
+  });
+
+  it('sends what was done to a timer before its start was answered', async () => {
+    let answer: (v: any) => void = () => {};
+    const { presets, rows, onStart, onAction } = widget();
+    onStart.mockImplementationOnce(() => new Promise(res => { answer = res; }));
+    presets()[0].click();
+    rows()[0].click(); // pause
+    rows()[0].querySelector<HTMLElement>('.tm-cancel')!.click();
+    expect(onAction).not.toHaveBeenCalled();
+    expect(rows()).toHaveLength(0);
+    answer({ timers: [running('real', 5, { duration: 5 * MIN })], now: Date.now() });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(onAction.mock.calls).toEqual([['real', 'pause'], ['real', 'cancel']]);
+    expect(rows()).toHaveLength(0);
+  });
+
   it('dismisses a finished timer with a tap', () => {
     const { rows, onAction } = widget([running('a', 0, { doneAt: Date.now() })]);
     rows()[0].click();

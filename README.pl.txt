@@ -1,23 +1,5 @@
-Widgetkeeper dodaje widżety pulpitu, które wyglądają jak część Homey.
+Widgetkeeper dodaje widżety pulpitu, które wyglądają jak część Homey. Każdy z nich zaprojektowano tak, by naturalnie pasował do wbudowanych widżetów Homey, z tym samym wyglądem i stylem.
 
-Każdy z nich zaprojektowano tak, by naturalnie pasował do wbudowanych widżetów Homey, z tym samym wyglądem i stylem.
-
-Dołączone widżety:
-- Przegląd energii: bieżące zużycie, ceny godzinowe i historia zużycia na jednej karcie.
-- Skróty termostatu: trzy ustawienia jednym dotknięciem dla termostatu, pompy ciepła lub klimatyzatora.
-- Szybkie akcje urządzeń: kompaktowe kafelki, które wykonują szybką akcję urządzenia, np. włączają światło lub zamykają drzwi.
-- Alarmy czujników: kafelki, które pokazują, czy czujnik ma alarm, np. dymu, wody lub CO₂, i zmieniają kolor na czerwony, gdy go ma.
-- Kropki czujników: czujniki ruchu i kontaktu jako siatka kropek, szarych w spoczynku i niebieskich, gdy są aktywne (oba kolory można zmienić). Dotknij kropki, aby zobaczyć nazwę czujnika, jego stan i od kiedy.
-- Prognoza pogody: ikona, temperatura, wiatr i opady godzina po godzinie na najbliższe 36 godzin, z MET Norway (yr.no).
-- Mapa cieplna Insights: tydzień jednej wartości, np. światła, temperatury lub ruchu, jako siatka dni i godzin.
-- Kamery: od dwóch do sześciu kamer w jednej siatce zdjęć odświeżanych co kilka sekund. Dotknij kamery, aby oglądać ją na żywo.
-- Wartości urządzeń: kompaktowe kafelki, z których każdy pokazuje jedną wartość, np. temperaturę, poziom baterii lub wł./wył. Flow może kolorować kafelki, np. na czerwono, gdy czujnik jest za ciepły.
-- Sterowanie światłem: kompaktowe kafelki z jasnością, kolorem i temperaturą barwową, sześć świateł w miejscu trzech.
-- Miniwykresy: kompaktowe kafelki z małym wykresem wartości z ostatniej godziny, 6 godzin, doby lub tygodnia, z minimum i maksimum.
-- Zmienne Flow: kompaktowe wiersze do włączania i wyłączania zmiennych Flow lub zmiany liczby albo tekstu, z pełną nazwą.
-- Przyciski Flow: uruchamiaj Flow jednym dotknięciem, każdy jako okrągły przycisk w wybranym kolorze i z wybraną ikoną, z nazwą Flow, w 1 lub 2 kolumnach.
-- Plakietka ceny: cena prądu teraz, w następnej godzinie i najtańsza nadchodząca godzina na jednym kompaktowym kafelku, w kolorze zielonym, żółtym lub czerwonym wg dzisiejszych cen.
-- Minutniki: minutniki kuchenne z przyciskami ustawień, z pozostałym czasem, pauzą, dodatkową minutą i sygnałem na koniec. Gdy minutnik się skończy, uruchamia się karta Flow.
-- Zamki i drzwi: jeden wiersz mówi, czy wszystkie zamki, drzwi i bramy garażowe są zamknięte. Dotknij go, by zobaczyć każde urządzenie i je zamknąć.
+Widżety obejmują energię, z bieżącym zużyciem prądu, cenami godzinowymi i kompaktową plakietką ceny; klimat, z ustawieniami termostatu, prognozą pogody na 36 godzin, mapami cieplnymi i małymi wykresami dowolnej wartości czujnika; bezpieczeństwo, z alarmami czujników, czujnikami ruchu i drzwi w jednym spojrzeniu, kamerami z podglądem na żywo oraz zamkami i drzwiami; a także codzienne sterowanie, z szybkimi akcjami, sterowaniem światłem z kolorami, wartościami urządzeń, zmiennymi Flow, przyciskami Flow i minutnikami kuchennymi. Wiele z nich to kompaktowe kafelki, więc na pulpicie zmieści się więcej.
 
 Dane pogodowe: MET Norway, licencja CC BY 4.0.

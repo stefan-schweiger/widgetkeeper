@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
-import FlowService, { FLOW_ICONS, parseFlowId } from '../lib/FlowService.js';
+import FlowService, { FLOW_ICON_PATHS, FLOW_ICONS, parseFlowId } from '../lib/FlowService.js';
+import { FLOW_ICON_IMAGES } from '../lib/flowIconImages.js';
 import { API_KEY_SETTING } from '../lib/PersonalApiKey.js';
 
 vi.mock('homey-api', () => homeyApiMock);
@@ -68,10 +69,29 @@ describe('listFlows', () => {
     expect((await service.listFlows('movie')).map(i => i.id)).toEqual(['advanced:a1']);
   });
 
+  it('shares a read between keystrokes, but reads a minute-old one again', async () => {
+    const { service, flow } = setup();
+    await service.getState(['flow:f1']);
+    vi.advanceTimersByTime(30e3);
+    await service.listFlows('');
+    expect(flow.getFlows).toHaveBeenCalledTimes(2);
+    await service.listFlows('g');
+    await service.listFlows('go');
+    await service.getState(['flow:f1']);
+    expect(flow.getFlows).toHaveBeenCalledTimes(2);
+  });
+
   it('lists the icons', () => {
     const { service } = setup();
-    expect(service.listIcons('').map(i => i.id)).toEqual([...FLOW_ICONS]);
+    // Alphabetical by name (the fake Homey has no strings, so the names are the ids).
+    expect(service.listIcons('').map(i => i.id)).toEqual([...FLOW_ICONS].sort());
     expect(service.listIcons('moo').map(i => i.id)).toEqual(['moon']);
+    expect(service.listIcons('moo')[0].image).toMatch(/^data:image\/png;base64,/);
+  });
+
+  it('has a preview of every icon, rendered from its current path (else run `npm run flow-icons`)', () => {
+    expect(Object.keys(FLOW_ICON_IMAGES).sort()).toEqual([...FLOW_ICONS].sort());
+    for (const id of FLOW_ICONS) expect(FLOW_ICON_IMAGES[id].d, id).toBe(FLOW_ICON_PATHS[id].d);
   });
 });
 

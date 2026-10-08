@@ -1,23 +1,5 @@
-Widgetkeeper fügt Dashboard-Widgets hinzu, die sich wie ein Teil von Homey anfühlen.
+Widgetkeeper fügt Dashboard-Widgets hinzu, die sich wie ein Teil von Homey anfühlen. Jedes ist so gestaltet, dass es sich mit demselben Look and Feel natürlich neben die eingebauten Widgets von Homey einfügt.
 
-Jedes ist so gestaltet, dass es sich mit demselben Look and Feel natürlich neben die eingebauten Widgets von Homey einfügt.
-
-Enthaltene Widgets:
-- Stromübersicht: aktueller Verbrauch, Stundenpreise und Verbrauchsverlauf auf einer Karte.
-- Thermostat-Schnelltasten: drei Voreinstellungen per Tippen für Thermostat, Wärmepumpe oder Klimaanlage.
-- Geräte-Schnellaktionen: kompakte Kacheln, die die Schnellaktion eines Geräts ausführen, etwa ein Licht einschalten oder eine Tür abschließen.
-- Sensoralarme: Kacheln, die zeigen, ob ein Sensor einen Alarm hat, etwa Rauch, Wasser oder CO₂, und dann rot werden.
-- Sensorpunkte: Bewegungs- und Kontaktsensoren als Punkteraster, grau in Ruhe und blau, wenn aktiv (beide Farben lassen sich ändern). Tippe auf einen Punkt, um Name, Zustand und seit wann zu sehen.
-- Wettervorhersage: Symbol, Temperatur, Wind und Niederschlag Stunde für Stunde für die nächsten 36 Stunden, von MET Norway (yr.no).
-- Insights-Heatmap: eine Woche eines Werts, etwa Licht, Temperatur oder Bewegung, als Raster aus Wochentagen und Stunden.
-- Kameras: zwei bis sechs Kameras in einem Raster aus Schnappschüssen, die sich alle paar Sekunden erneuern. Tippe auf eine für das Livebild.
-- Gerätewerte: kompakte Kacheln, die jeweils einen Wert zeigen, etwa eine Temperatur, einen Akkustand oder Ein/Aus. Ein Flow kann die Kacheln einfärben, etwa rot, wenn ein Sensor zu warm ist.
-- Lichtsteuerung: kompakte Lichtkacheln mit Helligkeit, Farbe und Farbtemperatur, sechs Lampen auf dem Platz von dreien.
-- Sparklines: kompakte Kacheln mit einem kleinen Diagramm eines Werts über die letzte Stunde, 6 Stunden, den Tag oder die Woche, mit Tiefst- und Höchstwert.
-- Flow-Variablen: kompakte Zeilen, um Flow-Variablen ein- und auszuschalten oder eine Zahl oder einen Text zu ändern, mit vollem Namen.
-- Flow-Tasten: Flows mit einem Tippen starten, jeder eine runde Taste in der gewählten Farbe und mit dem gewählten Symbol, dazu der Name des Flows, in 1 oder 2 Spalten.
-- Preis-Badge: der Strompreis jetzt, der der nächsten Stunde und die günstigste kommende Stunde in einer kompakten Kachel, grün, gelb oder rot nach den heutigen Preisen.
-- Timer: Küchentimer mit Schnellwahltasten, mit der Restzeit, Pause, einer Minute mehr und einem Piepton am Ende. Eine Flow-Karte löst aus, wenn ein Timer abläuft.
-- Schlösser und Türen: eine Zeile, die sagt, ob alle Schlösser, Türen und Garagentore verriegelt und geschlossen sind. Tippe darauf, um jedes zu sehen und zu verriegeln oder zu schließen.
+Die Widgets decken Energie ab, mit aktuellem Stromverbrauch, stündlichen Strompreisen und einem kompakten Preis-Badge; Klima, mit Thermostat-Voreinstellungen, einer 36-Stunden-Wettervorhersage, Heatmaps und kleinen Diagrammen beliebiger Sensorwerte; Sicherheit, mit Sensoralarmen, Bewegungs- und Türsensoren auf einen Blick, Kameras mit Live-Ansicht sowie Schlössern und Türen; und die tägliche Steuerung, mit Schnellaktionen, Lichtsteuerung mit Farben, Gerätewerten, Flow-Variablen, Flow-Buttons und Küchentimern. Viele davon sind kompakte Kacheln, sodass mehr auf ein Dashboard passt.
 
 Wetterdaten von MET Norway, lizenziert unter CC BY 4.0.

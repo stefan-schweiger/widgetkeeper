@@ -1,23 +1,5 @@
-Widgetkeeper tilføjer dashboard-widgets, der føles som en del af Homey.
+Widgetkeeper tilføjer dashboard-widgets, der føles som en del af Homey. Hver enkelt er designet til at passe naturligt ind ved siden af Homeys egne widgets, med samme udseende og fornemmelse.
 
-Hver enkelt er designet til at passe naturligt ind ved siden af Homeys egne widgets, med samme udseende og fornemmelse.
-
-Inkluderede widgets:
-- Strømoverblik: aktuelt forbrug, timepriser og forbrugshistorik på ét kort.
-- Termostatgenveje: tre forvalg med ét tryk til en termostat, varmepumpe eller aircondition.
-- Hurtighandlinger for enheder: kompakte felter, der udfører en enheds hurtighandling, fx at tænde et lys eller låse en dør.
-- Sensoralarmer: felter, der viser, om en sensor har en alarm, fx røg, vand eller CO₂, og bliver røde, når den har.
-- Sensorprikker: bevægelses- og kontaktsensorer som et gitter af prikker, grå i ro og blå, når de er aktive (begge farver kan ændres). Tryk på en prik for at se sensorens navn, tilstand og siden hvornår.
-- Vejrudsigt: ikon, temperatur, vind og nedbør time for time de næste 36 timer, fra MET Norway (yr.no).
-- Insights-heatmap: en uge af én værdi, fx lys, temperatur eller bevægelse, som et gitter af ugedage og timer.
-- Kameraer: to til seks kameraer i ét gitter af billeder, der opdateres med få sekunders mellemrum. Tryk på et for at se det live.
-- Enhedsværdier: kompakte felter, der hver viser én værdi, som en temperatur, et batteriniveau eller til/fra. Et flow kan farve felterne, fx rødt når en sensor er for varm.
-- Lysstyring: kompakte lysfelter med lysstyrke, farve og farvetemperatur, seks lys på pladsen af tre.
-- Minigrafer: kompakte felter med en lille graf over en værdi den seneste time, de seneste 6 timer, døgnet eller ugen, med laveste og højeste værdi.
-- Flowvariabler: kompakte rækker til at slå flowvariabler til og fra eller ændre et tal eller en tekst, med hele navnet.
-- Flowknapper: start flows med ét tryk, hver en rund knap i den farve og med det ikon, du vælger, og flowets navn, i 1 eller 2 kolonner.
-- Prismærke: elprisen nu, næste times pris og den billigste kommende time i ét kompakt felt, farvet grønt, gult eller rødt efter dagens priser.
-- Timere: køkkentimere med genvejsknapper, med tid tilbage, pause, et minut mere og et bip, når de er færdige. Et Flow-kort udløses, når en timer er færdig.
-- Låse og døre: én linje, der siger, om alle låse, døre og garageporte er låst og lukket. Tryk for at se hver enkelt og låse eller lukke den.
+Widgets'ene dækker energi, med aktuelt strømforbrug, timepriser og et kompakt prismærke; klima, med termostatforvalg, en vejrudsigt for 36 timer, heatmaps og små grafer over enhver sensorværdi; sikkerhed, med sensoralarmer, bevægelses- og dørsensorer i ét blik, kameraer med live-visning samt låse og døre; og daglig styring, med hurtighandlinger, lysstyring med farver, enhedsværdier, flowvariabler, flowknapper og køkkentimere. Mange af dem er kompakte felter, så der er plads til mere på et dashboard.
 
 Vejrdata fra MET Norway, licenseret under CC BY 4.0.

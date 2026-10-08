@@ -166,10 +166,10 @@
     presetsEl.style.setProperty('--tm-presets', String(Math.max(1, presets.length)));
     for (const p of presets) {
       const chip = el('div', { class: 'tm-preset', role: 'button', tabindex: '0' }, presetsEl);
-      const top = el('div', { class: 'tm-preset-top' }, chip);
-      top.appendChild(glyph('play'));
-      el('span', { class: 'tm-preset-name', dir: 'auto', text: p.label || durationText(p.minutes) }, top);
-      if (p.label) el('div', { class: 'tm-preset-time', text: durationText(p.minutes) }, chip);
+      chip.appendChild(glyph('play'));
+      const text = el('div', { class: 'tm-preset-text' }, chip);
+      el('div', { class: 'tm-preset-name', dir: 'auto', text: p.label || durationText(p.minutes) }, text);
+      if (p.label) el('div', { class: 'tm-preset-time', text: durationText(p.minutes) }, text);
       onTap(chip, () => start(p));
     }
     const list = el('div', { class: 'tm-list' }, root);
@@ -202,6 +202,8 @@
       try { if (opts.onHaptic) opts.onHaptic(); } catch (err) { /* not on every platform */ }
     }
 
+    let starting = null; // { local, actions } while a /start is on its way: taps on the local timer wait for its id
+
     async function start(preset) {
       unlockAudio();
       haptic();
@@ -210,47 +212,73 @@
       const before = timers;
       const local = { id: `local-${++localId}`, label: preset.label, duration: preset.minutes * MINUTE,
         endsAt: now + preset.minutes * MINUTE, remaining: null, doneAt: null };
+      const pending = { local, actions: [] };
+      starting = pending;
       timers = [local];
       render();
+      let state = null;
       try {
-        const state = opts.onStart ? await opts.onStart(preset.minutes, preset.label) : null;
-        if (state) setState(state);
+        state = opts.onStart ? await opts.onStart(preset.minutes, preset.label) : null;
       } catch (err) {
         console.error(err);
-        if (timers[0] === local) timers = before;
+        if (starting === pending) starting = null;
+        if (timers.some(x => x.id === local.id)) timers = before;
         setMessage(t('failed'), true);
+        return;
       }
+      if (starting === pending) starting = null;
+      if (state) setState(state);
+      // What was done to the local timer meanwhile now goes to the app, in order.
+      const started = state && Array.isArray(state.timers) ? state.timers[state.timers.length - 1] : null;
+      if (!started) return;
+      for (const action of pending.actions) await act(started.id, action, true);
     }
 
-    /** Applies an action at once (as the app will), then sends it; the app's answer replaces the timers. */
-    async function act(id, action) {
-      unlockAudio();
-      haptic();
+    /** The timer after `action`, as the app will make it (null when it's gone). */
+    function applied(tm, action, now) {
+      if (action === 'cancel' || action === 'dismiss') return null;
+      const next = { ...tm };
+      if (action === 'pause' && next.endsAt != null) { next.remaining = Math.max(0, next.endsAt - now); next.endsAt = null; }
+      if (action === 'resume' && next.remaining != null) { next.endsAt = now + next.remaining; next.remaining = null; }
+      if (action === 'add') {
+        next.duration += MINUTE;
+        if (next.endsAt != null) next.endsAt += MINUTE;
+        if (next.remaining != null) next.remaining += MINUTE;
+      }
+      return next;
+    }
+
+    /**
+     * Applies an action at once (as the app will), then sends it; the app's answer replaces the timers.
+     * A failure puts the timer back as it was, unless something has replaced it since.
+     */
+    async function act(id, action, quiet) {
+      if (!quiet) { unlockAudio(); haptic(); }
       const tm = timers.find(x => x.id === id);
       if (!tm) return;
-      const now = serverNow();
-      if (action === 'pause' && tm.endsAt != null) { tm.remaining = Math.max(0, tm.endsAt - now); tm.endsAt = null; }
-      if (action === 'resume' && tm.remaining != null) { tm.endsAt = now + tm.remaining; tm.remaining = null; }
-      if (action === 'add') {
-        tm.duration += MINUTE;
-        if (tm.endsAt != null) tm.endsAt += MINUTE;
-        if (tm.remaining != null) tm.remaining += MINUTE;
-      }
-      if (action === 'cancel' || action === 'dismiss') timers = timers.filter(x => x !== tm);
+      const before = timers;
+      const next = applied(tm, action, serverNow());
+      timers = next ? timers.map(x => (x === tm ? next : x)) : timers.filter(x => x !== tm);
+      const after = timers;
       render();
-      if (String(id).startsWith('local-')) return; // not in the app yet
+      if (String(id).startsWith('local-')) {
+        // Not in the app yet: sent once /start answers with its id.
+        if (starting && starting.local.id === id) starting.actions.push(action);
+        return;
+      }
       try {
         const state = opts.onAction ? await opts.onAction(id, action) : null;
         if (state) setState(state);
       } catch (err) {
         console.error(err);
+        if (timers === after) timers = before;
+        setMessage(t('failed'), true);
         const row = rows.get(id);
         if (row) {
           row.row.classList.remove('shake');
           void row.row.offsetWidth;
           row.row.classList.add('shake');
         }
-        setMessage(t('failed'), true);
       }
     }
 

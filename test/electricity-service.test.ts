@@ -73,6 +73,21 @@ describe('price slots', () => {
     expect(prices.slice(tomorrow).every(p => p.price == null)).toBe(true);
   });
 
+  it("reports an error only when today's prices failed", async () => {
+    const tomorrowFails = setup({
+      prices: ({ date }) => { if (date === '2026-01-16') throw new Error('Not published yet'); return dayPrices(date); },
+    });
+    expect((await tomorrowFails.service.getSnapshot(null)).priceError).toBeNull();
+    const todayFails = setup({
+      prices: ({ date }) => { if (date === '2026-01-15') throw new Error('Too many requests.'); return dayPrices(date); },
+    });
+    const snap = await todayFails.service.getSnapshot(null);
+    expect(snap.priceError).toBe('Too many requests.');
+    expect(snap.prices[24].price).toBeNull();
+    const notSetUp = setup({ prices: () => ({}) });
+    expect((await notSetUp.service.getSnapshot(null)).priceError).toBeNull();
+  });
+
   it('keeps complete days cached and retries partial ones after 15 minutes', async () => {
     const { service, api } = setup({ prices: ({ date }) => (date === '2026-01-16' ? {} : dayPrices(date)) });
     await service.getSnapshot(null);

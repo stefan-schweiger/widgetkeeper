@@ -21,7 +21,7 @@ const BACKFILL_TTL = 5 * MINUTE;
 
 export const HISTORY_SETTING = 'heatmapHistory';
 
-export type AutocompleteItem = { name: string, description?: string, id: string };
+export type AutocompleteItem = { name: string, description?: string, image?: string, id: string };
 
 export type HeatmapCapability = {
   id: string,

@@ -49,14 +49,14 @@ describe('render', () => {
   it('shows the price now with its level, the next hour and the lowest in 12 hours', () => {
     const { cell, tile } = widget(snapshot());
     expect(cell('now')).toEqual(['Now · High', '2.58 kr.']);
-    expect(cell('next')).toEqual(['Next hour', '↓ 2.50']);
-    expect(cell('low')).toEqual(['Lowest 12h', '03:00 · 1.20']);
+    expect(cell('next')).toEqual(['Next hour', '↓ 2.50 kr.']);
+    expect(cell('low')).toEqual(['Lowest 12h', '03:00 · 1.20 kr.']);
     expect(tile().dataset.level).toBe('high');
   });
 
   it('looks 24 hours ahead, says Now when the lowest is now, and hides what is turned off', () => {
     const cheapNow = snapshot((p, start) => (start.getHours() === 18 && start.getDate() === 6 ? 0.5 : p));
-    expect(widget(cheapNow, { nextLow: '24' }).cell('low')).toEqual(['Lowest 24h', 'Now · 0.50']);
+    expect(widget(cheapNow, { nextLow: '24' }).cell('low')).toEqual(['Lowest 24h', 'Now · 0.50 kr.']);
     const { cell } = widget(snapshot(), { showNext: false, nextLow: 'none' });
     expect(cell('next')).toBe(null);
     expect(cell('low')).toBe(null);
@@ -81,7 +81,7 @@ describe('render', () => {
     const { cell } = widget(snapshot());
     vi.advanceTimersByTime(40 * 60e3 + 100);
     expect(cell('now')).toEqual(['Now · High', '2.50 kr.']);
-    expect(cell('next')).toEqual(['Next hour', '↓ 2.15']);
+    expect(cell('next')).toEqual(['Next hour', '↓ 2.15 kr.']);
   });
 
   it('keeps the prices on a failed refresh', () => {

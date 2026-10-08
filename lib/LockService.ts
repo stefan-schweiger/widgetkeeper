@@ -1,5 +1,5 @@
 import type Homey from 'homey';
-import { getAppApi } from './appApi.js';
+import { getAppApi, lastUpdatedMs } from './appApi.js';
 import { fetchDeviceIcon } from './deviceIcon.js';
 import Timings from './Timings.js';
 
@@ -39,12 +39,6 @@ export function lockCaps(device: any): LockCapId[] {
   return (Object.keys(LOCK_CAPS) as LockCapId[]).filter(id => caps[id]);
 }
 
-/** Homey's `lastUpdated` is an ISO string (checked 2026-10-08); ms, or null. */
-function updatedAt(v: unknown): number | null {
-  const ms = typeof v === 'number' ? v : typeof v === 'string' ? Date.parse(v) : NaN;
-  return Number.isFinite(ms) ? ms : null;
-}
-
 function readCaps(device: any): Partial<Record<LockCapId, LockCap>> {
   const out: Partial<Record<LockCapId, LockCap>> = {};
   for (const id of lockCaps(device)) {
@@ -52,7 +46,7 @@ function readCaps(device: any): Partial<Record<LockCapId, LockCap>> {
     out[id] = {
       value: c.value ?? null,
       setable: SETTABLE_LOCK_CAPS.includes(id) && c.setable !== false,
-      lastUpdated: updatedAt(c.lastUpdated),
+      lastUpdated: lastUpdatedMs(c.lastUpdated),
     };
   }
   return out;
@@ -97,7 +91,11 @@ export default class LockService {
     return out;
   }
 
-  /** Locks or unlocks a lock, or closes or opens a garage door. Nothing else can be set. */
+  /**
+   * Locks or unlocks a lock, or closes or opens a garage door. Nothing else can be set. The widget's `allowUnlock`
+   * can't be checked here (a widget API call doesn't carry its widget's settings); the caller is a signed-in user,
+   * who can unlock it in the Homey app anyway.
+   */
   async set(deviceId: string, capabilityId: unknown, value: unknown) {
     if (!SETTABLE_LOCK_CAPS.includes(capabilityId as LockCapId)) throw new Error(`Can't set ${JSON.stringify(capabilityId)}`);
     if (typeof value !== 'boolean') throw new Error(`Invalid value ${JSON.stringify(value)}`);
