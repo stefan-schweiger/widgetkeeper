@@ -225,9 +225,11 @@
         [
           { type: 'electricity', settings: { liveWindow: 30, nextLow: 'none', smooth: true }, data: electricity() },
           heatPump,
-          { type: 'variables', opts: { columns: '2' }, vars: [
-            { id: 'f1', name: 'Away mode', type: 'boolean', value: false },
-            { id: 'f2', name: 'Guests staying over', type: 'boolean', value: true },
+          { type: 'flows', opts: { columns: '2', buttons: [
+            { id: 'flow:1', color: 'purple', icon: 'moon' }, { id: 'flow:2', color: 'yellow', icon: 'sun' },
+          ] }, flows: [
+            { id: 'flow:1', name: 'Good night', enabled: true, triggerable: true, advanced: false },
+            { id: 'flow:2', name: 'Good morning', enabled: true, triggerable: true, advanced: false },
           ] },
         ],
         [

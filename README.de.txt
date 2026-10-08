@@ -15,5 +15,6 @@ Enthaltene Widgets:
 - Lichtsteuerung: kompakte Lichtkacheln mit Helligkeit, Farbe und Farbtemperatur, sechs Lampen auf dem Platz von dreien.
 - Sparklines: kompakte Kacheln mit einem kleinen Diagramm eines Werts über die letzte Stunde, 6 Stunden, den Tag oder die Woche, mit Tiefst- und Höchstwert.
 - Flow-Variablen: kompakte Zeilen, um Flow-Variablen ein- und auszuschalten oder eine Zahl oder einen Text zu ändern, mit vollem Namen.
+- Flow-Tasten: Flows mit einem Tippen starten, jeder eine runde Taste in der gewählten Farbe und mit dem gewählten Symbol, dazu der Name des Flows, in 1 oder 2 Spalten.
 
 Wetterdaten von MET Norway, lizenziert unter CC BY 4.0.

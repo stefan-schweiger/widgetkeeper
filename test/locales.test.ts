@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 // Every language Homey supports.
 const LANGS = ['en', 'nl', 'de', 'fr', 'it', 'sv', 'no', 'es', 'da', 'ru', 'pl', 'ko', 'ar'];
-const COMPOSE = ['.homeycompose/app.json', 'widgets/electricity/widget.compose.json', 'widgets/thermostat/widget.compose.json', 'widgets/quickactions/widget.compose.json', 'widgets/sensoralarms/widget.compose.json', 'widgets/sensordots/widget.compose.json', 'widgets/weather/widget.compose.json', 'widgets/heatmap/widget.compose.json', 'widgets/cameras/widget.compose.json', 'widgets/values/widget.compose.json', 'widgets/lights/widget.compose.json', 'widgets/sparklines/widget.compose.json', 'widgets/variables/widget.compose.json', '.homeycompose/flow/actions/values_set_color.json'];
+const COMPOSE = ['.homeycompose/app.json', 'widgets/electricity/widget.compose.json', 'widgets/thermostat/widget.compose.json', 'widgets/quickactions/widget.compose.json', 'widgets/sensoralarms/widget.compose.json', 'widgets/sensordots/widget.compose.json', 'widgets/weather/widget.compose.json', 'widgets/heatmap/widget.compose.json', 'widgets/cameras/widget.compose.json', 'widgets/values/widget.compose.json', 'widgets/lights/widget.compose.json', 'widgets/sparklines/widget.compose.json', 'widgets/variables/widget.compose.json', 'widgets/flows/widget.compose.json', '.homeycompose/flow/actions/values_set_color.json'];
 
 const readJson = (path: string) => JSON.parse(readFileSync(path, 'utf8'));
 

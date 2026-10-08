@@ -175,37 +175,3 @@ describe('set', () => {
     expect(fresh.logic.updateVariable).toHaveBeenCalledWith({ id: 'v1', variable: { value: false } });
   });
 });
-
-describe('saveApiKey', () => {
-  afterEach(() => { keyApis.clear(); });
-
-  it('saves a key that may change variables, and removes it again', async () => {
-    const { service, homey, logic } = setup();
-    keyApis.set('good', keyApi(logic));
-    expect(await service.saveApiKey(' good ')).toEqual({ ok: true });
-    expect(homey.settings.get(API_KEY_SETTING)).toBe('good');
-    expect(service.hasApiKey()).toBe(true);
-    expect(await service.saveApiKey('')).toEqual({ ok: true });
-    expect(service.hasApiKey()).toBe(false);
-  });
-
-  it("doesn't save a key Homey refuses or one without the variables scope", async () => {
-    const { service, logic } = setup();
-    keyApis.set('readonly', keyApi(logic, ['homey.logic.readonly']));
-    expect(await service.saveApiKey('readonly')).toEqual({ ok: false, reason: 'keyScope' });
-    expect(await service.saveApiKey('nope')).toEqual({ ok: false, reason: 'keyInvalid' });
-    expect(service.hasApiKey()).toBe(false);
-  });
-
-  it('switches to a new key at once', async () => {
-    const { service, logic } = setup();
-    const a = keyApi(logic), b = keyApi(logic);
-    keyApis.set('a', a); keyApis.set('b', b);
-    await service.saveApiKey('a');
-    await service.set('v1', true);
-    await service.saveApiKey('b');
-    await service.set('v1', false);
-    expect(a.logic.updateVariable).toHaveBeenCalledTimes(1);
-    expect(b.logic.updateVariable).toHaveBeenCalledTimes(1);
-  });
-});

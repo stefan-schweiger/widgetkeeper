@@ -15,5 +15,6 @@ Inkluderede widgets:
 - Lysstyring: kompakte lysfelter med lysstyrke, farve og farvetemperatur, seks lys på pladsen af tre.
 - Minigrafer: kompakte felter med en lille graf over en værdi den seneste time, de seneste 6 timer, døgnet eller ugen, med laveste og højeste værdi.
 - Flowvariabler: kompakte rækker til at slå flowvariabler til og fra eller ændre et tal eller en tekst, med hele navnet.
+- Flowknapper: start flows med ét tryk, hver en rund knap i den farve og med det ikon, du vælger, og flowets navn, i 1 eller 2 kolonner.
 
 Vejrdata fra MET Norway, licenseret under CC BY 4.0.

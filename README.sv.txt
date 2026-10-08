@@ -15,5 +15,6 @@ Ingående widgetar:
 - Ljusreglage: kompakta ljusrutor med ljusstyrka, färg och färgtemperatur, sex lampor på samma plats som tre.
 - Minidiagram: kompakta rutor med ett litet diagram över ett värde den senaste timmen, de senaste 6 timmarna, dygnet eller veckan, med lägsta och högsta värde.
 - Flödesvariabler: kompakta rader för att slå på och av flödesvariabler eller ändra ett tal eller en text, med hela namnet.
+- Flödesknappar: starta flöden med ett tryck, varje en rund knapp i den färg och med den ikon du väljer, med flödets namn, i 1 eller 2 kolumner.
 
 Väderdata från MET Norway, licensierad under CC BY 4.0.

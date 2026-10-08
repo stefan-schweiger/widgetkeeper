@@ -1,0 +1,115 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/flows-preview.html).
+ * The row copies Flow Variables' (widgets/variables/public/widget.css), which copies Device Quick Actions' tile.
+ */
+.fb {
+  --fb-tile: var(--homey-background-color, #FFFFFF);
+  --fb-text: var(--homey-text-color, #EDEEF0);
+  --fb-muted: var(--homey-text-color-light, #9C9DA5);
+  --fb-neutral: color-mix(in srgb, var(--fb-text) 8%, var(--fb-tile)); /* the grey button: Flow Variables' −/+ */
+  /* The colour setting (data-color on .fb-row): Device Values' Flow colours plus grey. */
+  --fb-c-blue: var(--homey-color-blue, #2F8DF6);
+  --fb-c-red: var(--homey-color-red, #F25F5C);
+  --fb-c-orange: var(--homey-color-orange, #F07A1F);
+  --fb-c-yellow: #F5C518;
+  --fb-c-green: var(--homey-color-green, #71D51B);
+  --fb-c-purple: #9033FC;
+  --fb-on-color: #FFFFFF; /* the icon on a coloured button */
+  --fb-on-light: #1A1B21; /* the icon on yellow and green, which are too light for white */
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --fb-fs-small: var(--homey-font-size-small, 14px); --fb-lh-small: var(--homey-line-height-small, 20px);
+  --fb-bold: var(--homey-font-weight-bold, 700);
+  --fb-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+}
+/* Dark mode: each row looks like a native device tile, darker than the default widget background. */
+.homey-dark-mode .fb, .fb.homey-dark-mode { --fb-tile: #181920; --fb-neutral: #2E3039; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
+html, body { background: transparent !important; }
+
+.fb { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--fb-text);
+  container: fb / inline-size; }
+.fb * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.fb [dir="auto"] { text-align: left; }
+
+.fb-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--homey-su-2, 8px); }
+.fb[data-columns="2"] .fb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Two columns need room for a name beside the button; a narrow widget (300 px) gets one. */
+@container fb (max-width: 299px) {
+  .fb[data-columns="2"] .fb-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* A compact row (48px, like Flow Variables): the round button, then the name. */
+.fb-row {
+  position: relative; color: var(--fb-text); outline: none;
+  background: var(--fb-tile); border-radius: var(--fb-radius); padding: 8px 12px 8px 8px; min-width: 0; min-height: 48px;
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+  transition: transform .1s;
+}
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .fb-row::after, .fb.homey-dark-mode .fb-row::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.fb-row:focus-visible { box-shadow: 0 0 0 2px var(--fb-c-blue); }
+.fb-row.pressing { transform: scale(.98); }
+.fb-row.missing { cursor: default; }
+.fb-row.missing > *, .fb-row.unavailable > * { opacity: .5; }
+
+/* The round button: 32 px, like Flow Variables' −/+, in the row's colour with a 18 px icon. */
+.fb-button {
+  --fb-color: var(--fb-c-blue);
+  position: relative; flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--fb-color); color: var(--fb-on-color);
+  display: flex; align-items: center; justify-content: center; transition: transform .1s;
+}
+.fb-row[data-color="red"] .fb-button { --fb-color: var(--fb-c-red); }
+.fb-row[data-color="orange"] .fb-button { --fb-color: var(--fb-c-orange); }
+.fb-row[data-color="yellow"] .fb-button { --fb-color: var(--fb-c-yellow); color: var(--fb-on-light); }
+.fb-row[data-color="green"] .fb-button { --fb-color: var(--fb-c-green); color: var(--fb-on-light); }
+.fb-row[data-color="purple"] .fb-button { --fb-color: var(--fb-c-purple); }
+.fb-row[data-color="grey"] .fb-button { --fb-color: var(--fb-neutral); color: var(--fb-text); }
+.fb-row.pressing .fb-button { transform: scale(.9); }
+.fb-row.missing .fb-button { background: none; box-shadow: inset 0 0 0 1.5px var(--fb-muted); color: var(--fb-muted); }
+
+.fb-glyph { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round; }
+.fb-glyph .filled { fill: currentColor; stroke: none; }
+/* While the flow starts, a ring spins around the button and the icon fades. */
+.fb-row.running .fb-glyph { opacity: .45; }
+.fb-row.running .fb-button::after {
+  content: ''; position: absolute; inset: -4px; border-radius: 50%;
+  border: 2px solid transparent; border-top-color: var(--fb-color); border-right-color: var(--fb-color);
+  animation: fb-spin .7s linear infinite;
+}
+.fb-row[data-color="grey"].running .fb-button::after { border-top-color: var(--fb-text); border-right-color: var(--fb-text); }
+@keyframes fb-spin { to { transform: rotate(360deg); } }
+.fb-row.done .fb-glyph { animation: fb-pop .25s ease-out; }
+@keyframes fb-pop { from { transform: scale(.4); opacity: 0; } }
+
+.fb-name {
+  /* 14 bold like Flow Variables' names. Two lines before it's cut. */
+  flex: 1 1 auto; min-width: 0;
+  font-size: var(--fb-fs-small); line-height: var(--fb-lh-small); font-weight: var(--fb-bold);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+  overflow: hidden; overflow-wrap: anywhere;
+}
+
+.fb-message { font-size: var(--fb-fs-small); line-height: var(--fb-lh-small); color: var(--fb-muted); }
+.fb-message.error { color: var(--fb-c-red); }
+
+.fb-row.shake { animation: fb-shake .35s; }
+@keyframes fb-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fb-row.running .fb-button::after { animation-duration: 2s; }
+  .fb-row.done .fb-glyph, .fb-row.shake { animation: none; }
+}

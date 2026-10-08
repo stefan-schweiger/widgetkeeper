@@ -15,5 +15,6 @@ Widget inclusi:
 - Controllo luci: riquadri compatti con luminosità, colore e temperatura colore, sei luci nello spazio di tre.
 - Minigrafici: riquadri compatti con un piccolo grafico di un valore nell'ultima ora, nelle ultime 6 ore, nel giorno o nella settimana, con minimo e massimo.
 - Variabili dei flow: righe compatte per attivare e disattivare le variabili dei flow o cambiare un numero o un testo, con il nome completo.
+- Pulsanti dei flow: avvia i flow con un tocco, ognuno un pulsante rotondo del colore e con l'icona che scegli, con il nome del flow, in 1 o 2 colonne.
 
 Dati meteo di MET Norway, con licenza CC BY 4.0.

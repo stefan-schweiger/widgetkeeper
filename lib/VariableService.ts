@@ -1,6 +1,6 @@
 import type Homey from 'homey';
-import { HomeyAPI } from 'homey-api';
 import { getAppApi } from './appApi.js';
+import PersonalApiKey from './PersonalApiKey.js';
 import type { AutocompleteItem } from './HeatmapService.js';
 import Timings from './Timings.js';
 
@@ -12,26 +12,8 @@ const REREAD = 4 * MINUTE;
 const MAX_STRING = 1000;
 
 export const VARIABLES_STATE_EVENT = 'variables:state';
-/**
- * The app setting with the user's personal API key. Homey gives an app's own token `homey.logic.readonly` but not
- * `homey.logic` (checked on the Homey, 2026-10-07: `Missing Scopes`), so writes go through a key the user makes.
- */
-export const API_KEY_SETTING = 'variablesApiKey';
-const WRITE_SCOPE = 'homey.logic';
-
-/** Why a write can't happen: no key, a key without the variables permission, or a key Homey doesn't accept. */
-export type WriteProblem = 'noKey' | 'keyScope' | 'keyInvalid';
-
-export class VariableWriteError extends Error {
-  constructor(public reason: WriteProblem, message?: string) {
-    super(message ?? reason);
-  }
-}
-
-const isMissingScopes = (err: unknown) => /missing scopes/i.test(String((err as any)?.message ?? err));
-/** A key revoked after it was saved: `createLocalAPI` only pings, so it's the write that finds out. */
-const isUnauthorized = (err: unknown) => (err as any)?.statusCode === 401
-  || /invalid (session|token)|unauthori[sz]ed/i.test(String((err as any)?.message ?? err));
+// The key's setting and errors, for the widget API and the tests.
+export { API_KEY_SETTING, KeyError as VariableWriteError, type KeyProblem as WriteProblem } from './PersonalApiKey.js';
 
 export type VariableType = 'boolean' | 'number' | 'string';
 
@@ -75,8 +57,6 @@ export default class VariableService {
   private lastRequest = 0;
   private lastError: string | null = null;
   private tickTimer: NodeJS.Timeout | null = null;
-  /** The API made with the user's key, rebuilt when the key changes. */
-  private writer: { key: string, api: Promise<any> } | null = null;
   private lastWriteError: string | null = null;
 
   private onUpdate = (data: any) => this.received(data);
@@ -91,6 +71,8 @@ export default class VariableService {
     private homey: Homey.App['homey'],
     private log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
+    /** Writes go through the user's personal API key (the app's token may only read variables). */
+    private key = new PersonalApiKey(homey, log),
   ) {}
 
   start() {
@@ -155,16 +137,10 @@ export default class VariableService {
       if (!v) throw new Error(`No variable ${id}`);
     }
     const checked = checkValue(v.type, value);
-    const writer = await this.writeApi();
     try {
-      await writer.logic.updateVariable({ id, variable: { value: checked } });
+      await this.key.run(keyApi => keyApi.logic.updateVariable({ id, variable: { value: checked } }));
     } catch (err) {
       this.lastWriteError = String((err as any)?.message ?? err);
-      if (isMissingScopes(err)) throw new VariableWriteError('keyScope', this.lastWriteError);
-      if (isUnauthorized(err)) {
-        if (this.writer?.key === this.homey.settings.get(API_KEY_SETTING)) this.writer = null;
-        throw new VariableWriteError('keyInvalid', this.lastWriteError);
-      }
       throw err;
     }
     this.lastWriteError = null;
@@ -174,56 +150,6 @@ export default class VariableService {
     if (cached) cached.value = checked;
   }
 
-  /** Whether a key is saved. The key itself never leaves the app. */
-  hasApiKey() {
-    const key = this.homey.settings.get(API_KEY_SETTING);
-    return typeof key === 'string' && key.length > 0;
-  }
-
-  /**
-   * Checks a key and saves it (an empty key removes it). A key Homey doesn't accept, or one without the
-   * variables permission, isn't saved.
-   */
-  async saveApiKey(key: string): Promise<{ ok: true } | { ok: false, reason: WriteProblem }> {
-    key = key.trim();
-    if (!key) {
-      this.homey.settings.unset(API_KEY_SETTING);
-      this.writer = null;
-      return { ok: true };
-    }
-    let scopes: string[] = [];
-    try {
-      const api = await this.createKeyApi(key);
-      scopes = (await api.sessions.getSessionMe())?.scopes ?? [];
-    } catch (err) {
-      this.log('The variables API key was not accepted:', String((err as any)?.message ?? err));
-      return { ok: false, reason: 'keyInvalid' };
-    }
-    // An owner's key may list the broader scope only (`homey`), which covers the rest.
-    if (!scopes.some(sc => sc === WRITE_SCOPE || sc === 'homey')) return { ok: false, reason: 'keyScope' };
-    this.homey.settings.set(API_KEY_SETTING, key);
-    this.writer = null;
-    return { ok: true };
-  }
-
-  private writeApi(): Promise<any> {
-    const key = this.homey.settings.get(API_KEY_SETTING);
-    if (typeof key !== 'string' || !key) return Promise.reject(new VariableWriteError('noKey'));
-    if (this.writer?.key !== key) {
-      const api = this.createKeyApi(key).catch(err => {
-        if (this.writer?.api === api) this.writer = null;
-        throw new VariableWriteError('keyInvalid', String(err?.message ?? err));
-      });
-      this.writer = { key, api };
-    }
-    return this.writer.api;
-  }
-
-  private async createKeyApi(token: string) {
-    const address = await this.homey.api.getLocalUrl();
-    return HomeyAPI.createLocalAPI({ address, token, debug: null });
-  }
-
   /** For the diagnostics report: never the values. */
   describe() {
     return {
@@ -231,7 +157,7 @@ export default class VariableService {
       variables: this.vars.size,
       requested: this.requested.size,
       lastError: this.lastError,
-      apiKey: this.hasApiKey(),
+      apiKey: this.key.has(),
       lastWriteError: this.lastWriteError,
     };
   }

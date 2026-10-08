@@ -35,6 +35,8 @@ const OUT = {
   'spark-light': 'widgets/sparklines/preview-light.png',
   'var-dark': 'widgets/variables/preview-dark.png',
   'var-light': 'widgets/variables/preview-light.png',
+  'fb-dark': 'widgets/flows/preview-dark.png',
+  'fb-light': 'widgets/flows/preview-light.png',
 };
 
 const only = process.argv.slice(2);

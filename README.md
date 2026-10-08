@@ -52,6 +52,10 @@ Tiles with a small chart of a value over the last hour, day or week, with its lo
 <a href="#flow-variables"><b>Flow Variables</b></a><br>
 Compact rows to switch flow variables on and off or change a number or text, with the full name<br clear="left"></p>
 
+<p><a href="#flow-buttons"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/flows-dark.png"><img src="docs/previews/flows-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#flow-buttons"><b>Flow Buttons</b></a><br>
+Start flows with one tap: a round button in the colour and icon you pick, with the flow's name<br clear="left"></p>
+
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
@@ -144,10 +148,19 @@ Homey's Logic variables as compact rows that show the full name: a switch for a 
 
 Homey doesn't let apps change variables on their own, so changing them needs a Homey API key. In the Homey web app, create one under **Settings → API Keys** with permission to change variables. Then paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey. Without a key the widget shows the variables but can't change them.
 
+## Flow Buttons
+<img src="docs/screenshots/flows.png" alt="Flow Buttons on a Homey dashboard" width="358">
+
+Flows and Advanced Flows as compact rows, the size of Flow Variables' rows: a round button in its own colour and icon, then the flow's name. Tap anywhere on a row to start the flow; the button spins while it starts and shows a check mark once it has. A flow that's turned off is dimmed.
+
+**Settings:** up to eight flows, each with a colour (blue, red, orange, yellow, green, purple or grey) and an icon (21 to pick from), in 1 or 2 columns. Only flows that can be started by hand are listed.
+
+Like changing variables, starting flows needs a Homey API key, here with permission to start flows. One key can do both: create it under **Settings → API Keys** in the Homey web app and paste it under **Apps → Widgetkeeper → Configure**. Without a key the widget shows the flows, and a tap says how to add one.
+
 ## Dashboard examples
 Three dashboards from a made-up house, on a tablet in Homey's dark mode.
 
-**Home:** electricity, the heat pump, flow variables, the weather, lights, quick actions, sensor alarms, cameras, sparklines and a motion heatmap.
+**Home:** electricity, the heat pump, flow buttons, the weather, lights, quick actions, sensor alarms, cameras, sparklines and a motion heatmap.
 
 <img src="docs/showcase/home.png" alt="A home dashboard with Widgetkeeper widgets on a tablet" width="100%">
 

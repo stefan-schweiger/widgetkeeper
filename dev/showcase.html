@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
   <link rel="stylesheet" href="../widgets/values/public/widget.css">
   <link rel="stylesheet" href="../widgets/variables/public/widget.css">
+  <link rel="stylesheet" href="../widgets/flows/public/widget.css">
   <link rel="stylesheet" href="../widgets/lights/public/widget.css">
   <link rel="stylesheet" href="../widgets/sparklines/public/widget.css">
   <script src="../widgets/electricity/public/widget.js"></script>
@@ -47,6 +48,7 @@
   <script src="../widgets/cameras/public/widget.js"></script>
   <script src="../widgets/values/public/widget.js"></script>
   <script src="../widgets/variables/public/widget.js"></script>
+  <script src="../widgets/flows/public/widget.js"></script>
   <script src="../widgets/lights/public/widget.js"></script>
   <script src="../widgets/sparklines/public/widget.js"></script>
   <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
@@ -129,6 +131,7 @@
       sensordots: (el, w) => { const x = createSensorDotsWidget(el, w.opts || {}); x.setState({ devices: w.devices, language: 'en' }); if (w.open) x.open(w.open); },
       values: (el, w) => createValuesWidget(el, w.opts || {}).setState(w.slots),
       variables: (el, w) => createVariablesWidget(el, w.opts || {}).setState(w.vars),
+      flows: (el, w) => createFlowsWidget(el, w.opts || {}).setState(w.flows),
       sparklines: (el, w) => createSparklinesWidget(el, w.opts || {}).setState(w.slots),
       lights: (el, w) => createLightsWidget(el, w.opts || {}).setState(w.devices),
       cameras: (el, w) => { const x = createCamerasWidget(el, w.opts || {}); x.setState(w.cameras); x.refresh(); },

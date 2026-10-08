@@ -1,6 +1,6 @@
 // The widgets of dev/screenshots.html: the real widget code with the made-up home of showcase-data.js ("Solbakken",
 // the showcase dashboards' data, so no real home's names or readings end up in the README), mounted into the elements
-// with the ids w-elec, w-thermo, w-qa, w-sa, w-sd, w-weather, w-heatmap, w-cameras, w-values, w-lights, w-sparklines and w-variables.
+// with the ids w-elec, w-thermo, w-qa, w-sa, w-sd, w-weather, w-heatmap, w-cameras, w-values, w-lights, w-sparklines, w-variables and w-flows.
 // Needs the widget scripts, temp/screenshot-icons.js and showcase-data.js loaded first, and the
 // showcase's fixed clock (screenshots.html sets it), so every render is the same.
 (function () {
@@ -36,7 +36,22 @@
 
   createSparklinesWidget(el('w-sparklines'), {}).setState(find('sparklines').slots);
 
-  createVariablesWidget(el('w-variables'), {}).setState(find('variables').vars);
+  // Not on a showcase dashboard any more (Home's flags made way for Flow Buttons): the README's own four.
+  createVariablesWidget(el('w-variables'), {}).setState([
+    { id: 'f1', name: 'Away mode', type: 'boolean', value: false },
+    { id: 'f2', name: 'Guests staying over', type: 'boolean', value: true },
+    { id: 'f3', name: 'Pause the hallway motion lights', type: 'boolean', value: false },
+    { id: 'f4', name: 'Night setpoint', type: 'number', value: 18.5 },
+  ]);
+
+  // Home's two flows side by side, and two more below them for the README.
+  const flows = find('flows');
+  const more = [
+    [{ id: 'advanced:3', color: 'orange', icon: 'tv' }, { id: 'advanced:3', name: 'Movie time', enabled: true, triggerable: true, advanced: true }],
+    [{ id: 'flow:4', color: 'blue', icon: 'leave' }, { id: 'flow:4', name: 'Leaving home', enabled: true, triggerable: true, advanced: false }],
+  ];
+  createFlowsWidget(el('w-flows'), { ...flows.opts, buttons: [...flows.opts.buttons, ...more.map(m => m[0])] })
+    .setState([...flows.flows, ...more.map(m => m[1])]);
 
   createLightsWidget(el('w-lights'), {}).setState(find('lights').devices);
 

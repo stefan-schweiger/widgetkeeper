@@ -361,6 +361,23 @@ function flowVariables(t, theme) {
   </div>`;
 }
 
+function flowButtons(t, theme) {
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  // The widget's round buttons: a colour each, with a white play triangle (dark on yellow and green).
+  const row = ([color, w]) => `<div style="height:116px;border-radius:32px;background:${tileBg};box-shadow:${shadow};padding:0 32px 0 22px;box-sizing:border-box;display:flex;align-items:center;gap:26px">
+      <div style="width:76px;height:76px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:0;height:0;margin-left:7px;border-style:solid;border-width:15px 0 15px 25px;border-color:transparent transparent transparent ${color === '#F5C518' || color === '#71D51B' ? '#1A1B21' : '#FFFFFF'}"></div>
+      </div>
+      ${pill(w, 34, t.fg)}
+    </div>`;
+  const col = rows => `<div style="flex:1;display:flex;flex-direction:column;gap:24px">${rows.map(row).join('')}</div>`;
+  return `<div style="width:880px;display:flex;gap:24px">
+    ${col([['#9033FC', 200], [BLUE, 240], ['#F25F5C', 170]])}
+    ${col([[ORANGE, 230], ['#F5C518', 180], ['#71D51B', 210]])}
+  </div>`;
+}
+
 const PREVIEWS = [
   { id: 'elec-dark',    label: '1a · Electricity Overview — preview-dark.png', theme: 'dark',  render: electricity },
   { id: 'elec-light',   label: '1b · Electricity Overview — preview-light.png', theme: 'light', render: electricity },
@@ -386,6 +403,8 @@ const PREVIEWS = [
   { id: 'spark-light',  label: '1t · Sparklines — preview-light.png',            theme: 'light', render: sparklines },
   { id: 'var-dark',     label: '1u · Flow Variables — preview-dark.png',         theme: 'dark',  render: flowVariables },
   { id: 'var-light',    label: '1v · Flow Variables — preview-light.png',        theme: 'light', render: flowVariables },
+  { id: 'fb-dark',      label: '1y · Flow Buttons — preview-dark.png',           theme: 'dark',  render: flowButtons },
+  { id: 'fb-light',     label: '1z · Flow Buttons — preview-light.png',          theme: 'light', render: flowButtons },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');

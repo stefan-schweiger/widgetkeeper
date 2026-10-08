@@ -15,5 +15,6 @@ Dołączone widżety:
 - Sterowanie światłem: kompaktowe kafelki z jasnością, kolorem i temperaturą barwową, sześć świateł w miejscu trzech.
 - Miniwykresy: kompaktowe kafelki z małym wykresem wartości z ostatniej godziny, 6 godzin, doby lub tygodnia, z minimum i maksimum.
 - Zmienne Flow: kompaktowe wiersze do włączania i wyłączania zmiennych Flow lub zmiany liczby albo tekstu, z pełną nazwą.
+- Przyciski Flow: uruchamiaj Flow jednym dotknięciem, każdy jako okrągły przycisk w wybranym kolorze i z wybraną ikoną, z nazwą Flow, w 1 lub 2 kolumnach.
 
 Dane pogodowe: MET Norway, licencja CC BY 4.0.

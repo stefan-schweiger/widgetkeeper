@@ -15,5 +15,6 @@ Widgets incluidos:
 - Control de luces: mosaicos compactos con brillo, color y temperatura de color, seis luces en el espacio de tres.
 - Minigráficos: mosaicos compactos con un pequeño gráfico de un valor en la última hora, las últimas 6 horas, el día o la semana, con su mínimo y su máximo.
 - Variables de flujo: filas compactas para activar y desactivar variables de flujo o cambiar un número o un texto, con el nombre completo.
+- Botones de flujo: inicia flujos con un toque, cada uno un botón redondo con el color y el icono que elijas y el nombre del flujo, en 1 o 2 columnas.
 
 Datos meteorológicos de MET Norway, con licencia CC BY 4.0.

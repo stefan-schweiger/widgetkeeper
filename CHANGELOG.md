@@ -19,6 +19,12 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Camera detections (person, vehicle, pet) count too.
 - Tap a dot to see its name, what's active and since when (*Garage · Open since 18:17*) on a line over its row; tap the line to close it.
 
+### New: Flow Buttons
+- Start flows and Advanced Flows from the dashboard: compact rows the size of Flow Variables', each a round button with the flow's name beside it.
+- Pick up to eight flows, each with its own colour (blue, red, orange, yellow, green, purple or grey) and icon (21 to choose from), in **1** (the default) or **2** columns.
+- Tap anywhere on a row: the button spins while the flow starts, then shows a check mark. A flow that's turned off is dimmed, and a tap says so.
+- Like changing variables, starting flows needs a Homey API key with permission to start flows. The app settings now have one *API key* section for both widgets, and say what a saved key may do.
+
 ### Electricity Overview
 - Supports a fixed electricity price set in Homey Energy: the price shows in the header, and usage gets its own chart instead of the price chart.
 - Solar export: power below zero is drawn below the zero line in yellow, and the header says *Exporting now*.

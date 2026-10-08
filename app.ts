@@ -3,8 +3,10 @@ import Diagnostics, { DEBUG_LOG_SETTING } from './lib/Diagnostics.js';
 import { getAppApi } from './lib/appApi.js';
 import CameraService from './lib/CameraService.js';
 import ElectricityService from './lib/ElectricityService.js';
+import FlowService from './lib/FlowService.js';
 import HeatmapService from './lib/HeatmapService.js';
 import LightService from './lib/LightService.js';
+import PersonalApiKey from './lib/PersonalApiKey.js';
 import QuickActionService from './lib/QuickActionService.js';
 import SensorAlarmService from './lib/SensorAlarmService.js';
 import SparklineService from './lib/SparklineService.js';
@@ -15,6 +17,7 @@ import WeatherService from './lib/WeatherService.js';
 
 const VALUE_SLOTS = [1, 2, 3, 4, 5, 6];
 const VARIABLE_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const FLOW_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8];
 
 export default class WidgetkeeperApp extends Homey.App {
 
@@ -30,6 +33,9 @@ export default class WidgetkeeperApp extends Homey.App {
   lights!: LightService;
   sparklines!: SparklineService;
   variables!: VariableService;
+  flows!: FlowService;
+  /** The user's personal API key, shared by Flow Variables and Flow Buttons (the app's token may only read). */
+  apiKey!: PersonalApiKey;
 
   async onInit() {
     this.diagnostics = new Diagnostics(this.homey);
@@ -62,9 +68,12 @@ export default class WidgetkeeperApp extends Homey.App {
     this.sparklines = new SparklineService(this.homey, this.values, log, debug);
     this.sparklines.start();
     this.registerSparklineSettings();
-    this.variables = new VariableService(this.homey, log, debug);
+    this.apiKey = new PersonalApiKey(this.homey, log);
+    this.variables = new VariableService(this.homey, log, debug, this.apiKey);
     this.variables.start();
     this.registerVariableSettings();
+    this.flows = new FlowService(this.homey, log, debug, this.apiKey);
+    this.registerFlowSettings();
     this.debug('Widgetkeeper has been initialized');
   }
 
@@ -150,6 +159,15 @@ export default class WidgetkeeperApp extends Homey.App {
     const widget = this.homey.dashboards.getWidget('variables');
     for (const n of VARIABLE_SLOTS) {
       widget.registerSettingAutocompleteListener(`slot${n}`, query => this.variables.listVariables(query));
+    }
+  }
+
+  /** Autocomplete for the flow buttons widget: each button's flow (those with a start card) and icon. */
+  private registerFlowSettings() {
+    const widget = this.homey.dashboards.getWidget('flows');
+    for (const n of FLOW_SLOTS) {
+      widget.registerSettingAutocompleteListener(`flow${n}`, query => this.flows.listFlows(query));
+      widget.registerSettingAutocompleteListener(`icon${n}`, async query => this.flows.listIcons(query));
     }
   }
 

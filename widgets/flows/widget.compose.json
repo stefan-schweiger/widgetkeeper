@@ -1,0 +1,1592 @@
+{
+  "name": {
+    "en": "Flow Buttons",
+    "nl": "Flowknoppen",
+    "de": "Flow-Tasten",
+    "fr": "Boutons de flow",
+    "it": "Pulsanti dei flow",
+    "sv": "Flödesknappar",
+    "no": "Flytknapper",
+    "es": "Botones de flujo",
+    "da": "Flowknapper",
+    "ru": "Кнопки потоков",
+    "pl": "Przyciski Flow",
+    "ko": "플로우 버튼",
+    "ar": "أزرار التدفقات"
+  },
+  "height": 112,
+  "transparent": true,
+  "settings": [
+    {
+      "id": "columns",
+      "type": "dropdown",
+      "title": {
+        "en": "Columns",
+        "nl": "Kolommen",
+        "de": "Spalten",
+        "fr": "Colonnes",
+        "it": "Colonne",
+        "sv": "Kolumner",
+        "no": "Kolonner",
+        "es": "Columnas",
+        "da": "Kolonner",
+        "ru": "Столбцы",
+        "pl": "Kolumny",
+        "ko": "열",
+        "ar": "الأعمدة"
+      },
+      "value": "1",
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "1",
+            "nl": "1",
+            "de": "1",
+            "fr": "1",
+            "it": "1",
+            "sv": "1",
+            "no": "1",
+            "es": "1",
+            "da": "1",
+            "ru": "1",
+            "pl": "1",
+            "ko": "1",
+            "ar": "1"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "2",
+            "nl": "2",
+            "de": "2",
+            "fr": "2",
+            "it": "2",
+            "sv": "2",
+            "no": "2",
+            "es": "2",
+            "da": "2",
+            "ru": "2",
+            "pl": "2",
+            "ko": "2",
+            "ar": "2"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow1",
+      "type": "autocomplete",
+      "title": {
+        "en": "Flow 1",
+        "nl": "Flow 1",
+        "de": "Flow 1",
+        "fr": "Flow 1",
+        "it": "Flow 1",
+        "sv": "Flöde 1",
+        "no": "Flyt 1",
+        "es": "Flujo 1",
+        "da": "Flow 1",
+        "ru": "Поток 1",
+        "pl": "Flow 1",
+        "ko": "플로우 1",
+        "ar": "التدفق 1"
+      },
+      "hint": {
+        "en": "Only flows you can start by hand are listed. To start them from the widget, add an API key in Widgetkeeper’s app settings.",
+        "nl": "Alleen flows die je handmatig kunt starten staan in de lijst. Voeg in de app-instellingen van Widgetkeeper een API-sleutel toe om ze vanuit de widget te starten.",
+        "de": "Nur Flows, die man von Hand starten kann, werden aufgeführt. Um sie im Widget zu starten, füge in den App-Einstellungen von Widgetkeeper einen API-Schlüssel hinzu.",
+        "fr": "Seuls les flows lançables à la main sont listés. Pour les lancer depuis le widget, ajoutez une clé API dans les réglages de l'app Widgetkeeper.",
+        "it": "Sono elencati solo i flow avviabili a mano. Per avviarli dal widget, aggiungi una chiave API nelle impostazioni dell'app Widgetkeeper.",
+        "sv": "Bara flöden som kan startas manuellt visas. Lägg till en API-nyckel i Widgetkeepers appinställningar för att starta dem från widgeten.",
+        "no": "Bare flyter som kan startes manuelt, vises. Legg til en API-nøkkel i Widgetkeepers appinnstillinger for å starte dem fra widgeten.",
+        "es": "Solo aparecen los flujos que se pueden iniciar a mano. Para iniciarlos desde el widget, añade una clave API en los ajustes de la app Widgetkeeper.",
+        "da": "Kun flows, der kan startes manuelt, vises. Tilføj en API-nøgle i Widgetkeepers app-indstillinger for at starte dem fra widgetten.",
+        "ru": "В списке только потоки, которые можно запустить вручную. Чтобы запускать их из виджета, добавьте ключ API в настройках приложения Widgetkeeper.",
+        "pl": "Na liście są tylko Flow, które można uruchomić ręcznie. Aby uruchamiać je z widżetu, dodaj klucz API w ustawieniach aplikacji Widgetkeeper.",
+        "ko": "직접 시작할 수 있는 플로우만 표시됩니다. 위젯에서 시작하려면 Widgetkeeper 앱 설정에서 API 키를 추가하세요.",
+        "ar": "تظهر فقط التدفقات التي يمكن تشغيلها يدويًا. لتشغيلها من الأداة، أضف مفتاح API في إعدادات تطبيق Widgetkeeper."
+      }
+    },
+    {
+      "id": "color1",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour 1",
+        "nl": "Kleur 1",
+        "de": "Farbe 1",
+        "fr": "Couleur 1",
+        "it": "Colore 1",
+        "sv": "Färg 1",
+        "no": "Farge 1",
+        "es": "Color 1",
+        "da": "Farve 1",
+        "ru": "Цвет 1",
+        "pl": "Kolor 1",
+        "ko": "색상 1",
+        "ar": "اللون 1"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon1",
+      "type": "autocomplete",
+      "title": {
+        "en": "Icon 1",
+        "nl": "Pictogram 1",
+        "de": "Symbol 1",
+        "fr": "Icône 1",
+        "it": "Icona 1",
+        "sv": "Ikon 1",
+        "no": "Ikon 1",
+        "es": "Icono 1",
+        "da": "Ikon 1",
+        "ru": "Значок 1",
+        "pl": "Ikona 1",
+        "ko": "아이콘 1",
+        "ar": "الأيقونة 1"
+      }
+    },
+    {
+      "id": "flow2",
+      "type": "autocomplete",
+      "title": {
+        "en": "Flow 2",
+        "nl": "Flow 2",
+        "de": "Flow 2",
+        "fr": "Flow 2",
+        "it": "Flow 2",
+        "sv": "Flöde 2",
+        "no": "Flyt 2",
+        "es": "Flujo 2",
+        "da": "Flow 2",
+        "ru": "Поток 2",
+        "pl": "Flow 2",
+        "ko": "플로우 2",
+        "ar": "التدفق 2"
+      }
+    },
+    {
+      "id": "color2",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour 2",
+        "nl": "Kleur 2",
+        "de": "Farbe 2",
+        "fr": "Couleur 2",
+        "it": "Colore 2",
+        "sv": "Färg 2",
+        "no": "Farge 2",
+        "es": "Color 2",
+        "da": "Farve 2",
+        "ru": "Цвет 2",
+        "pl": "Kolor 2",
+        "ko": "색상 2",
+        "ar": "اللون 2"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon2",
+      "type": "autocomplete",
+      "title": {
+        "en": "Icon 2",
+        "nl": "Pictogram 2",
+        "de": "Symbol 2",
+        "fr": "Icône 2",
+        "it": "Icona 2",
+        "sv": "Ikon 2",
+        "no": "Ikon 2",
+        "es": "Icono 2",
+        "da": "Ikon 2",
+        "ru": "Значок 2",
+        "pl": "Ikona 2",
+        "ko": "아이콘 2",
+        "ar": "الأيقونة 2"
+      }
+    },
+    {
+      "id": "flow3",
+      "type": "autocomplete",
+      "title": {
+        "en": "Flow 3",
+        "nl": "Flow 3",
+        "de": "Flow 3",
+        "fr": "Flow 3",
+        "it": "Flow 3",
+        "sv": "Flöde 3",
+        "no": "Flyt 3",
+        "es": "Flujo 3",
+        "da": "Flow 3",
+        "ru": "Поток 3",
+        "pl": "Flow 3",
+        "ko": "플로우 3",
+        "ar": "التدفق 3"
+      }
+    },
+    {
+      "id": "color3",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour 3",
+        "nl": "Kleur 3",
+        "de": "Farbe 3",
+        "fr": "Couleur 3",
+        "it": "Colore 3",
+        "sv": "Färg 3",
+        "no": "Farge 3",
+        "es": "Color 3",
+        "da": "Farve 3",
+        "ru": "Цвет 3",
+        "pl": "Kolor 3",
+        "ko": "색상 3",
+        "ar": "اللون 3"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon3",
+      "type": "autocomplete",
+      "title": {
+        "en": "Icon 3",
+        "nl": "Pictogram 3",
+        "de": "Symbol 3",
+        "fr": "Icône 3",
+        "it": "Icona 3",
+        "sv": "Ikon 3",
+        "no": "Ikon 3",
+        "es": "Icono 3",
+        "da": "Ikon 3",
+        "ru": "Значок 3",
+        "pl": "Ikona 3",
+        "ko": "아이콘 3",
+        "ar": "الأيقونة 3"
+      }
+    },
+    {
+      "id": "flow4",
+      "type": "autocomplete",
+      "title": {
+        "en": "Flow 4",
+        "nl": "Flow 4",
+        "de": "Flow 4",
+        "fr": "Flow 4",
+        "it": "Flow 4",
+        "sv": "Flöde 4",
+        "no": "Flyt 4",
+        "es": "Flujo 4",
+        "da": "Flow 4",
+        "ru": "Поток 4",
+        "pl": "Flow 4",
+        "ko": "플로우 4",
+        "ar": "التدفق 4"
+      }
+    },
+    {
+      "id": "color4",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour 4",
+        "nl": "Kleur 4",
+        "de": "Farbe 4",
+        "fr": "Couleur 4",
+        "it": "Colore 4",
+        "sv": "Färg 4",
+        "no": "Farge 4",
+        "es": "Color 4",
+        "da": "Farve 4",
+        "ru": "Цвет 4",
+        "pl": "Kolor 4",
+        "ko": "색상 4",
+        "ar": "اللون 4"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon4",
+      "type": "autocomplete",
+      "title": {
+        "en": "Icon 4",
+        "nl": "Pictogram 4",
+        "de": "Symbol 4",
+        "fr": "Icône 4",
+        "it": "Icona 4",
+        "sv": "Ikon 4",
+        "no": "Ikon 4",
+        "es": "Icono 4",
+        "da": "Ikon 4",
+        "ru": "Значок 4",
+        "pl": "Ikona 4",
+        "ko": "아이콘 4",
+        "ar": "الأيقونة 4"
+      }
+    },
+    {
+      "id": "flow5",
+      "type": "autocomplete",
+      "title": {
+        "en": "Flow 5",
+        "nl": "Flow 5",
+        "de": "Flow 5",
+        "fr": "Flow 5",
+        "it": "Flow 5",
+        "sv": "Flöde 5",
+        "no": "Flyt 5",
+        "es": "Flujo 5",
+        "da": "Flow 5",
+        "ru": "Поток 5",
+        "pl": "Flow 5",
+        "ko": "플로우 5",
+        "ar": "التدفق 5"
+      }
+    },
+    {
+      "id": "color5",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour 5",
+        "nl": "Kleur 5",
+        "de": "Farbe 5",
+        "fr": "Couleur 5",
+        "it": "Colore 5",
+        "sv": "Färg 5",
+        "no": "Farge 5",
+        "es": "Color 5",
+        "da": "Farve 5",
+        "ru": "Цвет 5",
+        "pl": "Kolor 5",
+        "ko": "색상 5",
+        "ar": "اللون 5"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon5",
+      "type": "autocomplete",
+      "title": {
+        "en": "Icon 5",
+        "nl": "Pictogram 5",
+        "de": "Symbol 5",
+        "fr": "Icône 5",
+        "it": "Icona 5",
+        "sv": "Ikon 5",
+        "no": "Ikon 5",
+        "es": "Icono 5",
+        "da": "Ikon 5",
+        "ru": "Значок 5",
+        "pl": "Ikona 5",
+        "ko": "아이콘 5",
+        "ar": "الأيقونة 5"
+      }
+    },
+    {
+      "id": "flow6",
+      "type": "autocomplete",
+      "title": {
+        "en": "Flow 6",
+        "nl": "Flow 6",
+        "de": "Flow 6",
+        "fr": "Flow 6",
+        "it": "Flow 6",
+        "sv": "Flöde 6",
+        "no": "Flyt 6",
+        "es": "Flujo 6",
+        "da": "Flow 6",
+        "ru": "Поток 6",
+        "pl": "Flow 6",
+        "ko": "플로우 6",
+        "ar": "التدفق 6"
+      }
+    },
+    {
+      "id": "color6",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour 6",
+        "nl": "Kleur 6",
+        "de": "Farbe 6",
+        "fr": "Couleur 6",
+        "it": "Colore 6",
+        "sv": "Färg 6",
+        "no": "Farge 6",
+        "es": "Color 6",
+        "da": "Farve 6",
+        "ru": "Цвет 6",
+        "pl": "Kolor 6",
+        "ko": "색상 6",
+        "ar": "اللون 6"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon6",
+      "type": "autocomplete",
+      "title": {
+        "en": "Icon 6",
+        "nl": "Pictogram 6",
+        "de": "Symbol 6",
+        "fr": "Icône 6",
+        "it": "Icona 6",
+        "sv": "Ikon 6",
+        "no": "Ikon 6",
+        "es": "Icono 6",
+        "da": "Ikon 6",
+        "ru": "Значок 6",
+        "pl": "Ikona 6",
+        "ko": "아이콘 6",
+        "ar": "الأيقونة 6"
+      }
+    },
+    {
+      "id": "flow7",
+      "type": "autocomplete",
+      "title": {
+        "en": "Flow 7",
+        "nl": "Flow 7",
+        "de": "Flow 7",
+        "fr": "Flow 7",
+        "it": "Flow 7",
+        "sv": "Flöde 7",
+        "no": "Flyt 7",
+        "es": "Flujo 7",
+        "da": "Flow 7",
+        "ru": "Поток 7",
+        "pl": "Flow 7",
+        "ko": "플로우 7",
+        "ar": "التدفق 7"
+      }
+    },
+    {
+      "id": "color7",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour 7",
+        "nl": "Kleur 7",
+        "de": "Farbe 7",
+        "fr": "Couleur 7",
+        "it": "Colore 7",
+        "sv": "Färg 7",
+        "no": "Farge 7",
+        "es": "Color 7",
+        "da": "Farve 7",
+        "ru": "Цвет 7",
+        "pl": "Kolor 7",
+        "ko": "색상 7",
+        "ar": "اللون 7"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon7",
+      "type": "autocomplete",
+      "title": {
+        "en": "Icon 7",
+        "nl": "Pictogram 7",
+        "de": "Symbol 7",
+        "fr": "Icône 7",
+        "it": "Icona 7",
+        "sv": "Ikon 7",
+        "no": "Ikon 7",
+        "es": "Icono 7",
+        "da": "Ikon 7",
+        "ru": "Значок 7",
+        "pl": "Ikona 7",
+        "ko": "아이콘 7",
+        "ar": "الأيقونة 7"
+      }
+    },
+    {
+      "id": "flow8",
+      "type": "autocomplete",
+      "title": {
+        "en": "Flow 8",
+        "nl": "Flow 8",
+        "de": "Flow 8",
+        "fr": "Flow 8",
+        "it": "Flow 8",
+        "sv": "Flöde 8",
+        "no": "Flyt 8",
+        "es": "Flujo 8",
+        "da": "Flow 8",
+        "ru": "Поток 8",
+        "pl": "Flow 8",
+        "ko": "플로우 8",
+        "ar": "التدفق 8"
+      }
+    },
+    {
+      "id": "color8",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour 8",
+        "nl": "Kleur 8",
+        "de": "Farbe 8",
+        "fr": "Couleur 8",
+        "it": "Colore 8",
+        "sv": "Färg 8",
+        "no": "Farge 8",
+        "es": "Color 8",
+        "da": "Farve 8",
+        "ru": "Цвет 8",
+        "pl": "Kolor 8",
+        "ko": "색상 8",
+        "ar": "اللون 8"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon8",
+      "type": "autocomplete",
+      "title": {
+        "en": "Icon 8",
+        "nl": "Pictogram 8",
+        "de": "Symbol 8",
+        "fr": "Icône 8",
+        "it": "Icona 8",
+        "sv": "Ikon 8",
+        "no": "Ikon 8",
+        "es": "Icono 8",
+        "da": "Ikon 8",
+        "ru": "Значок 8",
+        "pl": "Ikona 8",
+        "ko": "아이콘 8",
+        "ar": "الأيقونة 8"
+      }
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    },
+    "trigger": {
+      "method": "POST",
+      "path": "/trigger"
+    }
+  }
+}

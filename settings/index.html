@@ -15,7 +15,7 @@
 </head>
 <body>
   <fieldset class="homey-form-fieldset">
-    <legend class="homey-form-legend" data-i18n="varTitle">Flow Variables</legend>
+    <legend class="homey-form-legend" data-i18n="varTitle">API key</legend>
     <p class="homey-form-help" data-i18n="varHelp"></p>
     <div class="homey-form-group">
       <label class="homey-form-label" for="varKey" data-i18n="varKey">API key</label>
@@ -99,7 +99,7 @@
         });
       }
 
-      // The Flow Variables API key: checked by the app before it's saved, and never sent back.
+      // The personal API key (Flow Variables and Flow Buttons): checked by the app before it's saved, and never sent back.
       const varKey = document.getElementById('varKey');
       const varStatus = document.getElementById('varStatus');
       function showKeyState() {
@@ -113,7 +113,9 @@
           if (err) { varStatus.textContent = err.message || String(err); return; }
           if (res && res.ok) {
             varKey.value = '';
-            varStatus.textContent = t(key ? 'varSaved' : 'varRemoved');
+            // A key may allow only one of the two (the answer says which).
+            const saved = res.variables === false ? 'varSavedFlows' : res.flows === false ? 'varSavedVariables' : 'varSaved';
+            varStatus.textContent = t(key ? saved : 'varRemoved');
           } else {
             varStatus.textContent = t(res && res.reason === 'keyScope' ? 'varKeyScope' : 'varKeyInvalid');
           }
