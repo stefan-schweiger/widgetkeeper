@@ -99,7 +99,8 @@ export default class LightService {
   /**
    * One change from a tile. Brightness 0 means off: it turns `onoff` off (keeping the brightness), and
    * brightness above 0 turns the light on. A light without `onoff` is turned off and on through `dim`,
-   * and one without `dim` takes a brightness as on (above 0) or off.
+   * and one without `dim` takes a brightness as on (above 0) or off. A colour or white turns an off light
+   * on first: a Hue bridge ignores colour changes while the light is off, so it came on in its old colour.
    */
   async set(deviceId: string, change: LightChange) {
     const api = await getAppApi(this.homey);
@@ -131,16 +132,16 @@ export default class LightService {
       const hue = fraction(change.hue, 'hue');
       const saturation = change.saturation === undefined ? undefined : fraction(change.saturation, 'saturation');
       if (!caps.light_hue) throw new Error(`${device.name} has no colour`);
+      await turnOn();
       if (caps.light_mode && caps.light_mode.value !== 'color') await send('light_mode', 'color');
       await send('light_hue', hue);
       if (saturation !== undefined && caps.light_saturation) await send('light_saturation', saturation);
-      await turnOn();
     } else if (change.temperature !== undefined) {
       const temperature = fraction(change.temperature, 'temperature');
       if (!caps.light_temperature) throw new Error(`${device.name} has no colour temperature`);
+      await turnOn();
       if (caps.light_mode && caps.light_mode.value !== 'temperature') await send('light_mode', 'temperature');
       await send('light_temperature', temperature);
-      await turnOn();
     } else {
       throw new Error('Nothing to set');
     }

@@ -219,7 +219,7 @@ How this project uses it:
   - 7 columns: 7 hues at full saturation (red, orange, yellow, green, blue, purple, pink); then 5 whites (temperature 0–1) with `light_temperature`, else one white (saturation 0); ✕ in the last column. A temperature-only light gets one row of whites.
   - The current colour has a ring (hue/saturation within 0.03 in colour mode, temperature within 0.05 otherwise, from the optimistic values).
   - A swatch tap sends `{hue, saturation}` or `{temperature}` and closes it; ✕, the chip again, 8 s without a touch or the light going missing also close it.
-- The service sets `light_mode` first when the device has it (`color` or `temperature`), then `light_hue` and `light_saturation` (when present), or `light_temperature`, then `onoff=true` if it was off.
+- The service sets `onoff=true` first if the light was off (a Hue bridge ignores colour changes while a light is off, so it came on in its old colour; a user's report), then `light_mode` when the device has it (`color` or `temperature`), then `light_hue` and `light_saturation` (when present), or `light_temperature`.
 - `palette` (dropdown, `opts.palette`; `PALETTES` in `widget.js`, an unknown id falls back to `default`): the panel's 7 colours (`[hue°, saturation]`) and 5 whites (temperatures, in display order).
   - `default`: bright colours around the wheel, whites cool → warm.
   - `warm`: red → orange → amber → pale amber, then whites warm → cool (the user's "from red to cool white").

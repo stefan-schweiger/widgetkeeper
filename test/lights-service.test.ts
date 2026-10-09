@@ -106,13 +106,19 @@ describe('set', () => {
     expect(devices[0].sent).toEqual(['dim=0.2']);
   });
 
-  it('switches to temperature mode before setting the temperature', async () => {
+  it('turns an off light on, then switches to temperature mode and sets the temperature', async () => {
     const { service, devices } = setup([bulb(false)]);
     await service.set('bulb', { temperature: 0.8 });
-    expect(devices[0].sent).toEqual(['light_mode="temperature"', 'light_temperature=0.8', 'onoff=true']);
+    expect(devices[0].sent).toEqual(['onoff=true', 'light_mode="temperature"', 'light_temperature=0.8']);
   });
 
-  it('switches to colour mode before setting the hue and saturation', async () => {
+  it("doesn't resend onoff with a colour temperature for a light that is on", async () => {
+    const { service, devices } = setup();
+    await service.set('bulb', { temperature: 0.8 });
+    expect(devices[0].sent).toEqual(['light_mode="temperature"', 'light_temperature=0.8']);
+  });
+
+  it('turns an off light on before switching to colour mode and setting the hue and saturation', async () => {
     const hueBulb = fakeDevice({
       id: 'hue', name: 'Hue Go',
       caps: {
@@ -125,7 +131,7 @@ describe('set', () => {
     });
     const { service, devices } = setup([hueBulb]);
     await service.set('hue', { hue: 0.6, saturation: 1 });
-    expect(devices[0].sent).toEqual(['light_mode="color"', 'light_hue=0.6', 'light_saturation=1', 'onoff=true']);
+    expect(devices[0].sent).toEqual(['onoff=true', 'light_mode="color"', 'light_hue=0.6', 'light_saturation=1']);
   });
 
   it('sets only the hue on a light without saturation, already in colour mode', async () => {
