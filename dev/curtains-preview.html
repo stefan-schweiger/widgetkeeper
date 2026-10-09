@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Curtains widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/curtains/public/widget.css">
+  <script src="../widgets/curtains/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <style>
+    body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px;
+      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · light</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>300 px · dark · reverses its last move</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · grouped by room</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
+
+  <script>
+    const cap = value => ({ value, setable: true });
+    const living = { id: 'z1', name: 'Living room' };
+    const bedroom = { id: 'z2', name: 'Bedroom' };
+    const curtains = () => [
+      { id: 'a', name: 'Sofa window', kind: 'curtain', zone: living, caps: { windowcoverings_set: cap(1), windowcoverings_state: cap('idle') } },
+      { id: 'b', name: 'Terrace door', kind: 'curtain', zone: living, caps: { windowcoverings_set: cap(1), windowcoverings_state: cap('idle') } },
+      { id: 'c', name: 'Bedroom left', kind: 'curtain', zone: bedroom, caps: { windowcoverings_set: cap(0), windowcoverings_state: cap('idle') } },
+      { id: 'd', name: 'Bedroom right', kind: 'curtain', zone: bedroom, caps: { windowcoverings_set: cap(0.35) } },
+      { id: 'e', name: 'Office blind', kind: 'blinds', caps: { windowcoverings_state: cap('idle') } },
+      { id: 'f', name: 'Skylight', kind: 'blinds', caps: { windowcoverings_closed: cap(true) } },
+      { id: 'g', missing: true },
+    ];
+    // Simulates the motors: a full run takes 4 s, reported every 0.4 s, with the motor state.
+    function mount(id, opts = {}) {
+      const devices = curtains();
+      const runs = new Map();
+      let w;
+      const push = (deviceId, capabilityId, value) => {
+        const d = devices.find(x => x.id === deviceId);
+        if (d && d.caps[capabilityId]) w.pushChange({ deviceId, capabilityId, value });
+      };
+      function run(d, target) {
+        clearInterval(runs.get(d.id));
+        const pos = () => d.caps.windowcoverings_set ? d.caps.windowcoverings_set.value : null;
+        if (pos() == null) { // no position: the motor runs 4 s
+          push(d.id, 'windowcoverings_state', target ? 'up' : 'down');
+          runs.set(d.id, setTimeout(() => push(d.id, 'windowcoverings_state', 'idle'), 4000));
+          return;
+        }
+        push(d.id, 'windowcoverings_state', target > pos() ? 'up' : 'down');
+        runs.set(d.id, setInterval(() => {
+          const p = pos(), step = 0.1;
+          const next = Math.abs(target - p) <= step ? target : p + Math.sign(target - p) * step;
+          push(d.id, 'windowcoverings_set', Math.round(next * 100) / 100);
+          if (next === target) { clearInterval(runs.get(d.id)); push(d.id, 'windowcoverings_state', 'idle'); }
+        }, 400));
+      }
+      const onSet = (deviceId, change) => new Promise((resolve) => setTimeout(() => {
+        const d = devices.find(x => x.id === deviceId);
+        if (change.position != null) run(d, change.position);
+        else if (d.caps.windowcoverings_closed) push(deviceId, 'windowcoverings_closed', change.action === 'close');
+        else run(d, change.action === 'open' ? 1 : 0);
+        resolve();
+      }, 300));
+      w = createCurtainsWidget(document.getElementById(id), { t: devT, onSet, ...opts });
+      w.setState(devices);
+    }
+    mount('w1');
+    mount('w2');
+    mount('w3', { between: 'reverse' });
+    mount('w5', { groupByZone: true });
+    const empty = createCurtainsWidget(document.getElementById('w4'), { t: devT });
+    empty.setMessage(empty.t('selectDevices'));
+  </script>
+</body>
+</html>

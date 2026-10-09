@@ -68,6 +68,10 @@ Kitchen timers from one-tap presets, with a Flow card when one runs out<br clear
 <a href="#locks-and-doors"><b>Locks and Doors</b></a><br>
 One line that says whether every lock and door is locked and closed<br clear="left"></p>
 
+<p><a href="#curtains"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/curtains-dark.png"><img src="docs/previews/curtains-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#curtains"><b>Curtains</b></a><br>
+Curtains and blinds that open or close with one tap, with a slider for anything in between<br clear="left"></p>
+
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
@@ -191,6 +195,15 @@ The timer runs on your Homey, not on the screen: every phone or tablet showing t
 Locks, door and window contacts and garage doors in one line: *All locked and closed* with a green padlock, or the device that isn't (*Back door · Unlocked since 18:12*), or how many aren't (*2 open or unlocked*) on a red tile. Tap it for the list of every device and its state, with a **Lock** or **Close** button for a lock or garage door that isn't secure, and **Lock all** for several.
 
 **Settings:** devices, show one line (tap for the list; the default) or every device, and allow unlocking and opening (off by default: the widget can only lock and close).
+
+## Curtains
+<img src="docs/screenshots/curtains.png" alt="Curtains on a Homey dashboard" width="358">
+
+Curtains and blinds as tiles, two per row. Tap a tile to open or close it, the way curtains used to toggle in Homey; the pill in its corner always says what a tap will do (**Open** or **Close**), so a half-open curtain never leaves you guessing. A tap while it moves sends it back the other way. The slider sets any position in between, and the icon's drapes follow the real position. A curtain that's moving shows where it's heading.
+
+**Settings:** devices; what a tap does for a half-open curtain (go to the nearer end, the default, or reverse its last move); group by room (curtains in the same room share one tile that moves them all).
+
+Works with curtains that have a position, ones with just open, stop and close, and ones that are only open or closed. Homey's Android app takes over a drag on the slider, so there you tap the slider where you want it.
 
 ## Dashboard examples
 Seven dashboards from a made-up house, on a tablet in Homey's dark mode.

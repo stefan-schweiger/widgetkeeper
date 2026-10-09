@@ -1,0 +1,128 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/curtains-preview.html).
+ * The tile copies Light Controls' (widgets/lights/public/widget.css).
+ */
+.ct {
+  --ct-tile: var(--homey-background-color, #FFFFFF);
+  --ct-text: var(--homey-text-color, #EDEEF0);
+  --ct-muted: var(--homey-text-color-light, #9C9DA5);
+  --ct-accent: var(--homey-color-blue, #2F8DF6);
+  --ct-track: color-mix(in srgb, var(--ct-text) 12%, var(--ct-tile));
+  --ct-tint: 18%; /* how much of the accent an open tile takes */
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --ct-fs-small: var(--homey-font-size-small, 14px); --ct-lh-small: var(--homey-line-height-small, 20px);
+  --ct-bold: var(--homey-font-weight-bold, 700);
+  --ct-medium: var(--homey-font-weight-medium, 500);
+  --ct-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+}
+/* Dark mode: each tile looks like a native device tile, darker than the default widget background. */
+.homey-dark-mode .ct, .ct.homey-dark-mode { --ct-tile: #181920; --ct-tint: 26%; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
+html, body { background: transparent !important; }
+
+.ct { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--ct-text); }
+.ct * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.ct [dir="auto"] { text-align: left; }
+
+.ct-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--homey-su-3, 12px); }
+
+/* A curtain tile (104px): the icon and the action pill, the name, the state and the position bar. */
+.ct-tile {
+  --ct-x: 0; --ct-target: 0;
+  position: relative; color: var(--ct-text);
+  background: var(--ct-tile); border-radius: var(--ct-radius); padding: 10px 12px 4px; min-width: 0;
+  display: flex; flex-direction: column; align-items: stretch;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+  transition: background .15s, transform .1s;
+  outline: none;
+}
+.ct-tile:focus-visible { box-shadow: 0 0 0 2px var(--ct-accent); }
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .ct-tile::after, .ct.homey-dark-mode .ct-tile::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.ct-tile.pressing { transform: scale(.97); }
+.ct-tile.missing { cursor: default; }
+.ct-tile.missing > * { opacity: .5; }
+.ct-tile.missing .ct-bar, .ct-tile.no-position .ct-bar { visibility: hidden; }
+
+/* Open (any part): a blue tint, brightest at the top like Homey's own cards. */
+.ct-tile.open, .ct-tile.moving {
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--ct-accent) var(--ct-tint), var(--ct-tile)),
+    color-mix(in srgb, var(--ct-accent) calc(var(--ct-tint) / 2), var(--ct-tile)));
+}
+
+.ct-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; height: 22px; }
+.ct-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--ct-muted); }
+.ct-icon rect { transition: x .3s, width .3s, height .3s; }
+.ct-tile.open .ct-icon, .ct-tile.moving .ct-icon { color: var(--ct-text); }
+
+/* What a tap does: Open or Close (while it moves, the other way), so a half-open curtain says which way it goes.
+   The glyph: filled triangles in the direction it will move. */
+.ct-act {
+  display: inline-flex; align-items: center; gap: 4px; min-width: 0; height: 22px; margin-right: -4px; padding: 0 8px 0 6px;
+  border-radius: 11px; background: var(--ct-track); color: var(--ct-text);
+  font-size: 12px; line-height: 16px; font-weight: var(--ct-medium); white-space: nowrap;
+}
+.ct-act span { overflow: hidden; text-overflow: ellipsis; }
+.ct-act svg { width: 12px; height: 12px; flex-shrink: 0; }
+.ct-tile.open .ct-act { background: color-mix(in srgb, var(--ct-text) 14%, transparent); }
+
+.ct-name {
+  /* 14 bold like the native tiles' name (and Light Controls). */
+  margin-top: 4px;
+  font-size: var(--ct-fs-small); line-height: var(--ct-lh-small); font-weight: var(--ct-bold);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* 12/16 like the other widgets' labels, a step below Homey's scale. */
+.ct-state {
+  font-size: 12px; line-height: 16px; color: var(--ct-muted); font-variant-numeric: tabular-nums;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ct-tile.open .ct-state { color: color-mix(in srgb, var(--ct-text) 75%, var(--ct-muted)); }
+
+/* The bar: a 28px hit area around a 6px track, with a knob at the position. Touches on it are the widget's. */
+.ct-bar { position: relative; height: 28px; margin: 2px 0 0; touch-action: none; cursor: ew-resize; }
+.ct-track {
+  position: absolute; left: 0; right: 0; top: 11px; height: 6px; border-radius: 3px; overflow: hidden;
+  background: var(--ct-track);
+}
+.ct-fill {
+  position: absolute; inset: 0 auto 0 0; width: calc(var(--ct-x) * 100%);
+  background: var(--ct-accent); border-radius: inherit;
+}
+.ct-tile:not(.open):not(.moving) .ct-fill { background: var(--ct-muted); }
+/* Where a moving curtain is heading. */
+.ct-target {
+  position: absolute; top: 9px; width: 2px; height: 10px; border-radius: 1px; background: var(--ct-text); opacity: .5;
+  left: calc(var(--ct-target) * (100% - 2px)); display: none;
+}
+.ct-tile.heading .ct-target { display: block; }
+.ct-knob {
+  position: absolute; top: 7px; width: 14px; height: 14px; border-radius: 50%;
+  left: calc(var(--ct-x) * (100% - 14px)); background: #FFFFFF;
+  box-shadow: 0 1px 3px rgb(0 0 0 / .35);
+}
+.ct-tile:not(.open):not(.moving) .ct-knob { background: color-mix(in srgb, var(--ct-muted) 60%, var(--ct-tile)); box-shadow: none; }
+.ct-bar.dragging .ct-knob { transform: scale(1.2); }
+.ct-knob, .ct-fill { transition: left .3s, width .3s; }
+.ct-bar.dragging .ct-knob, .ct-bar.dragging .ct-fill { transition: none; }
+
+.ct-message { font-size: var(--ct-fs-small); line-height: var(--ct-lh-small); color: var(--ct-muted); }
+.ct-message.error { color: var(--homey-color-red, #F25F5C); }
+
+.ct-tile.shake { animation: ct-shake .35s; }
+@keyframes ct-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ct-icon rect, .ct-knob, .ct-fill { transition: none; }
+}

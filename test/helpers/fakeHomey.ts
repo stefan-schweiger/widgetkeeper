@@ -42,6 +42,8 @@ export type FakeDeviceOptions = {
   id?: string,
   name?: string,
   zone?: string,
+  /** The device class (`light`, `curtain`, `blinds` …). */
+  class?: string,
   caps: Record<string, FakeCap>,
   ui?: { quickAction?: string | null, quickActionOverride?: string | null },
   /** ms before a set value is reported back; `null` = never reported. */
@@ -50,12 +52,13 @@ export type FakeDeviceOptions = {
 
 export type FakeDevice = ReturnType<typeof fakeDevice>;
 
-export function fakeDevice({ id = 'dev1', name = 'Aircon', zone = 'z1', caps, ui, reportDelay = 0 }: FakeDeviceOptions) {
+export function fakeDevice({ id = 'dev1', name = 'Aircon', zone = 'z1', class: cls = 'other', caps, ui, reportDelay = 0 }: FakeDeviceOptions) {
   const listeners = new Map<string, ((value: unknown) => void)[]>();
   const device = {
     id,
     name,
     zone,
+    class: cls,
     iconObj: null,
     ui: ui ?? {},
     capabilities: Object.keys(caps),

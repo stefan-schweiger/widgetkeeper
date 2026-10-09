@@ -258,5 +258,19 @@
     "close": "Stäng",
     "openAction": "Öppna",
     "lockAll": "Lås alla"
+  },
+  "curtains": {
+    "selectDevices": "Välj gardiner i widgetinställningarna.",
+    "error": "Kunde inte läsa in gardinerna.",
+    "failed": "Kunde inte ändra __name__.",
+    "unavailable": "Inte tillgänglig",
+    "isOpen": "Öppen",
+    "isClosed": "Stängd",
+    "percentOpen": "__percent__ % öppen",
+    "opening": "Öppnas…",
+    "closing": "Stängs…",
+    "stopped": "Stoppad",
+    "open": "Öppna",
+    "close": "Stäng"
   }
 }

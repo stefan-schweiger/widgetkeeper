@@ -1,0 +1,146 @@
+{
+  "name": {
+    "en": "Curtains",
+    "nl": "Gordijnen",
+    "de": "Vorhänge",
+    "fr": "Rideaux",
+    "it": "Tende",
+    "sv": "Gardiner",
+    "no": "Gardiner",
+    "es": "Cortinas",
+    "da": "Gardiner",
+    "ru": "Шторы",
+    "pl": "Zasłony",
+    "ko": "커튼",
+    "ar": "الستائر"
+  },
+  "height": 104,
+  "transparent": true,
+  "devices": {
+    "type": "global",
+    "singular": false,
+    "filter": {
+      "capabilities": "windowcoverings_set|windowcoverings_state|windowcoverings_closed"
+    }
+  },
+  "settings": [
+    {
+      "id": "between",
+      "type": "dropdown",
+      "title": {
+        "en": "A tap on a half-open curtain",
+        "nl": "Tik op een half open gordijn",
+        "de": "Tippen auf einen halb offenen Vorhang",
+        "fr": "Appui sur un rideau à moitié ouvert",
+        "it": "Tocco su una tenda semiaperta",
+        "sv": "Tryck på en halvöppen gardin",
+        "no": "Trykk på en halvåpen gardin",
+        "es": "Toque en una cortina medio abierta",
+        "da": "Tryk på et halvåbent gardin",
+        "ru": "Касание приоткрытой шторы",
+        "pl": "Dotknięcie częściowo otwartej zasłony",
+        "ko": "반쯤 열린 커튼을 탭하면",
+        "ar": "النقر على ستارة نصف مفتوحة"
+      },
+      "hint": {
+        "en": "A fully open curtain closes, a closed one opens and a moving one turns round. The tile always shows what a tap will do.",
+        "nl": "Een volledig open gordijn gaat dicht, een gesloten gaat open en een bewegend keert om. De tegel laat altijd zien wat een tik doet.",
+        "de": "Ein ganz offener Vorhang schließt, ein geschlossener öffnet und ein fahrender kehrt um. Die Kachel zeigt immer, was ein Tippen tut.",
+        "fr": "Un rideau tout ouvert se ferme, un rideau fermé s'ouvre et un rideau en mouvement repart dans l'autre sens. La tuile indique toujours ce que fera un appui.",
+        "it": "Una tenda tutta aperta si chiude, una chiusa si apre e una in movimento inverte la direzione. Il riquadro mostra sempre cosa farà un tocco.",
+        "sv": "En helt öppen gardin stängs, en stängd öppnas och en som rör sig vänder. Rutan visar alltid vad ett tryck gör.",
+        "no": "En helt åpen gardin lukkes, en lukket åpnes og en som beveger seg snur. Flisen viser alltid hva et trykk gjør.",
+        "es": "Una cortina del todo abierta se cierra, una cerrada se abre y una en movimiento cambia de sentido. El mosaico siempre muestra qué hará un toque.",
+        "da": "Et helt åbent gardin lukker, et lukket åbner, og et der kører, vender om. Feltet viser altid, hvad et tryk gør.",
+        "ru": "Полностью открытая штора закрывается, закрытая открывается, движущаяся едет в обратную сторону. Плитка всегда показывает, что сделает касание.",
+        "pl": "W pełni otwarta zasłona się zamyka, zamknięta otwiera, a poruszająca się zawraca. Kafelek zawsze pokazuje, co zrobi dotknięcie.",
+        "ko": "완전히 열린 커튼은 닫히고, 닫힌 커튼은 열리며, 움직이는 커튼은 방향을 바꿉니다. 타일에 탭하면 어떻게 되는지 항상 표시됩니다.",
+        "ar": "الستارة المفتوحة بالكامل تُغلق، والمغلقة تُفتح، والمتحركة تعكس اتجاهها. تعرض البلاطة دائمًا ما سيفعله النقر."
+      },
+      "value": "nearer",
+      "values": [
+        {
+          "id": "nearer",
+          "title": {
+            "en": "Goes to the nearer end",
+            "nl": "Gaat naar het dichtstbijzijnde uiteinde",
+            "de": "Fährt zum näheren Ende",
+            "fr": "Va vers l'extrémité la plus proche",
+            "it": "Va all'estremo più vicino",
+            "sv": "Går till närmaste ände",
+            "no": "Går til nærmeste ende",
+            "es": "Va al extremo más cercano",
+            "da": "Kører til den nærmeste ende",
+            "ru": "Едет к ближнему краю",
+            "pl": "Jedzie do bliższego końca",
+            "ko": "더 가까운 끝으로 이동",
+            "ar": "تذهب إلى الطرف الأقرب"
+          }
+        },
+        {
+          "id": "reverse",
+          "title": {
+            "en": "Reverses its last move",
+            "nl": "Keert de laatste beweging om",
+            "de": "Kehrt die letzte Fahrt um",
+            "fr": "Inverse son dernier mouvement",
+            "it": "Inverte l'ultimo movimento",
+            "sv": "Vänder senaste rörelsen",
+            "no": "Snur siste bevegelse",
+            "es": "Invierte su último movimiento",
+            "da": "Vender sidste bevægelse",
+            "ru": "Меняет направление последнего движения",
+            "pl": "Odwraca ostatni ruch",
+            "ko": "마지막 움직임의 반대로",
+            "ar": "تعكس حركتها الأخيرة"
+          }
+        }
+      ]
+    },
+    {
+      "id": "groupByZone",
+      "type": "checkbox",
+      "title": {
+        "en": "Group curtains by room",
+        "nl": "Gordijnen per ruimte groeperen",
+        "de": "Vorhänge nach Raum gruppieren",
+        "fr": "Grouper les rideaux par pièce",
+        "it": "Raggruppa le tende per stanza",
+        "sv": "Gruppera gardiner per rum",
+        "no": "Grupper gardiner etter rom",
+        "es": "Agrupar cortinas por habitación",
+        "da": "Gruppér gardiner efter rum",
+        "ru": "Группировать шторы по комнатам",
+        "pl": "Grupuj zasłony według pomieszczeń",
+        "ko": "방별로 커튼 묶기",
+        "ar": "تجميع الستائر حسب الغرفة"
+      },
+      "hint": {
+        "en": "On: the selected curtains in the same room share one tile, named after the room, that moves them all.",
+        "nl": "Aan: de gekozen gordijnen in dezelfde ruimte delen één tegel met de naam van de ruimte, die ze allemaal beweegt.",
+        "de": "Ein: Die gewählten Vorhänge im selben Raum teilen sich eine Kachel mit dem Namen des Raums, die alle bewegt.",
+        "fr": "Activé : les rideaux choisis d'une même pièce partagent une tuile au nom de la pièce, qui les déplace tous.",
+        "it": "Attivo: le tende scelte nella stessa stanza condividono un riquadro con il nome della stanza, che le muove tutte.",
+        "sv": "På: de valda gardinerna i samma rum delar en ruta med rummets namn, som styr dem alla.",
+        "no": "På: de valgte gardinene i samme rom deler én flis med rommets navn, som styrer alle.",
+        "es": "Activado: las cortinas elegidas de la misma habitación comparten un mosaico con el nombre de la habitación, que las mueve todas.",
+        "da": "Til: de valgte gardiner i samme rum deler ét felt med rummets navn, som styrer dem alle.",
+        "ru": "Вкл.: выбранные шторы в одной комнате показаны одной плиткой с названием комнаты, которая управляет всеми.",
+        "pl": "Wł.: wybrane zasłony w tym samym pomieszczeniu mają jeden kafelek z nazwą pomieszczenia, który porusza nimi wszystkimi.",
+        "ko": "켬: 같은 방에 있는 선택한 커튼이 방 이름의 타일 하나로 묶여 함께 움직입니다.",
+        "ar": "تشغيل: الستائر المختارة في الغرفة نفسها تشترك في بلاطة واحدة باسم الغرفة تحركها كلها."
+      },
+      "value": false
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    },
+    "set": {
+      "method": "POST",
+      "path": "/set"
+    }
+  }
+}

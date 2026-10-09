@@ -258,5 +258,19 @@
     "close": "닫기",
     "openAction": "열기",
     "lockAll": "모두 잠그기"
+  },
+  "curtains": {
+    "selectDevices": "위젯 설정에서 커튼을 선택하세요.",
+    "error": "커튼을 불러오지 못했습니다.",
+    "failed": "__name__을(를) 변경하지 못했습니다.",
+    "unavailable": "사용할 수 없음",
+    "isOpen": "열림",
+    "isClosed": "닫힘",
+    "percentOpen": "__percent__% 열림",
+    "opening": "여는 중…",
+    "closing": "닫는 중…",
+    "stopped": "멈춤",
+    "open": "열기",
+    "close": "닫기"
   }
 }

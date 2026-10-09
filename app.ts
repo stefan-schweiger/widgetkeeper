@@ -2,6 +2,7 @@ import Homey from 'homey';
 import Diagnostics, { DEBUG_LOG_SETTING } from './lib/Diagnostics.js';
 import { getAppApi } from './lib/appApi.js';
 import CameraService from './lib/CameraService.js';
+import CurtainService from './lib/CurtainService.js';
 import ElectricityService from './lib/ElectricityService.js';
 import FlowService from './lib/FlowService.js';
 import HeatmapService from './lib/HeatmapService.js';
@@ -38,6 +39,7 @@ export default class WidgetkeeperApp extends Homey.App {
   flows!: FlowService;
   timers!: TimerService;
   locks!: LockService;
+  curtains!: CurtainService;
   /** The user's personal API key, shared by Flow Variables and Flow Buttons (the app's token may only read). */
   apiKey!: PersonalApiKey;
 
@@ -82,6 +84,8 @@ export default class WidgetkeeperApp extends Homey.App {
     this.timers.start();
     this.locks = new LockService(this.homey, log, debug);
     this.locks.start();
+    this.curtains = new CurtainService(this.homey, log, debug);
+    this.curtains.start();
     this.debug('Widgetkeeper has been initialized');
   }
 
@@ -118,6 +122,7 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.variables?.stop();
     await this.timers?.stop();
     await this.locks?.stop();
+    await this.curtains?.stop();
   }
 
   /** Autocomplete for the thermostat widget: the device, then per-button options read from it. */

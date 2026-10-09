@@ -43,6 +43,8 @@ const OUT = {
   'tm-light': 'widgets/timers/preview-light.png',
   'lk-dark': 'widgets/locks/preview-dark.png',
   'lk-light': 'widgets/locks/preview-light.png',
+  'ct-dark': 'widgets/curtains/preview-dark.png',
+  'ct-light': 'widgets/curtains/preview-light.png',
 };
 
 const only = process.argv.slice(2);

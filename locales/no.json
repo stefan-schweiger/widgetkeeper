@@ -258,5 +258,19 @@
     "close": "Lukk",
     "openAction": "Åpne",
     "lockAll": "Lås alle"
+  },
+  "curtains": {
+    "selectDevices": "Velg gardiner i widgetinnstillingene.",
+    "error": "Kunne ikke laste inn gardinene.",
+    "failed": "Kunne ikke endre __name__.",
+    "unavailable": "Utilgjengelig",
+    "isOpen": "Åpen",
+    "isClosed": "Lukket",
+    "percentOpen": "__percent__ % åpen",
+    "opening": "Åpner…",
+    "closing": "Lukker…",
+    "stopped": "Stoppet",
+    "open": "Åpne",
+    "close": "Lukk"
   }
 }

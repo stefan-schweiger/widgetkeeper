@@ -258,5 +258,19 @@
     "close": "Sluit",
     "openAction": "Open",
     "lockAll": "Alles vergrendelen"
+  },
+  "curtains": {
+    "selectDevices": "Kies gordijnen in de widgetinstellingen.",
+    "error": "Kon de gordijnen niet laden.",
+    "failed": "Kon __name__ niet wijzigen.",
+    "unavailable": "Niet beschikbaar",
+    "isOpen": "Open",
+    "isClosed": "Dicht",
+    "percentOpen": "__percent__% open",
+    "opening": "Gaat open…",
+    "closing": "Gaat dicht…",
+    "stopped": "Gestopt",
+    "open": "Openen",
+    "close": "Sluiten"
   }
 }

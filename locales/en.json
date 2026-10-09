@@ -258,5 +258,19 @@
     "close": "Close",
     "openAction": "Open",
     "lockAll": "Lock all"
+  },
+  "curtains": {
+    "selectDevices": "Select curtains in the widget settings.",
+    "error": "Could not load the curtains.",
+    "failed": "Could not change __name__.",
+    "unavailable": "Unavailable",
+    "isOpen": "Open",
+    "isClosed": "Closed",
+    "percentOpen": "__percent__% open",
+    "opening": "Opening…",
+    "closing": "Closing…",
+    "stopped": "Stopped",
+    "open": "Open",
+    "close": "Close"
   }
 }

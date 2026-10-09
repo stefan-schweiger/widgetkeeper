@@ -7,7 +7,7 @@
   <!--
     The README screenshots: the real widget code with mock data, at the width of a widget on Homey's dark dashboard
     on a phone (358 px: a 390 px screen less the dashboard's 16 px margins; colours sampled from an iPhone screenshot).
-    No widget title and a transparent page, so the shots sit flush with the README text in either GitHub theme. `?s=electricity|thermostat|quickactions|sensoralarms|sensordots|weather|heatmap|cameras|values|lights|sparklines|variables|flows|price|timers|locks`
+    No widget title and a transparent page, so the shots sit flush with the README text in either GitHub theme. `?s=electricity|thermostat|quickactions|sensoralarms|sensordots|weather|heatmap|cameras|values|lights|sparklines|variables|flows|price|timers|locks|curtains`
     shows one, for scripts/render-screenshots.mjs; without it, all of them. The widgets are mounted by mock-dashboard.js with the made-up home of showcase-data.js.
     Device icons come from Homey's icon library. The render script downloads them to temp/screenshot-icons.js;
     without that file the tiles fall back to plain squares.
@@ -40,6 +40,7 @@
   <link rel="stylesheet" href="../widgets/timers/public/widget.css">
   <link rel="stylesheet" href="../widgets/locks/public/widget.css">
   <link rel="stylesheet" href="../widgets/lights/public/widget.css">
+  <link rel="stylesheet" href="../widgets/curtains/public/widget.css">
   <link rel="stylesheet" href="../widgets/sparklines/public/widget.css">
   <script src="../widgets/electricity/public/widget.js"></script>
   <script src="../widgets/thermostat/public/widget.js"></script>
@@ -56,6 +57,7 @@
   <script src="../widgets/timers/public/widget.js"></script>
   <script src="../widgets/locks/public/widget.js"></script>
   <script src="../widgets/lights/public/widget.js"></script>
+  <script src="../widgets/curtains/public/widget.js"></script>
   <script src="../widgets/sparklines/public/widget.js"></script>
   <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
   <script src="showcase-data.js"></script>
@@ -85,6 +87,7 @@
   <section class="shot" id="timers"><div style="display:flex;flex-direction:column;gap:12px"><div id="w-timers"></div><div id="w-timers-running"></div></div></section>
   <section class="shot" id="locks"><div id="w-locks"></div></section>
   <section class="shot" id="lights"><div id="w-lights"></div></section>
+  <section class="shot" id="curtains"><div id="w-curtains"></div></section>
   <section class="shot" id="sparklines"><div id="w-sparklines"></div></section>
 
   <script src="mock-dashboard.js"></script>

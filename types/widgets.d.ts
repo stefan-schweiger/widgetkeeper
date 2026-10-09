@@ -24,6 +24,8 @@ interface Window {
   timerPresetsFromSettings: (settings: Record<string, any>) => { minutes: number, label: string }[];
   createLocksWidget: (root: HTMLElement, opts?: object) => object;
   lockLevel: (device: object) => 'secure' | 'insecure' | 'unknown' | 'missing';
+  createCurtainsWidget: (root: HTMLElement, opts?: object) => object;
+  curtainAction: (c: object, rule?: string) => 'open' | 'close' | 'stop' | null;
   sparkPath: (points: [number, number][], from: number, to: number, w: number, h: number) => { line: string, area: string, dot: { x: number, y: number }, min: number, max: number } | null;
   formatCapabilityValue: (cap: object, value: unknown, t: (key: string) => string) => string;
   heatmapPeriodDays: (period: string | undefined) => number;

@@ -258,5 +258,19 @@
     "close": "Schließen",
     "openAction": "Öffnen",
     "lockAll": "Alle verriegeln"
+  },
+  "curtains": {
+    "selectDevices": "Wähle Vorhänge in den Widget-Einstellungen.",
+    "error": "Die Vorhänge konnten nicht geladen werden.",
+    "failed": "__name__ konnte nicht geändert werden.",
+    "unavailable": "Nicht verfügbar",
+    "isOpen": "Offen",
+    "isClosed": "Geschlossen",
+    "percentOpen": "__percent__ % offen",
+    "opening": "Öffnet…",
+    "closing": "Schließt…",
+    "stopped": "Gestoppt",
+    "open": "Öffnen",
+    "close": "Schließen"
   }
 }

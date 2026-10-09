@@ -258,5 +258,19 @@
     "close": "Chiudi",
     "openAction": "Apri",
     "lockAll": "Blocca tutto"
+  },
+  "curtains": {
+    "selectDevices": "Scegli le tende nelle impostazioni del widget.",
+    "error": "Impossibile caricare le tende.",
+    "failed": "Impossibile modificare __name__.",
+    "unavailable": "Non disponibile",
+    "isOpen": "Aperta",
+    "isClosed": "Chiusa",
+    "percentOpen": "Aperta al __percent__%",
+    "opening": "In apertura…",
+    "closing": "In chiusura…",
+    "stopped": "Ferma",
+    "open": "Apri",
+    "close": "Chiudi"
   }
 }

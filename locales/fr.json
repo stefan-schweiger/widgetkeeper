@@ -258,5 +258,19 @@
     "close": "Fermer",
     "openAction": "Ouvrir",
     "lockAll": "Tout verrouiller"
+  },
+  "curtains": {
+    "selectDevices": "Choisissez des rideaux dans les réglages du widget.",
+    "error": "Impossible de charger les rideaux.",
+    "failed": "Impossible de modifier __name__.",
+    "unavailable": "Indisponible",
+    "isOpen": "Ouvert",
+    "isClosed": "Fermé",
+    "percentOpen": "Ouvert à __percent__ %",
+    "opening": "Ouverture…",
+    "closing": "Fermeture…",
+    "stopped": "Arrêté",
+    "open": "Ouvrir",
+    "close": "Fermer"
   }
 }

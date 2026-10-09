@@ -258,5 +258,19 @@
     "close": "إغلاق",
     "openAction": "فتح",
     "lockAll": "قفل الكل"
+  },
+  "curtains": {
+    "selectDevices": "اختر الستائر في إعدادات الأداة.",
+    "error": "تعذر تحميل الستائر.",
+    "failed": "تعذر تغيير __name__.",
+    "unavailable": "غير متاح",
+    "isOpen": "مفتوحة",
+    "isClosed": "مغلقة",
+    "percentOpen": "مفتوحة بنسبة __percent__%",
+    "opening": "تُفتح…",
+    "closing": "تُغلق…",
+    "stopped": "متوقفة",
+    "open": "فتح",
+    "close": "إغلاق"
   }
 }

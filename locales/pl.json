@@ -258,5 +258,19 @@
     "close": "Zamknij",
     "openAction": "Otwórz",
     "lockAll": "Zamknij wszystkie"
+  },
+  "curtains": {
+    "selectDevices": "Wybierz zasłony w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać zasłon.",
+    "failed": "Nie udało się zmienić __name__.",
+    "unavailable": "Niedostępne",
+    "isOpen": "Otwarta",
+    "isClosed": "Zamknięta",
+    "percentOpen": "Otwarta w __percent__%",
+    "opening": "Otwiera się…",
+    "closing": "Zamyka się…",
+    "stopped": "Zatrzymana",
+    "open": "Otwórz",
+    "close": "Zamknij"
   }
 }
