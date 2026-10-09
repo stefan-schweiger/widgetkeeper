@@ -182,8 +182,10 @@
       summary.appendChild(svgPath('lk-chevron', CHEVRON));
       onTap(summary, () => { expanded = !expanded; render(); });
     }
+    // Lock all sits in the summary row, before the chevron, so the list stays one kind of row.
+    const allButton = el('div', { class: 'lk-all', role: 'button', tabindex: '0', text: t('lockAll') });
+    summary.insertBefore(allButton, text.nextSibling);
     const list = el('div', { class: 'lk-list' }, tile);
-    const allButton = el('div', { class: 'lk-all', role: 'button', tabindex: '0', text: t('lockAll') }, tile);
     onTap(allButton, () => {
       for (const d of devices) {
         const a = actionOf(d);

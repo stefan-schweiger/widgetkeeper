@@ -12,6 +12,7 @@
   --lk-red: var(--homey-color-red, #F25F5C);
   --lk-red-text: #D93B37; /* Sensor Alarms' red text on a red-tinted light tile */
   --lk-green: #2E9A0C; /* the secure padlock on a light tile (Homey's green is too light for 3:1 there) */
+  --lk-green-text: #237A08; /* a secure row's state on a light tile: 4.5:1 as text */
   /* Homey's type scale: only these size/line-height pairs are used natively. */
   --lk-fs-small: var(--homey-font-size-small, 14px); --lk-lh-small: var(--homey-line-height-small, 20px);
   --lk-regular: var(--homey-font-weight-regular, 400);
@@ -20,7 +21,7 @@
 }
 /* Dark mode: Homey's native device tiles, as Device Quick Actions; the red and green of the dark theme. */
 .homey-dark-mode .lk, .lk.homey-dark-mode {
-  --lk-tile: #181920; --lk-neutral: #2E3039; --lk-red-text: var(--lk-red); --lk-green: var(--homey-color-green, #71D51B);
+  --lk-tile: #181920; --lk-neutral: #2E3039; --lk-red-text: var(--lk-red); --lk-green: var(--homey-color-green, #71D51B); --lk-green-text: var(--lk-green);
 }
 
 /* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
@@ -40,8 +41,8 @@ html, body { background: transparent !important; }
   content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
 }
-/* Something open or unlocked: Sensor Alarms' red-tinted tile. */
-.lk-tile[data-level="insecure"] { background: color-mix(in srgb, var(--lk-red) 22%, var(--lk-tile)); }
+/* Something open or unlocked: Sensor Alarms' red-tinted tile, only while the list is closed (the list keeps the plain fill). */
+.lk-tile[data-level="insecure"]:not(.expanded) { background: color-mix(in srgb, var(--lk-red) 22%, var(--lk-tile)); }
 
 /* The summary: a 24 px padlock, the title (14 bold) over the detail (14 regular, muted), and a chevron. */
 .lk-summary {
@@ -66,7 +67,7 @@ html, body { background: transparent !important; }
 
 /* The list: one row per device, under a line. */
 .lk-list { border-top: var(--homey-line-light, 1px solid color-mix(in srgb, var(--lk-text) 10%, transparent)); padding: 4px 0; }
-.lk-row { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 12px; }
+.lk-row { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 4px 12px; }
 .lk-dev-icon {
   flex: 0 0 auto; width: 20px; height: 20px; background: var(--lk-muted);
   -webkit-mask: var(--lk-mask) center / contain no-repeat; mask: var(--lk-mask) center / contain no-repeat;
@@ -76,16 +77,17 @@ html, body { background: transparent !important; }
   background: none; -webkit-mask: none; mask: none;
   border: 2px solid var(--lk-muted); border-radius: 4px; width: 16px; height: 16px; margin: 2px;
 }
-.lk-row-text { flex: 1 1 auto; min-width: 0; display: flex; align-items: baseline; gap: 12px; }
+/* The name over the state, like the summary, so the states line up whether a row has a button or not. */
+.lk-row-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
 .lk-name, .lk-state { font-size: var(--lk-fs-small); line-height: var(--lk-lh-small); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lk-name { flex: 1 1 auto; min-width: 0; font-weight: var(--lk-bold); }
-.lk-state { flex: 0 1 auto; min-width: 0; max-width: 60%; color: var(--lk-muted); }
-.lk .lk-state { text-align: right; }
-.lk-row[data-level="insecure"] .lk-state { color: var(--lk-red-text); font-weight: var(--lk-bold); }
-.lk-row[data-level="insecure"] .lk-dev-icon:not(.fallback) { background: var(--lk-red-text); }
+.lk-name { font-weight: var(--lk-bold); }
+.lk-state { color: var(--lk-muted); }
+/* The state is the only colour in a row: green when secure, red when not, muted while unknown. */
+.lk-row[data-level="secure"] .lk-state { color: var(--lk-green-text); }
+.lk-row[data-level="insecure"] .lk-state { color: var(--lk-red-text); }
 .lk-row[data-level="missing"] > * { opacity: .5; }
 
-/* Lock / Close: a blue pill; Unlock / Open (with the setting) a grey one. 32 px high, like Flow Variables' buttons. */
+/* Lock / Close, Unlock / Open and Lock all: Flow Variables' grey pills, 32 px high. */
 .lk-action, .lk-all {
   flex: 0 0 auto; height: 32px; padding: 0 14px; border-radius: 16px;
   display: flex; align-items: center; justify-content: center;
@@ -94,13 +96,11 @@ html, body { background: transparent !important; }
   cursor: pointer; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; -webkit-user-select: none;
   transition: transform .1s, opacity .15s;
 }
-.lk-action.secures, .lk-all { background: var(--lk-blue); color: #FFFFFF; }
 .lk-action.pressing, .lk-all.pressing { transform: scale(.95); }
 .lk-action:focus-visible, .lk-all:focus-visible { box-shadow: 0 0 0 2px var(--lk-tile), 0 0 0 4px var(--lk-blue); }
 /* Waiting for the lock to report back: faded, with a pulse. */
 .lk-action.busy, .lk-all.busy { opacity: .55; pointer-events: none; animation: lk-pulse 1s ease-in-out infinite alternate; }
 @keyframes lk-pulse { to { opacity: .3; } }
-.lk-all { margin: 0 12px 12px; }
 
 .lk-message { font-size: var(--lk-fs-small); line-height: var(--lk-lh-small); color: var(--lk-muted); }
 .lk-message.error { color: var(--lk-red); }
