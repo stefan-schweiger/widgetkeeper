@@ -488,25 +488,30 @@ function timers(t, theme) {
 
 // Locks and Doors: the summary (a padlock, the title over the detail), then the list with a Lock button.
 function locks(t, theme) {
+  // The list open, as the README screenshot: no tint (the red tile is only for the closed summary), the summary's
+  // red padlock and Lock all, then each device's name over its state, green when secure and red when not, with grey
+  // Lock and Close pills.
   const RED = '#F25F5C';
   const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
   const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
   const muted = theme === 'dark' ? 'rgba(237,238,240,.45)' : 'rgba(31,32,41,.4)';
   const line = theme === 'dark' ? 'rgba(255,255,255,.08)' : 'rgba(31,32,41,.08)';
+  const btn = theme === 'dark' ? '#2E3039' : '#EEEFF2';
   const padlock = `<svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="${RED}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 11h11a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 18.5v-6A1.5 1.5 0 0 1 6.5 11zM8 11V7.5a4 4 0 0 1 7.8-1.25"/></svg>`;
-  const row = ([w, sw, red, button]) => `<div style="height:116px;display:flex;align-items:center;gap:28px;padding:0 36px">
-      <div style="width:40px;height:40px;border-radius:10px;border:5px solid ${muted};box-sizing:border-box;flex-shrink:0"></div>
-      <div style="flex:1">${pill(w, 30, t.fg)}</div>
-      ${pill(sw, 26, red ? RED : muted)}
-      ${button ? `<div style="width:150px;height:80px;border-radius:40px;background:${BLUE};display:flex;align-items:center;justify-content:center">${pill(70, 24, '#FFFFFF')}</div>` : ''}
+  const button = w => `<div class="pill" style="height:88px;padding:0 40px;background:${btn};display:flex;align-items:center;flex-shrink:0">${pill(w, 26, t.fg, 'opacity:.85')}</div>`;
+  const row = ([w, sw, secure, action]) => `<div style="height:132px;display:flex;align-items:center;gap:32px;padding:0 36px">
+      <div style="width:40px;height:52px;border-radius:10px;border:5px solid ${muted};box-sizing:border-box;flex-shrink:0"></div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:18px">${pill(w, 30, t.fg)}${pill(sw, 26, secure ? t.green : RED)}</div>
+      ${action ? button(action) : ''}
     </div>`;
-  return `<div style="width:880px;border-radius:32px;background:color-mix(in srgb, ${RED} 22%, ${tileBg});box-shadow:${shadow};overflow:hidden">
+  return `<div style="width:880px;border-radius:32px;background:${tileBg};box-shadow:${shadow};overflow:hidden">
     <div style="height:150px;display:flex;align-items:center;gap:30px;padding:0 36px">
       ${padlock}
-      <div style="flex:1;display:flex;flex-direction:column;gap:18px">${pill(260, 34, t.fg)}${pill(200, 28, RED, 'opacity:.85')}</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:18px">${pill(300, 34, t.fg)}${pill(200, 28, RED, 'opacity:.85')}</div>
+      ${button(110)}
     </div>
     <div style="border-top:3px solid ${line};padding:12px 0">
-      ${[[200, 150], [180, 120, true, true], [220, 120]].map(row).join('')}
+      ${[[220, 230, true], [200, 140, true], [130, 170, false, 70], [180, 110, false, 90]].map(row).join('')}
     </div>
   </div>`;
 }
