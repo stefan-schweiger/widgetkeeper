@@ -38,9 +38,16 @@
     return node;
   }
 
+  /** An entry with the tile's own name from the settings, when one is set (a missing entry keeps none). */
+  function withName(entry, name) {
+    const n = typeof name === 'string' ? name.trim() : '';
+    return n && entry && !('missing' in entry) ? { ...entry, name: n } : entry;
+  }
+
   /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, includeStates?: boolean,
+   *   names?: string[],
    *   onHeight?: (h: number) => void }} opts
    */
   function createSensorAlarmsWidget(root, opts = {}) {
@@ -50,6 +57,7 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
 
+    const names = Array.isArray(opts.names) ? opts.names : []; // per tile, lined up with the entries
     let devices = []; // [{ id, name, icon, alarms: [{ capabilityId, title, value, state }] } | { id, missing }]
     let messageText = null;
     let messageTimer = null;
@@ -65,7 +73,7 @@
     const tiles = new Map();
 
     function setState(list) {
-      devices = Array.isArray(list) ? list : [];
+      devices = (Array.isArray(list) ? list : []).map((d, i) => withName(d, names[i]));
       messageText = null;
       render();
     }

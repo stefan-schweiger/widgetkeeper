@@ -116,10 +116,16 @@
 
   const keyOf = s => `${s.deviceId}:${s.capabilityId}`;
 
+  /** An entry with the tile's own name from the settings, when one is set (a missing entry keeps none). */
+  function withName(entry, name) {
+    const n = typeof name === 'string' ? name.trim() : '';
+    return n && entry && !('missing' in entry) ? { ...entry, name: n } : entry;
+  }
+
   /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, columns?: number|string,
-   *   percentFill?: boolean, redBelow?: number|string, yellowBelow?: number|string,
+   *   percentFill?: boolean, redBelow?: number|string, yellowBelow?: number|string, names?: string[],
    *   onHeight?: (h: number) => void }} opts
    */
   function createValuesWidget(root, opts = {}) {
@@ -129,6 +135,7 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
 
+    const names = Array.isArray(opts.names) ? opts.names : []; // per tile, lined up with the entries
     let slots = []; // [{ deviceId, capabilityId, name, capability, value, color? } | { deviceId, capabilityId, missing }]
     let messageText = null;
     let messageTimer = null;
@@ -143,7 +150,7 @@
     const tiles = new Map();
 
     function setState(list) {
-      slots = Array.isArray(list) ? list : [];
+      slots = (Array.isArray(list) ? list : []).map((s, i) => withName(s, names[i]));
       messageText = null;
       render();
     }

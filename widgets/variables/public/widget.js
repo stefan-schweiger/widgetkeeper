@@ -97,9 +97,16 @@
     });
   }
 
+  /** An entry with the tile's own name from the settings, when one is set (a missing entry keeps none). */
+  function withName(entry, name) {
+    const n = typeof name === 'string' ? name.trim() : '';
+    return n && entry && !('missing' in entry) ? { ...entry, name: n } : entry;
+  }
+
   /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, columns?: number|string, step?: number|string,
+   *   names?: string[],
    *   onSet?: (id: string, value: boolean|number|string) => Promise<any>,
    *   onHeight?: (h: number) => void }} opts
    */
@@ -111,6 +118,7 @@
     };
     const step = Number(opts.step) > 0 ? Number(opts.step) : 1;
 
+    const names = Array.isArray(opts.names) ? opts.names : []; // per row, lined up with the entries
     let vars = []; // [{ id, name, type, value } | { id, missing }], one per slot
     const optimistic = new Map(); // variable id → { value, until }
     const stepTimers = new Map(); // variable id → timer of a pending −/+ send
@@ -127,7 +135,7 @@
     const rows = [];
 
     function setState(list) {
-      vars = Array.isArray(list) ? list : [];
+      vars = (Array.isArray(list) ? list : []).map((v, i) => withName(v, names[i]));
       messageText = null;
       render();
     }
@@ -136,10 +144,10 @@
     function pushChange(data) {
       if (!data || typeof data.id !== 'string') return;
       let hit = false;
-      vars = vars.map(v => {
+      vars = vars.map((v, i) => {
         if (v.id !== data.id) return v;
         hit = true;
-        return data.missing ? { id: v.id, missing: true } : { ...v, ...data };
+        return data.missing ? { id: v.id, missing: true } : withName({ ...v, ...data }, names[i]);
       });
       if (!hit) return;
       const o = optimistic.get(data.id);

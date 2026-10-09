@@ -50,12 +50,13 @@
       const sdkAt = performance.now();
       const settings = Homey.getSettings() || {};
       // Each button: a flow (an autocomplete item whose id is `flow:<id>` or `advanced:<id>`; `none` empties it),
-      // a colour (dropdown) and an icon (an autocomplete item whose id is the icon's).
+      // a colour (dropdown), an icon (an autocomplete item whose id is the icon's) and an optional name (text).
       const buttons = [1, 2, 3, 4, 5, 6, 7, 8]
         .map(n => ({
           id: settings[`flow${n}`] && settings[`flow${n}`].id,
           color: settings[`color${n}`],
           icon: settings[`icon${n}`] && settings[`icon${n}`].id,
+          name: settings[`name${n}`],
         }))
         .filter(b => typeof b.id === 'string' && b.id && b.id !== 'none');
       const ids = buttons.map(b => b.id);

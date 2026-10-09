@@ -50,9 +50,11 @@
       const sdkAt = performance.now();
       const settings = Homey.getSettings() || {};
       // Each slot setting is an autocomplete item whose id is `<deviceId>:<capabilityId>`.
-      const slots = [1, 2, 3, 4, 5, 6]
-        .map(n => settings[`slot${n}`] && settings[`slot${n}`].id)
-        .filter(id => typeof id === 'string' && id.includes(':'));
+      // An optional name per tile (`nameN`, text) replaces the device's.
+      const picked = [1, 2, 3, 4, 5, 6]
+        .map(n => ({ id: settings[`slot${n}`] && settings[`slot${n}`].id, name: settings[`name${n}`] }))
+        .filter(s => typeof s.id === 'string' && s.id.includes(':'));
+      const slots = picked.map(s => s.id);
       let readySent = false;
       let loaded = false;
 
@@ -62,6 +64,7 @@
         percentFill: settings.percentFill === true,
         redBelow: settings.redBelow,
         yellowBelow: settings.yellowBelow,
+        names: picked.map(s => s.name),
         onHeight: () => {
           if (!readySent) return;
           Homey.setHeight(bodyHeight());

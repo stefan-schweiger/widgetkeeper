@@ -5,7 +5,7 @@ import { describeWidgetPerf } from '../../lib/Timings.js';
 type Homey = App['homey'];
 
 export default {
-  /** `slots`: comma-separated `<deviceId>:<capabilityId>`; `span`: `1h`, `6h`, `24h` or `7d`. */
+  /** `slots`: comma-separated `<deviceId>:<capabilityId>`; `span`: `1h`, `6h`, `24h`, `2d`, `3d`, `5d` or `7d`. */
   async getState({ homey, query }: {
     homey: Homey,
     query: Record<string, string>,

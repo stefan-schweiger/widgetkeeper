@@ -193,3 +193,13 @@ describe('alarm panel', () => {
     expect(root.querySelector('.sa-panel')).not.toBeNull();
   });
 });
+
+describe('name override', () => {
+  it("shows a tile's own name, by position, and keeps the device's for an empty line", () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const w = win.createSensorAlarmsWidget(root, { names: ['', 'Airthings'] });
+    w.setState([door(), air(), thermo()]);
+    expect([...root.querySelectorAll('.sa-name')].map(n => n.textContent)).toEqual(['Back door', 'Airthings', 'Bedroom']);
+  });
+});

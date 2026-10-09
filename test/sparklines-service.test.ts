@@ -63,6 +63,14 @@ describe('downsample', () => {
     expect(points[points.length - 1]).toEqual([NOW - 15e3, 5]);
   });
 
+  it('makes no bucket shorter than the log step', () => {
+    const values = Array.from({ length: 72 }, (_, i) => ({ t: NOW - (72 - i) * HOUR, v: i }));
+    const points = downsample({ values }, NOW, 48 * HOUR, HOUR);
+    expect(points).toHaveLength(48);
+    expect(points[0]).toEqual([NOW - 48 * HOUR + HOUR / 2, 24]);
+    expect(points[47]).toEqual([NOW - HOUR / 2, 71]);
+  });
+
   it('drops null entries', () => {
     expect(downsample({ values: [{ t: NOW - 60e3, v: null }] }, NOW, HOUR)).toEqual([]);
   });
@@ -95,9 +103,9 @@ describe('getState', () => {
 
   it('asks Insights for the resolution of the span', async () => {
     const { service, api } = setup();
-    for (const span of ['1h', '6h', '24h', '7d', undefined]) await service.getState(['sensor:measure_humidity'], span);
+    for (const span of ['1h', '6h', '24h', '2d', '3d', '5d', '7d', undefined]) await service.getState(['sensor:measure_humidity'], span);
     expect(api.insights.getLogEntries.mock.calls.map((c: any[]) => c[0].resolution))
-      .toEqual(['lastHour', 'last6Hours', 'last24Hours', 'last7Days']);
+      .toEqual(['lastHour', 'last6Hours', 'last24Hours', 'last3Days', 'last3Days', 'last7Days', 'last7Days']);
     expect(api.insights.getLogEntries.mock.calls[0][0]).toMatchObject({
       uri: 'homey:device:sensor', id: 'homey:device:sensor:measure_humidity',
     });

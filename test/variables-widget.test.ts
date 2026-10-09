@@ -139,3 +139,13 @@ describe('editing', () => {
     await vi.waitFor(() => expect(message().textContent).toBe('To change variables, add an API key in the app settings.'));
   });
 });
+
+describe('name override', () => {
+  it("shows a row's own name and keeps it through realtime updates", () => {
+    const { w, rows } = widget([flag(), num()], { names: ['Guests', ''] });
+    const names = () => rows().map(r => r.querySelector('.vr-name')!.textContent);
+    expect(names()).toEqual(['Guests', 'Night setpoint']);
+    w.pushChange({ ...flag(true), name: 'Guest mode (renamed)' });
+    expect(names()).toEqual(['Guests', 'Night setpoint']);
+  });
+});

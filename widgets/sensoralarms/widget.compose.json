@@ -55,6 +55,41 @@
         "ar": "إيقاف: الباب المفتوح أو الحركة المكتشفة لا تجعل البلاطة حمراء."
       },
       "value": false
+    },
+    {
+      "id": "names",
+      "type": "textarea",
+      "title": {
+        "en": "Tile names",
+        "nl": "Tegelnamen",
+        "de": "Kachelnamen",
+        "fr": "Noms des tuiles",
+        "it": "Nomi dei riquadri",
+        "sv": "Rutnamn",
+        "no": "Flisnavn",
+        "es": "Nombres de mosaicos",
+        "da": "Feltnavne",
+        "ru": "Названия плиток",
+        "pl": "Nazwy kafelków",
+        "ko": "타일 이름",
+        "ar": "أسماء البلاطات"
+      },
+      "hint": {
+        "en": "Optional. One name per line, in the order of the devices. An empty line keeps the device’s name.",
+        "nl": "Optioneel. Eén naam per regel, in de volgorde van de apparaten. Een lege regel houdt de naam van het apparaat.",
+        "de": "Optional. Ein Name pro Zeile, in der Reihenfolge der Geräte. Eine leere Zeile behält den Gerätenamen.",
+        "fr": "Facultatif. Un nom par ligne, dans l'ordre des appareils. Une ligne vide garde le nom de l'appareil.",
+        "it": "Facoltativo. Un nome per riga, nell'ordine dei dispositivi. Una riga vuota mantiene il nome del dispositivo.",
+        "sv": "Valfritt. Ett namn per rad, i enheternas ordning. En tom rad behåller enhetens namn.",
+        "no": "Valgfritt. Ett navn per linje, i enhetenes rekkefølge. En tom linje beholder enhetens navn.",
+        "es": "Opcional. Un nombre por línea, en el orden de los dispositivos. Una línea vacía mantiene el nombre del dispositivo.",
+        "da": "Valgfrit. Ét navn pr. linje, i enhedernes rækkefølge. En tom linje beholder enhedens navn.",
+        "ru": "Необязательно. Одно название в строке, в порядке устройств. Пустая строка оставляет название устройства.",
+        "pl": "Opcjonalnie. Jedna nazwa w wierszu, w kolejności urządzeń. Pusty wiersz zachowuje nazwę urządzenia.",
+        "ko": "선택 사항입니다. 기기 순서대로 한 줄에 하나씩 이름을 입력하세요. 빈 줄은 기기 이름을 그대로 사용합니다.",
+        "ar": "اختياري. اسم واحد في كل سطر، بترتيب الأجهزة. السطر الفارغ يُبقي اسم الجهاز."
+      },
+      "value": ""
     }
   ],
   "api": {

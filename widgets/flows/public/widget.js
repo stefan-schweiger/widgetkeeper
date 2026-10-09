@@ -152,10 +152,16 @@
     });
   }
 
+  /** An entry with the tile's own name from the settings, when one is set (a missing entry keeps none). */
+  function withName(entry, name) {
+    const n = typeof name === 'string' ? name.trim() : '';
+    return n && entry && !('missing' in entry) ? { ...entry, name: n } : entry;
+  }
+
   /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, columns?: number|string,
-   *   buttons?: {id: string, color?: string, icon?: string}[],
+   *   buttons?: {id: string, color?: string, icon?: string, name?: string}[],
    *   onTrigger?: (id: string) => Promise<any>, onHaptic?: () => void,
    *   onHeight?: (h: number) => void }} opts
    */
@@ -167,7 +173,7 @@
     };
     // Each button's look, by position; the entries from setState() line up with it.
     const buttons = (Array.isArray(opts.buttons) ? opts.buttons : []).map(b => ({
-      id: b && b.id, color: colorOf(b && b.color), icon: iconOf(b && b.icon),
+      id: b && b.id, color: colorOf(b && b.color), icon: iconOf(b && b.icon), name: b && b.name,
     }));
 
     let flows = []; // [{ id, name, enabled, triggerable, advanced } | { id, missing }], one per button
@@ -183,7 +189,7 @@
     const rows = [];
 
     function setState(list) {
-      flows = Array.isArray(list) ? list : [];
+      flows = (Array.isArray(list) ? list : []).map((f, i) => withName(f, buttons[i] && buttons[i].name));
       messageText = null;
       render();
     }

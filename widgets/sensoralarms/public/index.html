@@ -56,6 +56,9 @@
       const widget = createSensorAlarmsWidget(document.getElementById('root'), {
         t: (key, tokens) => Homey.__(key, tokens),
         includeStates: settings.includeStates === true,
+        // One optional name per line, in the order of the devices; an empty line keeps the device's.
+        names: typeof settings.names === 'string' ? settings.names.split(/?
+/) : [],
         onHeight: () => {
           if (!readySent) return;
           Homey.setHeight(bodyHeight());

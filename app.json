@@ -1328,6 +1328,41 @@
           }
         },
         {
+          "id": "name1",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "hint": {
+            "en": "Optional. Leave empty to keep the original name.",
+            "nl": "Optioneel. Laat leeg om de oorspronkelijke naam te houden.",
+            "de": "Optional. Leer lassen, um den ursprünglichen Namen zu behalten.",
+            "fr": "Facultatif. Laissez vide pour garder le nom d'origine.",
+            "it": "Facoltativo. Lascia vuoto per mantenere il nome originale.",
+            "sv": "Valfritt. Lämna tomt för att behålla det ursprungliga namnet.",
+            "no": "Valgfritt. La stå tomt for å beholde det opprinnelige navnet.",
+            "es": "Opcional. Déjalo vacío para mantener el nombre original.",
+            "da": "Valgfrit. Lad feltet stå tomt for at beholde det oprindelige navn.",
+            "ru": "Необязательно. Оставьте пустым, чтобы сохранить исходное название.",
+            "pl": "Opcjonalnie. Zostaw puste, aby zachować oryginalną nazwę.",
+            "ko": "선택 사항입니다. 비워 두면 원래 이름을 사용합니다.",
+            "ar": "اختياري. اتركه فارغًا للإبقاء على الاسم الأصلي."
+          },
+          "value": ""
+        },
+        {
           "id": "flow2",
           "type": "autocomplete",
           "title": {
@@ -1512,6 +1547,26 @@
             "ko": "  – 아이콘",
             "ar": "  – الأيقونة"
           }
+        },
+        {
+          "id": "name2",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "flow3",
@@ -1700,6 +1755,26 @@
           }
         },
         {
+          "id": "name3",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
+        },
+        {
           "id": "flow4",
           "type": "autocomplete",
           "title": {
@@ -1884,6 +1959,26 @@
             "ko": "  – 아이콘",
             "ar": "  – الأيقونة"
           }
+        },
+        {
+          "id": "name4",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "flow5",
@@ -2072,6 +2167,26 @@
           }
         },
         {
+          "id": "name5",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
+        },
+        {
           "id": "flow6",
           "type": "autocomplete",
           "title": {
@@ -2256,6 +2371,26 @@
             "ko": "  – 아이콘",
             "ar": "  – الأيقونة"
           }
+        },
+        {
+          "id": "name6",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "flow7",
@@ -2444,6 +2579,26 @@
           }
         },
         {
+          "id": "name7",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
+        },
+        {
           "id": "flow8",
           "type": "autocomplete",
           "title": {
@@ -2628,6 +2783,26 @@
             "ko": "  – 아이콘",
             "ar": "  – الأيقونة"
           }
+        },
+        {
+          "id": "name8",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         }
       ],
       "api": {
@@ -3837,6 +4012,41 @@
             "ar": "إيقاف: الباب المفتوح أو الحركة المكتشفة لا تجعل البلاطة حمراء."
           },
           "value": false
+        },
+        {
+          "id": "names",
+          "type": "textarea",
+          "title": {
+            "en": "Tile names",
+            "nl": "Tegelnamen",
+            "de": "Kachelnamen",
+            "fr": "Noms des tuiles",
+            "it": "Nomi dei riquadri",
+            "sv": "Rutnamn",
+            "no": "Flisnavn",
+            "es": "Nombres de mosaicos",
+            "da": "Feltnavne",
+            "ru": "Названия плиток",
+            "pl": "Nazwy kafelków",
+            "ko": "타일 이름",
+            "ar": "أسماء البلاطات"
+          },
+          "hint": {
+            "en": "Optional. One name per line, in the order of the devices. An empty line keeps the device’s name.",
+            "nl": "Optioneel. Eén naam per regel, in de volgorde van de apparaten. Een lege regel houdt de naam van het apparaat.",
+            "de": "Optional. Ein Name pro Zeile, in der Reihenfolge der Geräte. Eine leere Zeile behält den Gerätenamen.",
+            "fr": "Facultatif. Un nom par ligne, dans l'ordre des appareils. Une ligne vide garde le nom de l'appareil.",
+            "it": "Facoltativo. Un nome per riga, nell'ordine dei dispositivi. Una riga vuota mantiene il nome del dispositivo.",
+            "sv": "Valfritt. Ett namn per rad, i enheternas ordning. En tom rad behåller enhetens namn.",
+            "no": "Valgfritt. Ett navn per linje, i enhetenes rekkefølge. En tom linje beholder enhetens navn.",
+            "es": "Opcional. Un nombre por línea, en el orden de los dispositivos. Una línea vacía mantiene el nombre del dispositivo.",
+            "da": "Valgfrit. Ét navn pr. linje, i enhedernes rækkefølge. En tom linje beholder enhedens navn.",
+            "ru": "Необязательно. Одно название в строке, в порядке устройств. Пустая строка оставляет название устройства.",
+            "pl": "Opcjonalnie. Jedna nazwa w wierszu, w kolejności urządzeń. Pusty wiersz zachowuje nazwę urządzenia.",
+            "ko": "선택 사항입니다. 기기 순서대로 한 줄에 하나씩 이름을 입력하세요. 빈 줄은 기기 이름을 그대로 사용합니다.",
+            "ar": "اختياري. اسم واحد في كل سطر، بترتيب الأجهزة. السطر الفارغ يُبقي اسم الجهاز."
+          },
+          "value": ""
         }
       ],
       "api": {
@@ -4307,6 +4517,60 @@
               }
             },
             {
+              "id": "2d",
+              "title": {
+                "en": "2 days",
+                "nl": "2 dagen",
+                "de": "2 Tage",
+                "fr": "2 jours",
+                "it": "2 giorni",
+                "sv": "2 dagar",
+                "no": "2 dager",
+                "es": "2 días",
+                "da": "2 dage",
+                "ru": "2 дня",
+                "pl": "2 dni",
+                "ko": "2일",
+                "ar": "يومان"
+              }
+            },
+            {
+              "id": "3d",
+              "title": {
+                "en": "3 days",
+                "nl": "3 dagen",
+                "de": "3 Tage",
+                "fr": "3 jours",
+                "it": "3 giorni",
+                "sv": "3 dagar",
+                "no": "3 dager",
+                "es": "3 días",
+                "da": "3 dage",
+                "ru": "3 дня",
+                "pl": "3 dni",
+                "ko": "3일",
+                "ar": "3 أيام"
+              }
+            },
+            {
+              "id": "5d",
+              "title": {
+                "en": "5 days",
+                "nl": "5 dagen",
+                "de": "5 Tage",
+                "fr": "5 jours",
+                "it": "5 giorni",
+                "sv": "5 dagar",
+                "no": "5 dager",
+                "es": "5 días",
+                "da": "5 dage",
+                "ru": "5 дней",
+                "pl": "5 dni",
+                "ko": "5일",
+                "ar": "5 أيام"
+              }
+            },
+            {
               "id": "7d",
               "title": {
                 "en": "7 days",
@@ -4388,19 +4652,19 @@
           "id": "slot1",
           "type": "autocomplete",
           "title": {
-            "en": "Tile 1",
-            "nl": "Tegel 1",
-            "de": "Kachel 1",
-            "fr": "Tuile 1",
-            "it": "Riquadro 1",
-            "sv": "Ruta 1",
-            "no": "Flis 1",
-            "es": "Mosaico 1",
-            "da": "Felt 1",
-            "ru": "Плитка 1",
-            "pl": "Kafelek 1",
-            "ko": "타일 1",
-            "ar": "البلاطة 1"
+            "en": "Tile 1",
+            "nl": "Tegel 1",
+            "de": "Kachel 1",
+            "fr": "Tuile 1",
+            "it": "Riquadro 1",
+            "sv": "Ruta 1",
+            "no": "Flis 1",
+            "es": "Mosaico 1",
+            "da": "Felt 1",
+            "ru": "Плитка 1",
+            "pl": "Kafelek 1",
+            "ko": "타일 1",
+            "ar": "البلاطة 1"
           },
           "hint": {
             "en": "Pick a value for each tile. Only numbers with Insights history are listed; empty tiles are left out.",
@@ -4422,95 +4686,95 @@
           "id": "slot2",
           "type": "autocomplete",
           "title": {
-            "en": "Tile 2",
-            "nl": "Tegel 2",
-            "de": "Kachel 2",
-            "fr": "Tuile 2",
-            "it": "Riquadro 2",
-            "sv": "Ruta 2",
-            "no": "Flis 2",
-            "es": "Mosaico 2",
-            "da": "Felt 2",
-            "ru": "Плитка 2",
-            "pl": "Kafelek 2",
-            "ko": "타일 2",
-            "ar": "البلاطة 2"
+            "en": "Tile 2",
+            "nl": "Tegel 2",
+            "de": "Kachel 2",
+            "fr": "Tuile 2",
+            "it": "Riquadro 2",
+            "sv": "Ruta 2",
+            "no": "Flis 2",
+            "es": "Mosaico 2",
+            "da": "Felt 2",
+            "ru": "Плитка 2",
+            "pl": "Kafelek 2",
+            "ko": "타일 2",
+            "ar": "البلاطة 2"
           }
         },
         {
           "id": "slot3",
           "type": "autocomplete",
           "title": {
-            "en": "Tile 3",
-            "nl": "Tegel 3",
-            "de": "Kachel 3",
-            "fr": "Tuile 3",
-            "it": "Riquadro 3",
-            "sv": "Ruta 3",
-            "no": "Flis 3",
-            "es": "Mosaico 3",
-            "da": "Felt 3",
-            "ru": "Плитка 3",
-            "pl": "Kafelek 3",
-            "ko": "타일 3",
-            "ar": "البلاطة 3"
+            "en": "Tile 3",
+            "nl": "Tegel 3",
+            "de": "Kachel 3",
+            "fr": "Tuile 3",
+            "it": "Riquadro 3",
+            "sv": "Ruta 3",
+            "no": "Flis 3",
+            "es": "Mosaico 3",
+            "da": "Felt 3",
+            "ru": "Плитка 3",
+            "pl": "Kafelek 3",
+            "ko": "타일 3",
+            "ar": "البلاطة 3"
           }
         },
         {
           "id": "slot4",
           "type": "autocomplete",
           "title": {
-            "en": "Tile 4",
-            "nl": "Tegel 4",
-            "de": "Kachel 4",
-            "fr": "Tuile 4",
-            "it": "Riquadro 4",
-            "sv": "Ruta 4",
-            "no": "Flis 4",
-            "es": "Mosaico 4",
-            "da": "Felt 4",
-            "ru": "Плитка 4",
-            "pl": "Kafelek 4",
-            "ko": "타일 4",
-            "ar": "البلاطة 4"
+            "en": "Tile 4",
+            "nl": "Tegel 4",
+            "de": "Kachel 4",
+            "fr": "Tuile 4",
+            "it": "Riquadro 4",
+            "sv": "Ruta 4",
+            "no": "Flis 4",
+            "es": "Mosaico 4",
+            "da": "Felt 4",
+            "ru": "Плитка 4",
+            "pl": "Kafelek 4",
+            "ko": "타일 4",
+            "ar": "البلاطة 4"
           }
         },
         {
           "id": "slot5",
           "type": "autocomplete",
           "title": {
-            "en": "Tile 5",
-            "nl": "Tegel 5",
-            "de": "Kachel 5",
-            "fr": "Tuile 5",
-            "it": "Riquadro 5",
-            "sv": "Ruta 5",
-            "no": "Flis 5",
-            "es": "Mosaico 5",
-            "da": "Felt 5",
-            "ru": "Плитка 5",
-            "pl": "Kafelek 5",
-            "ko": "타일 5",
-            "ar": "البلاطة 5"
+            "en": "Tile 5",
+            "nl": "Tegel 5",
+            "de": "Kachel 5",
+            "fr": "Tuile 5",
+            "it": "Riquadro 5",
+            "sv": "Ruta 5",
+            "no": "Flis 5",
+            "es": "Mosaico 5",
+            "da": "Felt 5",
+            "ru": "Плитка 5",
+            "pl": "Kafelek 5",
+            "ko": "타일 5",
+            "ar": "البلاطة 5"
           }
         },
         {
           "id": "slot6",
           "type": "autocomplete",
           "title": {
-            "en": "Tile 6",
-            "nl": "Tegel 6",
-            "de": "Kachel 6",
-            "fr": "Tuile 6",
-            "it": "Riquadro 6",
-            "sv": "Ruta 6",
-            "no": "Flis 6",
-            "es": "Mosaico 6",
-            "da": "Felt 6",
-            "ru": "Плитка 6",
-            "pl": "Kafelek 6",
-            "ko": "타일 6",
-            "ar": "البلاطة 6"
+            "en": "Tile 6",
+            "nl": "Tegel 6",
+            "de": "Kachel 6",
+            "fr": "Tuile 6",
+            "it": "Riquadro 6",
+            "sv": "Ruta 6",
+            "no": "Flis 6",
+            "es": "Mosaico 6",
+            "da": "Felt 6",
+            "ru": "Плитка 6",
+            "pl": "Kafelek 6",
+            "ko": "타일 6",
+            "ar": "البلاطة 6"
           }
         }
       ],
@@ -5461,19 +5725,19 @@
           "id": "slot1",
           "type": "autocomplete",
           "title": {
-            "en": "Tile 1",
-            "nl": "Tegel 1",
-            "de": "Kachel 1",
-            "fr": "Tuile 1",
-            "it": "Riquadro 1",
-            "sv": "Ruta 1",
-            "no": "Flis 1",
-            "es": "Mosaico 1",
-            "da": "Felt 1",
-            "ru": "Плитка 1",
-            "pl": "Kafelek 1",
-            "ko": "타일 1",
-            "ar": "البلاطة 1"
+            "en": "Tile 1",
+            "nl": "Tegel 1",
+            "de": "Kachel 1",
+            "fr": "Tuile 1",
+            "it": "Riquadro 1",
+            "sv": "Ruta 1",
+            "no": "Flis 1",
+            "es": "Mosaico 1",
+            "da": "Felt 1",
+            "ru": "Плитка 1",
+            "pl": "Kafelek 1",
+            "ko": "타일 1",
+            "ar": "البلاطة 1"
           },
           "hint": {
             "en": "Pick a device value for each tile. Empty tiles are left out.",
@@ -5492,99 +5756,234 @@
           }
         },
         {
+          "id": "name1",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "hint": {
+            "en": "Optional. Leave empty to keep the original name.",
+            "nl": "Optioneel. Laat leeg om de oorspronkelijke naam te houden.",
+            "de": "Optional. Leer lassen, um den ursprünglichen Namen zu behalten.",
+            "fr": "Facultatif. Laissez vide pour garder le nom d'origine.",
+            "it": "Facoltativo. Lascia vuoto per mantenere il nome originale.",
+            "sv": "Valfritt. Lämna tomt för att behålla det ursprungliga namnet.",
+            "no": "Valgfritt. La stå tomt for å beholde det opprinnelige navnet.",
+            "es": "Opcional. Déjalo vacío para mantener el nombre original.",
+            "da": "Valgfrit. Lad feltet stå tomt for at beholde det oprindelige navn.",
+            "ru": "Необязательно. Оставьте пустым, чтобы сохранить исходное название.",
+            "pl": "Opcjonalnie. Zostaw puste, aby zachować oryginalną nazwę.",
+            "ko": "선택 사항입니다. 비워 두면 원래 이름을 사용합니다.",
+            "ar": "اختياري. اتركه فارغًا للإبقاء على الاسم الأصلي."
+          },
+          "value": ""
+        },
+        {
           "id": "slot2",
           "type": "autocomplete",
           "title": {
-            "en": "Tile 2",
-            "nl": "Tegel 2",
-            "de": "Kachel 2",
-            "fr": "Tuile 2",
-            "it": "Riquadro 2",
-            "sv": "Ruta 2",
-            "no": "Flis 2",
-            "es": "Mosaico 2",
-            "da": "Felt 2",
-            "ru": "Плитка 2",
-            "pl": "Kafelek 2",
-            "ko": "타일 2",
-            "ar": "البلاطة 2"
+            "en": "Tile 2",
+            "nl": "Tegel 2",
+            "de": "Kachel 2",
+            "fr": "Tuile 2",
+            "it": "Riquadro 2",
+            "sv": "Ruta 2",
+            "no": "Flis 2",
+            "es": "Mosaico 2",
+            "da": "Felt 2",
+            "ru": "Плитка 2",
+            "pl": "Kafelek 2",
+            "ko": "타일 2",
+            "ar": "البلاطة 2"
           }
+        },
+        {
+          "id": "name2",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "slot3",
           "type": "autocomplete",
           "title": {
-            "en": "Tile 3",
-            "nl": "Tegel 3",
-            "de": "Kachel 3",
-            "fr": "Tuile 3",
-            "it": "Riquadro 3",
-            "sv": "Ruta 3",
-            "no": "Flis 3",
-            "es": "Mosaico 3",
-            "da": "Felt 3",
-            "ru": "Плитка 3",
-            "pl": "Kafelek 3",
-            "ko": "타일 3",
-            "ar": "البلاطة 3"
+            "en": "Tile 3",
+            "nl": "Tegel 3",
+            "de": "Kachel 3",
+            "fr": "Tuile 3",
+            "it": "Riquadro 3",
+            "sv": "Ruta 3",
+            "no": "Flis 3",
+            "es": "Mosaico 3",
+            "da": "Felt 3",
+            "ru": "Плитка 3",
+            "pl": "Kafelek 3",
+            "ko": "타일 3",
+            "ar": "البلاطة 3"
           }
+        },
+        {
+          "id": "name3",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "slot4",
           "type": "autocomplete",
           "title": {
-            "en": "Tile 4",
-            "nl": "Tegel 4",
-            "de": "Kachel 4",
-            "fr": "Tuile 4",
-            "it": "Riquadro 4",
-            "sv": "Ruta 4",
-            "no": "Flis 4",
-            "es": "Mosaico 4",
-            "da": "Felt 4",
-            "ru": "Плитка 4",
-            "pl": "Kafelek 4",
-            "ko": "타일 4",
-            "ar": "البلاطة 4"
+            "en": "Tile 4",
+            "nl": "Tegel 4",
+            "de": "Kachel 4",
+            "fr": "Tuile 4",
+            "it": "Riquadro 4",
+            "sv": "Ruta 4",
+            "no": "Flis 4",
+            "es": "Mosaico 4",
+            "da": "Felt 4",
+            "ru": "Плитка 4",
+            "pl": "Kafelek 4",
+            "ko": "타일 4",
+            "ar": "البلاطة 4"
           }
+        },
+        {
+          "id": "name4",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "slot5",
           "type": "autocomplete",
           "title": {
-            "en": "Tile 5",
-            "nl": "Tegel 5",
-            "de": "Kachel 5",
-            "fr": "Tuile 5",
-            "it": "Riquadro 5",
-            "sv": "Ruta 5",
-            "no": "Flis 5",
-            "es": "Mosaico 5",
-            "da": "Felt 5",
-            "ru": "Плитка 5",
-            "pl": "Kafelek 5",
-            "ko": "타일 5",
-            "ar": "البلاطة 5"
+            "en": "Tile 5",
+            "nl": "Tegel 5",
+            "de": "Kachel 5",
+            "fr": "Tuile 5",
+            "it": "Riquadro 5",
+            "sv": "Ruta 5",
+            "no": "Flis 5",
+            "es": "Mosaico 5",
+            "da": "Felt 5",
+            "ru": "Плитка 5",
+            "pl": "Kafelek 5",
+            "ko": "타일 5",
+            "ar": "البلاطة 5"
           }
+        },
+        {
+          "id": "name5",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "slot6",
           "type": "autocomplete",
           "title": {
-            "en": "Tile 6",
-            "nl": "Tegel 6",
-            "de": "Kachel 6",
-            "fr": "Tuile 6",
-            "it": "Riquadro 6",
-            "sv": "Ruta 6",
-            "no": "Flis 6",
-            "es": "Mosaico 6",
-            "da": "Felt 6",
-            "ru": "Плитка 6",
-            "pl": "Kafelek 6",
-            "ko": "타일 6",
-            "ar": "البلاطة 6"
+            "en": "Tile 6",
+            "nl": "Tegel 6",
+            "de": "Kachel 6",
+            "fr": "Tuile 6",
+            "it": "Riquadro 6",
+            "sv": "Ruta 6",
+            "no": "Flis 6",
+            "es": "Mosaico 6",
+            "da": "Felt 6",
+            "ru": "Плитка 6",
+            "pl": "Kafelek 6",
+            "ko": "타일 6",
+            "ar": "البلاطة 6"
           }
+        },
+        {
+          "id": "name6",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         }
       ],
       "api": {
@@ -5698,19 +6097,19 @@
           "id": "slot1",
           "type": "autocomplete",
           "title": {
-            "en": "Variable 1",
-            "nl": "Variabele 1",
-            "de": "Variable 1",
-            "fr": "Variable 1",
-            "it": "Variabile 1",
-            "sv": "Variabel 1",
-            "no": "Variabel 1",
-            "es": "Variable 1",
-            "da": "Variabel 1",
-            "ru": "Переменная 1",
-            "pl": "Zmienna 1",
-            "ko": "변수 1",
-            "ar": "المتغير 1"
+            "en": "Variable 1",
+            "nl": "Variabele 1",
+            "de": "Variable 1",
+            "fr": "Variable 1",
+            "it": "Variabile 1",
+            "sv": "Variabel 1",
+            "no": "Variabel 1",
+            "es": "Variable 1",
+            "da": "Variabel 1",
+            "ru": "Переменная 1",
+            "pl": "Zmienna 1",
+            "ko": "변수 1",
+            "ar": "المتغير 1"
           },
           "hint": {
             "en": "To change variables from the widget, add an API key in Widgetkeeper’s app settings.",
@@ -5729,175 +6128,390 @@
           }
         },
         {
+          "id": "name1",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "hint": {
+            "en": "Optional. Leave empty to keep the original name.",
+            "nl": "Optioneel. Laat leeg om de oorspronkelijke naam te houden.",
+            "de": "Optional. Leer lassen, um den ursprünglichen Namen zu behalten.",
+            "fr": "Facultatif. Laissez vide pour garder le nom d'origine.",
+            "it": "Facoltativo. Lascia vuoto per mantenere il nome originale.",
+            "sv": "Valfritt. Lämna tomt för att behålla det ursprungliga namnet.",
+            "no": "Valgfritt. La stå tomt for å beholde det opprinnelige navnet.",
+            "es": "Opcional. Déjalo vacío para mantener el nombre original.",
+            "da": "Valgfrit. Lad feltet stå tomt for at beholde det oprindelige navn.",
+            "ru": "Необязательно. Оставьте пустым, чтобы сохранить исходное название.",
+            "pl": "Opcjonalnie. Zostaw puste, aby zachować oryginalną nazwę.",
+            "ko": "선택 사항입니다. 비워 두면 원래 이름을 사용합니다.",
+            "ar": "اختياري. اتركه فارغًا للإبقاء على الاسم الأصلي."
+          },
+          "value": ""
+        },
+        {
           "id": "slot2",
           "type": "autocomplete",
           "title": {
-            "en": "Variable 2",
-            "nl": "Variabele 2",
-            "de": "Variable 2",
-            "fr": "Variable 2",
-            "it": "Variabile 2",
-            "sv": "Variabel 2",
-            "no": "Variabel 2",
-            "es": "Variable 2",
-            "da": "Variabel 2",
-            "ru": "Переменная 2",
-            "pl": "Zmienna 2",
-            "ko": "변수 2",
-            "ar": "المتغير 2"
+            "en": "Variable 2",
+            "nl": "Variabele 2",
+            "de": "Variable 2",
+            "fr": "Variable 2",
+            "it": "Variabile 2",
+            "sv": "Variabel 2",
+            "no": "Variabel 2",
+            "es": "Variable 2",
+            "da": "Variabel 2",
+            "ru": "Переменная 2",
+            "pl": "Zmienna 2",
+            "ko": "변수 2",
+            "ar": "المتغير 2"
           }
+        },
+        {
+          "id": "name2",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "slot3",
           "type": "autocomplete",
           "title": {
-            "en": "Variable 3",
-            "nl": "Variabele 3",
-            "de": "Variable 3",
-            "fr": "Variable 3",
-            "it": "Variabile 3",
-            "sv": "Variabel 3",
-            "no": "Variabel 3",
-            "es": "Variable 3",
-            "da": "Variabel 3",
-            "ru": "Переменная 3",
-            "pl": "Zmienna 3",
-            "ko": "변수 3",
-            "ar": "المتغير 3"
+            "en": "Variable 3",
+            "nl": "Variabele 3",
+            "de": "Variable 3",
+            "fr": "Variable 3",
+            "it": "Variabile 3",
+            "sv": "Variabel 3",
+            "no": "Variabel 3",
+            "es": "Variable 3",
+            "da": "Variabel 3",
+            "ru": "Переменная 3",
+            "pl": "Zmienna 3",
+            "ko": "변수 3",
+            "ar": "المتغير 3"
           }
+        },
+        {
+          "id": "name3",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "slot4",
           "type": "autocomplete",
           "title": {
-            "en": "Variable 4",
-            "nl": "Variabele 4",
-            "de": "Variable 4",
-            "fr": "Variable 4",
-            "it": "Variabile 4",
-            "sv": "Variabel 4",
-            "no": "Variabel 4",
-            "es": "Variable 4",
-            "da": "Variabel 4",
-            "ru": "Переменная 4",
-            "pl": "Zmienna 4",
-            "ko": "변수 4",
-            "ar": "المتغير 4"
+            "en": "Variable 4",
+            "nl": "Variabele 4",
+            "de": "Variable 4",
+            "fr": "Variable 4",
+            "it": "Variabile 4",
+            "sv": "Variabel 4",
+            "no": "Variabel 4",
+            "es": "Variable 4",
+            "da": "Variabel 4",
+            "ru": "Переменная 4",
+            "pl": "Zmienna 4",
+            "ko": "변수 4",
+            "ar": "المتغير 4"
           }
+        },
+        {
+          "id": "name4",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "slot5",
           "type": "autocomplete",
           "title": {
-            "en": "Variable 5",
-            "nl": "Variabele 5",
-            "de": "Variable 5",
-            "fr": "Variable 5",
-            "it": "Variabile 5",
-            "sv": "Variabel 5",
-            "no": "Variabel 5",
-            "es": "Variable 5",
-            "da": "Variabel 5",
-            "ru": "Переменная 5",
-            "pl": "Zmienna 5",
-            "ko": "변수 5",
-            "ar": "المتغير 5"
+            "en": "Variable 5",
+            "nl": "Variabele 5",
+            "de": "Variable 5",
+            "fr": "Variable 5",
+            "it": "Variabile 5",
+            "sv": "Variabel 5",
+            "no": "Variabel 5",
+            "es": "Variable 5",
+            "da": "Variabel 5",
+            "ru": "Переменная 5",
+            "pl": "Zmienna 5",
+            "ko": "변수 5",
+            "ar": "المتغير 5"
           }
+        },
+        {
+          "id": "name5",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "slot6",
           "type": "autocomplete",
           "title": {
-            "en": "Variable 6",
-            "nl": "Variabele 6",
-            "de": "Variable 6",
-            "fr": "Variable 6",
-            "it": "Variabile 6",
-            "sv": "Variabel 6",
-            "no": "Variabel 6",
-            "es": "Variable 6",
-            "da": "Variabel 6",
-            "ru": "Переменная 6",
-            "pl": "Zmienna 6",
-            "ko": "변수 6",
-            "ar": "المتغير 6"
+            "en": "Variable 6",
+            "nl": "Variabele 6",
+            "de": "Variable 6",
+            "fr": "Variable 6",
+            "it": "Variabile 6",
+            "sv": "Variabel 6",
+            "no": "Variabel 6",
+            "es": "Variable 6",
+            "da": "Variabel 6",
+            "ru": "Переменная 6",
+            "pl": "Zmienna 6",
+            "ko": "변수 6",
+            "ar": "المتغير 6"
           }
+        },
+        {
+          "id": "name6",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "slot7",
           "type": "autocomplete",
           "title": {
-            "en": "Variable 7",
-            "nl": "Variabele 7",
-            "de": "Variable 7",
-            "fr": "Variable 7",
-            "it": "Variabile 7",
-            "sv": "Variabel 7",
-            "no": "Variabel 7",
-            "es": "Variable 7",
-            "da": "Variabel 7",
-            "ru": "Переменная 7",
-            "pl": "Zmienna 7",
-            "ko": "변수 7",
-            "ar": "المتغير 7"
+            "en": "Variable 7",
+            "nl": "Variabele 7",
+            "de": "Variable 7",
+            "fr": "Variable 7",
+            "it": "Variabile 7",
+            "sv": "Variabel 7",
+            "no": "Variabel 7",
+            "es": "Variable 7",
+            "da": "Variabel 7",
+            "ru": "Переменная 7",
+            "pl": "Zmienna 7",
+            "ko": "변수 7",
+            "ar": "المتغير 7"
           }
+        },
+        {
+          "id": "name7",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "slot8",
           "type": "autocomplete",
           "title": {
-            "en": "Variable 8",
-            "nl": "Variabele 8",
-            "de": "Variable 8",
-            "fr": "Variable 8",
-            "it": "Variabile 8",
-            "sv": "Variabel 8",
-            "no": "Variabel 8",
-            "es": "Variable 8",
-            "da": "Variabel 8",
-            "ru": "Переменная 8",
-            "pl": "Zmienna 8",
-            "ko": "변수 8",
-            "ar": "المتغير 8"
+            "en": "Variable 8",
+            "nl": "Variabele 8",
+            "de": "Variable 8",
+            "fr": "Variable 8",
+            "it": "Variabile 8",
+            "sv": "Variabel 8",
+            "no": "Variabel 8",
+            "es": "Variable 8",
+            "da": "Variabel 8",
+            "ru": "Переменная 8",
+            "pl": "Zmienna 8",
+            "ko": "변수 8",
+            "ar": "المتغير 8"
           }
+        },
+        {
+          "id": "name8",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "slot9",
           "type": "autocomplete",
           "title": {
-            "en": "Variable 9",
-            "nl": "Variabele 9",
-            "de": "Variable 9",
-            "fr": "Variable 9",
-            "it": "Variabile 9",
-            "sv": "Variabel 9",
-            "no": "Variabel 9",
-            "es": "Variable 9",
-            "da": "Variabel 9",
-            "ru": "Переменная 9",
-            "pl": "Zmienna 9",
-            "ko": "변수 9",
-            "ar": "المتغير 9"
+            "en": "Variable 9",
+            "nl": "Variabele 9",
+            "de": "Variable 9",
+            "fr": "Variable 9",
+            "it": "Variabile 9",
+            "sv": "Variabel 9",
+            "no": "Variabel 9",
+            "es": "Variable 9",
+            "da": "Variabel 9",
+            "ru": "Переменная 9",
+            "pl": "Zmienna 9",
+            "ko": "변수 9",
+            "ar": "المتغير 9"
           }
+        },
+        {
+          "id": "name9",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         },
         {
           "id": "slot10",
           "type": "autocomplete",
           "title": {
-            "en": "Variable 10",
-            "nl": "Variabele 10",
-            "de": "Variable 10",
-            "fr": "Variable 10",
-            "it": "Variabile 10",
-            "sv": "Variabel 10",
-            "no": "Variabel 10",
-            "es": "Variable 10",
-            "da": "Variabel 10",
-            "ru": "Переменная 10",
-            "pl": "Zmienna 10",
-            "ko": "변수 10",
-            "ar": "المتغير 10"
+            "en": "Variable 10",
+            "nl": "Variabele 10",
+            "de": "Variable 10",
+            "fr": "Variable 10",
+            "it": "Variabile 10",
+            "sv": "Variabel 10",
+            "no": "Variabel 10",
+            "es": "Variable 10",
+            "da": "Variabel 10",
+            "ru": "Переменная 10",
+            "pl": "Zmienna 10",
+            "ko": "변수 10",
+            "ar": "المتغير 10"
           }
+        },
+        {
+          "id": "name10",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
         }
       ],
       "api": {

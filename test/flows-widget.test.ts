@@ -123,3 +123,19 @@ describe('start', () => {
     expect(onTrigger).not.toHaveBeenCalled();
   });
 });
+
+describe('name override', () => {
+  it("shows a button's own name, also in its messages, and keeps the flow's when empty", () => {
+    const { rows, row, message } = widget([flow('flow:1', 'Good night', { enabled: false }), flow('flow:2', 'Movie time')], {
+      buttons: [{ id: 'flow:1', name: '  Bedtime ' }, { id: 'flow:2', name: '' }],
+    });
+    expect(rows().map(r => r.querySelector('.fb-name')!.textContent)).toEqual(['Bedtime', 'Movie time']);
+    row(0).click();
+    expect(message().textContent).toContain('Bedtime');
+  });
+
+  it('says a missing flow is missing, whatever its name', () => {
+    const { rows } = widget([{ id: 'flow:3', missing: true }], { buttons: [{ id: 'flow:3', name: 'Bedtime' }] });
+    expect(rows()[0].querySelector('.fb-name')!.textContent).toBe('Flow not found');
+  });
+});

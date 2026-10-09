@@ -14,12 +14,19 @@ const IDLE_TIMEOUT = 10 * MINUTE;
 /** The most points a sparkline gets: about one per 3 px of a phone's 2-column tile. */
 export const MAX_POINTS = 120;
 
-/** The spans the widget offers, with the Insights resolution behind each (all verified on the Homey, 2026-10-06). */
+/**
+ * The spans the widget offers, with the Insights resolution behind each and its step (all verified on the
+ * Homey, 2026-10-06 and 2026-10-09). Insights has no `last2Days` or `last5Days`, so those read the next
+ * longer hourly log; `downsample()` cuts it to the span.
+ */
 export const SPANS = {
-  '1h': { resolution: 'lastHour', ms: HOUR }, // 5 s steps
-  '6h': { resolution: 'last6Hours', ms: 6 * HOUR }, // 1 min
-  '24h': { resolution: 'last24Hours', ms: 24 * HOUR }, // 5 min
-  '7d': { resolution: 'last7Days', ms: 7 * 24 * HOUR }, // 1 h
+  '1h': { resolution: 'lastHour', ms: HOUR, step: 5 * 1000 },
+  '6h': { resolution: 'last6Hours', ms: 6 * HOUR, step: MINUTE },
+  '24h': { resolution: 'last24Hours', ms: 24 * HOUR, step: 5 * MINUTE },
+  '2d': { resolution: 'last3Days', ms: 2 * 24 * HOUR, step: HOUR },
+  '3d': { resolution: 'last3Days', ms: 3 * 24 * HOUR, step: HOUR },
+  '5d': { resolution: 'last7Days', ms: 5 * 24 * HOUR, step: HOUR },
+  '7d': { resolution: 'last7Days', ms: 7 * 24 * HOUR, step: HOUR },
 } as const;
 export type SpanId = keyof typeof SPANS;
 
@@ -42,13 +49,15 @@ export function sparkCaps(device: any): string[] {
 /**
  * Insights entries averaged into at most `MAX_POINTS` buckets over the span ending `now`, each at its
  * bucket's middle. Empty buckets carry the last value (Homey doesn't log unchanged values); buckets
- * before the first value are left out.
+ * before the first value are left out. With the log's `logStep`, no bucket is shorter than it, so an
+ * hourly log over 2 days is 48 points, not 120 drawn as steps.
  */
-export function downsample(res: any, now: number, spanMs: number): [number, number][] {
-  const step = spanMs / MAX_POINTS;
+export function downsample(res: any, now: number, spanMs: number, logStep = 0): [number, number][] {
+  const count = Math.max(1, Math.min(MAX_POINTS, logStep ? Math.floor(spanMs / logStep) : MAX_POINTS));
+  const step = spanMs / count;
   const start = now - spanMs;
   const out: [number, number][] = [];
-  bucketAverage(parseInsightsEntries(res), start, step, MAX_POINTS).forEach((v, i) => {
+  bucketAverage(parseInsightsEntries(res), start, step, count).forEach((v, i) => {
     if (v != null) out.push([Math.round(start + (i + 0.5) * step), Math.round(v * 1000) / 1000]);
   });
   return out;
@@ -140,7 +149,7 @@ export default class SparklineService {
           const res = await api.insights.getLogEntries({
             uri: `homey:device:${deviceId}`, id: `homey:device:${deviceId}:${capabilityId}`, resolution: SPANS[span].resolution,
           });
-          points = downsample(res, Date.now(), SPANS[span].ms);
+          points = downsample(res, Date.now(), SPANS[span].ms, SPANS[span].step);
         } catch (err) {
           // Cached all the same, so a capability without a log isn't asked for again on every request.
           this.log(`Sparkline history of ${slot} unavailable:`, err);

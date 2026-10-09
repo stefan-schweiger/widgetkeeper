@@ -151,3 +151,15 @@ describe('render', () => {
     expect(tiles()).toHaveLength(0);
   });
 });
+
+describe('name override', () => {
+  it("shows a tile's own name, by position, and keeps the device's when empty", () => {
+    const { text } = widget([temp(), temp(), lamp()], undefined, { names: ['Living room', '', '  '] });
+    expect(text('.vt-name')).toEqual(['Living room', 'Stue', 'Lamp']);
+  });
+
+  it('says a missing value is unavailable, whatever its name', () => {
+    const { text } = widget([{ deviceId: 'x', capabilityId: 'onoff', missing: true }], undefined, { names: ['Lamp'] });
+    expect(text('.vt-name')).toEqual(['Unavailable']);
+  });
+});

@@ -277,6 +277,41 @@
       }
     },
     {
+      "id": "name1",
+      "type": "text",
+      "title": {
+        "en": "  – Name",
+        "nl": "  – Naam",
+        "de": "  – Name",
+        "fr": "  – Nom",
+        "it": "  – Nome",
+        "sv": "  – Namn",
+        "no": "  – Navn",
+        "es": "  – Nombre",
+        "da": "  – Navn",
+        "ru": "  – Название",
+        "pl": "  – Nazwa",
+        "ko": "  – 이름",
+        "ar": "  – الاسم"
+      },
+      "hint": {
+        "en": "Optional. Leave empty to keep the original name.",
+        "nl": "Optioneel. Laat leeg om de oorspronkelijke naam te houden.",
+        "de": "Optional. Leer lassen, um den ursprünglichen Namen zu behalten.",
+        "fr": "Facultatif. Laissez vide pour garder le nom d'origine.",
+        "it": "Facoltativo. Lascia vuoto per mantenere il nome originale.",
+        "sv": "Valfritt. Lämna tomt för att behålla det ursprungliga namnet.",
+        "no": "Valgfritt. La stå tomt for å beholde det opprinnelige navnet.",
+        "es": "Opcional. Déjalo vacío para mantener el nombre original.",
+        "da": "Valgfrit. Lad feltet stå tomt for at beholde det oprindelige navn.",
+        "ru": "Необязательно. Оставьте пустым, чтобы сохранить исходное название.",
+        "pl": "Opcjonalnie. Zostaw puste, aby zachować oryginalną nazwę.",
+        "ko": "선택 사항입니다. 비워 두면 원래 이름을 사용합니다.",
+        "ar": "اختياري. اتركه فارغًا للإبقاء على الاسم الأصلي."
+      },
+      "value": ""
+    },
+    {
       "id": "flow2",
       "type": "autocomplete",
       "title": {
@@ -461,6 +496,26 @@
         "ko": "  – 아이콘",
         "ar": "  – الأيقونة"
       }
+    },
+    {
+      "id": "name2",
+      "type": "text",
+      "title": {
+        "en": "  – Name",
+        "nl": "  – Naam",
+        "de": "  – Name",
+        "fr": "  – Nom",
+        "it": "  – Nome",
+        "sv": "  – Namn",
+        "no": "  – Navn",
+        "es": "  – Nombre",
+        "da": "  – Navn",
+        "ru": "  – Название",
+        "pl": "  – Nazwa",
+        "ko": "  – 이름",
+        "ar": "  – الاسم"
+      },
+      "value": ""
     },
     {
       "id": "flow3",
@@ -649,6 +704,26 @@
       }
     },
     {
+      "id": "name3",
+      "type": "text",
+      "title": {
+        "en": "  – Name",
+        "nl": "  – Naam",
+        "de": "  – Name",
+        "fr": "  – Nom",
+        "it": "  – Nome",
+        "sv": "  – Namn",
+        "no": "  – Navn",
+        "es": "  – Nombre",
+        "da": "  – Navn",
+        "ru": "  – Название",
+        "pl": "  – Nazwa",
+        "ko": "  – 이름",
+        "ar": "  – الاسم"
+      },
+      "value": ""
+    },
+    {
       "id": "flow4",
       "type": "autocomplete",
       "title": {
@@ -833,6 +908,26 @@
         "ko": "  – 아이콘",
         "ar": "  – الأيقونة"
       }
+    },
+    {
+      "id": "name4",
+      "type": "text",
+      "title": {
+        "en": "  – Name",
+        "nl": "  – Naam",
+        "de": "  – Name",
+        "fr": "  – Nom",
+        "it": "  – Nome",
+        "sv": "  – Namn",
+        "no": "  – Navn",
+        "es": "  – Nombre",
+        "da": "  – Navn",
+        "ru": "  – Название",
+        "pl": "  – Nazwa",
+        "ko": "  – 이름",
+        "ar": "  – الاسم"
+      },
+      "value": ""
     },
     {
       "id": "flow5",
@@ -1021,6 +1116,26 @@
       }
     },
     {
+      "id": "name5",
+      "type": "text",
+      "title": {
+        "en": "  – Name",
+        "nl": "  – Naam",
+        "de": "  – Name",
+        "fr": "  – Nom",
+        "it": "  – Nome",
+        "sv": "  – Namn",
+        "no": "  – Navn",
+        "es": "  – Nombre",
+        "da": "  – Navn",
+        "ru": "  – Название",
+        "pl": "  – Nazwa",
+        "ko": "  – 이름",
+        "ar": "  – الاسم"
+      },
+      "value": ""
+    },
+    {
       "id": "flow6",
       "type": "autocomplete",
       "title": {
@@ -1205,6 +1320,26 @@
         "ko": "  – 아이콘",
         "ar": "  – الأيقونة"
       }
+    },
+    {
+      "id": "name6",
+      "type": "text",
+      "title": {
+        "en": "  – Name",
+        "nl": "  – Naam",
+        "de": "  – Name",
+        "fr": "  – Nom",
+        "it": "  – Nome",
+        "sv": "  – Namn",
+        "no": "  – Navn",
+        "es": "  – Nombre",
+        "da": "  – Navn",
+        "ru": "  – Название",
+        "pl": "  – Nazwa",
+        "ko": "  – 이름",
+        "ar": "  – الاسم"
+      },
+      "value": ""
     },
     {
       "id": "flow7",
@@ -1393,6 +1528,26 @@
       }
     },
     {
+      "id": "name7",
+      "type": "text",
+      "title": {
+        "en": "  – Name",
+        "nl": "  – Naam",
+        "de": "  – Name",
+        "fr": "  – Nom",
+        "it": "  – Nome",
+        "sv": "  – Namn",
+        "no": "  – Navn",
+        "es": "  – Nombre",
+        "da": "  – Navn",
+        "ru": "  – Название",
+        "pl": "  – Nazwa",
+        "ko": "  – 이름",
+        "ar": "  – الاسم"
+      },
+      "value": ""
+    },
+    {
       "id": "flow8",
       "type": "autocomplete",
       "title": {
@@ -1577,6 +1732,26 @@
         "ko": "  – 아이콘",
         "ar": "  – الأيقونة"
       }
+    },
+    {
+      "id": "name8",
+      "type": "text",
+      "title": {
+        "en": "  – Name",
+        "nl": "  – Naam",
+        "de": "  – Name",
+        "fr": "  – Nom",
+        "it": "  – Nome",
+        "sv": "  – Namn",
+        "no": "  – Navn",
+        "es": "  – Nombre",
+        "da": "  – Navn",
+        "ru": "  – Название",
+        "pl": "  – Nazwa",
+        "ko": "  – 이름",
+        "ar": "  – الاسم"
+      },
+      "value": ""
     }
   ],
   "api": {

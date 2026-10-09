@@ -50,9 +50,11 @@
       const sdkAt = performance.now();
       const settings = Homey.getSettings() || {};
       // Each slot setting is an autocomplete item whose id is the Logic variable's id (`none` empties it).
-      const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        .map(n => settings[`slot${n}`] && settings[`slot${n}`].id)
-        .filter(id => typeof id === 'string' && id && id !== 'none');
+      // An optional name per row (`nameN`, text) replaces the variable's.
+      const picked = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        .map(n => ({ id: settings[`slot${n}`] && settings[`slot${n}`].id, name: settings[`name${n}`] }))
+        .filter(s => typeof s.id === 'string' && s.id && s.id !== 'none');
+      const ids = picked.map(s => s.id);
       let readySent = false;
       let loaded = false;
 
@@ -60,6 +62,7 @@
         t: (key, tokens) => Homey.__(key, tokens),
         columns: settings.columns,
         step: settings.step,
+        names: picked.map(s => s.name),
         onSet: async (id, value) => {
           const res = await Homey.api('POST', '/set', { id, value });
           // No usable API key: the widget says what to do (see the app settings).

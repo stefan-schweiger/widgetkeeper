@@ -12,7 +12,7 @@
     unavailable: 'Unavailable',
   };
 
-  const SPAN_MS = { '1h': 3600e3, '6h': 6 * 3600e3, '24h': 24 * 3600e3, '7d': 7 * 24 * 3600e3 };
+  const SPAN_MS = { '1h': 3600e3, '6h': 6 * 3600e3, '24h': 24 * 3600e3, '2d': 2 * 24 * 3600e3, '3d': 3 * 24 * 3600e3, '5d': 5 * 24 * 3600e3, '7d': 7 * 24 * 3600e3 };
   /** The chart's vertical padding, so the line and the dot aren't cut at the top and bottom. */
   const PAD = 3;
 
