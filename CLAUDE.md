@@ -101,6 +101,10 @@ How this project uses it:
 - Layout: a header with the device icon and name, then a segmented row of three buttons. Each button's text is derived from its preset (`21°` / `Heat` / `Fan slow`, or `Off`). The custom label and icon settings are hidden for now.
 - When no preset matches, the header shows `Currently Cool 23° · Fan auto` under the name.
 - Type: the name and the button values are 17 bold. The buttons' mode/extra text is 12/16 regular, a deliberate exception to Homey's scale so three lines fit the 68 px buttons.
+- `layout` (dropdown after the device, `standard` by default; a missing value is standard): `compact` adds `.tw-compact` on the root, CSS only (same markup, so the tests and logic are shared). About 108 px with the frame against 156.
+  - The header is one 24 px line: the 24 px icon (20 px glyph), the name at 14/20 bold (at most 60 % while the subtitle shows: `.has-sub`, set when there's a subtitle and no error) and `· Currently …` ellipsized beside it. An error or message wraps onto its own line.
+  - The buttons are 44 px with one line: the value (17 bold) and the mode at 14 in its colour, or the first extra when there's no mode; other extras are hidden (`.tw-modetext ~ .tw-extra`). So two presets that differ only in fan speed read the same in compact.
+  - `dev/thermostat-preview.html` has compact cards below the standard ones.
 - In dark mode, `body.tw-frame` mimics Homey's native device tiles: a `#181920` fill and a 1px rim that's lighter at the top (a fixed `::after`, so it stays out of the height), using a 10px radius measured from a phone screenshot. It's gated on `.homey-dark-mode`; light mode keeps the default frame.
 - The device icon is fetched by the app (`lib/deviceIcon.ts`), sent as an SVG data URL, and used as a CSS mask. A rounded square is the fallback.
   - A user-picked icon (`device.iconOverride`, e.g. `lock`, `christmas-lights`) comes from Homey's icon library at `https://my.homey.app/img/devices/<name>.svg`. That's public, and it's where the web app's own bundle loads it from.

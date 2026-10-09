@@ -60,7 +60,7 @@
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, locale?: string,
    *   onApply?: (values: {capabilityId: string, value: any}[]) => Promise<any>,
-   *   onHeight?: (h: number) => void }} opts
+   *   onHeight?: (h: number) => void, layout?: string }} opts
    */
   function createThermostatWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -77,6 +77,8 @@
     let errorText = null;
 
     root.classList.add('tw');
+    // Compact: a one-line header and one-line buttons; the markup is the same, only the CSS differs.
+    root.classList.toggle('tw-compact', opts.layout === 'compact');
     const header = el('div', { class: 'tw-header' }, root);
     const iconBox = el('div', { class: 'tw-device-icon' }, header);
     const titles = el('div', { class: 'tw-titles' }, header);
@@ -289,6 +291,7 @@
       subEl.textContent = sub;
       subEl.style.display = sub ? '' : 'none';
       subEl.classList.toggle('error', !!errorText && !!state);
+      header.classList.toggle('has-sub', !!sub && !errorText);
       header.classList.toggle('message-only', !state);
 
       row.style.display = state || !errorText ? '' : 'none';

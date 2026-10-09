@@ -111,3 +111,29 @@ html, body { margin: 0; }
   20%, 60% { transform: translateX(-4px); }
   40%, 80% { transform: translateX(4px); }
 }
+
+/*
+ * Compact layout (the `layout` setting): the name and the "Currently …" text on one 24px line, and 44px
+ * buttons with one line each. Same markup; a button shows its big value and the mode, or the first extra
+ * setting when there's no mode.
+ */
+.tw.tw-compact { gap: var(--homey-su-2, 8px); }
+.tw-compact .tw-header { min-height: 24px; gap: var(--homey-su-2, 8px); }
+.tw-compact .tw-device-icon {
+  width: 24px; height: 24px;
+  -webkit-mask-size: var(--homey-icon-size-medium, 20px); mask-size: var(--homey-icon-size-medium, 20px);
+}
+.tw-compact .tw-device-icon.fallback { width: 16px; height: 16px; margin: 4px; border-width: 2px; border-radius: 4px; }
+/* Wraps only for a message, which takes its own line; the subtitle's zero basis keeps it beside the name. */
+.tw-compact .tw-titles { flex: 1; flex-direction: row; flex-wrap: wrap; align-items: baseline; }
+.tw-compact .tw-name { font-size: var(--tw-fs-small); line-height: var(--tw-lh-small); flex: 0 1 auto; max-width: 100%; }
+.tw-compact .tw-header.has-sub .tw-name { max-width: 60%; }
+.tw-compact .tw-sub { flex: 1 1 0; min-width: 0; }
+.tw-compact .tw-header.has-sub .tw-sub::before { content: '\00a0·\00a0'; }
+.tw-compact .tw-sub.error, .tw-compact .tw-header.message-only .tw-sub { flex-basis: 100%; }
+
+.tw-compact .tw-btn { height: 44px; padding: 0 8px; flex-direction: row; gap: 6px; }
+.tw-compact .tw-big { flex-shrink: 0; }
+/* The default line height on the smaller text too, so both share one centre line. */
+.tw-compact .tw-modetext, .tw-compact .tw-extra { font-size: var(--tw-fs-small); line-height: var(--tw-lh-default); min-width: 0; }
+.tw-compact .tw-modetext ~ .tw-extra, .tw-compact .tw-extra ~ .tw-extra { display: none; }

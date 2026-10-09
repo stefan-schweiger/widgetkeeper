@@ -5454,6 +5454,64 @@
           }
         },
         {
+          "id": "layout",
+          "type": "dropdown",
+          "title": {
+            "en": "Layout",
+            "nl": "Indeling",
+            "de": "Layout",
+            "fr": "Disposition",
+            "it": "Layout",
+            "sv": "Layout",
+            "no": "Oppsett",
+            "es": "Diseño",
+            "da": "Layout",
+            "ru": "Макет",
+            "pl": "Układ",
+            "ko": "레이아웃",
+            "ar": "التخطيط"
+          },
+          "value": "standard",
+          "values": [
+            {
+              "id": "standard",
+              "title": {
+                "en": "Standard",
+                "nl": "Standaard",
+                "de": "Standard",
+                "fr": "Standard",
+                "it": "Standard",
+                "sv": "Standard",
+                "no": "Standard",
+                "es": "Estándar",
+                "da": "Standard",
+                "ru": "Стандартный",
+                "pl": "Standardowy",
+                "ko": "기본",
+                "ar": "قياسي"
+              }
+            },
+            {
+              "id": "compact",
+              "title": {
+                "en": "Compact",
+                "nl": "Compact",
+                "de": "Kompakt",
+                "fr": "Compacte",
+                "it": "Compatto",
+                "sv": "Kompakt",
+                "no": "Kompakt",
+                "es": "Compacto",
+                "da": "Kompakt",
+                "ru": "Компактный",
+                "pl": "Kompaktowy",
+                "ko": "컴팩트",
+                "ar": "مضغوط"
+              }
+            }
+          ]
+        },
+        {
           "id": "b1Power",
           "type": "dropdown",
           "title": {

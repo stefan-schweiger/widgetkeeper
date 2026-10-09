@@ -43,10 +43,10 @@ function noOnoff(mode = 'cool') {
   return s;
 }
 
-function widget(settings: Record<string, unknown>, state: any = aircon(), onApply = vi.fn(async () => {})) {
+function widget(settings: Record<string, unknown>, state: any = aircon(), onApply = vi.fn(async () => {}), layout?: string) {
   const root = document.createElement('div');
   document.body.append(root);
-  const w = win.createThermostatWidget(root, { locale: 'en', onApply });
+  const w = win.createThermostatWidget(root, { locale: 'en', onApply, layout });
   w.setButtons(win.thermostatPresetsFromSettings(settings));
   if (state) w.setState(state);
   const buttons = () => [...root.querySelectorAll<HTMLButtonElement>('.tw-btn')].map(b => ({
@@ -243,5 +243,34 @@ describe('press', () => {
     const { press, onApply } = widget({});
     press(0);
     expect(onApply).not.toHaveBeenCalled();
+  });
+});
+
+describe('layout', () => {
+  const settings = { b1Power: 'off', b2Mode: heat, b2Temp: t21, b2Extra: fanLow, b3Mode: cool };
+
+  it('marks the compact layout, and leaves the standard one (or a missing setting) alone', () => {
+    expect(widget(settings, aircon(), undefined, 'compact').root.classList.contains('tw-compact')).toBe(true);
+    expect(widget(settings, aircon(), undefined, 'standard').root.classList.contains('tw-compact')).toBe(false);
+    expect(widget(settings).root.classList.contains('tw-compact')).toBe(false);
+  });
+
+  it('keeps the same buttons and subtitle in compact', () => {
+    const standard = widget(settings);
+    const compact = widget(settings, aircon(), undefined, 'compact');
+    expect(compact.buttons()).toEqual(standard.buttons());
+    expect(compact.sub()).toBe(standard.sub());
+  });
+
+  it('flags a subtitle beside the name, but not an error', async () => {
+    vi.useFakeTimers();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const onApply = vi.fn(async () => { throw new Error('No'); });
+    const { root, press } = widget({ b1Mode: heat }, aircon(), onApply, 'compact');
+    const header = root.querySelector('.tw-header')!;
+    expect(header.classList.contains('has-sub')).toBe(true); // "Currently Cool 23°"
+    press(0);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(header.classList.contains('has-sub')).toBe(false);
   });
 });

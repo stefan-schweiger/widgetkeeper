@@ -55,6 +55,7 @@
 
       const widget = createThermostatWidget(document.getElementById('root'), {
         t: (key, tokens) => Homey.__(key, tokens),
+        layout: settings.layout, // missing on widgets placed before the setting: standard
         onApply: (values) => Homey.api('POST', '/apply', {
           deviceId, values: values.map(({ capabilityId, value }) => ({ capabilityId, value })),
         }),
