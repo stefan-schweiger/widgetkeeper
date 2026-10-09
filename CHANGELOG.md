@@ -2,6 +2,59 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 0.9.0
+
+### New: Curtains
+- Curtains and blinds as tiles, two per row. Tap a tile to open or close it, the way curtains used to work in Homey. A label in the corner always says which it will do (**Open** or **Close**), so a half-open curtain never leaves you guessing.
+- Tap while it moves to send it back the other way. The slider sets any position in between.
+- The tile shows *Open*, *Closed*, *42% open* or *Opening…*, and while it moves, a mark shows where it's heading. Its icon opens and closes with the curtain.
+- A half-open curtain goes to the nearer end, or, with a setting, the opposite way of its last move, like a one-button remote.
+- New setting, *Position 100% means closed*, for curtains that count the other way round from Homey's standard (such as some SwitchBot curtains).
+- Optional grouping by room: one tile moves all of a room's curtains.
+- The line under the name can be hidden for lower tiles.
+
+### New: Media
+- One speaker as a card: album art, the track and artist, a progress line, previous, play and next, and mute.
+- The volume moves at once on every tap, and a maximum volume setting stops it going too loud.
+- Choose the volume as a slider on its own line, or as − and + buttons next to play.
+- When the speaker plays from the TV or line-in, the card says so instead of showing old album art.
+- Up to four buttons for the speaker's own actions, such as *Set source to TV*, or any flow. They sit behind **⋯**. Running a speaker action needs a Homey API key with permission to manage flows.
+- Tap the speaker's name to switch to another speaker. Each screen remembers its choice; the speaker in the settings stays the default.
+- Shuffle and repeat, and the progress line, are settings.
+
+### Tile names
+- Device Values, Flow Variables and Flow Buttons: give each tile, row or button its own name with the new *– Name* setting under it.
+- Sensor Alarms: a *Tile names* setting, one per line. Write `Device name = Tile name`, or just a name for the device in that position.
+
+### Electricity Overview
+- New setting, *Layout*: *Compact* makes the card about a quarter lower.
+
+### Thermostat Shortcuts
+- New setting, *Layout*: *Compact* puts the name and the current state on one line and makes the buttons one line high.
+
+### Sparklines
+- New spans: 2, 3 and 5 days.
+- Power sparklines now show their history straight away, instead of starting empty each time the dashboard opens.
+
+### Locks and Doors
+- A calmer list: each device's state is green when it's secure and red when it isn't, and every button is the same grey.
+- **Lock all** sits in the top line while the list is open.
+- A lock that hasn't reported yet is never shown as locked.
+
+### Flow Buttons
+- 44 icons, each shown with a picture in the settings.
+
+### Price Badge
+- Every price shows its unit, and a lightning bolt in the price level's colour.
+- A failed price read now shows an error, instead of saying there are no prices.
+
+### Other fixes
+- Device Values: a percentage fill and a Flow colour now use the same tint.
+- Light Controls: picking a colour for a light that's off turns it on in that colour (a Hue light used to come on in its old colour).
+- Timers: a quick tap on a timer that is just starting is no longer lost, and a failed change puts the timer back as it was.
+- Flow Variables: a value you just changed is no longer overwritten by an older one.
+- Numbered settings (*Tile 4*, *Button 2*) show their number on iOS.
+
 ## 0.8.0
 
 ### New: Price Badge
