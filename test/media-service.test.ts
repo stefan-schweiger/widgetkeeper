@@ -206,6 +206,24 @@ describe('buttons', () => {
     expect(key.flow.runFlowCardAction).not.toHaveBeenCalled();
   });
 
+  it('runs a card picked for another speaker as this speaker’s card of the same kind', async () => {
+    const { service, homey } = setup();
+    const key = keyApi();
+    keyApis.set('k', key);
+    homey.settings.set(API_KEY_SETTING, 'k');
+    await service.runButton('tv', 'card:homey:device:kitchen:cloud_play_home_theater');
+    expect(key.flow.runFlowCardAction).toHaveBeenCalledWith({
+      uri: 'homey:device:tv', id: 'homey:device:tv:cloud_play_home_theater', args: {},
+    });
+  });
+
+  it('lists a speaker’s own cards with its state when asked', async () => {
+    const { service } = setup();
+    expect(((await service.getState('tv', { cards: true })) as any).cards)
+      .toEqual(['cloud_play_home_theater', 'cloud_leave_current_group']);
+    expect((await service.getState('tv')) as any).not.toHaveProperty('cards');
+  });
+
   it('starts a flow through Flow Buttons', async () => {
     const { service, homey } = setup();
     const key = keyApi(['homey.flow.start']);
@@ -213,5 +231,23 @@ describe('buttons', () => {
     homey.settings.set(API_KEY_SETTING, 'k');
     await service.runButton('tv', 'flow:f1');
     expect(key.flow.triggerFlow).toHaveBeenCalledWith({ id: 'f1' });
+  });
+});
+
+describe('listSpeakers', () => {
+  it('lists every speaker with its zone and what it plays, by name', async () => {
+    const kitchen = fakeDevice({
+      id: 'kitchen', name: 'Kitchen', class: 'speaker',
+      caps: {
+        speaker_playing: { type: 'boolean', value: true },
+        speaker_track: { type: 'string', value: 'Hey Jude', setable: false },
+        volume_set: { type: 'number', value: 0.2 },
+      },
+    });
+    const { service } = setup([sonos(), lamp(), kitchen]);
+    expect(await service.listSpeakers()).toEqual([
+      { id: 'kitchen', name: 'Kitchen', icon: null, zone: 'Stue', caps: { speaker_playing: { value: true }, speaker_track: { value: 'Hey Jude' } } },
+      { id: 'tv', name: 'TV', icon: null, zone: 'Stue', caps: { speaker_playing: { value: false }, speaker_track: { value: 'HDMI' }, speaker_artist: { value: null } } },
+    ]);
   });
 });

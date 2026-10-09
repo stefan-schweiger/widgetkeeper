@@ -14,7 +14,13 @@ export default {
     if (!query.deviceId) throw new Error('Missing deviceId');
     const perf = describeWidgetPerf(query.perf);
     if (perf) app.debug(`Media widget: ${perf}`);
-    return app.media.getState(query.deviceId);
+    return app.media.getState(query.deviceId, { cards: query.cards === '1' });
+  },
+
+  /** Every speaker, for the widget's switcher. */
+  async getSpeakers({ homey }: { homey: Homey }) {
+    const app = homey.app as WidgetkeeperApp;
+    return { speakers: await app.media.listSpeakers() };
   },
 
   /** `{deviceId, capabilityId, value, maxVolume}`: one control (play, next, mute, the volume …). */

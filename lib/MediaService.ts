@@ -51,8 +51,20 @@ export type MediaCap = { value: unknown, setable: boolean, values?: { id: string
 export type MediaArt = { url: string, lastUpdated: number | null };
 
 export type MediaDevice =
-  | { id: string, name: string, icon: string | null, caps: Record<string, MediaCap>, art: MediaArt | null }
+  | { id: string, name: string, icon: string | null, caps: Record<string, MediaCap>, art: MediaArt | null, cards?: string[] }
   | { id: string, missing: true };
+
+/** A speaker in the widget's switcher: enough to show what it plays. */
+export type SpeakerItem = {
+  id: string,
+  name: string,
+  icon: string | null,
+  zone: string | null,
+  caps: Record<string, { value: unknown }>,
+};
+
+/** What the switcher shows of each speaker. */
+const SUMMARY_CAPS = ['speaker_playing', 'speaker_track', 'speaker_artist', 'sonos_sound_input'];
 
 export type Art = { type: string, data: string };
 
@@ -102,6 +114,12 @@ function readCaps(device: any): Record<string, MediaCap> {
 export function parseCardId(id: string): string | null {
   const m = /^card:(.+)$/.exec(id || '');
   return m ? m[1] : null;
+}
+
+/** A device card's own part: `homey:device:<deviceId>:<card>` → `<card>` (the same on every speaker of one app). */
+export function cardSuffix(cardId: string): string {
+  const m = /^homey:device:[^:]+:(.+)$/.exec(cardId || '');
+  return m ? m[1] : cardId;
 }
 
 function matches(query: string, ...texts: (string | undefined)[]) {
@@ -174,18 +192,53 @@ export default class MediaService {
 
   // ---------------------------------------------------------------- state and control
 
-  async getState(deviceId: string): Promise<MediaDevice> {
+  /**
+   * One speaker's state. With `cards` it also lists the speaker's own argument-free Flow cards (their `<card>`
+   * part), so a widget switched to another speaker knows which of its buttons that speaker has.
+   */
+  async getState(deviceId: string, opts: { cards?: boolean } = {}): Promise<MediaDevice> {
     const tm = new Timings();
     try {
       const t = await this.current(deviceId, tm);
       t.lastRequested = Date.now();
-      return { id: deviceId, name: t.name, icon: t.icon, caps: structuredClone(t.caps), art: t.art && { ...t.art } };
+      const state: MediaDevice = { id: deviceId, name: t.name, icon: t.icon, caps: structuredClone(t.caps), art: t.art && { ...t.art } };
+      if (opts.cards) {
+        state.cards = await tm.time('cards', () => this.deviceCards(deviceId)
+          .then(cards => cards.map(c => cardSuffix(c.id)))
+          .catch(() => []));
+      }
+      return state;
     } catch (err) {
       this.log(`Speaker ${deviceId} unavailable:`, err);
       return { id: deviceId, missing: true };
     } finally {
       this.debug(`Media state for ${deviceId}: ${tm.summary()}`);
     }
+  }
+
+  /** Every speaker, for the widget's switcher: its icon, zone and what it plays, sorted by name. */
+  async listSpeakers(): Promise<SpeakerItem[]> {
+    const api = await getAppApi(this.homey);
+    const [devices, zones] = await Promise.all([
+      api.devices.getDevices(),
+      api.zones.getZones().catch(() => ({})),
+    ]);
+    const speakers = (Object.values(devices) as any[]).filter(isSpeaker);
+    const items = await Promise.all(speakers.map(async (d): Promise<SpeakerItem> => {
+      const caps: Record<string, { value: unknown }> = {};
+      for (const id of SUMMARY_CAPS) {
+        const c = d.capabilitiesObj?.[id];
+        if (c) caps[id] = { value: c.value ?? null };
+      }
+      return {
+        id: d.id,
+        name: d.name,
+        icon: await fetchDeviceIcon(api, d, this.log),
+        zone: (zones as any)[d.zone]?.name ?? null,
+        caps,
+      };
+    }));
+    return items.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   /**
@@ -215,7 +268,8 @@ export default class MediaService {
 
   /**
    * A button: a flow (`flow:`/`advanced:`, through Flow Buttons' start) or one of this speaker's own argument-free
-   * Flow cards (`card:`), run with the user's API key. A KeyError says why it can't.
+   * Flow cards (`card:`), run with the user's API key. A KeyError says why it can't. A card picked for another
+   * speaker (the widget switched speaker) runs this speaker's card of the same kind, if it has one.
    */
   async runButton(deviceId: string, id: string) {
     const cardId = parseCardId(id);
@@ -223,7 +277,8 @@ export default class MediaService {
       await this.flows.trigger(id);
       return;
     }
-    const card = (await this.deviceCards(deviceId)).find(c => c.id === cardId);
+    const suffix = cardSuffix(cardId);
+    const card = (await this.deviceCards(deviceId)).find(c => cardSuffix(c.id) === suffix);
     if (!card) throw new Error(`${cardId} is not an action of speaker ${deviceId}`);
     try {
       await this.key.run(api => api.flow.runFlowCardAction({ uri: card.ownerUri, id: card.id, args: {} }));

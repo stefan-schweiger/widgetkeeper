@@ -1,8 +1,11 @@
 /*
- * Media: one speaker as a card. The album art, the track and the speaker's name; previous, play/pause and next
- * with mute on the right; the volume as − bar + (each tap moves the number at once and a burst is sent once, so it
- * never overshoots, and `maxVolume` caps it); then buttons for the speaker's own Flow cards (Set source to TV …)
- * or flows. On TV or line-in the card says so instead of greying out: mute and the volume are what matter there.
+ * Media: one speaker as a compact card. The album art, the track and the speaker's name, with a ⋯ button that
+ * opens an overlay of buttons for the speaker's own Flow cards (Set source to TV …) or flows; previous, play/pause
+ * and next with mute on the right; the volume as − bar + on its own line (`volumeLayout: 'line'`), or only − and +
+ * around mute next to the transport (`'buttons'`, the level as a ring on mute). Each −/+ tap moves the volume at
+ * once and a burst is sent once, so it never overshoots, and `maxVolume` caps it. On TV or line-in the card says so
+ * instead of greying out: mute and the volume are what matter there. With `canSwitch`, a tap on the speaker's name
+ * (its device icon, the name and a ⌄) lists every speaker, and picking one switches the card to it.
  * Plain browser JS (served as-is).
  */
 (function () {
@@ -14,6 +17,9 @@
   const MIN_RUNNING_MS = 400; // a button's spinner shows at least this long, so a fast run still registers
   const DONE_MS = 1500;
   const FLASH_MS = 300; // next/previous light up this long
+  const PANEL_IDLE_MS = 8e3; // the overlay closes after this long without a touch
+  const PANEL_CLOSE_MS = 600; // after a button's check mark, the overlay closes this much later
+  const SPEAKERS_IDLE_MS = 15e3; // the speaker list closes after this long without a touch
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
   const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
 
@@ -38,6 +44,12 @@
     volumeDown: 'Volume down',
     volumeUp: 'Volume up',
     volume: 'Volume',
+    more: 'More',
+    close: 'Close',
+    speakers: 'Speakers',
+    switchSpeaker: 'Switch speaker',
+    speakersError: 'Could not load the speakers.',
+    loading: 'Loading…',
     noKey: 'To use this button, add an API key in the app settings.',
     keyScope: 'The API key may not run this button. Speaker actions need permission to manage flows.',
     keyInvalid: 'The API key was not accepted.',
@@ -59,6 +71,10 @@
     tv: { d: 'M4.5 6h15A1.5 1.5 0 0 1 21 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5v-9A1.5 1.5 0 0 1 4.5 6zM8 21h8M9 2.5 12 6l3-3.5' },
     lineIn: { d: 'M9 2.5V7M15 2.5V7M6 7h12v4a6 6 0 0 1-12 0V7zM12 17v4.5' },
     check: { d: 'M5 12.5l4.5 4.5L19 7.5' },
+    more: { fill: true, d: 'M6 10.25a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5zM12 10.25a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5zM18 10.25a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5z' },
+    close: { d: 'M6.5 6.5l11 11M17.5 6.5l-11 11' },
+    chevron: { d: 'M7 10l5 5 5-5' },
+    device: { d: 'M7.5 3h9A1.5 1.5 0 0 1 18 4.5v15a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 19.5v-15A1.5 1.5 0 0 1 7.5 3zM12 11.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7zM12 6.5h.01' },
   };
 
   function glyph(name, cls) {
@@ -119,6 +135,24 @@
     return node;
   }
 
+  /**
+   * A device icon: Homey's SVG (a data URL from the app) as a mask in the text colour, or the drawn speaker.
+   * @param {string|null|undefined} icon @param {string} cls
+   */
+  function deviceIcon(icon, cls) {
+    if (!icon) return glyph('device', cls);
+    const span = document.createElement('span');
+    span.className = `${cls} mw-mask`;
+    span.style.setProperty('--mw-icon', `url("${icon}")`);
+    return span;
+  }
+
+  /** `<card>` of a `card:homey:device:<id>:<card>` button id, or null for a flow. */
+  function buttonCard(id) {
+    const m = /^card:homey:device:[^:]+:(.+)$/.exec(id || '');
+    return m ? m[1] : null;
+  }
+
   /** `0:42`, `3:15`, `1:02:03` from seconds. */
   function clock(s) {
     s = Math.max(0, Math.floor(s));
@@ -136,7 +170,8 @@
    *   onArt?: () => Promise<{type: string, data: string}>,
    *   onReport?: (text: string) => void, onHaptic?: () => void, onHeight?: (h: number) => void,
    *   buttons?: {id: string, name: string}[], volumeStep?: number, maxVolume?: number, showShuffle?: boolean,
-   *   now?: () => number }} opts
+   *   volumeLayout?: 'line' | 'buttons', showProgress?: boolean, now?: () => number,
+   *   canSwitch?: boolean, onListSpeakers?: () => Promise<any[]>, onSwitch?: (id: string) => void }} opts
    */
   function createMediaWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -148,10 +183,12 @@
     /** The volume limit (0–1): the bar's right end, and `+` stops there. */
     const maxVolume = typeof opts.maxVolume === 'number' && opts.maxVolume > 0 && opts.maxVolume < 1 ? opts.maxVolume : 1;
     const buttons = Array.isArray(opts.buttons) ? opts.buttons : [];
+    /** `buttons`: − and + around mute in the transport row, no bar. Anything else is the bar on its own line. */
+    const volumeButtons = opts.volumeLayout === 'buttons';
     /** The clock the position counts on with (the README screenshot fixes it). */
     const now = typeof opts.now === 'function' ? opts.now : () => Date.now();
 
-    /** @type {{id: string, name?: string, icon?: string|null, caps?: Record<string, any>, art?: any, missing?: boolean} | null} */
+    /** @type {{id: string, name?: string, icon?: string|null, caps?: Record<string, any>, art?: any, cards?: string[], missing?: boolean} | null} */
     let device = null;
     const optimistic = new Map(); // capabilityId → { value, until }
     let volumeTimer = null; // a −/+ burst waiting to be sent
@@ -171,58 +208,115 @@
     let artShown = null; // the image URL on screen
 
     root.classList.add('mw');
+    root.classList.toggle('mw-volume-buttons', volumeButtons);
     const card = el('div', { class: 'mw-card' }, root);
-    const nowPlaying = el('div', { class: 'mw-now' }, card);
+    // The main view and the overlay share one grid cell, so the card is as tall as the taller of the two and
+    // opening the overlay never changes the widget's height.
+    const main = el('div', { class: 'mw-main' }, card);
+    const nowPlaying = el('div', { class: 'mw-now' }, main);
     const artBox = el('div', { class: 'mw-art' }, nowPlaying);
     const artImg = el('div', { class: 'mw-art-img' }, artBox);
     let artGlyphName = null;
     const info = el('div', { class: 'mw-info' }, nowPlaying);
-    const nameEl = el('div', { class: 'mw-name', dir: 'auto' }, info);
+    // The speaker: its device icon, the name and, with switching, a ⌄. A tap opens the speaker list.
+    const canSwitch = !!opts.canSwitch && typeof opts.onListSpeakers === 'function' && typeof opts.onSwitch === 'function';
+    const who = el(canSwitch ? 'button' : 'div', canSwitch
+      ? { type: 'button', class: 'mw-who switch', 'aria-label': t('switchSpeaker'), 'aria-expanded': 'false' }
+      : { class: 'mw-who' }, info);
+    let whoIcon = el('span', { class: 'mw-who-icon' }, who);
+    let whoIconKey;
+    const nameEl = el('span', { class: 'mw-name', dir: 'auto' }, who);
+    if (canSwitch) who.appendChild(glyph('chevron', 'mw-chevron'));
     const titleEl = el('div', { class: 'mw-title', dir: 'auto' }, info);
     const subEl = el('div', { class: 'mw-sub', dir: 'auto' }, info);
     const progress = el('div', { class: 'mw-progress' }, info);
     const progressFill = el('div', { class: 'mw-progress-fill' }, progress);
     const progressText = el('div', { class: 'mw-progress-text' }, info);
+    const moreBtn = el('button', { type: 'button', class: 'mw-btn mw-more', 'aria-label': t('more'), 'aria-expanded': 'false' }, nowPlaying);
+    moreBtn.appendChild(glyph('more'));
 
-    const controls = el('div', { class: 'mw-controls' }, card);
+    const controls = el('div', { class: 'mw-controls' }, main);
     const control = (name, label, cls) => {
       const b = el('button', { type: 'button', class: `mw-btn ${cls || ''}`, 'aria-label': t(label), 'data-control': name }, controls);
       b.appendChild(glyph(name));
       return b;
     };
-    const shuffleBtn = opts.showShuffle ? control('shuffle', 'shuffle', 'mw-small') : null;
+    // With the volume as buttons the row has no room for shuffle and repeat: they go in the overlay.
+    const shuffleInPanel = volumeButtons;
+    const shuffleBtn = opts.showShuffle && !shuffleInPanel ? control('shuffle', 'shuffle', 'mw-small') : null;
     const prevBtn = control('previous', 'previous', 'mw-transport');
     const playBtn = control('play', 'play', 'mw-transport mw-play');
     const nextBtn = control('next', 'next', 'mw-transport');
-    const repeatBtn = opts.showShuffle ? control('repeat', 'repeat', 'mw-small') : null;
+    const repeatBtn = opts.showShuffle && !shuffleInPanel ? control('repeat', 'repeat', 'mw-small') : null;
     if (repeatBtn) el('span', { class: 'mw-badge', text: '1' }, repeatBtn);
     el('span', { class: 'mw-spacer' }, controls);
+    const downBtn = el('button', { type: 'button', class: 'mw-btn mw-step', 'aria-label': t('volumeDown') });
+    downBtn.appendChild(glyph('minus'));
+    const upBtn = el('button', { type: 'button', class: 'mw-btn mw-step', 'aria-label': t('volumeUp') });
+    upBtn.appendChild(glyph('plus'));
+    if (volumeButtons) controls.appendChild(downBtn);
     const muteBtn = control('speaker', 'mute', 'mw-mute');
+    if (volumeButtons) controls.appendChild(upBtn);
     let playGlyph = 'play';
     let muteGlyph = 'speaker';
 
-    const volume = el('div', { class: 'mw-volume' }, card);
-    const downBtn = el('button', { type: 'button', class: 'mw-btn mw-step', 'aria-label': t('volumeDown') }, volume);
-    downBtn.appendChild(glyph('minus'));
-    const bar = el('div', { class: 'mw-bar', role: 'slider', tabindex: '0', 'aria-label': t('volume'), 'aria-valuemin': '0', 'aria-valuemax': String(Math.round(maxVolume * 100)) }, volume);
+    // The volume line: − bar +. With `volumeButtons` it isn't in the card (and the bar isn't used).
+    const volume = el('div', { class: 'mw-volume' }, volumeButtons ? null : main);
+    const bar = el('div', { class: 'mw-bar', role: 'slider', tabindex: '0', 'aria-label': t('volume'), 'aria-valuemin': '0', 'aria-valuemax': String(Math.round(maxVolume * 100)) });
     const track = el('div', { class: 'mw-track' }, bar);
     el('div', { class: 'mw-fill' }, track);
     el('div', { class: 'mw-knob' }, bar);
-    const upBtn = el('button', { type: 'button', class: 'mw-btn mw-step', 'aria-label': t('volumeUp') }, volume);
-    upBtn.appendChild(glyph('plus'));
-    const volumeText = el('span', { class: 'mw-volume-text' }, volume);
+    if (!volumeButtons) volume.append(downBtn, bar, upBtn);
 
-    const chips = el('div', { class: 'mw-chips' }, card);
+    // The overlay (⋯): the buttons as Flow Variables' grey pills, plus shuffle and repeat with the volume as buttons.
+    const panel = el('div', { class: 'mw-panel', 'aria-hidden': 'true' }, card);
+    const chips = el('div', { class: 'mw-chips' }, panel);
     const chipEls = buttons.map((b, i) => {
       const chip = el('button', { type: 'button', class: 'mw-chip', dir: 'auto' }, chips);
       el('span', { class: 'mw-chip-text', text: b.name }, chip);
-      onTap(chip, () => runButton(i));
+      onTap(chip, (e) => { e.stopPropagation(); runButton(i); });
       return chip;
     });
+    const toggleChip = (name) => {
+      const chip = el('button', { type: 'button', class: 'mw-chip mw-toggle', 'data-control': name }, chips);
+      chip.appendChild(glyph(name));
+      el('span', { class: 'mw-chip-text', text: t(name) }, chip);
+      if (name === 'repeat') el('span', { class: 'mw-badge', text: '1' }, chip);
+      return chip;
+    };
+    const shuffleChip = opts.showShuffle && shuffleInPanel ? toggleChip('shuffle') : null;
+    const repeatChip = opts.showShuffle && shuffleInPanel ? toggleChip('repeat') : null;
+    const closeBtn = el('button', { type: 'button', class: 'mw-btn mw-close', 'aria-label': t('close') }, panel);
+    closeBtn.appendChild(glyph('close'));
+    // The speaker list: in the same grid cell, but only laid out while open, so a long list grows the card then.
+    const speakersPanel = el('div', { class: 'mw-speakers', 'aria-hidden': 'true' }, card);
+    const speakersHead = el('div', { class: 'mw-speakers-head' }, speakersPanel);
+    el('span', { class: 'mw-speakers-title', text: t('speakers') }, speakersHead);
+    const speakersClose = el('button', { type: 'button', class: 'mw-btn mw-close', 'aria-label': t('close') }, speakersHead);
+    speakersClose.appendChild(glyph('close'));
+    const speakersList = el('div', { class: 'mw-speakers-list' }, speakersPanel);
     const messageEl = el('div', { class: 'mw-message', dir: 'auto' }, root);
+    let panelOpen = false;
+    let panelTimer = null;
+    let speakersOpen = false;
+    let speakersTimer = null;
+    /** @type {any[] | null} the last list read, shown at once the next time */
+    let speakers = null;
+    let speakersError = false;
 
     function setState(d) {
-      device = d && typeof d === 'object' ? d : null;
+      const next = d && typeof d === 'object' ? d : null;
+      // Another speaker: nothing of the previous one's may carry over (a volume burst would go to the new one).
+      if (device && next && next.id !== device.id) {
+        optimistic.clear();
+        if (volumeTimer) clearTimeout(volumeTimer);
+        volumeTimer = null;
+        busy.clear();
+        flashes.clear();
+        drag = null;
+        panelOpen = false;
+      }
+      device = next;
       positionAt = now();
       messageText = null;
       render();
@@ -278,6 +372,16 @@
 
     function haptic() {
       if (opts.onHaptic) opts.onHaptic();
+    }
+
+    /**
+     * A card button runs on the widget's speaker: on the one it was picked for, or a switched-to speaker that has a
+     * card of the same kind (`device.cards`, sent only for a switched-to speaker). Flows always run.
+     */
+    function buttonAvailable(b) {
+      const cardPart = buttonCard(b.id);
+      if (!cardPart || !device || !Array.isArray(device.cards)) return true;
+      return device.cards.includes(cardPart);
     }
 
     /** Sends one control, showing `value` meanwhile; a failure puts it back, shakes the card and says so. */
@@ -377,6 +481,7 @@
       const b = buttons[index];
       if (!b || busy.get(index) === 'running') return;
       haptic();
+      poke();
       busy.set(index, 'running');
       render();
       const began = Date.now();
@@ -391,12 +496,15 @@
       if (error) {
         console.error(error);
         busy.delete(index);
+        setPanel(false);
         shake();
         setMessage(KEY_PROBLEMS.includes(error.reason) ? t(error.reason) : t('buttonFailed', { name: b.name }), true);
         return;
       }
       busy.set(index, 'done');
       render();
+      // The check mark shows a moment, then the overlay closes, so the card shows what changed (TV …).
+      setTimeout(() => { if (busy.get(index) === 'done' && panelOpen) setPanel(false); }, PANEL_CLOSE_MS);
       setTimeout(() => {
         if (busy.get(index) !== 'done') return;
         busy.delete(index);
@@ -423,12 +531,12 @@
         if (!isTap) return;
         e.preventDefault(); // no click after it
         lastTouchTap = Date.now();
-        fn();
+        fn(e);
       });
       node.addEventListener('touchcancel', unpress);
-      node.addEventListener('click', () => {
+      node.addEventListener('click', (e) => {
         if (Date.now() - lastTouchTap < 800) return;
-        fn();
+        fn(e);
       });
     }
 
@@ -438,8 +546,105 @@
     onTap(muteBtn, toggleMute);
     if (shuffleBtn) onTap(shuffleBtn, toggleShuffle);
     if (repeatBtn) onTap(repeatBtn, cycleRepeat);
+    if (shuffleChip) onTap(shuffleChip, (e) => { e.stopPropagation(); poke(); toggleShuffle(); });
+    if (repeatChip) onTap(repeatChip, (e) => { e.stopPropagation(); poke(); cycleRepeat(); });
     onTap(downBtn, () => stepVolume(-1));
     onTap(upBtn, () => stepVolume(1));
+    onTap(moreBtn, () => { haptic(); setPanel(!panelOpen); });
+    if (canSwitch) onTap(who, () => { haptic(); setSpeakers(!speakersOpen); });
+    onTap(speakersClose, (e) => { e.stopPropagation(); setSpeakers(false); });
+    onTap(speakersPanel, () => setSpeakers(false));
+    onTap(closeBtn, (e) => { e.stopPropagation(); setPanel(false); });
+    // A tap on the overlay outside its buttons closes it, as Sensor Dots' overlay.
+    onTap(panel, () => setPanel(false));
+
+    /** Opens or closes the speaker list, reading it again each time (the last read shows meanwhile). */
+    async function setSpeakers(open) {
+      speakersOpen = !!open && canSwitch;
+      if (speakersTimer) clearTimeout(speakersTimer);
+      speakersTimer = null;
+      if (speakersOpen) {
+        panelOpen = false;
+        pokeSpeakers();
+      }
+      render();
+      if (!speakersOpen) return;
+      try {
+        const list = await opts.onListSpeakers();
+        speakers = Array.isArray(list) ? list : [];
+        speakersError = false;
+      } catch (err) {
+        console.error(err);
+        speakersError = true;
+      }
+      if (speakersOpen) render();
+    }
+
+    function pokeSpeakers() {
+      if (speakersTimer) clearTimeout(speakersTimer);
+      speakersTimer = setTimeout(() => { speakersTimer = null; setSpeakers(false); }, SPEAKERS_IDLE_MS);
+    }
+
+    function pickSpeaker(id) {
+      haptic();
+      setSpeakers(false);
+      if (!device || id !== device.id) opts.onSwitch(id);
+    }
+
+    /** What a speaker in the list plays: TV, line-in, the track and artist, or nothing. */
+    function speakerSummary(sp) {
+      const caps = sp.caps || {};
+      const source = mediaSource(caps);
+      if (source) return { text: t(source), playing: true };
+      const track = caps.speaker_track && caps.speaker_track.value;
+      const artist = caps.speaker_artist && caps.speaker_artist.value;
+      const playing = !!(caps.speaker_playing && caps.speaker_playing.value === true);
+      if (typeof track === 'string' && track) {
+        return { text: [track, artist].filter(x => typeof x === 'string' && x).join(' · '), playing };
+      }
+      return { text: sp.zone || '', playing: false };
+    }
+
+    function renderSpeakers() {
+      const rows = [];
+      if (speakers && speakers.length) {
+        for (const sp of speakers) {
+          const current = !!device && sp.id === device.id;
+          const row = el('button', { type: 'button', class: `mw-spk${current ? ' current' : ''}`, 'aria-current': current ? 'true' : null });
+          row.appendChild(deviceIcon(sp.icon, 'mw-spk-icon'));
+          const text = el('span', { class: 'mw-spk-text' }, row);
+          el('span', { class: 'mw-spk-name', dir: 'auto', text: sp.name }, text);
+          const sum = speakerSummary(sp);
+          if (sum.text) el('span', { class: `mw-spk-sub${sum.playing ? ' playing' : ''}`, dir: 'auto', text: sum.text }, text);
+          if (current) row.appendChild(glyph('check', 'mw-spk-check'));
+          onTap(row, (e) => { e.stopPropagation(); pickSpeaker(sp.id); });
+          rows.push(row);
+        }
+      } else {
+        rows.push(el('div', { class: 'mw-spk-empty', text: t(speakersError ? 'speakersError' : 'loading') }));
+      }
+      speakersList.replaceChildren(...rows);
+    }
+
+    /** Opens or closes the overlay; it closes by itself after PANEL_IDLE_MS without a touch. */
+    function setPanel(open) {
+      panelOpen = !!open;
+      if (panelOpen && speakersOpen) { speakersOpen = false; if (speakersTimer) clearTimeout(speakersTimer); speakersTimer = null; }
+      if (panelTimer) clearTimeout(panelTimer);
+      panelTimer = null;
+      if (panelOpen) poke();
+      render();
+    }
+
+    /** Restarts the overlay's idle timer; a button still running there keeps it open. */
+    function poke() {
+      if (panelTimer) clearTimeout(panelTimer);
+      panelTimer = setTimeout(() => {
+        panelTimer = null;
+        if ([...busy.values()].includes('running')) { poke(); return; }
+        setPanel(false);
+      }, PANEL_IDLE_MS);
+    }
 
     /**
      * The volume bar, as Light Controls' and Curtains' bar: a drag moves it live and sends when let go; a tap sets it
@@ -589,6 +794,7 @@
       messageEl.style.display = messageText ? '' : 'none';
       messageEl.classList.toggle('error', !!messageText && !!device);
       if (device && !ok) {
+        // Kept for switching: a speaker that's gone can still be switched away from.
         nameEl.textContent = '';
         titleEl.textContent = t('missing');
         subEl.textContent = '';
@@ -620,21 +826,21 @@
         }
         subEl.style.display = subEl.textContent ? '' : 'none';
 
-        // The cover, or a glyph: the TV or line-in, or a note while there's no art.
+        // The cover, or a glyph: the TV or line-in, or the speaker's own icon while there's no art.
         updateArt(device.art, source);
-        const fallback = source || 'music';
+        const fallback = source || `icon:${device.icon || ''}`;
         if (artGlyphName !== fallback) {
           artGlyphName = fallback;
           const old = artBox.querySelector('.mw-art-glyph');
           if (old) old.remove();
-          artBox.insertBefore(glyph(fallback, 'mw-art-glyph'), artImg);
+          artBox.insertBefore(source ? glyph(source, 'mw-art-glyph') : deviceIcon(device.icon, 'mw-art-glyph'), artImg);
         }
         artBox.classList.toggle('external', !!source);
 
         // Progress: Homey's speaker_position and speaker_duration are seconds.
         const dur = shown('speaker_duration');
         let pos = shown('speaker_position');
-        const showProgress = !source && !!trackName && typeof dur === 'number' && dur > 0 && typeof pos === 'number';
+        const showProgress = opts.showProgress !== false && !source && !!trackName && typeof dur === 'number' && dur > 0 && typeof pos === 'number';
         if (showProgress) {
           if (playing) pos += (now() - positionAt) / 1000;
           pos = Math.min(dur, Math.max(0, pos));
@@ -670,37 +876,84 @@
           repeatBtn.classList.toggle('one', r === 'track');
         }
 
-        // Volume: the bar runs to `maxVolume`.
+        // Volume: the bar (or, with the volume as buttons, the ring around mute) runs to `maxVolume`.
         const v = volumeValue();
         const x = drag != null ? drag : v != null ? Math.min(1, v / maxVolume) : 0;
         const pct = drag != null ? Math.round(drag * maxVolume * 100) : v != null ? Math.round(v * 100) : null;
         volume.style.display = has('volume_set') ? '' : 'none';
         volume.classList.toggle('muted', muted);
-        volume.style.setProperty('--mw-x', String(x));
-        volumeText.textContent = pct == null ? '–' : `${pct}%`;
+        root.style.setProperty('--mw-x', String(x));
         bar.setAttribute('aria-valuenow', String(pct == null ? 0 : pct));
+        if (volumeButtons) {
+          downBtn.style.display = upBtn.style.display = has('volume_set') ? '' : 'none';
+          muteBtn.classList.toggle('ring', has('volume_set'));
+        }
         upBtn.disabled = !settable('volume_set') || (v != null && v >= maxVolume - 0.001);
         downBtn.disabled = !settable('volume_set') || (v != null && v <= 0.001);
 
         // Buttons: a TV/line-in button is lit while the speaker plays from it (by its name, the only clue).
+        let anyLit = false;
         buttons.forEach((b, i) => {
           const chip = chipEls[i];
+          chip.style.display = buttonAvailable(b) ? '' : 'none';
           const state = busy.get(i) || null;
           chip.classList.toggle('running', state === 'running');
           chip.classList.toggle('done', state === 'done');
           const lit = (source === 'tv' && /\b(tv|hdmi)\b/i.test(b.name)) || (source === 'lineIn' && /line/i.test(b.name));
           chip.classList.toggle('on', lit);
+          if (lit) anyLit = true;
         });
+        // ⋯ is tinted while a button in it is lit, so the TV source shows without opening it.
+        moreBtn.classList.toggle('on', anyLit);
+        if (shuffleChip) {
+          const on = shown('speaker_shuffle') === true;
+          shuffleChip.style.display = has('speaker_shuffle') ? '' : 'none';
+          shuffleChip.classList.toggle('on', on);
+          shuffleChip.setAttribute('aria-pressed', String(on));
+        }
+        if (repeatChip) {
+          const r = shown('speaker_repeat');
+          repeatChip.style.display = has('speaker_repeat') ? '' : 'none';
+          repeatChip.classList.toggle('on', !!r && r !== 'none');
+          repeatChip.classList.toggle('one', r === 'track');
+        }
       }
-      chips.style.display = ok && buttons.length ? '' : 'none';
+      const panelItems = ok ? buttons.filter(buttonAvailable).length
+        + (shuffleChip && has('speaker_shuffle') ? 1 : 0) + (repeatChip && has('speaker_repeat') ? 1 : 0) : 0;
+      if (panelOpen && !panelItems) {
+        panelOpen = false;
+        if (panelTimer) clearTimeout(panelTimer);
+        panelTimer = null;
+      }
+      moreBtn.style.display = panelItems ? '' : 'none';
+      moreBtn.setAttribute('aria-expanded', String(panelOpen));
+      card.classList.toggle('panel-open', panelOpen);
+      panel.setAttribute('aria-hidden', String(!panelOpen));
+      panel.style.display = panelItems ? '' : 'none';
       controls.style.display = ok ? '' : 'none';
       if (!ok) volume.style.display = 'none';
+
+      // The speaker: its icon (as the list shows it) and the switcher.
+      const iconKey = device && !device.missing ? device.icon || '' : '';
+      if (iconKey !== whoIconKey) {
+        whoIconKey = iconKey;
+        const next = deviceIcon(iconKey, 'mw-who-icon');
+        whoIcon.replaceWith(next);
+        whoIcon = next;
+      }
+      who.style.display = device && (ok || canSwitch) ? '' : 'none';
+      if (!ok && device) nameEl.textContent = canSwitch ? t('switchSpeaker') : '';
+      if (speakersOpen && !device) speakersOpen = false;
+      if (canSwitch) who.setAttribute('aria-expanded', String(speakersOpen));
+      card.classList.toggle('speakers-open', speakersOpen);
+      speakersPanel.setAttribute('aria-hidden', String(!speakersOpen));
+      if (speakersOpen) renderSpeakers();
 
       const h = Math.ceil(root.getBoundingClientRect().height);
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    return { setState, pushChange, pushArt, setMessage, render, t };
+    return { setState, pushChange, pushArt, setMessage, render, t, setPanel, setSpeakers };
   }
 
   window.createMediaWidget = createMediaWidget;

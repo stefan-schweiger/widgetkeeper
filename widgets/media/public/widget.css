@@ -42,7 +42,11 @@ html, body { margin: 0; }
 /* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
 .mw [dir="auto"] { text-align: left; }
 
-.mw-card { display: flex; flex-direction: column; gap: var(--homey-su-3, 12px); min-width: 0; }
+/* The main view and the ⋯ overlay share one grid cell: the card is as tall as the taller of the two, so opening
+   the overlay never changes the widget's height. */
+.mw-card { display: grid; min-width: 0; }
+.mw-main, .mw-panel { grid-area: 1 / 1; min-width: 0; }
+.mw-main { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); }
 .mw-card.shake { animation: mw-shake .35s; }
 
 /* Now playing: the cover, then the speaker's name (12/16), the track (17 bold) and artist · album (14). */
@@ -60,9 +64,36 @@ html, body { margin: 0; }
 .mw-art.external { background: color-mix(in srgb, var(--mw-accent) 22%, var(--mw-card)); color: var(--mw-text); }
 
 .mw-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+/* ⋯ in the top right corner opens the overlay; tinted while a button there is lit (the TV source). */
+.mw-btn.mw-more {
+  width: 36px; height: 36px; align-self: flex-start; margin: -6px -8px 0 -4px;
+  background: transparent; color: var(--mw-muted);
+}
+.mw-more .mw-glyph { width: 20px; height: 20px; }
+.mw-more.on { color: var(--mw-accent); }
 .mw-name, .mw-title, .mw-sub, .mw-progress-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* 12/16 like the other widgets' labels, a step below Homey's scale. */
-.mw-name { font-size: 12px; line-height: 16px; color: var(--mw-muted); }
+/* The speaker: its device icon, the name (12/16 like the other widgets' labels, a step below Homey's scale) and,
+   with switching, a ⌄. As a button it keeps a 32 px touch height without moving the text (negative margins). */
+.mw-who {
+  display: flex; align-items: center; gap: 4px; min-width: 0; max-width: 100%; align-self: flex-start;
+  color: var(--mw-muted); font: inherit;
+}
+button.mw-who {
+  appearance: none; border: 0; background: transparent; padding: 8px 6px 8px 0; margin: -8px 0;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; text-align: left; border-radius: 6px;
+}
+button.mw-who:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--mw-accent); }
+button.mw-who.pressing { opacity: .6; }
+.mw-who-icon { width: 14px; height: 14px; flex-shrink: 0; display: block; }
+.mw-chevron { width: 14px; height: 14px; flex-shrink: 0; display: block; }
+.mw-chevron svg { width: 100%; height: 100%; display: block; }
+.mw-name { font-size: 12px; line-height: 16px; min-width: 0; }
+/* A device icon from Homey: its SVG as a mask in the text colour (as the other widgets' icons). */
+.mw-mask {
+  background: currentColor;
+  -webkit-mask: var(--mw-icon) center / contain no-repeat; mask: var(--mw-icon) center / contain no-repeat;
+}
+.mw-who-icon svg, .mw-spk-icon svg { width: 100%; height: 100%; display: block; }
 .mw-title { font-size: var(--mw-fs-default); line-height: var(--mw-lh-default); font-weight: var(--mw-bold); }
 .mw-sub { font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); color: var(--mw-muted); }
 .mw-progress { position: relative; height: 3px; margin-top: 6px; border-radius: 2px; background: var(--mw-track); overflow: hidden; }
@@ -100,8 +131,9 @@ html, body { margin: 0; }
 }
 .mw-small.one .mw-badge { display: block; }
 
-/* Volume: − bar + and the percentage. The bar copies Light Controls'; touches on it are the widget's. */
-.mw-volume { --mw-x: 0; display: flex; align-items: center; gap: var(--homey-su-2, 8px); min-width: 0; }
+/* Volume: − bar +. The bar copies Light Controls'; touches on it are the widget's. */
+.mw { --mw-x: 0; }
+.mw-volume { display: flex; align-items: center; gap: var(--homey-su-2, 8px); min-width: 0; }
 .mw-step { width: 36px; height: 36px; }
 .mw-step .mw-glyph { width: 18px; height: 18px; }
 .mw-bar { position: relative; flex: 1; min-width: 0; height: 36px; touch-action: none; cursor: ew-resize; outline: none; }
@@ -123,24 +155,75 @@ html, body { margin: 0; }
 .mw-bar.dragging .mw-knob { transform: scale(1.2); }
 .mw-knob, .mw-fill { transition: left .15s, width .15s; }
 .mw-bar.dragging .mw-knob, .mw-bar.dragging .mw-fill { transition: none; }
-.mw-volume-text {
-  width: 40px; flex-shrink: 0; text-align: right; font-variant-numeric: tabular-nums;
-  font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); font-weight: var(--mw-medium);
+
+/* The volume as buttons: − mute + next to the transport, which fits 300 px (268 of content) with 4 px gaps.
+   Mute carries the level as a ring (to `maxVolume`), since there's no bar. */
+.mw-volume-buttons .mw-controls { gap: var(--homey-su, 4px); }
+.mw-volume-buttons .mw-transport:not(.mw-play) { width: 40px; height: 40px; }
+.mw-mute.ring::before {
+  content: ''; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(var(--mw-accent) calc(var(--mw-x) * 360deg), var(--mw-track) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
 }
-.mw-volume.muted .mw-volume-text { color: var(--mw-muted); text-decoration: line-through; }
+.mw-mute.ring:not(.on)::before { --mw-track: color-mix(in srgb, var(--mw-text) 18%, var(--mw-card)); }
+.mw-mute.ring.on::before { background: conic-gradient(rgb(255 255 255 / .9) calc(var(--mw-x) * 360deg), rgb(255 255 255 / .3) 0); }
+
+/* The ⋯ overlay: the main view steps aside and the buttons take its place, with ✕ top right. A tap beside them
+   closes it too. */
+.mw-panel {
+  display: flex; align-items: flex-start; gap: var(--homey-su-2, 8px);
+  visibility: hidden; opacity: 0; transition: opacity .15s, visibility 0s .15s;
+}
+.mw-card.panel-open .mw-panel { visibility: visible; opacity: 1; transition: opacity .15s; }
+.mw-main { transition: opacity .15s; }
+.mw-card.panel-open .mw-main, .mw-card.speakers-open .mw-main, .mw-card.speakers-open .mw-panel { visibility: hidden; opacity: 0; }
+
+/* The speaker list: only laid out while open, so a list longer than the card grows the widget then. */
+.mw-speakers { grid-area: 1 / 1; min-width: 0; display: none; flex-direction: column; }
+.mw-card.speakers-open .mw-speakers { display: flex; }
+.mw-speakers-head { display: flex; align-items: center; justify-content: space-between; height: 28px; margin-top: -6px; }
+.mw-speakers-head .mw-close { margin: 0 -8px 0 0; }
+.mw-speakers-title { font-size: 12px; line-height: 16px; color: var(--mw-muted); }
+.mw-speakers-list { display: flex; flex-direction: column; }
+.mw-spk {
+  appearance: none; border: 0; margin: 0 -8px; padding: 6px 8px; font: inherit; color: var(--mw-text);
+  background: transparent; border-radius: var(--mw-radius); min-height: 48px; text-align: left;
+  display: flex; align-items: center; gap: var(--homey-su-3, 12px); cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.mw-spk.pressing { background: var(--mw-grey); }
+.mw-spk.current { background: color-mix(in srgb, var(--mw-accent) 18%, var(--mw-card)); }
+.mw-spk:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--mw-accent); }
+.mw-spk-icon { width: 20px; height: 20px; flex-shrink: 0; display: block; color: var(--mw-muted); }
+.mw-spk.current .mw-spk-icon { color: var(--mw-accent); }
+.mw-spk-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.mw-spk-name, .mw-spk-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mw-spk-name { font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); font-weight: var(--mw-bold); }
+.mw-spk-sub { font-size: 12px; line-height: 16px; color: var(--mw-muted); }
+.mw-spk-sub.playing { color: color-mix(in srgb, var(--mw-accent) 75%, var(--mw-text)); }
+.mw-spk-check { width: 20px; height: 20px; flex-shrink: 0; display: block; color: var(--mw-accent); }
+.mw-spk-check svg { width: 100%; height: 100%; display: block; }
+.mw-spk-empty { font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); color: var(--mw-muted); padding: 8px 0; }
+.mw-btn.mw-close { width: 36px; height: 36px; background: transparent; color: var(--mw-muted); margin: -6px -8px 0 0; }
+.mw-close .mw-glyph { width: 20px; height: 20px; }
 
 /* Buttons for the speaker's Flow cards and flows: Flow Variables' grey pills, lit while the speaker plays from one. */
-.mw-chips { display: flex; flex-wrap: wrap; gap: var(--homey-su-2, 8px); }
+.mw-chips { flex: 1; min-width: 0; align-self: center; display: flex; flex-wrap: wrap; gap: var(--homey-su-2, 8px); }
 .mw-chip {
-  appearance: none; border: 0; margin: 0; font: inherit; color: var(--mw-text);
-  height: 36px; padding: 0 14px; border-radius: 18px; background: var(--mw-grey); max-width: 100%;
+  appearance: none; border: 0; margin: 0; font: inherit; color: var(--mw-text); flex: 0 1 auto; min-width: 0; max-width: 100%;
+  height: 36px; padding: 0 14px; border-radius: 18px; background: var(--mw-grey);
+  display: flex; align-items: center; justify-content: center; gap: 6px;
   font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); font-weight: var(--mw-medium);
   cursor: pointer; -webkit-tap-highlight-color: transparent; position: relative;
   transition: transform .1s, background .15s;
 }
-.mw-chip-text { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mw-chip-text { display: block; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mw-chip .mw-glyph { width: 18px; height: 18px; flex-shrink: 0; color: var(--mw-muted); }
+.mw-chip.mw-toggle.on .mw-glyph { color: var(--mw-accent); }
+.mw-chip .mw-badge { right: 6px; top: 2px; }
+.mw-chip.one .mw-badge { display: block; }
 .mw-chip.pressing { transform: scale(.96); }
-.mw-chip.on { background: color-mix(in srgb, var(--mw-accent) 30%, var(--mw-card)); }
+.mw-chip.on:not(.mw-toggle) { background: color-mix(in srgb, var(--mw-accent) 30%, var(--mw-card)); }
 .mw-chip.running { animation: mw-pulse 1s ease-in-out infinite; }
 .mw-chip.done { background: color-mix(in srgb, var(--homey-color-green, #5DB815) 30%, var(--mw-card)); }
 
@@ -157,4 +240,5 @@ html, body { margin: 0; }
 @media (prefers-reduced-motion: reduce) {
   .mw-knob, .mw-fill { transition: none; }
   .mw-chip.running { animation: none; opacity: .7; }
+  .mw-panel, .mw-main, .mw-card.panel-open .mw-panel { transition: none; }
 }

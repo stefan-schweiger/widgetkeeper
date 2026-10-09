@@ -73,8 +73,15 @@ describe('render', () => {
     expect(q('.mw-title').textContent).toBe('Hey Jude');
     expect(q('.mw-sub').textContent).toBe('The Beatles · 1');
     expect(q('.mw-progress-text').textContent).toBe('0:30 / 4:00');
-    expect(q('.mw-volume-text').textContent).toBe('30%');
+    expect(q('.mw-bar').getAttribute('aria-valuenow')).toBe('30');
+    expect(q('.mw-volume-text')).toBeNull();
     expect(q('.mw-play').getAttribute('aria-label')).toBe('Pause');
+  });
+
+  it('leaves out the progress bar and time with showProgress off', () => {
+    const { q } = widget(speaker(), { showProgress: false });
+    expect(q('.mw-progress').style.display).toBe('none');
+    expect(q('.mw-progress-text').style.display).toBe('none');
   });
 
   it('counts the position on while playing', () => {
@@ -135,7 +142,7 @@ describe('volume', () => {
     const { q, onSet } = widget(speaker(), { volumeStep: 0.05 });
     const up = q('.mw-step[aria-label="Volume up"]');
     for (let i = 0; i < 3; i++) up.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
-    expect(q('.mw-volume-text').textContent).toBe('45%');
+    expect(q('.mw-bar').getAttribute('aria-valuenow')).toBe('45');
     expect(onSet).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(450);
     expect(onSet.mock.calls).toEqual([['volume_set', 0.45]]);
@@ -147,22 +154,22 @@ describe('volume', () => {
     up.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
     up.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
     w.pushChange({ capabilityId: 'volume_set', value: 0.35 }); // a report of an earlier step
-    expect(q('.mw-volume-text').textContent).toBe('40%');
+    expect(q('.mw-bar').getAttribute('aria-valuenow')).toBe('40');
     await vi.advanceTimersByTimeAsync(450);
     w.pushChange({ capabilityId: 'volume_set', value: 0.35 });
-    expect(q('.mw-volume-text').textContent).toBe('40%');
+    expect(q('.mw-bar').getAttribute('aria-valuenow')).toBe('40');
     w.pushChange({ capabilityId: 'volume_set', value: 0.4 });
     // Changed elsewhere afterwards: shown as reported.
     vi.advanceTimersByTime(5000);
     w.pushChange({ capabilityId: 'volume_set', value: 0.1 });
-    expect(q('.mw-volume-text').textContent).toBe('10%');
+    expect(q('.mw-bar').getAttribute('aria-valuenow')).toBe('10');
   });
 
   it('stops at the maximum volume', async () => {
     const { q, onSet } = widget(speaker({ volume_set: cap(0.38) }), { volumeStep: 0.05, maxVolume: 0.4 });
     const up = q('.mw-step[aria-label="Volume up"]');
     up.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
-    expect(q('.mw-volume-text').textContent).toBe('40%');
+    expect(q('.mw-bar').getAttribute('aria-valuenow')).toBe('40');
     expect((up as HTMLButtonElement).disabled).toBe(true);
     await vi.advanceTimersByTimeAsync(450);
     expect(onSet.mock.calls).toEqual([['volume_set', 0.4]]);
@@ -171,7 +178,7 @@ describe('volume', () => {
   it('snaps a step to round numbers', () => {
     const { q } = widget(speaker({ volume_set: cap(0.23) }), { volumeStep: 0.05 });
     q('.mw-step[aria-label="Volume down"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
-    expect(q('.mw-volume-text').textContent).toBe('20%');
+    expect(q('.mw-bar').getAttribute('aria-valuenow')).toBe('20');
   });
 
   it('unmutes when the volume changes', async () => {
@@ -192,20 +199,78 @@ describe('volume', () => {
   });
 });
 
+describe('volume as buttons', () => {
+  it('puts − mute + in the transport row, with no bar or volume line', async () => {
+    const { root, q, onSet } = widget(speaker(), { volumeLayout: 'buttons', volumeStep: 0.05 });
+    expect(root.querySelector('.mw-volume')).toBeNull();
+    const row = [...q('.mw-controls').querySelectorAll('.mw-btn')].map(b => b.getAttribute('aria-label'));
+    expect(row).toEqual(['Previous', 'Pause', 'Next', 'Volume down', 'Mute', 'Volume up']);
+    expect(q('.mw-mute').classList.contains('ring')).toBe(true);
+    expect(root.style.getPropertyValue('--mw-x')).toBe('0.3');
+    q('.mw-step[aria-label="Volume up"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+    await vi.advanceTimersByTimeAsync(450);
+    expect(onSet.mock.calls).toEqual([['volume_set', 0.35]]);
+  });
+
+  it('moves shuffle and repeat into the overlay', () => {
+    const { root, q, onSet } = widget(speaker(), { volumeLayout: 'buttons', showShuffle: true });
+    expect(q('.mw-controls').querySelector('[data-control="shuffle"]')).toBeNull();
+    expect(q('.mw-more').style.display).toBe('');
+    root.querySelector<HTMLElement>('.mw-panel [data-control="shuffle"]')!.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+    expect(onSet).toHaveBeenCalledWith('speaker_shuffle', true);
+  });
+
+  it('keeps shuffle and repeat in the row with the volume line', () => {
+    const { q } = widget(speaker(), { showShuffle: true });
+    expect(q('.mw-controls').querySelector('[data-control="shuffle"]')).toBeTruthy();
+    expect(q('.mw-more').style.display).toBe('none');
+  });
+});
+
 describe('buttons', () => {
   const buttons = [{ id: 'card:homey:device:k:tv', name: 'TV' }, { id: 'flow:f1', name: 'Movie time' }];
 
-  it('runs a button and lights the TV one while the speaker plays from it', async () => {
-    const { root, onButton, w } = widget(speaker(), { buttons });
+  it('keeps the buttons in an overlay that ⋯ opens', () => {
+    const { q, click } = widget(speaker(), { buttons });
+    expect(q('.mw-card').classList.contains('panel-open')).toBe(false);
+    click('.mw-more');
+    expect(q('.mw-card').classList.contains('panel-open')).toBe(true);
+    expect(q('.mw-more').getAttribute('aria-expanded')).toBe('true');
+    click('.mw-close');
+    expect(q('.mw-card').classList.contains('panel-open')).toBe(false);
+  });
+
+  it('closes the overlay after a tap beside the buttons, or after a while', () => {
+    const { q, click } = widget(speaker(), { buttons });
+    click('.mw-more');
+    click('.mw-panel');
+    expect(q('.mw-card').classList.contains('panel-open')).toBe(false);
+    click('.mw-more');
+    vi.advanceTimersByTime(8100);
+    expect(q('.mw-card').classList.contains('panel-open')).toBe(false);
+  });
+
+  it('hides ⋯ without buttons', () => {
+    const { q } = widget(speaker());
+    expect(q('.mw-more').style.display).toBe('none');
+  });
+
+  it('runs a button, closes the overlay and lights the TV one (and ⋯) while the speaker plays from it', async () => {
+    const { root, q, click, onButton, w } = widget(speaker(), { buttons });
+    click('.mw-more');
     const chips = root.querySelectorAll<HTMLElement>('.mw-chip');
     expect([...chips].map(c => c.textContent)).toEqual(['TV', 'Movie time']);
     chips[0].dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
     expect(onButton).toHaveBeenCalledWith('card:homey:device:k:tv');
+    expect(q('.mw-card').classList.contains('panel-open')).toBe(true);
     await vi.advanceTimersByTimeAsync(500);
     expect(chips[0].classList.contains('done')).toBe(true);
+    await vi.advanceTimersByTimeAsync(700);
+    expect(q('.mw-card').classList.contains('panel-open')).toBe(false);
     w.pushChange({ capabilityId: 'speaker_track', value: 'HDMI' });
     expect(chips[0].classList.contains('on')).toBe(true);
     expect(chips[1].classList.contains('on')).toBe(false);
+    expect(q('.mw-more').classList.contains('on')).toBe(true);
   });
 
   it('says what to do without a usable API key', async () => {
@@ -238,5 +303,78 @@ describe('album art', () => {
     w.pushArt({ url: '/api/image/a', lastUpdated: 1 });
     expect(q('.mw-art').classList.contains('has-art')).toBe(false);
     expect(q('.mw-art').classList.contains('external')).toBe(true);
+  });
+});
+
+describe('switching speaker', () => {
+  const list = [
+    { id: 'b', name: 'Bedroom', icon: null, zone: 'Upstairs', caps: { speaker_playing: { value: true }, speaker_track: { value: 'Let It Be' }, speaker_artist: { value: 'The Beatles' } } },
+    { id: 'k', name: 'Kitchen', icon: 'data:image/svg+xml;base64,PHN2Zy8+', zone: 'Kitchen', caps: {} },
+    { id: 't', name: 'TV', icon: null, zone: 'Living room', caps: { speaker_track: { value: 'HDMI' } } },
+  ];
+  const switching = (extra: object = {}) => {
+    const onSwitch = vi.fn();
+    const onListSpeakers = vi.fn(async () => list);
+    return { ...widget(speaker(), { canSwitch: true, onSwitch, onListSpeakers, ...extra }), onSwitch, onListSpeakers };
+  };
+
+  it('opens the list from the speaker’s name, with what each one plays', async () => {
+    const { q, click, onListSpeakers } = switching();
+    expect(q('.mw-who').tagName).toBe('BUTTON');
+    click('.mw-who');
+    expect(q('.mw-card').classList.contains('speakers-open')).toBe(true);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(onListSpeakers).toHaveBeenCalled();
+    const rows = [...document.querySelectorAll('.mw-spk')];
+    expect(rows.map(r => r.querySelector('.mw-spk-name')!.textContent)).toEqual(['Bedroom', 'Kitchen', 'TV']);
+    expect(rows.map(r => r.querySelector('.mw-spk-sub')?.textContent)).toEqual(['Let It Be · The Beatles', 'Kitchen', 'TV']);
+    expect(rows[1].classList.contains('current')).toBe(true);
+    expect(rows[1].querySelector('.mw-mask')).toBeTruthy();
+  });
+
+  it('switches when another speaker is picked, and only closes for the current one', async () => {
+    const { q, click, onSwitch } = switching();
+    click('.mw-who');
+    await vi.advanceTimersByTimeAsync(0);
+    document.querySelectorAll<HTMLElement>('.mw-spk')[1].dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+    expect(onSwitch).not.toHaveBeenCalled();
+    expect(q('.mw-card').classList.contains('speakers-open')).toBe(false);
+    click('.mw-who');
+    await vi.advanceTimersByTimeAsync(0);
+    document.querySelectorAll<HTMLElement>('.mw-spk')[0].dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+    expect(onSwitch).toHaveBeenCalledWith('b');
+    expect(q('.mw-card').classList.contains('speakers-open')).toBe(false);
+  });
+
+  it('drops a volume burst meant for the previous speaker', async () => {
+    const { w, q, onSet } = switching({ volumeStep: 0.05 });
+    q('.mw-step[aria-label="Volume up"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+    w.setState({ ...speaker(), id: 'b', name: 'Bedroom' });
+    await vi.advanceTimersByTimeAsync(450);
+    expect(onSet).not.toHaveBeenCalled();
+    expect(q('.mw-name').textContent).toBe('Bedroom');
+  });
+
+  it('is a plain label without switching', () => {
+    const { q } = widget();
+    expect(q('.mw-who').tagName).toBe('DIV');
+    expect(q('.mw-chevron')).toBeNull();
+  });
+
+  it('hides the card buttons a switched-to speaker doesn’t have', () => {
+    const buttons = [{ id: 'card:homey:device:k:cloud_play_home_theater', name: 'TV' }, { id: 'flow:f1', name: 'Movie time' }];
+    const { w, root } = widget(speaker(), { buttons });
+    const chips = () => [...root.querySelectorAll<HTMLElement>('.mw-chip')].map(c => c.style.display);
+    expect(chips()).toEqual(['', '']);
+    w.setState({ ...speaker(), id: 'b', cards: ['cloud_leave_current_group'] });
+    expect(chips()).toEqual(['none', '']);
+    w.setState({ ...speaker(), id: 'a', cards: ['cloud_play_home_theater'] });
+    expect(chips()).toEqual(['', '']);
+  });
+
+  it('shows the device icon in place of missing album art', () => {
+    const { q } = widget({ ...speaker(), icon: 'data:image/svg+xml;base64,PHN2Zy8+' });
+    expect(q('.mw-art .mw-art-glyph').classList.contains('mw-mask')).toBe(true);
+    expect(q('.mw-who .mw-who-icon').classList.contains('mw-mask')).toBe(true);
   });
 });

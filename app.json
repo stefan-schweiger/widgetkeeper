@@ -3890,7 +3890,7 @@
         "ko": "미디어",
         "ar": "الوسائط"
       },
-      "height": 240,
+      "height": 216,
       "transparent": false,
       "settings": [
         {
@@ -3925,6 +3925,114 @@
             "pl": "Wybierz najpierw: przyciski poniżej pokazują akcje tego głośnika, np. Ustaw źródło na TV.",
             "ko": "먼저 선택하세요. 아래 버튼에 TV로 소스 설정 같은 이 스피커의 동작이 나열됩니다.",
             "ar": "اختره أولًا: تعرض الأزرار أدناه إجراءات مكبر الصوت هذا، مثل ضبط المصدر على التلفاز."
+          }
+        },
+        {
+          "id": "switchSpeakers",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Switch speaker from the widget",
+            "nl": "Speaker wisselen vanuit de widget",
+            "de": "Lautsprecher im Widget wechseln",
+            "fr": "Changer d’enceinte depuis le widget",
+            "it": "Cambia altoparlante dal widget",
+            "sv": "Byt högtalare från widgeten",
+            "no": "Bytt høyttaler fra widgeten",
+            "es": "Cambiar de altavoz desde el widget",
+            "da": "Skift højttaler fra widgetten",
+            "ru": "Переключать колонку в виджете",
+            "pl": "Zmiana głośnika z widżetu",
+            "ko": "위젯에서 스피커 전환",
+            "ar": "تبديل مكبر الصوت من الأداة"
+          },
+          "hint": {
+            "en": "Tap the speaker’s name to pick another. Each screen remembers its own choice; the speaker above is the default.",
+            "nl": "Tik op de naam van de speaker om een andere te kiezen. Elk scherm onthoudt zijn keuze; de speaker hierboven is de standaard.",
+            "de": "Tippe auf den Namen des Lautsprechers, um einen anderen zu wählen. Jeder Bildschirm merkt sich seine Wahl; der Lautsprecher oben ist der Standard.",
+            "fr": "Touchez le nom de l’enceinte pour en choisir une autre. Chaque écran retient son choix ; l’enceinte ci-dessus est celle par défaut.",
+            "it": "Tocca il nome dell’altoparlante per sceglierne un altro. Ogni schermo ricorda la sua scelta; quello sopra è il predefinito.",
+            "sv": "Tryck på högtalarens namn för att välja en annan. Varje skärm minns sitt val; högtalaren ovan är standard.",
+            "no": "Trykk på høyttalerens navn for å velge en annen. Hver skjerm husker sitt valg; høyttaleren over er standard.",
+            "es": "Toca el nombre del altavoz para elegir otro. Cada pantalla recuerda su elección; el altavoz de arriba es el predeterminado.",
+            "da": "Tryk på højttalerens navn for at vælge en anden. Hver skærm husker sit valg; højttaleren ovenfor er standard.",
+            "ru": "Нажмите на название колонки, чтобы выбрать другую. Каждый экран запоминает свой выбор; колонка выше — по умолчанию.",
+            "pl": "Stuknij nazwę głośnika, aby wybrać inny. Każdy ekran pamięta swój wybór; głośnik powyżej jest domyślny.",
+            "ko": "스피커 이름을 탭해 다른 스피커를 고르세요. 화면마다 선택을 기억하며, 위의 스피커가 기본값입니다.",
+            "ar": "اضغط على اسم مكبر الصوت لاختيار آخر. تتذكر كل شاشة اختيارها؛ مكبر الصوت أعلاه هو الافتراضي."
+          }
+        },
+        {
+          "id": "volumeLayout",
+          "type": "dropdown",
+          "value": "line",
+          "title": {
+            "en": "Volume",
+            "nl": "Volume",
+            "de": "Lautstärke",
+            "fr": "Volume",
+            "it": "Volume",
+            "sv": "Volym",
+            "no": "Volum",
+            "es": "Volumen",
+            "da": "Lydstyrke",
+            "ru": "Громкость",
+            "pl": "Głośność",
+            "ko": "볼륨",
+            "ar": "مستوى الصوت"
+          },
+          "values": [
+            {
+              "id": "line",
+              "title": {
+                "en": "Bar on its own line",
+                "nl": "Balk op een eigen regel",
+                "de": "Leiste in eigener Zeile",
+                "fr": "Barre sur sa propre ligne",
+                "it": "Barra su una riga propria",
+                "sv": "Reglage på egen rad",
+                "no": "Linje på egen rad",
+                "es": "Barra en su propia línea",
+                "da": "Bjælke på egen linje",
+                "ru": "Полоса отдельной строкой",
+                "pl": "Pasek w osobnym wierszu",
+                "ko": "별도 줄에 막대",
+                "ar": "شريط في سطر مستقل"
+              }
+            },
+            {
+              "id": "buttons",
+              "title": {
+                "en": "− and + next to play",
+                "nl": "− en + naast afspelen",
+                "de": "− und + neben Wiedergabe",
+                "fr": "− et + à côté de lecture",
+                "it": "− e + accanto a riproduci",
+                "sv": "− och + bredvid spela",
+                "no": "− og + ved siden av spill",
+                "es": "− y + junto a reproducir",
+                "da": "− og + ved siden af afspil",
+                "ru": "− и + рядом с воспроизведением",
+                "pl": "− i + obok odtwarzania",
+                "ko": "재생 옆에 − 및 +",
+                "ar": "− و+ بجانب التشغيل"
+              }
+            }
+          ],
+          "hint": {
+            "en": "With − and +, the volume shows as a ring around mute, and shuffle and repeat move to the ⋯ menu.",
+            "nl": "Met − en + toont een ring rond dempen het volume, en shuffle en herhalen staan in het ⋯-menu.",
+            "de": "Mit − und + zeigt ein Ring um Stumm die Lautstärke; Zufall und Wiederholen stehen im ⋯-Menü.",
+            "fr": "Avec − et +, un anneau autour de sourdine montre le volume ; aléatoire et répétition passent dans le menu ⋯.",
+            "it": "Con − e +, un anello attorno a muto mostra il volume; casuale e ripeti vanno nel menu ⋯.",
+            "sv": "Med − och + visar en ring runt ljud av volymen, och blanda och upprepa flyttas till ⋯-menyn.",
+            "no": "Med − og + viser en ring rundt demp volumet, og tilfeldig og gjenta flyttes til ⋯-menyen.",
+            "es": "Con − y +, un anillo alrededor de silencio muestra el volumen; aleatorio y repetir pasan al menú ⋯.",
+            "da": "Med − og + viser en ring om lyd fra lydstyrken, og bland og gentag flytter til ⋯-menuen.",
+            "ru": "С − и + громкость показывает кольцо вокруг кнопки звука, а перемешивание и повтор уходят в меню ⋯.",
+            "pl": "Przy − i + głośność pokazuje pierścień wokół wyciszenia, a losowo i powtarzanie trafiają do menu ⋯.",
+            "ko": "− 및 + 사용 시 음소거 버튼의 링이 볼륨을 표시하고, 셔플과 반복은 ⋯ 메뉴로 이동합니다.",
+            "ar": "مع − و+ تظهر حلقة حول زر الكتم مستوى الصوت، وينتقل التشغيل العشوائي والتكرار إلى قائمة ⋯."
           }
         },
         {
@@ -4038,6 +4146,26 @@
             "pl": "Pasek głośności i + zatrzymują się tutaj. Przydatne, gdy z pulpitu korzystają dzieci.",
             "ko": "볼륨 막대와 +가 여기서 멈춥니다. 아이들이 대시보드를 쓸 때 유용합니다.",
             "ar": "يتوقف شريط الصوت و+ هنا. مفيد عندما يستخدم الأطفال لوحة التحكم."
+          }
+        },
+        {
+          "id": "showProgress",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Show progress bar and time",
+            "nl": "Voortgangsbalk en tijd tonen",
+            "de": "Fortschrittsleiste und Zeit zeigen",
+            "fr": "Afficher la progression et la durée",
+            "it": "Mostra barra di avanzamento e tempo",
+            "sv": "Visa förloppsindikator och tid",
+            "no": "Vis fremdriftslinje og tid",
+            "es": "Mostrar barra de progreso y tiempo",
+            "da": "Vis statuslinje og tid",
+            "ru": "Показывать прогресс и время",
+            "pl": "Pokaż pasek postępu i czas",
+            "ko": "진행 막대와 시간 표시",
+            "ar": "إظهار شريط التقدم والوقت"
           }
         },
         {
@@ -4251,6 +4379,10 @@
         "getState": {
           "method": "GET",
           "path": "/state"
+        },
+        "getSpeakers": {
+          "method": "GET",
+          "path": "/speakers"
         },
         "set": {
           "method": "POST",

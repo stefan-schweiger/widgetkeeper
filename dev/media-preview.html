@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../widgets/media/public/widget.css">
   <script src="../widgets/media/public/widget.js"></script>
+  <script src="../temp/screenshot-icons.js"></script>
   <script src="mock-media.js"></script>
   <script src="i18n.js"></script>
   <style>
@@ -21,17 +22,31 @@
   <div class="col"><span>358 px (phone) · dark · playing</span><div class="card mw-frame homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
   <div class="col"><span>358 px · light · paused, shuffle and repeat</span><div class="card light" style="width:358px"><div id="w2"></div></div></div>
   <div class="col"><span>300 px · dark · TV, muted, max 40 %</span><div class="card mw-frame homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · dark · volume as buttons, shuffle in ⋯</span><div class="card mw-frame homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
+  <div class="col"><span>300 px · light · volume as buttons, muted</span><div class="card light" style="width:300px"><div id="w8"></div></div></div>
+  <div class="col"><span>358 px · dark · ⋯ open</span><div class="card mw-frame homey-dark-mode" style="width:358px"><div id="w9"></div></div></div>
+  <div class="col"><span>300 px · dark · volume as buttons, ⋯ open with shuffle</span><div class="card mw-frame homey-dark-mode" style="width:300px"><div id="w10"></div></div></div>
+  <div class="col"><span>358 px · dark · no progress</span><div class="card mw-frame homey-dark-mode" style="width:358px"><div id="w13"></div></div></div>
+  <div class="col"><span>358 px · dark · speaker list open</span><div class="card mw-frame homey-dark-mode" style="width:358px"><div id="w11"></div></div></div>
+  <div class="col"><span>300 px · light · speaker list open</span><div class="card light" style="width:300px"><div id="w12"></div></div></div>
   <div class="col"><span>358 px · dark · no art, nothing playing</span><div class="card mw-frame homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
   <div class="col"><span>358 px · dark · missing speaker</span><div class="card mw-frame homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
   <div class="col"><span>358 px · dark · nothing picked</span><div class="card mw-frame homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
 
   <script>
     const SOURCES = [{ id: 'card:tv', name: 'TV' }, { id: 'card:line', name: 'Line-in' }, { id: 'flow:movie', name: 'Movie night' }];
-    mountMockMedia(document.getElementById('w1'), mockSpeaker('Kitchen', 0), { buttons: SOURCES, t: devT });
+    mountMockMedia(document.getElementById('w1'), mockSpeaker('Kitchen', 0), { buttons: SOURCES, canSwitch: true, t: devT });
     mountMockMedia(document.getElementById('w2'), mockSpeaker('Living room', 1, { playing: false }), { showShuffle: true, t: devT });
     mountMockMedia(document.getElementById('w3'), mockSpeaker('TV', 2, { track: 'HDMI', muted: true, volume: 0.25 }),
       { buttons: SOURCES, maxVolume: 0.4, t: devT });
     mountMockMedia(document.getElementById('w4'), mockSpeaker('Bathroom', 0, { track: null, art: false, playing: false }), { t: devT });
+    mountMockMedia(document.getElementById('w7'), mockSpeaker('Kitchen', 0), { buttons: SOURCES, volumeLayout: 'buttons', showShuffle: true, canSwitch: true, t: devT });
+    mountMockMedia(document.getElementById('w8'), mockSpeaker('Bedroom', 1, { muted: true }), { buttons: SOURCES, volumeLayout: 'buttons', t: devT });
+    mountMockMedia(document.getElementById('w9'), mockSpeaker('Kitchen', 0), { buttons: SOURCES, t: devT }).setPanel(true);
+    mountMockMedia(document.getElementById('w10'), mockSpeaker('Kitchen', 2), { buttons: SOURCES, volumeLayout: 'buttons', showShuffle: true, t: devT }).setPanel(true);
+    mountMockMedia(document.getElementById('w13'), mockSpeaker('Kitchen', 0), { buttons: SOURCES, canSwitch: true, showProgress: false, volumeLayout: 'buttons', t: devT });
+    mountMockMedia(document.getElementById('w11'), mockSpeaker('Kitchen', 0), { buttons: SOURCES, canSwitch: true, t: devT }).setSpeakers(true);
+    mountMockMedia(document.getElementById('w12'), mockSpeaker('Kitchen', 0), { canSwitch: true, volumeLayout: 'buttons', t: devT }).setSpeakers(true);
     createMediaWidget(document.getElementById('w5'), { t: devT }).setState({ id: 'x', missing: true });
     const empty = createMediaWidget(document.getElementById('w6'), { t: devT });
     empty.setMessage(empty.t('selectDevice'));

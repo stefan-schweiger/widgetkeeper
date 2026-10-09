@@ -209,39 +209,37 @@ function curtains(t, theme) {
   </div>`;
 }
 
-// Media: a card with the album art (a drawn cover), the speaker's name, the track and the artist, a progress line;
-// previous, play (blue) and next with mute on the right; the volume bar between − and +; then two source buttons.
+// Media, the condensed layout: the album art (a drawn cover), the speaker (its icon, the name and a ⌄), the track and
+// the artist, ⋯ in the top right corner; then previous, play (blue) and next, with − mute + on the right and the
+// volume as a ring around mute.
 function media(t, theme) {
-  const btn = theme === 'dark' ? '#2E3039' : '#EEEFF2', track = theme === 'dark' ? '#2E2F37' : '#E6E7EA';
+  const btn = theme === 'dark' ? '#2E3039' : '#EEEFF2', track = theme === 'dark' ? '#3A3C46' : '#D9DAE0';
   const muted = theme === 'dark' ? '#9C9DA5' : '#6B6C75';
-  const glyph = (d, color, fill) => `<svg width="48" height="48" viewBox="0 0 24 24"><path d="${d}" ${fill ? `fill="${color}"` : `fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`}/></svg>`;
-  const round = (inner, bg, size = 112) => `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;flex:none">${inner}</div>`;
+  const glyph = (d, color, fill, size = 48) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24"><path d="${d}" ${fill ? `fill="${color}"` : `fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`}/></svg>`;
+  const round = (inner, bg, size = 112, extra = '') => `<div style="position:relative;width:${size}px;height:${size}px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;flex:none;${extra}">${inner}</div>`;
   const PREV = 'M19 6.3v11.4a.8.8 0 0 1-1.25.66l-8.3-5.7a.8.8 0 0 1 0-1.32l8.3-5.7A.8.8 0 0 1 19 6.3zM6.5 5.5h-1a.5.5 0 0 0-.5.5v12a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-.5-.5z';
   const NEXT = 'M5 6.3v11.4a.8.8 0 0 0 1.25.66l8.3-5.7a.8.8 0 0 0 0-1.32l-8.3-5.7A.8.8 0 0 0 5 6.3zM17.5 5.5h1a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5V6a.5.5 0 0 1 .5-.5z';
   const PAUSE = 'M7.5 5h2.5a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-.5.5H7.5a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 .5-.5zM14 5h2.5a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-.5.5H14a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 .5-.5z';
   const SPEAKER = 'M4 9.5h3.5L12 5.5v13l-4.5-4H4v-5zM16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11';
+  const DEVICE = 'M7.5 3h9A1.5 1.5 0 0 1 18 4.5v15a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 19.5v-15A1.5 1.5 0 0 1 7.5 3zM12 11.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7zM12 6.5h.01';
+  const CHEVRON = 'M7 10l5 5 5-5';
   const cover = `<div style="width:176px;height:176px;border-radius:28px;flex:none;background:radial-gradient(circle at 30% 30%, #FFB054, transparent 55%), radial-gradient(circle at 75% 70%, #E2457A, transparent 60%), linear-gradient(135deg, #5B3FD9, #1E1446)"></div>`;
+  const ring = `<div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(${BLUE} 126deg, ${track} 0);-webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px));mask:radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px))"></div>`;
+  const plus = `<div style="position:relative;width:36px;height:36px">${pill(36, 6, t.fg, 'position:absolute;top:15px')}${pill(6, 36, t.fg, 'position:absolute;left:15px')}</div>`;
   return `<div class="card" style="gap:40px">
     <div style="display:flex;align-items:center;gap:36px">
       ${cover}
-      <div style="flex:1;display:flex;flex-direction:column;gap:16px">
-        ${pill(150, 22, muted, 'opacity:.7')}${pill(380, 38, t.fg)}${pill(280, 26, muted)}
-        <div style="height:8px;border-radius:4px;background:${track};margin-top:8px"><div style="width:42%;height:100%;border-radius:4px;background:${BLUE}"></div></div>
+      <div style="flex:none;align-self:flex-start;display:flex;gap:10px;order:3;padding-top:8px">${[0, 1, 2].map(() => `<div style="width:12px;height:12px;border-radius:50%;background:${muted}"></div>`).join('')}</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;align-items:center;gap:10px">${glyph(DEVICE, muted, false, 34)}${pill(130, 22, muted, 'opacity:.7')}${glyph(CHEVRON, muted, false, 34)}</div>
+        ${pill(380, 38, t.fg)}${pill(280, 26, muted)}
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:24px">
-      ${round(glyph(PREV, t.fg, true), btn)}${round(glyph(PAUSE, '#FFFFFF', true), BLUE)}${round(glyph(NEXT, t.fg, true), btn)}
-      <div style="flex:1"></div>${round(glyph(SPEAKER, t.fg), btn)}
+    <div style="display:flex;align-items:center;gap:16px">
+      ${round(glyph(PREV, t.fg, true), btn, 100)}${round(glyph(PAUSE, '#FFFFFF', true), BLUE)}${round(glyph(NEXT, t.fg, true), btn, 100)}
+      <div style="flex:1"></div>
+      ${round(pill(36, 6, t.fg), btn, 88)}${round(ring + glyph(SPEAKER, t.fg), btn)}${round(plus, btn, 88)}
     </div>
-    <div style="display:flex;align-items:center;gap:24px">
-      ${round(pill(36, 6, t.fg), btn, 88)}
-      <div style="flex:1;position:relative;height:40px">
-        <div style="position:absolute;left:0;right:0;top:12px;height:16px;border-radius:8px;background:${track};overflow:hidden"><div style="width:35%;height:100%;background:${BLUE}"></div></div>
-        <div style="position:absolute;top:0;left:calc(.35 * (100% - 40px));width:40px;height:40px;border-radius:50%;background:#FFFFFF;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>
-      </div>
-      ${round(`<div style="position:relative;width:36px;height:36px">${pill(36, 6, t.fg, 'position:absolute;top:15px')}${pill(6, 36, t.fg, 'position:absolute;left:15px')}</div>`, btn, 88)}
-    </div>
-    <div style="display:flex;gap:24px">${[[170, 70], [230, 130]].map(([w, iw]) => `<div class="pill" style="width:${w}px;height:88px;background:${btn};display:flex;align-items:center;justify-content:center">${pill(iw, 24, t.fg, 'opacity:.85')}</div>`).join('')}</div>
   </div>`;
 }
 

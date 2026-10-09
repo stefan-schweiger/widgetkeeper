@@ -49,7 +49,21 @@
       undoTextZoom();
       perf = loadMarks(performance.now());
       const settings = Homey.getSettings() || {};
-      const deviceId = (settings.device && settings.device.id) || null;
+      // The speaker in the settings is the default; with switching, each screen remembers the one it picked last
+      // (per widget instance, in this screen's storage; it can come back empty, which means the default).
+      const defaultId = (settings.device && settings.device.id) || null;
+      const canSwitch = settings.switchSpeakers !== false;
+      let instanceId = 'default';
+      try { instanceId = Homey.getWidgetInstanceId() || 'default'; } catch (e) { /* older apps */ }
+      const storeKey = `widgetkeeper.media.speaker.${instanceId}`;
+      const store = {
+        get() { try { return localStorage.getItem(storeKey); } catch (e) { return null; } },
+        set(id) {
+          try { if (id && id !== defaultId) localStorage.setItem(storeKey, id); else localStorage.removeItem(storeKey); } catch (e) { /* no storage */ }
+        },
+      };
+      let deviceId = defaultId && canSwitch ? store.get() || defaultId : defaultId;
+      let loadSeq = 0;
       const maxVolume = Number(settings.maxVolume);
       let readySent = false;
       let loaded = false;
@@ -60,6 +74,15 @@
         volumeStep: Number(settings.volumeStep || 5) / 100,
         maxVolume: maxVolume > 0 && maxVolume < 100 ? maxVolume / 100 : 1,
         showShuffle: settings.showShuffle === true,
+        showProgress: settings.showProgress !== false,
+        canSwitch: canSwitch && !!defaultId,
+        onListSpeakers: async () => (await Homey.api('GET', '/speakers')).speakers,
+        onSwitch: (id) => {
+          deviceId = id;
+          store.set(id);
+          load();
+        },
+        volumeLayout: settings.volumeLayout === 'buttons' ? 'buttons' : 'line',
         onSet: (capabilityId, value) => Homey.api('POST', '/set', {
           deviceId, capabilityId, value, maxVolume: maxVolume > 0 && maxVolume < 100 ? maxVolume / 100 : 1,
         }),
@@ -102,10 +125,24 @@
           ready();
           return;
         }
+        const seq = ++loadSeq;
+        const id = deviceId;
         try {
-          widget.setState(await Homey.api('GET', `/state?deviceId=${encodeURIComponent(deviceId)}${perfParam()}`));
+          // A switched-to speaker also says which of its own actions it has, for the buttons picked for the default.
+          const cards = id !== defaultId ? '&cards=1' : '';
+          const state = await Homey.api('GET', `/state?deviceId=${encodeURIComponent(id)}${cards}${perfParam()}`);
+          if (seq !== loadSeq) return; // switched again meanwhile
+          if (state && state.missing && id !== defaultId) {
+            // The speaker picked on this screen is gone: back to the default.
+            deviceId = defaultId;
+            store.set(null);
+            load();
+            return;
+          }
+          widget.setState(state);
           loaded = true;
         } catch (err) {
+          if (seq !== loadSeq) return;
           console.error(err);
           // A failed refresh keeps the card; only a failed first load replaces it with the error.
           widget.setMessage(widget.t('error'), loaded);

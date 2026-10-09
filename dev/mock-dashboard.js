@@ -80,9 +80,10 @@
   ]);
 
   // Solbakken's living room speaker (no showcase dashboard has one), playing with a drawn cover, the TV and
-  // line-in buttons under it. The fixed clock keeps the position the same in every render.
+  // line-in buttons behind its ⋯. The fixed clock keeps the position the same in every render.
   const clock = Date.now();
   mountMockMedia(el('w-media'), mockSpeaker('Living room', 0), {
+    canSwitch: true,
     now: () => clock,
     buttons: [{ id: 'card:tv', name: 'TV' }, { id: 'card:line', name: 'Line-in' }, { id: 'flow:f1', name: 'Movie night' }],
   });

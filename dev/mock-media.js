@@ -37,8 +37,9 @@
     const [track, artist, album] = TRACKS[i % TRACKS.length];
     const t = o.track === undefined ? track : o.track;
     const external = t === 'HDMI';
+    const icons = window.ICONS || {};
     return {
-      id: `speaker-${i}-${name}`, name, icon: null,
+      id: `speaker-${i}-${name}`, name, icon: (external ? icons.tv : icons.speaker) || null,
       art: o.art === false || !t ? null : { url: cover(i), lastUpdated: 1 },
       caps: {
         speaker_playing: cap(o.playing !== false),
@@ -57,7 +58,22 @@
     };
   }
 
-  /** Mounts a widget on a simulated speaker: changes come back as reports after 300 ms; next/prev change the track. */
+  /** The made-up house's speakers, for the switcher: [name, track index, options]. */
+  const HOUSE = [['Bathroom', 0, { track: null, playing: false }], ['Kitchen', 0], ['Living room', 1, { playing: false }], ['TV', 2, { track: 'HDMI' }]];
+
+  /** The switcher's list, as `/speakers` returns it. */
+  function mockSpeakerList() {
+    return HOUSE.map(([name, i, o]) => {
+      const sp = mockSpeaker(name, i, o);
+      const pick = ['speaker_playing', 'speaker_track', 'speaker_artist'];
+      return { id: sp.id, name, icon: sp.icon, zone: name === 'TV' ? 'Living room' : name, caps: Object.fromEntries(pick.map(k => [k, { value: sp.caps[k].value }])) };
+    });
+  }
+
+  /**
+   * Mounts a widget on a simulated speaker: changes come back as reports after 300 ms; next/prev change the track.
+   * With `canSwitch` the switcher lists the made-up house's speakers.
+   */
   function mountMockMedia(root, speaker, opts = {}) {
     let w;
     let n = 0;
@@ -81,11 +97,17 @@
       if (id === 'card:line') report('speaker_track', 'Line-In');
       resolve();
     }, 500));
-    w = createMediaWidget(root, { onSet, onButton, ...opts });
+    const onListSpeakers = () => new Promise(resolve => setTimeout(() => resolve(mockSpeakerList()), 200));
+    const onSwitch = (id) => {
+      const found = HOUSE.find(([name, i, o]) => mockSpeaker(name, i, o).id === id);
+      if (found) setTimeout(() => w.setState(mockSpeaker(...found)), 300);
+    };
+    w = createMediaWidget(root, { onSet, onButton, onListSpeakers, onSwitch, ...opts });
     w.setState(speaker);
     return w;
   }
 
   window.mockSpeaker = mockSpeaker;
   window.mountMockMedia = mountMockMedia;
+  window.mockSpeakerList = mockSpeakerList;
 })();

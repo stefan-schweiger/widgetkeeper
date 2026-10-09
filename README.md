@@ -212,11 +212,13 @@ Works with curtains that have a position, ones with just open, stop and close, a
 ## Media
 <img src="docs/screenshots/media.png" alt="Media on a Homey dashboard" width="358">
 
-One speaker as a card: the album art, the track and the artist, previous, play and next, and mute on the right. The volume moves on every tap of − or +, and a burst of taps is sent once, so it never runs ahead of you; set a maximum volume and neither + nor the bar goes past it. On TV or line-in the card says so instead of greying out, and mute and the volume keep working.
+One speaker as a compact card: the album art, the track and the artist, previous, play and next, and mute on the right. The volume is a bar between − and + on its own line, or just − and + next to play, with the level as a ring around mute. It moves on every tap of − or +, and a burst of taps is sent once, so it never runs ahead of you; set a maximum volume and neither + nor the bar goes past it. On TV or line-in the card says so instead of greying out, and mute and the volume keep working.
 
-Up to four buttons run the speaker's own actions, such as *Set source to TV* or *Set source to Line-In*, or any flow. A button for the TV is lit while the speaker plays from the TV. The buttons need an API key in Widgetkeeper's app settings, which may manage flows for the speaker's actions (or only start flows, for flows).
+Tap the speaker's name (with its device icon) to switch to another speaker; each screen remembers its own choice, and the speaker in the settings stays the default.
 
-**Settings:** the speaker, the volume step (2, 5 or 10 %), the maximum volume, shuffle and repeat (off by default), and four buttons, each with an optional name.
+Up to four buttons, behind ⋯ in the corner, run the speaker's own actions, such as *Set source to TV* or *Set source to Line-In*, or any flow. A button for the TV is lit while the speaker plays from the TV, and so is ⋯. After a switch, a speaker action runs as the same action of the new speaker, and is hidden when that speaker doesn't have it. The buttons need an API key in Widgetkeeper's app settings, which may manage flows for the speaker's actions (or only start flows, for flows).
+
+**Settings:** the speaker, switching speaker (on by default), the volume as a bar or as buttons, the volume step (2, 5 or 10 %), the maximum volume, the progress bar and time (on by default), shuffle and repeat (off by default; with the volume as buttons they're behind ⋯ too), and four buttons, each with an optional name.
 
 Works with any speaker in Homey; made with Sonos in mind.
 
