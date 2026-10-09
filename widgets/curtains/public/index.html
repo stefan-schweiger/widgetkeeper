@@ -58,6 +58,7 @@
         groupByZone: settings.groupByZone === true,
         between: settings.between,
         invert: settings.invert === true,
+        showState: settings.showState !== false,
         onSet: (deviceId, change) => Homey.api('POST', '/set', { deviceId, ...change }),
         onHeight: () => {
           if (!readySent) return;

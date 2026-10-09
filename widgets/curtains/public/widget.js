@@ -93,7 +93,7 @@
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string,
    *   onSet?: (deviceId: string, change: {action?: string, position?: number}) => Promise<any>,
-   *   onHeight?: (h: number) => void, groupByZone?: boolean, between?: string, invert?: boolean }} opts
+   *   onHeight?: (h: number) => void, groupByZone?: boolean, between?: string, invert?: boolean, showState?: boolean }} opts
    */
   function createCurtainsWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -128,6 +128,8 @@
     let lastTouchTap = 0;
 
     root.classList.add('ct');
+    // The state under the name (Open, 42% open, Opening…): on unless `showState` is false.
+    root.classList.toggle('ct-no-state', opts.showState === false);
     const grid = el('div', { class: 'ct-grid' }, root);
     const messageEl = el('div', { class: 'ct-message', dir: 'auto' }, root);
     /** @type {Map<string, {tile: HTMLElement, icon: SVGSVGElement, act: HTMLElement, name: HTMLElement,

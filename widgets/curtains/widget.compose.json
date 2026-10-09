@@ -133,6 +133,41 @@
       "value": false
     },
     {
+      "id": "showState",
+      "type": "checkbox",
+      "title": {
+        "en": "Show the state under the name",
+        "nl": "Status onder de naam tonen",
+        "de": "Zustand unter dem Namen zeigen",
+        "fr": "Afficher l'état sous le nom",
+        "it": "Mostra lo stato sotto il nome",
+        "sv": "Visa läget under namnet",
+        "no": "Vis tilstanden under navnet",
+        "es": "Mostrar el estado bajo el nombre",
+        "da": "Vis tilstanden under navnet",
+        "ru": "Показывать состояние под названием",
+        "pl": "Pokazuj stan pod nazwą",
+        "ko": "이름 아래에 상태 표시",
+        "ar": "إظهار الحالة أسفل الاسم"
+      },
+      "hint": {
+        "en": "Open, Closed, 42% open or Opening…. Off makes the tiles lower.",
+        "nl": "Open, Dicht, 42% open of Gaat open…. Uit maakt de tegels lager.",
+        "de": "Offen, Geschlossen, 42 % offen oder Öffnet…. Aus macht die Kacheln niedriger.",
+        "fr": "Ouvert, Fermé, Ouvert à 42 % ou Ouverture…. Désactivé, les tuiles sont moins hautes.",
+        "it": "Aperta, Chiusa, Aperta al 42% o In apertura…. Se disattivato, i riquadri sono più bassi.",
+        "sv": "Öppen, Stängd, 42 % öppen eller Öppnas…. Av gör rutorna lägre.",
+        "no": "Åpen, Lukket, 42 % åpen eller Åpner…. Av gjør flisene lavere.",
+        "es": "Abierta, Cerrada, Abierta al 42 % o Abriendo…. Desactivado, los mosaicos son más bajos.",
+        "da": "Åben, Lukket, 42 % åben eller Åbner…. Fra gør felterne lavere.",
+        "ru": "Открыта, Закрыта, Открыта на 42 % или Открывается…. Если выключить, плитки станут ниже.",
+        "pl": "Otwarta, Zamknięta, Otwarta w 42% lub Otwiera się…. Po wyłączeniu kafelki są niższe.",
+        "ko": "열림, 닫힘, 42% 열림 또는 여는 중…. 끄면 타일이 낮아집니다.",
+        "ar": "مفتوحة، مغلقة، مفتوحة بنسبة 42% أو تُفتح…. إيقافه يجعل البلاطات أقصر."
+      },
+      "value": true
+    },
+    {
       "id": "groupByZone",
       "type": "checkbox",
       "title": {

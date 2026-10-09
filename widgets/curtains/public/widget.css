@@ -87,6 +87,8 @@ html, body { background: transparent !important; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .ct-tile.open .ct-state { color: color-mix(in srgb, var(--ct-text) 75%, var(--ct-muted)); }
+/* The `showState` setting off: no state line, so the tile is 16px lower. */
+.ct-no-state .ct-state { display: none; }
 
 /* The bar: a 28px hit area around a 6px track, with a knob at the position. Touches on it are the widget's. */
 .ct-bar { position: relative; height: 28px; margin: 2px 0 0; touch-action: none; cursor: ew-resize; }

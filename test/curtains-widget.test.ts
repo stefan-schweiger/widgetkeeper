@@ -181,6 +181,16 @@ describe('taps', () => {
   });
 });
 
+describe('showState', () => {
+  it('shows the state under the name unless it is turned off', () => {
+    const on = widget([curtain('a', 1)]);
+    expect(on.root.classList.contains('ct-no-state')).toBe(false);
+    const off = widget([curtain('b', 1)], { showState: false });
+    expect(off.root.classList.contains('ct-no-state')).toBe(true);
+    expect(off.state('b')).toBe('Open'); // still there for the label, only hidden
+  });
+});
+
 describe('ends', () => {
   it('counts 1 % and 99 % (and up to 5 %) as closed and open', () => {
     const { action, state } = widget([curtain('a', 0.99), curtain('b', 0.01), curtain('c', 0.95), curtain('d', 0.94)]);
