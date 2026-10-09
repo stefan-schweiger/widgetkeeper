@@ -272,5 +272,31 @@
     "stopped": "Stoppad",
     "open": "Öppna",
     "close": "Stäng"
+  },
+  "media": {
+    "selectDevice": "Välj en högtalare i widgetinställningarna.",
+    "error": "Kunde inte läsa in högtalaren.",
+    "failed": "Kunde inte ändra __name__.",
+    "buttonFailed": "Kunde inte köra __name__.",
+    "missing": "Högtalaren hittades inte",
+    "nothingPlaying": "Inget spelas",
+    "tv": "TV",
+    "lineIn": "Linjeingång",
+    "muted": "Ljud av",
+    "play": "Spela",
+    "pause": "Pausa",
+    "next": "Nästa",
+    "previous": "Föregående",
+    "mute": "Stäng av ljud",
+    "unmute": "Slå på ljud",
+    "shuffle": "Blanda",
+    "repeat": "Upprepa",
+    "volumeDown": "Sänk volymen",
+    "volumeUp": "Höj volymen",
+    "volume": "Volym",
+    "noKey": "Lägg till en API-nyckel i appinställningarna för att använda knappen.",
+    "keyScope": "API-nyckeln får inte köra detta. Högtalaråtgärder kräver behörighet att hantera flöden.",
+    "keyInvalid": "API-nyckeln godkändes inte.",
+    "speakerAction": "Högtalaråtgärd"
   }
 }

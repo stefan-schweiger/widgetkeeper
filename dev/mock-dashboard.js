@@ -1,6 +1,6 @@
 // The widgets of dev/screenshots.html: the real widget code with the made-up home of showcase-data.js ("Solbakken",
 // the showcase dashboards' data, so no real home's names or readings end up in the README), mounted into the elements
-// with the ids w-elec, w-thermo, w-qa, w-sa, w-sd, w-weather, w-heatmap, w-cameras, w-values, w-lights, w-sparklines, w-variables, w-flows, w-price, w-timers, w-locks and w-curtains.
+// with the ids w-elec, w-thermo, w-qa, w-sa, w-sd, w-weather, w-heatmap, w-cameras, w-values, w-lights, w-sparklines, w-variables, w-flows, w-price, w-timers, w-locks, w-curtains and w-media.
 // Needs the widget scripts, temp/screenshot-icons.js and showcase-data.js loaded first, and the
 // showcase's fixed clock (screenshots.html sets it), so every render is the same.
 (function () {
@@ -78,6 +78,14 @@
     { id: 'c3', name: 'Bedroom', kind: 'curtain', caps: { windowcoverings_set: cap(0), windowcoverings_state: cap('idle') } },
     { id: 'c4', name: 'Office blind', kind: 'blinds', caps: { windowcoverings_set: cap(0.35), windowcoverings_state: cap('idle') } },
   ]);
+
+  // Solbakken's living room speaker (no showcase dashboard has one), playing with a drawn cover, the TV and
+  // line-in buttons under it. The fixed clock keeps the position the same in every render.
+  const clock = Date.now();
+  mountMockMedia(el('w-media'), mockSpeaker('Living room', 0), {
+    now: () => clock,
+    buttons: [{ id: 'card:tv', name: 'TV' }, { id: 'card:line', name: 'Line-in' }, { id: 'flow:f1', name: 'Movie night' }],
+  });
 
   const cams = createCamerasWidget(el('w-cameras'), {});
   cams.setState(find('cameras', 1).cameras.slice(0, 4));

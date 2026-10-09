@@ -272,5 +272,31 @@
     "stopped": "Gestoppt",
     "open": "Öffnen",
     "close": "Schließen"
+  },
+  "media": {
+    "selectDevice": "Wähle einen Lautsprecher in den Widget-Einstellungen.",
+    "error": "Lautsprecher konnte nicht geladen werden.",
+    "failed": "__name__ konnte nicht geändert werden.",
+    "buttonFailed": "__name__ konnte nicht ausgeführt werden.",
+    "missing": "Lautsprecher nicht gefunden",
+    "nothingPlaying": "Keine Wiedergabe",
+    "tv": "TV",
+    "lineIn": "Line-In",
+    "muted": "Stumm",
+    "play": "Abspielen",
+    "pause": "Pause",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "mute": "Stummschalten",
+    "unmute": "Ton an",
+    "shuffle": "Zufall",
+    "repeat": "Wiederholen",
+    "volumeDown": "Leiser",
+    "volumeUp": "Lauter",
+    "volume": "Lautstärke",
+    "noKey": "Um diesen Button zu nutzen, füge in den App-Einstellungen einen API-Schlüssel hinzu.",
+    "keyScope": "Der API-Schlüssel darf das nicht ausführen. Lautsprecheraktionen brauchen das Recht, Flows zu verwalten.",
+    "keyInvalid": "Der API-Schlüssel wurde nicht akzeptiert.",
+    "speakerAction": "Lautsprecheraktion"
   }
 }

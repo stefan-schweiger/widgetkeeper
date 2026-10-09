@@ -272,5 +272,31 @@
     "stopped": "Arrêté",
     "open": "Ouvrir",
     "close": "Fermer"
+  },
+  "media": {
+    "selectDevice": "Choisissez une enceinte dans les réglages du widget.",
+    "error": "Impossible de charger l’enceinte.",
+    "failed": "Impossible de modifier __name__.",
+    "buttonFailed": "Impossible d’exécuter __name__.",
+    "missing": "Enceinte introuvable",
+    "nothingPlaying": "Aucune lecture",
+    "tv": "TV",
+    "lineIn": "Entrée ligne",
+    "muted": "Muet",
+    "play": "Lecture",
+    "pause": "Pause",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "mute": "Couper le son",
+    "unmute": "Rétablir le son",
+    "shuffle": "Aléatoire",
+    "repeat": "Répéter",
+    "volumeDown": "Baisser le volume",
+    "volumeUp": "Monter le volume",
+    "volume": "Volume",
+    "noKey": "Pour utiliser ce bouton, ajoutez une clé API dans les réglages de l’app.",
+    "keyScope": "La clé API ne peut pas l’exécuter. Les actions d’enceinte exigent le droit de gérer les flows.",
+    "keyInvalid": "La clé API n’a pas été acceptée.",
+    "speakerAction": "Action de l’enceinte"
   }
 }

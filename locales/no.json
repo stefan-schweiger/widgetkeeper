@@ -272,5 +272,31 @@
     "stopped": "Stoppet",
     "open": "Åpne",
     "close": "Lukk"
+  },
+  "media": {
+    "selectDevice": "Velg en høyttaler i widgetinnstillingene.",
+    "error": "Kunne ikke laste høyttaleren.",
+    "failed": "Kunne ikke endre __name__.",
+    "buttonFailed": "Kunne ikke kjøre __name__.",
+    "missing": "Fant ikke høyttaleren",
+    "nothingPlaying": "Ingenting spilles",
+    "tv": "TV",
+    "lineIn": "Linjeinngang",
+    "muted": "Dempet",
+    "play": "Spill av",
+    "pause": "Pause",
+    "next": "Neste",
+    "previous": "Forrige",
+    "mute": "Demp",
+    "unmute": "Opphev demping",
+    "shuffle": "Tilfeldig",
+    "repeat": "Gjenta",
+    "volumeDown": "Volum ned",
+    "volumeUp": "Volum opp",
+    "volume": "Volum",
+    "noKey": "Legg til en API-nøkkel i appinnstillingene for å bruke knappen.",
+    "keyScope": "API-nøkkelen kan ikke kjøre dette. Høyttalerhandlinger krever tillatelse til å administrere flyter.",
+    "keyInvalid": "API-nøkkelen ble ikke godtatt.",
+    "speakerAction": "Høyttalerhandling"
   }
 }

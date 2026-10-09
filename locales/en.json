@@ -272,5 +272,31 @@
     "stopped": "Stopped",
     "open": "Open",
     "close": "Close"
+  },
+  "media": {
+    "selectDevice": "Select a speaker in the widget settings.",
+    "error": "Could not load the speaker.",
+    "failed": "Could not change __name__.",
+    "buttonFailed": "Could not run __name__.",
+    "missing": "Speaker not found",
+    "nothingPlaying": "Nothing playing",
+    "tv": "TV",
+    "lineIn": "Line-in",
+    "muted": "Muted",
+    "play": "Play",
+    "pause": "Pause",
+    "next": "Next",
+    "previous": "Previous",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "shuffle": "Shuffle",
+    "repeat": "Repeat",
+    "volumeDown": "Volume down",
+    "volumeUp": "Volume up",
+    "volume": "Volume",
+    "noKey": "To use this button, add an API key in the app settings.",
+    "keyScope": "The API key may not run this. Speaker actions need permission to manage flows.",
+    "keyInvalid": "The API key was not accepted.",
+    "speakerAction": "Speaker action"
   }
 }

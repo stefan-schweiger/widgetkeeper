@@ -272,5 +272,31 @@
     "stopped": "Ferma",
     "open": "Apri",
     "close": "Chiudi"
+  },
+  "media": {
+    "selectDevice": "Scegli un altoparlante nelle impostazioni del widget.",
+    "error": "Impossibile caricare l’altoparlante.",
+    "failed": "Impossibile modificare __name__.",
+    "buttonFailed": "Impossibile eseguire __name__.",
+    "missing": "Altoparlante non trovato",
+    "nothingPlaying": "Nessuna riproduzione",
+    "tv": "TV",
+    "lineIn": "Line-in",
+    "muted": "Muto",
+    "play": "Riproduci",
+    "pause": "Pausa",
+    "next": "Successivo",
+    "previous": "Precedente",
+    "mute": "Silenzia",
+    "unmute": "Riattiva audio",
+    "shuffle": "Casuale",
+    "repeat": "Ripeti",
+    "volumeDown": "Abbassa volume",
+    "volumeUp": "Alza volume",
+    "volume": "Volume",
+    "noKey": "Per usare questo pulsante, aggiungi una chiave API nelle impostazioni dell’app.",
+    "keyScope": "La chiave API non può eseguirlo. Le azioni dell’altoparlante richiedono il permesso di gestire i flow.",
+    "keyInvalid": "La chiave API non è stata accettata.",
+    "speakerAction": "Azione dell’altoparlante"
   }
 }

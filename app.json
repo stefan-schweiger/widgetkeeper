@@ -3874,6 +3874,403 @@
       },
       "id": "locks"
     },
+    "media": {
+      "name": {
+        "en": "Media",
+        "nl": "Media",
+        "de": "Medien",
+        "fr": "Médias",
+        "it": "Media",
+        "sv": "Media",
+        "no": "Media",
+        "es": "Multimedia",
+        "da": "Medier",
+        "ru": "Медиа",
+        "pl": "Multimedia",
+        "ko": "미디어",
+        "ar": "الوسائط"
+      },
+      "height": 240,
+      "transparent": false,
+      "settings": [
+        {
+          "id": "device",
+          "type": "autocomplete",
+          "title": {
+            "en": "Speaker",
+            "nl": "Speaker",
+            "de": "Lautsprecher",
+            "fr": "Enceinte",
+            "it": "Altoparlante",
+            "sv": "Högtalare",
+            "no": "Høyttaler",
+            "es": "Altavoz",
+            "da": "Højttaler",
+            "ru": "Колонка",
+            "pl": "Głośnik",
+            "ko": "스피커",
+            "ar": "مكبر الصوت"
+          },
+          "hint": {
+            "en": "Pick this first: the buttons below list this speaker’s actions, such as Set source to TV.",
+            "nl": "Kies dit eerst: de knoppen hieronder tonen de acties van deze speaker, zoals Bron instellen op tv.",
+            "de": "Zuerst auswählen: Die Buttons darunter zeigen die Aktionen dieses Lautsprechers, etwa Quelle auf TV setzen.",
+            "fr": "À choisir d’abord : les boutons ci-dessous proposent les actions de cette enceinte, comme Source sur TV.",
+            "it": "Sceglilo per primo: i pulsanti qui sotto elencano le azioni di questo altoparlante, come Sorgente su TV.",
+            "sv": "Välj den först: knapparna nedan visar högtalarens åtgärder, till exempel Ställ in källa till TV.",
+            "no": "Velg denne først: knappene under viser høyttalerens handlinger, for eksempel Sett kilde til TV.",
+            "es": "Elígelo primero: los botones de abajo muestran las acciones de este altavoz, como Fuente a TV.",
+            "da": "Vælg den først: knapperne nedenfor viser højttalerens handlinger, fx Sæt kilde til TV.",
+            "ru": "Выберите её первой: кнопки ниже предлагают действия этой колонки, например «Источник: ТВ».",
+            "pl": "Wybierz najpierw: przyciski poniżej pokazują akcje tego głośnika, np. Ustaw źródło na TV.",
+            "ko": "먼저 선택하세요. 아래 버튼에 TV로 소스 설정 같은 이 스피커의 동작이 나열됩니다.",
+            "ar": "اختره أولًا: تعرض الأزرار أدناه إجراءات مكبر الصوت هذا، مثل ضبط المصدر على التلفاز."
+          }
+        },
+        {
+          "id": "volumeStep",
+          "type": "dropdown",
+          "value": "5",
+          "title": {
+            "en": "Volume step",
+            "nl": "Volumestap",
+            "de": "Lautstärkeschritt",
+            "fr": "Pas du volume",
+            "it": "Passo del volume",
+            "sv": "Volymsteg",
+            "no": "Volumsteg",
+            "es": "Paso de volumen",
+            "da": "Lydstyrketrin",
+            "ru": "Шаг громкости",
+            "pl": "Krok głośności",
+            "ko": "볼륨 단계",
+            "ar": "خطوة مستوى الصوت"
+          },
+          "values": [
+            {
+              "id": "2",
+              "title": {
+                "en": "2 %",
+                "nl": "2 %",
+                "de": "2 %",
+                "fr": "2 %",
+                "it": "2 %",
+                "sv": "2 %",
+                "no": "2 %",
+                "es": "2 %",
+                "da": "2 %",
+                "ru": "2 %",
+                "pl": "2 %",
+                "ko": "2 %",
+                "ar": "2 %"
+              }
+            },
+            {
+              "id": "5",
+              "title": {
+                "en": "5 %",
+                "nl": "5 %",
+                "de": "5 %",
+                "fr": "5 %",
+                "it": "5 %",
+                "sv": "5 %",
+                "no": "5 %",
+                "es": "5 %",
+                "da": "5 %",
+                "ru": "5 %",
+                "pl": "5 %",
+                "ko": "5 %",
+                "ar": "5 %"
+              }
+            },
+            {
+              "id": "10",
+              "title": {
+                "en": "10 %",
+                "nl": "10 %",
+                "de": "10 %",
+                "fr": "10 %",
+                "it": "10 %",
+                "sv": "10 %",
+                "no": "10 %",
+                "es": "10 %",
+                "da": "10 %",
+                "ru": "10 %",
+                "pl": "10 %",
+                "ko": "10 %",
+                "ar": "10 %"
+              }
+            }
+          ]
+        },
+        {
+          "id": "maxVolume",
+          "type": "number",
+          "value": 100,
+          "min": 1,
+          "max": 100,
+          "title": {
+            "en": "Maximum volume (%)",
+            "nl": "Maximaal volume (%)",
+            "de": "Maximale Lautstärke (%)",
+            "fr": "Volume maximal (%)",
+            "it": "Volume massimo (%)",
+            "sv": "Högsta volym (%)",
+            "no": "Maks. volum (%)",
+            "es": "Volumen máximo (%)",
+            "da": "Maks. lydstyrke (%)",
+            "ru": "Максимальная громкость (%)",
+            "pl": "Maksymalna głośność (%)",
+            "ko": "최대 볼륨(%)",
+            "ar": "أقصى مستوى صوت (%)"
+          },
+          "hint": {
+            "en": "The volume bar and + stop here. Handy where children use the dashboard.",
+            "nl": "De volumebalk en + stoppen hier. Handig als kinderen het dashboard gebruiken.",
+            "de": "Lautstärkeleiste und + enden hier. Praktisch, wenn Kinder das Dashboard benutzen.",
+            "fr": "La barre de volume et + s’arrêtent ici. Pratique si des enfants utilisent le tableau de bord.",
+            "it": "La barra del volume e + si fermano qui. Utile se il dashboard lo usano i bambini.",
+            "sv": "Volymreglaget och + stannar här. Praktiskt om barn använder instrumentpanelen.",
+            "no": "Volumlinjen og + stopper her. Nyttig når barn bruker dashbordet.",
+            "es": "La barra de volumen y + se detienen aquí. Útil si los niños usan el panel.",
+            "da": "Lydstyrkebjælken og + stopper her. Praktisk, hvis børn bruger dashboardet.",
+            "ru": "Полоса громкости и + останавливаются здесь. Удобно, если панелью пользуются дети.",
+            "pl": "Pasek głośności i + zatrzymują się tutaj. Przydatne, gdy z pulpitu korzystają dzieci.",
+            "ko": "볼륨 막대와 +가 여기서 멈춥니다. 아이들이 대시보드를 쓸 때 유용합니다.",
+            "ar": "يتوقف شريط الصوت و+ هنا. مفيد عندما يستخدم الأطفال لوحة التحكم."
+          }
+        },
+        {
+          "id": "showShuffle",
+          "type": "checkbox",
+          "value": false,
+          "title": {
+            "en": "Show shuffle and repeat",
+            "nl": "Shuffle en herhalen tonen",
+            "de": "Zufall und Wiederholen zeigen",
+            "fr": "Afficher aléatoire et répétition",
+            "it": "Mostra casuale e ripeti",
+            "sv": "Visa blanda och upprepa",
+            "no": "Vis tilfeldig og gjenta",
+            "es": "Mostrar aleatorio y repetir",
+            "da": "Vis bland og gentag",
+            "ru": "Показывать перемешивание и повтор",
+            "pl": "Pokaż losowo i powtarzanie",
+            "ko": "셔플과 반복 표시",
+            "ar": "إظهار التشغيل العشوائي والتكرار"
+          }
+        },
+        {
+          "id": "button1",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 1",
+            "nl": "Knop 1",
+            "de": "Button 1",
+            "fr": "Bouton 1",
+            "it": "Pulsante 1",
+            "sv": "Knapp 1",
+            "no": "Knapp 1",
+            "es": "Botón 1",
+            "da": "Knap 1",
+            "ru": "Кнопка 1",
+            "pl": "Przycisk 1",
+            "ko": "버튼 1",
+            "ar": "الزر 1"
+          },
+          "hint": {
+            "en": "A source such as Set source to TV, another action of the speaker, or a flow. They run with the API key in Widgetkeeper’s app settings; speaker actions need its permission to manage flows.",
+            "nl": "Een bron zoals Bron instellen op tv, een andere actie van de speaker of een flow. Ze lopen via de API-sleutel in de app-instellingen van Widgetkeeper; speakeracties hebben de rechten om flows te beheren nodig.",
+            "de": "Eine Quelle wie Quelle auf TV setzen, eine andere Aktion des Lautsprechers oder ein Flow. Sie laufen über den API-Schlüssel in den App-Einstellungen von Widgetkeeper; Lautsprecheraktionen brauchen das Recht, Flows zu verwalten.",
+            "fr": "Une source comme Source sur TV, une autre action de l’enceinte ou un flow. Ils passent par la clé API des réglages de l’app Widgetkeeper ; les actions de l’enceinte demandent le droit de gérer les flows.",
+            "it": "Una sorgente come Sorgente su TV, un’altra azione dell’altoparlante o un flow. Usano la chiave API nelle impostazioni dell’app Widgetkeeper; le azioni dell’altoparlante richiedono il permesso di gestire i flow.",
+            "sv": "En källa som Ställ in källa till TV, en annan åtgärd för högtalaren eller ett flöde. De körs med API-nyckeln i Widgetkeepers appinställningar; högtalaråtgärder kräver behörighet att hantera flöden.",
+            "no": "En kilde som Sett kilde til TV, en annen handling for høyttaleren eller en flyt. De kjøres med API-nøkkelen i Widgetkeepers appinnstillinger; høyttalerhandlinger krever tillatelse til å administrere flyter.",
+            "es": "Una fuente como Fuente a TV, otra acción del altavoz o un flujo. Usan la clave API de los ajustes de la app Widgetkeeper; las acciones del altavoz necesitan permiso para gestionar flujos.",
+            "da": "En kilde som Sæt kilde til TV, en anden handling for højttaleren eller et flow. De kører med API-nøglen i Widgetkeepers app-indstillinger; højttalerhandlinger kræver tilladelse til at administrere flows.",
+            "ru": "Источник, например «Источник: ТВ», другое действие колонки или поток. Они выполняются с ключом API из настроек приложения Widgetkeeper; для действий колонки нужно право управлять потоками.",
+            "pl": "Źródło, np. Ustaw źródło na TV, inna akcja głośnika lub Flow. Działają z kluczem API z ustawień aplikacji Widgetkeeper; akcje głośnika wymagają uprawnienia do zarządzania Flow.",
+            "ko": "TV로 소스 설정 같은 소스, 스피커의 다른 동작 또는 플로우입니다. Widgetkeeper 앱 설정의 API 키로 실행되며, 스피커 동작에는 플로우 관리 권한이 필요합니다.",
+            "ar": "مصدر مثل ضبط المصدر على التلفاز، أو إجراء آخر لمكبر الصوت، أو تدفق. تعمل بمفتاح API في إعدادات تطبيق Widgetkeeper؛ وتحتاج إجراءات مكبر الصوت إلى صلاحية إدارة التدفقات."
+          }
+        },
+        {
+          "id": "button1Name",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "hint": {
+            "en": "Optional. Leave empty to keep the original name.",
+            "nl": "Optioneel. Laat leeg om de oorspronkelijke naam te houden.",
+            "de": "Optional. Leer lassen, um den ursprünglichen Namen zu behalten.",
+            "fr": "Facultatif. Laissez vide pour garder le nom d'origine.",
+            "it": "Facoltativo. Lascia vuoto per mantenere il nome originale.",
+            "sv": "Valfritt. Lämna tomt för att behålla det ursprungliga namnet.",
+            "no": "Valgfritt. La stå tomt for å beholde det opprinnelige navnet.",
+            "es": "Opcional. Déjalo vacío para mantener el nombre original.",
+            "da": "Valgfrit. Lad feltet stå tomt for at beholde det oprindelige navn.",
+            "ru": "Необязательно. Оставьте пустым, чтобы сохранить исходное название.",
+            "pl": "Opcjonalnie. Zostaw puste, aby zachować oryginalną nazwę.",
+            "ko": "선택 사항입니다. 비워 두면 원래 이름을 사용합니다.",
+            "ar": "اختياري. اتركه فارغًا للإبقاء على الاسم الأصلي."
+          },
+          "value": ""
+        },
+        {
+          "id": "button2",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 2",
+            "nl": "Knop 2",
+            "de": "Button 2",
+            "fr": "Bouton 2",
+            "it": "Pulsante 2",
+            "sv": "Knapp 2",
+            "no": "Knapp 2",
+            "es": "Botón 2",
+            "da": "Knap 2",
+            "ru": "Кнопка 2",
+            "pl": "Przycisk 2",
+            "ko": "버튼 2",
+            "ar": "الزر 2"
+          }
+        },
+        {
+          "id": "button2Name",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
+        },
+        {
+          "id": "button3",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 3",
+            "nl": "Knop 3",
+            "de": "Button 3",
+            "fr": "Bouton 3",
+            "it": "Pulsante 3",
+            "sv": "Knapp 3",
+            "no": "Knapp 3",
+            "es": "Botón 3",
+            "da": "Knap 3",
+            "ru": "Кнопка 3",
+            "pl": "Przycisk 3",
+            "ko": "버튼 3",
+            "ar": "الزر 3"
+          }
+        },
+        {
+          "id": "button3Name",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
+        },
+        {
+          "id": "button4",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 4",
+            "nl": "Knop 4",
+            "de": "Button 4",
+            "fr": "Bouton 4",
+            "it": "Pulsante 4",
+            "sv": "Knapp 4",
+            "no": "Knapp 4",
+            "es": "Botón 4",
+            "da": "Knap 4",
+            "ru": "Кнопка 4",
+            "pl": "Przycisk 4",
+            "ko": "버튼 4",
+            "ar": "الزر 4"
+          }
+        },
+        {
+          "id": "button4Name",
+          "type": "text",
+          "title": {
+            "en": "  – Name",
+            "nl": "  – Naam",
+            "de": "  – Name",
+            "fr": "  – Nom",
+            "it": "  – Nome",
+            "sv": "  – Namn",
+            "no": "  – Navn",
+            "es": "  – Nombre",
+            "da": "  – Navn",
+            "ru": "  – Название",
+            "pl": "  – Nazwa",
+            "ko": "  – 이름",
+            "ar": "  – الاسم"
+          },
+          "value": ""
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        },
+        "set": {
+          "method": "POST",
+          "path": "/set"
+        },
+        "button": {
+          "method": "POST",
+          "path": "/button"
+        },
+        "getArt": {
+          "method": "GET",
+          "path": "/art"
+        },
+        "report": {
+          "method": "POST",
+          "path": "/report"
+        }
+      },
+      "id": "media"
+    },
     "price": {
       "name": {
         "en": "Price Badge",

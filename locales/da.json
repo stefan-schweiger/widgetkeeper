@@ -272,5 +272,31 @@
     "stopped": "Stoppet",
     "open": "Åbn",
     "close": "Luk"
+  },
+  "media": {
+    "selectDevice": "Vælg en højttaler i widgetindstillingerne.",
+    "error": "Kunne ikke indlæse højttaleren.",
+    "failed": "Kunne ikke ændre __name__.",
+    "buttonFailed": "Kunne ikke køre __name__.",
+    "missing": "Højttaler ikke fundet",
+    "nothingPlaying": "Der afspilles intet",
+    "tv": "TV",
+    "lineIn": "Line-in",
+    "muted": "Lyd fra",
+    "play": "Afspil",
+    "pause": "Pause",
+    "next": "Næste",
+    "previous": "Forrige",
+    "mute": "Slå lyd fra",
+    "unmute": "Slå lyd til",
+    "shuffle": "Bland",
+    "repeat": "Gentag",
+    "volumeDown": "Skru ned",
+    "volumeUp": "Skru op",
+    "volume": "Lydstyrke",
+    "noKey": "Tilføj en API-nøgle i app-indstillingerne for at bruge knappen.",
+    "keyScope": "API-nøglen må ikke køre dette. Højttalerhandlinger kræver tilladelse til at administrere flows.",
+    "keyInvalid": "API-nøglen blev ikke godkendt.",
+    "speakerAction": "Højttalerhandling"
   }
 }

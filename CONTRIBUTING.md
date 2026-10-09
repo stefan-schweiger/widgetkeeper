@@ -33,7 +33,7 @@ npm run screenshots                    # render the README screenshots (docs/scr
   - Stay on Homey's type scale. CLAUDE.md lists the tokens and the few deliberate exceptions.
 
 ### Previewing widgets in a browser
-`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/sensordots-preview.html`, `dev/weather-preview.html`, `dev/heatmap-preview.html`, `dev/values-preview.html`, `dev/lights-preview.html`, `dev/sparklines-preview.html`, `dev/variables-preview.html`, `dev/flows-preview.html`, `dev/price-preview.html`, `dev/timers-preview.html`, `dev/locks-preview.html` and `dev/curtains-preview.html` render the widgets with mock data, outside Homey.
+`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/sensordots-preview.html`, `dev/weather-preview.html`, `dev/heatmap-preview.html`, `dev/values-preview.html`, `dev/lights-preview.html`, `dev/sparklines-preview.html`, `dev/variables-preview.html`, `dev/flows-preview.html`, `dev/price-preview.html`, `dev/timers-preview.html`, `dev/locks-preview.html`, `dev/curtains-preview.html` and `dev/media-preview.html` render the widgets with mock data, outside Homey.
 1. Serve the repo root, e.g. `python -m http.server 8765`.
 2. Open `/dev/preview.html`.
 3. Optionally add `#live=0.4` or `#price=0.3` to the URL to simulate scrubbing.
@@ -53,10 +53,11 @@ lib/LightService.ts             light state tracking and control for Light Contr
 lib/SparklineService.ts         Insights history for Sparklines (live values through ValueService)
 lib/VariableService.ts          Logic variables for Flow Variables (read, set, live updates)
 lib/FlowService.ts              flows for Flow Buttons (list, start)
-lib/PersonalApiKey.ts           the user's API key for changing variables and starting flows
+lib/PersonalApiKey.ts           the user's API key for changing variables, starting flows and running speaker actions
 lib/TimerService.ts             the Timers widget's timers (run, save, Flow card)
 lib/LockService.ts              lock, contact and garage door tracking for Locks and Doors
 lib/CurtainService.ts           curtain and blind tracking and moves for Curtains
+lib/MediaService.ts             speaker tracking, album art, controls and source buttons for Media
 lib/heatmap.ts                  local-hour bucketing for the heatmap
 lib/deviceIcon.ts               device and capability icons, as SVG data URLs
 lib/appApi.ts                   shared HomeyAPI instance
@@ -78,6 +79,7 @@ widgets/price/                  widget manifest, api.ts (the Electricity Overvie
 widgets/timers/                 widget manifest, api.ts, public/ (renderer)
 widgets/locks/                  widget manifest, api.ts, public/ (renderer)
 widgets/curtains/               widget manifest, api.ts, public/ (renderer)
+widgets/media/                  widget manifest, api.ts, public/ (renderer)
 settings/                       app settings page (diagnostics)
 dev/                            browser previews with mock data; screenshots.html for the README
 scripts/                        app image, widget preview and screenshot generators

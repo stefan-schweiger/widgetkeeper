@@ -72,6 +72,10 @@ One line that says whether every lock and door is locked and closed<br clear="le
 <a href="#curtains"><b>Curtains</b></a><br>
 Curtains and blinds that open or close with one tap, with a slider for anything in between<br clear="left"></p>
 
+<p><a href="#media"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/media-dark.png"><img src="docs/previews/media-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#media"><b>Media</b></a><br>
+A speaker with its album art, mute, a volume that never overshoots and buttons for its sources<br clear="left"></p>
+
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
@@ -204,6 +208,17 @@ Curtains and blinds as tiles, two per row. Tap a tile to open or close it, the w
 **Settings:** devices; what a tap does for a half-open curtain (go to the nearer end, the default, or reverse its last move); position 100% means closed (for curtains such as SwitchBot that count the other way); show the state under the name (on by default; off makes the tiles lower); group by room (curtains in the same room share one tile that moves them all).
 
 Works with curtains that have a position, ones with just open, stop and close, and ones that are only open or closed. Homey's Android app takes over a drag on the slider, so there you tap the slider where you want it.
+
+## Media
+<img src="docs/screenshots/media.png" alt="Media on a Homey dashboard" width="358">
+
+One speaker as a card: the album art, the track and the artist, previous, play and next, and mute on the right. The volume moves on every tap of − or +, and a burst of taps is sent once, so it never runs ahead of you; set a maximum volume and neither + nor the bar goes past it. On TV or line-in the card says so instead of greying out, and mute and the volume keep working.
+
+Up to four buttons run the speaker's own actions, such as *Set source to TV* or *Set source to Line-In*, or any flow. A button for the TV is lit while the speaker plays from the TV. The buttons need an API key in Widgetkeeper's app settings, which may manage flows for the speaker's actions (or only start flows, for flows).
+
+**Settings:** the speaker, the volume step (2, 5 or 10 %), the maximum volume, shuffle and repeat (off by default), and four buttons, each with an optional name.
+
+Works with any speaker in Homey; made with Sonos in mind.
 
 ## Dashboard examples
 Seven dashboards from a made-up house, on a tablet in Homey's dark mode.

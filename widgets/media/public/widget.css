@@ -1,0 +1,160 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/media-preview.html).
+ * The dark frame copies the thermostat's .tw-frame; the buttons Flow Variables' grey and Flow Buttons' blue.
+ */
+.mw {
+  --mw-card: var(--homey-background-color, #1F2029);
+  --mw-text: var(--homey-text-color, #EDEEF0);
+  --mw-muted: var(--homey-text-color-light, #9C9DA5);
+  --mw-accent: var(--homey-color-blue, #2F8DF6);
+  --mw-red: var(--homey-color-red, #F25F5C);
+  --mw-white: var(--homey-text-color-white, #FFFFFF);
+  --mw-grey: color-mix(in srgb, var(--mw-text) 10%, var(--mw-card)); /* Flow Variables' −/+ fill */
+  --mw-track: color-mix(in srgb, var(--mw-text) 12%, var(--mw-card));
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --mw-fs-small: var(--homey-font-size-small, 14px); --mw-lh-small: var(--homey-line-height-small, 20px);
+  --mw-fs-default: var(--homey-font-size-default, 17px); --mw-lh-default: var(--homey-line-height-default, 24px);
+  --mw-bold: var(--homey-font-weight-bold, 700);
+  --mw-medium: var(--homey-font-weight-medium, 500);
+  --mw-radius: 10px; /* Homey's native device tiles */
+}
+.homey-dark-mode .mw, .mw.homey-dark-mode { --mw-card: #181920; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+
+/* Dark mode: the frame looks like Homey's native device tiles (as the thermostat's .tw-frame). */
+.homey-dark-mode .mw-frame, .mw-frame.homey-dark-mode {
+  background-color: #181920;
+  border-radius: 10px;
+}
+.homey-dark-mode .mw-frame::after, .mw-frame.homey-dark-mode::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.mw-frame { position: relative; }
+.homey-dark-mode body.mw-frame::after, body.mw-frame.homey-dark-mode::after { position: fixed; }
+
+.mw { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--mw-text); }
+.mw * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.mw [dir="auto"] { text-align: left; }
+
+.mw-card { display: flex; flex-direction: column; gap: var(--homey-su-3, 12px); min-width: 0; }
+.mw-card.shake { animation: mw-shake .35s; }
+
+/* Now playing: the cover, then the speaker's name (12/16), the track (17 bold) and artist · album (14). */
+.mw-now { display: flex; align-items: center; gap: var(--homey-su-3, 12px); min-width: 0; }
+.mw-art {
+  position: relative; width: 64px; height: 64px; flex-shrink: 0; border-radius: var(--mw-radius); overflow: hidden;
+  background: var(--mw-grey); color: var(--mw-muted);
+  display: flex; align-items: center; justify-content: center;
+}
+.mw-art-img { position: absolute; inset: 0; background: center / cover no-repeat; }
+.mw-art.has-art .mw-art-glyph { visibility: hidden; }
+.mw-art-glyph { width: 28px; height: 28px; display: block; }
+.mw-art-glyph svg, .mw-glyph svg { width: 100%; height: 100%; display: block; }
+/* On TV or line-in: Homey's blue, so it reads as a state, not as "nothing". */
+.mw-art.external { background: color-mix(in srgb, var(--mw-accent) 22%, var(--mw-card)); color: var(--mw-text); }
+
+.mw-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.mw-name, .mw-title, .mw-sub, .mw-progress-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* 12/16 like the other widgets' labels, a step below Homey's scale. */
+.mw-name { font-size: 12px; line-height: 16px; color: var(--mw-muted); }
+.mw-title { font-size: var(--mw-fs-default); line-height: var(--mw-lh-default); font-weight: var(--mw-bold); }
+.mw-sub { font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); color: var(--mw-muted); }
+.mw-progress { position: relative; height: 3px; margin-top: 6px; border-radius: 2px; background: var(--mw-track); overflow: hidden; }
+.mw-progress-fill { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--mw-muted); border-radius: inherit; }
+.mw-playing .mw-progress-fill { background: var(--mw-accent); }
+.mw-progress-text { margin-top: 2px; font-size: 12px; line-height: 16px; color: var(--mw-muted); font-variant-numeric: tabular-nums; }
+
+/* Controls: previous, play/pause, next, then mute on the right. Every button is a 44 px touch target. */
+.mw-controls { display: flex; align-items: center; gap: var(--homey-su-2, 8px); min-width: 0; }
+.mw-spacer { flex: 1; }
+.mw-btn {
+  appearance: none; border: 0; margin: 0; padding: 0; font: inherit; color: var(--mw-text);
+  width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center; position: relative;
+  background: var(--mw-grey); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform .1s, background .15s, opacity .15s;
+}
+.mw-btn .mw-glyph { width: 22px; height: 22px; display: block; }
+.mw-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--mw-accent); }
+.mw-btn.pressing { transform: scale(.92); }
+.mw-btn:disabled { opacity: .4; cursor: default; }
+.mw-btn.flash { background: color-mix(in srgb, var(--mw-accent) 45%, var(--mw-grey)); }
+.mw-play { background: var(--mw-accent); color: var(--mw-white); }
+.mw-play .mw-glyph { width: 24px; height: 24px; }
+/* On TV or line-in: play, previous and next do nothing there, so they step back; mute and the volume stay. */
+.mw-external .mw-transport { opacity: .35; pointer-events: none; }
+.mw-external .mw-play { background: var(--mw-grey); color: var(--mw-text); }
+.mw-mute.on { background: var(--mw-red); color: var(--mw-white); }
+.mw-small { width: 36px; height: 36px; background: transparent; color: var(--mw-muted); }
+.mw-small .mw-glyph { width: 20px; height: 20px; }
+.mw-small.on { color: var(--mw-accent); }
+.mw-badge {
+  position: absolute; right: 3px; top: 3px; display: none; min-width: 12px; height: 12px; border-radius: 6px;
+  background: var(--mw-accent); color: var(--mw-white); font-size: 9px; line-height: 12px; font-weight: var(--mw-bold); text-align: center;
+}
+.mw-small.one .mw-badge { display: block; }
+
+/* Volume: − bar + and the percentage. The bar copies Light Controls'; touches on it are the widget's. */
+.mw-volume { --mw-x: 0; display: flex; align-items: center; gap: var(--homey-su-2, 8px); min-width: 0; }
+.mw-step { width: 36px; height: 36px; }
+.mw-step .mw-glyph { width: 18px; height: 18px; }
+.mw-bar { position: relative; flex: 1; min-width: 0; height: 36px; touch-action: none; cursor: ew-resize; outline: none; }
+.mw-bar:focus-visible .mw-track { box-shadow: 0 0 0 2px var(--mw-accent); }
+.mw-track {
+  position: absolute; left: 0; right: 0; top: 15px; height: 6px; border-radius: 3px; overflow: hidden;
+  background: var(--mw-track);
+}
+.mw-fill {
+  position: absolute; inset: 0 auto 0 0; width: calc(var(--mw-x) * 100%);
+  background: var(--mw-accent); border-radius: inherit;
+}
+.mw-knob {
+  position: absolute; top: 11px; width: 14px; height: 14px; border-radius: 50%;
+  left: calc(var(--mw-x) * (100% - 14px)); background: #FFFFFF;
+  box-shadow: 0 1px 3px rgb(0 0 0 / .35);
+}
+.mw-volume.muted .mw-fill { background: var(--mw-muted); }
+.mw-bar.dragging .mw-knob { transform: scale(1.2); }
+.mw-knob, .mw-fill { transition: left .15s, width .15s; }
+.mw-bar.dragging .mw-knob, .mw-bar.dragging .mw-fill { transition: none; }
+.mw-volume-text {
+  width: 40px; flex-shrink: 0; text-align: right; font-variant-numeric: tabular-nums;
+  font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); font-weight: var(--mw-medium);
+}
+.mw-volume.muted .mw-volume-text { color: var(--mw-muted); text-decoration: line-through; }
+
+/* Buttons for the speaker's Flow cards and flows: Flow Variables' grey pills, lit while the speaker plays from one. */
+.mw-chips { display: flex; flex-wrap: wrap; gap: var(--homey-su-2, 8px); }
+.mw-chip {
+  appearance: none; border: 0; margin: 0; font: inherit; color: var(--mw-text);
+  height: 36px; padding: 0 14px; border-radius: 18px; background: var(--mw-grey); max-width: 100%;
+  font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); font-weight: var(--mw-medium);
+  cursor: pointer; -webkit-tap-highlight-color: transparent; position: relative;
+  transition: transform .1s, background .15s;
+}
+.mw-chip-text { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mw-chip.pressing { transform: scale(.96); }
+.mw-chip.on { background: color-mix(in srgb, var(--mw-accent) 30%, var(--mw-card)); }
+.mw-chip.running { animation: mw-pulse 1s ease-in-out infinite; }
+.mw-chip.done { background: color-mix(in srgb, var(--homey-color-green, #5DB815) 30%, var(--mw-card)); }
+
+.mw-card.missing .mw-art, .mw-card.missing .mw-info { opacity: .5; }
+
+.mw-message { font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); color: var(--mw-muted); }
+.mw-message.error { color: var(--mw-red); }
+
+@keyframes mw-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+@keyframes mw-pulse { 50% { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) {
+  .mw-knob, .mw-fill { transition: none; }
+  .mw-chip.running { animation: none; opacity: .7; }
+}

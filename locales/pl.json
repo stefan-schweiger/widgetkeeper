@@ -272,5 +272,31 @@
     "stopped": "Zatrzymana",
     "open": "Otwórz",
     "close": "Zamknij"
+  },
+  "media": {
+    "selectDevice": "Wybierz głośnik w ustawieniach widżetu.",
+    "error": "Nie można wczytać głośnika.",
+    "failed": "Nie można zmienić __name__.",
+    "buttonFailed": "Nie można uruchomić __name__.",
+    "missing": "Nie znaleziono głośnika",
+    "nothingPlaying": "Nic nie gra",
+    "tv": "TV",
+    "lineIn": "Wejście liniowe",
+    "muted": "Wyciszony",
+    "play": "Odtwórz",
+    "pause": "Pauza",
+    "next": "Następny",
+    "previous": "Poprzedni",
+    "mute": "Wycisz",
+    "unmute": "Wyłącz wyciszenie",
+    "shuffle": "Losowo",
+    "repeat": "Powtarzaj",
+    "volumeDown": "Ciszej",
+    "volumeUp": "Głośniej",
+    "volume": "Głośność",
+    "noKey": "Aby użyć przycisku, dodaj klucz API w ustawieniach aplikacji.",
+    "keyScope": "Klucz API nie może tego uruchomić. Akcje głośnika wymagają uprawnienia do zarządzania Flow.",
+    "keyInvalid": "Klucz API nie został zaakceptowany.",
+    "speakerAction": "Akcja głośnika"
   }
 }

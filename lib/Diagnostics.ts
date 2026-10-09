@@ -45,6 +45,7 @@ export default class Diagnostics {
       variables: (this.homey.app as any)?.variables?.describe?.() ?? null,
       flows: (this.homey.app as any)?.flows?.describe?.() ?? null,
       timers: (this.homey.app as any)?.timers?.describe?.() ?? null,
+      media: (this.homey.app as any)?.media?.describe?.() ?? null,
     };
     try {
       const api = await getAppApi(this.homey);

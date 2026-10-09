@@ -8,6 +8,7 @@ import FlowService from './lib/FlowService.js';
 import HeatmapService from './lib/HeatmapService.js';
 import LightService from './lib/LightService.js';
 import LockService from './lib/LockService.js';
+import MediaService from './lib/MediaService.js';
 import PersonalApiKey from './lib/PersonalApiKey.js';
 import QuickActionService from './lib/QuickActionService.js';
 import SensorAlarmService from './lib/SensorAlarmService.js';
@@ -21,6 +22,7 @@ import WeatherService from './lib/WeatherService.js';
 const VALUE_SLOTS = [1, 2, 3, 4, 5, 6];
 const VARIABLE_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const FLOW_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8];
+const MEDIA_BUTTONS = [1, 2, 3, 4];
 
 export default class WidgetkeeperApp extends Homey.App {
 
@@ -40,6 +42,7 @@ export default class WidgetkeeperApp extends Homey.App {
   timers!: TimerService;
   locks!: LockService;
   curtains!: CurtainService;
+  media!: MediaService;
   /** The user's personal API key, shared by Flow Variables and Flow Buttons (the app's token may only read). */
   apiKey!: PersonalApiKey;
 
@@ -86,6 +89,9 @@ export default class WidgetkeeperApp extends Homey.App {
     this.locks.start();
     this.curtains = new CurtainService(this.homey, log, debug);
     this.curtains.start();
+    this.media = new MediaService(this.homey, this.flows, log, debug, this.apiKey);
+    this.media.start();
+    this.registerMediaSettings();
     this.debug('Widgetkeeper has been initialized');
   }
 
@@ -123,6 +129,7 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.timers?.stop();
     await this.locks?.stop();
     await this.curtains?.stop();
+    await this.media?.stop();
   }
 
   /** Autocomplete for the thermostat widget: the device, then per-button options read from it. */
@@ -183,6 +190,15 @@ export default class WidgetkeeperApp extends Homey.App {
     for (const n of FLOW_SLOTS) {
       widget.registerSettingAutocompleteListener(`flow${n}`, query => this.flows.listFlows(query));
       widget.registerSettingAutocompleteListener(`icon${n}`, async query => this.flows.listIcons(query));
+    }
+  }
+
+  /** Autocomplete for the media widget: the speaker, then each button's Flow card of that speaker or flow. */
+  private registerMediaSettings() {
+    const widget = this.homey.dashboards.getWidget('media');
+    widget.registerSettingAutocompleteListener('device', query => this.media.listDevices(query));
+    for (const n of MEDIA_BUTTONS) {
+      widget.registerSettingAutocompleteListener(`button${n}`, (query, settings) => this.media.listButtons(settings?.device?.id, query));
     }
   }
 

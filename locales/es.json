@@ -272,5 +272,31 @@
     "stopped": "Detenida",
     "open": "Abrir",
     "close": "Cerrar"
+  },
+  "media": {
+    "selectDevice": "Elige un altavoz en los ajustes del widget.",
+    "error": "No se pudo cargar el altavoz.",
+    "failed": "No se pudo cambiar __name__.",
+    "buttonFailed": "No se pudo ejecutar __name__.",
+    "missing": "Altavoz no encontrado",
+    "nothingPlaying": "No se reproduce nada",
+    "tv": "TV",
+    "lineIn": "Entrada de línea",
+    "muted": "Silenciado",
+    "play": "Reproducir",
+    "pause": "Pausa",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "mute": "Silenciar",
+    "unmute": "Activar sonido",
+    "shuffle": "Aleatorio",
+    "repeat": "Repetir",
+    "volumeDown": "Bajar volumen",
+    "volumeUp": "Subir volumen",
+    "volume": "Volumen",
+    "noKey": "Para usar este botón, añade una clave API en los ajustes de la app.",
+    "keyScope": "La clave API no puede ejecutarlo. Las acciones del altavoz necesitan permiso para gestionar flujos.",
+    "keyInvalid": "La clave API no se ha aceptado.",
+    "speakerAction": "Acción del altavoz"
   }
 }

@@ -272,5 +272,31 @@
     "stopped": "Gestopt",
     "open": "Openen",
     "close": "Sluiten"
+  },
+  "media": {
+    "selectDevice": "Kies een speaker in de widgetinstellingen.",
+    "error": "Kan de speaker niet laden.",
+    "failed": "Kan __name__ niet wijzigen.",
+    "buttonFailed": "Kan __name__ niet uitvoeren.",
+    "missing": "Speaker niet gevonden",
+    "nothingPlaying": "Er speelt niets",
+    "tv": "Tv",
+    "lineIn": "Line-in",
+    "muted": "Gedempt",
+    "play": "Afspelen",
+    "pause": "Pauzeren",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "mute": "Dempen",
+    "unmute": "Dempen opheffen",
+    "shuffle": "Shuffle",
+    "repeat": "Herhalen",
+    "volumeDown": "Volume omlaag",
+    "volumeUp": "Volume omhoog",
+    "volume": "Volume",
+    "noKey": "Voeg een API-sleutel toe in de app-instellingen om deze knop te gebruiken.",
+    "keyScope": "De API-sleutel mag dit niet uitvoeren. Speakeracties hebben rechten nodig om flows te beheren.",
+    "keyInvalid": "De API-sleutel is niet geaccepteerd.",
+    "speakerAction": "Speakeractie"
   }
 }

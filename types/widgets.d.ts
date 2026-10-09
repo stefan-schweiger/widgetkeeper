@@ -26,6 +26,9 @@ interface Window {
   lockLevel: (device: object) => 'secure' | 'insecure' | 'unknown' | 'missing';
   createCurtainsWidget: (root: HTMLElement, opts?: object) => object;
   curtainAction: (c: object, rule?: string) => 'open' | 'close' | 'stop' | null;
+  createMediaWidget: (root: HTMLElement, opts?: object) => object;
+  mediaSource: (caps: object) => 'tv' | 'lineIn' | null;
+  mediaButtonsFromSettings: (settings: object) => { id: string, name: string }[];
   sparkPath: (points: [number, number][], from: number, to: number, w: number, h: number) => { line: string, area: string, dot: { x: number, y: number }, min: number, max: number } | null;
   formatCapabilityValue: (cap: object, value: unknown, t: (key: string) => string) => string;
   heatmapPeriodDays: (period: string | undefined) => number;
