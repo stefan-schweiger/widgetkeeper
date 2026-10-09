@@ -25,10 +25,10 @@ function snapshot(over: Record<string, any> = {}, prices: Record<number, number 
   };
 }
 
-function widget(snap: any, settings: Record<string, unknown> = {}) {
+function widget(snap: any, settings: Record<string, unknown> = {}, layout?: string) {
   const root = document.createElement('div');
   document.body.append(root);
-  const w = win.createElectricityWidget(root, { locale: 'da-DK' });
+  const w = win.createElectricityWidget(root, { locale: 'da-DK', layout });
   if (Object.keys(settings).length) w.setSettings(settings);
   w.setData(snap);
   const q = (sel: string) => root.querySelector<HTMLElement>(sel);
@@ -335,6 +335,35 @@ it('selects on tap and keeps a touch selection for 3 s after the finger lifts', 
   vi.advanceTimersByTime(200);
   expect(sub()).toBe(idle);
   expect(q('.ew-header')).toBeTruthy();
+});
+
+describe('layout', () => {
+  const heights = (root: HTMLElement) => [...root.querySelectorAll('svg')].map(s => Number(s.getAttribute('height')));
+
+  it('marks the compact layout, and leaves the standard one (or a missing setting) alone', () => {
+    expect(widget(snapshot(), {}, 'compact').q('.ew')!.classList.contains('ew-compact')).toBe(true);
+    expect(widget(snapshot(), {}, 'standard').q('.ew')!.classList.contains('ew-compact')).toBe(false);
+    expect(widget(snapshot()).q('.ew')!.classList.contains('ew-compact')).toBe(false);
+  });
+
+  it('draws flatter charts with the same content in compact', () => {
+    const usage = [{ t: HOUR_START - HOUR, w: 300 }, { t: HOUR_START - HOUR + 5 * MIN, w: 600 }];
+    const standard = widget(snapshot({ usage }), { separateUsage: true });
+    const compact = widget(snapshot({ usage }), { separateUsage: true }, 'compact');
+    expect(heights(standard.root)).toEqual([140, 157, 179]);
+    expect(heights(compact.root)).toEqual([99, 107, 123]);
+    expect(compact.footer()).toBe(standard.footer());
+    expect(compact.q('.ew-header')!.textContent).toBe(standard.q('.ew-header')!.textContent);
+  });
+
+  it('thins the price and usage labels on the flatter chart', () => {
+    // Prices 2–3 kr. (3 steps up) and usage down to −3 kW (2 steps down): 5 steps, 14 px apart in compact.
+    const usage = [{ t: HOUR_START - HOUR, w: -3000 }, { t: HOUR_START - HOUR + 5 * MIN, w: 1000 }];
+    const labels = (root: HTMLElement) => [...root.querySelectorAll('svg')].at(-1)!.querySelectorAll('text').length;
+    const std = widget(snapshot({ usage }, { 30: 3 }));
+    const cmp = widget(snapshot({ usage }, { 30: 3 }), {}, 'compact');
+    expect(labels(std.root) - labels(cmp.root)).toBe(6); // every other step on each side; zero stays
+  });
 });
 
 it('shows a message instead of the charts', () => {

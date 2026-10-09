@@ -2,6 +2,7 @@ import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import { fetchDeviceIcon } from './deviceIcon.js';
 import { hourlyAverages, hourlyShareTrue, spanFor, type HeatmapDay, type Span } from './heatmap.js';
+import { readCapabilityLog } from './insightsLog.js';
 import { HOUR, MINUTE, parseInsightsEntries } from './series.js';
 import Timings from './Timings.js';
 
@@ -101,6 +102,7 @@ export default class HeatmapService {
 
   private numeric = new Map<string, NumericCache>();
   private numericPromises = new Map<string, Promise<HeatmapDay[]>>();
+  private logIds = new Map<string, string>(); // the Insights log that worked, per device and capability
   private recorded = new Map<string, Recorded>();
   private instances = new Map<string, any>();
   private backfilledAt = new Map<string, number>();
@@ -199,9 +201,7 @@ export default class HeatmapService {
     let p = this.numericPromises.get(k);
     if (!p) {
       p = (async () => {
-        const res = await api.insights.getLogEntries({
-          uri: `homey:device:${deviceId}`, id: `homey:device:${deviceId}:${capabilityId}`, resolution: `last${span}Days`,
-        });
+        const res = await readCapabilityLog(api, deviceId, capabilityId, `last${span}Days`, this.logIds);
         const days = hourlyAverages(parseInsightsEntries(res), Date.now(), this.homey.clock.getTimezone(), span);
         this.numeric.set(k, { at: Date.now(), lastRequested: Date.now(), days });
         return days;

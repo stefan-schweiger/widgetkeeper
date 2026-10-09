@@ -130,6 +130,31 @@ describe('getState', () => {
     expect(s).toMatchObject({ value: 21.5, points: [] });
   });
 
+  it('reads power from its energy_power log, as Homey logs it, and remembers that', async () => {
+    const meter = fakeDevice({
+      id: 'meter', name: 'Meter',
+      caps: { measure_power: { type: 'number', value: 3000, title: 'Power', units: 'W', insights: true } },
+    });
+    const api = fakeApi({
+      devices: [sensor(), meter], logEntries: entries,
+      logs: [
+        { id: 'homey:device:meter:energy_power', ownerUri: 'homey:device:meter', ownerId: 'energy_power' },
+        { id: 'homey:device:sensor:measure_temperature', ownerUri: 'homey:device:sensor', ownerId: 'measure_temperature' },
+      ],
+    });
+    const homey = fakeHomey(api);
+    const service = new SparklineService(homey, new ValueService(homey, () => {}), () => {});
+    const ids = () => api.insights.getLogEntries.mock.calls.map((c: any[]) => c[0].id);
+    const [power, temp] = await service.getState(['meter:measure_power', 'sensor:measure_temperature'], '24h') as any[];
+    expect(power.points).toHaveLength(MAX_POINTS);
+    expect(temp.points).toHaveLength(MAX_POINTS);
+    expect(ids().sort()).toEqual(['homey:device:meter:energy_power', 'homey:device:sensor:measure_temperature']);
+    api.insights.getLogEntries.mockClear();
+    vi.advanceTimersByTime(5 * 60e3 + 1);
+    await service.getState(['meter:measure_power'], '1h');
+    expect(ids()).toEqual(['homey:device:meter:energy_power']);
+  });
+
   it("sends live values as Device Values' realtime events", async () => {
     const { service, homey, devices } = setup();
     await service.getState(['sensor:measure_temperature'], '24h');

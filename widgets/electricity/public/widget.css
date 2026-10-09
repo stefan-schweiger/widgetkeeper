@@ -123,3 +123,12 @@ html, body { margin: 0; }
 .ew .ew-usage-chart .dot-ring.export { stroke: var(--ew-export); }
 .ew .ew-usage-chart .dot-core.export { fill: var(--ew-export); }
 .ew .midnight { stroke: var(--ew-axis); stroke-width: 1; stroke-dasharray: 2 3; fill: none; shape-rendering: crispEdges; }
+
+/* `layout: compact`: the same parts, tighter. Half the gaps, the header values at 20 (Homey's large,
+   bold here so they still read as the headline) over 12/16 subtitles, and a tighter footer; the flatter
+   plots and the chip row are DIMS.compact in widget.js. */
+.ew.ew-compact { gap: var(--homey-su-2, 8px); }
+.ew-compact .ew-header { gap: var(--homey-su-3, 12px); }
+.ew-compact .ew-hval .v { font-size: var(--homey-font-size-large, 20px); line-height: var(--homey-line-height-large, 28px); }
+.ew-compact .ew-hsub { font-size: var(--ew-fs-label); line-height: var(--ew-lh-label); }
+.ew-compact .ew-footer { padding-top: var(--homey-su-2, 8px); }

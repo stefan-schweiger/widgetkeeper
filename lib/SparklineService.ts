@@ -1,6 +1,7 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import { heatmapCaps, type AutocompleteItem } from './HeatmapService.js';
+import { readCapabilityLog } from './insightsLog.js';
 import { bucketAverage, HOUR, MINUTE, parseInsightsEntries } from './series.js';
 import Timings from './Timings.js';
 import type ValueService from './ValueService.js';
@@ -76,6 +77,7 @@ export default class SparklineService {
 
   private cache = new Map<string, HistoryCache>();
   private promises = new Map<string, Promise<[number, number][]>>();
+  private logIds = new Map<string, string>(); // the Insights log that worked, per device and capability
   private tickTimer: NodeJS.Timeout | null = null;
 
   constructor(
@@ -146,9 +148,7 @@ export default class SparklineService {
         let points: [number, number][] = [];
         try {
           const api = await getAppApi(this.homey);
-          const res = await api.insights.getLogEntries({
-            uri: `homey:device:${deviceId}`, id: `homey:device:${deviceId}:${capabilityId}`, resolution: SPANS[span].resolution,
-          });
+          const res = await readCapabilityLog(api, deviceId, capabilityId, SPANS[span].resolution, this.logIds);
           points = downsample(res, Date.now(), SPANS[span].ms, SPANS[span].step);
         } catch (err) {
           // Cached all the same, so a capability without a log isn't asked for again on every request.

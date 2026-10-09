@@ -149,6 +149,19 @@ describe('HeatmapService', () => {
     expect(api.insights.getLogEntries).toHaveBeenCalledTimes(2);
   });
 
+  it('reads power from its energy_power log', async () => {
+    const plug = fakeDevice({ id: 'plug', name: 'Plug', caps: { measure_power: { type: 'number', value: 26, title: 'Power', units: 'W', insights: true } } });
+    const api = fakeApi({
+      devices: [plug],
+      logs: [{ id: 'homey:device:plug:energy_power', ownerUri: 'homey:device:plug', ownerId: 'energy_power' }],
+      logEntries: () => ({ step: 3600000, values: [{ t: '2026-10-04T05:00:00.000Z', v: 40 }] }),
+    });
+    const service = new HeatmapService(fakeHomey(api), () => {});
+    const h = await service.getHistory('plug', 'measure_power');
+    expect(h.days[6].hours[7]).toBe(40);
+    expect(api.insights.getLogEntries).toHaveBeenLastCalledWith(expect.objectContaining({ id: 'homey:device:plug:energy_power' }));
+  });
+
   it('reads 14 days with last14Days, cached apart from the 7-day read', async () => {
     const { api, service } = setup({
       logEntries: (args: any) => ({ values: [{ t: '2026-09-22T05:00:00.000Z', v: args.resolution === 'last14Days' ? 3 : 99 }] }),

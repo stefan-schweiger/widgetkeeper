@@ -13,10 +13,12 @@
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
   const L = 38; // left gutter
-  const CHIP_H = 38; // chip row → top grid line
-  const LIVE_H = 83;
-  const PRICE_H = 122;
-  const USAGE_H = 100; // separate usage chart
+  // Chip row → top grid line, and the plot heights, per `layout`. Compact: a tighter chip row and
+  // flatter plots (with smaller gaps and header in widget.css), about 350 px against 483.
+  const DIMS = {
+    standard: { CHIP_H: 38, LIVE_H: 83, PRICE_H: 122, USAGE_H: 100 },
+    compact: { CHIP_H: 32, LIVE_H: 48, PRICE_H: 72, USAGE_H: 56 },
+  };
   const X_LABEL_GAP = 5;
   const X_LABEL_H = 14;
   const R_USAGE = 34; // right gutter when the usage scale sits on the price chart
@@ -167,7 +169,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string | null, locale?: string, onHeight?: (h: number) => void }} opts
+   * @param {{ t?: (key: string, tokens?: object) => string | null, locale?: string, layout?: string, onHeight?: (h: number) => void }} opts
    */
   function createElectricityWidget(root, opts = {}) {
     const locale = opts.locale || navigator.language || 'da-DK';
@@ -202,6 +204,9 @@
         : `${Math.round(ms / 1000)}s`);
     const weekday = (ms, lang) => new Intl.DateTimeFormat(lang || 'en', { weekday: 'short' }).format(new Date(ms));
 
+    const layout = opts.layout === 'compact' ? 'compact' : 'standard'; // missing on widgets placed before the setting
+    const { CHIP_H, LIVE_H, PRICE_H, USAGE_H } = DIMS[layout];
+
     const state = {
       data: null, // snapshot from the app; data.live holds raw readings
       settings: { showPrices: true, showUsage: true, nextLow: '12', separateUsage: false, liveWindow: 10, smooth: false, usageColor: 'neutral' }, // nextLow: none/12/24/both; usageColor: neutral/purple
@@ -219,7 +224,7 @@
     // Persistent skeleton. The SVG elements must survive re-renders: replacing the element under
     // a finger drops the touch pointer capture and ends the scrub.
     const ui = (() => {
-      const wrap = el('div', { class: 'ew' }, root);
+      const wrap = el('div', { class: layout === 'compact' ? 'ew ew-compact' : 'ew' }, root);
       const message = el('div', { class: 'ew-message', dir: 'auto' }, wrap);
       const header = el('div', { class: 'ew-header' }, wrap);
       const chart = (cls = '') => {
@@ -593,9 +598,11 @@
       // 1. Grid + y labels
       let grid = '';
       const xr = L + pw + (showUsage ? 6 : 0);
+      const every = Math.max(1, Math.ceil(LABEL_MIN_GAP / (PRICE_H / k))); // thinned on a flat (compact) chart
       for (let j = 0; j <= k; j++) {
         const yy = py(pMin + pst * j);
         if (j > 0) grid += `M${L - 6} ${f1(yy)}H${xr}`;
+        if ((j - kNeg) % every !== 0) continue; // zero always keeps its label
         text(svg, L - LABEL_PAD, yy, nf(pMin + pst * j, 2), 'end', 'central');
         if (showUsage) text(svg, L + pw + LABEL_PAD, yy, kW(uMin + ust * j), 'start', 'central');
       }
