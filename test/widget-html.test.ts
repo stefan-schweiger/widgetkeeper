@@ -14,3 +14,18 @@ describe('widget index.html', () => {
     for (const code of scripts) expect(() => new Script(code)).not.toThrow();
   });
 });
+
+// Homey serves each widget's files separately, so shared helpers are copied; these must stay equal.
+describe('copied widget helpers', () => {
+  const source = (id: string, fn: string) => {
+    const js = readFileSync(`widgets/${id}/public/widget.js`, 'utf8').replace(/\r\n/g, '\n');
+    const m = js.match(new RegExp(String.raw`\n( *)function ${fn}\([\s\S]*?\n\1}\n`));
+    return m ? m[0] : null;
+  };
+
+  it('withName() is the same in every widget that has one', () => {
+    const copies = ['values', 'variables', 'flows', 'sensoralarms'].map(id => source(id, 'withName'));
+    expect(copies[0]).not.toBeNull();
+    for (const c of copies) expect(c).toBe(copies[0]);
+  });
+});

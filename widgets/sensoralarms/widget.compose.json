@@ -75,19 +75,19 @@
         "ar": "أسماء البلاطات"
       },
       "hint": {
-        "en": "Optional. One name per line, in the order of the devices. An empty line keeps the device’s name.",
-        "nl": "Optioneel. Eén naam per regel, in de volgorde van de apparaten. Een lege regel houdt de naam van het apparaat.",
-        "de": "Optional. Ein Name pro Zeile, in der Reihenfolge der Geräte. Eine leere Zeile behält den Gerätenamen.",
-        "fr": "Facultatif. Un nom par ligne, dans l'ordre des appareils. Une ligne vide garde le nom de l'appareil.",
-        "it": "Facoltativo. Un nome per riga, nell'ordine dei dispositivi. Una riga vuota mantiene il nome del dispositivo.",
-        "sv": "Valfritt. Ett namn per rad, i enheternas ordning. En tom rad behåller enhetens namn.",
-        "no": "Valgfritt. Ett navn per linje, i enhetenes rekkefølge. En tom linje beholder enhetens navn.",
-        "es": "Opcional. Un nombre por línea, en el orden de los dispositivos. Una línea vacía mantiene el nombre del dispositivo.",
-        "da": "Valgfrit. Ét navn pr. linje, i enhedernes rækkefølge. En tom linje beholder enhedens navn.",
-        "ru": "Необязательно. Одно название в строке, в порядке устройств. Пустая строка оставляет название устройства.",
-        "pl": "Opcjonalnie. Jedna nazwa w wierszu, w kolejności urządzeń. Pusty wiersz zachowuje nazwę urządzenia.",
-        "ko": "선택 사항입니다. 기기 순서대로 한 줄에 하나씩 이름을 입력하세요. 빈 줄은 기기 이름을 그대로 사용합니다.",
-        "ar": "اختياري. اسم واحد في كل سطر، بترتيب الأجهزة. السطر الفارغ يُبقي اسم الجهاز."
+        "en": "Optional. One per line: Device name = Tile name. A line without = names the device in that position.",
+        "nl": "Optioneel. Eén per regel: Apparaatnaam = Tegelnaam. Een regel zonder = geeft het apparaat op die plek een naam.",
+        "de": "Optional. Eine pro Zeile: Gerätename = Kachelname. Eine Zeile ohne = benennt das Gerät an dieser Stelle.",
+        "fr": "Facultatif. Un par ligne : Nom de l'appareil = Nom de la tuile. Une ligne sans = nomme l'appareil à cette position.",
+        "it": "Facoltativo. Uno per riga: Nome dispositivo = Nome riquadro. Una riga senza = rinomina il dispositivo in quella posizione.",
+        "sv": "Valfritt. En per rad: Enhetsnamn = Rutnamn. En rad utan = namnger enheten på den platsen.",
+        "no": "Valgfritt. Én per linje: Enhetsnavn = Flisnavn. En linje uten = gir enheten på den plassen et navn.",
+        "es": "Opcional. Uno por línea: Nombre del dispositivo = Nombre del mosaico. Una línea sin = nombra el dispositivo en esa posición.",
+        "da": "Valgfrit. Én pr. linje: Enhedsnavn = Feltnavn. En linje uden = navngiver enheden på den plads.",
+        "ru": "Необязательно. По одному в строке: Название устройства = Название плитки. Строка без = называет устройство на этом месте.",
+        "pl": "Opcjonalnie. Jedna w wierszu: Nazwa urządzenia = Nazwa kafelka. Wiersz bez = nazywa urządzenie na tej pozycji.",
+        "ko": "선택 사항입니다. 한 줄에 하나씩: 기기 이름 = 타일 이름. = 없는 줄은 그 순서의 기기 이름이 됩니다.",
+        "ar": "اختياري. سطر لكل اسم: اسم الجهاز = اسم البلاطة. السطر بدون = يسمّي الجهاز في ذلك الموضع."
       },
       "value": ""
     }

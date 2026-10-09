@@ -53,7 +53,7 @@
       // An optional name per tile (`nameN`, text) replaces the device's.
       const picked = [1, 2, 3, 4, 5, 6]
         .map(n => ({ id: settings[`slot${n}`] && settings[`slot${n}`].id, name: settings[`name${n}`] }))
-        .filter(s => typeof s.id === 'string' && s.id.includes(':'));
+        .filter(s => typeof s.id === 'string' && s.id.indexOf(':') > 0 && !s.id.endsWith(':')); // as parseSlot(), so the names stay in line
       const slots = picked.map(s => s.id);
       let readySent = false;
       let loaded = false;

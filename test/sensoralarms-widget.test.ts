@@ -202,4 +202,15 @@ describe('name override', () => {
     w.setState([door(), air(), thermo()]);
     expect([...root.querySelectorAll('.sa-name')].map(n => n.textContent)).toEqual(['Back door', 'Airthings', 'Bedroom']);
   });
+
+  it('matches a `Device name = Tile name` line by the device name, wherever the device is', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const w = win.createSensorAlarmsWidget(root, { names: ['bedroom = Soveværelse', 'Hall'] });
+    w.setState([thermo(), door()]);
+    // The first line is a match by name, so it doesn't name the first tile by position.
+    expect([...root.querySelectorAll('.sa-name')].map(n => n.textContent)).toEqual(['Soveværelse', 'Hall']);
+    w.setState([door(), thermo()]);
+    expect([...root.querySelectorAll('.sa-name')].map(n => n.textContent)).toEqual(['Back door', 'Soveværelse']);
+  });
 });

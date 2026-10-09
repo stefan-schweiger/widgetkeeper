@@ -99,7 +99,9 @@ html, body { background: transparent !important; }
 .lk-action.pressing, .lk-all.pressing { transform: scale(.95); }
 .lk-action:focus-visible, .lk-all:focus-visible { box-shadow: 0 0 0 2px var(--lk-tile), 0 0 0 4px var(--lk-blue); }
 /* Waiting for the lock to report back: faded, with a pulse. */
-.lk-action.busy, .lk-all.busy { opacity: .55; pointer-events: none; animation: lk-pulse 1s ease-in-out infinite alternate; }
+.lk-action.busy, .lk-all.busy { opacity: .55; animation: lk-pulse 1s ease-in-out infinite alternate; }
+/* A busy row button ignores taps (`send()` skips busy devices); Lock all keeps them, so a tap on it never reaches the summary. */
+.lk-action.busy { pointer-events: none; }
 @keyframes lk-pulse { to { opacity: .3; } }
 
 .lk-message { font-size: var(--lk-fs-small); line-height: var(--lk-lh-small); color: var(--lk-muted); }

@@ -105,7 +105,7 @@ describe('getState', () => {
     const { service, api } = setup();
     for (const span of ['1h', '6h', '24h', '2d', '3d', '5d', '7d', undefined]) await service.getState(['sensor:measure_humidity'], span);
     expect(api.insights.getLogEntries.mock.calls.map((c: any[]) => c[0].resolution))
-      .toEqual(['lastHour', 'last6Hours', 'last24Hours', 'last3Days', 'last3Days', 'last7Days', 'last7Days']);
+      .toEqual(['lastHour', 'last6Hours', 'last24Hours', 'last3Days', 'last7Days']); // 2d/3d and 5d/7d share a log
     expect(api.insights.getLogEntries.mock.calls[0][0]).toMatchObject({
       uri: 'homey:device:sensor', id: 'homey:device:sensor:measure_humidity',
     });

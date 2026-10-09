@@ -84,6 +84,7 @@
     let lastTouchTap = 0;
     const unpress = () => { start = null; node.classList.remove('pressing'); };
     node.addEventListener('touchstart', (e) => {
+      e.stopPropagation(); // a tap on Lock all mustn't also press the summary around it
       const p = e.changedTouches[0];
       start = { x: p.clientX, y: p.clientY };
       node.classList.add('pressing');
@@ -377,7 +378,6 @@
         if (a && a.secures) securable++;
         r.button.style.display = a ? '' : 'none';
         r.button.textContent = a ? a.label : '';
-        r.button.classList.toggle('secures', !!(a && a.secures));
         r.button.classList.toggle('busy', busy.has(d.id));
       }
       list.style.display = expanded && devices.length ? '' : 'none';

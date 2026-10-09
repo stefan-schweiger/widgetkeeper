@@ -45,6 +45,20 @@
   }
 
   /**
+   * The `names` line for the device at `i`: a `Device name = Tile name` line by the device's own name
+   * (so removing or reordering a device doesn't move the names), else a plain line at its position.
+   */
+  function nameLine(names, entry, i) {
+    const own = entry && typeof entry.name === 'string' ? entry.name.trim().toLowerCase() : '';
+    for (const line of names) {
+      const at = typeof line === 'string' ? line.indexOf('=') : -1;
+      if (at > 0 && own && line.slice(0, at).trim().toLowerCase() === own) return line.slice(at + 1);
+    }
+    const line = names[i];
+    return typeof line === 'string' && !line.includes('=') ? line : '';
+  }
+
+  /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, includeStates?: boolean,
    *   names?: string[],
@@ -57,7 +71,7 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
 
-    const names = Array.isArray(opts.names) ? opts.names : []; // per tile, lined up with the entries
+    const names = Array.isArray(opts.names) ? opts.names : []; // the `names` lines, see nameLine()
     let devices = []; // [{ id, name, icon, alarms: [{ capabilityId, title, value, state }] } | { id, missing }]
     let messageText = null;
     let messageTimer = null;
@@ -73,7 +87,7 @@
     const tiles = new Map();
 
     function setState(list) {
-      devices = (Array.isArray(list) ? list : []).map((d, i) => withName(d, names[i]));
+      devices = (Array.isArray(list) ? list : []).map((d, i) => withName(d, nameLine(names, d, i)));
       messageText = null;
       render();
     }

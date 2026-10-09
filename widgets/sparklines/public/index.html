@@ -52,7 +52,7 @@
       // Each slot setting is an autocomplete item whose id is `<deviceId>:<capabilityId>`.
       const slots = [1, 2, 3, 4, 5, 6]
         .map(n => settings[`slot${n}`] && settings[`slot${n}`].id)
-        .filter(id => typeof id === 'string' && id.includes(':'));
+        .filter(id => typeof id === 'string' && id.indexOf(':') > 0 && !id.endsWith(':')); // as parseSlot()
       let readySent = false;
       let loaded = false;
 

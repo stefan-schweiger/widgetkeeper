@@ -77,6 +77,8 @@ export default class SparklineService {
 
   private cache = new Map<string, HistoryCache>();
   private promises = new Map<string, Promise<[number, number][]>>();
+  /** The raw Insights log per slot and resolution, so spans on the same log (2d and 3d, 5d and 7d) read it once. */
+  private logs = new Map<string, { at: number, log: Promise<any> }>();
   private logIds = new Map<string, string>(); // the Insights log that worked, per device and capability
   private tickTimer: NodeJS.Timeout | null = null;
 
@@ -147,8 +149,7 @@ export default class SparklineService {
         const { deviceId, capabilityId } = parseSlot(slot)!;
         let points: [number, number][] = [];
         try {
-          const api = await getAppApi(this.homey);
-          const res = await readCapabilityLog(api, deviceId, capabilityId, SPANS[span].resolution, this.logIds);
+          const res = await this.readLog(slot, deviceId, capabilityId, SPANS[span].resolution);
           points = downsample(res, Date.now(), SPANS[span].ms, SPANS[span].step);
         } catch (err) {
           // Cached all the same, so a capability without a log isn't asked for again on every request.
@@ -162,8 +163,21 @@ export default class SparklineService {
     return p;
   }
 
+  private readLog(slot: string, deviceId: string, capabilityId: string, resolution: string): Promise<any> {
+    const k = `${slot}:${resolution}`;
+    const cached = this.logs.get(k);
+    if (cached && Date.now() - cached.at < HISTORY_TTL) return cached.log;
+    const log = getAppApi(this.homey).then(api => readCapabilityLog(api, deviceId, capabilityId, resolution, this.logIds));
+    log.catch(() => {}); // a failure is handled by each caller
+    this.logs.set(k, { at: Date.now(), log });
+    return log;
+  }
+
   private tick() {
     const now = Date.now();
+    for (const [k, l] of this.logs) {
+      if (now - l.at >= HISTORY_TTL) this.logs.delete(k);
+    }
     for (const [k, c] of this.cache) {
       if (now - c.lastRequested > IDLE_TIMEOUT) this.cache.delete(k);
     }
