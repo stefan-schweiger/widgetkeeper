@@ -201,7 +201,7 @@ Locks, door and window contacts and garage doors in one line: *All locked and cl
 
 Curtains and blinds as tiles, two per row. Tap a tile to open or close it, the way curtains used to toggle in Homey; the pill in its corner always says what a tap will do (**Open** or **Close**), so a half-open curtain never leaves you guessing. A tap while it moves sends it back the other way. The slider sets any position in between, and the icon's drapes follow the real position. A curtain that's moving shows where it's heading.
 
-**Settings:** devices; what a tap does for a half-open curtain (go to the nearer end, the default, or reverse its last move); group by room (curtains in the same room share one tile that moves them all).
+**Settings:** devices; what a tap does for a half-open curtain (go to the nearer end, the default, or reverse its last move); position 100% means closed (for curtains such as SwitchBot that count the other way); group by room (curtains in the same room share one tile that moves them all).
 
 Works with curtains that have a position, ones with just open, stop and close, and ones that are only open or closed. Homey's Android app takes over a drag on the slider, so there you tap the slider where you want it.
 

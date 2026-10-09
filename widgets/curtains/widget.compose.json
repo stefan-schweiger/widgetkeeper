@@ -98,6 +98,41 @@
       ]
     },
     {
+      "id": "invert",
+      "type": "checkbox",
+      "title": {
+        "en": "Position 100% means closed",
+        "nl": "Positie 100% betekent dicht",
+        "de": "Position 100 % heißt geschlossen",
+        "fr": "Position 100 % signifie fermé",
+        "it": "Posizione 100% significa chiusa",
+        "sv": "Position 100 % betyder stängd",
+        "no": "Posisjon 100 % betyr lukket",
+        "es": "Posición 100 % significa cerrada",
+        "da": "Position 100 % betyder lukket",
+        "ru": "Положение 100 % означает «закрыта»",
+        "pl": "Pozycja 100% oznacza zamknięte",
+        "ko": "위치 100%는 닫힘",
+        "ar": "الموضع 100% يعني مغلقة"
+      },
+      "hint": {
+        "en": "Turn on for curtains that report 0% when open and 100% when closed, such as SwitchBot. Applies to every curtain in this widget.",
+        "nl": "Zet aan voor gordijnen die 0% melden als ze open zijn en 100% als ze dicht zijn, zoals SwitchBot. Geldt voor alle gordijnen in deze widget.",
+        "de": "Für Vorhänge einschalten, die offen 0 % und geschlossen 100 % melden, etwa SwitchBot. Gilt für alle Vorhänge in diesem Widget.",
+        "fr": "À activer pour les rideaux qui indiquent 0 % ouverts et 100 % fermés, comme SwitchBot. S'applique à tous les rideaux de ce widget.",
+        "it": "Attiva per le tende che riportano 0% quando sono aperte e 100% quando sono chiuse, come SwitchBot. Vale per tutte le tende di questo widget.",
+        "sv": "Slå på för gardiner som rapporterar 0 % när de är öppna och 100 % när de är stängda, som SwitchBot. Gäller alla gardiner i den här widgeten.",
+        "no": "Slå på for gardiner som melder 0 % når de er åpne og 100 % når de er lukket, som SwitchBot. Gjelder alle gardiner i denne widgeten.",
+        "es": "Actívalo para cortinas que indican 0 % abiertas y 100 % cerradas, como SwitchBot. Se aplica a todas las cortinas de este widget.",
+        "da": "Slå til for gardiner, der melder 0 %, når de er åbne, og 100 %, når de er lukkede, som SwitchBot. Gælder alle gardiner i denne widget.",
+        "ru": "Включите для штор, которые сообщают 0 % в открытом положении и 100 % в закрытом, например SwitchBot. Действует для всех штор в этом виджете.",
+        "pl": "Włącz dla zasłon, które zgłaszają 0% po otwarciu i 100% po zamknięciu, np. SwitchBot. Dotyczy wszystkich zasłon w tym widżecie.",
+        "ko": "SwitchBot처럼 열렸을 때 0%, 닫혔을 때 100%로 보고하는 커튼이라면 켜세요. 이 위젯의 모든 커튼에 적용됩니다.",
+        "ar": "فعّله للستائر التي تُبلغ 0% عندما تكون مفتوحة و100% عندما تكون مغلقة، مثل SwitchBot. ينطبق على كل الستائر في هذه الأداة."
+      },
+      "value": false
+    },
+    {
       "id": "groupByZone",
       "type": "checkbox",
       "title": {

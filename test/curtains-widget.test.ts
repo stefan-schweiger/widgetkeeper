@@ -100,10 +100,10 @@ describe('render', () => {
 });
 
 describe('taps', () => {
-  it('sends the action, then shows the curtain moving; a tap while it moves turns it round', async () => {
+  it('sends the end position, then shows the curtain moving; a tap while it moves turns it round', async () => {
     const { w, tap, onSet, action, state, tile } = widget([curtain('a', 0.7)]);
     tap('a');
-    expect(onSet).toHaveBeenCalledWith('a', { action: 'close' });
+    expect(onSet).toHaveBeenCalledWith('a', { position: 0 });
     expect(action('a')).toBe('open');
     expect(state('a')).toBe('Closing…');
     expect(tile('a').classList.contains('heading')).toBe(true);
@@ -111,7 +111,7 @@ describe('taps', () => {
     w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_state', value: 'down' });
     w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_set', value: 0.5 });
     tap('a');
-    expect(onSet).toHaveBeenLastCalledWith('a', { action: 'open' });
+    expect(onSet).toHaveBeenLastCalledWith('a', { position: 1 });
     // Opening at once, though the motor still says down until it reports.
     expect(state('a')).toBe('Opening…');
     expect(action('a')).toBe('close');
@@ -160,7 +160,7 @@ describe('taps', () => {
     w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_set', value: 0.55 }); // then closed a little
     expect(action('a')).toBe('open');
     tap('a');
-    expect(onSet).toHaveBeenCalledWith('a', { action: 'open' });
+    expect(onSet).toHaveBeenCalledWith('a', { position: 1 });
   });
 
   it('sets the position from the bar', () => {
@@ -181,6 +181,47 @@ describe('taps', () => {
   });
 });
 
+describe('ends', () => {
+  it('counts 1 % and 99 % (and up to 5 %) as closed and open', () => {
+    const { action, state } = widget([curtain('a', 0.99), curtain('b', 0.01), curtain('c', 0.95), curtain('d', 0.94)]);
+    expect([state('a'), state('b'), state('c'), state('d')]).toEqual(['Open', 'Closed', 'Open', '94% open']);
+    expect([action('a'), action('b')]).toEqual(['close', 'open']);
+  });
+
+  it('counts a curtain stopping at 99 % as there', () => {
+    const { w, tap, state } = widget([curtain('a', 0)]);
+    tap('a');
+    w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_set', value: 0.99 });
+    expect(state('a')).toBe('Open');
+  });
+});
+
+describe('invert', () => {
+  it('reads position 0 as open and 1 as closed, and sends it that way', () => {
+    const { tap, barAt, onSet, action, state, tile } = widget([curtain('a', 0), curtain('b', 0.99), curtain('c', 0.3)], { invert: true });
+    expect([state('a'), state('b'), state('c')]).toEqual(['Open', 'Closed', '70% open']);
+    expect([action('a'), action('b')]).toEqual(['close', 'open']);
+    expect(tile('c').style.getPropertyValue('--ct-x')).toBe('0.7');
+    tap('a');
+    expect(onSet).toHaveBeenLastCalledWith('a', { position: 1 }); // closing
+    barAt('b', 0.25);
+    expect(onSet).toHaveBeenLastCalledWith('b', { position: 0.75 }); // 25 % open
+  });
+
+  it('follows an inverted curtain as it moves', () => {
+    const { w, action, state } = widget([curtain('a', 0.5)], { invert: true, between: 'reverse' });
+    w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_set', value: 0.4 }); // opening
+    expect(state('a')).toBe('60% open');
+    expect(action('a')).toBe('close'); // reverses the opening
+  });
+
+  it('leaves a curtain without a position to the app', () => {
+    const { tap, onSet } = widget([plain('d', true)], { invert: true });
+    tap('d');
+    expect(onSet).toHaveBeenCalledWith('d', { action: 'open' });
+  });
+});
+
 describe('groupByZone', () => {
   it('puts the curtains of one room on one tile that moves them all', () => {
     const { root, tap, onSet, state, action } = widget([curtain('a', 1), curtain('b', 0.5), plain('c', true)], { groupByZone: true });
@@ -189,6 +230,6 @@ describe('groupByZone', () => {
     expect(state('zone:z1')).toBe('75% open');
     expect(action('zone:z1')).toBe('close');
     tap('zone:z1');
-    expect(onSet.mock.calls).toEqual([['a', { action: 'close' }], ['b', { action: 'close' }]]);
+    expect(onSet.mock.calls).toEqual([['a', { position: 0 }], ['b', { position: 0 }]]);
   });
 });

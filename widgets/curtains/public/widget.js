@@ -8,7 +8,8 @@
 
   const OPTIMISTIC_MS = 10e3; // how long a changed tile shows its new value while waiting for the device
   const PENDING_MS = 60e3; // a curtain sent somewhere counts as moving until it gets there, at most this long
-  const END = 0.02; // a position this close to 0 or 1 counts as closed or open
+  // A position this close to 0 or 1 counts as closed or open: some curtains stop at 1 % and 99 % (a user's SwitchBots).
+  const END = 0.05;
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
 
   const DEFAULT_STRINGS = {
@@ -92,7 +93,7 @@
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string,
    *   onSet?: (deviceId: string, change: {action?: string, position?: number}) => Promise<any>,
-   *   onHeight?: (h: number) => void, groupByZone?: boolean, between?: string }} opts
+   *   onHeight?: (h: number) => void, groupByZone?: boolean, between?: string, invert?: boolean }} opts
    */
   function createCurtainsWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -101,6 +102,13 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
     const rule = opts.between === 'reverse' ? 'reverse' : 'nearer';
+    /**
+     * Homey's position is 1 = open, but some drivers (SwitchBot's curtains) report 0 = open and 1 = closed; the
+     * `invert` setting flips it. The widget works in open-ness (1 = open): `pos()` turns a device's position
+     * into that and back.
+     */
+    const invert = opts.invert === true;
+    const pos = v => (invert ? 1 - v : v);
 
     let devices = []; // [{ id, name, kind, zone, caps } | { id, missing }]
     /**
@@ -144,10 +152,10 @@
         else if (value === 'down') lastDir.set(deviceId, -1);
         else if (value === 'idle') pending.delete(deviceId);
       } else if (capabilityId === 'windowcoverings_set') {
-        if (typeof old === 'number' && typeof value === 'number' && value !== old) lastDir.set(deviceId, value > old ? 1 : -1);
+        if (typeof old === 'number' && typeof value === 'number' && value !== old) lastDir.set(deviceId, pos(value) > pos(old) ? 1 : -1);
         // There: the motor state hoped for on the tap no longer counts.
         const p = pending.get(deviceId);
-        if (p && typeof value === 'number' && Math.abs(value - p.value) <= END) optimistic.delete(`${deviceId}:windowcoverings_state`);
+        if (p && typeof value === 'number' && Math.abs(pos(value) - p.value) <= END) optimistic.delete(`${deviceId}:windowcoverings_state`);
       } else if (capabilityId === 'windowcoverings_closed') {
         pending.delete(deviceId);
         if (typeof value === 'boolean') lastDir.set(deviceId, value ? -1 : 1);
@@ -178,7 +186,8 @@
 
     /** One curtain as `curtainAction()` sees it. */
     function view(d) {
-      const position = d.caps.windowcoverings_set ? num(shown(d, 'windowcoverings_set')) : null;
+      const raw = d.caps.windowcoverings_set ? num(shown(d, 'windowcoverings_set')) : null;
+      const position = raw == null ? null : pos(raw);
       const motor = d.caps.windowcoverings_state ? shown(d, 'windowcoverings_state') : null;
       const closedValue = d.caps.windowcoverings_closed ? shown(d, 'windowcoverings_closed') : null;
       let moving = motor === 'up' ? 1 : motor === 'down' ? -1 : 0;
@@ -265,6 +274,8 @@
       for (const d of item.members) {
         if (!view(d).canMove) continue;
         const open = action === 'open';
+        // With a position, the widget sends the end itself, so `invert` applies; else the app picks the motor or open/closed.
+        changes.push([d, settable(d, 'windowcoverings_set') ? { position: pos(open ? 1 : 0) } : { action }]);
         if (!d.caps.windowcoverings_set && !settable(d, 'windowcoverings_state')) {
           // Only open/closed: it's there as soon as the device says so.
           optimistic.set(`${d.id}:windowcoverings_closed`, { value: !open, until: Date.now() + OPTIMISTIC_MS });
@@ -274,11 +285,10 @@
           if (d.caps.windowcoverings_state) optimistic.set(`${d.id}:windowcoverings_state`, { value: open ? 'up' : 'down', until: Date.now() + OPTIMISTIC_MS });
           expectMove(d, open ? 1 : 0, open ? 1 : -1);
         }
-        changes.push(d);
       }
       setTimeout(render, OPTIMISTIC_MS + 50);
       render();
-      for (const d of changes) send(item, d, { action });
+      for (const [d, change] of changes) send(item, d, change);
     }
 
     /** The bar was let go at `x` (0–1): the position of every curtain on the tile that has one. */
@@ -295,7 +305,7 @@
         changes.push(d);
       }
       render();
-      for (const d of changes) send(item, d, { position: value });
+      for (const d of changes) send(item, d, { position: pos(value) });
     }
 
     /** Taps on the tile body: a touch that ends within TAP_SLOP, or a click. Drags scroll the dashboard. */
