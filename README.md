@@ -241,7 +241,7 @@ Seven dashboards from a made-up house, on a tablet in Homey's dark mode.
 
 <img src="docs/showcase/climate.png" alt="A climate dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
-**Evening:** lights grouped by room with the dusk palette, flow buttons for movie time, dinner and good night, quick actions for the TV, speaker and locks, the heat pump, two cameras, the weather in two rows of 2-hour steps, and the evening's flags.
+**Evening:** lights grouped by room with the dusk palette, flow buttons for movie time, dinner and good night, quick actions for the TV, speaker and locks, the heat pump, two cameras, the weather in two rows of 2-hour steps, the living room speaker, and the evening's flags.
 
 <img src="docs/showcase/evening.png" alt="An evening dashboard with Widgetkeeper widgets on a tablet" width="100%">
 

@@ -480,6 +480,11 @@
         ],
         [
           { type: 'weather', opts: { rows: 2, step: 2 }, hours: weatherHours() },
+          // The living room speaker in the condensed layout, its TV and line-in buttons behind ⋯.
+          { type: 'media', speaker: ['Living room', 0], opts: {
+            volumeLayout: 'buttons', showProgress: false, canSwitch: true,
+            buttons: [{ id: 'card:tv', name: 'TV' }, { id: 'card:line', name: 'Line-in' }],
+          } },
           { type: 'variables', opts: { columns: '1' }, vars: [
             { id: 'ev1', name: 'Guests staying over', type: 'boolean', value: true },
             { id: 'ev2', name: 'Kids in bed', type: 'boolean', value: false },

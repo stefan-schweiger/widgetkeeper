@@ -79,7 +79,7 @@
     { id: 'c4', name: 'Office blind', kind: 'blinds', caps: { windowcoverings_set: cap(0.35), windowcoverings_state: cap('idle') } },
   ]);
 
-  // Solbakken's living room speaker (no showcase dashboard has one), playing with a drawn cover, the TV and
+  // Solbakken's living room speaker (the Evening showcase has it too, condensed), playing with a drawn cover, the TV and
   // line-in buttons behind its ⋯. The fixed clock keeps the position the same in every render.
   const clock = Date.now();
   mountMockMedia(el('w-media'), mockSpeaker('Living room', 0), {

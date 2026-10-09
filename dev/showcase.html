@@ -41,6 +41,7 @@
   <link rel="stylesheet" href="../widgets/locks/public/widget.css">
   <link rel="stylesheet" href="../widgets/lights/public/widget.css">
   <link rel="stylesheet" href="../widgets/sparklines/public/widget.css">
+  <link rel="stylesheet" href="../widgets/media/public/widget.css">
   <script src="../widgets/electricity/public/widget.js"></script>
   <script src="../widgets/thermostat/public/widget.js"></script>
   <script src="../widgets/quickactions/public/widget.js"></script>
@@ -57,7 +58,9 @@
   <script src="../widgets/locks/public/widget.js"></script>
   <script src="../widgets/lights/public/widget.js"></script>
   <script src="../widgets/sparklines/public/widget.js"></script>
+  <script src="../widgets/media/public/widget.js"></script>
   <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
+  <script src="mock-media.js"></script>
   <script src="showcase-data.js"></script>
   <style>
     /* Transparent around the tablet: the render script screenshots with a transparent default background. */
@@ -146,11 +149,13 @@
       lights: (el, w) => createLightsWidget(el, w.opts || {}).setState(w.devices),
       cameras: (el, w) => { const x = createCamerasWidget(el, w.opts || {}); x.setState(w.cameras); x.refresh(); },
       heatmap: (el, w) => createHeatmapWidget(el, { locale: LOCALE, ...w.opts }).setData(w.data),
+      // The made-up speakers of mock-media.js (drawn covers); the fixed clock keeps the position still.
+      media: (el, w) => mountMockMedia(el, mockSpeaker(...w.speaker), { now: () => SHOWCASE_NOW, ...w.opts }),
       weather: (el, w) => createWeatherWidget(el, { locale: LOCALE, iconBase: '../widgets/weather/public/icons/', ...w.opts })
         .setForecast({ hours: w.hours, language: 'en' }),
     };
     // The widgets drawn on Homey's default widget background; the rest are transparent tiles.
-    const FRAME = { electricity: 'card', thermostat: 'card tw-frame', weather: 'card wf-frame', heatmap: 'card hm-frame' };
+    const FRAME = { electricity: 'card', thermostat: 'card tw-frame', media: 'card mw-frame', weather: 'card wf-frame', heatmap: 'card hm-frame' };
 
     const id = new URLSearchParams(location.search).get('d') || 'home';
     const board = SHOWCASE[id];
