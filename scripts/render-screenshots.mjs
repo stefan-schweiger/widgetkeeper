@@ -1,13 +1,14 @@
 // Renders the README screenshots (docs/screenshots/*.png) from dev/screenshots.html with headless Edge:
 // the real widgets with mock data, at a phone's widget width (358 px, 3x like an iPhone), on a transparent background.
 // Usage: `npm run screenshots [-- <id>…]` (set EDGE to the browser path if it isn't the default).
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { downloadIcons, edge } from './headless.mjs';
 
 const page = pathToFileURL(resolve('dev/screenshots.html')).href;
-const SHOTS = ['electricity', 'thermostat', 'quickactions', 'sensoralarms', 'sensordots', 'weather', 'heatmap', 'cameras', 'values', 'lights', 'sparklines', 'variables', 'flows', 'price', 'timers', 'locks', 'curtains', 'media'];
+// The shots: the ids of the page's `<section class="shot">`s, in page order.
+const SHOTS = [...readFileSync('dev/screenshots.html', 'utf8').matchAll(/<section class="shot" id="(\w+)"/g)].map(m => m[1]);
 const WIDTH = 358;
 const SCALE = 3;
 

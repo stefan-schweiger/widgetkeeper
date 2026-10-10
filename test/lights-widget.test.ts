@@ -119,6 +119,18 @@ describe('tap', () => {
     expect(value('spots')).toBe('40');
   });
 
+  it('toggles from the keyboard: the tile is a button that takes Enter and Space', () => {
+    const { tile, onSet } = widget([bulb(false)]);
+    expect(tile('bulb').getAttribute('role')).toBe('button');
+    expect(tile('bulb').getAttribute('tabindex')).toBe('0');
+    tile('bulb').dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    expect(onSet).toHaveBeenLastCalledWith('bulb', { onoff: true });
+    tile('bulb').dispatchEvent(new win.KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }));
+    expect(onSet).toHaveBeenLastCalledWith('bulb', { onoff: false });
+    tile('bulb').dispatchEvent(new win.KeyboardEvent('keydown', { key: 'a', bubbles: true, cancelable: true }));
+    expect(onSet).toHaveBeenCalledTimes(2);
+  });
+
   it('shows the failure and goes back', async () => {
     const { tile, value, root } = widget([bulb(false)], vi.fn(async () => { throw new Error('no'); }));
     tile('bulb').click();
@@ -187,6 +199,26 @@ describe('swatch panel', () => {
     expect(tile('hue').querySelector('.lc-chip')!.classList.contains('active')).toBe(true);
     expect(swatches(root)).toHaveLength(7 + 5);
     expect(panelOf(root).querySelector('.lc-close')).not.toBeNull();
+  });
+
+  it('opens on a touch tap on the chip, but not on a swipe across it, and never toggles', () => {
+    const { tile, root, onSet } = widget([hueGo()]);
+    const chip = tile('hue').querySelector<HTMLElement>('.lc-chip')!;
+    const touch = (type: string, x: number) => {
+      const e = new win.Event(type, { bubbles: true, cancelable: true });
+      e.changedTouches = [{ clientX: x, clientY: 10 }];
+      chip.dispatchEvent(e);
+    };
+    // A swipe that starts and ends on the chip is the dashboard's.
+    touch('touchstart', 10); touch('touchmove', 40); touch('touchend', 40);
+    expect(shownPanel(root)).toBe(false);
+    touch('touchstart', 10); touch('touchend', 13);
+    expect(shownPanel(root)).toBe(true);
+    // The same from the keyboard, which doesn't reach the tile either.
+    chip.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    expect(shownPanel(root)).toBe(false);
+    expect(onSet).not.toHaveBeenCalled();
+    expect(tile('hue').classList.contains('pressing')).toBe(false);
   });
 
   it('sets a colour, turning the light on and tinting the tile, and closes', () => {

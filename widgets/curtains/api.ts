@@ -1,6 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { describeWidgetPerf } from '../../lib/Timings.js';
+import { idList, logged, logPerf } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -10,15 +10,8 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const ids = (query.deviceIds || '').split(',').filter(Boolean);
-    const perf = describeWidgetPerf(query.perf);
-    if (perf) app.debug(`Curtains widget: ${perf}`);
-    try {
-      return await app.curtains.getState(ids);
-    } catch (err) {
-      app.log('Curtains state failed:', err);
-      throw err;
-    }
+    logPerf(app, 'Curtains', query);
+    return logged(app, 'Curtains state failed:', () => app.curtains.getState(idList(query.deviceIds)));
   },
 
   async set({ homey, body }: {
@@ -26,13 +19,10 @@ export default {
     body: { deviceId?: string, action?: unknown, position?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    try {
+    return logged(app, `Curtain change failed, body: ${JSON.stringify(body)}`, async () => {
       if (!body?.deviceId) throw new Error('Missing deviceId');
       await app.curtains.set(body.deviceId, { action: body.action, position: body.position });
       return { ok: true };
-    } catch (err) {
-      app.log('Curtain change failed, body:', JSON.stringify(body), err);
-      throw err;
-    }
+    });
   },
 };

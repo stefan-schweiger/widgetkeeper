@@ -1,6 +1,7 @@
 import type Homey from 'homey';
-import type { AutocompleteItem } from './HeatmapService.js';
+import { matches, type AutocompleteItem } from './autocomplete.js';
 import PersonalApiKey, { KeyError } from './PersonalApiKey.js';
+import { sharedCache } from './sharedCache.js';
 import Timings from './Timings.js';
 
 /** How long a read of the dashboards is reused. A widget re-reads its pages every 5 min. */
@@ -42,11 +43,6 @@ export type StackRequest = { type: StackType, until: number };
 
 export const isStackType = (type: unknown): type is StackType => (STACK_TYPES as readonly unknown[]).includes(type);
 
-function matches(query: string, ...texts: (string | undefined)[]) {
-  const q = (query || '').trim().toLowerCase();
-  return !q || texts.some(t => t?.toLowerCase().includes(q));
-}
-
 /**
  * The pages of a dashboard: this app's widgets (`type: 'app_webview'`, `data.appWidgetId` =
  * `homey:app:<appId>:<widget>`), column by column, top to bottom. Homey's own widgets and other apps' can't be
@@ -80,7 +76,17 @@ export function dashboardPages(dashboard: any, appId: string): StackPage[] {
  */
 export default class StackService {
 
-  private cache: { at: number, dashboards: Promise<any[]> } | null = null;
+  /** Every dashboard: the shared read (see `read`). */
+  private cache = sharedCache(() => this.key.run(api => api.dashboards.getDashboards())
+    .then((all: any) => {
+      this.lastError = null;
+      this.reads++;
+      return Object.values(all ?? {}) as any[];
+    })
+    .catch((err: unknown) => {
+      this.lastError = String((err as any)?.reason ?? (err as any)?.message ?? err);
+      throw err;
+    }));
   private requests = new Map<StackType, number>();
   private lastError: string | null = null;
   private reads = 0;
@@ -174,7 +180,7 @@ export default class StackService {
       clearTimeout(timer);
     }
     return {
-      cached: !!this.cache,
+      cached: this.cache.cached,
       reads: this.reads,
       lastError: this.lastError,
       apiKey: this.key.has(),
@@ -183,22 +189,9 @@ export default class StackService {
     };
   }
 
-  /** Every dashboard, through the API key. A read (or one on its way) is shared while it's at most `maxAge` old. */
+  /** A read (or one on its way) is shared while it's at most `maxAge` old. */
   private read(maxAge: number): Promise<any[]> {
-    if (this.cache && Date.now() - this.cache.at < maxAge) return this.cache.dashboards;
-    const dashboards = this.key.run(api => api.dashboards.getDashboards())
-      .then((all: any) => {
-        this.lastError = null;
-        this.reads++;
-        return Object.values(all ?? {}) as any[];
-      })
-      .catch((err: unknown) => {
-        if (this.cache?.dashboards === dashboards) this.cache = null;
-        this.lastError = String((err as any)?.reason ?? (err as any)?.message ?? err);
-        throw err;
-      });
-    this.cache = { at: Date.now(), dashboards };
-    return dashboards;
+    return this.cache.get(maxAge);
   }
 
 }

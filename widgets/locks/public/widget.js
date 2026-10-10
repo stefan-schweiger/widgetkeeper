@@ -84,7 +84,7 @@
     let lastTouchTap = 0;
     const unpress = () => { start = null; node.classList.remove('pressing'); };
     node.addEventListener('touchstart', (e) => {
-      e.stopPropagation(); // a tap on Lock all mustn't also press the summary around it
+      e.stopPropagation(); // a tap on a button mustn't also press the row around it
       const p = e.changedTouches[0];
       start = { x: p.clientX, y: p.clientY };
       node.classList.add('pressing');
@@ -254,7 +254,7 @@
 
     async function send(d, action) {
       if (busy.has(d.id)) return;
-      try { if (opts.onHaptic) opts.onHaptic(); } catch (err) { /* not on every platform */ }
+      if (opts.onHaptic) opts.onHaptic();
       busy.set(d.id, setTimeout(() => { busy.delete(d.id); render(); }, BUSY_MS));
       render();
       try {

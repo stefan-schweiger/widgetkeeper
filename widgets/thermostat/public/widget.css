@@ -36,8 +36,7 @@ html, body { margin: 0; }
  * own, which clips the page.
  */
 .homey-dark-mode .tw-frame, .tw-frame.homey-dark-mode {
-  --tw-frame-bg: #181920;
-  background-color: var(--tw-frame-bg);
+  background-color: #181920;
   border-radius: 10px;
 }
 /* The rim covers the viewport without taking part in layout, so the reported height stays the content's. */

@@ -1,6 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { describeWidgetPerf } from '../../lib/Timings.js';
+import { logPerf } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -10,8 +10,7 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const perf = describeWidgetPerf(query.perf);
-    if (perf) app.debug(`Electricity widget: ${perf}`);
+    logPerf(app, 'Electricity', query);
     return app.electricity.getSnapshot(query.deviceId || null, { costs: query.costs !== '0' });
   },
 };

@@ -4,15 +4,26 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const EDGE = process.env.EDGE || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+/** The browser: Edge's default install path, or `EDGE` from the environment. */
+export const EDGE = process.env.EDGE || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+/** The flags every render runs Edge with. */
+export const HEADLESS = ['--headless=new', '--disable-gpu', '--hide-scrollbars'];
 
-/** Runs headless Edge with the given arguments and returns its stdout. */
-export function edge(args) {
-  // A fresh profile per run avoids stale cached files.
-  const profile = mkdtempSync(join(tmpdir(), 'wk-render-'));
+/** A fresh, empty browser profile (a temp directory; remove it when done). A fresh profile avoids stale cached files. */
+export function freshProfile() {
+  return mkdtempSync(join(tmpdir(), 'wk-render-'));
+}
+
+/**
+ * Runs headless Edge with the given arguments (in a fresh profile) and returns its stdout. `virtualTime` is the
+ * `--virtual-time-budget` in ms (the page's timers run that far before a screenshot or DOM dump), or null for none.
+ */
+export function edge(args, { virtualTime = 4000 } = {}) {
+  const profile = freshProfile();
   try {
-    return execFileSync(EDGE, ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--virtual-time-budget=4000',
-      `--user-data-dir=${profile}`, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    const budget = virtualTime == null ? [] : [`--virtual-time-budget=${virtualTime}`];
+    return execFileSync(EDGE, [...HEADLESS, ...budget, `--user-data-dir=${profile}`, ...args],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
   } finally {
     rmSync(profile, { recursive: true, force: true });
   }

@@ -404,7 +404,6 @@
         end(false);
       });
       bar.addEventListener('click', e => e.stopPropagation()); // not a tap on the tile
-      bar.addEventListener('keydown', e => e.stopPropagation());
     }
 
     /**

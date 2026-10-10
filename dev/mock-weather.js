@@ -1,8 +1,8 @@
 /*
- * Mock forecast for dev/weather-preview.html and dev/screenshots.html: an autumn day with sun,
+ * Mock forecast for dev/weather-preview.html (the screenshots and showcase use showcase-data.js): an autumn day with sun,
  * showers, an evening of rain and a frosty clear night, from the current hour on.
  * `mockWeatherFromMet(json)` turns a real MET compact response (e.g. `?snap=/temp/met-compact.json`)
- * into the app's `/forecast` shape, like `hoursFrom()` in lib/WeatherService.ts.
+ * into the app's `/forecast` shape, like `hoursFrom()` in lib/WeatherService.ts. Needs mock-util.js.
  */
 (function () {
   // [symbol (day/night picked by hour), °C, wind m/s, wind from °, precipitation mm]
@@ -16,17 +16,12 @@
     ['fair', -2.4, 1.2, 340, 0], ['fog', -2.2, 0.8, 350, 0], ['fog', -1.4, 1.0, 0, 0],
     ['partlycloudy', 0.6, 1.8, 10, 0], ['partlycloudy', 2.9, 2.6, 20, 0], ['fair', 4.8, 3.2, 30, 0],
   ];
-  const NIGHT_CAPABLE = /^(clearsky|fair|partlycloudy|lightrainshowers|rainshowers|heavyrainshowers)$/;
-
   function mockWeatherHours(start) {
     const from = Math.floor((start || Date.now()) / 3600e3) * 3600e3;
     return Array.from({ length: 48 }, (_, i) => {
       const [sym, temp, wind, windDir, precip] = DAY[i % DAY.length];
       const t = new Date(from + i * 3600e3);
-      const hour = t.getHours();
-      const night = hour >= 19 || hour < 7;
-      const symbol = NIGHT_CAPABLE.test(sym) ? `${sym}_${night ? 'night' : 'day'}` : sym;
-      return { t: t.toISOString(), symbol, temp, wind, windDir, precip };
+      return { t: t.toISOString(), symbol: mockWeatherSymbol(sym, t), temp, wind, windDir, precip };
     });
   }
 

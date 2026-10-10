@@ -1,5 +1,7 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import { localHour } from './heatmap.js';
+import { readFirstLog } from './insightsLog.js';
 import Timings from './Timings.js';
 import {
   HOUR, MINUTE, SECOND, Sample,
@@ -91,9 +93,6 @@ export default class ElectricityService {
       .catch(err => this.log('Warm-up failed', err));
   }
 
-  private getApi(): Promise<any> {
-    return getAppApi(this.homey);
-  }
 
   /** `costs: false` gives the bare spot prices, without Homey Energy's costs (the widgets' `priceCosts` setting). */
   async getSnapshot(deviceId: string | null, { costs = true }: { costs?: boolean } = {}): Promise<Snapshot> {
@@ -157,7 +156,7 @@ export default class ElectricityService {
   }
 
   private async createMeter(deviceId: string, tm: Timings): Promise<Meter> {
-    const api = await tm.time('api', () => this.getApi());
+    const api = await tm.time('api', () => getAppApi(this.homey));
     // The power history doesn't need the device, so both are requested at once.
     const [device, logs] = await Promise.all([
       tm.time('getDevice', () => api.devices.getDevice({ id: deviceId })) as Promise<any>,
@@ -209,24 +208,21 @@ export default class ElectricityService {
   private async readPowerLogs(api: any, deviceId: string): Promise<{
     logId: string | null, lastHour: Sample[], last24Hours: Sample[] | null,
   }> {
-    const known = this.logIds.get(deviceId);
-    const candidates = known ? [known] : POWER_LOGS.map(cap => `homey:device:${deviceId}:${cap}`);
-    let error: unknown;
-    for (const logId of candidates) {
-      try {
-        const [lastHour, last24Hours] = await Promise.all([
+    try {
+      // A known log that fails is kept (`keep`), so the usage history is retried with it later.
+      const { logId, result: [lastHour, last24Hours] } = await readFirstLog(
+        deviceId, POWER_LOGS.map(cap => `homey:device:${deviceId}:${cap}`), this.logIds,
+        logId => Promise.all([
           this.readLog(api, deviceId, logId, 'lastHour'),
           this.readLog(api, deviceId, logId, 'last24Hours'),
-        ]);
-        this.logIds.set(deviceId, logId);
-        return { logId, lastHour, last24Hours };
-      } catch (err) {
-        error = err;
-      }
+        ]),
+        { keep: true },
+      );
+      return { logId, lastHour, last24Hours };
+    } catch (error) {
+      this.log('Could not read the power history', error);
+      return { logId: this.logIds.get(deviceId) ?? null, lastHour: [], last24Hours: null };
     }
-    this.log('Could not read the power history', error);
-    // A known log that failed is kept, so the usage history is retried with it later.
-    return { logId: known ?? null, lastHour: [], last24Hours: null };
   }
 
   private async readLog(api: any, deviceId: string, logId: string, resolution: string): Promise<Sample[]> {
@@ -277,7 +273,7 @@ export default class ElectricityService {
 
   private async getUsage(meter: Meter, from: number, now: number): Promise<Sample[]> {
     if (!meter.usage || now - meter.usage.at > USAGE_TTL) {
-      const api = await this.getApi();
+      const api = await getAppApi(this.homey);
       let data: Sample[];
       if (meter.logId) {
         data = await this.readLog(api, meter.deviceId, meter.logId, 'last24Hours');
@@ -316,7 +312,7 @@ export default class ElectricityService {
       const settings: PriceSettings = { fixed: null, costs: null, costsExpression: null };
       let api: any;
       try {
-        api = await this.getApi();
+        api = await getAppApi(this.homey);
         if (await api.energy.getElectricityPriceType() === 'fixed') {
           settings.fixed = parseFixedPrice(await api.energy.getOptionElectricityPriceFixed());
           if (settings.fixed == null) this.log('Fixed electricity price set, but no price found');
@@ -387,7 +383,7 @@ export default class ElectricityService {
   private loadCurrency(): Promise<void> {
     this.currencyPending ??= (async () => {
       try {
-        const c = await (await this.getApi()).energy.getCurrency();
+        const c = await (await getAppApi(this.homey)).energy.getCurrency();
         this.currency = typeof c === 'string' ? c : (c?.currency ?? c?.symbol ?? null);
       } catch (err) {
         this.log('Could not read currency', err);
@@ -414,7 +410,7 @@ export default class ElectricityService {
 
   private async fetchPriceDay(day: string): Promise<Map<number, number>> {
     const now = Date.now();
-    const api = await this.getApi();
+    const api = await getAppApi(this.homey);
     const res = await api.energy.fetchDynamicElectricityPrices({ date: day });
     if (!this.loggedPriceSample) {
       this.loggedPriceSample = true;
@@ -428,13 +424,11 @@ export default class ElectricityService {
     return hours;
   }
 
-  /** YYYY-MM-DD in Homey's timezone. */
+  /** YYYY-MM-DD in Homey's timezone (through the heatmap's cached formatter: this runs ~50 times per snapshot). */
   private localDate(t: number): string {
-    return new Intl.DateTimeFormat('en-CA', {
-      timeZone: this.homey.clock.getTimezone(),
-      year: 'numeric', month: '2-digit', day: '2-digit',
-    }).format(new Date(t));
+    return localHour(t, this.homey.clock.getTimezone()).date;
   }
+
 
 }
 

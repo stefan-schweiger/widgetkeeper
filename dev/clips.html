@@ -13,18 +13,7 @@
     `window.clipReady` resolves once the clip is drawn; `window.clip` has the clip's own controls (the render script's
     `run` steps call them, e.g. a camera seeing someone).
   -->
-  <script>
-    // The showcase's fixed day (Tuesday 6 October 2026, 18:40); the clock runs on from there, so timers count down.
-    (() => {
-      const Real = Date;
-      const offset = new Real(2026, 9, 6, 18, 40, 0).getTime() - Real.now();
-      class FixedDate extends Real {
-        constructor(...args) { if (args.length) super(...args); else super(Real.now() + offset); }
-        static now() { return Real.now() + offset; }
-      }
-      window.Date = FixedDate;
-    })();
-  </script>
+  <script src="fixed-clock.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../widgets/lights/public/widget.css">
   <link rel="stylesheet" href="../widgets/stack/public/widget.css">
@@ -45,7 +34,9 @@
   <script src="../widgets/media/public/mount.js"></script>
   <script src="mock-media.js"></script>
   <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
+  <script src="mock-util.js"></script>
   <script src="showcase-data.js"></script>
+  <script src="showcase-mount.js"></script>
   <style>
     html, body { background: transparent !important; }
     body { width: 358px; margin: 0; font-family: Roboto, sans-serif; }
@@ -90,8 +81,6 @@
 
   <script>
     (function () {
-      const all = Object.values(SHOWCASE).flatMap(board => board.columns.flat());
-      const find = (type, n = 0) => all.filter(w => w.type === type)[n];
       const el = id => document.getElementById(id);
       const only = new URLSearchParams(location.search).get('c') || 'lights';
       for (const s of document.querySelectorAll('.clip')) s.hidden = s.id !== only;
@@ -143,7 +132,7 @@
             resolve();
           }, 300));
           w = createLightsWidget(el('w-lights'), { onSet });
-          w.setState(JSON.parse(JSON.stringify(find('lights').devices)));
+          w.setState(JSON.parse(JSON.stringify(findWidget('lights').devices)));
           return {};
         },
 
@@ -169,15 +158,12 @@
           ];
           const w = createStackWidget(el('w-stack'), { intervalMs: 3000, resumeAfterMs: 3500, dotsPosition: 'above', dotsSize: 'large' });
           const slides = w.setPages(PAGES);
-          const values = find('values', 2) || find('values');
-          createValuesWidget(slides[0].root, values.opts || {}).setState(values.slots);
-          const kitchen = find('timers');
+          MOUNT.values(slides[0].root, findWidget('values', 2) || findWidget('values'));
+          const kitchen = findWidget('timers');
           createTimersWidget(slides[1].root, { sound: false, presets: kitchen.presets }).setState({ timers: kitchen.timers, now: Date.now() });
           const clock = Date.now();
           mountMockMedia(slides[2].root, mockSpeaker('Living room', 0), { now: () => clock });
-          const cams = createCamerasWidget(slides[3].root, {});
-          cams.setState(find('cameras').cameras);
-          cams.refresh();
+          MOUNT.cameras(slides[3].root, { cameras: findWidget('cameras').cameras });
           // Its height follows the page; the clip is as tall as the tallest, so nothing below it jumps in the video.
           let tallest = 0;
           for (const s of slides) tallest = Math.max(tallest, Math.ceil(s.frame.getBoundingClientRect().height));

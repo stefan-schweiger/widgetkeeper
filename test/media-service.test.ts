@@ -122,6 +122,21 @@ describe('tracking', () => {
     expect(((await service.getState('tv')) as any).art.lastUpdated).toBe(2000);
   });
 
+  it('shows a changed device icon on the next request', async () => {
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg"/>';
+    const fetch = vi.fn(async (_url: string) => new Response(svg));
+    vi.stubGlobal('fetch', fetch);
+    try {
+      const { service, devices } = setup();
+      expect(((await service.getState('tv')) as any).icon).toBeNull();
+      devices[0].iconOverride = 'media-test-speaker'; // the user picks an icon in the Homey app
+      expect(((await service.getState('tv')) as any).icon).toBe(`data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`);
+      expect(fetch).toHaveBeenCalledWith('https://my.homey.app/img/devices/media-test-speaker.svg');
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('stops tracking after 10 minutes without a request', async () => {
     const { service, devices } = setup();
     service.start();

@@ -74,6 +74,7 @@
     let lastTouchTap = 0;
     const unpress = () => { start = null; node.classList.remove('pressing'); };
     node.addEventListener('touchstart', (e) => {
+      e.stopPropagation(); // a tap on a button mustn't also press the row around it
       const p = e.changedTouches[0];
       start = { x: p.clientX, y: p.clientY };
       node.classList.add('pressing');
@@ -199,7 +200,7 @@
     }
 
     function haptic() {
-      try { if (opts.onHaptic) opts.onHaptic(); } catch (err) { /* not on every platform */ }
+      if (opts.onHaptic) opts.onHaptic();
     }
 
     let starting = null; // { local, actions } while a /start is on its way: taps on the local timer wait for its id

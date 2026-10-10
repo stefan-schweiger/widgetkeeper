@@ -2,6 +2,7 @@ import { inspect } from 'node:util';
 import type Homey from 'homey';
 import { heatmapCaps } from './HeatmapService.js';
 import { alarmCaps } from './SensorAlarmService.js';
+import { isThermostat } from './ThermostatService.js';
 import { getAppApi } from './appApi.js';
 
 const MAX_LINES = 500;
@@ -54,7 +55,7 @@ export default class Diagnostics {
       out.apiScopes = await (api as any).sessions.getSessionMe().then((s: any) => s?.scopes ?? null, (err: unknown) => String(err));
       const devices = Object.values(await api.devices.getDevices()) as any[];
       out.thermostats = devices
-        .filter(d => d.capabilities?.includes('target_temperature') || d.capabilities?.includes('thermostat_mode'))
+        .filter(isThermostat)
         .map(d => ({ id: d.id, name: d.name, capabilities: d.capabilities }));
       out.devices = devices
         .map(d => {

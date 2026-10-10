@@ -1,11 +1,12 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
-import { heatmapCaps, type AutocompleteItem } from './HeatmapService.js';
+import { listCapabilitySlots, type AutocompleteItem } from './autocomplete.js';
+import { heatmapCaps } from './HeatmapService.js';
 import { readCapabilityLog } from './insightsLog.js';
 import { bucketAverage, HOUR, MINUTE, parseInsightsEntries } from './series.js';
 import Timings from './Timings.js';
 import type ValueService from './ValueService.js';
-import { describeCapability, parseSlot, type ValueSlot } from './ValueService.js';
+import { parseSlot, type ValueSlot } from './ValueService.js';
 
 const TICK = MINUTE;
 /** A history is re-read from Insights at most this often (widgets refresh every 5 min). */
@@ -64,11 +65,6 @@ export function downsample(res: any, now: number, spanMs: number, logStep = 0): 
   return out;
 }
 
-function matches(query: string, ...texts: (string | undefined)[]) {
-  const q = (query || '').trim().toLowerCase();
-  return !q || texts.some(t => t?.toLowerCase().includes(q));
-}
-
 /**
  * The Sparklines widget: Device Values' tiles with each value's recent history from Insights.
  * The name, icon and live value come from `ValueService` (and its `values:state` realtime events).
@@ -99,27 +95,9 @@ export default class SparklineService {
 
   // ---------------------------------------------------------------- settings autocomplete
 
-  /** Every logged number of every device, as `Device · Capability`. */
-  async listSlots(query: string): Promise<AutocompleteItem[]> {
-    const api = await getAppApi(this.homey);
-    const [devices, zones] = await Promise.all([
-      api.devices.getDevices(),
-      api.zones.getZones().catch(() => ({})),
-    ]);
-    const items: AutocompleteItem[] = [];
-    for (const d of Object.values(devices) as any[]) {
-      const zone = (zones as any)[d.zone]?.name as string | undefined;
-      for (const id of sparkCaps(d)) {
-        const c = describeCapability(d.capabilitiesObj[id], id);
-        const name = `${d.name} · ${c.title}`;
-        if (!matches(query, name, zone, id)) continue;
-        items.push({ name, description: [zone, c.units].filter(Boolean).join(' · ') || undefined, id: `${d.id}:${id}` });
-      }
-    }
-    items.sort((a, b) => a.name.localeCompare(b.name));
-    // "None" first, so a tile can be emptied again. Its id has no colon, so the widget skips the slot.
-    const none = this.homey.__('values.none') || 'None';
-    return matches(query, none) ? [{ name: none, id: 'none' }, ...items] : items;
+  /** Every logged number of every device, as `Device · Capability`, with `None` first. */
+  listSlots(query: string): Promise<AutocompleteItem[]> {
+    return listCapabilitySlots(this.homey, query, sparkCaps);
   }
 
   // ---------------------------------------------------------------- state

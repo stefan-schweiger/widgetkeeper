@@ -357,12 +357,12 @@
         start = null;
         if (!tap) return;
         e.preventDefault(); // no click after it
-        lastTouchTap = now();
+        lastTouchTap = Date.now(); // the real clock: opts.now may be fixed
         press(id);
       });
       node.addEventListener('touchcancel', () => { start = null; });
       node.addEventListener('click', () => {
-        if (now() - lastTouchTap < 800) return;
+        if (Date.now() - lastTouchTap < 800) return;
         press(id);
       });
       tiles.set(id, tile);
@@ -411,7 +411,7 @@
     /** Ends live view, e.g. when the dashboard goes to the background. */
     function pause() { stopLive(); }
 
-    return { setState, setMessage, refresh, render, pause, stopLive, t, routeOf: (id) => (appRoute.has(id) ? 'app' : 'direct') };
+    return { setState, setMessage, refresh, render, pause, t, routeOf: (id) => (appRoute.has(id) ? 'app' : 'direct') };
   }
 
   window.createCamerasWidget = createCamerasWidget;

@@ -1,12 +1,12 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
-import { fetchDeviceIcon } from './deviceIcon.js';
+import { deviceImage, fetchDeviceIcon, fetchImageBase64, type DeviceImage } from './deviceIcon.js';
 import Timings from './Timings.js';
 
 /** Several widgets (or a fast refresh) asking for the same snapshot within this share one fetch. */
 const IMAGE_REUSE = 2000;
 
-export type CameraImage = { id: string, url: string, lastUpdated: number | null };
+export type CameraImage = DeviceImage;
 
 export type CameraDevice =
   | { id: string, name: string, icon: string | null, image: CameraImage | null, video: string | null }
@@ -19,11 +19,7 @@ export type Snapshot = { type: string, data: string };
  * entries are `{type, id, title, imageObj: {id, url, lastUpdated}}`).
  */
 export function cameraImage(device: any): CameraImage | null {
-  const images: any[] = Array.isArray(device?.images) ? device.images : [];
-  const img = images.find(i => i?.type === 'camera' && i.imageObj?.url) || images.find(i => i?.imageObj?.url);
-  if (!img) return null;
-  const o = img.imageObj;
-  return { id: o.id, url: o.url, lastUpdated: typeof o.lastUpdated === 'number' ? o.lastUpdated : null };
+  return deviceImage(device, 'camera', { anyType: true });
 }
 
 /**
@@ -126,13 +122,9 @@ export default class CameraService {
   private async fetchImage(url: string): Promise<Snapshot> {
     const api = await getAppApi(this.homey);
     const t0 = Date.now();
-    const res = await fetch(/^https?:/.test(url) ? url : `${await api.baseUrl}${url}`);
-    if (!res.ok) throw new Error(`Snapshot HTTP ${res.status}`);
-    const type = res.headers.get('content-type') || 'image/jpeg';
-    if (!type.startsWith('image/')) throw new Error(`Snapshot is ${type}`);
-    const data = Buffer.from(await res.arrayBuffer()).toString('base64');
-    this.debug(`Camera snapshot ${url}: ${Math.round(data.length / 1024)} KB base64 in ${Date.now() - t0} ms`);
-    return { type, data };
+    const snapshot = await fetchImageBase64(api, url, 'Snapshot');
+    this.debug(`Camera snapshot ${url}: ${Math.round(snapshot.data.length / 1024)} KB base64 in ${Date.now() - t0} ms`);
+    return snapshot;
   }
 
 }

@@ -41,7 +41,9 @@ html, body { background: transparent !important; }
   display: flex; flex-direction: column; align-items: stretch;
   cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
   transition: background .15s, transform .1s;
+  outline: none;
 }
+.lc-tile:focus-visible { box-shadow: 0 0 0 2px var(--lc-accent); }
 /* The native tiles' 1px rim, brightest along the top. */
 .homey-dark-mode .lc-tile::after, .lc.homey-dark-mode .lc-tile::after {
   content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;

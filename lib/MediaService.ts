@@ -1,14 +1,13 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
-import { fetchDeviceIcon } from './deviceIcon.js';
+import { listDevicesWhere, matches, withNone, type AutocompleteItem } from './autocomplete.js';
+import { capabilityValues, presentCaps } from './capabilities.js';
+import DeviceTracker, { type TrackedEntry } from './DeviceTracker.js';
+import { deviceImage, fetchDeviceIcon, fetchImageBase64 } from './deviceIcon.js';
 import type FlowService from './FlowService.js';
-import type { AutocompleteItem } from './HeatmapService.js';
 import PersonalApiKey from './PersonalApiKey.js';
+import { sharedCache } from './sharedCache.js';
 import Timings from './Timings.js';
-
-const MINUTE = 60e3;
-const TICK = MINUTE;
-const IDLE_TIMEOUT = 10 * MINUTE;
 /** The flow card list is long (every device's cards); the settings' autocomplete reuses a read this long. */
 const CARDS_CACHE_MS = 60e3;
 /**
@@ -68,21 +67,17 @@ const SUMMARY_CAPS = ['speaker_playing', 'speaker_track', 'speaker_artist', 'son
 
 export type Art = { type: string, data: string };
 
-type Tracked = {
-  deviceId: string,
+type Tracked = TrackedEntry & {
   name: string,
   icon: string | null,
   caps: Record<string, MediaCap>,
   art: MediaArt | null,
-  instances: any[],
   artTimers: NodeJS.Timeout[],
-  lastRequested: number,
 };
 
 /** The media capabilities the device has, in `MEDIA_CAPS` order. */
 export function mediaCaps(device: any): string[] {
-  const caps = device?.capabilitiesObj || {};
-  return MEDIA_CAPS.filter(id => caps[id]);
+  return presentCaps(device, MEDIA_CAPS);
 }
 
 /** A speaker: anything with play/pause or a volume. */
@@ -92,11 +87,8 @@ export function isSpeaker(device: any): boolean {
 }
 
 export function mediaArt(device: any): MediaArt | null {
-  const images: any[] = Array.isArray(device?.images) ? device.images : [];
-  const img = images.find(i => i?.type === 'media' && i.imageObj?.url);
-  if (!img) return null;
-  const o = img.imageObj;
-  return { url: o.url, lastUpdated: typeof o.lastUpdated === 'number' ? o.lastUpdated : null };
+  const img = deviceImage(device, 'media');
+  return img && { url: img.url, lastUpdated: img.lastUpdated };
 }
 
 function readCaps(device: any): Record<string, MediaCap> {
@@ -104,7 +96,8 @@ function readCaps(device: any): Record<string, MediaCap> {
   for (const id of mediaCaps(device)) {
     const c = device.capabilitiesObj[id];
     const cap: MediaCap = { value: c.value ?? null, setable: c.setable === true || (c.setable !== false && id in SETTABLE) };
-    if (Array.isArray(c.values)) cap.values = c.values.map((v: any) => ({ id: String(v.id), title: String(v.title ?? v.id) }));
+    const values = capabilityValues(c);
+    if (values) cap.values = values;
     out[id] = cap;
   }
   return out;
@@ -122,10 +115,6 @@ export function cardSuffix(cardId: string): string {
   return m ? m[1] : cardId;
 }
 
-function matches(query: string, ...texts: (string | undefined)[]) {
-  const q = (query || '').trim().toLowerCase();
-  return !q || texts.some(t => t?.toLowerCase().includes(q));
-}
 
 const sameArt = (a: MediaArt | null, b: MediaArt | null) => a?.url === b?.url && a?.lastUpdated === b?.lastUpdated;
 
@@ -136,10 +125,15 @@ const sameArt = (a: MediaArt | null, b: MediaArt | null) => a?.url === b?.url &&
  */
 export default class MediaService {
 
-  private tracked = new Map<string, Tracked>();
-  private trackPromises = new Map<string, Promise<Tracked>>();
-  private tickTimer: NodeJS.Timeout | null = null;
-  private cards: { at: number, cards: Promise<any[]> } | null = null;
+  private tracker: DeviceTracker<Tracked>;
+  /** Every device's Flow action cards (a long list); the settings' autocomplete reuses a read for a minute. */
+  private cards = sharedCache(() => getAppApi(this.homey)
+    .then(api => api.flow.getFlowCardActions({ $cache: false }))
+    .then((all: Record<string, any>) => Object.values(all ?? {}))
+    .catch((err: unknown) => {
+      this.log('Could not read the Flow cards:', err);
+      throw err;
+    }));
   private lastCardError: string | null = null;
 
   constructor(
@@ -148,31 +142,51 @@ export default class MediaService {
     private log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
     private key = PersonalApiKey.for(homey, log),
-  ) {}
+  ) {
+    this.tracker = new DeviceTracker<Tracked>({
+      homey,
+      debug,
+      what: 'Media capabilities',
+      signature: device => mediaCaps(device).join(),
+      create: async (device, api, tm) => {
+        if (!isSpeaker(device)) throw new Error(`${device.name} is not a speaker`);
+        const icon = await tm.time('icon', () => fetchDeviceIcon(api, device, this.log));
+        return { name: device.name, icon, caps: readCaps(device), art: mediaArt(device), artTimers: [] };
+      },
+      listen: (t, device) => {
+        const instances = Object.keys(t.caps)
+          .filter(id => id !== 'speaker_next' && id !== 'speaker_prev') // buttons: nothing to report
+          .map(id => device.makeCapabilityInstance(id, (value: unknown) => {
+            if (t.caps[id]) t.caps[id].value = value;
+            this.homey.api.realtime(MEDIA_STATE_EVENT, { deviceId: t.key, capabilityId: id, value });
+            if (TRACK_CAPS.has(id)) this.recheckArt(t);
+          }));
+        this.debug(`Tracking speaker ${device.name} (${t.key}): ${Object.keys(t.caps).join()}`);
+        return instances;
+      },
+      refresh: async (t, device, api, tm) => {
+        t.name = device.name;
+        t.icon = await tm.time('icon', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
+        t.caps = readCaps(device);
+        t.art = mediaArt(device);
+      },
+      label: t => `speaker ${t.name}`,
+      onDispose: (t) => { for (const timer of t.artTimers) this.homey.clearTimeout(timer); },
+    });
+  }
 
   start() {
-    this.tickTimer = this.homey.setInterval(() => this.tick(), TICK);
+    this.tracker.start();
   }
 
   async stop() {
-    if (this.tickTimer) this.homey.clearInterval(this.tickTimer);
-    for (const t of this.tracked.values()) this.dispose(t);
+    this.tracker.stop();
   }
-
   // ---------------------------------------------------------------- settings autocomplete
 
   /** Every speaker, by name, described by its zone. */
-  async listDevices(query: string): Promise<AutocompleteItem[]> {
-    const api = await getAppApi(this.homey);
-    const [devices, zones] = await Promise.all([
-      api.devices.getDevices(),
-      api.zones.getZones().catch(() => ({})),
-    ]);
-    return (Object.values(devices) as any[])
-      .filter(isSpeaker)
-      .map(d => ({ name: d.name as string, description: (zones as any)[d.zone]?.name, id: d.id as string }))
-      .filter(d => matches(query, d.name, d.description))
-      .sort((a, b) => a.name.localeCompare(b.name));
+  listDevices(query: string): Promise<AutocompleteItem[]> {
+    return listDevicesWhere(this.homey, query, isSpeaker);
   }
 
   /**
@@ -186,8 +200,7 @@ export default class MediaService {
       .filter(c => matches(query, c.title))
       .map(c => ({ name: c.title as string, description: action, id: `card:${c.id}` })) : [];
     const flows = (await this.flows.listFlows(query).catch(() => [])).filter(f => f.id !== 'none');
-    const none = this.homey.__('flows.none') || 'None';
-    return [...(matches(query, none) ? [{ name: none, id: 'none' }] : []), ...cards, ...flows];
+    return withNone(this.homey.__('flows.none') || 'None', query, [...cards, ...flows]);
   }
 
   // ---------------------------------------------------------------- state and control
@@ -199,8 +212,7 @@ export default class MediaService {
   async getState(deviceId: string, opts: { cards?: boolean } = {}): Promise<MediaDevice> {
     const tm = new Timings();
     try {
-      const t = await this.current(deviceId, tm);
-      t.lastRequested = Date.now();
+      const t = await this.tracker.current(deviceId, tm);
       const state: MediaDevice = { id: deviceId, name: t.name, icon: t.icon, caps: structuredClone(t.caps), art: t.art && { ...t.art } };
       if (opts.cards) {
         state.cards = await tm.time('cards', () => this.deviceCards(deviceId)
@@ -293,19 +305,15 @@ export default class MediaService {
   /** The album art through the app, for a frame that can't load `/api/image/…` itself. */
   async getArt(deviceId: string): Promise<Art> {
     const api = await getAppApi(this.homey);
-    const art = this.tracked.get(deviceId)?.art ?? mediaArt(await api.devices.getDevice({ id: deviceId, $cache: false }));
+    const art = this.tracker.get(deviceId)?.art ?? mediaArt(await api.devices.getDevice({ id: deviceId, $cache: false }));
     if (!art) throw new Error(`Speaker ${deviceId} has no album art`);
-    const res = await fetch(/^https?:/.test(art.url) ? art.url : `${await api.baseUrl}${art.url}`);
-    if (!res.ok) throw new Error(`Album art HTTP ${res.status}`);
-    const type = res.headers.get('content-type') || 'image/jpeg';
-    if (!type.startsWith('image/')) throw new Error(`Album art is ${type}`);
-    return { type, data: Buffer.from(await res.arrayBuffer()).toString('base64') };
+    return fetchImageBase64(api, art.url, 'Album art');
   }
 
   /** For the diagnostics report: what each tracked speaker has, never track names. */
   describe() {
     return {
-      tracked: [...this.tracked.values()].map(t => ({ id: t.deviceId, caps: Object.keys(t.caps), art: !!t.art })),
+      tracked: [...this.tracker.values()].map(t => ({ id: t.key, caps: Object.keys(t.caps), art: !!t.art })),
       apiKey: this.key.has(),
       lastCardError: this.lastCardError,
     };
@@ -322,116 +330,26 @@ export default class MediaService {
   }
 
   private readCards(): Promise<any[]> {
-    const now = Date.now();
-    if (!this.cards || now - this.cards.at > CARDS_CACHE_MS) {
-      const cards = getAppApi(this.homey)
-        .then(api => api.flow.getFlowCardActions({ $cache: false }))
-        .then((all: Record<string, any>) => Object.values(all ?? {}))
-        .catch((err: unknown) => {
-          if (this.cards?.cards === cards) this.cards = null;
-          this.log('Could not read the Flow cards:', err);
-          throw err;
-        });
-      this.cards = { at: now, cards };
-    }
-    return this.cards.cards;
+    return this.cards.get(CARDS_CACHE_MS);
   }
 
   // ---------------------------------------------------------------- live state
-
-  private async current(deviceId: string, tm: Timings): Promise<Tracked> {
-    const t = this.tracked.get(deviceId);
-    if (!t) return this.ensureTracked(deviceId, tm);
-    const api = await getAppApi(this.homey);
-    let device: any;
-    try {
-      device = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId, $cache: false }));
-    } catch (err) {
-      this.dispose(t);
-      throw err;
-    }
-    const caps = mediaCaps(device);
-    if (caps.join() !== Object.keys(t.caps).join()) {
-      this.debug(`Media capabilities of ${device.name} changed: ${Object.keys(t.caps).join()} → ${caps.join()}`);
-      this.dispose(t);
-      return this.ensureTracked(deviceId, tm);
-    }
-    t.name = device.name;
-    t.caps = readCaps(device);
-    t.art = mediaArt(device);
-    return t;
-  }
-
-  private ensureTracked(deviceId: string, tm: Timings): Promise<Tracked> {
-    const existing = this.tracked.get(deviceId);
-    if (existing) return Promise.resolve(existing);
-    let p = this.trackPromises.get(deviceId);
-    if (!p) {
-      p = this.track(deviceId, tm).finally(() => this.trackPromises.delete(deviceId));
-      this.trackPromises.set(deviceId, p);
-    }
-    return p;
-  }
-
-  private async track(deviceId: string, tm: Timings): Promise<Tracked> {
-    const api = await tm.time('api', () => getAppApi(this.homey));
-    const device: any = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId }));
-    if (!isSpeaker(device)) throw new Error(`${device.name} is not a speaker`);
-    const icon = await tm.time('icon', () => fetchDeviceIcon(api, device, this.log));
-    const t: Tracked = {
-      deviceId,
-      name: device.name,
-      icon,
-      caps: readCaps(device),
-      art: mediaArt(device),
-      instances: [],
-      artTimers: [],
-      lastRequested: Date.now(),
-    };
-    for (const id of Object.keys(t.caps)) {
-      if (id === 'speaker_next' || id === 'speaker_prev') continue; // buttons: nothing to report
-      t.instances.push(device.makeCapabilityInstance(id, (value: unknown) => {
-        if (t.caps[id]) t.caps[id].value = value;
-        this.homey.api.realtime(MEDIA_STATE_EVENT, { deviceId, capabilityId: id, value });
-        if (TRACK_CAPS.has(id)) this.recheckArt(t);
-      }));
-    }
-    this.tracked.set(deviceId, t);
-    this.debug(`Tracking speaker ${device.name} (${deviceId}): ${Object.keys(t.caps).join()}`);
-    return t;
-  }
 
   /** A new track: read the device again (twice) for its album art, and send it when it changed. */
   private recheckArt(t: Tracked) {
     for (const timer of t.artTimers) this.homey.clearTimeout(timer);
     t.artTimers = ART_RECHECKS.map(ms => this.homey.setTimeout(async () => {
-      if (this.tracked.get(t.deviceId) !== t) return;
+      if (!this.tracker.isCurrent(t)) return;
       try {
         const api = await getAppApi(this.homey);
-        const art = mediaArt(await api.devices.getDevice({ id: t.deviceId, $cache: false }));
+        const art = mediaArt(await api.devices.getDevice({ id: t.key, $cache: false }));
         if (sameArt(art, t.art)) return;
         t.art = art;
-        this.homey.api.realtime(MEDIA_ART_EVENT, { deviceId: t.deviceId, art });
+        this.homey.api.realtime(MEDIA_ART_EVENT, { deviceId: t.key, art });
       } catch (err) {
         this.debug(`Album art of ${t.name} unavailable:`, err);
       }
     }, ms));
-  }
-
-  private tick() {
-    const now = Date.now();
-    for (const t of this.tracked.values()) {
-      if (now - t.lastRequested > IDLE_TIMEOUT) this.dispose(t);
-    }
-  }
-
-  private dispose(t: Tracked) {
-    for (const i of t.instances) {
-      try { i?.destroy(); } catch (err) { /* ignore */ }
-    }
-    for (const timer of t.artTimers) this.homey.clearTimeout(timer);
-    if (this.tracked.get(t.deviceId) === t) this.tracked.delete(t.deviceId);
-    this.debug(`Stopped tracking speaker ${t.name}`);
   }
 
 }

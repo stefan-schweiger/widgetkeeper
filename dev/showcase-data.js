@@ -1,17 +1,17 @@
 /*
  * The showcase dashboards (dev/showcase.html): a made-up family house, "Solbakken", on an October evening
- * (Tuesday 6 October 2026, 18:40; showcase.html fixes the clock). The oven is on, the heat pump keeps the house
+ * (Tuesday 6 October 2026, 18:40; fixed-clock.js fixes the clock). The oven is on, the heat pump keeps the house
  * at 21°, the car charged in the cheap night hours and the sun has just set.
  *
  * `SHOWCASE[id]` is one dashboard: `{ title, columns: [[widget, …], …] }`. A widget is `{ type, … }` with the
- * data its `create…Widget` takes (see MOUNT in showcase.html). To add a dashboard, add an entry and render it with
- * `npm run showcase -- <id>`. All data is built from formulas and a seeded random sequence, so every render is the same.
+ * data its `create…Widget` takes (see MOUNT in showcase-mount.js). To add a dashboard, add an entry and render it with
+ * `npm run showcase -- <id>`. All data is built from formulas and a seeded random sequence, so every render is the same
+ * (the seeded sequence and the weather symbols come from mock-util.js, loaded first).
  */
 (function () {
   const NOW = Date.now(); // The fixed clock.
   const HOUR = 3600e3, MIN = 60e3, DAY = 24 * HOUR;
   const icon = name => (window.ICONS && ICONS[name]) || null;
-  function rng(seed) { return () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
   const round = (v, d = 0) => Math.round(v * 10 ** d) / 10 ** d;
   const hourOf = t => new Date(t).getHours();
   const pad = n => String(n).padStart(2, '0');
@@ -42,7 +42,7 @@
   let snapshot;
   function electricity() {
     if (snapshot) return structuredClone(snapshot);
-    const r = rng(1906);
+    const r = mockRng(1906);
     const hourStart = Math.floor(NOW / HOUR) * HOUR;
     const prices = Array.from({ length: 49 }, (_, i) => {
       const start = hourStart + (i - 24) * HOUR;
@@ -82,7 +82,6 @@
     [20, 'partlycloudy', 14.1, 5.0, 270, 0], [23, 'cloudy', 12.0, 4.4, 260, 0], [26, 'lightrainshowers', 10.8, 5.6, 250, 0.3],
     [29, 'cloudy', 10.1, 5.2, 245, 0], [34, 'partlycloudy', 8.6, 4.1, 240, 0], [42, 'fair', 7.2, 3.4, 230, 0], [48, 'fair', 7.0, 3.0, 230, 0],
   ];
-  const NIGHT_CAPABLE = /^(clearsky|fair|partlycloudy|lightrainshowers|rainshowers)$/;
   function weatherHours() {
     const from = Math.floor(NOW / HOUR) * HOUR;
     return Array.from({ length: 48 }, (_, i) => {
@@ -91,10 +90,9 @@
       const [h1, , temp1, wind1, dir1] = WEATHER[Math.min(k + 1, WEATHER.length - 1)];
       const f = h1 > h0 ? (i - h0) / (h1 - h0) : 0;
       const t = new Date(from + i * HOUR);
-      const night = t.getHours() >= 19 || t.getHours() < 7;
       return {
         t: t.toISOString(),
-        symbol: NIGHT_CAPABLE.test(sym) ? `${sym}_${night ? 'night' : 'day'}` : sym,
+        symbol: mockWeatherSymbol(sym, t),
         temp: round(temp0 + (temp1 - temp0) * f, 1), wind: round(wind0 + (wind1 - wind0) * f, 1),
         windDir: Math.round(dir0 + (dir1 - dir0) * f), precip: mm,
       };
@@ -103,16 +101,14 @@
 
   // ---- Heatmaps: the last 7 days up to now, the way the app sends `/history`.
 
+  /** The last 7 days up to now: `fn(t, weekday, hour, r)` for each hour (`t` its middle; `r` a seeded sequence). */
   function heatDays(fn, seed) {
-    const r = rng(seed);
     const today = new Date(NOW); today.setHours(0, 0, 0, 0);
-    return Array.from({ length: 7 }, (_, i) => {
+    const dates = Array.from({ length: 7 }, (_, i) => {
       const d = new Date(today); d.setDate(d.getDate() - 6 + i);
-      return {
-        date: ymd(d), weekday: d.getDay(),
-        hours: Array.from({ length: 24 }, (_, h) => (i === 6 && h > hourOf(NOW) ? null : fn(new Date(d).setHours(h, 30), d.getDay(), h, r))),
-      };
+      return { date: ymd(d), weekday: d.getDay(), day: d };
     });
+    return mockHeatmapDays(dates, hourOf(NOW), (h, d, r) => fn(new Date(d.day).setHours(h, 30), d.weekday, h, r), seed);
   }
   /** A Locks and Doors device: `caps` is `{capabilityId: [value, minutes ago]}`; a contact sensor can't be set. */
   const lockDevice = (id, name, iconName, caps) => ({
@@ -147,7 +143,7 @@
   // ---- Sparklines: 24 h of 120 points ending now.
 
   const spark = (f, seed) => {
-    const r = rng(seed);
+    const r = mockRng(seed);
     return Array.from({ length: 120 }, (_, i) => { const t = NOW - DAY + (i + 0.5) * DAY / 120; return [t, f(t, r)]; });
   };
   const vcap = (type, extra = {}) => ({ title: '', type, units: null, decimals: null, values: null, icon: null, ...extra });

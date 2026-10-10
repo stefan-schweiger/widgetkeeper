@@ -371,6 +371,8 @@ describe('mount', () => {
     // The Timers page asks for its own instance (the dashboard widget's id), and the smart-rotate watcher too.
     expect(bodies.filter(b => b.type === 'timers').every(b => b.query.instance === 'w-timers')).toBe(true);
     expect(bodies.find(b => b.type === 'values').query.slots).toBe('dev:measure_temperature');
+    // A page's first request has perf= (its load marks), but those are the stack frame's: left out.
+    expect(bodies.some(b => 'perf' in b.query)).toBe(false);
     expect(Homey.ready).toHaveBeenCalledTimes(1);
 
     // A started timer brings its page forward; before that, the stack rotates every 15 s.

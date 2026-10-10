@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadWidget } from './helpers/loadWidget.js';
+import { touch as fireTouch } from './helpers/touch.js';
 
 let win: any;
 beforeAll(() => { win = loadWidget('sensordots'); });
@@ -144,11 +145,7 @@ describe('overlay', () => {
 
   it('opens on a touch tap but not on a drag', () => {
     const { cell, shown } = widget([door()]);
-    const touch = (type: string, x: number) => {
-      const e = new win.Event(type, { bubbles: true, cancelable: true });
-      e.changedTouches = [{ clientX: x, clientY: 0 }];
-      cell('door').dispatchEvent(e);
-    };
+    const touch = (type: string, x: number) => fireTouch(cell('door'), type, x);
     touch('touchstart', 0); touch('touchmove', 30); touch('touchend', 30);
     expect(shown()).toBe(false);
     touch('touchstart', 0); touch('touchend', 4);

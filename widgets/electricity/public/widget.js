@@ -683,10 +683,10 @@
       for (const q of kept) text(svg, q.x, ly, q.label, q.anchor, 'hanging');
     }
 
-    /** Index of the cheapest known slot from now through `hours` ahead, or -1. */
-    function lowestSlot(slots, hours) {
+    /** The cheapest slot from `from` up to `hours` ahead (the first of equal ones), or -1. As the Price Badge. */
+    function lowestSlot(slots, from, hours) {
       let low = -1;
-      for (let i = NOW_SLOT; i <= NOW_SLOT + hours && i < slots.length; i++) {
+      for (let i = from; i <= from + hours && i < slots.length; i++) {
         const p = slots[i].price;
         if (p != null && (low < 0 || p < slots[low].price - 1e-9)) low = i;
       }
@@ -700,7 +700,7 @@
     function renderFooter(footer, m, mode) {
       const slots = m.allSlots;
       const lows = (mode === 'both' ? [12, 24] : [mode === '24' ? 24 : 12])
-        .map(h => lowestSlot(slots, h)).filter((i, k, a) => i >= 0 && a.indexOf(i) === k);
+        .map(h => lowestSlot(slots, NOW_SLOT, h)).filter((i, k, a) => i >= 0 && a.indexOf(i) === k);
       clear(footer);
       if (!lows.length) { show(footer, false); return; }
       const both = lows.length > 1;

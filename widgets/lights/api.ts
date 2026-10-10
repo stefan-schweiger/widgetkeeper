@@ -1,7 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
 import type { LightChange } from '../../lib/LightService.js';
-import { describeWidgetPerf } from '../../lib/Timings.js';
+import { idList, logged, logPerf } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -11,15 +11,8 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const ids = (query.deviceIds || '').split(',').filter(Boolean);
-    const perf = describeWidgetPerf(query.perf);
-    if (perf) app.debug(`Lights widget: ${perf}`);
-    try {
-      return await app.lights.getState(ids);
-    } catch (err) {
-      app.log('Lights state failed:', err);
-      throw err;
-    }
+    logPerf(app, 'Lights', query);
+    return logged(app, 'Lights state failed:', () => app.lights.getState(idList(query.deviceIds)));
   },
 
   async set({ homey, body }: {
@@ -27,13 +20,10 @@ export default {
     body: { deviceId?: string } & LightChange,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    try {
+    return logged(app, `Light change failed, body: ${JSON.stringify(body)}`, async () => {
       if (!body?.deviceId) throw new Error('Missing deviceId');
       await app.lights.set(body.deviceId, { dim: body.dim, onoff: body.onoff, temperature: body.temperature, hue: body.hue, saturation: body.saturation });
       return { ok: true };
-    } catch (err) {
-      app.log('Light change failed, body:', JSON.stringify(body), err);
-      throw err;
-    }
+    });
   },
 };

@@ -1,7 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { describeWidgetPerf } from '../../lib/Timings.js';
 import type { CapValue } from '../../lib/ThermostatService.js';
+import { logged, logPerf } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -12,14 +12,8 @@ export default {
   }) {
     const app = homey.app as WidgetkeeperApp;
     if (!query.deviceId) throw new Error('Missing deviceId');
-    const perf = describeWidgetPerf(query.perf);
-    if (perf) app.debug(`Thermostat widget: ${perf}`);
-    try {
-      return await app.thermostat.getState(query.deviceId);
-    } catch (err) {
-      app.log('Thermostat state failed:', err);
-      throw err;
-    }
+    logPerf(app, 'Thermostat', query);
+    return logged(app, 'Thermostat state failed:', () => app.thermostat.getState(query.deviceId));
   },
 
   async apply({ homey, body }: {
@@ -27,13 +21,10 @@ export default {
     body: { deviceId?: string, values?: CapValue[] },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    try {
+    return logged(app, `Thermostat apply failed, body: ${JSON.stringify(body)}`, async () => {
       if (!body?.deviceId || !Array.isArray(body.values)) throw new Error('Missing deviceId or values');
       await app.thermostat.apply(body.deviceId, body.values);
       return { ok: true };
-    } catch (err) {
-      app.log('Thermostat apply failed, body:', JSON.stringify(body), err);
-      throw err;
-    }
+    });
   },
 };

@@ -1,0 +1,7 @@
+/* Shared by the dev/*-preview.html pages (and preview.html): Homey's dark dashboard behind the cards, the light-mode
+   tokens for a `.light` card (Homey defines them in the real frame; here they're set by hand), and the labelled
+   columns. Each page adds its own frame and card rules after this file. */
+body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+.light { --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+.col { display: flex; flex-direction: column; gap: 8px; }
+.col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }

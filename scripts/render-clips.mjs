@@ -3,14 +3,12 @@
 // inline. Like the screenshots: Homey's dark mode, 358 px wide (a phone's widget), here at 2x, on a transparent page.
 // Usage: `npm run clips [-- lights stack]` (set EDGE to the browser path if it isn't the default).
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import sharp from 'sharp';
-import { downloadIcons } from './headless.mjs';
+import { downloadIcons, EDGE, freshProfile, HEADLESS } from './headless.mjs';
 
-const EDGE = process.env.EDGE || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const page = pathToFileURL(resolve('dev/clips.html')).href;
 const WIDTH = 358;
 const SCALE = 2;
@@ -102,9 +100,8 @@ const CLIPS = {
 // ---------------------------------------------------------------- Edge and the DevTools protocol
 
 async function launch() {
-  const profile = mkdtempSync(join(tmpdir(), 'wk-clips-'));
-  const proc = spawn(EDGE, ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--remote-debugging-port=0',
-    `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' });
+  const profile = freshProfile();
+  const proc = spawn(EDGE, [...HEADLESS, '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' });
   const portFile = join(profile, 'DevToolsActivePort');
   for (let i = 0; i < 100 && !existsSync(portFile); i++) await sleep(100);
   const port = readFileSync(portFile, 'utf8').split('\n')[0].trim();

@@ -9,21 +9,10 @@
     dashboard, on a drawn 16:10 tablet in landscape (a 1280 × 800 screen). `?d=home|energy|security` picks the dashboard
     (default home). scripts/render-showcase.mjs (`npm run showcase [-- <id>…]`) renders them to docs/showcase/<id>.png
     on a transparent background; the README shows home.png.
-    The clock is fixed (Date is replaced below), so every render is the same.
+    The clock is fixed (fixed-clock.js replaces Date), so every render is the same.
     Device icons come from Homey's icon library, downloaded by the render scripts to temp/screenshot-icons.js.
   -->
-  <script>
-    // A fixed clock: Tuesday 6 October 2026, 18:40 local time, still ticking so the widgets' timers behave.
-    (() => {
-      const Real = Date;
-      const offset = new Real(2026, 9, 6, 18, 40, 0).getTime() - Real.now();
-      class FixedDate extends Real {
-        constructor(...args) { if (args.length) super(...args); else super(Real.now() + offset); }
-        static now() { return Real.now() + offset; }
-      }
-      window.Date = FixedDate;
-    })();
-  </script>
+  <script src="fixed-clock.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../widgets/electricity/public/widget.css">
   <link rel="stylesheet" href="../widgets/thermostat/public/widget.css">
@@ -61,7 +50,9 @@
   <script src="../widgets/media/public/widget.js"></script>
   <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
   <script src="mock-media.js"></script>
+  <script src="mock-util.js"></script>
   <script src="showcase-data.js"></script>
+  <script src="showcase-mount.js"></script>
   <style>
     /* Transparent around the tablet: the render script screenshots with a transparent default background. */
     html { background: transparent !important; }
@@ -130,30 +121,6 @@
   </div>
 
   <script>
-    const LOCALE = 'en-GB';
-    const SHOWCASE_NOW = Date.now(); // the timers count from this, so every render shows the same time left
-    // One mount per widget type: the element, then the widget's data from showcase-data.js.
-    const MOUNT = {
-      electricity: (el, w) => { const x = createElectricityWidget(el, { locale: LOCALE }); x.setSettings(w.settings || {}); x.setData(w.data); },
-      thermostat: (el, w) => { const x = createThermostatWidget(el, { locale: LOCALE }); x.setButtons(thermostatPresetsFromSettings(w.presets)); x.setState(w.state); },
-      quickactions: (el, w) => createQuickActionsWidget(el, w.opts || {}).setState(w.devices),
-      sensoralarms: (el, w) => createSensorAlarmsWidget(el, w.opts || {}).setState(w.devices),
-      sensordots: (el, w) => { const x = createSensorDotsWidget(el, w.opts || {}); x.setState({ devices: w.devices, language: 'en' }); if (w.open) x.open(w.open); },
-      values: (el, w) => createValuesWidget(el, w.opts || {}).setState(w.slots),
-      variables: (el, w) => createVariablesWidget(el, w.opts || {}).setState(w.vars),
-      flows: (el, w) => createFlowsWidget(el, w.opts || {}).setState(w.flows),
-      price: (el, w) => createPriceWidget(el, { locale: LOCALE, ...w.opts }).setState(w.state),
-      timers: (el, w) => createTimersWidget(el, { sound: false, now: () => SHOWCASE_NOW, presets: w.presets, ...w.opts }).setState({ timers: w.timers, now: SHOWCASE_NOW }),
-      locks: (el, w) => createLocksWidget(el, w.opts || {}).setState({ devices: w.devices, language: 'en' }),
-      sparklines: (el, w) => createSparklinesWidget(el, w.opts || {}).setState(w.slots),
-      lights: (el, w) => createLightsWidget(el, w.opts || {}).setState(w.devices),
-      cameras: (el, w) => { const x = createCamerasWidget(el, w.opts || {}); x.setState(w.cameras); x.refresh(); },
-      heatmap: (el, w) => createHeatmapWidget(el, { locale: LOCALE, ...w.opts }).setData(w.data),
-      // The made-up speakers of mock-media.js (drawn covers); the fixed clock keeps the position still.
-      media: (el, w) => mountMockMedia(el, mockSpeaker(...w.speaker), { now: () => SHOWCASE_NOW, ...w.opts }),
-      weather: (el, w) => createWeatherWidget(el, { locale: LOCALE, iconBase: '../widgets/weather/public/icons/', ...w.opts })
-        .setForecast({ hours: w.hours, language: 'en' }),
-    };
     // The widgets drawn on Homey's default widget background; the rest are transparent tiles.
     const FRAME = { electricity: 'card', thermostat: 'card tw-frame', media: 'card mw-frame', weather: 'card wf-frame', heatmap: 'card hm-frame' };
 

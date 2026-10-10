@@ -1,7 +1,7 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import { matches, withNone, type AutocompleteItem } from './autocomplete.js';
 import PersonalApiKey from './PersonalApiKey.js';
-import type { AutocompleteItem } from './HeatmapService.js';
 import Timings from './Timings.js';
 
 const MINUTE = 60e3;
@@ -12,8 +12,6 @@ const REREAD = 4 * MINUTE;
 const MAX_STRING = 1000;
 
 export const VARIABLES_STATE_EVENT = 'variables:state';
-// The key's setting and errors, for the widget API and the tests.
-export { API_KEY_SETTING, KeyError as VariableWriteError, type KeyProblem as WriteProblem } from './PersonalApiKey.js';
 
 export type VariableType = 'boolean' | 'number' | 'string';
 
@@ -35,11 +33,6 @@ export function checkValue(type: VariableType, value: unknown): boolean | number
   if (type === 'number' && typeof value === 'number' && Number.isFinite(value)) return value;
   if (type === 'string' && typeof value === 'string' && value.length <= MAX_STRING) return value;
   throw new Error(`Not a valid ${type}: ${JSON.stringify(value)}`);
-}
-
-function matches(query: string, ...texts: (string | undefined)[]) {
-  const q = (query || '').trim().toLowerCase();
-  return !q || texts.some(t => t?.toLowerCase().includes(q));
 }
 
 /**
@@ -99,9 +92,7 @@ export default class VariableService {
       .filter(v => matches(query, v.name))
       .sort((a, b) => a.name.localeCompare(b.name))
       .map(v => ({ name: v.name, description: `${this.typeTitle(v.type)} · ${this.valueText(v)}`, id: v.id }));
-    // "None" first, so a slot can be emptied again; the widget skips the id `none`.
-    const none = this.homey.__('variables.none') || 'None';
-    return matches(query, none) ? [{ name: none, id: 'none' }, ...items] : items;
+    return withNone(this.homey.__('variables.none') || 'None', query, items);
   }
 
   private typeTitle(type: VariableType) {

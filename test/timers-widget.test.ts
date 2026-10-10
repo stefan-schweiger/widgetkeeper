@@ -127,6 +127,19 @@ describe('taps', () => {
     expect(root.querySelector<HTMLElement>('.tm-presets')!.style.display).toBe(''); // the presets are back
   });
 
+  it("doesn't press the row on a touch tap on +1", () => {
+    const { rows, onAction } = widget([running('a', 5)]);
+    const add = rows()[0].querySelector<HTMLElement>('.tm-add')!;
+    for (const type of ['touchstart', 'touchend']) {
+      const e = new Event(type, { bubbles: true, cancelable: true }) as any;
+      e.changedTouches = [{ clientX: 10, clientY: 10 }];
+      add.dispatchEvent(e);
+    }
+    expect(onAction).toHaveBeenCalledTimes(1);
+    expect(onAction).toHaveBeenLastCalledWith('a', 'add');
+    expect(rows()[0].classList.contains('pressing')).toBe(false);
+  });
+
   it('puts the timer back when an action fails', async () => {
     const { rows, onAction, message } = widget([running('a', 5)]);
     onAction.mockRejectedValueOnce(new Error('nope'));

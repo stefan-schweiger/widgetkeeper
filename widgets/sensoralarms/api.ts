@@ -1,6 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { describeWidgetPerf } from '../../lib/Timings.js';
+import { idList, logged, logPerf } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -10,14 +10,7 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const ids = (query.deviceIds || '').split(',').filter(Boolean);
-    const perf = describeWidgetPerf(query.perf);
-    if (perf) app.debug(`Sensor alarms widget: ${perf}`);
-    try {
-      return await app.sensorAlarms.getState(ids);
-    } catch (err) {
-      app.log('Sensor alarms state failed:', err);
-      throw err;
-    }
+    logPerf(app, 'Sensor alarms', query);
+    return logged(app, 'Sensor alarms state failed:', () => app.sensorAlarms.getState(idList(query.deviceIds)));
   },
 };

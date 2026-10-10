@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadWidget } from './helpers/loadWidget.js';
+import { touch as fireTouch } from './helpers/touch.js';
 
 let win: any;
 beforeAll(() => { win = loadWidget('flows'); });
@@ -83,11 +84,7 @@ describe('start', () => {
 
   it('starts on a touch tap, but not on a drag', () => {
     const { row, onTrigger } = widget([flow('flow:1', 'Good night')]);
-    const touch = (type: string, x: number, y: number) => {
-      const e = new Event(type, { bubbles: true, cancelable: true }) as any;
-      e.changedTouches = [{ clientX: x, clientY: y }];
-      row(0).dispatchEvent(e);
-    };
+    const touch = (type: string, x: number, y: number) => fireTouch(row(0), type, x, y);
     touch('touchstart', 10, 10); touch('touchmove', 10, 40); touch('touchend', 10, 40);
     expect(onTrigger).not.toHaveBeenCalled();
     touch('touchstart', 10, 10); touch('touchend', 12, 11);

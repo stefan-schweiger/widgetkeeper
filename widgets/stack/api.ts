@@ -1,8 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { KeyError } from '../../lib/PersonalApiKey.js';
 import { isStackType } from '../../lib/StackService.js';
-import { describeWidgetPerf } from '../../lib/Timings.js';
+import { keyResult, logPerf } from '../../lib/widgetApi.js';
 import electricity from '../electricity/api.js';
 import thermostat from '../thermostat/api.js';
 import quickactions from '../quickactions/api.js';
@@ -53,19 +52,9 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const perf = describeWidgetPerf(query.perf);
-    if (perf) app.debug(`Smart stack widget: ${perf}`);
+    logPerf(app, 'Smart stack', query);
     const language = homey.i18n.getLanguage();
-    try {
-      return { ok: true, ...await app.stack.getPages(query.dashboardId || ''), language };
-    } catch (err) {
-      if (err instanceof KeyError) {
-        if (err.reason !== 'noKey') app.log(`Smart stack pages failed (${err.reason}):`, err.message);
-        return { ok: false, reason: err.reason, language };
-      }
-      app.log('Smart stack pages failed:', err);
-      throw err;
-    }
+    return { ...await keyResult(app, 'Smart stack pages failed', () => app.stack.getPages(query.dashboardId || '')), language };
   },
 
   /**

@@ -1,7 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { KeyError } from '../../lib/PersonalApiKey.js';
-import { describeWidgetPerf } from '../../lib/Timings.js';
+import { keyResult, logged, logPerf } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -12,8 +11,7 @@ export default {
   }) {
     const app = homey.app as WidgetkeeperApp;
     if (!query.deviceId) throw new Error('Missing deviceId');
-    const perf = describeWidgetPerf(query.perf);
-    if (perf) app.debug(`Media widget: ${perf}`);
+    logPerf(app, 'Media', query);
     return app.media.getState(query.deviceId, { cards: query.cards === '1' });
   },
 
@@ -29,14 +27,11 @@ export default {
     body: { deviceId?: string, capabilityId?: string, value?: unknown, maxVolume?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    try {
+    return logged(app, `Media change failed, body: ${JSON.stringify(body)}`, async () => {
       if (!body?.deviceId || !body.capabilityId) throw new Error('Missing deviceId or capabilityId');
       await app.media.set(body.deviceId, body.capabilityId, body.value, body.maxVolume);
       return { ok: true };
-    } catch (err) {
-      app.log('Media change failed, body:', JSON.stringify(body), err);
-      throw err;
-    }
+    });
   },
 
   /**
@@ -48,18 +43,9 @@ export default {
     body: { deviceId?: unknown, id?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    if (typeof body?.deviceId !== 'string' || typeof body.id !== 'string' || !body.id) throw new Error('Missing deviceId or id');
-    try {
-      await app.media.runButton(body.deviceId, body.id);
-      return { ok: true };
-    } catch (err) {
-      if (err instanceof KeyError) {
-        if (err.reason !== 'noKey') app.log(`Media button failed (${err.reason}):`, err.message);
-        return { ok: false, reason: err.reason };
-      }
-      app.log('Media button failed:', err);
-      throw err;
-    }
+    const { deviceId, id } = body ?? {};
+    if (typeof deviceId !== 'string' || typeof id !== 'string' || !id) throw new Error('Missing deviceId or id');
+    return keyResult(app, 'Media button failed', () => app.media.runButton(deviceId, id));
   },
 
   /** The album art as base64, for a frame that can't load `/api/image/…` itself. */

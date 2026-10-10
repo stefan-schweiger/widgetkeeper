@@ -1,5 +1,7 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import { listDevicesWhere, matches, type AutocompleteItem } from './autocomplete.js';
+import { describeCapability } from './capabilities.js';
 import { fetchDeviceIcon } from './deviceIcon.js';
 import { hourlyAverages, hourlyShareTrue, spanFor, type HeatmapDay, type Span } from './heatmap.js';
 import { readCapabilityLog } from './insightsLog.js';
@@ -21,8 +23,6 @@ const SAVE_DELAY = MINUTE;
 const BACKFILL_TTL = 5 * MINUTE;
 
 export const HISTORY_SETTING = 'heatmapHistory';
-
-export type AutocompleteItem = { name: string, description?: string, image?: string, id: string };
 
 export type HeatmapCapability = {
   id: string,
@@ -53,25 +53,14 @@ type NumericCache = { at: number, lastRequested: number, days: HeatmapDay[] };
 
 const key = (deviceId: string, capabilityId: string) => `${deviceId}:${capabilityId}`;
 
-function matches(query: string, ...texts: (string | undefined)[]) {
-  const q = (query || '').trim().toLowerCase();
-  return !q || texts.some(t => t?.toLowerCase().includes(q));
-}
-
 /** The device's capabilities a heatmap can show: numbers and booleans that Homey logs in Insights. */
 export function heatmapCaps(device: any): HeatmapCapability[] {
   const caps = device?.capabilitiesObj || {};
   return (device?.capabilities as string[] || Object.keys(caps))
     .filter(id => caps[id]?.insights === true && (caps[id].type === 'number' || caps[id].type === 'boolean'))
     .map(id => {
-      const c = caps[id];
-      return {
-        id,
-        title: typeof c.title === 'string' && c.title ? c.title : id,
-        type: c.type,
-        units: typeof c.units === 'string' && c.units ? c.units : null,
-        decimals: typeof c.decimals === 'number' ? c.decimals : null,
-      };
+      const { title, type, units, decimals } = describeCapability(caps[id], id);
+      return { id, title, type: type as HeatmapCapability['type'], units, decimals };
     });
 }
 
@@ -142,17 +131,8 @@ export default class HeatmapService {
 
   // ---------------------------------------------------------------- settings autocomplete
 
-  async listDevices(query: string): Promise<AutocompleteItem[]> {
-    const api = await getAppApi(this.homey);
-    const [devices, zones] = await Promise.all([
-      api.devices.getDevices(),
-      api.zones.getZones().catch(() => ({})),
-    ]);
-    return (Object.values(devices) as any[])
-      .filter(d => heatmapCaps(d).length > 0)
-      .map(d => ({ name: d.name as string, description: (zones as any)[d.zone]?.name as string | undefined, id: d.id as string }))
-      .filter(d => matches(query, d.name, d.description))
-      .sort((a, b) => a.name.localeCompare(b.name));
+  listDevices(query: string): Promise<AutocompleteItem[]> {
+    return listDevicesWhere(this.homey, query, d => heatmapCaps(d).length > 0);
   }
 
   async listCapabilities(deviceId: string | undefined, query: string): Promise<AutocompleteItem[]> {

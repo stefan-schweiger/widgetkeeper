@@ -131,6 +131,25 @@ describe('live view', () => {
     expect(api).not.toHaveBeenCalled();
   });
 
+  it('takes a click after a touch tap again with a fixed clock (opts.now)', () => {
+    stubPeerConnection();
+    const { tile } = widget([cam('a'), cam('b')], offerApi(), () => 1000);
+    const touch = (type: string) => {
+      const e = new Event(type, { bubbles: true, cancelable: true }) as any;
+      e.changedTouches = [{ clientX: 10, clientY: 10 }];
+      tile('a').dispatchEvent(e);
+    };
+    touch('touchstart'); touch('touchend');
+    expect(tile('a').classList.contains('expanded')).toBe(true);
+    // The click right after the touch is the same tap: ignored.
+    tile('a').click();
+    expect(tile('a').classList.contains('expanded')).toBe(true);
+    // A click a second later is a new one, though the widget's own clock stands still.
+    vi.setSystemTime(Date.now() + 1000);
+    tile('a').click();
+    expect(tile('a').classList.contains('expanded')).toBe(false);
+  });
+
   it('sends an offer on a tap and fills the widget, and stops on a second tap', async () => {
     const pcs = stubPeerConnection();
     const api = offerApi();

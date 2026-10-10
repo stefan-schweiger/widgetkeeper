@@ -15,15 +15,21 @@ Use the project-local Homey CLI (`npx homey`, v4). An older globally installed `
 ## Commands
 
 ```sh
-npx homey app validate --level debug   # compile + validate
+npx homey app validate --level debug   # compile + validate (also: npm run validate)
 npm test                               # unit tests (vitest; widget tests use happy-dom)
 npm run typecheck                      # tsc for the app + basic JS checking of the widget front ends
-npx homey app install                  # build and install on your Homey
-npx homey app run                      # run with live logs (needs Docker); widget files hot-reload
+npx homey app install                  # build and install on your Homey (also: npm run install-homey)
+npx homey app run                      # run with live logs (needs Docker); widget files hot-reload (also: npm start)
+npm run diagnostics                    # the app's diagnostics report and log from your Homey
 npm run app-images                     # render the app store images
 npm run previews                       # render the widget preview images (Homey's widget picker)
 npm run screenshots                    # render the README screenshots (docs/screenshots)
+npm run showcase                       # render the README's showcase dashboards (docs/showcase)
+npm run clips                          # record the README clips (docs/clips, animated WebP)
+npm run flow-icons                     # re-render the Flow Buttons icon images (lib/flowIconImages.ts)
 ```
+
+The npm scripts run the project-local CLI too. The render scripts need Microsoft Edge (set `EDGE` to its path if it isn't the default).
 
 ## How it's built
 - **App code** is TypeScript (ESM), compiled by `tsc` to `.homeybuild/`. Relative imports need `.js` extensions.
@@ -33,7 +39,7 @@ npm run screenshots                    # render the README screenshots (docs/scr
   - Stay on Homey's type scale. CLAUDE.md lists the tokens and the few deliberate exceptions.
 
 ### Previewing widgets in a browser
-`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/sensordots-preview.html`, `dev/weather-preview.html`, `dev/heatmap-preview.html`, `dev/values-preview.html`, `dev/lights-preview.html`, `dev/sparklines-preview.html`, `dev/variables-preview.html`, `dev/flows-preview.html`, `dev/price-preview.html`, `dev/timers-preview.html`, `dev/locks-preview.html`, `dev/curtains-preview.html` and `dev/media-preview.html` render the widgets with mock data, outside Homey.
+`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/sensordots-preview.html`, `dev/weather-preview.html`, `dev/heatmap-preview.html`, `dev/values-preview.html`, `dev/lights-preview.html`, `dev/sparklines-preview.html`, `dev/variables-preview.html`, `dev/flows-preview.html`, `dev/price-preview.html`, `dev/timers-preview.html`, `dev/locks-preview.html`, `dev/curtains-preview.html`, `dev/media-preview.html`, `dev/cameras-preview.html` and `dev/stack-preview.html` render the widgets with mock data, outside Homey.
 1. Serve the repo root, e.g. `python -m http.server 8765`.
 2. Open `/dev/preview.html`.
 3. Optionally add `#live=0.4` or `#price=0.3` to the URL to simulate scrubbing.
@@ -81,8 +87,9 @@ widgets/locks/                  widget manifest, api.ts, public/ (renderer)
 widgets/curtains/               widget manifest, api.ts, public/ (renderer)
 widgets/media/                  widget manifest, api.ts, public/ (renderer)
 settings/                       app settings page (diagnostics)
-dev/                            browser previews with mock data; screenshots.html for the README
-scripts/                        app image, widget preview and screenshot generators
+dev/                            browser previews with mock data; screenshots, showcase and clips pages for the README
+scripts/                        app image, widget preview, screenshot, showcase and clip renderers; diagnostics
 docs/screenshots/               README screenshots (npm run screenshots)
+docs/showcase/, docs/clips/     README showcase dashboards and clips (npm run showcase, npm run clips)
 test/                           vitest tests; helpers/ has the fake Homey API and the widget loader
 ```

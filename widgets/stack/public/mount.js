@@ -86,7 +86,8 @@ window.mountStackWidget = function (Homey, { root, frame }) {
       api: (method, path, body) => {
         const [p, qs] = String(path).split('?');
         const query = {};
-        new URLSearchParams(qs || '').forEach((v, k) => { query[k] = v; });
+        // perf= is the frame's load marks (loadMarks()): the stack frame's, not the page's, so it's left out.
+        new URLSearchParams(qs || '').forEach((v, k) => { if (k !== 'perf') query[k] = v; });
         return call(page.type, method, p, query, body);
       },
       on: (event, fn) => Homey.on(event, fn),

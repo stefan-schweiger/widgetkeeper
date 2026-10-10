@@ -1,8 +1,9 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import { matches, withNone, type AutocompleteItem } from './autocomplete.js';
 import { FLOW_ICON_IMAGES } from './flowIconImages.js';
-import type { AutocompleteItem } from './HeatmapService.js';
 import PersonalApiKey from './PersonalApiKey.js';
+import { sharedCache } from './sharedCache.js';
 import Timings from './Timings.js';
 
 /** How long a read of every flow is reused: renames and enabling show on the widget's next refresh. */
@@ -33,11 +34,6 @@ export function parseFlowId(id: string): { kind: FlowKind, flowId: string } | nu
   return m ? { kind: m[1] as FlowKind, flowId: m[2] } : null;
 }
 
-function matches(query: string, ...texts: (string | undefined)[]) {
-  const q = (query || '').trim().toLowerCase();
-  return !q || texts.some(t => t?.toLowerCase().includes(q));
-}
-
 /**
  * The Flow Buttons widget: Homey's flows by name, and starting one. Reading uses the app's own token
  * (`homey.flow.readonly`); starting needs `homey.flow.start`, which apps don't get, so it goes through the
@@ -45,7 +41,12 @@ function matches(query: string, ...texts: (string | undefined)[]) {
  */
 export default class FlowService {
 
-  private cache: { at: number, flows: Promise<{ flows: Map<string, FlowInfo & { folder: string | null }>, folders: Map<string, string> }> } | null = null;
+  /** Every flow and Advanced Flow, keyed by slot id: the shared read (see `read`). */
+  private cache = sharedCache(() => this.readAll().catch((err) => {
+    this.lastError = String(err?.message ?? err);
+    this.log('Could not read the flows:', err);
+    throw err;
+  }));
   private lastError: string | null = null;
   private lastTriggerError: string | null = null;
   private triggered = 0;
@@ -74,8 +75,7 @@ export default class FlowService {
         const folder = f.folder ? folders.get(f.folder) : undefined;
         return { name: f.name, description: [f.advanced ? advanced : standard, folder].filter(Boolean).join(' · '), id: f.id };
       });
-    const none = this.homey.__('flows.none') || 'None';
-    return matches(query, none) ? [{ name: none, id: 'none' }, ...items] : items;
+    return withNone(this.homey.__('flows.none') || 'None', query, items);
   }
 
   /**
@@ -89,8 +89,7 @@ export default class FlowService {
       .map(id => ({ id, name: this.homey.__(`flows.icons.${id}`) || id, image: iconImage(id) }))
       .filter(i => matches(query, i.name, i.id))
       .sort((a, b) => a.name.localeCompare(b.name, language));
-    const noneName = this.homey.__('flows.none') || 'None';
-    return none && matches(query, noneName) ? [{ name: noneName, id: 'none' }, ...items] : items;
+    return none ? withNone(this.homey.__('flows.none') || 'None', query, items) : items;
   }
 
   // ---------------------------------------------------------------- state
@@ -128,7 +127,7 @@ export default class FlowService {
   /** For the diagnostics report: counts, never names. */
   describe() {
     return {
-      cached: !!this.cache,
+      cached: this.cache.cached,
       lastError: this.lastError,
       apiKey: this.key.has(),
       triggered: this.triggered,
@@ -136,19 +135,9 @@ export default class FlowService {
     };
   }
 
-  /** Every flow and Advanced Flow, keyed by slot id. A read (or one on its way) is shared while it's at most `maxAge` old. */
+  /** A read (or one on its way) is shared while it's at most `maxAge` old. */
   private read(maxAge: number) {
-    const now = Date.now();
-    if (!this.cache || now - this.cache.at > maxAge) {
-      const flows = this.readAll().catch(err => {
-        if (this.cache?.flows === flows) this.cache = null;
-        this.lastError = String(err?.message ?? err);
-        this.log('Could not read the flows:', err);
-        throw err;
-      });
-      this.cache = { at: now, flows };
-    }
-    return this.cache.flows;
+    return this.cache.get(maxAge);
   }
 
   private async readAll() {

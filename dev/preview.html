@@ -8,16 +8,12 @@
   <link rel="stylesheet" href="../widgets/electricity/public/widget.css">
   <script src="../widgets/electricity/public/widget.js"></script>
   <script src="i18n.js"></script>
+  <script src="mock-util.js"></script>
   <script src="mock-electricity.js"></script>
+  <link rel="stylesheet" href="preview.css">
   <style>
-    body { background: #111217; padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
     .card { background: var(--homey-background-color, #1F2029); border-radius: 20px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.3); box-sizing: border-box; }
-    .light {
-      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75;
-      color: var(--ew-text);
-    }
-    .col { display: flex; flex-direction: column; gap: 8px; }
-    .col > span { color: #9C9DA5; font: 12px Roboto, sans-serif; }
+    .light { color: var(--ew-text); }
   </style>
 </head>
 <body>

@@ -51,7 +51,7 @@
     speakersError: 'Could not load the speakers.',
     loading: 'Loading…',
     noKey: 'To use this button, add an API key in the app settings.',
-    keyScope: 'The API key may not run this button. Speaker actions need permission to manage flows.',
+    keyScope: 'The API key may not run this. Speaker actions need permission to manage flows.',
     keyInvalid: 'The API key was not accepted.',
   };
 

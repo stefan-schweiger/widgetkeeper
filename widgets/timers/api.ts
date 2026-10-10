@@ -1,7 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
 import { TIMER_ACTIONS, type TimerAction } from '../../lib/TimerService.js';
-import { describeWidgetPerf } from '../../lib/Timings.js';
+import { logPerf } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -18,8 +18,7 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const perf = describeWidgetPerf(query.perf);
-    if (perf) app.debug(`Timers widget: ${perf}`);
+    logPerf(app, 'Timers', query);
     return app.timers.getState(instanceOf(query.instance));
   },
 

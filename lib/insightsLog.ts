@@ -14,27 +14,37 @@ export function logIdsFor(deviceId: string, capabilityId: string): string[] {
 }
 
 /**
- * A capability's Insights log entries at `resolution`. A missing log throws, so the candidate ids are
- * tried in turn; the one that worked is remembered in `known` (per `deviceId:capabilityId`), so later
- * reads make one call. Throws the last error when none works.
+ * `read` with the first of the candidate log ids that works (a missing log throws, so they're tried in turn). The one
+ * that worked is remembered in `known` under `key`, so later reads make one call. A remembered id that fails is
+ * forgotten, so the next read tries every candidate again, unless `keep` (then it stays the only one tried). Throws
+ * the last error when none works.
  */
-export async function readCapabilityLog(
-  api: any, deviceId: string, capabilityId: string, resolution: string, known: Map<string, string>,
-): Promise<any> {
-  const k = `${deviceId}:${capabilityId}`;
-  const remembered = known.get(k);
-  const candidates = remembered ? [remembered] : logIdsFor(deviceId, capabilityId);
+export async function readFirstLog<T>(
+  key: string, candidates: string[], known: Map<string, string>, read: (logId: string) => Promise<T>, { keep = false } = {},
+): Promise<{ logId: string, result: T }> {
+  const remembered = known.get(key);
   let error: unknown;
-  for (const id of candidates) {
+  for (const logId of remembered ? [remembered] : candidates) {
     try {
-      const res = await api.insights.getLogEntries({ uri: `homey:device:${deviceId}`, id, resolution });
-      known.set(k, id);
-      return res;
+      const result = await read(logId);
+      known.set(key, logId);
+      return { logId, result };
     } catch (err) {
       error = err;
     }
   }
-  // A remembered id that failed is forgotten, so the next read tries every candidate again.
-  if (remembered) known.delete(k);
+  if (remembered && !keep) known.delete(key);
   throw error;
+}
+
+/**
+ * A capability's Insights log entries at `resolution`, from the first of `logIdsFor()` that works; the one that worked
+ * is remembered in `known` (per `deviceId:capabilityId`).
+ */
+export async function readCapabilityLog(
+  api: any, deviceId: string, capabilityId: string, resolution: string, known: Map<string, string>,
+): Promise<any> {
+  const { result } = await readFirstLog(`${deviceId}:${capabilityId}`, logIdsFor(deviceId, capabilityId), known,
+    id => api.insights.getLogEntries({ uri: `homey:device:${deviceId}`, id, resolution }));
+  return result;
 }

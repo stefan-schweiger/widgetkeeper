@@ -392,9 +392,9 @@
         if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
       }, { passive: true });
       node.addEventListener('touchend', (e) => {
-        const tap = !!start;
+        const isTap = !!start;
         unpress();
-        if (!tap) return;
+        if (!isTap) return;
         e.preventDefault(); // no click after it
         lastTouchTap = Date.now();
         fn();
@@ -402,6 +402,11 @@
       node.addEventListener('touchcancel', unpress);
       node.addEventListener('click', () => {
         if (Date.now() - lastTouchTap < 800) return;
+        fn();
+      });
+      node.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
         fn();
       });
     }
@@ -466,13 +471,13 @@
         if (e.pointerType === 'touch') return;
         end(false);
       });
-      bar.addEventListener('click', e => e.stopPropagation()); // not a toggle
+      bar.addEventListener('click', e => e.stopPropagation()); // not a tap on the tile
     }
 
     function tileFor(id) {
       let tile = tiles.get(id);
       if (!tile) {
-        const node = el('div', { class: 'lc-tile', 'data-device': id });
+        const node = el('div', { class: 'lc-tile', 'data-device': id, role: 'button', tabindex: '0' });
         const top = el('div', { class: 'lc-top' }, node);
         const icon = el('span', { class: 'lc-icon' }, top);
         const chip = el('button', { type: 'button', class: 'lc-chip' }, top);
@@ -484,15 +489,10 @@
         const knob = el('div', { class: 'lc-knob' }, bar);
         tile = { tile: node, icon, chip, chipGlyph, name, bar, fill, knob };
         onTap(node, () => toggle(id));
-        // The chip is inside the tile: its own taps must not toggle the light.
-        for (const type of ['touchstart', 'touchend', 'click']) {
-          chip.addEventListener(type, (e) => {
-            e.stopPropagation();
-            if (type === 'touchstart') return;
-            if (type === 'touchend') { e.preventDefault(); lastTouchTap = Date.now(); }
-            else if (Date.now() - lastTouchTap < 800) return;
-            togglePanel(id);
-          }, { passive: type !== 'touchend' });
+        // The chip is inside the tile: its own taps (and keys) must not toggle the light.
+        onTap(chip, () => togglePanel(id));
+        for (const type of ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'click', 'keydown']) {
+          chip.addEventListener(type, e => e.stopPropagation(), { passive: true });
         }
         wireBar(id, bar);
         tiles.set(id, tile);

@@ -1,6 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { describeWidgetPerf } from '../../lib/Timings.js';
+import { logged, logPerf } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -10,13 +10,7 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const perf = describeWidgetPerf(query.perf);
-    if (perf) app.debug(`Weather widget: ${perf}`);
-    try {
-      return await app.weather.getForecast();
-    } catch (err) {
-      app.log('Weather forecast failed:', err);
-      throw err;
-    }
+    logPerf(app, 'Weather', query);
+    return logged(app, 'Weather forecast failed:', () => app.weather.getForecast());
   },
 };

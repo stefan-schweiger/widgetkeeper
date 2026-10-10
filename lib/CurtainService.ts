@@ -1,10 +1,8 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import { presentCaps, readCaps, type CapState } from './capabilities.js';
+import DeviceTracker, { readZones, zoneRef, type TrackedEntry } from './DeviceTracker.js';
 import Timings from './Timings.js';
-
-const MINUTE = 60e3;
-const TICK = MINUTE;
-const IDLE_TIMEOUT = 10 * MINUTE;
 
 export const CURTAINS_STATE_EVENT = 'curtains:state';
 
@@ -15,7 +13,7 @@ export const CURTAINS_STATE_EVENT = 'curtains:state';
  */
 export const CURTAIN_CAPS = ['windowcoverings_set', 'windowcoverings_state', 'windowcoverings_closed'] as const;
 
-export type CurtainCap = { value: unknown, setable: boolean };
+export type CurtainCap = CapState;
 
 /** `blinds` for blinds and sunshades (the tile draws a blind), else `curtain`. */
 export type CurtainKind = 'curtain' | 'blinds';
@@ -26,21 +24,17 @@ export type CurtainDevice =
 
 export type CurtainChange = { action?: unknown, position?: unknown };
 
-type Tracked = {
-  deviceId: string,
+type Tracked = TrackedEntry & {
   name: string,
   kind: CurtainKind,
   /** The zone (room) id, for grouping the tiles by room. */
   zone: string | null,
   caps: Record<string, CurtainCap>,
-  instances: any[],
-  lastRequested: number,
 };
 
 /** The curtain capabilities the device has, in `CURTAIN_CAPS` order. */
 export function curtainCaps(device: any): string[] {
-  const caps = device?.capabilitiesObj || {};
-  return CURTAIN_CAPS.filter(id => caps[id]);
+  return presentCaps(device, CURTAIN_CAPS);
 }
 
 export function curtainKind(device: any): CurtainKind {
@@ -48,53 +42,57 @@ export function curtainKind(device: any): CurtainKind {
   return cls === 'blinds' || cls === 'sunshade' ? 'blinds' : 'curtain';
 }
 
-function readCaps(device: any): Record<string, CurtainCap> {
-  const out: Record<string, CurtainCap> = {};
-  for (const id of curtainCaps(device)) {
-    const c = device.capabilitiesObj[id];
-    out[id] = { value: c.value ?? null, setable: c.setable !== false };
-  }
-  return out;
-}
-
 /** The Curtains widget: open, close and the position of curtains and blinds. */
 export default class CurtainService {
 
-  private tracked = new Map<string, Tracked>();
-  private trackPromises = new Map<string, Promise<Tracked>>();
-  private tickTimer: NodeJS.Timeout | null = null;
+  private tracker: DeviceTracker<Tracked>;
 
   constructor(
     private homey: Homey.App['homey'],
     private log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
-  ) {}
+  ) {
+    this.tracker = new DeviceTracker<Tracked>({
+      homey,
+      debug,
+      what: 'Curtain capabilities',
+      signature: device => curtainCaps(device).join(),
+      create: async (device) => {
+        if (!curtainCaps(device).length) throw new Error(`${device.name} has no curtain capability`);
+        return { name: device.name, kind: curtainKind(device), zone: device.zone ?? null, caps: readCaps(device, CURTAIN_CAPS) };
+      },
+      listen: (t, device) => {
+        const instances = Object.keys(t.caps).map(id => device.makeCapabilityInstance(id, (value: unknown) => {
+          if (t.caps[id]) t.caps[id].value = value;
+          this.homey.api.realtime(CURTAINS_STATE_EVENT, { deviceId: t.key, capabilityId: id, value });
+        }));
+        this.debug(`Tracking curtain ${device.name} (${t.key}): ${JSON.stringify(Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, c.value])))}`);
+        return instances;
+      },
+      refresh: (t, device) => {
+        t.name = device.name;
+        t.kind = curtainKind(device);
+        t.zone = device.zone ?? null;
+        t.caps = readCaps(device, CURTAIN_CAPS);
+      },
+      label: t => `curtain ${t.name}`,
+    });
+  }
 
   start() {
-    this.tickTimer = this.homey.setInterval(() => this.tick(), TICK);
+    this.tracker.start();
   }
 
   async stop() {
-    if (this.tickTimer) this.homey.clearInterval(this.tickTimer);
-    for (const t of this.tracked.values()) this.dispose(t);
+    this.tracker.stop();
   }
 
   /** One entry per device, in the order asked for. A deleted device doesn't fail the others. */
   async getState(deviceIds: string[]): Promise<CurtainDevice[]> {
     const tm = new Timings();
-    const zonesP = tm.time('zones', async () => (await getAppApi(this.homey)).zones.getZones())
-      .catch((err: unknown) => { this.log('Curtain zones unavailable:', err); return {}; });
-    const out = await Promise.all(deviceIds.map(async (id): Promise<CurtainDevice> => {
-      try {
-        const t = await this.current(id, tm);
-        t.lastRequested = Date.now();
-        const zones: Record<string, any> = await zonesP;
-        const zone = t.zone && zones[t.zone] ? { id: t.zone, name: String(zones[t.zone].name) } : null;
-        return { id, name: t.name, kind: t.kind, zone, caps: Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, { ...c }])) };
-      } catch (err) {
-        this.log(`Curtain ${id} unavailable:`, err);
-        return { id, missing: true };
-      }
+    const zonesP = readZones(this.homey, tm, this.log, 'Curtain');
+    const out = await this.tracker.each(deviceIds, tm, this.log, 'Curtain', async (t, id): Promise<CurtainDevice> => ({
+      id, name: t.name, kind: t.kind, zone: zoneRef(await zonesP, t.zone), caps: Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, { ...c }])),
     }));
     this.debug(`Curtains state for ${deviceIds.length} devices: ${tm.summary()}`);
     return out;
@@ -129,83 +127,6 @@ export default class CurtainService {
     } else {
       throw new Error(`Invalid change ${JSON.stringify(change)}`);
     }
-  }
-
-  // ---------------------------------------------------------------- live state
-
-  /** The tracked entry, re-read when it was already tracked, so a rename or a deleted device shows. */
-  private async current(deviceId: string, tm: Timings): Promise<Tracked> {
-    const t = this.tracked.get(deviceId);
-    if (!t) return this.ensureTracked(deviceId, tm);
-    const api = await getAppApi(this.homey);
-    let device: any;
-    try {
-      device = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId, $cache: false }));
-    } catch (err) {
-      this.dispose(t);
-      throw err;
-    }
-    const caps = curtainCaps(device);
-    if (caps.join() !== Object.keys(t.caps).join()) {
-      this.debug(`Curtain capabilities of ${device.name} changed: ${Object.keys(t.caps).join()} → ${caps.join()}`);
-      this.dispose(t);
-      return this.ensureTracked(deviceId, tm);
-    }
-    t.name = device.name;
-    t.kind = curtainKind(device);
-    t.zone = device.zone ?? null;
-    t.caps = readCaps(device);
-    return t;
-  }
-
-  private ensureTracked(deviceId: string, tm: Timings): Promise<Tracked> {
-    const existing = this.tracked.get(deviceId);
-    if (existing) return Promise.resolve(existing);
-    let p = this.trackPromises.get(deviceId);
-    if (!p) {
-      p = this.track(deviceId, tm).finally(() => this.trackPromises.delete(deviceId));
-      this.trackPromises.set(deviceId, p);
-    }
-    return p;
-  }
-
-  private async track(deviceId: string, tm: Timings): Promise<Tracked> {
-    const api = await tm.time('api', () => getAppApi(this.homey));
-    const device: any = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId }));
-    if (!curtainCaps(device).length) throw new Error(`${device.name} has no curtain capability`);
-    const t: Tracked = {
-      deviceId,
-      name: device.name,
-      kind: curtainKind(device),
-      zone: device.zone ?? null,
-      caps: readCaps(device),
-      instances: [],
-      lastRequested: Date.now(),
-    };
-    for (const id of Object.keys(t.caps)) {
-      t.instances.push(device.makeCapabilityInstance(id, (value: unknown) => {
-        if (t.caps[id]) t.caps[id].value = value;
-        this.homey.api.realtime(CURTAINS_STATE_EVENT, { deviceId, capabilityId: id, value });
-      }));
-    }
-    this.tracked.set(deviceId, t);
-    this.debug(`Tracking curtain ${device.name} (${deviceId}): ${JSON.stringify(Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, c.value])))}`);
-    return t;
-  }
-
-  private tick() {
-    const now = Date.now();
-    for (const t of this.tracked.values()) {
-      if (now - t.lastRequested > IDLE_TIMEOUT) this.dispose(t);
-    }
-  }
-
-  private dispose(t: Tracked) {
-    for (const i of t.instances) {
-      try { i?.destroy(); } catch (err) { /* ignore */ }
-    }
-    if (this.tracked.get(t.deviceId) === t) this.tracked.delete(t.deviceId);
-    this.debug(`Stopped tracking curtain ${t.name}`);
   }
 
 }

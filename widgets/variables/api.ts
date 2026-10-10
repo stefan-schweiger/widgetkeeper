@@ -1,7 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { describeWidgetPerf } from '../../lib/Timings.js';
-import { VariableWriteError } from '../../lib/VariableService.js';
+import { idList, keyResult, logged, logPerf } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -12,15 +11,8 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const ids = (query.ids || '').split(',').filter(Boolean);
-    const perf = describeWidgetPerf(query.perf);
-    if (perf) app.debug(`Flow variables widget: ${perf}`);
-    try {
-      return await app.variables.getState(ids);
-    } catch (err) {
-      app.log('Flow variables state failed:', err);
-      throw err;
-    }
+    logPerf(app, 'Flow variables', query);
+    return logged(app, 'Flow variables state failed:', () => app.variables.getState(idList(query.ids)));
   },
 
   /**
@@ -32,17 +24,8 @@ export default {
     body: { id?: unknown, value?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    if (typeof body?.id !== 'string' || !body.id) throw new Error('Missing id');
-    try {
-      await app.variables.set(body.id, body.value);
-      return { ok: true };
-    } catch (err) {
-      if (err instanceof VariableWriteError) {
-        if (err.reason !== 'noKey') app.log(`Flow variable set failed (${err.reason}):`, err.message);
-        return { ok: false, reason: err.reason };
-      }
-      app.log('Flow variable set failed:', err);
-      throw err;
-    }
+    const id = body?.id;
+    if (typeof id !== 'string' || !id) throw new Error('Missing id');
+    return keyResult(app, 'Flow variable set failed', () => app.variables.set(id, body.value));
   },
 };

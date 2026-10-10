@@ -1,11 +1,8 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import DeviceTracker, { type TrackedEntry } from './DeviceTracker.js';
 import { fetchDeviceIcon, fetchSvgIcon } from './deviceIcon.js';
 import Timings from './Timings.js';
-
-const MINUTE = 60e3;
-const TICK = MINUTE;
-const IDLE_TIMEOUT = 10 * MINUTE;
 
 export const QA_STATE_EVENT = 'quickactions:state';
 
@@ -24,13 +21,10 @@ export type QuickActionDevice =
   | { id: string, name: string, icon: string | null, quickAction: QuickAction | null }
   | { id: string, missing: true };
 
-type Tracked = {
-  deviceId: string,
+type Tracked = TrackedEntry & {
   name: string,
   icon: string | null,
   quickAction: QuickAction | null,
-  instance: any,
-  lastRequested: number,
 };
 
 /**
@@ -53,38 +47,74 @@ function isActionable(cap: any) {
 
 export default class QuickActionService {
 
-  private tracked = new Map<string, Tracked>();
-  private trackPromises = new Map<string, Promise<Tracked>>();
-  private tickTimer: NodeJS.Timeout | null = null;
+  private tracker: DeviceTracker<Tracked>;
 
   constructor(
     private homey: Homey.App['homey'],
     private log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
-  ) {}
+  ) {
+    // An open widget keeps its entries alive indefinitely, so each request re-reads the device: a rename, a new
+    // quick action or a deleted device would otherwise never show.
+    this.tracker = new DeviceTracker<Tracked>({
+      homey,
+      debug,
+      what: 'Quick action',
+      signature: device => quickActionId(device) ?? '',
+      create: async (device, api, tm) => {
+        const id = quickActionId(device);
+        const cap = id ? device.capabilitiesObj[id] : null;
+        const [icon, capIcon] = await tm.time('icons', () => Promise.all([
+          fetchDeviceIcon(api, device, this.log),
+          id ? fetchSvgIcon(api, cap.iconObj, `${device.name} ${id}`, this.log) : null,
+        ]));
+        return {
+          name: device.name,
+          icon,
+          quickAction: id ? {
+            capabilityId: id,
+            value: cap.value ?? null,
+            actionable: isActionable(cap),
+            momentary: isMomentary(id),
+            icon: capIcon,
+          } : null,
+        };
+      },
+      listen: (t, device) => {
+        const id = t.quickAction?.capabilityId;
+        this.debug(`Tracking quick action of ${device.name} (${t.key}): ${id ?? 'none'}=${JSON.stringify(t.quickAction?.value)}`);
+        return id ? [device.makeCapabilityInstance(id, (value: unknown) => {
+          if (t.quickAction) t.quickAction.value = value;
+          this.homey.api.realtime(QA_STATE_EVENT, { deviceId: t.key, capabilityId: id, value });
+        })] : [];
+      },
+      refresh: async (t, device, api, tm) => {
+        t.name = device.name;
+        t.icon = await tm.time('icons', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
+        if (t.quickAction) {
+          const cap = device.capabilitiesObj[t.quickAction.capabilityId];
+          t.quickAction.value = cap.value ?? null;
+          t.quickAction.actionable = isActionable(cap);
+        }
+      },
+      label: t => t.name,
+    });
+  }
 
   start() {
-    this.tickTimer = this.homey.setInterval(() => this.tick(), TICK);
+    this.tracker.start();
   }
 
   async stop() {
-    if (this.tickTimer) this.homey.clearInterval(this.tickTimer);
-    for (const t of this.tracked.values()) this.dispose(t);
+    this.tracker.stop();
   }
 
   /** One entry per device, in the order asked for. A deleted device doesn't fail the others. */
   async getState(deviceIds: string[]): Promise<QuickActionDevice[]> {
     const tm = new Timings();
-    const out = await Promise.all(deviceIds.map(async (id): Promise<QuickActionDevice> => {
-      try {
-        const t = await this.current(id, tm);
-        t.lastRequested = Date.now();
-        return { id, name: t.name, icon: t.icon, quickAction: t.quickAction && { ...t.quickAction } };
-      } catch (err) {
-        this.log(`Quick action device ${id} unavailable:`, err);
-        return { id, missing: true };
-      }
-    }));
+    const out = await this.tracker.each(deviceIds, tm, this.log, 'Quick action device', (t, id): QuickActionDevice => (
+      { id, name: t.name, icon: t.icon, quickAction: t.quickAction && { ...t.quickAction } }
+    ));
     this.debug(`Quick actions state for ${deviceIds.length} devices: ${tm.summary()}`);
     return out;
   }
@@ -100,97 +130,6 @@ export default class QuickActionService {
     if (typeof v !== 'boolean') throw new Error(`Invalid value ${JSON.stringify(value)}`);
     await device.setCapabilityValue({ capabilityId: id, value: v });
     this.debug(`Quick action ${device.name}: ${id}=${v}`);
-  }
-
-  // ---------------------------------------------------------------- live state
-
-  /**
-   * The tracked entry, re-read from the device when it was already tracked: an open widget keeps the
-   * entry alive indefinitely, so a rename, a new quick action or a deleted device would otherwise never show.
-   */
-  private async current(deviceId: string, tm: Timings): Promise<Tracked> {
-    const t = this.tracked.get(deviceId);
-    if (!t) return this.ensureTracked(deviceId, tm);
-    const api = await getAppApi(this.homey);
-    let device: any;
-    try {
-      device = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId, $cache: false }));
-    } catch (err) {
-      this.dispose(t);
-      throw err;
-    }
-    const id = quickActionId(device);
-    if (id !== (t.quickAction?.capabilityId ?? null)) {
-      this.debug(`Quick action of ${device.name} changed: ${t.quickAction?.capabilityId ?? 'none'} → ${id ?? 'none'}`);
-      this.dispose(t);
-      return this.ensureTracked(deviceId, tm);
-    }
-    t.name = device.name;
-    t.icon = await tm.time('icons', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
-    if (id && t.quickAction) {
-      const cap = device.capabilitiesObj[id];
-      t.quickAction.value = cap.value ?? null;
-      t.quickAction.actionable = isActionable(cap);
-    }
-    return t;
-  }
-
-  private ensureTracked(deviceId: string, tm: Timings): Promise<Tracked> {
-    const existing = this.tracked.get(deviceId);
-    if (existing) return Promise.resolve(existing);
-    let p = this.trackPromises.get(deviceId);
-    if (!p) {
-      p = this.track(deviceId, tm).finally(() => this.trackPromises.delete(deviceId));
-      this.trackPromises.set(deviceId, p);
-    }
-    return p;
-  }
-
-  private async track(deviceId: string, tm: Timings): Promise<Tracked> {
-    const api = await tm.time('api', () => getAppApi(this.homey));
-    const device: any = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId }));
-    const id = quickActionId(device);
-    const cap = id ? device.capabilitiesObj[id] : null;
-    const [icon, capIcon] = await tm.time('icons', () => Promise.all([
-      fetchDeviceIcon(api, device, this.log),
-      id ? fetchSvgIcon(api, cap.iconObj, `${device.name} ${id}`, this.log) : null,
-    ]));
-    const t: Tracked = {
-      deviceId,
-      name: device.name,
-      icon,
-      quickAction: id ? {
-        capabilityId: id,
-        value: cap.value ?? null,
-        actionable: isActionable(cap),
-        momentary: isMomentary(id),
-        icon: capIcon,
-      } : null,
-      instance: null,
-      lastRequested: Date.now(),
-    };
-    if (id) {
-      t.instance = device.makeCapabilityInstance(id, (value: unknown) => {
-        if (t.quickAction) t.quickAction.value = value;
-        this.homey.api.realtime(QA_STATE_EVENT, { deviceId, capabilityId: id, value });
-      });
-    }
-    this.tracked.set(deviceId, t);
-    this.debug(`Tracking quick action of ${device.name} (${deviceId}): ${id ?? 'none'}=${JSON.stringify(t.quickAction?.value)}`);
-    return t;
-  }
-
-  private tick() {
-    const now = Date.now();
-    for (const t of this.tracked.values()) {
-      if (now - t.lastRequested > IDLE_TIMEOUT) this.dispose(t);
-    }
-  }
-
-  private dispose(t: Tracked) {
-    try { t.instance?.destroy(); } catch (err) { /* ignore */ }
-    if (this.tracked.get(t.deviceId) === t) this.tracked.delete(t.deviceId);
-    this.debug(`Stopped tracking ${t.name}`);
   }
 
 }

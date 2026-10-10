@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { loadWidget } from './helpers/loadWidget.js';
+import { touch as fireTouch } from './helpers/touch.js';
 
 let win: any;
 beforeAll(() => { win = loadWidget('sensoralarms'); });
@@ -182,11 +183,7 @@ describe('alarm panel', () => {
 
   it('opens on a touch tap but not on a drag', () => {
     const { root, tile } = widget([air()]);
-    const touch = (type: string, x: number) => {
-      const e = new win.Event(type, { bubbles: true, cancelable: true });
-      e.changedTouches = [{ clientX: x, clientY: 0 }];
-      tile('air').dispatchEvent(e);
-    };
+    const touch = (type: string, x: number) => fireTouch(tile('air'), type, x);
     touch('touchstart', 0); touch('touchmove', 30); touch('touchend', 30);
     expect(root.querySelector('.sa-panel')).toBeNull();
     touch('touchstart', 0); touch('touchend', 4);

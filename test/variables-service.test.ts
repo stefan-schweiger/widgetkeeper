@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
-import VariableService, { API_KEY_SETTING, checkValue, VARIABLES_STATE_EVENT } from '../lib/VariableService.js';
+import { API_KEY_SETTING } from '../lib/PersonalApiKey.js';
+import VariableService, { checkValue, VARIABLES_STATE_EVENT } from '../lib/VariableService.js';
 
 vi.mock('homey-api', () => homeyApiMock);
 

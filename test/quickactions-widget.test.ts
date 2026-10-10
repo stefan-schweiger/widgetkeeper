@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadWidget } from './helpers/loadWidget.js';
+import { touch as fireTouch } from './helpers/touch.js';
 
 let win: any;
 beforeAll(() => { win = loadWidget('quickactions'); });
@@ -118,11 +119,7 @@ describe('tap', () => {
 
   it('taps on touch, but leaves drags to the dashboard', () => {
     const { tile, onTrigger } = widget([lamp(false)]);
-    const touch = (type: string, x: number, y: number) => {
-      const e = new Event(type, { bubbles: true, cancelable: true });
-      Object.assign(e, { changedTouches: [{ clientX: x, clientY: y }] });
-      tile('lamp').dispatchEvent(e);
-    };
+    const touch = (type: string, x: number, y: number) => fireTouch(tile('lamp'), type, x, y);
     touch('touchstart', 10, 10);
     touch('touchmove', 10, 40);
     touch('touchend', 10, 40);

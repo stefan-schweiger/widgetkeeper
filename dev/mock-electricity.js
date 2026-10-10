@@ -1,12 +1,11 @@
-/* Mock electricity snapshots for the dev pages (preview.html, screenshots.html). */
+/* Mock electricity snapshots for dev/preview.html (the screenshots and showcase use showcase-data.js). Needs mock-util.js. */
 // Mock data, ported from the prototype's generator (Handoff/prototype/Electricity Widget.dc.html).
-function rng(seed) { return () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
 const PB = [1.30, 1.25, 1.22, 1.20, 1.22, 1.35, 1.75, 2.25, 2.38, 2.05, 1.75, 1.50, 1.30, 1.22, 1.25, 1.40, 1.85, 2.30, 2.58, 2.50, 2.15, 1.80, 1.60, 1.42];
 const UB = [0.32, 0.30, 0.28, 0.29, 0.30, 0.35, 0.70, 1.10, 0.85, 0.55, 0.48, 0.52, 0.60, 0.50, 0.48, 0.55, 0.95, 1.60, 1.85, 1.40, 1.05, 0.80, 0.60, 0.42];
 
 // `solar`: solar panels export (negative power) around midday, and for the last 20 min of live readings.
 function mockSnapshot({ futureHours = 24, solar = false } = {}) {
-  const now = Date.now(), r = rng(4242);
+  const now = Date.now(), r = mockRng(4242);
   const hs = Math.floor(now / 3600e3) * 3600e3, mins = new Date(now).getMinutes();
   const prices = [];
   for (let i = 0; i < 49; i++) {

@@ -1,6 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { describeWidgetPerf } from '../../lib/Timings.js';
+import { idList, logged, logPerf } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -11,18 +11,13 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const ids = (query.deviceIds || '').split(',').filter(Boolean);
-    const perf = describeWidgetPerf(query.perf);
-    if (perf) app.debug(`Sensor dots widget: ${perf}`);
-    try {
-      const devices = await app.sensorAlarms.getState(ids);
+    logPerf(app, 'Sensor dots', query);
+    return logged(app, 'Sensor dots state failed:', async () => {
+      const devices = await app.sensorAlarms.getState(idList(query.deviceIds));
       return {
         devices: devices.map(d => ('missing' in d ? d : { ...d, alarms: d.alarms.filter(a => a.state) })),
         language: homey.i18n.getLanguage(),
       };
-    } catch (err) {
-      app.log('Sensor dots state failed:', err);
-      throw err;
-    }
+    });
   },
 };

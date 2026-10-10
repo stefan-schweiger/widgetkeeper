@@ -1,16 +1,11 @@
 /*
  * Mock `/history` responses for the heatmap previews: a light sensor (daylight through a window) and a
  * motion sensor (busy mornings and evenings). The last day is "today" up to `hour`; later hours are null.
+ * Needs mock-util.js.
  */
 (function () {
   const svg = body => 'data:image/svg+xml;base64,' + btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round">${body}</svg>`);
   const SENSOR = svg('<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>');
-
-  // A fixed pseudo-random sequence, so the previews don't change between renders.
-  function rng(seed) {
-    let s = seed;
-    return () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
-  }
 
   /** `count` days ending on `today` (YYYY-MM-DD). */
   function dates(today, count) {
@@ -23,12 +18,9 @@
     return out;
   }
 
+  /** `count` days of `fn(hour, weekday, r)` (a seeded sequence), ending on `today` at `hour`. */
   function days(today, hour, fn, seed, count = 7) {
-    const r = rng(seed);
-    return dates(today, count).map((d, i) => ({
-      ...d,
-      hours: Array.from({ length: 24 }, (_, h) => (i === count - 1 && h > hour ? null : fn(h, d.weekday, r))),
-    }));
+    return mockHeatmapDays(dates(today, count), hour, (h, d, r) => fn(h, d.weekday, r), seed);
   }
 
   window.mockHeatmapLux = function (today = '2026-10-04', hour = 9, count = 7) {

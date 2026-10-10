@@ -1,6 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { describeWidgetPerf } from '../../lib/Timings.js';
+import { idList, logged, logPerf } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -11,15 +11,10 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const ids = (query.deviceIds || '').split(',').filter(Boolean);
-    const perf = describeWidgetPerf(query.perf);
-    if (perf) app.debug(`Locks widget: ${perf}`);
-    try {
-      return { devices: await app.locks.getState(ids), language: homey.i18n.getLanguage() };
-    } catch (err) {
-      app.log('Locks state failed:', err);
-      throw err;
-    }
+    logPerf(app, 'Locks', query);
+    return logged(app, 'Locks state failed:', async () => (
+      { devices: await app.locks.getState(idList(query.deviceIds)), language: homey.i18n.getLanguage() }
+    ));
   },
 
   /** `{deviceId, capabilityId: 'locked' | 'garagedoor_closed', value}`. */
@@ -28,13 +23,11 @@ export default {
     body: { deviceId?: unknown, capabilityId?: unknown, value?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    if (typeof body?.deviceId !== 'string' || !body.deviceId) throw new Error('Missing deviceId');
-    try {
-      await app.locks.set(body.deviceId, body.capabilityId, body.value);
+    const deviceId = body?.deviceId;
+    if (typeof deviceId !== 'string' || !deviceId) throw new Error('Missing deviceId');
+    return logged(app, 'Lock change failed:', async () => {
+      await app.locks.set(deviceId, body.capabilityId, body.value);
       return { ok: true };
-    } catch (err) {
-      app.log('Lock change failed:', err);
-      throw err;
-    }
+    });
   },
 };

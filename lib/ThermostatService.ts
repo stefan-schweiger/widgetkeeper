@@ -1,24 +1,24 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import { listDevicesWhere, matches, type AutocompleteItem } from './autocomplete.js';
+import { describeCapability } from './capabilities.js';
+import DeviceTracker, { type TrackedEntry } from './DeviceTracker.js';
 import { fetchDeviceIcon } from './deviceIcon.js';
 import Timings from './Timings.js';
 
-const MINUTE = 60e3;
-const TICK = MINUTE;
-const IDLE_TIMEOUT = 10 * MINUTE;
 const CONFIRM_TIMEOUT = 4000; // wait for a value to be reported before sending the next
 const CONFIRM_POLL = 300;
 const BASE_CAPS = ['onoff', 'target_temperature', 'thermostat_mode', 'measure_temperature'];
 
 export const STATE_EVENT = 'thermostat:state';
 
-export type CapInfo = {
+type CapInfo = {
   title: string,
   units: string | null,
   values: { id: string, title: string }[] | null, // enum capabilities only
 };
 
-export type ThermostatState = {
+type ThermostatState = {
   name: string,
   icon: string | null, // the device's icon as an SVG data URL (the widget uses it as a mask)
   values: Record<string, unknown>,
@@ -27,16 +27,14 @@ export type ThermostatState = {
 
 export type CapValue = { capabilityId: string, value: unknown };
 
-export type AutocompleteItem = { name: string, description?: string, [key: string]: unknown };
+/** A preset option: a value to set (`capabilityId`, `value`), or none (`Don't change`). */
+type PresetOption = { name: string, capabilityId?: string, value?: unknown };
 
-type Tracked = {
-  deviceId: string,
+type Tracked = TrackedEntry & {
   name: string,
   icon: string | null,
   values: Record<string, unknown>,
   caps: Record<string, CapInfo>,
-  instances: any[],
-  lastRequested: number,
 };
 
 /** Capabilities a shortcut can set: the thermostat basics plus every settable enum (mode, fan, swing…). */
@@ -46,23 +44,23 @@ function relevantCaps(device: any): string[] {
     || (obj[id]?.type === 'enum' && obj[id]?.setable !== false));
 }
 
-function isThermostat(device: any): boolean {
+/** A device the thermostat widget can use (the same ones its device setting lists). */
+export function isThermostat(device: any): boolean {
   return !!(device?.capabilities?.includes('target_temperature') || device?.capabilities?.includes('thermostat_mode'));
 }
 
 function capInfo(cap: any, id: string): CapInfo {
-  return {
-    title: typeof cap?.title === 'string' ? cap.title : id,
-    units: typeof cap?.units === 'string' ? cap.units : null,
-    values: Array.isArray(cap?.values)
-      ? cap.values.map((v: any) => ({ id: String(v.id), title: typeof v.title === 'string' ? v.title : String(v.id) }))
-      : null,
-  };
+  const { title, units, values } = describeCapability(cap, id);
+  return { title, units, values };
 }
 
-function matches(query: string, ...texts: (string | undefined)[]) {
-  const q = (query || '').trim().toLowerCase();
-  return !q || texts.some(t => t?.toLowerCase().includes(q));
+/** The capabilities and values of the ones a shortcut can set, read into the entry. */
+function readState(t: Tracked, device: any) {
+  for (const id of relevantCaps(device)) {
+    const cap = device.capabilitiesObj[id];
+    t.caps[id] = capInfo(cap, id);
+    t.values[id] = cap?.value ?? null;
+  }
 }
 
 /** A tracked device that can no longer be read. */
@@ -72,30 +70,53 @@ class MissingError extends Error {
 
 export default class ThermostatService {
 
-  private tracked = new Map<string, Tracked>();
-  private trackPromises = new Map<string, Promise<Tracked>>();
+  private tracker: DeviceTracker<Tracked>;
   private applying = new Map<string, { gen: number, done: Promise<void> }>();
-  private tickTimer: NodeJS.Timeout | null = null;
 
   constructor(
     private homey: Homey.App['homey'],
     private log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
-  ) {}
+  ) {
+    // An open widget keeps its entry alive indefinitely, so each request re-reads the device: a rename, changed
+    // capabilities or a deleted device would otherwise never show.
+    this.tracker = new DeviceTracker<Tracked>({
+      homey,
+      debug,
+      what: 'Thermostat capabilities',
+      signature: device => (isThermostat(device) ? relevantCaps(device).join() : 'not a thermostat'),
+      create: async (device, api, tm) => {
+        this.assertThermostat(device);
+        const t = { name: device.name, icon: await tm.time('icon', () => fetchDeviceIcon(api, device, this.log)), values: {}, caps: {} };
+        readState(t as Tracked, device);
+        return t;
+      },
+      listen: (t, device) => {
+        const ids = Object.keys(t.caps);
+        this.debug(`Tracking thermostat ${device.name} (${t.key}):`,
+          ids.map(id => `${id}=${JSON.stringify(t.values[id])}${t.caps[id].values ? ` [${t.caps[id].values!.map(v => v.id).join('|')}]` : ''}`).join(', '));
+        return ids.map(id => device.makeCapabilityInstance(id, (value: unknown) => {
+          t.values[id] = value;
+          this.homey.api.realtime(STATE_EVENT, { deviceId: t.key, capabilityId: id, value });
+        }));
+      },
+      refresh: async (t, device, api, tm) => {
+        t.name = device.name;
+        t.icon = await tm.time('icon', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
+        readState(t, device);
+      },
+      label: t => t.name,
+      readError: err => new MissingError(err),
+    });
+  }
 
   start() {
-    this.tickTimer = this.homey.setInterval(() => this.tick(), TICK);
+    this.tracker.start();
   }
 
   async stop() {
-    if (this.tickTimer) this.homey.clearInterval(this.tickTimer);
-    for (const t of this.tracked.values()) this.dispose(t);
+    this.tracker.stop();
   }
-
-  private getApi(): Promise<any> {
-    return getAppApi(this.homey);
-  }
-
   /** The widget API may only touch thermostat-like devices (the same ones the device setting lists). */
   private assertThermostat(device: any) {
     if (!isThermostat(device)) throw new Error(`${device?.name ?? 'Device'} is not a thermostat`);
@@ -106,13 +127,12 @@ export default class ThermostatService {
     const tm = new Timings();
     let t: Tracked;
     try {
-      t = await this.current(deviceId, tm);
+      t = await this.tracker.current(deviceId, tm);
     } catch (err) {
       if (!(err instanceof MissingError)) throw err;
       this.log(`Thermostat ${deviceId} unavailable:`, err.reason);
       return { missing: true };
     }
-    t.lastRequested = Date.now();
     this.debug(`Thermostat state ${t.name}: ${tm.summary()}`);
     return { name: t.name, icon: t.icon, values: { ...t.values }, caps: t.caps };
   }
@@ -142,7 +162,7 @@ export default class ThermostatService {
 
   private async applyNow(deviceId: string, values: CapValue[], superseded: () => boolean) {
     if (superseded()) return;
-    const api = await this.getApi();
+    const api = await getAppApi(this.homey);
     const device = await api.devices.getDevice({ id: deviceId, $cache: false });
     this.assertThermostat(device);
     const obj = device.capabilitiesObj || {};
@@ -200,23 +220,14 @@ export default class ThermostatService {
 
   // ---------------------------------------------------------------- settings autocomplete
 
-  async listDevices(query: string): Promise<AutocompleteItem[]> {
-    const api = await this.getApi();
-    const [devices, zones] = await Promise.all([
-      api.devices.getDevices(),
-      api.zones.getZones().catch(() => ({})),
-    ]);
-    return (Object.values(devices) as any[])
-      .filter(isThermostat)
-      .map(d => ({ name: d.name as string, description: (zones as any)[d.zone]?.name, id: d.id as string }))
-      .filter(d => matches(query, d.name, d.description))
-      .sort((a, b) => a.name.localeCompare(b.name));
+  listDevices(query: string): Promise<AutocompleteItem[]> {
+    return listDevicesWhere(this.homey, query, isThermostat);
   }
 
   /** Every value of every settable enum capability, e.g. "Fan speed: Medium". */
-  async listEnumOptions(deviceId: string | undefined, query: string): Promise<AutocompleteItem[]> {
+  async listEnumOptions(deviceId: string | undefined, query: string): Promise<PresetOption[]> {
     const device = await this.getDeviceForSettings(deviceId);
-    const items: AutocompleteItem[] = [];
+    const items: PresetOption[] = [];
     for (const id of relevantCaps(device)) {
       const info = capInfo(device.capabilitiesObj[id], id);
       for (const v of info.values || []) {
@@ -227,7 +238,7 @@ export default class ThermostatService {
   }
 
   /** Target temperatures within the capability's range and step. */
-  async listTemperatures(deviceId: string | undefined, query: string): Promise<AutocompleteItem[]> {
+  async listTemperatures(deviceId: string | undefined, query: string): Promise<PresetOption[]> {
     const device = await this.getDeviceForSettings(deviceId);
     const cap = device.capabilitiesObj?.target_temperature;
     if (!cap) return [this.unchanged()];
@@ -235,7 +246,7 @@ export default class ThermostatService {
     const max = typeof cap.max === 'number' ? cap.max : 30;
     const step = typeof cap.step === 'number' && cap.step > 0 ? cap.step : 0.5;
     const units = typeof cap.units === 'string' ? cap.units : '°C';
-    const items: AutocompleteItem[] = [];
+    const items: PresetOption[] = [];
     for (let v = min; v <= max + 1e-9 && items.length < 200; v += step) {
       const value = Math.round(v * 100) / 100;
       items.push({ name: `${value} ${units}`, capabilityId: 'target_temperature', value });
@@ -243,102 +254,14 @@ export default class ThermostatService {
     return [this.unchanged(), ...items.filter(i => matches(query, i.name))];
   }
 
-  private unchanged(): AutocompleteItem {
+  private unchanged(): PresetOption {
     return { name: this.homey.__('thermostat.unchanged') || "Don't change" };
   }
 
   private async getDeviceForSettings(deviceId: string | undefined) {
     if (!deviceId) throw new Error(this.homey.__('thermostat.selectDeviceFirst') || 'Select a device first');
-    const api = await this.getApi();
+    const api = await getAppApi(this.homey);
     return api.devices.getDevice({ id: deviceId });
-  }
-
-  // ---------------------------------------------------------------- live state
-
-  /**
-   * The tracked entry, re-read from the device when it was already tracked: an open widget keeps the
-   * entry alive indefinitely, so a rename, changed capabilities or a deleted device would otherwise never show.
-   */
-  private async current(deviceId: string, tm: Timings): Promise<Tracked> {
-    const t = this.tracked.get(deviceId);
-    if (!t) return this.ensureTracked(deviceId, tm);
-    const api = await this.getApi();
-    let device: any;
-    try {
-      device = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId, $cache: false }));
-    } catch (err) {
-      this.dispose(t);
-      throw new MissingError(err);
-    }
-    const ids = relevantCaps(device);
-    if (!isThermostat(device) || ids.join() !== Object.keys(t.caps).join()) {
-      this.debug(`Capabilities of ${device.name} changed, tracking again`);
-      this.dispose(t);
-      return this.ensureTracked(deviceId, tm);
-    }
-    t.name = device.name;
-    t.icon = await tm.time('icon', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
-    for (const id of ids) {
-      const cap = device.capabilitiesObj[id];
-      t.caps[id] = capInfo(cap, id);
-      t.values[id] = cap?.value ?? null;
-    }
-    return t;
-  }
-
-  private ensureTracked(deviceId: string, tm: Timings): Promise<Tracked> {
-    const existing = this.tracked.get(deviceId);
-    if (existing) return Promise.resolve(existing);
-    let p = this.trackPromises.get(deviceId);
-    if (!p) {
-      p = this.track(deviceId, tm).finally(() => this.trackPromises.delete(deviceId));
-      this.trackPromises.set(deviceId, p);
-    }
-    return p;
-  }
-
-  private async track(deviceId: string, tm: Timings): Promise<Tracked> {
-    const api = await tm.time('api', () => this.getApi());
-    const device: any = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId }));
-    this.assertThermostat(device);
-    const ids = relevantCaps(device);
-    const t: Tracked = {
-      deviceId,
-      name: device.name,
-      icon: await tm.time('icon', () => fetchDeviceIcon(api, device, this.log)),
-      values: {},
-      caps: {},
-      instances: [],
-      lastRequested: Date.now(),
-    };
-    for (const id of ids) {
-      const cap = device.capabilitiesObj[id];
-      t.caps[id] = capInfo(cap, id);
-      t.values[id] = cap?.value ?? null;
-      t.instances.push(device.makeCapabilityInstance(id, (value: unknown) => {
-        t.values[id] = value;
-        this.homey.api.realtime(STATE_EVENT, { deviceId, capabilityId: id, value });
-      }));
-    }
-    this.tracked.set(deviceId, t);
-    this.debug(`Tracking thermostat ${device.name} (${deviceId}):`,
-      ids.map(id => `${id}=${JSON.stringify(t.values[id])}${t.caps[id].values ? ` [${t.caps[id].values!.map(v => v.id).join('|')}]` : ''}`).join(', '));
-    return t;
-  }
-
-  private tick() {
-    const now = Date.now();
-    for (const t of this.tracked.values()) {
-      if (now - t.lastRequested > IDLE_TIMEOUT) this.dispose(t);
-    }
-  }
-
-  private dispose(t: Tracked) {
-    for (const i of t.instances) {
-      try { i.destroy(); } catch (err) { /* ignore */ }
-    }
-    if (this.tracked.get(t.deviceId) === t) this.tracked.delete(t.deviceId);
-    this.debug(`Stopped tracking ${t.name}`);
   }
 
 }
