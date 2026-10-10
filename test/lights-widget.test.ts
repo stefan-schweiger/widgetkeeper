@@ -119,9 +119,10 @@ describe('tap', () => {
     expect(value('spots')).toBe('40');
   });
 
-  it('toggles from the keyboard: the tile is a button that takes Enter and Space', () => {
+  it('toggles from the keyboard: the tile is a focusable group that takes Enter and Space', () => {
     const { tile, onSet } = widget([bulb(false)]);
-    expect(tile('bulb').getAttribute('role')).toBe('button');
+    expect(tile('bulb').getAttribute('role')).toBe('group'); // not a button: it holds the chip and the slider
+    expect(tile('bulb').getAttribute('aria-label')).toBe('Kitchen');
     expect(tile('bulb').getAttribute('tabindex')).toBe('0');
     tile('bulb').dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
     expect(onSet).toHaveBeenLastCalledWith('bulb', { onoff: true });
@@ -211,6 +212,10 @@ describe('swatch panel', () => {
     };
     // A swipe that starts and ends on the chip is the dashboard's.
     touch('touchstart', 10); touch('touchmove', 40); touch('touchend', 40);
+    expect(shownPanel(root)).toBe(false);
+    // A short swipe (past TAP_SLOP, inside the browser's own limit) still gets the browser's click: ignored.
+    touch('touchstart', 10); touch('touchmove', 23); touch('touchend', 23);
+    chip.click();
     expect(shownPanel(root)).toBe(false);
     touch('touchstart', 10); touch('touchend', 13);
     expect(shownPanel(root)).toBe(true);

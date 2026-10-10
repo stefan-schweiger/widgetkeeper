@@ -87,6 +87,30 @@ describe('DeviceTracker', () => {
     expect(onDispose).toHaveBeenCalledTimes(2);
   });
 
+  it('disposes an entry once when two re-reads see the change at the same time', async () => {
+    const { device, tracker, onDispose, debug } = setup();
+    const first = await tracker.current('d1', new Timings());
+    device.capabilitiesObj.dim = { id: 'dim', value: 0.5 };
+    const [a, b] = await Promise.all([tracker.current('d1', new Timings()), tracker.current('d1', new Timings())]);
+    expect(a).toBe(b);
+    expect(a).not.toBe(first);
+    expect(onDispose).toHaveBeenCalledTimes(1);
+    expect(debug.mock.calls.filter(c => c[0] === 'Stopped tracking plug Plug')).toHaveLength(1);
+    expect(device.listenerCount('onoff')).toBe(1);
+    tracker.dispose(first); // again: nothing happens
+    expect(onDispose).toHaveBeenCalledTimes(1);
+  });
+
+  it('subscribes to nothing when stopped while a device is being tracked', async () => {
+    const { device, tracker } = setup();
+    tracker.start();
+    const pending = tracker.current('d1', new Timings());
+    tracker.stop();
+    await expect(pending).rejects.toThrow('Stopped before d1 was tracked');
+    expect(device.listenerCount('onoff')).toBe(0);
+    expect(tracker.get('d1')).toBeUndefined();
+  });
+
   it('answers one entry per key, a failing one as missing', async () => {
     const { tracker } = setup();
     const log = vi.fn();

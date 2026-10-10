@@ -15,12 +15,15 @@ export function idList(s: string | undefined): string[] {
   return (s || '').split(',').filter(Boolean);
 }
 
-/** `fn`'s answer; a failure is logged as `<label> <error>` and thrown on. */
-export async function logged<T>(app: AppLog, label: string, fn: () => Promise<T>): Promise<T> {
+/**
+ * `fn`'s answer; a failure is logged as `<label> <error>` and thrown on. A label that costs something to build (the
+ * request body as JSON) can be a function, called only on a failure.
+ */
+export async function logged<T>(app: AppLog, label: string | (() => string), fn: () => Promise<T>): Promise<T> {
   try {
     return await fn();
   } catch (err) {
-    app.log(label, err);
+    app.log(typeof label === 'function' ? label() : label, err);
     throw err;
   }
 }

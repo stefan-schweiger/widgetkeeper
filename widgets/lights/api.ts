@@ -20,7 +20,7 @@ export default {
     body: { deviceId?: string } & LightChange,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    return logged(app, `Light change failed, body: ${JSON.stringify(body)}`, async () => {
+    return logged(app, () => `Light change failed, body: ${JSON.stringify(body)}`, async () => {
       if (!body?.deviceId) throw new Error('Missing deviceId');
       await app.lights.set(body.deviceId, { dim: body.dim, onoff: body.onoff, temperature: body.temperature, hue: body.hue, saturation: body.saturation });
       return { ok: true };

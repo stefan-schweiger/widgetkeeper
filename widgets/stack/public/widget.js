@@ -460,8 +460,8 @@
     }, { passive: true });
     el.addEventListener('touchend', (e) => {
       const p = e.changedTouches[0];
+      touched = Date.now(); // every touch: one that moved 10 px or more can still get the browser's click
       if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) < 10) {
-        touched = Date.now();
         e.preventDefault();
         fn();
       }

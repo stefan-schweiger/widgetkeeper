@@ -1,7 +1,7 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import { listDevicesWhere, matches, type AutocompleteItem } from './autocomplete.js';
-import { describeCapability } from './capabilities.js';
+import { capabilityValues, describeCapability } from './capabilities.js';
 import DeviceTracker, { type TrackedEntry } from './DeviceTracker.js';
 import { fetchDeviceIcon } from './deviceIcon.js';
 import Timings from './Timings.js';
@@ -50,8 +50,9 @@ export function isThermostat(device: any): boolean {
 }
 
 function capInfo(cap: any, id: string): CapInfo {
-  const { title, units, values } = describeCapability(cap, id);
-  return { title, units, values };
+  const { title, units } = describeCapability(cap, id);
+  // Any values list, not only an enum's: describeCapability() keeps them for `type: 'enum'` alone.
+  return { title, units, values: capabilityValues(cap) };
 }
 
 /** The capabilities and values of the ones a shortcut can set, read into the entry. */

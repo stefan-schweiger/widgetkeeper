@@ -27,7 +27,7 @@ export default {
     body: { deviceId?: string, capabilityId?: string, value?: unknown, maxVolume?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    return logged(app, `Media change failed, body: ${JSON.stringify(body)}`, async () => {
+    return logged(app, () => `Media change failed, body: ${JSON.stringify(body)}`, async () => {
       if (!body?.deviceId || !body.capabilityId) throw new Error('Missing deviceId or capabilityId');
       await app.media.set(body.deviceId, body.capabilityId, body.value, body.maxVolume);
       return { ok: true };

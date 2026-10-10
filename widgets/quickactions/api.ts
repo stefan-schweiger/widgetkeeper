@@ -19,7 +19,7 @@ export default {
     body: { deviceId?: string, value?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    return logged(app, `Quick action failed, body: ${JSON.stringify(body)}`, async () => {
+    return logged(app, () => `Quick action failed, body: ${JSON.stringify(body)}`, async () => {
       if (!body?.deviceId) throw new Error('Missing deviceId');
       await app.quickActions.trigger(body.deviceId, body.value);
       return { ok: true };

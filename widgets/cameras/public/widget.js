@@ -355,9 +355,10 @@
       node.addEventListener('touchend', (e) => {
         const tap = !!start;
         start = null;
+        // Every touch: one that moved past TAP_SLOP can still get the browser's click.
+        lastTouchTap = Date.now(); // the real clock: opts.now may be fixed
         if (!tap) return;
         e.preventDefault(); // no click after it
-        lastTouchTap = Date.now(); // the real clock: opts.now may be fixed
         press(id);
       });
       node.addEventListener('touchcancel', () => { start = null; });

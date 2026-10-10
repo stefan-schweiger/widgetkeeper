@@ -83,10 +83,11 @@
     node.addEventListener('touchend', (e) => {
       const tap = !!start;
       unpress();
+      // Every touch: one that moved past TAP_SLOP can still get the browser's click.
+      lastTouchTap = Date.now();
       if (!tap) return;
       e.preventDefault(); // no click after it
       e.stopPropagation(); // a −/+ tap isn't also a tap on its row
-      lastTouchTap = Date.now();
       fn(e);
     });
     node.addEventListener('touchcancel', unpress);

@@ -19,7 +19,7 @@ export default {
     body: { deviceId?: string, action?: unknown, position?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    return logged(app, `Curtain change failed, body: ${JSON.stringify(body)}`, async () => {
+    return logged(app, () => `Curtain change failed, body: ${JSON.stringify(body)}`, async () => {
       if (!body?.deviceId) throw new Error('Missing deviceId');
       await app.curtains.set(body.deviceId, { action: body.action, position: body.position });
       return { ok: true };

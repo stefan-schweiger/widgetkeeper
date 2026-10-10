@@ -21,7 +21,7 @@ export default {
     body: { deviceId?: string, values?: CapValue[] },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    return logged(app, `Thermostat apply failed, body: ${JSON.stringify(body)}`, async () => {
+    return logged(app, () => `Thermostat apply failed, body: ${JSON.stringify(body)}`, async () => {
       if (!body?.deviceId || !Array.isArray(body.values)) throw new Error('Missing deviceId or values');
       await app.thermostat.apply(body.deviceId, body.values);
       return { ok: true };

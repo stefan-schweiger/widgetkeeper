@@ -51,15 +51,21 @@ export default class DeviceTracker<T extends TrackedEntry> {
   private tracked = new Map<string, T>();
   private trackPromises = new Map<string, Promise<T>>();
   private tickTimer: NodeJS.Timeout | null = null;
+  private disposed = new WeakSet<T>();
+  /** Set by `stop()`: a track still under way then subscribes to nothing. */
+  private stopped = false;
 
   constructor(private opts: DeviceTrackerOptions<T>) {}
 
   start() {
+    this.stopped = false;
     this.tickTimer = this.opts.homey.setInterval(() => this.tick(), TICK);
   }
 
   stop() {
+    this.stopped = true;
     if (this.tickTimer) this.opts.homey.clearInterval(this.tickTimer);
+    this.tickTimer = null;
     for (const t of this.tracked.values()) this.dispose(t);
   }
 
@@ -112,6 +118,8 @@ export default class DeviceTracker<T extends TrackedEntry> {
       this.dispose(t);
       throw this.opts.readError ? this.opts.readError(err) : err;
     }
+    // Another request's re-read disposed or replaced it meanwhile: use what that one left.
+    if (!this.isCurrent(t)) return this.ensureTracked(key, tm);
     const signature = this.opts.signature(device, key);
     if (signature !== t.signature) {
       this.opts.debug(`${this.opts.what} of ${device.name} changed: ${t.signature || 'none'} → ${signature || 'none'}`);
@@ -142,6 +150,7 @@ export default class DeviceTracker<T extends TrackedEntry> {
     const api = await tm.time('api', () => getAppApi(this.opts.homey));
     const device: any = await tm.time('getDevice', () => api.devices.getDevice({ id: this.deviceId(key) }));
     const own = await this.opts.create(device, api, tm, key);
+    if (this.stopped) throw new Error(`Stopped before ${key} was tracked`); // nothing would ever destroy its instances
     const t = { ...own, key, instances: [], lastRequested: Date.now(), signature: this.opts.signature(device, key) } as unknown as T;
     t.instances = this.opts.listen(t, device);
     this.tracked.set(key, t);
@@ -160,6 +169,8 @@ export default class DeviceTracker<T extends TrackedEntry> {
   }
 
   dispose(t: T) {
+    if (this.disposed.has(t)) return; // two re-reads that failed or saw a change at once
+    this.disposed.add(t);
     for (const i of t.instances) {
       try { i?.destroy(); } catch (err) { /* ignore */ }
     }

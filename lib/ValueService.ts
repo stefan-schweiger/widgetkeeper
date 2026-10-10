@@ -39,6 +39,13 @@ export function parseSlot(slot: string): { deviceId: string, capabilityId: strin
   return { deviceId: slot.slice(0, i), capabilityId: slot.slice(i + 1) };
 }
 
+/** `parseSlot()` for a tracker key, which must be a valid slot: anything else throws a clear error. */
+function slotOf(key: string): { deviceId: string, capabilityId: string } {
+  const s = parseSlot(key);
+  if (!s) throw new Error(`Not a slot (<deviceId>:<capabilityId>): ${key}`);
+  return s;
+}
+
 /** The device's capabilities a tile can show: readable numbers, booleans, enums and strings. */
 export function valueCaps(device: any): string[] {
   const caps = device?.capabilitiesObj || {};
@@ -60,11 +67,11 @@ export default class ValueService {
     this.tracker = new DeviceTracker<Tracked>({
       homey,
       debug,
-      deviceId: key => parseSlot(key)!.deviceId,
+      deviceId: key => slotOf(key).deviceId,
       what: 'Value',
       signature: () => '', // one capability: a re-read without it fails in `refresh`
       create: async (device, api, tm, key) => {
-        const { deviceId, capabilityId } = parseSlot(key)!;
+        const { deviceId, capabilityId } = slotOf(key);
         const cap = device.capabilitiesObj?.[capabilityId];
         if (!cap) throw new Error(`${device.name} has no capability ${capabilityId}`);
         const icon = await tm.time('icon', () => fetchSvgIcon(api, cap.iconObj, `${device.name} ${capabilityId}`, this.log));

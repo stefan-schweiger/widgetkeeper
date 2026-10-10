@@ -310,11 +310,15 @@
       for (const d of changes) send(item, d, { position: pos(value) });
     }
 
-    /** Taps on the tile body: a touch that ends within TAP_SLOP, or a click. Drags scroll the dashboard. */
-    function onTap(node, fn) {
+    /**
+     * Taps on the tile body: a touch that ends within TAP_SLOP, or a click. Drags scroll the dashboard.
+     * `stop` keeps a control's taps (and keys) from also reaching the tile around it.
+     */
+    function onTap(node, fn, { stop = false } = {}) {
       let start = null;
       const unpress = () => { start = null; node.classList.remove('pressing'); };
       node.addEventListener('touchstart', (e) => {
+        if (stop) e.stopPropagation();
         const p = e.changedTouches[0];
         start = { x: p.clientX, y: p.clientY };
         node.classList.add('pressing');
@@ -326,19 +330,23 @@
       node.addEventListener('touchend', (e) => {
         const isTap = !!start;
         unpress();
+        // Every touch: one that moved past TAP_SLOP can still get the browser's click.
+        lastTouchTap = Date.now();
         if (!isTap) return;
         e.preventDefault(); // no click after it
-        lastTouchTap = Date.now();
+        if (stop) e.stopPropagation();
         fn();
       });
       node.addEventListener('touchcancel', unpress);
-      node.addEventListener('click', () => {
+      node.addEventListener('click', (e) => {
+        if (stop) e.stopPropagation();
         if (Date.now() - lastTouchTap < 800) return;
         fn();
       });
       node.addEventListener('keydown', (e) => {
         if (e.key !== 'Enter' && e.key !== ' ') return;
         e.preventDefault();
+        if (stop) e.stopPropagation();
         fn();
       });
     }
@@ -435,7 +443,7 @@
     function tileFor(id) {
       let tile = tiles.get(id);
       if (!tile) {
-        const node = el('div', { class: 'ct-tile', 'data-device': id, role: 'button', tabindex: '0' });
+        const node = el('div', { class: 'ct-tile', 'data-device': id, role: 'group', tabindex: '0' });
         const top = el('div', { class: 'ct-top' }, node);
         const icon = makeIcon(top);
         const act = el('span', { class: 'ct-act' }, top);
@@ -532,7 +540,9 @@
           }
         }
         tile.act.style.display = action ? '' : 'none';
+        // A group, not a button: it holds the slider, which has its own role.
         tile.tile.setAttribute('aria-label', `${item.name}: ${action ? t(action) : stateText(v)}`);
+        tile.bar.setAttribute('aria-label', item.name);
         drawIcon(tile.icon, item.kind, openness);
         tile.tile.style.setProperty('--ct-x', String(x));
         tile.tile.style.setProperty('--ct-target', String(v.target != null ? v.target : x));
