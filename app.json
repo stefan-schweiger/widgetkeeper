@@ -72,6 +72,34 @@
     "putVariablesKey": {
       "method": "PUT",
       "path": "/variables-key"
+    },
+    "getWebSetup": {
+      "method": "GET",
+      "path": "/web/setup"
+    },
+    "getWebDevices": {
+      "method": "GET",
+      "path": "/web/devices"
+    },
+    "postWebAutocomplete": {
+      "method": "POST",
+      "path": "/web/autocomplete"
+    },
+    "putWebDashboard": {
+      "method": "PUT",
+      "path": "/web/dashboards"
+    },
+    "deleteWebDashboard": {
+      "method": "DELETE",
+      "path": "/web/dashboards/:id"
+    },
+    "postWebCall": {
+      "method": "POST",
+      "path": "/web/call"
+    },
+    "getWebAddress": {
+      "method": "GET",
+      "path": "/web/address"
     }
   },
   "esm": true,

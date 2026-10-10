@@ -4,6 +4,12 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ## 0.9.0
 
+### New: Web dashboards
+- Widgetkeeper widgets in any browser on your home network (a wall tablet, a computer, a TV), with the same settings and live updates as on a Homey dashboard. The address is in the app settings.
+- Build the dashboards on the page itself: columns of widgets, moved and set up in place, in light, dark or automatic. Drag a widget by its bar to move it. They're kept on your Homey.
+- Off until you turn them on in the app settings.
+- The page asks for a Homey API key, which stays in that browser.
+
 ### New: Smart Stack
 - Widgetkeeper widgets from another dashboard, one at a time in the space of one, like a Smart Stack on a phone. Set up a dashboard with the widgets to rotate, then pick it in the stack.
 - It turns to the next widget every 30 seconds (or 10 s to 5 min, or never). Swipe or tap the dots to move by hand; it then holds still for a minute.

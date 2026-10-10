@@ -20,6 +20,7 @@
     "clips": "node scripts/render-clips.mjs",
     "showcase": "node scripts/render-showcase.mjs",
     "flow-icons": "node scripts/render-flow-icons.mjs",
+    "web-socket": "node scripts/build-web-socket.mjs",
     "diagnostics": "node scripts/diagnostics.mjs",
     "validate": "homey app validate --level debug",
     "start": "homey app run",
@@ -32,9 +33,11 @@
     "@tsconfig/node16": "^16.1.9",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
     "@types/node": "^26.6.3",
+    "esbuild": "^0.28.2",
     "happy-dom": "^20.14.5",
     "homey": "^4.5.3",
     "sharp": "^0.34.5",
+    "socket.io-client": "^2.5.0",
     "typescript": "^7.0.2",
     "vitest": "^5.0.3"
   }

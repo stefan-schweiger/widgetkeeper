@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Widgetkeeper</title>
+  <!-- Homey's own widget stylesheet (its tokens, fonts and dark mode), as each widget frame gets it. -->
+  <link rel="stylesheet" href="/widgets/css/homey.widgets.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <script src="socket.io.js"></script>
+  <script src="dashboard.js"></script>
+</head>
+<body>
+  <div id="app" class="wd"></div>
+  <script>
+    mountWebDashboards(document.getElementById('app'));
+  </script>
+</body>
+</html>

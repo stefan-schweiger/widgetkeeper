@@ -2,6 +2,7 @@ import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
 import { isStackType } from '../../lib/StackService.js';
 import { keyResult, logPerf } from '../../lib/widgetApi.js';
+import { callWidgetRoute, findWidgetRoute, type WidgetApis } from '../../lib/widgetRoutes.js';
 import electricity from '../electricity/api.js';
 import thermostat from '../thermostat/api.js';
 import quickactions from '../quickactions/api.js';
@@ -24,22 +25,14 @@ import media from '../media/api.js';
 type Homey = App['homey'];
 
 /** Each page widget's own API (its `api.ts`), by widget id. */
-const PAGE_APIS: Record<string, Record<string, (args: any) => Promise<unknown>>> = {
+export const PAGE_APIS: WidgetApis = {
   electricity, thermostat, quickactions, sensoralarms, sensordots, weather, heatmap, cameras, values,
   lights, sparklines, variables, flows, price, timers, locks, curtains, media,
 };
 
-/**
- * A page's API route: the handler of the widget's own `api.ts` whose method and path (from the manifest, i.e. its
- * `widget.compose.json`) match, or null. Only those routes can be reached, as from the widget's own frame.
- */
+/** A page's API route (`findWidgetRoute()`), or null; a stack's own routes can't be reached from a page. */
 export function findRoute(homey: Homey, type: string, method: string, path: string): string | null {
-  if (!isStackType(type)) return null;
-  const routes = (homey.manifest as any)?.widgets?.[type]?.api ?? {};
-  for (const [name, route] of Object.entries(routes) as [string, any][]) {
-    if (route?.method === method && route?.path === path && typeof PAGE_APIS[type]?.[name] === 'function') return name;
-  }
-  return null;
+  return isStackType(type) ? findWidgetRoute(homey, PAGE_APIS, type, method, path) : null;
 }
 
 export default {
@@ -66,11 +59,7 @@ export default {
     body: { type?: unknown, method?: unknown, path?: unknown, query?: unknown, body?: unknown },
   }) {
     const type = String(body?.type ?? '');
-    const route = findRoute(homey, type, String(body?.method ?? ''), String(body?.path ?? ''));
-    if (!route) throw new Error(`Not a widget route: ${type} ${body?.method} ${body?.path}`);
-    const query = body?.query && typeof body.query === 'object' ? Object.fromEntries(
-      Object.entries(body.query as Record<string, unknown>).map(([k, v]) => [k, String(v)]),
-    ) : {};
-    return PAGE_APIS[type][route]({ homey, query, body: body?.body ?? {}, params: {} });
+    if (!isStackType(type)) throw new Error(`Not a widget route: ${type} ${body?.method} ${body?.path}`);
+    return callWidgetRoute(homey, PAGE_APIS, type, String(body?.method ?? ''), String(body?.path ?? ''), body?.query, body?.body);
   },
 };

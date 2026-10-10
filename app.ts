@@ -19,11 +19,8 @@ import TimerService, { TIMER_FINISHED_CARD, timerDurationText, type Timer } from
 import ValueService from './lib/ValueService.js';
 import VariableService from './lib/VariableService.js';
 import WeatherService from './lib/WeatherService.js';
-
-const VALUE_SLOTS = [1, 2, 3, 4, 5, 6];
-const VARIABLE_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const FLOW_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8];
-const MEDIA_BUTTONS = [1, 2, 3, 4];
+import WebDashboardService from './lib/WebDashboardService.js';
+import { widgetAutocompletes } from './lib/widgetAutocompletes.js';
 
 export default class WidgetkeeperApp extends Homey.App {
 
@@ -45,6 +42,7 @@ export default class WidgetkeeperApp extends Homey.App {
   curtains!: CurtainService;
   media!: MediaService;
   stack!: StackService;
+  web!: WebDashboardService;
   /** The user's personal API key, shared by Flow Variables, Flow Buttons, Media and the Smart Stack (the app's token may only read). */
   apiKey!: PersonalApiKey;
 
@@ -59,7 +57,6 @@ export default class WidgetkeeperApp extends Homey.App {
     this.electricity.warmUp();
     this.thermostat = new ThermostatService(this.homey, log, debug);
     this.thermostat.start();
-    this.registerThermostatSettings();
     this.quickActions = new QuickActionService(this.homey, log, debug);
     this.quickActions.start();
     this.sensorAlarms = new SensorAlarmService(this.homey, log, debug);
@@ -68,23 +65,18 @@ export default class WidgetkeeperApp extends Homey.App {
     this.weather.start();
     this.heatmap = new HeatmapService(this.homey, log, debug);
     this.heatmap.start();
-    this.registerHeatmapSettings();
     this.cameras = new CameraService(this.homey, log, debug);
     this.values = new ValueService(this.homey, log, debug);
     this.values.start();
-    this.registerValueSettings();
     this.registerValueFlows();
     this.lights = new LightService(this.homey, log, debug);
     this.lights.start();
     this.sparklines = new SparklineService(this.homey, this.values, log, debug);
     this.sparklines.start();
-    this.registerSparklineSettings();
     this.apiKey = PersonalApiKey.for(this.homey, log);
     this.variables = new VariableService(this.homey, log, debug, this.apiKey);
     this.variables.start();
-    this.registerVariableSettings();
     this.flows = new FlowService(this.homey, log, debug, this.apiKey);
-    this.registerFlowSettings();
     this.timers = new TimerService(this.homey, log, debug, timer => this.timerFinished(timer));
     this.timers.start();
     this.locks = new LockService(this.homey, log, debug);
@@ -93,10 +85,10 @@ export default class WidgetkeeperApp extends Homey.App {
     this.curtains.start();
     this.media = new MediaService(this.homey, this.flows, log, debug, this.apiKey);
     this.media.start();
-    this.registerMediaSettings();
     this.stack = new StackService(this.homey, log, debug, this.apiKey);
-    this.registerStackSettings();
     this.registerStackFlows();
+    this.web = new WebDashboardService(this.homey, log, widgetAutocompletes(this));
+    this.registerAutocompletes();
     this.debug('Widgetkeeper has been initialized');
   }
 
@@ -137,30 +129,13 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.media?.stop();
   }
 
-  /** Autocomplete for the thermostat widget: the device, then per-button options read from it. */
-  private registerThermostatSettings() {
-    const widget = this.homey.dashboards.getWidget('thermostat');
-    widget.registerSettingAutocompleteListener('device', query => this.thermostat.listDevices(query));
-    for (const n of [1, 2, 3]) {
-      widget.registerSettingAutocompleteListener(`b${n}Temp`, (query, settings) => this.thermostat.listTemperatures(settings?.device?.id, query));
-      for (const field of ['Mode', 'Extra']) {
-        widget.registerSettingAutocompleteListener(`b${n}${field}`, (query, settings) => this.thermostat.listEnumOptions(settings?.device?.id, query));
+  /** Every widget's autocomplete settings (`lib/widgetAutocompletes.ts`, which the web dashboards' editor uses too). */
+  private registerAutocompletes() {
+    for (const [type, listeners] of Object.entries(this.web.autocompletes)) {
+      const widget = this.homey.dashboards.getWidget(type);
+      for (const [setting, listener] of Object.entries(listeners)) {
+        widget.registerSettingAutocompleteListener(setting, (query, settings) => listener(query, settings));
       }
-    }
-  }
-
-  /** Autocomplete for the heatmap widget: the device, then one of its logged capabilities. */
-  private registerHeatmapSettings() {
-    const widget = this.homey.dashboards.getWidget('heatmap');
-    widget.registerSettingAutocompleteListener('device', query => this.heatmap.listDevices(query));
-    widget.registerSettingAutocompleteListener('capability', (query, settings) => this.heatmap.listCapabilities(settings?.device?.id, query));
-  }
-
-  /** Autocomplete for the device values widget: every tile slot lists all `Device · Capability` pairs. */
-  private registerValueSettings() {
-    const widget = this.homey.dashboards.getWidget('values');
-    for (const n of VALUE_SLOTS) {
-      widget.registerSettingAutocompleteListener(`slot${n}`, query => this.values.listSlots(query));
     }
   }
 
@@ -171,47 +146,6 @@ export default class WidgetkeeperApp extends Homey.App {
     card.registerRunListener(async (args: { slot?: { id?: string }, color: string }) => {
       this.values.setColor(args.slot?.id ?? '', args.color);
     });
-  }
-
-  /** Autocomplete for the sparklines widget: every tile slot lists all logged `Device · Capability` numbers. */
-  private registerSparklineSettings() {
-    const widget = this.homey.dashboards.getWidget('sparklines');
-    for (const n of VALUE_SLOTS) {
-      widget.registerSettingAutocompleteListener(`slot${n}`, query => this.sparklines.listSlots(query));
-    }
-  }
-
-  /** Autocomplete for the flow variables widget: every slot lists all Logic variables. */
-  private registerVariableSettings() {
-    const widget = this.homey.dashboards.getWidget('variables');
-    for (const n of VARIABLE_SLOTS) {
-      widget.registerSettingAutocompleteListener(`slot${n}`, query => this.variables.listVariables(query));
-    }
-  }
-
-  /** Autocomplete for the flow buttons widget: each button's flow (those with a start card) and icon. */
-  private registerFlowSettings() {
-    const widget = this.homey.dashboards.getWidget('flows');
-    for (const n of FLOW_SLOTS) {
-      widget.registerSettingAutocompleteListener(`flow${n}`, query => this.flows.listFlows(query));
-      widget.registerSettingAutocompleteListener(`icon${n}`, async query => this.flows.listIcons(query));
-    }
-  }
-
-  /** Autocomplete for the media widget: the speaker, then each button's Flow card of that speaker or flow, and its icon. */
-  private registerMediaSettings() {
-    const widget = this.homey.dashboards.getWidget('media');
-    widget.registerSettingAutocompleteListener('device', query => this.media.listDevices(query));
-    for (const n of MEDIA_BUTTONS) {
-      widget.registerSettingAutocompleteListener(`button${n}`, (query, settings) => this.media.listButtons(settings?.device?.id, query));
-      widget.registerSettingAutocompleteListener(`button${n}Icon`, async query => this.flows.listIcons(query, { none: true }));
-    }
-  }
-
-  /** Autocomplete for the Smart Stack: the dashboard whose widgets it shows. */
-  private registerStackSettings() {
-    const widget = this.homey.dashboards.getWidget('stack');
-    widget.registerSettingAutocompleteListener('dashboard', query => this.stack.listDashboards(query));
   }
 
   /** The Flow cards that bring a widget forward on every Smart Stack, and that end it. */

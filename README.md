@@ -215,6 +215,9 @@ Widgetkeeper widgets from another dashboard, one at a time in the space of one. 
 
 **Settings:** dashboard, interval, smart rotate, pause after a swipe, dots.
 
+## Web dashboards
+Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an old iPad, a computer or a TV. Turn them on under **Apps → Widgetkeeper → Configure**, open the address shown there (`http://<your Homey's address>/app/com.thomassidor.widgetkeeper/settings/dashboard.html`), paste a Homey [API key](#api-key), and build the dashboards on the page itself: columns of widgets, each with the same settings as on a Homey dashboard, in light, dark or automatic. They're the same widgets with the same live updates, and the dashboards are kept on your Homey, so every browser shows them. Home network only for now.
+
 ## Dashboard examples
 **Home**
 <img src="docs/showcase/home.png" alt="A home dashboard with Widgetkeeper widgets on a tablet" width="100%">
@@ -238,7 +241,7 @@ Widgetkeeper widgets from another dashboard, one at a time in the space of one. 
 <img src="docs/showcase/kitchen.png" alt="A kitchen dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
 ## API key
-Homey doesn't let apps change variables, start flows or read dashboards on their own, so Flow Variables, Flow Buttons, Media's buttons and Smart Stack need a Homey API key. Create one in the Homey web app under **Settings → API Keys** with those permissions, and paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey.
+Homey doesn't let apps change variables, start flows or read dashboards on their own, so Flow Variables, Flow Buttons, Media's buttons and Smart Stack need a Homey API key. Create one in the Homey web app under **Settings → API Keys** with those permissions, and paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey. The web dashboards ask for a key of their own, which stays in that browser.
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic, following Homey's language.

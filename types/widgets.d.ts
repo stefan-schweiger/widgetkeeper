@@ -5,6 +5,9 @@ type MountWidget = ((Homey: any, el: { root: HTMLElement, frame: HTMLElement }) 
   & { frameClass?: string };
 
 interface Window {
+  /** settings/dashboard.js, the web dashboards page; `io` is the vendored socket.io-client (settings/socket.io.js). */
+  mountWebDashboards: (root: HTMLElement) => void;
+  io: (url: string, opts?: object) => any;
   createElectricityWidget: (root: HTMLElement, opts?: object) => any;
   createThermostatWidget: (root: HTMLElement, opts?: object) => any;
   createQuickActionsWidget: (root: HTMLElement, opts?: object) => any;

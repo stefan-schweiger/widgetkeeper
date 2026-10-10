@@ -4,59 +4,194 @@
   <meta charset="utf-8">
   <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
   <style>
-    .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 0; }
     .row > * { flex: 1 1 auto; }
+    .status { min-height: 1.4em; margin-top: 8px; }
+    .status:empty { display: none; }
+    #webUrl { display: block; margin-top: 12px; word-break: break-all; }
     #report {
-      width: 100%; box-sizing: border-box; height: 60vh; font: 11px/1.4 ui-monospace, Menlo, Consolas, monospace;
-      white-space: pre; overflow: auto; resize: vertical;
+      display: block; width: 100%; box-sizing: border-box; height: 50vh; margin-top: 12px;
+      font: 11px/1.4 ui-monospace, Menlo, Consolas, monospace; white-space: pre; overflow: auto; resize: vertical;
     }
-    #status { min-height: 1.4em; }
+    [hidden] { display: none !important; }
+    /* Whether a key is saved: a badge that stands out from the help text. */
+    .key-state {
+      --ks: var(--homey-color-orange-500, #E58A00);
+      display: flex; align-items: center; gap: 10px; margin: 12px 0; padding: 10px 12px; border-radius: 10px;
+      font-weight: 500; line-height: 20px; color: var(--ks); background: color-mix(in srgb, var(--ks) 12%, transparent);
+    }
+    .key-state::before {
+      content: '!'; flex: none; width: 22px; height: 22px; border-radius: 11px; text-align: center; line-height: 22px;
+      font-weight: 700; color: #FFFFFF; background: var(--ks);
+    }
+    .key-state.set { --ks: var(--homey-color-green, #2DA94F); }
+    .key-state.set::before { content: '✓'; }
   </style>
 </head>
 <body>
+  <!-- The personal API key: what the app's own token may not do (variables, flows, speaker actions, dashboards). -->
   <fieldset class="homey-form-fieldset">
     <legend class="homey-form-legend" data-i18n="varTitle">API key</legend>
     <p class="homey-form-help" data-i18n="varHelp"></p>
+    <div class="key-state" id="varState" role="status" hidden><span></span></div>
     <div class="homey-form-group">
-      <label class="homey-form-label" for="varKey" data-i18n="varKey">API key</label>
-      <input class="homey-form-input" id="varKey" type="password" autocomplete="off" spellcheck="false">
+      <input class="homey-form-input" id="varKey" type="password" autocomplete="off" spellcheck="false" data-i18n-label="varKey">
     </div>
     <div class="row">
-      <button class="homey-button-primary-shadow" id="varSave" data-i18n="varSave">Save</button>
-      <button class="homey-button-secondary-shadow" id="varRemove" data-i18n="varRemove">Remove</button>
+      <button class="homey-button-primary-shadow" id="varSave" data-i18n="varSave" disabled>Save</button>
+      <button class="homey-button-secondary-shadow" id="varRemove" data-i18n="varRemove" hidden>Remove</button>
     </div>
-    <p class="homey-form-help" id="varStatus"></p>
+    <p class="homey-form-help status" id="varStatus" role="status"></p>
   </fieldset>
 
-  <header class="homey-header">
-    <h2 class="homey-title" data-i18n="title">Diagnostics</h2>
-    <p class="homey-subtitle" data-i18n="subtitle"></p>
-  </header>
+  <fieldset class="homey-form-fieldset">
+    <legend class="homey-form-legend" data-i18n="webTitle">Web dashboards</legend>
+    <p class="homey-form-help" data-i18n="webHelp"></p>
+    <label class="homey-form-checkbox">
+      <input class="homey-form-checkbox-input" id="webEnabled" type="checkbox" disabled>
+      <span class="homey-form-checkbox-checkmark"></span>
+      <span class="homey-form-checkbox-text" data-i18n="webEnable">Turn on web dashboards</span>
+    </label>
+    <div id="webOn" hidden>
+      <a id="webUrl" target="_blank" rel="noopener"></a>
+      <div class="row">
+        <button class="homey-button-primary-shadow" id="webOpen" data-i18n="webOpen">Open</button>
+        <button class="homey-button-secondary-shadow" id="webCopy" data-i18n="copy">Copy</button>
+      </div>
+    </div>
+    <p class="homey-form-help status" id="webStatus" role="status"></p>
+  </fieldset>
 
   <fieldset class="homey-form-fieldset">
+    <legend class="homey-form-legend" data-i18n="title">Diagnostics</legend>
+    <p class="homey-form-help" data-i18n="subtitle"></p>
     <div class="homey-form-group">
       <label class="homey-form-label" for="device" data-i18n="includeDevice">Include device details</label>
       <select class="homey-form-select" id="device"><option value="" data-i18n="none">None</option></select>
     </div>
+    <div class="row">
+      <button class="homey-button-primary-shadow" id="copy" data-i18n="copy">Copy</button>
+      <button class="homey-button-secondary-shadow" id="share" data-i18n="share" hidden>Share</button>
+      <button class="homey-button-secondary-shadow" id="refresh" data-i18n="refresh">Refresh</button>
+    </div>
+    <p class="homey-form-help status" id="status" role="status"></p>
+    <textarea id="report" readonly></textarea>
   </fieldset>
-
-  <div class="row">
-    <button class="homey-button-secondary-shadow" id="refresh" data-i18n="refresh">Refresh</button>
-    <button class="homey-button-primary-shadow" id="copy" data-i18n="copy">Copy</button>
-    <button class="homey-button-secondary-shadow" id="share" style="display:none" data-i18n="share">Share</button>
-  </div>
-  <p class="homey-form-help" id="status"></p>
-  <textarea id="report" readonly></textarea>
 
   <script type="text/javascript">
     function onHomeyReady(Homey) {
-      const select = document.getElementById('device');
-      const report = document.getElementById('report');
-      const status = document.getElementById('status');
-      let devicesListed = false;
+      const $ = id => document.getElementById(id);
       const t = (key, tokens) => Homey.__(`settings.${key}`, tokens);
       for (const node of document.querySelectorAll('[data-i18n]')) node.textContent = t(node.dataset.i18n);
+      for (const node of document.querySelectorAll('[data-i18n-label]')) {
+        node.setAttribute('aria-label', t(node.dataset.i18nLabel));
+        node.placeholder = t(node.dataset.i18nLabel);
+      }
 
+      /** Copies text, falling back to a selection where the Homey app's web view doesn't allow the async clipboard. */
+      async function copyText(text, from) {
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch (e) {
+          if (from) { from.focus(); from.select(); }
+          document.execCommand('copy');
+        }
+      }
+
+      // ---- The personal API key: checked by the app before it's saved, and never sent back. ----
+      const varKey = $('varKey');
+      const varSave = $('varSave');
+      const varRemove = $('varRemove');
+      const varStatus = $('varStatus');
+      const varState = $('varState');
+      let busy = false;
+      const syncKeyButtons = () => { varSave.disabled = busy || !varKey.value.trim(); varRemove.disabled = busy; };
+      function showKeyState(message) {
+        Homey.api('GET', '/variables-key', null, (err, res) => {
+          if (err) return;
+          const set = !!(res && res.set);
+          varRemove.hidden = !set;
+          varState.hidden = false;
+          varState.classList.toggle('set', set);
+          varState.firstChild.textContent = t(set ? 'varIsSet' : 'varNotSet');
+          if (!message) varStatus.textContent = '';
+        });
+      }
+      function saveKey(key) {
+        busy = true;
+        syncKeyButtons();
+        varStatus.textContent = t('varChecking');
+        Homey.api('PUT', '/variables-key', { key }, (err, res) => {
+          busy = false;
+          syncKeyButtons();
+          if (err) { varStatus.textContent = err.message || String(err); return; }
+          if (res && res.ok) {
+            varKey.value = '';
+            syncKeyButtons();
+            // A key may allow only some of it (the answer says what): variables, flows, dashboards (the Smart Stack).
+            if (!key) varStatus.textContent = t('varRemoved');
+            else if (!res.variables && !res.flows) varStatus.textContent = t('varSavedDashboards');
+            else {
+              const saved = !res.variables ? 'varSavedFlows' : !res.flows ? 'varSavedVariables' : 'varSaved';
+              varStatus.textContent = `${t(saved)} ${t(res.dashboards ? 'varDashboards' : 'varNoDashboards')}`;
+            }
+            showKeyState(true);
+          } else {
+            varStatus.textContent = t(res && res.reason === 'keyScope' ? 'varKeyScope' : 'varKeyInvalid');
+          }
+        });
+      }
+      varKey.addEventListener('input', syncKeyButtons);
+      varKey.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !varSave.disabled) varSave.click(); });
+      varSave.addEventListener('click', () => { if (varKey.value.trim()) saveKey(varKey.value.trim()); });
+      varRemove.addEventListener('click', () => saveKey(''));
+      showKeyState();
+
+      // ---- Web dashboards: on or off (the app setting), and the page's address on the home network (this settings
+      // page may be served through the cloud). ----
+      const webEnabled = $('webEnabled');
+      const webUrl = $('webUrl');
+      const webStatus = $('webStatus');
+      function showWeb(on) {
+        webEnabled.checked = on;
+        $('webOn').hidden = !on;
+        if (on && !webUrl.textContent) {
+          Homey.api('GET', '/web/address', null, (err, res) => {
+            if (err || !res || !res.url) return;
+            webUrl.href = res.url;
+            webUrl.textContent = res.url;
+          });
+        }
+      }
+      Homey.get('webDashboardsEnabled', (err, value) => {
+        webEnabled.disabled = false;
+        showWeb(!err && value === true);
+      });
+      webEnabled.addEventListener('change', () => {
+        const on = webEnabled.checked;
+        webEnabled.disabled = true;
+        webStatus.textContent = '';
+        Homey.set('webDashboardsEnabled', on, (err) => {
+          webEnabled.disabled = false;
+          if (err) { webStatus.textContent = err.message || String(err); showWeb(!on); return; }
+          showWeb(on);
+        });
+      });
+      $('webOpen').addEventListener('click', () => {
+        if (!webUrl.textContent) return;
+        if (typeof Homey.openURL === 'function') Homey.openURL(webUrl.href); else window.open(webUrl.href, '_blank');
+      });
+      $('webCopy').addEventListener('click', async () => {
+        if (!webUrl.textContent) return;
+        await copyText(webUrl.href);
+        webStatus.textContent = t('copied');
+      });
+
+      // ---- Diagnostics ----
+      const select = $('device');
+      const report = $('report');
+      const status = $('status');
+      let devicesListed = false;
       function load() {
         status.textContent = t('loading');
         const device = select.value;
@@ -78,60 +213,19 @@
           status.textContent = t('updated', { time: new Date().toLocaleTimeString() });
         });
       }
-
-      async function copy() {
-        try {
-          await navigator.clipboard.writeText(report.value);
-        } catch (e) {
-          // The Homey app's web view may not allow the async clipboard.
-          report.focus();
-          report.select();
-          document.execCommand('copy');
-        }
-        status.textContent = t('copied');
-      }
-
-      const share = document.getElementById('share');
+      const share = $('share');
       if (navigator.share) {
-        share.style.display = '';
+        share.hidden = false;
         share.addEventListener('click', () => {
           navigator.share({ title: t('shareTitle'), text: report.value }).catch(() => {});
         });
       }
-
-      // The personal API key (Flow Variables, Flow Buttons, Media and the Smart Stack): checked by the app before it's saved, and never sent back.
-      const varKey = document.getElementById('varKey');
-      const varStatus = document.getElementById('varStatus');
-      function showKeyState() {
-        Homey.api('GET', '/variables-key', null, (err, res) => {
-          if (!err) varStatus.textContent = t(res && res.set ? 'varIsSet' : 'varNotSet');
-        });
-      }
-      function saveKey(key) {
-        varStatus.textContent = t('varChecking');
-        Homey.api('PUT', '/variables-key', { key }, (err, res) => {
-          if (err) { varStatus.textContent = err.message || String(err); return; }
-          if (res && res.ok) {
-            varKey.value = '';
-            // A key may allow only some of it (the answer says what): variables, flows, dashboards (the Smart Stack).
-            if (!key) varStatus.textContent = t('varRemoved');
-            else if (!res.variables && !res.flows) varStatus.textContent = t('varSavedDashboards');
-            else {
-              const saved = !res.variables ? 'varSavedFlows' : !res.flows ? 'varSavedVariables' : 'varSaved';
-              varStatus.textContent = `${t(saved)} ${t(res.dashboards ? 'varDashboards' : 'varNoDashboards')}`;
-            }
-          } else {
-            varStatus.textContent = t(res && res.reason === 'keyScope' ? 'varKeyScope' : 'varKeyInvalid');
-          }
-        });
-      }
-      document.getElementById('varSave').addEventListener('click', () => { if (varKey.value.trim()) saveKey(varKey.value.trim()); });
-      document.getElementById('varRemove').addEventListener('click', () => saveKey(''));
-      showKeyState();
-
       select.addEventListener('change', load);
-      document.getElementById('refresh').addEventListener('click', load);
-      document.getElementById('copy').addEventListener('click', copy);
+      $('refresh').addEventListener('click', load);
+      $('copy').addEventListener('click', async () => {
+        await copyText(report.value, report);
+        status.textContent = t('copied');
+      });
       load();
       Homey.ready();
     }
