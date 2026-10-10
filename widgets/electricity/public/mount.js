@@ -21,6 +21,7 @@ window.mountElectricityWidget = function (Homey, { root, frame }) {
 
   const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
+  const costsParam = settings.priceCosts === false ? '&costs=0' : ''; // missing on older widgets: with costs
   let deviceId = null;
   let readySent = false;
   let loaded = false;
@@ -51,7 +52,7 @@ window.mountElectricityWidget = function (Homey, { root, frame }) {
 
   async function load() {
     try {
-      const snapshot = await Homey.api('GET', `/snapshot?deviceId=${encodeURIComponent(deviceId || '')}${perfParam()}`);
+      const snapshot = await Homey.api('GET', `/snapshot?deviceId=${encodeURIComponent(deviceId || '')}${costsParam}${perfParam()}`);
       // Without readings (or with a meter error) the prices still show; the widget notes the meter.
       if (!deviceId) widget.setMessage(widget.t('selectMeter'));
       else {

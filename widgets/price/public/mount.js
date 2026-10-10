@@ -53,7 +53,7 @@ window.mountPriceWidget = function (Homey, { root, frame }) {
 
   async function load() {
     try {
-      widget.setState(await Homey.api('GET', `/price?${perfParam().slice(1)}`));
+      widget.setState(await Homey.api('GET', `/price?${[settings.priceCosts === false ? 'costs=0' : '', perfParam().slice(1)].filter(Boolean).join('&')}`));
       loaded = true;
     } catch (err) {
       console.error(err);

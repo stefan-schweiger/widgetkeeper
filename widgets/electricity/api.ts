@@ -12,6 +12,6 @@ export default {
     const app = homey.app as WidgetkeeperApp;
     const perf = describeWidgetPerf(query.perf);
     if (perf) app.debug(`Electricity widget: ${perf}`);
-    return app.electricity.getSnapshot(query.deviceId || null);
+    return app.electricity.getSnapshot(query.deviceId || null, { costs: query.costs !== '0' });
   },
 };

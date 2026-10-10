@@ -5,6 +5,7 @@ import {
   HOUR, MINUTE, SECOND, Sample,
   bucketAverage, floorTo, hourlyPrices, parseInsightsEntries, parsePriceResponse,
 } from './series.js';
+import { parsePriceCosts } from './priceCosts.js';
 
 const LIVE_KEEP = HOUR + 2 * MINUTE; // raw readings kept (the widget's longest live window is 60 min)
 const LIVE_PUSH_THROTTLE = SECOND;
@@ -32,6 +33,12 @@ export type Snapshot = {
   language: string, // Homey UI language, for weekday names
 };
 
+type PriceSettings = {
+  fixed: number | null,
+  costs: ((price: number) => number) | null, // Homey Energy's costs on the spot price (tariffs, taxes, VAT)
+  costsExpression: string | null,
+};
+
 type Meter = {
   deviceId: string,
   name: string,
@@ -55,8 +62,8 @@ export default class ElectricityService {
   private pricePending = new Map<string, Promise<Map<number, number>>>();
   private currency: string | null = null;
   private currencyPending: Promise<void> | null = null;
-  private priceType: { at: number, fixed: number | null } | null = null;
-  private priceTypePending: Promise<number | null> | null = null;
+  private priceType: PriceSettings & { at: number } | null = null;
+  private priceTypePending: Promise<PriceSettings> | null = null;
   private tickTimer: NodeJS.Timeout | null = null;
   private loggedPriceSample = false;
 
@@ -79,7 +86,7 @@ export default class ElectricityService {
   warmUp() {
     const firstSlot = floorTo(Date.now(), HOUR) - PRICE_PAST_HOURS * HOUR;
     const tm = new Timings();
-    this.getFixedPrice().then(fixed => this.getPriceSlots(firstSlot, tm, fixed))
+    this.getPriceSettings().then(settings => this.getPriceSlots(firstSlot, tm, settings))
       .then(() => this.debug(`Prices warmed up: ${tm.summary()}`))
       .catch(err => this.log('Warm-up failed', err));
   }
@@ -88,7 +95,8 @@ export default class ElectricityService {
     return getAppApi(this.homey);
   }
 
-  async getSnapshot(deviceId: string | null): Promise<Snapshot> {
+  /** `costs: false` gives the bare spot prices, without Homey Energy's costs (the widgets' `priceCosts` setting). */
+  async getSnapshot(deviceId: string | null, { costs = true }: { costs?: boolean } = {}): Promise<Snapshot> {
     const now = Date.now();
     const hourStart = floorTo(now, HOUR);
     const firstSlot = hourStart - PRICE_PAST_HOURS * HOUR;
@@ -105,8 +113,10 @@ export default class ElectricityService {
         return null;
       }) : null,
       tm.time('prices', async () => {
-        fixedPrice = await this.getFixedPrice();
-        return this.getPriceSlots(firstSlot, tm, fixedPrice, (day, err) => {
+        const cached = await this.getPriceSettings();
+        const settings = costs ? cached : { ...cached, costs: null }; // a copy: the cache is shared
+        fixedPrice = settings.fixed;
+        return this.getPriceSlots(firstSlot, tm, settings, (day, err) => {
           if (day === this.localDate(hourStart)) priceError = message(err);
         });
       }).catch(err => { this.log('Price error', err); priceError = message(err); return []; }),
@@ -294,39 +304,57 @@ export default class ElectricityService {
   // ---------------------------------------------------------------- prices
 
   /**
-   * Homey's fixed price per kWh when Energy is set to a fixed price, else null (dynamic, or the type
-   * can't be read). Homey keeps one fixed price, with no peak/off-peak: its app says to enter an
-   * average. Spot prices are still returned in fixed mode, so the type has to be checked.
+   * How Homey Energy prices electricity: a fixed price per kWh (`fixed`), or the spot prices with the
+   * user's costs on top (`costs`, e.g. tariffs, taxes and VAT; null when there are none or the
+   * expression can't be used, so the spot prices show as they are). Homey keeps one fixed price,
+   * with no peak/off-peak: its app says to enter an average. Spot prices are still returned in fixed
+   * mode, so the type has to be checked. A type that can't be read counts as dynamic.
    */
-  private getFixedPrice(): Promise<number | null> {
-    if (this.priceType && Date.now() - this.priceType.at < PRICE_TYPE_TTL) return Promise.resolve(this.priceType.fixed);
+  private getPriceSettings(): Promise<PriceSettings> {
+    if (this.priceType && Date.now() - this.priceType.at < PRICE_TYPE_TTL) return Promise.resolve(this.priceType);
     this.priceTypePending ??= (async () => {
-      let fixed: number | null = null;
+      const settings: PriceSettings = { fixed: null, costs: null, costsExpression: null };
+      let api: any;
       try {
-        const api = await this.getApi();
+        api = await this.getApi();
         if (await api.energy.getElectricityPriceType() === 'fixed') {
-          fixed = parseFixedPrice(await api.energy.getOptionElectricityPriceFixed());
-          if (fixed == null) this.log('Fixed electricity price set, but no price found');
+          settings.fixed = parseFixedPrice(await api.energy.getOptionElectricityPriceFixed());
+          if (settings.fixed == null) this.log('Fixed electricity price set, but no price found');
         }
       } catch (err) {
         this.log('Could not read the electricity price type', err);
       }
-      if (fixed !== this.priceType?.fixed) this.debug(`Electricity price: ${fixed == null ? 'dynamic' : `fixed ${fixed}`}`);
-      this.priceType = { at: Date.now(), fixed };
-      return fixed;
+      if (settings.fixed == null && api) {
+        try {
+          const res = await api.energy.getDynamicElectricityPriceUserCosts();
+          const expression = typeof res?.mathExpression === 'string' ? res.mathExpression : null;
+          settings.costs = parsePriceCosts(expression);
+          if (settings.costs) settings.costsExpression = expression;
+        } catch (err) {
+          this.log('Could not use the electricity price costs; showing spot prices', err);
+        }
+      }
+      const prev = this.priceType;
+      if (settings.fixed !== prev?.fixed || settings.costsExpression !== prev?.costsExpression) {
+        this.debug(`Electricity price: ${settings.fixed != null ? `fixed ${settings.fixed}`
+          : `dynamic${settings.costsExpression ? ` with costs ${settings.costsExpression}` : ''}`}`);
+      }
+      this.priceType = { ...settings, at: Date.now() };
+      return settings;
     })().finally(() => { this.priceTypePending = null; });
     return this.priceTypePending;
   }
 
-  /** Price type and fixed price, for the diagnostics report. */
+  /** Price type, fixed price and costs, for the diagnostics report. */
   async describe() {
-    const fixedPrice = await this.getFixedPrice();
-    return { priceType: fixedPrice == null ? 'dynamic' : 'fixed', fixedPrice, currency: this.currency };
+    const { fixed, costsExpression } = await this.getPriceSettings();
+    return { priceType: fixed == null ? 'dynamic' : 'fixed', fixedPrice: fixed, priceCosts: costsExpression, currency: this.currency };
   }
 
-  private async getPriceSlots(firstSlot: number, tm: Timings, fixedPrice: number | null = null,
+  private async getPriceSlots(firstSlot: number, tm: Timings, settings: PriceSettings,
     onDayError?: (day: string, err: unknown) => void): Promise<Snapshot['prices']> {
     const count = PRICE_PAST_HOURS + 1 + PRICE_FUTURE_HOURS;
+    const fixedPrice = settings.fixed;
     if (fixedPrice != null) {
       if (this.currency == null) await tm.time('currency', () => this.loadCurrency());
       return Array.from({ length: count }, (_, i) => ({ start: firstSlot + i * HOUR, price: fixedPrice }));
@@ -351,7 +379,8 @@ export default class ElectricityService {
 
     return Array.from({ length: count }, (_, i) => {
       const start = firstSlot + i * HOUR;
-      return { start, price: hours.get(start) ?? null };
+      const spot = hours.get(start);
+      return { start, price: spot == null ? null : settings.costs ? round4(settings.costs(spot)) : spot };
     });
   }
 
@@ -407,6 +436,11 @@ export default class ElectricityService {
     }).format(new Date(t));
   }
 
+}
+
+/** Float noise off (0.1 + 0.2), at the 4 decimals Homey's spot prices have. */
+function round4(x: number): number {
+  return Math.round(x * 1e4) / 1e4;
 }
 
 /** `{value: {costs: {user_fixed_base: {value: 2}}}}` (verified 2026-10-07) → 2. */

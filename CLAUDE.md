@@ -365,6 +365,7 @@ How this project uses it:
 
 ## Homey API facts (verified on the real Homey)
 - Dynamic prices: `energy.fetchDynamicElectricityPrices({ date: 'YYYY-MM-DD' })` returns `{ priceUnit: 'DKK', interval: 60, pricesPerInterval: [{ periodStart, periodEnd, value }] }`. Zone DK2. `getCurrency()` returns `"DKK"`.
+  - Those are bare spot prices. Homey Energy's Energy tab adds the user's costs, `energy.getDynamicElectricityPriceUserCosts()` → `{mathExpression: '{{([[price]]+0.515)*1.25}}'}` (tariffs and taxes, then VAT; checked 2026-10-10), and no endpoint returns the prices with them. So `getPriceSettings()` reads it (with the price type, 5-min cache) and `parsePriceCosts()` (`lib/priceCosts.ts`, a small parser, no `eval`: numbers, `[[price]]`, `+ - * / % ^`, brackets, `min max abs round floor ceil`) applies it to every slot; the cached spot prices stay raw. An expression it can't read or parse leaves the spot prices, with a log line. The diagnostics' `electricity.priceCosts` shows it. Both price widgets have the checkbox `priceCosts` ("Include tariffs and taxes", on by default; a missing value is on): off sends `costs=0`, and `getSnapshot(…, {costs: false})` gives the spot prices.
 - Insights: `getLogEntries({ uri: 'homey:device:<id>', id: 'homey:device:<id>:<cap>', resolution })`. **The `id` is the full log id.**
   - `lastHour` has a 5 s step; `last24Hours` has a 5 min step.
   - `last7Days` (and `last14Days`, `thisWeek`) on a **numeric** log: `{values, start, end, step: 3600000, …}`, one average per hour, `t` = the hour's start; the current hour is included.

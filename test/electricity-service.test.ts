@@ -166,6 +166,48 @@ describe('fixed price', () => {
   });
 });
 
+describe('price costs', () => {
+  const costs = { priceCosts: { mathExpression: '{{([[price]]+0.5)*1.25}}' } };
+
+  it("puts Homey Energy's costs on the spot prices, like its Energy tab", async () => {
+    const { service } = setup(costs);
+    const { prices, fixedPrice } = await service.getSnapshot(null);
+    expect(fixedPrice).toBeNull();
+    expect(prices[24].price).toBe(1.875); // (1 + 0.5) * 1.25
+    expect(prices[0].price).toBe(1.875);
+    expect(await service.describe()).toMatchObject({ priceType: 'dynamic', priceCosts: '{{([[price]]+0.5)*1.25}}' });
+  });
+
+  it('gives the bare spot prices with costs: false, without touching the shared costs', async () => {
+    const { service } = setup(costs);
+    expect((await service.getSnapshot(null, { costs: false })).prices[24].price).toBe(1);
+    expect((await service.getSnapshot(null)).prices[24].price).toBe(1.875);
+  });
+
+  it("keeps the spot prices when the costs can't be read or used", async () => {
+    const failing = setup();
+    failing.api.energy.getDynamicElectricityPriceUserCosts.mockRejectedValue(new Error('Not Found'));
+    expect((await failing.service.getSnapshot(null)).prices[24].price).toBe(1);
+    const unknown = setup({ priceCosts: { mathExpression: '{{[[price]] * tariff()}}' } });
+    expect((await unknown.service.getSnapshot(null)).prices[24].price).toBe(1);
+  });
+
+  it('ignores the costs with a fixed price', async () => {
+    const { service, api } = setup({ ...costs, priceType: 'fixed', fixedPrice: { value: { costs: { user_fixed_base: { value: 2 } } } } });
+    expect((await service.getSnapshot(null)).prices[24].price).toBe(2);
+    expect(api.energy.getDynamicElectricityPriceUserCosts).not.toHaveBeenCalled();
+  });
+
+  it('reads a changed expression after 5 minutes, without fetching the spot prices again', async () => {
+    const { service, api } = setup(costs);
+    await service.getSnapshot(null);
+    api.energy.getDynamicElectricityPriceUserCosts.mockResolvedValue({ mathExpression: '{{[[price]]*2}}' });
+    vi.setSystemTime(NOW + 5 * MINUTE);
+    expect((await service.getSnapshot(null)).prices[24].price).toBe(2);
+    expect(fetchesFor(api, '2026-01-15')).toBe(1);
+  });
+});
+
 describe('meter', () => {
   it('seeds the live readings from insights plus the current value', async () => {
     const { service, api } = setup({

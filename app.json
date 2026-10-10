@@ -1494,6 +1494,41 @@
           "value": true
         },
         {
+          "id": "priceCosts",
+          "type": "checkbox",
+          "title": {
+            "en": "Include tariffs and taxes",
+            "nl": "Inclusief tarieven en belastingen",
+            "de": "Netzentgelte und Steuern einrechnen",
+            "fr": "Inclure tarifs et taxes",
+            "it": "Includi tariffe e tasse",
+            "sv": "Inkludera avgifter och skatter",
+            "no": "Inkluder nettleie og avgifter",
+            "es": "Incluir tarifas e impuestos",
+            "da": "Inkluder tariffer og afgifter",
+            "ru": "Учитывать тарифы и налоги",
+            "pl": "Uwzględnij opłaty i podatki",
+            "ko": "요금 및 세금 포함",
+            "ar": "تضمين التعريفات والضرائب"
+          },
+          "hint": {
+            "en": "On: the price as in Homey's Energy tab, with the costs set up in Homey Energy (such as tariffs, taxes and VAT). Off: the bare spot price.",
+            "nl": "Aan: de prijs zoals op Homey's Energie-tab, met de kosten uit Homey Energy (zoals tarieven, belastingen en btw). Uit: de kale spotprijs.",
+            "de": "Ein: der Preis wie im Energie-Tab von Homey, mit den in Homey Energy eingerichteten Kosten (etwa Netzentgelte, Steuern und MwSt.). Aus: der reine Spotpreis.",
+            "fr": "Activé : le prix comme dans l'onglet Énergie de Homey, avec les coûts configurés dans Homey Energy (tarifs, taxes, TVA…). Désactivé : le prix spot seul.",
+            "it": "Attivo: il prezzo come nella scheda Energia di Homey, con i costi impostati in Homey Energy (come tariffe, tasse e IVA). Disattivo: il solo prezzo spot.",
+            "sv": "På: priset som på Homeys Energi-flik, med kostnaderna i Homey Energy (som nätavgifter, skatter och moms). Av: det rena spotpriset.",
+            "no": "På: prisen som i Homeys Energi-fane, med kostnadene satt opp i Homey Energy (som nettleie, avgifter og mva.). Av: den rene spotprisen.",
+            "es": "Activado: el precio como en la pestaña Energía de Homey, con los costes configurados en Homey Energy (como tarifas, impuestos e IVA). Desactivado: solo el precio spot.",
+            "da": "Til: prisen som på Homeys Energi-fane, med omkostningerne sat op i Homey Energy (som tariffer, afgifter og moms). Fra: den rene spotpris.",
+            "ru": "Вкл.: цена как на вкладке «Энергия» в Homey, с расходами из Homey Energy (тарифы, налоги, НДС). Выкл.: только спотовая цена.",
+            "pl": "Wł.: cena jak w zakładce Energia w Homey, z kosztami ustawionymi w Homey Energy (np. opłaty, podatki, VAT). Wył.: sama cena spot.",
+            "ko": "켜짐: Homey 에너지 탭과 같은 요금으로, Homey Energy에 설정된 비용(요금, 세금, 부가세 등)을 포함합니다. 꺼짐: 순수 현물 가격.",
+            "ar": "تشغيل: السعر كما في علامة تبويب الطاقة في Homey، مع التكاليف المضبوطة في Homey Energy (مثل التعريفات والضرائب وضريبة القيمة المضافة). إيقاف: سعر السوق الفوري فقط."
+          },
+          "value": true
+        },
+        {
           "id": "showUsage",
           "type": "checkbox",
           "title": {
@@ -5146,6 +5181,41 @@
               }
             }
           ]
+        },
+        {
+          "id": "priceCosts",
+          "type": "checkbox",
+          "title": {
+            "en": "Include tariffs and taxes",
+            "nl": "Inclusief tarieven en belastingen",
+            "de": "Netzentgelte und Steuern einrechnen",
+            "fr": "Inclure tarifs et taxes",
+            "it": "Includi tariffe e tasse",
+            "sv": "Inkludera avgifter och skatter",
+            "no": "Inkluder nettleie og avgifter",
+            "es": "Incluir tarifas e impuestos",
+            "da": "Inkluder tariffer og afgifter",
+            "ru": "Учитывать тарифы и налоги",
+            "pl": "Uwzględnij opłaty i podatki",
+            "ko": "요금 및 세금 포함",
+            "ar": "تضمين التعريفات والضرائب"
+          },
+          "hint": {
+            "en": "On: the price as in Homey's Energy tab, with the costs set up in Homey Energy (such as tariffs, taxes and VAT). Off: the bare spot price.",
+            "nl": "Aan: de prijs zoals op Homey's Energie-tab, met de kosten uit Homey Energy (zoals tarieven, belastingen en btw). Uit: de kale spotprijs.",
+            "de": "Ein: der Preis wie im Energie-Tab von Homey, mit den in Homey Energy eingerichteten Kosten (etwa Netzentgelte, Steuern und MwSt.). Aus: der reine Spotpreis.",
+            "fr": "Activé : le prix comme dans l'onglet Énergie de Homey, avec les coûts configurés dans Homey Energy (tarifs, taxes, TVA…). Désactivé : le prix spot seul.",
+            "it": "Attivo: il prezzo come nella scheda Energia di Homey, con i costi impostati in Homey Energy (come tariffe, tasse e IVA). Disattivo: il solo prezzo spot.",
+            "sv": "På: priset som på Homeys Energi-flik, med kostnaderna i Homey Energy (som nätavgifter, skatter och moms). Av: det rena spotpriset.",
+            "no": "På: prisen som i Homeys Energi-fane, med kostnadene satt opp i Homey Energy (som nettleie, avgifter og mva.). Av: den rene spotprisen.",
+            "es": "Activado: el precio como en la pestaña Energía de Homey, con los costes configurados en Homey Energy (como tarifas, impuestos e IVA). Desactivado: solo el precio spot.",
+            "da": "Til: prisen som på Homeys Energi-fane, med omkostningerne sat op i Homey Energy (som tariffer, afgifter og moms). Fra: den rene spotpris.",
+            "ru": "Вкл.: цена как на вкладке «Энергия» в Homey, с расходами из Homey Energy (тарифы, налоги, НДС). Выкл.: только спотовая цена.",
+            "pl": "Wł.: cena jak w zakładce Energia w Homey, z kosztami ustawionymi w Homey Energy (np. opłaty, podatki, VAT). Wył.: sama cena spot.",
+            "ko": "켜짐: Homey 에너지 탭과 같은 요금으로, Homey Energy에 설정된 비용(요금, 세금, 부가세 등)을 포함합니다. 꺼짐: 순수 현물 가격.",
+            "ar": "تشغيل: السعر كما في علامة تبويب الطاقة في Homey، مع التكاليف المضبوطة في Homey Energy (مثل التعريفات والضرائب وضريبة القيمة المضافة). إيقاف: سعر السوق الفوري فقط."
+          },
+          "value": true
         },
         {
           "id": "tint",

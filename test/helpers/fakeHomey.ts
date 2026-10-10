@@ -101,6 +101,7 @@ export type FakeApiOptions = {
   currency?: unknown,
   priceType?: unknown, // Homey's electricity price type: 'dynamic' (the default) or 'fixed'
   fixedPrice?: unknown, // the `electricityPriceFixed` option
+  priceCosts?: unknown, // the dynamic price's user costs: `{mathExpression}`
   variables?: FakeVariable[], // Logic variables
 };
 
@@ -166,6 +167,7 @@ export function fakeApi(opts: FakeApiOptions = {}) {
       getCurrency: vi.fn(async () => opts.currency ?? 'DKK'),
       getElectricityPriceType: vi.fn(async () => opts.priceType ?? 'dynamic'),
       getOptionElectricityPriceFixed: vi.fn(async () => opts.fixedPrice ?? { value: null }),
+      getDynamicElectricityPriceUserCosts: vi.fn(async () => opts.priceCosts ?? { mathExpression: null }),
     },
     logic: fakeLogic(opts.variables),
   };
