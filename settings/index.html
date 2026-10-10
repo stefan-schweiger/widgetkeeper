@@ -99,7 +99,7 @@
         });
       }
 
-      // The personal API key (Flow Variables and Flow Buttons): checked by the app before it's saved, and never sent back.
+      // The personal API key (Flow Variables, Flow Buttons, Media and the Smart Stack): checked by the app before it's saved, and never sent back.
       const varKey = document.getElementById('varKey');
       const varStatus = document.getElementById('varStatus');
       function showKeyState() {
@@ -113,9 +113,13 @@
           if (err) { varStatus.textContent = err.message || String(err); return; }
           if (res && res.ok) {
             varKey.value = '';
-            // A key may allow only one of the two (the answer says which).
-            const saved = res.variables === false ? 'varSavedFlows' : res.flows === false ? 'varSavedVariables' : 'varSaved';
-            varStatus.textContent = t(key ? saved : 'varRemoved');
+            // A key may allow only some of it (the answer says what): variables, flows, dashboards (the Smart Stack).
+            if (!key) varStatus.textContent = t('varRemoved');
+            else if (!res.variables && !res.flows) varStatus.textContent = t('varSavedDashboards');
+            else {
+              const saved = !res.variables ? 'varSavedFlows' : !res.flows ? 'varSavedVariables' : 'varSaved';
+              varStatus.textContent = `${t(saved)} ${t(res.dashboards ? 'varDashboards' : 'varNoDashboards')}`;
+            }
           } else {
             varStatus.textContent = t(res && res.reason === 'keyScope' ? 'varKeyScope' : 'varKeyInvalid');
           }

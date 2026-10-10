@@ -24,21 +24,23 @@ describe('save', () => {
   it('saves a key and says what it may do, and removes it again', async () => {
     const { homey, key } = setup();
     keyApis.set('both', keyApi(['homey.logic', 'homey.flow.start']));
-    expect(await key.save(' both ')).toEqual({ ok: true, variables: true, flows: true });
+    expect(await key.save(' both ')).toEqual({ ok: true, variables: true, flows: true, dashboards: false });
     expect(homey.settings.get(API_KEY_SETTING)).toBe('both');
     expect(key.has()).toBe(true);
-    expect(await key.save('')).toEqual({ ok: true, variables: false, flows: false });
+    expect(await key.save('')).toEqual({ ok: true, variables: false, flows: false, dashboards: false });
     expect(key.has()).toBe(false);
   });
 
-  it('saves a key that may do only one of the two', async () => {
+  it('saves a key that may do only some of it', async () => {
     const { key } = setup();
     keyApis.set('vars', keyApi(['homey.logic']));
     keyApis.set('flows', keyApi(['homey.flow.start']));
     keyApis.set('owner', keyApi(['homey']));
-    expect(await key.save('vars')).toEqual({ ok: true, variables: true, flows: false });
-    expect(await key.save('flows')).toEqual({ ok: true, variables: false, flows: true });
-    expect(await key.save('owner')).toEqual({ ok: true, variables: true, flows: true });
+    expect(await key.save('vars')).toEqual({ ok: true, variables: true, flows: false, dashboards: false });
+    expect(await key.save('flows')).toEqual({ ok: true, variables: false, flows: true, dashboards: false });
+    expect(await key.save('owner')).toEqual({ ok: true, variables: true, flows: true, dashboards: true });
+    keyApis.set('dash', keyApi(['homey.dashboard.readonly']));
+    expect(await key.save('dash')).toEqual({ ok: true, variables: false, flows: false, dashboards: true });
   });
 
   it("doesn't save a key Homey refuses or one that may do neither", async () => {

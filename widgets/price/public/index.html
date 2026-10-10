@@ -5,25 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="widget.css">
   <script src="widget.js"></script>
+  <script src="mount.js"></script>
 </head>
 <body class="homey-widget-full">
   <div id="root"></div>
   <script>
-    const REFRESH_MS = 5 * 60e3; // picks up tomorrow's prices and a changed price type
-
-    // Load marks for the app's diagnostics log, sent with the first request only.
-    let perf = '';
-    function loadMarks(sdkAt) {
-      const nav = performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
-      return [Math.round(performance.timeOrigin), nav ? Math.round(nav.responseEnd) : -1,
-        Math.round(sdkAt), Math.round(performance.now())].join(',');
-    }
-    function perfParam() {
-      const p = perf ? `&perf=${perf}` : '';
-      perf = '';
-      return p;
-    }
-
     // Homey's Android app already scales its type tokens by the system font scale (calc(1.1 * 14px)), and
     // the WebView's text zoom then scales all text again, so token text came out 1.21x where the native tiles
     // are 1.1x. Divide the tokens by the zoom (measured: a 100px font computes as 110px), so they render at
@@ -47,53 +33,7 @@
 
     function onHomeyReady(Homey) {
       undoTextZoom();
-      const sdkAt = performance.now();
-      const settings = Homey.getSettings() || {};
-      let readySent = false;
-      let loaded = false;
-
-      const widget = createPriceWidget(document.getElementById('root'), {
-        t: (key, tokens) => Homey.__(key, tokens),
-        showNext: settings.showNext !== false,
-        nextLow: settings.nextLow,
-        tint: settings.tint !== false,
-        onHeight: () => {
-          if (!readySent) return;
-          Homey.setHeight(bodyHeight());
-        },
-      });
-
-      function bodyHeight() {
-        return Math.ceil(document.body.getBoundingClientRect().height);
-      }
-
-      // Shown once the text font has loaded (at most 1 s), so the text doesn't pop in.
-      let readyStarted = false;
-      async function ready() {
-        if (readyStarted) return;
-        readyStarted = true;
-        if (document.fonts && document.fonts.ready) {
-          await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1000))]);
-        }
-        readySent = true;
-        Homey.ready({ height: bodyHeight() });
-      }
-
-      async function load() {
-        try {
-          widget.setState(await Homey.api('GET', `/price?${perfParam().slice(1)}`));
-          loaded = true;
-        } catch (err) {
-          console.error(err);
-          // A failed refresh keeps the prices; only a failed first load replaces them with the error.
-          widget.setMessage(widget.t('error'), loaded);
-        }
-        ready();
-      }
-
-      perf = loadMarks(sdkAt);
-      setInterval(load, REFRESH_MS);
-      load();
+      mountPriceWidget(Homey, { root: document.getElementById('root'), frame: document.body });
     }
   </script>
 </body>

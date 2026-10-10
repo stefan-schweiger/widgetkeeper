@@ -4,7 +4,8 @@ import { HomeyAPI } from 'homey-api';
 /**
  * The app setting with the user's personal API key. Homey gives an app's own token `homey.logic.readonly` and
  * `homey.flow.readonly`, but not `homey.logic` or `homey.flow.start` (checked on the Homey, 2026-10-07/08:
- * `Missing Scopes`), so changing a variable or starting a flow goes through a key the user makes.
+ * `Missing Scopes`), nor `homey.dashboard.readonly` (2026-10-10), so changing a variable, starting a flow or
+ * reading a dashboard (the Smart Stack's pages) goes through a key the user makes.
  * The setting's name predates Flow Buttons; it's kept so saved keys still work.
  */
 export const API_KEY_SETTING = 'variablesApiKey';
@@ -13,6 +14,7 @@ export const API_KEY_SETTING = 'variablesApiKey';
 const USES = {
   variables: ['homey.logic', 'homey'],
   flows: ['homey.flow.start', 'homey.flow', 'homey'],
+  dashboards: ['homey.dashboard.readonly', 'homey.dashboard', 'homey'],
 } as const;
 
 export type KeyUse = keyof typeof USES;
@@ -31,12 +33,12 @@ export const isMissingScopes = (err: unknown) => /missing scopes/i.test(String((
 export const isUnauthorized = (err: unknown) => (err as any)?.statusCode === 401
   || /invalid (session|token)|unauthori[sz]ed/i.test(String((err as any)?.message ?? err));
 
-export type SaveResult = { ok: true, variables: boolean, flows: boolean } | { ok: false, reason: KeyProblem };
+export type SaveResult = { ok: true, variables: boolean, flows: boolean, dashboards: boolean } | { ok: false, reason: KeyProblem };
 
 const shared = new WeakMap<object, PersonalApiKey>();
 
 /**
- * The user's personal API key (Flow Variables and Flow Buttons): checked when saved, kept in the app settings,
+ * The user's personal API key (Flow Variables, Flow Buttons, Media's buttons and the Smart Stack): checked when saved, kept in the app settings,
  * never sent back or logged. The services share one instance (`PersonalApiKey.for(homey)`), so a save resets
  * the API they all use.
  */
@@ -67,15 +69,15 @@ export default class PersonalApiKey {
   }
 
   /**
-   * Checks a key and saves it (an empty key removes it). A key Homey doesn't accept, or one that may neither
-   * change variables nor start flows, isn't saved. The result says what the saved key may do.
+   * Checks a key and saves it (an empty key removes it). A key Homey doesn't accept, or one that may do none of
+   * the uses (change variables, start flows, read dashboards), isn't saved. The result says what the saved key may do.
    */
   async save(key: string): Promise<SaveResult> {
     key = key.trim();
     if (!key) {
       this.homey.settings.unset(API_KEY_SETTING);
       this.cached = null;
-      return { ok: true, variables: false, flows: false };
+      return { ok: true, variables: false, flows: false, dashboards: false };
     }
     let scopes: string[] = [];
     try {
@@ -88,10 +90,11 @@ export default class PersonalApiKey {
     const may = (use: KeyUse) => scopes.some(sc => (USES[use] as readonly string[]).includes(sc));
     const variables = may('variables');
     const flows = may('flows');
-    if (!variables && !flows) return { ok: false, reason: 'keyScope' };
+    const dashboards = may('dashboards');
+    if (!variables && !flows && !dashboards) return { ok: false, reason: 'keyScope' };
     this.homey.settings.set(API_KEY_SETTING, key);
     this.cached = null;
-    return { ok: true, variables, flows };
+    return { ok: true, variables, flows, dashboards };
   }
 
   /**

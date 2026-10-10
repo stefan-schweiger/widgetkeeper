@@ -75,7 +75,7 @@
     "copied": "Kopiert til utklippstavlen",
     "shareTitle": "Widgetkeeper-diagnostikk",
     "varTitle": "API-nøkkel",
-    "varHelp": "Homey lar ikke apper endre flytvariabler eller starte flyter selv. Opprett en API-nøkkel under Innstillinger → API-nøkler i Homeys nettapp som kan endre variabler og starte flyter, og lim den inn her. Den blir på din Homey.",
+    "varHelp": "Homey lar ikke apper endre flytvariabler eller starte flyter selv. Opprett en API-nøkkel under Innstillinger → API-nøkler i Homeys nettapp som kan endre variabler og starte flyter, og lim den inn her. Den blir på din Homey. For den smarte stabelen må den også kunne lese dashbord.",
     "varKey": "API-nøkkel",
     "varSave": "Lagre",
     "varRemove": "Fjern",
@@ -86,8 +86,11 @@
     "varRemoved": "Fjernet.",
     "varIsSet": "En nøkkel er lagret.",
     "varNotSet": "Ingen nøkkel lagret: widgetene viser variabler og flyter, men kan ikke endre eller starte dem.",
-    "varKeyScope": "API-nøkkelen kan verken endre variabler eller starte flyter.",
-    "varKeyInvalid": "API-nøkkelen ble ikke godtatt."
+    "varKeyScope": "API-nøkkelen kan verken endre variabler, starte flows eller lese dashbord.",
+    "varKeyInvalid": "API-nøkkelen ble ikke godtatt.",
+    "varDashboards": "Den smarte stabelen kan lese dashbord.",
+    "varNoDashboards": "Den kan ikke lese dashbord, noe den smarte stabelen trenger.",
+    "varSavedDashboards": "Lagret. Nøkkelen kan lese dashbord for den smarte stabelen, men ikke endre variabler eller starte flows."
   },
   "heatmap": {
     "selectDevice": "Velg en enhet og en verdi i widgetinnstillingene.",
@@ -304,5 +307,17 @@
     "keyScope": "API-nøkkelen kan ikke kjøre dette. Høyttalerhandlinger krever tillatelse til å administrere flyter.",
     "keyInvalid": "API-nøkkelen ble ikke godtatt.",
     "speakerAction": "Høyttalerhandling"
+  },
+  "stack": {
+    "selectDashboard": "Velg et dashbord i widgetinnstillingene.",
+    "noKey": "Legg til en API-nøkkel i appinnstillingene for å lese dashbordet.",
+    "keyScope": "API-nøkkelen kan ikke lese dashbord.",
+    "keyInvalid": "API-nøkkelen ble ikke godtatt.",
+    "dashboardMissing": "Fant ikke dashbordet.",
+    "noPages": "Dashbordet har ingen Widgetkeeper-widgeter.",
+    "error": "Kunne ikke laste stabelen.",
+    "pageFailed": "Kunne ikke vise denne widgeten.",
+    "pageCount": "__count__ Widgetkeeper-widgeter",
+    "keyHint": "Widgetkeeper → Konfigurer: en API-nøkkel som kan lese dashbord."
   }
 }

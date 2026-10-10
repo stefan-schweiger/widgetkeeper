@@ -75,7 +75,7 @@
     "copied": "클립보드에 복사됨",
     "shareTitle": "Widgetkeeper 진단",
     "varTitle": "API 키",
-    "varHelp": "Homey는 앱이 직접 플로우 변수를 바꾸거나 플로우를 시작하도록 허용하지 않습니다. Homey 웹 앱의 설정 → API 키에서 변수를 바꾸고 플로우를 시작할 수 있는 API 키를 만들어 여기에 붙여 넣으세요. 키는 Homey에만 저장됩니다.",
+    "varHelp": "Homey는 앱이 직접 플로우 변수를 바꾸거나 플로우를 시작하도록 허용하지 않습니다. Homey 웹 앱의 설정 → API 키에서 변수를 바꾸고 플로우를 시작할 수 있는 API 키를 만들어 여기에 붙여 넣으세요. 키는 Homey에만 저장됩니다. 스마트 스택에는 대시보드 읽기 권한도 필요합니다.",
     "varKey": "API 키",
     "varSave": "저장",
     "varRemove": "삭제",
@@ -86,8 +86,11 @@
     "varRemoved": "삭제되었습니다.",
     "varIsSet": "키가 저장되어 있습니다.",
     "varNotSet": "저장된 키 없음: 위젯에 변수와 플로우가 표시되지만 바꾸거나 시작할 수는 없습니다.",
-    "varKeyScope": "이 API 키로는 변수를 바꿀 수도, 플로우를 시작할 수도 없습니다.",
-    "varKeyInvalid": "API 키가 승인되지 않았습니다."
+    "varKeyScope": "API 키로 변수 변경, Flow 시작, 대시보드 읽기를 할 수 없습니다.",
+    "varKeyInvalid": "API 키가 승인되지 않았습니다.",
+    "varDashboards": "스마트 스택이 대시보드를 읽을 수 있습니다.",
+    "varNoDashboards": "대시보드를 읽을 수 없습니다. 스마트 스택에 필요합니다.",
+    "varSavedDashboards": "저장되었습니다. 키로 스마트 스택용 대시보드를 읽을 수 있지만 변수 변경이나 Flow 시작은 할 수 없습니다."
   },
   "heatmap": {
     "selectDevice": "위젯 설정에서 기기와 값을 선택하세요.",
@@ -304,5 +307,17 @@
     "keyScope": "API 키로 실행할 수 없습니다. 스피커 동작에는 플로우 관리 권한이 필요합니다.",
     "keyInvalid": "API 키가 승인되지 않았습니다.",
     "speakerAction": "스피커 동작"
+  },
+  "stack": {
+    "selectDashboard": "위젯 설정에서 대시보드를 선택하세요.",
+    "noKey": "대시보드를 읽으려면 앱 설정에서 API 키를 추가하세요.",
+    "keyScope": "API 키에 대시보드 읽기 권한이 없습니다.",
+    "keyInvalid": "API 키가 승인되지 않았습니다.",
+    "dashboardMissing": "대시보드를 찾을 수 없습니다.",
+    "noPages": "대시보드에 Widgetkeeper 위젯이 없습니다.",
+    "error": "스택을 불러올 수 없습니다.",
+    "pageFailed": "이 위젯을 표시할 수 없습니다.",
+    "pageCount": "Widgetkeeper 위젯 __count__개",
+    "keyHint": "Widgetkeeper → 구성: 대시보드를 읽을 수 있는 API 키."
   }
 }

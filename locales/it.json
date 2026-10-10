@@ -75,7 +75,7 @@
     "copied": "Copiato negli appunti",
     "shareTitle": "Diagnostica Widgetkeeper",
     "varTitle": "Chiave API",
-    "varHelp": "Homey non permette alle app di modificare le variabili dei flow né di avviare i flow da sole. Nell'app web di Homey, crea una chiave API in Impostazioni → Chiavi API che possa modificare le variabili e avviare i flow, e incollala qui. Resta sul tuo Homey.",
+    "varHelp": "Homey non permette alle app di modificare le variabili dei flow né di avviare i flow da sole. Nell'app web di Homey, crea una chiave API in Impostazioni → Chiavi API che possa modificare le variabili e avviare i flow, e incollala qui. Resta sul tuo Homey. Per la pila intelligente deve anche poter leggere le dashboard.",
     "varKey": "Chiave API",
     "varSave": "Salva",
     "varRemove": "Rimuovi",
@@ -86,8 +86,11 @@
     "varRemoved": "Rimossa.",
     "varIsSet": "Una chiave è salvata.",
     "varNotSet": "Nessuna chiave salvata: i widget mostrano variabili e flow, ma non possono modificarli né avviarli.",
-    "varKeyScope": "La chiave API non può né modificare le variabili né avviare i flow.",
-    "varKeyInvalid": "La chiave API non è stata accettata."
+    "varKeyScope": "La chiave API non può modificare variabili, avviare flow né leggere dashboard.",
+    "varKeyInvalid": "La chiave API non è stata accettata.",
+    "varDashboards": "La pila intelligente può leggere le dashboard.",
+    "varNoDashboards": "Non può leggere le dashboard, cosa che serve alla pila intelligente.",
+    "varSavedDashboards": "Salvata. La chiave può leggere le dashboard per la pila intelligente, ma non modificare variabili né avviare flow."
   },
   "heatmap": {
     "selectDevice": "Scegli un dispositivo e un valore nelle impostazioni del widget.",
@@ -304,5 +307,17 @@
     "keyScope": "La chiave API non può eseguirlo. Le azioni dell’altoparlante richiedono il permesso di gestire i flow.",
     "keyInvalid": "La chiave API non è stata accettata.",
     "speakerAction": "Azione dell’altoparlante"
+  },
+  "stack": {
+    "selectDashboard": "Scegli una dashboard nelle impostazioni del widget.",
+    "noKey": "Per leggere la dashboard, aggiungi una chiave API nelle impostazioni dell'app.",
+    "keyScope": "La chiave API non può leggere le dashboard.",
+    "keyInvalid": "La chiave API non è stata accettata.",
+    "dashboardMissing": "Dashboard non trovata.",
+    "noPages": "La dashboard non ha widget di Widgetkeeper.",
+    "error": "Impossibile caricare la pila.",
+    "pageFailed": "Impossibile mostrare questo widget.",
+    "pageCount": "__count__ widget di Widgetkeeper",
+    "keyHint": "Widgetkeeper → Configura: una chiave API che può leggere le dashboard."
   }
 }

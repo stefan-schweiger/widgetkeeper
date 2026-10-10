@@ -169,6 +169,471 @@
     ],
     "actions": [
       {
+        "id": "stack_resume",
+        "title": {
+          "en": "Return Smart Stacks to rotation",
+          "nl": "Slimme stapels weer laten wisselen",
+          "de": "Smarte Stapel wieder wechseln lassen",
+          "fr": "Relancer la rotation des piles intelligentes",
+          "it": "Riavvia la rotazione delle pile intelligenti",
+          "sv": "Återställ växlingen på smarta staplar",
+          "no": "Gjenoppta bytting på smarte stabler",
+          "es": "Reanudar la rotación de las pilas inteligentes",
+          "da": "Genoptag skift på smarte stakke",
+          "ru": "Вернуть умные стопки к переключению",
+          "pl": "Przywróć przełączanie inteligentnych stosów",
+          "ko": "스마트 스택 전환 재개",
+          "ar": "إعادة التبديل في المكدسات الذكية"
+        },
+        "hint": {
+          "en": "Ends every 'Bring forward' that is still running.",
+          "nl": "Beëindigt elk 'naar voren halen' dat nog loopt.",
+          "de": "Beendet jedes noch laufende Nach-vorn-Holen.",
+          "fr": "Met fin à toutes les mises en avant en cours.",
+          "it": "Termina ogni 'porta avanti' ancora attivo.",
+          "sv": "Avslutar alla visningar som fortfarande pågår.",
+          "no": "Avslutter alle visninger som fortsatt pågår.",
+          "es": "Termina todo 'traer al frente' que siga activo.",
+          "da": "Afslutter alle visninger, der stadig kører.",
+          "ru": "Отменяет все ещё действующие выводы вперёд.",
+          "pl": "Kończy każde wciąż trwające wysunięcie.",
+          "ko": "아직 진행 중인 모든 '앞으로 가져오기'를 끝냅니다.",
+          "ar": "يُنهي كل إظهار لا يزال جاريًا."
+        }
+      },
+      {
+        "id": "stack_show",
+        "title": {
+          "en": "Bring a widget forward on Smart Stacks",
+          "nl": "Een widget naar voren halen op slimme stapels",
+          "de": "Ein Widget auf smarten Stapeln nach vorn holen",
+          "fr": "Mettre un widget en avant sur les piles intelligentes",
+          "it": "Porta avanti un widget nelle pile intelligenti",
+          "sv": "Visa en widget på smarta staplar",
+          "no": "Vis en widget på smarte stabler",
+          "es": "Traer un widget al frente en las pilas inteligentes",
+          "da": "Vis en widget på smarte stakke",
+          "ru": "Вывести виджет вперёд в умных стопках",
+          "pl": "Wysuń widżet na przód w inteligentnych stosach",
+          "ko": "스마트 스택에서 위젯을 앞으로 가져오기",
+          "ar": "إظهار عنصر في المكدسات الذكية"
+        },
+        "titleFormatted": {
+          "en": "Bring [[widget]] forward on Smart Stacks for [[minutes]] minutes",
+          "nl": "Haal [[widget]] naar voren op slimme stapels voor [[minutes]] minuten",
+          "de": "[[widget]] auf smarten Stapeln für [[minutes]] Minuten nach vorn holen",
+          "fr": "Mettre [[widget]] en avant sur les piles intelligentes pendant [[minutes]] minutes",
+          "it": "Porta avanti [[widget]] nelle pile intelligenti per [[minutes]] minuti",
+          "sv": "Visa [[widget]] på smarta staplar i [[minutes]] minuter",
+          "no": "Vis [[widget]] på smarte stabler i [[minutes]] minutter",
+          "es": "Traer [[widget]] al frente en las pilas inteligentes durante [[minutes]] minutos",
+          "da": "Vis [[widget]] på smarte stakke i [[minutes]] minutter",
+          "ru": "Вывести [[widget]] вперёд в умных стопках на [[minutes]] мин",
+          "pl": "Wysuń [[widget]] na przód w inteligentnych stosach na [[minutes]] min",
+          "ko": "스마트 스택에서 [[widget]]을(를) [[minutes]]분 동안 앞으로 가져오기",
+          "ar": "إظهار [[widget]] في المكدسات الذكية لمدة [[minutes]] دقيقة"
+        },
+        "hint": {
+          "en": "Every Smart Stack with this widget among its pages shows it, on every screen, until the time is up or a Flow returns the stacks to rotation.",
+          "nl": "Elke slimme stapel met deze widget tussen zijn pagina's toont hem, op elk scherm, tot de tijd om is of een Flow de stapels weer laat wisselen.",
+          "de": "Jeder smarte Stapel mit diesem Widget unter seinen Seiten zeigt es auf jedem Bildschirm, bis die Zeit um ist oder ein Flow die Stapel wieder wechseln lässt.",
+          "fr": "Chaque pile intelligente qui a ce widget parmi ses pages l'affiche, sur chaque écran, jusqu'à la fin du délai ou jusqu'à ce qu'un Flow relance la rotation.",
+          "it": "Ogni pila intelligente con questo widget tra le sue pagine lo mostra, su ogni schermo, finché il tempo non scade o un Flow riavvia la rotazione.",
+          "sv": "Varje smart stapel med widgeten bland sina sidor visar den, på alla skärmar, tills tiden är ute eller ett Flow återställer växlingen.",
+          "no": "Hver smart stabel med denne widgeten blant sidene viser den, på alle skjermer, til tiden er ute eller en Flow gjenopptar byttingen.",
+          "es": "Cada pila inteligente con este widget entre sus páginas lo muestra, en cada pantalla, hasta que se acabe el tiempo o un Flow reanude la rotación.",
+          "da": "Hver smart stak med denne widget blandt sine sider viser den, på alle skærme, indtil tiden er gået, eller et Flow genoptager skiftet.",
+          "ru": "Каждая умная стопка с этим виджетом среди страниц показывает его на всех экранах, пока не выйдет время или Flow не вернёт переключение.",
+          "pl": "Każdy inteligentny stos z tym widżetem wśród stron pokazuje go na każdym ekranie, aż minie czas albo Flow przywróci przełączanie.",
+          "ko": "이 위젯이 페이지에 있는 모든 스마트 스택이 모든 화면에서 시간이 끝나거나 Flow가 전환을 재개할 때까지 이를 표시합니다.",
+          "ar": "كل مكدس ذكي يضم هذا العنصر بين صفحاته يعرضه على كل شاشة حتى ينتهي الوقت أو يعيد Flow التبديل."
+        },
+        "args": [
+          {
+            "type": "dropdown",
+            "name": "widget",
+            "title": {
+              "en": "Widget",
+              "nl": "Widget",
+              "de": "Widget",
+              "fr": "Widget",
+              "it": "Widget",
+              "sv": "Widget",
+              "no": "Widget",
+              "es": "Widget",
+              "da": "Widget",
+              "ru": "Виджет",
+              "pl": "Widżet",
+              "ko": "위젯",
+              "ar": "العنصر"
+            },
+            "values": [
+              {
+                "id": "electricity",
+                "title": {
+                  "en": "Electricity Overview",
+                  "nl": "Elektriciteitsoverzicht",
+                  "de": "Stromübersicht",
+                  "fr": "Aperçu de l'électricité",
+                  "it": "Panoramica elettricità",
+                  "sv": "Elöversikt",
+                  "no": "Strømoversikt",
+                  "es": "Resumen de electricidad",
+                  "da": "Strømoverblik",
+                  "ru": "Обзор электроэнергии",
+                  "pl": "Przegląd energii",
+                  "ko": "전기 개요",
+                  "ar": "نظرة عامة على الكهرباء"
+                }
+              },
+              {
+                "id": "thermostat",
+                "title": {
+                  "en": "Thermostat Shortcuts",
+                  "nl": "Thermostaatsnelkoppelingen",
+                  "de": "Thermostat-Schnelltasten",
+                  "fr": "Raccourcis thermostat",
+                  "it": "Scorciatoie termostato",
+                  "sv": "Termostatgenvägar",
+                  "no": "Termostatsnarveier",
+                  "es": "Accesos directos de termostato",
+                  "da": "Termostatgenveje",
+                  "ru": "Быстрые кнопки термостата",
+                  "pl": "Skróty termostatu",
+                  "ko": "온도 조절기 바로가기",
+                  "ar": "اختصارات منظم الحرارة"
+                }
+              },
+              {
+                "id": "quickactions",
+                "title": {
+                  "en": "Device Quick Actions",
+                  "nl": "Snelle apparaatacties",
+                  "de": "Geräte-Schnellaktionen",
+                  "fr": "Actions rapides d'appareils",
+                  "it": "Azioni rapide dispositivi",
+                  "sv": "Snabbåtgärder för enheter",
+                  "no": "Hurtighandlinger for enheter",
+                  "es": "Acciones rápidas de dispositivos",
+                  "da": "Hurtighandlinger for enheder",
+                  "ru": "Быстрые действия устройств",
+                  "pl": "Szybkie akcje urządzeń",
+                  "ko": "기기 빠른 실행",
+                  "ar": "إجراءات سريعة للأجهزة"
+                }
+              },
+              {
+                "id": "sensoralarms",
+                "title": {
+                  "en": "Sensor Alarms",
+                  "nl": "Sensoralarmen",
+                  "de": "Sensoralarme",
+                  "fr": "Alarmes des capteurs",
+                  "it": "Allarmi sensori",
+                  "sv": "Sensorlarm",
+                  "no": "Sensoralarmer",
+                  "es": "Alarmas de sensores",
+                  "da": "Sensoralarmer",
+                  "ru": "Тревоги датчиков",
+                  "pl": "Alarmy czujników",
+                  "ko": "센서 알람",
+                  "ar": "إنذارات المستشعرات"
+                }
+              },
+              {
+                "id": "sensordots",
+                "title": {
+                  "en": "Sensor Dots",
+                  "nl": "Sensorstippen",
+                  "de": "Sensorpunkte",
+                  "fr": "Points capteurs",
+                  "it": "Punti sensori",
+                  "sv": "Sensorprickar",
+                  "no": "Sensorprikker",
+                  "es": "Puntos de sensores",
+                  "da": "Sensorprikker",
+                  "ru": "Точки датчиков",
+                  "pl": "Kropki czujników",
+                  "ko": "센서 점",
+                  "ar": "نقاط المستشعرات"
+                }
+              },
+              {
+                "id": "weather",
+                "title": {
+                  "en": "Weather Forecast",
+                  "nl": "Weersverwachting",
+                  "de": "Wettervorhersage",
+                  "fr": "Prévisions météo",
+                  "it": "Previsioni meteo",
+                  "sv": "Väderprognos",
+                  "no": "Værvarsel",
+                  "es": "Previsión del tiempo",
+                  "da": "Vejrudsigt",
+                  "ru": "Прогноз погоды",
+                  "pl": "Prognoza pogody",
+                  "ko": "일기 예보",
+                  "ar": "توقعات الطقس"
+                }
+              },
+              {
+                "id": "heatmap",
+                "title": {
+                  "en": "Insights Heatmap",
+                  "nl": "Insights-heatmap",
+                  "de": "Insights-Heatmap",
+                  "fr": "Carte thermique Insights",
+                  "it": "Mappa di calore Insights",
+                  "sv": "Insights-värmekarta",
+                  "no": "Insights-varmekart",
+                  "es": "Mapa de calor de Insights",
+                  "da": "Insights-heatmap",
+                  "ru": "Тепловая карта Insights",
+                  "pl": "Mapa cieplna Insights",
+                  "ko": "인사이트 히트맵",
+                  "ar": "خريطة حرارية للرؤى"
+                }
+              },
+              {
+                "id": "cameras",
+                "title": {
+                  "en": "Cameras",
+                  "nl": "Camera's",
+                  "de": "Kameras",
+                  "fr": "Caméras",
+                  "it": "Telecamere",
+                  "sv": "Kameror",
+                  "no": "Kameraer",
+                  "es": "Cámaras",
+                  "da": "Kameraer",
+                  "ru": "Камеры",
+                  "pl": "Kamery",
+                  "ko": "카메라",
+                  "ar": "الكاميرات"
+                }
+              },
+              {
+                "id": "values",
+                "title": {
+                  "en": "Device Values",
+                  "nl": "Apparaatwaarden",
+                  "de": "Gerätewerte",
+                  "fr": "Valeurs d'appareils",
+                  "it": "Valori dispositivi",
+                  "sv": "Enhetsvärden",
+                  "no": "Enhetsverdier",
+                  "es": "Valores de dispositivos",
+                  "da": "Enhedsværdier",
+                  "ru": "Значения устройств",
+                  "pl": "Wartości urządzeń",
+                  "ko": "기기 값",
+                  "ar": "قيم الأجهزة"
+                }
+              },
+              {
+                "id": "lights",
+                "title": {
+                  "en": "Light Controls",
+                  "nl": "Lichtbediening",
+                  "de": "Lichtsteuerung",
+                  "fr": "Commandes d'éclairage",
+                  "it": "Controllo luci",
+                  "sv": "Ljusreglage",
+                  "no": "Lysstyring",
+                  "es": "Control de luces",
+                  "da": "Lysstyring",
+                  "ru": "Управление светом",
+                  "pl": "Sterowanie światłem",
+                  "ko": "조명 제어",
+                  "ar": "التحكم بالإضاءة"
+                }
+              },
+              {
+                "id": "sparklines",
+                "title": {
+                  "en": "Sparklines",
+                  "nl": "Sparklines",
+                  "de": "Sparklines",
+                  "fr": "Mini-graphiques",
+                  "it": "Minigrafici",
+                  "sv": "Minidiagram",
+                  "no": "Minigrafer",
+                  "es": "Minigráficos",
+                  "da": "Minigrafer",
+                  "ru": "Мини-графики",
+                  "pl": "Miniwykresy",
+                  "ko": "스파크라인",
+                  "ar": "مخططات مصغرة"
+                }
+              },
+              {
+                "id": "variables",
+                "title": {
+                  "en": "Flow Variables",
+                  "nl": "Flowvariabelen",
+                  "de": "Flow-Variablen",
+                  "fr": "Variables de flow",
+                  "it": "Variabili dei flow",
+                  "sv": "Flödesvariabler",
+                  "no": "Flytvariabler",
+                  "es": "Variables de flujo",
+                  "da": "Flowvariabler",
+                  "ru": "Переменные потоков",
+                  "pl": "Zmienne Flow",
+                  "ko": "플로우 변수",
+                  "ar": "متغيرات التدفقات"
+                }
+              },
+              {
+                "id": "flows",
+                "title": {
+                  "en": "Flow Buttons",
+                  "nl": "Flowknoppen",
+                  "de": "Flow-Tasten",
+                  "fr": "Boutons de flow",
+                  "it": "Pulsanti dei flow",
+                  "sv": "Flödesknappar",
+                  "no": "Flytknapper",
+                  "es": "Botones de flujo",
+                  "da": "Flowknapper",
+                  "ru": "Кнопки потоков",
+                  "pl": "Przyciski Flow",
+                  "ko": "플로우 버튼",
+                  "ar": "أزرار التدفقات"
+                }
+              },
+              {
+                "id": "price",
+                "title": {
+                  "en": "Price Badge",
+                  "nl": "Prijsbadge",
+                  "de": "Preis-Badge",
+                  "fr": "Badge de prix",
+                  "it": "Badge prezzo",
+                  "sv": "Prisbricka",
+                  "no": "Prismerke",
+                  "es": "Insignia de precio",
+                  "da": "Prismærke",
+                  "ru": "Значок цены",
+                  "pl": "Plakietka ceny",
+                  "ko": "가격 배지",
+                  "ar": "شارة السعر"
+                }
+              },
+              {
+                "id": "timers",
+                "title": {
+                  "en": "Timers",
+                  "nl": "Timers",
+                  "de": "Timer",
+                  "fr": "Minuteurs",
+                  "it": "Timer",
+                  "sv": "Timers",
+                  "no": "Tidtakere",
+                  "es": "Temporizadores",
+                  "da": "Timere",
+                  "ru": "Таймеры",
+                  "pl": "Minutniki",
+                  "ko": "타이머",
+                  "ar": "المؤقتات"
+                }
+              },
+              {
+                "id": "locks",
+                "title": {
+                  "en": "Locks and Doors",
+                  "nl": "Sloten en deuren",
+                  "de": "Schlösser und Türen",
+                  "fr": "Serrures et portes",
+                  "it": "Serrature e porte",
+                  "sv": "Lås och dörrar",
+                  "no": "Låser og dører",
+                  "es": "Cerraduras y puertas",
+                  "da": "Låse og døre",
+                  "ru": "Замки и двери",
+                  "pl": "Zamki i drzwi",
+                  "ko": "잠금장치 및 문",
+                  "ar": "الأقفال والأبواب"
+                }
+              },
+              {
+                "id": "curtains",
+                "title": {
+                  "en": "Curtains",
+                  "nl": "Gordijnen",
+                  "de": "Vorhänge",
+                  "fr": "Rideaux",
+                  "it": "Tende",
+                  "sv": "Gardiner",
+                  "no": "Gardiner",
+                  "es": "Cortinas",
+                  "da": "Gardiner",
+                  "ru": "Шторы",
+                  "pl": "Zasłony",
+                  "ko": "커튼",
+                  "ar": "الستائر"
+                }
+              },
+              {
+                "id": "media",
+                "title": {
+                  "en": "Media",
+                  "nl": "Media",
+                  "de": "Medien",
+                  "fr": "Médias",
+                  "it": "Media",
+                  "sv": "Media",
+                  "no": "Media",
+                  "es": "Multimedia",
+                  "da": "Medier",
+                  "ru": "Медиа",
+                  "pl": "Multimedia",
+                  "ko": "미디어",
+                  "ar": "الوسائط"
+                }
+              }
+            ]
+          },
+          {
+            "type": "number",
+            "name": "minutes",
+            "title": {
+              "en": "Minutes",
+              "nl": "Minuten",
+              "de": "Minuten",
+              "fr": "Minutes",
+              "it": "Minuti",
+              "sv": "Minuter",
+              "no": "Minutter",
+              "es": "Minutos",
+              "da": "Minutter",
+              "ru": "Минуты",
+              "pl": "Minuty",
+              "ko": "분",
+              "ar": "الدقائق"
+            },
+            "placeholder": {
+              "en": "5",
+              "nl": "5",
+              "de": "5",
+              "fr": "5",
+              "it": "5",
+              "sv": "5",
+              "no": "5",
+              "es": "5",
+              "da": "5",
+              "ru": "5",
+              "pl": "5",
+              "ko": "5",
+              "ar": "5"
+            },
+            "min": 0.5,
+            "max": 1440,
+            "step": 0.5
+          }
+        ]
+      },
+      {
         "id": "values_set_color",
         "title": {
           "en": "Set the tile colour",
@@ -4281,6 +4746,25 @@
           }
         },
         {
+          "id": "button1Icon",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
           "id": "button1Name",
           "type": "text",
           "title": {
@@ -4335,6 +4819,25 @@
           }
         },
         {
+          "id": "button2Icon",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
           "id": "button2Name",
           "type": "text",
           "title": {
@@ -4374,6 +4877,25 @@
           }
         },
         {
+          "id": "button3Icon",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
           "id": "button3Name",
           "type": "text",
           "title": {
@@ -4410,6 +4932,25 @@
             "pl": "Przycisk 4",
             "ko": "버튼 4",
             "ar": "الزر 4"
+          }
+        },
+        {
+          "id": "button4Icon",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
           }
         },
         {
@@ -5589,6 +6130,485 @@
         }
       },
       "id": "sparklines"
+    },
+    "stack": {
+      "name": {
+        "en": "Smart Stack",
+        "nl": "Slimme stapel",
+        "de": "Smarter Stapel",
+        "fr": "Pile intelligente",
+        "it": "Pila intelligente",
+        "sv": "Smart stapel",
+        "no": "Smart stabel",
+        "es": "Pila inteligente",
+        "da": "Smart stak",
+        "ru": "Умная стопка",
+        "pl": "Inteligentny stos",
+        "ko": "스마트 스택",
+        "ar": "المكدس الذكي"
+      },
+      "height": 200,
+      "transparent": true,
+      "settings": [
+        {
+          "id": "dashboard",
+          "type": "autocomplete",
+          "title": {
+            "en": "Dashboard",
+            "nl": "Dashboard",
+            "de": "Dashboard",
+            "fr": "Tableau de bord",
+            "it": "Dashboard",
+            "sv": "Instrumentpanel",
+            "no": "Dashbord",
+            "es": "Panel",
+            "da": "Dashboard",
+            "ru": "Панель",
+            "pl": "Pulpit",
+            "ko": "대시보드",
+            "ar": "لوحة المعلومات"
+          },
+          "hint": {
+            "en": "The dashboard whose widgets the stack shows, one at a time. Only Widgetkeeper widgets can be shown. Needs the API key in the app's settings, with permission to read dashboards.",
+            "nl": "Het dashboard waarvan de stapel de widgets één voor één toont. Alleen Widgetkeeper-widgets kunnen worden getoond. Vereist de API-sleutel in de app-instellingen, met toestemming om dashboards te lezen.",
+            "de": "Das Dashboard, dessen Widgets der Stapel nacheinander zeigt. Nur Widgetkeeper-Widgets werden gezeigt. Braucht den API-Schlüssel in den App-Einstellungen, mit Leserecht für Dashboards.",
+            "fr": "Le tableau de bord dont la pile affiche les widgets un par un. Seuls les widgets Widgetkeeper s'affichent. Nécessite la clé API dans les réglages de l'app, avec le droit de lire les tableaux de bord.",
+            "it": "La dashboard di cui la pila mostra i widget uno alla volta. Si possono mostrare solo i widget di Widgetkeeper. Serve la chiave API nelle impostazioni dell'app, con il permesso di leggere le dashboard.",
+            "sv": "Instrumentpanelen vars widgetar stapeln visar en i taget. Bara Widgetkeeper-widgetar kan visas. Kräver API-nyckeln i appens inställningar, med behörighet att läsa instrumentpaneler.",
+            "no": "Dashbordet der stabelen viser widgetene én om gangen. Bare Widgetkeeper-widgeter kan vises. Krever API-nøkkelen i appinnstillingene, med tillatelse til å lese dashbord.",
+            "es": "El panel cuyos widgets muestra la pila, de uno en uno. Solo se pueden mostrar widgets de Widgetkeeper. Necesita la clave API en los ajustes de la app, con permiso para leer paneles.",
+            "da": "Det dashboard, hvis widgets stakken viser én ad gangen. Kun Widgetkeeper-widgets kan vises. Kræver API-nøglen i appens indstillinger, med tilladelse til at læse dashboards.",
+            "ru": "Панель, виджеты которой стопка показывает по одному. Показываются только виджеты Widgetkeeper. Нужен API-ключ в настройках приложения с правом читать панели.",
+            "pl": "Pulpit, którego widżety stos pokazuje po kolei. Można pokazać tylko widżety Widgetkeeper. Wymaga klucza API w ustawieniach aplikacji, z prawem odczytu pulpitów.",
+            "ko": "스택이 하나씩 보여줄 위젯이 있는 대시보드입니다. Widgetkeeper 위젯만 표시됩니다. 앱 설정에 대시보드 읽기 권한이 있는 API 키가 필요합니다.",
+            "ar": "اللوحة التي يعرض المكدس عناصرها واحدًا تلو الآخر. تُعرض عناصر Widgetkeeper فقط. يتطلب مفتاح API في إعدادات التطبيق مع إذن قراءة اللوحات."
+          }
+        },
+        {
+          "id": "interval",
+          "type": "dropdown",
+          "title": {
+            "en": "Rotate every",
+            "nl": "Wisselen elke",
+            "de": "Wechseln alle",
+            "fr": "Changer toutes les",
+            "it": "Cambia ogni",
+            "sv": "Byt var",
+            "no": "Bytt hver",
+            "es": "Cambiar cada",
+            "da": "Skift hver",
+            "ru": "Переключать каждые",
+            "pl": "Przełączaj co",
+            "ko": "전환 간격",
+            "ar": "التبديل كل"
+          },
+          "value": "30",
+          "values": [
+            {
+              "id": "10",
+              "title": {
+                "en": "10 s",
+                "nl": "10 s",
+                "de": "10 s",
+                "fr": "10 s",
+                "it": "10 s",
+                "sv": "10 s",
+                "no": "10 s",
+                "es": "10 s",
+                "da": "10 s",
+                "ru": "10 с",
+                "pl": "10 s",
+                "ko": "10초",
+                "ar": "10 ث"
+              }
+            },
+            {
+              "id": "15",
+              "title": {
+                "en": "15 s",
+                "nl": "15 s",
+                "de": "15 s",
+                "fr": "15 s",
+                "it": "15 s",
+                "sv": "15 s",
+                "no": "15 s",
+                "es": "15 s",
+                "da": "15 s",
+                "ru": "15 с",
+                "pl": "15 s",
+                "ko": "15초",
+                "ar": "15 ث"
+              }
+            },
+            {
+              "id": "30",
+              "title": {
+                "en": "30 s",
+                "nl": "30 s",
+                "de": "30 s",
+                "fr": "30 s",
+                "it": "30 s",
+                "sv": "30 s",
+                "no": "30 s",
+                "es": "30 s",
+                "da": "30 s",
+                "ru": "30 с",
+                "pl": "30 s",
+                "ko": "30초",
+                "ar": "30 ث"
+              }
+            },
+            {
+              "id": "60",
+              "title": {
+                "en": "1 min",
+                "nl": "1 min",
+                "de": "1 min",
+                "fr": "1 min",
+                "it": "1 min",
+                "sv": "1 min",
+                "no": "1 min",
+                "es": "1 min",
+                "da": "1 min",
+                "ru": "1 мин",
+                "pl": "1 min",
+                "ko": "1분",
+                "ar": "1 د"
+              }
+            },
+            {
+              "id": "120",
+              "title": {
+                "en": "2 min",
+                "nl": "2 min",
+                "de": "2 min",
+                "fr": "2 min",
+                "it": "2 min",
+                "sv": "2 min",
+                "no": "2 min",
+                "es": "2 min",
+                "da": "2 min",
+                "ru": "2 мин",
+                "pl": "2 min",
+                "ko": "2분",
+                "ar": "2 د"
+              }
+            },
+            {
+              "id": "300",
+              "title": {
+                "en": "5 min",
+                "nl": "5 min",
+                "de": "5 min",
+                "fr": "5 min",
+                "it": "5 min",
+                "sv": "5 min",
+                "no": "5 min",
+                "es": "5 min",
+                "da": "5 min",
+                "ru": "5 мин",
+                "pl": "5 min",
+                "ko": "5분",
+                "ar": "5 د"
+              }
+            },
+            {
+              "id": "never",
+              "title": {
+                "en": "Never",
+                "nl": "Nooit",
+                "de": "Nie",
+                "fr": "Jamais",
+                "it": "Mai",
+                "sv": "Aldrig",
+                "no": "Aldri",
+                "es": "Nunca",
+                "da": "Aldrig",
+                "ru": "Никогда",
+                "pl": "Nigdy",
+                "ko": "안 함",
+                "ar": "أبدًا"
+              }
+            }
+          ]
+        },
+        {
+          "id": "smart",
+          "type": "checkbox",
+          "title": {
+            "en": "Smart rotate",
+            "nl": "Slim wisselen",
+            "de": "Intelligent wechseln",
+            "fr": "Rotation intelligente",
+            "it": "Rotazione intelligente",
+            "sv": "Smart växling",
+            "no": "Smart bytte",
+            "es": "Rotación inteligente",
+            "da": "Smart skift",
+            "ru": "Умное переключение",
+            "pl": "Inteligentne przełączanie",
+            "ko": "스마트 전환",
+            "ar": "تبديل ذكي"
+          },
+          "hint": {
+            "en": "Brings a page forward while something happens: music playing, a timer running, an alarm, someone on a camera, or a door open or unlocked.",
+            "nl": "Haalt een pagina naar voren zolang er iets gebeurt: muziek speelt, een timer loopt, een alarm, iemand op een camera of een deur open of ontgrendeld.",
+            "de": "Holt eine Seite nach vorn, solange etwas passiert: Musik läuft, ein Timer läuft, ein Alarm, jemand vor einer Kamera oder eine Tür offen oder entriegelt.",
+            "fr": "Met une page en avant tant qu'il se passe quelque chose : musique en cours, minuteur actif, alarme, quelqu'un devant une caméra, ou une porte ouverte ou déverrouillée.",
+            "it": "Porta avanti una pagina mentre succede qualcosa: musica in riproduzione, un timer attivo, un allarme, qualcuno davanti a una telecamera o una porta aperta o sbloccata.",
+            "sv": "Visar en sida medan något händer: musik spelas, en timer går, ett larm, någon på en kamera eller en dörr som är öppen eller olåst.",
+            "no": "Viser en side mens noe skjer: musikk spiller, en tidtaker går, en alarm, noen på et kamera eller en dør som er åpen eller ulåst.",
+            "es": "Muestra una página mientras ocurre algo: música sonando, un temporizador en marcha, una alarma, alguien ante una cámara o una puerta abierta o sin cerrojo.",
+            "da": "Viser en side, mens noget sker: musik spiller, en timer kører, en alarm, nogen på et kamera eller en dør, der er åben eller ulåst.",
+            "ru": "Выводит страницу вперёд, пока что-то происходит: играет музыка, идёт таймер, тревога, кто-то на камере или дверь открыта или не заперта.",
+            "pl": "Wysuwa stronę na przód, gdy coś się dzieje: gra muzyka, działa minutnik, alarm, ktoś przed kamerą albo drzwi otwarte lub odblokowane.",
+            "ko": "무언가 일어나는 동안 해당 페이지를 앞으로 가져옵니다: 음악 재생, 타이머 작동, 경보, 카메라에 사람 감지, 문 열림 또는 잠금 해제.",
+            "ar": "يُظهر صفحة أثناء حدوث شيء: تشغيل موسيقى، مؤقت يعمل، إنذار، شخص أمام كاميرا، أو باب مفتوح أو غير مقفل."
+          },
+          "value": true
+        },
+        {
+          "id": "resumeAfter",
+          "type": "dropdown",
+          "title": {
+            "en": "Pause after a swipe",
+            "nl": "Pauze na vegen",
+            "de": "Pause nach Wischen",
+            "fr": "Pause après un balayage",
+            "it": "Pausa dopo uno scorrimento",
+            "sv": "Paus efter svep",
+            "no": "Pause etter sveip",
+            "es": "Pausa tras deslizar",
+            "da": "Pause efter swipe",
+            "ru": "Пауза после пролистывания",
+            "pl": "Pauza po przesunięciu",
+            "ko": "스와이프 후 일시정지",
+            "ar": "إيقاف مؤقت بعد السحب"
+          },
+          "value": "60",
+          "values": [
+            {
+              "id": "30",
+              "title": {
+                "en": "30 s",
+                "nl": "30 s",
+                "de": "30 s",
+                "fr": "30 s",
+                "it": "30 s",
+                "sv": "30 s",
+                "no": "30 s",
+                "es": "30 s",
+                "da": "30 s",
+                "ru": "30 с",
+                "pl": "30 s",
+                "ko": "30초",
+                "ar": "30 ث"
+              }
+            },
+            {
+              "id": "60",
+              "title": {
+                "en": "1 min",
+                "nl": "1 min",
+                "de": "1 min",
+                "fr": "1 min",
+                "it": "1 min",
+                "sv": "1 min",
+                "no": "1 min",
+                "es": "1 min",
+                "da": "1 min",
+                "ru": "1 мин",
+                "pl": "1 min",
+                "ko": "1분",
+                "ar": "1 د"
+              }
+            },
+            {
+              "id": "120",
+              "title": {
+                "en": "2 min",
+                "nl": "2 min",
+                "de": "2 min",
+                "fr": "2 min",
+                "it": "2 min",
+                "sv": "2 min",
+                "no": "2 min",
+                "es": "2 min",
+                "da": "2 min",
+                "ru": "2 мин",
+                "pl": "2 min",
+                "ko": "2분",
+                "ar": "2 د"
+              }
+            },
+            {
+              "id": "300",
+              "title": {
+                "en": "5 min",
+                "nl": "5 min",
+                "de": "5 min",
+                "fr": "5 min",
+                "it": "5 min",
+                "sv": "5 min",
+                "no": "5 min",
+                "es": "5 min",
+                "da": "5 min",
+                "ru": "5 мин",
+                "pl": "5 min",
+                "ko": "5분",
+                "ar": "5 د"
+              }
+            }
+          ]
+        },
+        {
+          "id": "showDots",
+          "type": "checkbox",
+          "title": {
+            "en": "Show page dots",
+            "nl": "Paginapunten tonen",
+            "de": "Seitenpunkte zeigen",
+            "fr": "Afficher les points de page",
+            "it": "Mostra i punti pagina",
+            "sv": "Visa sidpunkter",
+            "no": "Vis sideprikker",
+            "es": "Mostrar puntos de página",
+            "da": "Vis sideprikker",
+            "ru": "Показывать точки страниц",
+            "pl": "Pokaż kropki stron",
+            "ko": "페이지 점 표시",
+            "ar": "إظهار نقاط الصفحات"
+          },
+          "value": true
+        },
+        {
+          "id": "dotsPosition",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Position",
+            "nl": "  – Positie",
+            "de": "  – Position",
+            "fr": "  – Position",
+            "it": "  – Posizione",
+            "sv": "  – Placering",
+            "no": "  – Plassering",
+            "es": "  – Posición",
+            "da": "  – Placering",
+            "ru": "  – Положение",
+            "pl": "  – Położenie",
+            "ko": "  – 위치",
+            "ar": "  – الموضع"
+          },
+          "value": "below",
+          "values": [
+            {
+              "id": "below",
+              "title": {
+                "en": "Below the widget",
+                "nl": "Onder de widget",
+                "de": "Unter dem Widget",
+                "fr": "Sous le widget",
+                "it": "Sotto il widget",
+                "sv": "Under widgeten",
+                "no": "Under widgeten",
+                "es": "Debajo del widget",
+                "da": "Under widgetten",
+                "ru": "Под виджетом",
+                "pl": "Pod widżetem",
+                "ko": "위젯 아래",
+                "ar": "أسفل العنصر"
+              }
+            },
+            {
+              "id": "above",
+              "title": {
+                "en": "Above the widget",
+                "nl": "Boven de widget",
+                "de": "Über dem Widget",
+                "fr": "Au-dessus du widget",
+                "it": "Sopra il widget",
+                "sv": "Ovanför widgeten",
+                "no": "Over widgeten",
+                "es": "Encima del widget",
+                "da": "Over widgetten",
+                "ru": "Над виджетом",
+                "pl": "Nad widżetem",
+                "ko": "위젯 위",
+                "ar": "أعلى العنصر"
+              }
+            }
+          ]
+        },
+        {
+          "id": "dotsSize",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Size",
+            "nl": "  – Grootte",
+            "de": "  – Größe",
+            "fr": "  – Taille",
+            "it": "  – Dimensione",
+            "sv": "  – Storlek",
+            "no": "  – Størrelse",
+            "es": "  – Tamaño",
+            "da": "  – Størrelse",
+            "ru": "  – Размер",
+            "pl": "  – Rozmiar",
+            "ko": "  – 크기",
+            "ar": "  – الحجم"
+          },
+          "value": "small",
+          "values": [
+            {
+              "id": "small",
+              "title": {
+                "en": "Small",
+                "nl": "Klein",
+                "de": "Klein",
+                "fr": "Petits",
+                "it": "Piccoli",
+                "sv": "Små",
+                "no": "Små",
+                "es": "Pequeños",
+                "da": "Små",
+                "ru": "Маленькие",
+                "pl": "Małe",
+                "ko": "작게",
+                "ar": "صغيرة"
+              }
+            },
+            {
+              "id": "large",
+              "title": {
+                "en": "Large (easier to tap)",
+                "nl": "Groot (makkelijker te tikken)",
+                "de": "Groß (leichter zu tippen)",
+                "fr": "Grands (plus faciles à toucher)",
+                "it": "Grandi (più facili da toccare)",
+                "sv": "Stora (lättare att trycka på)",
+                "no": "Store (lettere å trykke på)",
+                "es": "Grandes (más fáciles de tocar)",
+                "da": "Store (nemmere at trykke på)",
+                "ru": "Большие (легче нажимать)",
+                "pl": "Duże (łatwiej trafić)",
+                "ko": "크게 (누르기 쉬움)",
+                "ar": "كبيرة (أسهل للنقر)"
+              }
+            }
+          ]
+        }
+      ],
+      "api": {
+        "getPages": {
+          "method": "GET",
+          "path": "/pages"
+        },
+        "call": {
+          "method": "POST",
+          "path": "/call"
+        }
+      },
+      "id": "stack"
     },
     "thermostat": {
       "name": {

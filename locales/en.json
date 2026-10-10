@@ -75,7 +75,7 @@
     "copied": "Copied to clipboard",
     "shareTitle": "Widgetkeeper diagnostics",
     "varTitle": "API key",
-    "varHelp": "Homey doesn't let apps change flow variables or start flows themselves. In the Homey web app, create an API key under Settings → API Keys that may change variables and start flows, and paste it here. It stays on your Homey.",
+    "varHelp": "Homey doesn't let apps change flow variables or start flows themselves. In the Homey web app, create an API key under Settings → API Keys that may change variables and start flows, and paste it here. It stays on your Homey. For the Smart Stack, it also needs to read dashboards.",
     "varKey": "API key",
     "varSave": "Save",
     "varRemove": "Remove",
@@ -86,8 +86,11 @@
     "varRemoved": "Removed.",
     "varIsSet": "A key is saved.",
     "varNotSet": "No key saved: the widgets show variables and flows, but can't change or start them.",
-    "varKeyScope": "The API key may neither change variables nor start flows.",
-    "varKeyInvalid": "The API key was not accepted."
+    "varKeyScope": "The API key may not change variables, start flows or read dashboards.",
+    "varKeyInvalid": "The API key was not accepted.",
+    "varDashboards": "The Smart Stack can read dashboards.",
+    "varNoDashboards": "It may not read dashboards, which the Smart Stack needs.",
+    "varSavedDashboards": "Saved. The key may read dashboards for the Smart Stack, but not change variables or start flows."
   },
   "heatmap": {
     "selectDevice": "Select a device and a value in the widget settings.",
@@ -304,5 +307,17 @@
     "keyScope": "The API key may not run this. Speaker actions need permission to manage flows.",
     "keyInvalid": "The API key was not accepted.",
     "speakerAction": "Speaker action"
+  },
+  "stack": {
+    "selectDashboard": "Pick a dashboard in the widget settings.",
+    "noKey": "To read the dashboard, add an API key in the app settings.",
+    "keyScope": "The API key may not read dashboards.",
+    "keyInvalid": "The API key was not accepted.",
+    "dashboardMissing": "The dashboard was not found.",
+    "noPages": "The dashboard has no Widgetkeeper widgets.",
+    "error": "Could not load the stack.",
+    "pageFailed": "Could not show this widget.",
+    "pageCount": "__count__ Widgetkeeper widgets",
+    "keyHint": "Widgetkeeper → Configure: an API key that may read dashboards."
   }
 }

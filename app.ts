@@ -13,6 +13,7 @@ import PersonalApiKey from './lib/PersonalApiKey.js';
 import QuickActionService from './lib/QuickActionService.js';
 import SensorAlarmService from './lib/SensorAlarmService.js';
 import SparklineService from './lib/SparklineService.js';
+import StackService, { STACK_RESUME_CARD, STACK_SHOW_CARD } from './lib/StackService.js';
 import ThermostatService from './lib/ThermostatService.js';
 import TimerService, { TIMER_FINISHED_CARD, timerDurationText, type Timer } from './lib/TimerService.js';
 import ValueService from './lib/ValueService.js';
@@ -43,7 +44,8 @@ export default class WidgetkeeperApp extends Homey.App {
   locks!: LockService;
   curtains!: CurtainService;
   media!: MediaService;
-  /** The user's personal API key, shared by Flow Variables and Flow Buttons (the app's token may only read). */
+  stack!: StackService;
+  /** The user's personal API key, shared by Flow Variables, Flow Buttons, Media and the Smart Stack (the app's token may only read). */
   apiKey!: PersonalApiKey;
 
   async onInit() {
@@ -92,6 +94,9 @@ export default class WidgetkeeperApp extends Homey.App {
     this.media = new MediaService(this.homey, this.flows, log, debug, this.apiKey);
     this.media.start();
     this.registerMediaSettings();
+    this.stack = new StackService(this.homey, log, debug, this.apiKey);
+    this.registerStackSettings();
+    this.registerStackFlows();
     this.debug('Widgetkeeper has been initialized');
   }
 
@@ -193,13 +198,28 @@ export default class WidgetkeeperApp extends Homey.App {
     }
   }
 
-  /** Autocomplete for the media widget: the speaker, then each button's Flow card of that speaker or flow. */
+  /** Autocomplete for the media widget: the speaker, then each button's Flow card of that speaker or flow, and its icon. */
   private registerMediaSettings() {
     const widget = this.homey.dashboards.getWidget('media');
     widget.registerSettingAutocompleteListener('device', query => this.media.listDevices(query));
     for (const n of MEDIA_BUTTONS) {
       widget.registerSettingAutocompleteListener(`button${n}`, (query, settings) => this.media.listButtons(settings?.device?.id, query));
+      widget.registerSettingAutocompleteListener(`button${n}Icon`, async query => this.flows.listIcons(query, { none: true }));
     }
+  }
+
+  /** Autocomplete for the Smart Stack: the dashboard whose widgets it shows. */
+  private registerStackSettings() {
+    const widget = this.homey.dashboards.getWidget('stack');
+    widget.registerSettingAutocompleteListener('dashboard', query => this.stack.listDashboards(query));
+  }
+
+  /** The Flow cards that bring a widget forward on every Smart Stack, and that end it. */
+  private registerStackFlows() {
+    this.homey.flow.getActionCard(STACK_SHOW_CARD)
+      .registerRunListener(async (args: { widget: string, minutes: number }) => this.stack.show(args.widget, args.minutes));
+    this.homey.flow.getActionCard(STACK_RESUME_CARD)
+      .registerRunListener(async () => this.stack.resume());
   }
 
   /** The Flow card *A timer finished*: the timer's name (or its duration, as the widget shows it) and its minutes. */

@@ -75,7 +75,7 @@
     "copied": "Copiado al portapapeles",
     "shareTitle": "Diagnóstico de Widgetkeeper",
     "varTitle": "Clave API",
-    "varHelp": "Homey no permite que las apps cambien variables de flujo ni inicien flujos por sí mismas. En la app web de Homey, crea una clave API en Ajustes → Claves API que pueda cambiar variables e iniciar flujos, y pégala aquí. Se queda en tu Homey.",
+    "varHelp": "Homey no permite que las apps cambien variables de flujo ni inicien flujos por sí mismas. En la app web de Homey, crea una clave API en Ajustes → Claves API que pueda cambiar variables e iniciar flujos, y pégala aquí. Se queda en tu Homey. Para la pila inteligente, también debe poder leer paneles.",
     "varKey": "Clave API",
     "varSave": "Guardar",
     "varRemove": "Quitar",
@@ -86,8 +86,11 @@
     "varRemoved": "Quitada.",
     "varIsSet": "Hay una clave guardada.",
     "varNotSet": "No hay clave guardada: los widgets muestran variables y flujos, pero no pueden cambiarlos ni iniciarlos.",
-    "varKeyScope": "La clave API no puede cambiar variables ni iniciar flujos.",
-    "varKeyInvalid": "La clave API no fue aceptada."
+    "varKeyScope": "La clave API no puede cambiar variables, iniciar flows ni leer paneles.",
+    "varKeyInvalid": "La clave API no fue aceptada.",
+    "varDashboards": "La pila inteligente puede leer paneles.",
+    "varNoDashboards": "No puede leer paneles, algo que la pila inteligente necesita.",
+    "varSavedDashboards": "Guardada. La clave puede leer paneles para la pila inteligente, pero no cambiar variables ni iniciar flows."
   },
   "heatmap": {
     "selectDevice": "Elige un dispositivo y un valor en los ajustes del widget.",
@@ -304,5 +307,17 @@
     "keyScope": "La clave API no puede ejecutarlo. Las acciones del altavoz necesitan permiso para gestionar flujos.",
     "keyInvalid": "La clave API no se ha aceptado.",
     "speakerAction": "Acción del altavoz"
+  },
+  "stack": {
+    "selectDashboard": "Elige un panel en los ajustes del widget.",
+    "noKey": "Para leer el panel, añade una clave API en los ajustes de la app.",
+    "keyScope": "La clave API no puede leer paneles.",
+    "keyInvalid": "La clave API no se aceptó.",
+    "dashboardMissing": "No se encontró el panel.",
+    "noPages": "El panel no tiene widgets de Widgetkeeper.",
+    "error": "No se pudo cargar la pila.",
+    "pageFailed": "No se pudo mostrar este widget.",
+    "pageCount": "__count__ widgets de Widgetkeeper",
+    "keyHint": "Widgetkeeper → Configurar: una clave API que pueda leer paneles."
   }
 }

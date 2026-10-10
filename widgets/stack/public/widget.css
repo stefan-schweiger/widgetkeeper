@@ -1,0 +1,67 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/stack-preview.html).
+ * Each page brings its own widget's stylesheet; this only lays out the pages and the dots.
+ */
+.sk {
+  --sk-tile: var(--homey-background-color, #FFFFFF);
+  --sk-text: var(--homey-text-color, #EDEEF0);
+  --sk-muted: var(--homey-text-color-light, #9C9DA5);
+  --sk-accent: var(--homey-color-blue, #2F8DF6);
+  --sk-red: var(--homey-color-red, #F25F5C);
+  --sk-fs-small: var(--homey-font-size-small, 14px); --sk-lh-small: var(--homey-line-height-small, 20px);
+  --sk-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+  --sk-dots-h: 20px; --sk-dot-w: 28px; --sk-dot: 6px; --sk-dot-on: 16px;
+  display: flex; flex-direction: column;
+}
+/* Large dots (the dotsSize setting): easier to see and to tap. */
+.sk.dots-large { --sk-dots-h: 32px; --sk-dot-w: 40px; --sk-dot: 10px; --sk-dot-on: 26px; }
+.homey-dark-mode .sk, .sk.homey-dark-mode { --sk-tile: #181920; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
+html, body { background: transparent !important; }
+
+/*
+ * The pages side by side, one screen wide each, snapping. A native scroll, so a swipe is the WebView's own and a
+ * vertical swipe still scrolls the dashboard. Its height is the current page's (set by widget.js), so a taller page
+ * next to it doesn't stretch it.
+ */
+.sk-track {
+  display: flex; align-items: flex-start; overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none;
+}
+.sk-track::-webkit-scrollbar { display: none; }
+.sk-slide { flex: 0 0 100%; min-width: 0; box-sizing: border-box; scroll-snap-align: start; scroll-snap-stop: always; }
+/* A page whose widget isn't transparent: Homey draws its card, so the slide does (its frame class darkens it in dark mode). */
+.sk-slide.sk-card { background-color: var(--homey-background-color, #FFFFFF); border-radius: var(--sk-radius); position: relative; }
+.sk-slide.homey-widget { padding: var(--homey-su-4, 16px); }
+.sk-slide.homey-widget-full { padding: 0; }
+
+/* The dots: which page shows, and a tap goes to another one. Each is a 28 × 20 px target around a 6 px dot (large: 40 × 32 around 10 px). */
+.sk-dots { display: flex; justify-content: center; height: var(--sk-dots-h); }
+.sk.no-dots .sk-dots { display: none; }
+/* Above the pages (the dotsPosition setting). */
+.sk.dots-above .sk-dots { order: -1; }
+.sk-dot {
+  -webkit-appearance: none; appearance: none; border: 0; margin: 0; padding: 0; background: none; cursor: pointer;
+  width: var(--sk-dot-w); height: var(--sk-dots-h); display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.sk-dot::before {
+  content: ''; width: var(--sk-dot); height: var(--sk-dot); border-radius: calc(var(--sk-dot) / 2);
+  background: color-mix(in srgb, var(--sk-muted) 55%, transparent);
+  transition: width .2s ease, background-color .2s ease;
+}
+.sk-dot.on::before { width: var(--sk-dot-on); background: var(--sk-text); }
+/* A page that wants attention (or a Flow brought forward) while it isn't showing. */
+.sk-dot.alert:not(.on)::before { background: var(--sk-accent); }
+
+.sk-message { display: none; }
+.sk.has-message .sk-message {
+  display: block; padding: 14px 16px; border-radius: var(--sk-radius); background: var(--sk-tile);
+  font-size: var(--sk-fs-small); line-height: var(--sk-lh-small); color: var(--sk-muted); text-align: left;
+}
+.sk-message.error { color: var(--sk-red); }

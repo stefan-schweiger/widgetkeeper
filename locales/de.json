@@ -75,7 +75,7 @@
     "copied": "In die Zwischenablage kopiert",
     "shareTitle": "Widgetkeeper-Diagnose",
     "varTitle": "API-Schlüssel",
-    "varHelp": "Homey lässt Apps Flow-Variablen nicht selbst ändern und keine Flows starten. Erstelle in der Homey-Web-App unter Einstellungen → API-Schlüssel einen API-Schlüssel, der Variablen ändern und Flows starten darf, und füge ihn hier ein. Er bleibt auf deinem Homey.",
+    "varHelp": "Homey lässt Apps Flow-Variablen nicht selbst ändern und keine Flows starten. Erstelle in der Homey-Web-App unter Einstellungen → API-Schlüssel einen API-Schlüssel, der Variablen ändern und Flows starten darf, und füge ihn hier ein. Er bleibt auf deinem Homey. Für den smarten Stapel muss er auch Dashboards lesen dürfen.",
     "varKey": "API-Schlüssel",
     "varSave": "Speichern",
     "varRemove": "Entfernen",
@@ -86,8 +86,11 @@
     "varRemoved": "Entfernt.",
     "varIsSet": "Ein Schlüssel ist gespeichert.",
     "varNotSet": "Kein Schlüssel gespeichert: Die Widgets zeigen Variablen und Flows, können sie aber nicht ändern oder starten.",
-    "varKeyScope": "Der API-Schlüssel darf weder Variablen ändern noch Flows starten.",
-    "varKeyInvalid": "Der API-Schlüssel wurde nicht akzeptiert."
+    "varKeyScope": "Der API-Schlüssel darf weder Variablen ändern, Flows starten noch Dashboards lesen.",
+    "varKeyInvalid": "Der API-Schlüssel wurde nicht akzeptiert.",
+    "varDashboards": "Der smarte Stapel kann Dashboards lesen.",
+    "varNoDashboards": "Er darf keine Dashboards lesen, was der smarte Stapel braucht.",
+    "varSavedDashboards": "Gespeichert. Der Schlüssel darf Dashboards für den smarten Stapel lesen, aber keine Variablen ändern oder Flows starten."
   },
   "heatmap": {
     "selectDevice": "Wähle ein Gerät und einen Wert in den Widget-Einstellungen.",
@@ -304,5 +307,17 @@
     "keyScope": "Der API-Schlüssel darf das nicht ausführen. Lautsprecheraktionen brauchen das Recht, Flows zu verwalten.",
     "keyInvalid": "Der API-Schlüssel wurde nicht akzeptiert.",
     "speakerAction": "Lautsprecheraktion"
+  },
+  "stack": {
+    "selectDashboard": "Wähle ein Dashboard in den Widget-Einstellungen.",
+    "noKey": "Füge in den App-Einstellungen einen API-Schlüssel hinzu, um das Dashboard zu lesen.",
+    "keyScope": "Der API-Schlüssel darf keine Dashboards lesen.",
+    "keyInvalid": "Der API-Schlüssel wurde nicht akzeptiert.",
+    "dashboardMissing": "Das Dashboard wurde nicht gefunden.",
+    "noPages": "Das Dashboard hat keine Widgetkeeper-Widgets.",
+    "error": "Der Stapel konnte nicht geladen werden.",
+    "pageFailed": "Dieses Widget konnte nicht angezeigt werden.",
+    "pageCount": "__count__ Widgetkeeper-Widgets",
+    "keyHint": "Widgetkeeper → Konfigurieren: ein API-Schlüssel, der Dashboards lesen darf."
   }
 }

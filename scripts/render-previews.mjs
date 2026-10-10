@@ -47,6 +47,8 @@ const OUT = {
   'ct-light': 'widgets/curtains/preview-light.png',
   'mw-dark': 'widgets/media/preview-dark.png',
   'mw-light': 'widgets/media/preview-light.png',
+  'sk-dark': 'widgets/stack/preview-dark.png',
+  'sk-light': 'widgets/stack/preview-light.png',
 };
 
 const only = process.argv.slice(2);

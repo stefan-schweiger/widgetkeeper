@@ -76,6 +76,10 @@ Curtains and blinds that open or close with one tap, with a slider for anything 
 <a href="#media"><b>Media</b></a><br>
 A speaker with its album art, mute, a volume that never overshoots and buttons for its sources<br clear="left"></p>
 
+<p><a href="#smart-stack"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/stack-dark.png"><img src="docs/previews/stack-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#smart-stack"><b>Smart Stack</b></a><br>
+Several widgets in one spot, one at a time, with the one that matters brought forward<br clear="left"></p>
+
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
@@ -146,7 +150,7 @@ A Flow can colour the tiles: the action card **Set the tile colour of … to …
 **Settings:** up to six values, 3 or 2 tiles per row, fill percentages by level with adjustable limits.
 
 ## Light Controls
-<img src="docs/screenshots/lights.png" alt="Light Controls on a Homey dashboard" width="358">
+<img src="docs/clips/lights.webp" alt="Light Controls on a Homey dashboard: a light turned on, dimmed with the bar, and given a colour and a white" width="358">
 
 Compact light tiles, six in the space of three of Homey's light cards. Tap a tile to turn the light on or off, drag or tap the bar to set the brightness, and tap the colour button (a half-filled circle, or a thermometer on white-only lights, in the light's colour) to pick a colour or a white from a row of swatches. On Android, tap the bar instead of dragging. Lights in the same room can share one tile that controls them all. Plugs and switches that only turn on and off get a tile without the bar.
 
@@ -221,6 +225,19 @@ Up to four buttons, behind ⋯ in the corner, run the speaker's own actions, suc
 **Settings:** the speaker, switching speaker (on by default), the volume as a bar or as buttons, the volume step (2, 5 or 10 %), the maximum volume, the progress bar and time (on by default), shuffle and repeat (off by default; with the volume as buttons they're behind ⋯ too), and four buttons, each with an optional name.
 
 Works with any speaker in Homey; made with Sonos in mind.
+
+## Smart Stack
+<img src="docs/clips/stack.webp" alt="A Smart Stack on a Homey dashboard: it turns through four widgets, is swiped by hand, and brings the cameras forward when someone is at the door" width="358">
+
+Widgetkeeper widgets from another dashboard, one at a time in the space of one. Set up a dashboard with the widgets you want to rotate (for example cameras, the speaker and a timer), then put a Smart Stack on your main dashboard and pick that dashboard. The stack turns to the next widget every 30 seconds (or 10 s to 5 min, or never), and its height follows the widget it shows. Swipe, or tap the dots under it, to move by hand; the stack then holds still for a minute.
+
+With smart rotate on, a widget comes forward while something happens on it: the speaker plays, a timer runs or rings, a camera sees someone, a sensor alarm goes off, or a door is open or unlocked. When several do, they take turns; one you swipe away from only comes back the next time it starts. The Flow card *Bring a widget forward on Smart Stacks for … minutes* does the same from any Flow (a doorbell, say), and *Return Smart Stacks to rotation* ends it.
+
+The widgets in a stack are the real ones, with the settings and devices you gave them on the other dashboard; a timer started in the stack is the same timer as on that dashboard. Only Widgetkeeper widgets can be in a stack: Homey's own widgets and other apps' are left out.
+
+Homey doesn't let an app read your dashboards, so the stack needs an API key in Widgetkeeper's app settings that may read dashboards. In Homey's Android app a swipe may be taken by the dashboard; the dots always work.
+
+**Settings:** the dashboard, how often it turns (30 s by default), smart rotate (on by default), how long it holds still after a swipe (1 min by default) and the page dots (on by default; below or above the widget, small or large).
 
 ## Dashboard examples
 Seven dashboards from a made-up house, on a tablet in Homey's dark mode.

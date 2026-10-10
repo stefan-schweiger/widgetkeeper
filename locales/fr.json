@@ -75,7 +75,7 @@
     "copied": "Copié dans le presse-papiers",
     "shareTitle": "Diagnostic Widgetkeeper",
     "varTitle": "Clé API",
-    "varHelp": "Homey ne permet pas aux apps de modifier les variables de flow ni de lancer des flows elles-mêmes. Dans l'app web Homey, créez une clé API sous Réglages → Clés API qui peut modifier les variables et lancer des flows, puis collez-la ici. Elle reste sur votre Homey.",
+    "varHelp": "Homey ne permet pas aux apps de modifier les variables de flow ni de lancer des flows elles-mêmes. Dans l'app web Homey, créez une clé API sous Réglages → Clés API qui peut modifier les variables et lancer des flows, puis collez-la ici. Elle reste sur votre Homey. Pour la pile intelligente, elle doit aussi pouvoir lire les tableaux de bord.",
     "varKey": "Clé API",
     "varSave": "Enregistrer",
     "varRemove": "Supprimer",
@@ -86,8 +86,11 @@
     "varRemoved": "Supprimée.",
     "varIsSet": "Une clé est enregistrée.",
     "varNotSet": "Aucune clé enregistrée : les widgets affichent variables et flows, sans pouvoir les modifier ni les lancer.",
-    "varKeyScope": "La clé API ne peut ni modifier les variables ni lancer de flows.",
-    "varKeyInvalid": "La clé API n'a pas été acceptée."
+    "varKeyScope": "La clé API ne peut ni modifier les variables, ni lancer des flows, ni lire les tableaux de bord.",
+    "varKeyInvalid": "La clé API n'a pas été acceptée.",
+    "varDashboards": "La pile intelligente peut lire les tableaux de bord.",
+    "varNoDashboards": "Elle ne peut pas lire les tableaux de bord, ce dont la pile intelligente a besoin.",
+    "varSavedDashboards": "Enregistrée. La clé peut lire les tableaux de bord pour la pile intelligente, mais pas modifier les variables ni lancer des flows."
   },
   "heatmap": {
     "selectDevice": "Choisissez un appareil et une valeur dans les réglages du widget.",
@@ -304,5 +307,17 @@
     "keyScope": "La clé API ne peut pas l’exécuter. Les actions d’enceinte exigent le droit de gérer les flows.",
     "keyInvalid": "La clé API n’a pas été acceptée.",
     "speakerAction": "Action de l’enceinte"
+  },
+  "stack": {
+    "selectDashboard": "Choisissez un tableau de bord dans les réglages du widget.",
+    "noKey": "Pour lire le tableau de bord, ajoutez une clé API dans les réglages de l'app.",
+    "keyScope": "La clé API ne peut pas lire les tableaux de bord.",
+    "keyInvalid": "La clé API n'a pas été acceptée.",
+    "dashboardMissing": "Le tableau de bord est introuvable.",
+    "noPages": "Le tableau de bord n'a aucun widget Widgetkeeper.",
+    "error": "Impossible de charger la pile.",
+    "pageFailed": "Impossible d'afficher ce widget.",
+    "pageCount": "__count__ widgets Widgetkeeper",
+    "keyHint": "Widgetkeeper → Configurer : une clé API qui peut lire les tableaux de bord."
   }
 }

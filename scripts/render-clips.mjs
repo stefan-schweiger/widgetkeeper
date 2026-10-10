@@ -1,0 +1,198 @@
+// Records the README clips (docs/clips/<id>.webp): dev/clips.html?c=<id> in headless Edge, driven by real touch events
+// through the DevTools protocol, captured as screenshots and joined into an animated WebP (sharp) that GitHub plays
+// inline. Like the screenshots: Homey's dark mode, 358 px wide (a phone's widget), here at 2x, on a transparent page.
+// Usage: `npm run clips [-- lights stack]` (set EDGE to the browser path if it isn't the default).
+import { spawn } from 'node:child_process';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import sharp from 'sharp';
+import { downloadIcons } from './headless.mjs';
+
+const EDGE = process.env.EDGE || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+const page = pathToFileURL(resolve('dev/clips.html')).href;
+const WIDTH = 358;
+const SCALE = 2;
+/** The longest a frame is held in the WebP; a capture that took longer is still one frame. */
+const MAX_FRAME_MS = 200;
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/**
+ * Each clip: what the finger does, step by step. `tap`/`drag` take a CSS selector and the match's index (`i`), and
+ * points as fractions of its box (`x`, `y`, default the middle). `say` sets the caption; `run` calls a page control.
+ */
+const CLIPS = {
+  lights: [
+    { say: 'Tap a light to turn it on or off' },
+    { wait: 900 },
+    { tap: '.lc-tile', i: 4, y: 0.3 },
+    { wait: 1300 },
+    { say: 'Drag the bar to dim it' },
+    { wait: 700 },
+    { drag: '.lc-bar', i: 0, from: { x: 0.55 }, to: { x: 0.12 }, ms: 1100 },
+    { wait: 900 },
+    { drag: '.lc-bar', i: 0, from: { x: 0.12 }, to: { x: 0.8 }, ms: 900 },
+    { wait: 1100 },
+    { say: 'The chip picks a colour or a white' },
+    { wait: 700 },
+    { tap: '.lc-chip', i: 1 },
+    { wait: 1200 },
+    { tap: '.lc-swatch', i: 4 },
+    { wait: 1300 },
+    { tap: '.lc-chip', i: 0 },
+    { wait: 1100 },
+    { tap: '.lc-swatch', i: 0 }, // the coolest white (a whites-only light), so the change shows
+    { wait: 1800 },
+  ],
+  stack: [
+    { say: 'Turns to the next widget (every 30 s; sped up here)' },
+    { wait: 6600 },
+    { say: 'Swipe, or tap the dots, to move by hand' },
+    { wait: 600 },
+    // Headless Edge scrolls half as far as dispatched touch moves go, so the finger runs on past the left edge.
+    { drag: '.sk-track', i: 0, from: { x: 0.97, y: 0.5 }, to: { x: -0.25, y: 0.5 }, ms: 600, hold: 30 },
+    { wait: 1500 },
+    { tap: '.sk-dot', i: 0 },
+    { wait: 2600 },
+    { say: 'Someone at the door: the cameras come forward' },
+    { wait: 900 },
+    { run: 'doorbell' },
+    { wait: 3500 },
+  ],
+};
+
+// ---------------------------------------------------------------- Edge and the DevTools protocol
+
+async function launch() {
+  const profile = mkdtempSync(join(tmpdir(), 'wk-clips-'));
+  const proc = spawn(EDGE, ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--remote-debugging-port=0',
+    `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' });
+  const portFile = join(profile, 'DevToolsActivePort');
+  for (let i = 0; i < 100 && !existsSync(portFile); i++) await sleep(100);
+  const port = readFileSync(portFile, 'utf8').split('\n')[0].trim();
+  const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+  const target = targets.find(t => t.type === 'page');
+  const ws = new WebSocket(target.webSocketDebuggerUrl);
+  await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+  let id = 0;
+  const pending = new Map();
+  ws.onmessage = (m) => {
+    const msg = JSON.parse(m.data);
+    if (msg.id && pending.has(msg.id)) {
+      const { res, rej } = pending.get(msg.id);
+      pending.delete(msg.id);
+      if (msg.error) rej(new Error(`${msg.error.message}`)); else res(msg.result);
+    }
+  };
+  const send = (method, params = {}) => new Promise((res, rej) => {
+    pending.set(++id, { res, rej });
+    ws.send(JSON.stringify({ id, method, params }));
+  });
+  const close = () => { ws.close(); proc.kill(); setTimeout(() => rmSync(profile, { recursive: true, force: true }), 500); };
+  return { send, close };
+}
+
+/** Evaluates `expr` in the page (awaiting a promise) and returns its value. */
+async function evaluate(send, expr) {
+  const r = await send('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true });
+  if (r.exceptionDetails) throw new Error(`${expr}: ${r.exceptionDetails.exception?.description ?? r.exceptionDetails.text}`);
+  return r.result.value;
+}
+
+/** A point in an element's box: `x`/`y` as fractions (default the middle). */
+async function pointIn(send, selector, i = 0, { x = 0.5, y = 0.5 } = {}) {
+  const box = await evaluate(send, `(() => { const e = document.querySelectorAll(${JSON.stringify(selector)})[${i}];
+    if (!e) return null; const r = e.getBoundingClientRect(); return { left: r.left, top: r.top, width: r.width, height: r.height }; })()`);
+  if (!box) throw new Error(`No ${selector} #${i}`);
+  return { x: box.left + box.width * x, y: box.top + box.height * y };
+}
+
+const touch = (send, type, p) => send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x: p.x, y: p.y }] });
+
+async function step(send, s) {
+  if (s.wait) return sleep(s.wait);
+  if (s.say) return evaluate(send, `window.clip.say(${JSON.stringify(s.say)})`);
+  if (s.run) return evaluate(send, `window.clip[${JSON.stringify(s.run)}]()`);
+  // A value from the page, printed (for working out a clip's steps): `{ probe: 'expression' }`.
+  if (s.probe) return console.log('probe', s.probe, '→', JSON.stringify(await evaluate(send, s.probe)));
+  if (s.tap) {
+    const p = await pointIn(send, s.tap, s.i, s);
+    await touch(send, 'touchStart', p);
+    await sleep(240); // long enough for the finger to show in a few frames (still well under a long press)
+    return touch(send, 'touchEnd', p);
+  }
+  if (s.swipe) {
+    // A native scroll by touch (the browser's own gesture: dispatched touch moves only scroll half as far at 2x).
+    const a = await pointIn(send, s.swipe, s.i, s.from);
+    const b = await pointIn(send, s.swipe, s.i, s.to);
+    return send('Input.synthesizeScrollGesture', {
+      x: a.x, y: a.y, xDistance: b.x - a.x, yDistance: b.y - a.y, gestureSourceType: 'touch', speed: s.speed ?? 600,
+    });
+  }
+  if (s.drag) {
+    const a = await pointIn(send, s.drag, s.i, s.from);
+    const b = await pointIn(send, s.drag, s.i, s.to);
+    await touch(send, 'touchStart', a);
+    await sleep(120);
+    const n = Math.max(6, Math.round(s.ms / 30));
+    for (let k = 1; k <= n; k++) {
+      const f = k / n;
+      await touch(send, 'touchMove', { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f });
+      await sleep(s.ms / n);
+    }
+    await sleep(s.hold ?? 80); // a held finger: the page's scrolling catches up with the moves before the lift
+    return touch(send, 'touchEnd', b);
+  }
+  throw new Error(`Unknown step ${JSON.stringify(s)}`);
+}
+
+// ---------------------------------------------------------------- recording
+
+async function record(id) {
+  const { send, close } = await launch();
+  try {
+    await send('Page.enable');
+    await send('Runtime.enable');
+    await send('Emulation.setDeviceMetricsOverride', { width: WIDTH, height: 1200, deviceScaleFactor: 1, mobile: true }); // 1x: touch moves 1:1; the screenshots render at 2x (clip.scale)
+    await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 });
+    await send('Emulation.setDefaultBackgroundColorOverride', { color: { r: 0, g: 0, b: 0, a: 0 } });
+    await send('Page.navigate', { url: `${page}?c=${id}` });
+    for (let i = 0; i < 100; i++) {
+      if (await evaluate(send, 'document.readyState === "complete" && !!window.clipReady').catch(() => false)) break;
+      await sleep(100);
+    }
+    const height = await evaluate(send, 'window.clipReady');
+
+    // Screenshots as fast as they come, each with the time it was taken; the steps run meanwhile.
+    const frames = [];
+    let recording = true;
+    const capture = (async () => {
+      while (recording) {
+        const at = Date.now();
+        const { data } = await send('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width: WIDTH, height, scale: SCALE } });
+        frames.push({ at, png: Buffer.from(data, 'base64') });
+      }
+    })();
+    for (const s of CLIPS[id]) await step(send, s);
+    recording = false;
+    await capture;
+
+    const delays = frames.map((f, i) => Math.min(MAX_FRAME_MS, Math.max(20, (frames[i + 1]?.at ?? f.at + 100) - f.at)));
+    const out = `docs/clips/${id}.webp`;
+    await sharp(frames.map(f => f.png), { join: { animated: true } })
+      .webp({ loop: 0, delay: delays, quality: 80, effort: 6, smartSubsample: true })
+      .toFile(out);
+    const seconds = delays.reduce((a, b) => a + b, 0) / 1000;
+    console.log('wrote', out, `(${frames.length} frames, ${seconds.toFixed(1)} s, ${WIDTH}×${height} @${SCALE}x)`);
+  } finally {
+    close();
+  }
+}
+
+await downloadIcons();
+mkdirSync('docs/clips', { recursive: true });
+const only = process.argv.slice(2);
+for (const id of Object.keys(CLIPS).filter(c => !only.length || only.includes(c))) await record(id);
+process.exit(0);

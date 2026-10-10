@@ -75,7 +75,7 @@
     "copied": "Kopierat till urklipp",
     "shareTitle": "Widgetkeeper-diagnostik",
     "varTitle": "API-nyckel",
-    "varHelp": "Homey låter inte appar ändra flödesvariabler eller starta flöden själva. Skapa en API-nyckel under Inställningar → API-nycklar i Homeys webbapp som får ändra variabler och starta flöden, och klistra in den här. Den stannar på din Homey.",
+    "varHelp": "Homey låter inte appar ändra flödesvariabler eller starta flöden själva. Skapa en API-nyckel under Inställningar → API-nycklar i Homeys webbapp som får ändra variabler och starta flöden, och klistra in den här. Den stannar på din Homey. För den smarta stapeln behöver den också få läsa instrumentpaneler.",
     "varKey": "API-nyckel",
     "varSave": "Spara",
     "varRemove": "Ta bort",
@@ -86,8 +86,11 @@
     "varRemoved": "Borttagen.",
     "varIsSet": "En nyckel är sparad.",
     "varNotSet": "Ingen nyckel sparad: widgetarna visar variabler och flöden, men kan inte ändra eller starta dem.",
-    "varKeyScope": "API-nyckeln får varken ändra variabler eller starta flöden.",
-    "varKeyInvalid": "API-nyckeln godkändes inte."
+    "varKeyScope": "API-nyckeln får varken ändra variabler, starta flöden eller läsa instrumentpaneler.",
+    "varKeyInvalid": "API-nyckeln godkändes inte.",
+    "varDashboards": "Den smarta stapeln kan läsa instrumentpaneler.",
+    "varNoDashboards": "Den får inte läsa instrumentpaneler, vilket den smarta stapeln behöver.",
+    "varSavedDashboards": "Sparad. Nyckeln får läsa instrumentpaneler för den smarta stapeln, men inte ändra variabler eller starta flöden."
   },
   "heatmap": {
     "selectDevice": "Välj en enhet och ett värde i widgetens inställningar.",
@@ -304,5 +307,17 @@
     "keyScope": "API-nyckeln får inte köra detta. Högtalaråtgärder kräver behörighet att hantera flöden.",
     "keyInvalid": "API-nyckeln godkändes inte.",
     "speakerAction": "Högtalaråtgärd"
+  },
+  "stack": {
+    "selectDashboard": "Välj en instrumentpanel i widgetens inställningar.",
+    "noKey": "Lägg till en API-nyckel i appens inställningar för att läsa instrumentpanelen.",
+    "keyScope": "API-nyckeln får inte läsa instrumentpaneler.",
+    "keyInvalid": "API-nyckeln godkändes inte.",
+    "dashboardMissing": "Instrumentpanelen hittades inte.",
+    "noPages": "Instrumentpanelen har inga Widgetkeeper-widgetar.",
+    "error": "Kunde inte läsa in stapeln.",
+    "pageFailed": "Kunde inte visa widgeten.",
+    "pageCount": "__count__ Widgetkeeper-widgetar",
+    "keyHint": "Widgetkeeper → Konfigurera: en API-nyckel som får läsa instrumentpaneler."
   }
 }

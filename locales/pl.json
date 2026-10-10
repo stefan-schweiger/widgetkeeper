@@ -75,7 +75,7 @@
     "copied": "Skopiowano do schowka",
     "shareTitle": "Diagnostyka Widgetkeeper",
     "varTitle": "Klucz API",
-    "varHelp": "Homey nie pozwala aplikacjom samodzielnie zmieniać zmiennych Flow ani uruchamiać Flow. W aplikacji webowej Homey utwórz w Ustawienia → Klucze API klucz, który może zmieniać zmienne i uruchamiać Flow, i wklej go tutaj. Zostaje na Twoim Homey.",
+    "varHelp": "Homey nie pozwala aplikacjom samodzielnie zmieniać zmiennych Flow ani uruchamiać Flow. W aplikacji webowej Homey utwórz w Ustawienia → Klucze API klucz, który może zmieniać zmienne i uruchamiać Flow, i wklej go tutaj. Zostaje na Twoim Homey. Dla inteligentnego stosu musi też móc odczytywać pulpity.",
     "varKey": "Klucz API",
     "varSave": "Zapisz",
     "varRemove": "Usuń",
@@ -86,8 +86,11 @@
     "varRemoved": "Usunięto.",
     "varIsSet": "Klucz jest zapisany.",
     "varNotSet": "Brak zapisanego klucza: widżety pokazują zmienne i Flow, ale nie mogą ich zmieniać ani uruchamiać.",
-    "varKeyScope": "Klucz API nie może ani zmieniać zmiennych, ani uruchamiać Flow.",
-    "varKeyInvalid": "Klucz API nie został zaakceptowany."
+    "varKeyScope": "Klucz API nie może zmieniać zmiennych, uruchamiać flow ani odczytywać pulpitów.",
+    "varKeyInvalid": "Klucz API nie został zaakceptowany.",
+    "varDashboards": "Inteligentny stos może odczytywać pulpity.",
+    "varNoDashboards": "Nie może odczytywać pulpitów, czego potrzebuje inteligentny stos.",
+    "varSavedDashboards": "Zapisano. Klucz może odczytywać pulpity dla inteligentnego stosu, ale nie zmieniać zmiennych ani uruchamiać flow."
   },
   "heatmap": {
     "selectDevice": "Wybierz urządzenie i wartość w ustawieniach widżetu.",
@@ -304,5 +307,17 @@
     "keyScope": "Klucz API nie może tego uruchomić. Akcje głośnika wymagają uprawnienia do zarządzania Flow.",
     "keyInvalid": "Klucz API nie został zaakceptowany.",
     "speakerAction": "Akcja głośnika"
+  },
+  "stack": {
+    "selectDashboard": "Wybierz pulpit w ustawieniach widżetu.",
+    "noKey": "Aby odczytać pulpit, dodaj klucz API w ustawieniach aplikacji.",
+    "keyScope": "Klucz API nie może odczytywać pulpitów.",
+    "keyInvalid": "Klucz API nie został zaakceptowany.",
+    "dashboardMissing": "Nie znaleziono pulpitu.",
+    "noPages": "Pulpit nie ma widżetów Widgetkeeper.",
+    "error": "Nie udało się wczytać stosu.",
+    "pageFailed": "Nie udało się pokazać tego widżetu.",
+    "pageCount": "Widżety Widgetkeeper: __count__",
+    "keyHint": "Widgetkeeper → Konfiguruj: klucz API z prawem odczytu pulpitów."
   }
 }

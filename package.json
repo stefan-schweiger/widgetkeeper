@@ -17,6 +17,7 @@
     "app-images": "node scripts/render-app-images.mjs",
     "previews": "node scripts/render-previews.mjs",
     "screenshots": "node scripts/render-screenshots.mjs",
+    "clips": "node scripts/render-clips.mjs",
     "showcase": "node scripts/render-showcase.mjs",
     "flow-icons": "node scripts/render-flow-icons.mjs",
     "diagnostics": "node scripts/diagnostics.mjs",
@@ -33,7 +34,7 @@
     "@types/node": "^26.6.3",
     "happy-dom": "^20.14.5",
     "homey": "^4.5.3",
-    "sharp": "^0.33.5",
+    "sharp": "^0.34.5",
     "typescript": "^7.0.2",
     "vitest": "^5.0.3"
   }

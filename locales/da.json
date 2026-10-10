@@ -75,7 +75,7 @@
     "copied": "Kopieret til udklipsholderen",
     "shareTitle": "Widgetkeeper-diagnostik",
     "varTitle": "API-nøgle",
-    "varHelp": "Homey lader ikke apps ændre flowvariabler eller starte flows selv. Opret en API-nøgle under Indstillinger → API-nøgler i Homeys webapp, der må ændre variabler og starte flows, og indsæt den her. Den bliver på din Homey.",
+    "varHelp": "Homey lader ikke apps ændre flowvariabler eller starte flows selv. Opret en API-nøgle under Indstillinger → API-nøgler i Homeys webapp, der må ændre variabler og starte flows, og indsæt den her. Den bliver på din Homey. Til den smarte stak skal den også kunne læse dashboards.",
     "varKey": "API-nøgle",
     "varSave": "Gem",
     "varRemove": "Fjern",
@@ -86,8 +86,11 @@
     "varRemoved": "Fjernet.",
     "varIsSet": "Der er gemt en nøgle.",
     "varNotSet": "Ingen nøgle gemt: widgetterne viser variabler og flows, men kan ikke ændre eller starte dem.",
-    "varKeyScope": "API-nøglen må hverken ændre variabler eller starte flows.",
-    "varKeyInvalid": "API-nøglen blev ikke godkendt."
+    "varKeyScope": "API-nøglen må hverken ændre variabler, starte flows eller læse dashboards.",
+    "varKeyInvalid": "API-nøglen blev ikke godkendt.",
+    "varDashboards": "Den smarte stak kan læse dashboards.",
+    "varNoDashboards": "Den må ikke læse dashboards, hvilket den smarte stak har brug for.",
+    "varSavedDashboards": "Gemt. Nøglen må læse dashboards til den smarte stak, men ikke ændre variabler eller starte flows."
   },
   "heatmap": {
     "selectDevice": "Vælg en enhed og en værdi i widgettens indstillinger.",
@@ -304,5 +307,17 @@
     "keyScope": "API-nøglen må ikke køre dette. Højttalerhandlinger kræver tilladelse til at administrere flows.",
     "keyInvalid": "API-nøglen blev ikke godkendt.",
     "speakerAction": "Højttalerhandling"
+  },
+  "stack": {
+    "selectDashboard": "Vælg et dashboard i widgetens indstillinger.",
+    "noKey": "Tilføj en API-nøgle i appens indstillinger for at læse dashboardet.",
+    "keyScope": "API-nøglen må ikke læse dashboards.",
+    "keyInvalid": "API-nøglen blev ikke godkendt.",
+    "dashboardMissing": "Dashboardet blev ikke fundet.",
+    "noPages": "Dashboardet har ingen Widgetkeeper-widgets.",
+    "error": "Kunne ikke indlæse stakken.",
+    "pageFailed": "Kunne ikke vise denne widget.",
+    "pageCount": "__count__ Widgetkeeper-widgets",
+    "keyHint": "Widgetkeeper → Konfigurer: en API-nøgle, der må læse dashboards."
   }
 }

@@ -1,0 +1,33 @@
+{
+  "id": "stack_resume",
+  "title": {
+    "en": "Return Smart Stacks to rotation",
+    "nl": "Slimme stapels weer laten wisselen",
+    "de": "Smarte Stapel wieder wechseln lassen",
+    "fr": "Relancer la rotation des piles intelligentes",
+    "it": "Riavvia la rotazione delle pile intelligenti",
+    "sv": "Återställ växlingen på smarta staplar",
+    "no": "Gjenoppta bytting på smarte stabler",
+    "es": "Reanudar la rotación de las pilas inteligentes",
+    "da": "Genoptag skift på smarte stakke",
+    "ru": "Вернуть умные стопки к переключению",
+    "pl": "Przywróć przełączanie inteligentnych stosów",
+    "ko": "스마트 스택 전환 재개",
+    "ar": "إعادة التبديل في المكدسات الذكية"
+  },
+  "hint": {
+    "en": "Ends every 'Bring forward' that is still running.",
+    "nl": "Beëindigt elk 'naar voren halen' dat nog loopt.",
+    "de": "Beendet jedes noch laufende Nach-vorn-Holen.",
+    "fr": "Met fin à toutes les mises en avant en cours.",
+    "it": "Termina ogni 'porta avanti' ancora attivo.",
+    "sv": "Avslutar alla visningar som fortfarande pågår.",
+    "no": "Avslutter alle visninger som fortsatt pågår.",
+    "es": "Termina todo 'traer al frente' que siga activo.",
+    "da": "Afslutter alle visninger, der stadig kører.",
+    "ru": "Отменяет все ещё действующие выводы вперёд.",
+    "pl": "Kończy każde wciąż trwające wysunięcie.",
+    "ko": "아직 진행 중인 모든 '앞으로 가져오기'를 끝냅니다.",
+    "ar": "يُنهي كل إظهار لا يزال جاريًا."
+  }
+}

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html class="homey-dark-mode">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Widget clips</title>
+  <!--
+    The README clips (docs/clips/<id>.webp, `npm run clips`): the real widget code with the made-up home of
+    showcase-data.js, in Homey's dark mode at a phone's widget width (358 px), like the screenshots. `?c=<clip>` shows
+    one; scripts/render-clips.mjs then drives it with real touch events (Edge's DevTools protocol) and records it.
+    Each clip's widgets answer like a device would (a light reports its new brightness after a moment).
+    A drawn finger shows every touch, and the caption over the widget says what happens.
+    `window.clipReady` resolves once the clip is drawn; `window.clip` has the clip's own controls (the render script's
+    `run` steps call them, e.g. a camera seeing someone).
+  -->
+  <script>
+    // The showcase's fixed day (Tuesday 6 October 2026, 18:40); the clock runs on from there, so timers count down.
+    (() => {
+      const Real = Date;
+      const offset = new Real(2026, 9, 6, 18, 40, 0).getTime() - Real.now();
+      class FixedDate extends Real {
+        constructor(...args) { if (args.length) super(...args); else super(Real.now() + offset); }
+        static now() { return Real.now() + offset; }
+      }
+      window.Date = FixedDate;
+    })();
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/lights/public/widget.css">
+  <link rel="stylesheet" href="../widgets/stack/public/widget.css">
+  <link rel="stylesheet" href="../widgets/values/public/widget.css">
+  <link rel="stylesheet" href="../widgets/timers/public/widget.css">
+  <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
+  <link rel="stylesheet" href="../widgets/media/public/widget.css">
+  <script src="../widgets/lights/public/widget.js"></script>
+  <script src="../widgets/stack/public/widget.js"></script>
+  <script src="../widgets/values/public/widget.js"></script>
+  <script src="../widgets/timers/public/widget.js"></script>
+  <script src="../widgets/cameras/public/widget.js"></script>
+  <script src="../widgets/media/public/widget.js"></script>
+  <!-- Only for each widget's frame classes, which the stack puts on its slides (the clips create the widgets themselves). -->
+  <script src="../widgets/values/public/mount.js"></script>
+  <script src="../widgets/timers/public/mount.js"></script>
+  <script src="../widgets/cameras/public/mount.js"></script>
+  <script src="../widgets/media/public/mount.js"></script>
+  <script src="mock-media.js"></script>
+  <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
+  <script src="showcase-data.js"></script>
+  <style>
+    html, body { background: transparent !important; }
+    body { width: 358px; margin: 0; font-family: Roboto, sans-serif; }
+    .clip[hidden] { display: none; }
+    /* What happens, over the widget: grey that reads on GitHub's light and dark pages alike. */
+    .caption { height: 36px; display: flex; align-items: center; font-size: 14px; line-height: 20px; color: #8B949E; transition: opacity .25s; }
+    .caption.fading { opacity: 0; }
+    /* A non-transparent widget's frame, as in the screenshots. */
+    .card { background: #181920; border-radius: 20px; padding: 16px; box-sizing: border-box; }
+    /* The finger: where a touch is, pressed while it's down. */
+    .finger {
+      position: fixed; left: 0; top: 0; width: 36px; height: 36px; margin: -18px 0 0 -18px; border-radius: 50%; pointer-events: none;
+      background: rgb(255 255 255 / .28); border: 2px solid rgb(255 255 255 / .75); box-shadow: 0 2px 10px rgb(0 0 0 / .35);
+      opacity: 0; transform: scale(1.25); transition: opacity .18s, transform .18s; z-index: 100;
+    }
+    .finger.down { opacity: 1; transform: scale(1); }
+  </style>
+</head>
+<body>
+  <div class="caption" id="caption"></div>
+  <section class="clip" id="lights"><div id="w-lights"></div></section>
+  <section class="clip" id="stack"><div id="w-stack"></div></section>
+  <div class="finger" id="finger"></div>
+
+  <script>
+    (function () {
+      const all = Object.values(SHOWCASE).flatMap(board => board.columns.flat());
+      const find = (type, n = 0) => all.filter(w => w.type === type)[n];
+      const el = id => document.getElementById(id);
+      const only = new URLSearchParams(location.search).get('c') || 'lights';
+      for (const s of document.querySelectorAll('.clip')) s.hidden = s.id !== only;
+
+      // The finger follows every touch (the render script's are real touch events).
+      const finger = el('finger');
+      const at = (e) => { const p = e.touches[0] || e.changedTouches[0]; finger.style.left = `${p.clientX}px`; finger.style.top = `${p.clientY}px`; };
+      addEventListener('touchstart', (e) => { at(e); finger.classList.add('down'); }, { capture: true, passive: true });
+      addEventListener('touchmove', at, { capture: true, passive: true });
+      addEventListener('touchend', () => finger.classList.remove('down'), { capture: true, passive: true });
+
+      // The caption crossfades to a new text.
+      const caption = el('caption');
+      function say(text) {
+        caption.classList.add('fading');
+        setTimeout(() => { caption.textContent = text; caption.classList.remove('fading'); }, 250);
+      }
+
+      const CLIPS = {
+        // Light Controls: Solbakken's six lights; each reports a change back after a moment, as a real light does.
+        lights() {
+          let w;
+          const onSet = (deviceId, change) => new Promise((resolve) => setTimeout(() => {
+            const push = (capabilityId, value) => w.pushChange({ deviceId, capabilityId, value });
+            if ('dim' in change) { if (change.dim === 0) push('onoff', false); else { push('dim', change.dim); push('onoff', true); } }
+            if ('onoff' in change) push('onoff', change.onoff);
+            if ('hue' in change) { push('light_mode', 'color'); push('light_hue', change.hue); push('light_saturation', change.saturation); push('onoff', true); }
+            if ('temperature' in change) { push('light_mode', 'temperature'); push('light_temperature', change.temperature); push('onoff', true); }
+            resolve();
+          }, 300));
+          w = createLightsWidget(el('w-lights'), { onSet });
+          w.setState(JSON.parse(JSON.stringify(find('lights').devices)));
+          return {};
+        },
+
+        // Smart Stack: four of Solbakken's widgets, turning every 3 s here (30 s by default); then a swipe, and someone
+        // at the door brings the cameras forward.
+        stack() {
+          const PAGES = [
+            { id: 'p-values', type: 'values', title: null, settings: {}, deviceIds: [] },
+            { id: 'p-timers', type: 'timers', title: null, settings: {}, deviceIds: [] },
+            { id: 'p-media', type: 'media', title: null, settings: {}, deviceIds: [] },
+            { id: 'p-cams', type: 'cameras', title: null, settings: {}, deviceIds: [] },
+          ];
+          const w = createStackWidget(el('w-stack'), { intervalMs: 3000, resumeAfterMs: 3500 });
+          const slides = w.setPages(PAGES);
+          const values = find('values', 2) || find('values');
+          createValuesWidget(slides[0].root, values.opts || {}).setState(values.slots);
+          const kitchen = find('timers');
+          createTimersWidget(slides[1].root, { sound: false, presets: kitchen.presets }).setState({ timers: kitchen.timers, now: Date.now() });
+          const clock = Date.now();
+          mountMockMedia(slides[2].root, mockSpeaker('Living room', 0), { now: () => clock });
+          const cams = createCamerasWidget(slides[3].root, {});
+          cams.setState(find('cameras').cameras);
+          cams.refresh();
+          // Its height follows the page; the clip is as tall as the tallest, so nothing below it jumps in the video.
+          let tallest = 0;
+          for (const s of slides) tallest = Math.max(tallest, Math.ceil(s.frame.getBoundingClientRect().height));
+          return {
+            minHeight: tallest + 20,
+            doorbell: () => w.setAttention('p-cams', true),
+          };
+        },
+      };
+
+      window.clip = Object.assign({ say }, CLIPS[only]());
+      window.clipReady = document.fonts.ready
+        .then(() => new Promise(r => setTimeout(r, 600))) // the camera snapshots and icons decode
+        .then(() => Math.max(Math.ceil(document.body.getBoundingClientRect().height), 36 + (window.clip.minHeight || 0)));
+    })();
+  </script>
+</body>
+</html>

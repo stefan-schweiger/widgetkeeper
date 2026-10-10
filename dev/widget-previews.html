@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|sd-dark|sd-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|var-dark|var-light|sd-dark|sd-light|fb-dark|fb-light|pb-dark|pb-light|tm-dark|tm-light|lk-dark|lk-light|ct-dark|ct-light|mw-dark|mw-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|sd-dark|sd-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|var-dark|var-light|sd-dark|sd-light|fb-dark|fb-light|pb-dark|pb-light|tm-dark|tm-light|lk-dark|lk-light|ct-dark|ct-light|mw-dark|mw-light|sk-dark|sk-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -514,6 +514,36 @@ function locks(t, theme) {
   </div>`;
 }
 
+// Smart Stack: one widget in front (a running timer row) with two more peeking out behind it, and the page dots.
+function stack(t, theme) {
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const behind = theme === 'dark' ? ['#22232B', '#1D1E25'] : ['#E9EAEE', '#F3F4F6'];
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const small = theme === 'dark' ? '#2E3039' : '#EDEEF1';
+  const dot = theme === 'dark' ? 'rgba(237,238,240,.3)' : 'rgba(31,32,41,.2)';
+  const pause = '<div style="display:flex;gap:11px"><div style="width:11px;height:36px;background:#FFF;border-radius:3px"></div><div style="width:11px;height:36px;background:#FFF;border-radius:3px"></div></div>';
+  const card = (w, top, bg, z) => `<div style="position:absolute;left:50%;top:${top}px;transform:translateX(-50%);width:${w}px;height:200px;border-radius:32px;background:${bg};box-shadow:${shadow};z-index:${z}"></div>`;
+  return `<div style="width:880px;display:flex;flex-direction:column;align-items:center;gap:44px">
+    <div style="position:relative;width:880px;height:248px">
+      ${card(760, 0, behind[1], 1)}${card(820, 24, behind[0], 2)}
+      <div style="position:absolute;left:0;right:0;top:48px;height:200px;border-radius:32px;z-index:3;box-shadow:${shadow};
+        background:linear-gradient(to right, color-mix(in srgb, ${BLUE} 22%, ${tileBg}) 58%, ${tileBg} 58%);
+        padding:0 30px;box-sizing:border-box;display:flex;align-items:center;gap:30px">
+        <div style="width:104px;height:104px;border-radius:50%;background:${BLUE};display:flex;align-items:center;justify-content:center;flex-shrink:0">${pause}</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:18px">${pill(190, 36, t.fg)}${pill(140, 26, t.fg, 'opacity:.45')}</div>
+        ${pill(150, 56, t.fg)}
+        <div style="width:96px;height:96px;border-radius:50%;background:${small};flex-shrink:0"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:22px;align-items:center">
+      <div style="width:22px;height:22px;border-radius:11px;background:${dot}"></div>
+      <div style="width:60px;height:22px;border-radius:11px;background:${t.fg}"></div>
+      <div style="width:22px;height:22px;border-radius:11px;background:${BLUE}"></div>
+      <div style="width:22px;height:22px;border-radius:11px;background:${dot}"></div>
+    </div>
+  </div>`;
+}
+
 const PREVIEWS = [
   { id: 'elec-dark',    label: '1a · Electricity Overview — preview-dark.png', theme: 'dark',  render: electricity },
   { id: 'elec-light',   label: '1b · Electricity Overview — preview-light.png', theme: 'light', render: electricity },
@@ -551,6 +581,8 @@ const PREVIEWS = [
   { id: 'ct-light',     label: '2h · Curtains — preview-light.png',              theme: 'light', render: curtains },
   { id: 'mw-dark',      label: '2i · Media — preview-dark.png',                  theme: 'dark',  render: media },
   { id: 'mw-light',     label: '2j · Media — preview-light.png',                 theme: 'light', render: media },
+  { id: 'sk-dark',      label: '2k · Smart Stack — preview-dark.png',            theme: 'dark',  render: stack },
+  { id: 'sk-light',     label: '2l · Smart Stack — preview-light.png',           theme: 'light', render: stack },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');

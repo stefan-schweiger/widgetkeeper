@@ -1,0 +1,478 @@
+{
+  "name": {
+    "en": "Smart Stack",
+    "nl": "Slimme stapel",
+    "de": "Smarter Stapel",
+    "fr": "Pile intelligente",
+    "it": "Pila intelligente",
+    "sv": "Smart stapel",
+    "no": "Smart stabel",
+    "es": "Pila inteligente",
+    "da": "Smart stak",
+    "ru": "Умная стопка",
+    "pl": "Inteligentny stos",
+    "ko": "스마트 스택",
+    "ar": "المكدس الذكي"
+  },
+  "height": 200,
+  "transparent": true,
+  "settings": [
+    {
+      "id": "dashboard",
+      "type": "autocomplete",
+      "title": {
+        "en": "Dashboard",
+        "nl": "Dashboard",
+        "de": "Dashboard",
+        "fr": "Tableau de bord",
+        "it": "Dashboard",
+        "sv": "Instrumentpanel",
+        "no": "Dashbord",
+        "es": "Panel",
+        "da": "Dashboard",
+        "ru": "Панель",
+        "pl": "Pulpit",
+        "ko": "대시보드",
+        "ar": "لوحة المعلومات"
+      },
+      "hint": {
+        "en": "The dashboard whose widgets the stack shows, one at a time. Only Widgetkeeper widgets can be shown. Needs the API key in the app's settings, with permission to read dashboards.",
+        "nl": "Het dashboard waarvan de stapel de widgets één voor één toont. Alleen Widgetkeeper-widgets kunnen worden getoond. Vereist de API-sleutel in de app-instellingen, met toestemming om dashboards te lezen.",
+        "de": "Das Dashboard, dessen Widgets der Stapel nacheinander zeigt. Nur Widgetkeeper-Widgets werden gezeigt. Braucht den API-Schlüssel in den App-Einstellungen, mit Leserecht für Dashboards.",
+        "fr": "Le tableau de bord dont la pile affiche les widgets un par un. Seuls les widgets Widgetkeeper s'affichent. Nécessite la clé API dans les réglages de l'app, avec le droit de lire les tableaux de bord.",
+        "it": "La dashboard di cui la pila mostra i widget uno alla volta. Si possono mostrare solo i widget di Widgetkeeper. Serve la chiave API nelle impostazioni dell'app, con il permesso di leggere le dashboard.",
+        "sv": "Instrumentpanelen vars widgetar stapeln visar en i taget. Bara Widgetkeeper-widgetar kan visas. Kräver API-nyckeln i appens inställningar, med behörighet att läsa instrumentpaneler.",
+        "no": "Dashbordet der stabelen viser widgetene én om gangen. Bare Widgetkeeper-widgeter kan vises. Krever API-nøkkelen i appinnstillingene, med tillatelse til å lese dashbord.",
+        "es": "El panel cuyos widgets muestra la pila, de uno en uno. Solo se pueden mostrar widgets de Widgetkeeper. Necesita la clave API en los ajustes de la app, con permiso para leer paneles.",
+        "da": "Det dashboard, hvis widgets stakken viser én ad gangen. Kun Widgetkeeper-widgets kan vises. Kræver API-nøglen i appens indstillinger, med tilladelse til at læse dashboards.",
+        "ru": "Панель, виджеты которой стопка показывает по одному. Показываются только виджеты Widgetkeeper. Нужен API-ключ в настройках приложения с правом читать панели.",
+        "pl": "Pulpit, którego widżety stos pokazuje po kolei. Można pokazać tylko widżety Widgetkeeper. Wymaga klucza API w ustawieniach aplikacji, z prawem odczytu pulpitów.",
+        "ko": "스택이 하나씩 보여줄 위젯이 있는 대시보드입니다. Widgetkeeper 위젯만 표시됩니다. 앱 설정에 대시보드 읽기 권한이 있는 API 키가 필요합니다.",
+        "ar": "اللوحة التي يعرض المكدس عناصرها واحدًا تلو الآخر. تُعرض عناصر Widgetkeeper فقط. يتطلب مفتاح API في إعدادات التطبيق مع إذن قراءة اللوحات."
+      }
+    },
+    {
+      "id": "interval",
+      "type": "dropdown",
+      "title": {
+        "en": "Rotate every",
+        "nl": "Wisselen elke",
+        "de": "Wechseln alle",
+        "fr": "Changer toutes les",
+        "it": "Cambia ogni",
+        "sv": "Byt var",
+        "no": "Bytt hver",
+        "es": "Cambiar cada",
+        "da": "Skift hver",
+        "ru": "Переключать каждые",
+        "pl": "Przełączaj co",
+        "ko": "전환 간격",
+        "ar": "التبديل كل"
+      },
+      "value": "30",
+      "values": [
+        {
+          "id": "10",
+          "title": {
+            "en": "10 s",
+            "nl": "10 s",
+            "de": "10 s",
+            "fr": "10 s",
+            "it": "10 s",
+            "sv": "10 s",
+            "no": "10 s",
+            "es": "10 s",
+            "da": "10 s",
+            "ru": "10 с",
+            "pl": "10 s",
+            "ko": "10초",
+            "ar": "10 ث"
+          }
+        },
+        {
+          "id": "15",
+          "title": {
+            "en": "15 s",
+            "nl": "15 s",
+            "de": "15 s",
+            "fr": "15 s",
+            "it": "15 s",
+            "sv": "15 s",
+            "no": "15 s",
+            "es": "15 s",
+            "da": "15 s",
+            "ru": "15 с",
+            "pl": "15 s",
+            "ko": "15초",
+            "ar": "15 ث"
+          }
+        },
+        {
+          "id": "30",
+          "title": {
+            "en": "30 s",
+            "nl": "30 s",
+            "de": "30 s",
+            "fr": "30 s",
+            "it": "30 s",
+            "sv": "30 s",
+            "no": "30 s",
+            "es": "30 s",
+            "da": "30 s",
+            "ru": "30 с",
+            "pl": "30 s",
+            "ko": "30초",
+            "ar": "30 ث"
+          }
+        },
+        {
+          "id": "60",
+          "title": {
+            "en": "1 min",
+            "nl": "1 min",
+            "de": "1 min",
+            "fr": "1 min",
+            "it": "1 min",
+            "sv": "1 min",
+            "no": "1 min",
+            "es": "1 min",
+            "da": "1 min",
+            "ru": "1 мин",
+            "pl": "1 min",
+            "ko": "1분",
+            "ar": "1 د"
+          }
+        },
+        {
+          "id": "120",
+          "title": {
+            "en": "2 min",
+            "nl": "2 min",
+            "de": "2 min",
+            "fr": "2 min",
+            "it": "2 min",
+            "sv": "2 min",
+            "no": "2 min",
+            "es": "2 min",
+            "da": "2 min",
+            "ru": "2 мин",
+            "pl": "2 min",
+            "ko": "2분",
+            "ar": "2 د"
+          }
+        },
+        {
+          "id": "300",
+          "title": {
+            "en": "5 min",
+            "nl": "5 min",
+            "de": "5 min",
+            "fr": "5 min",
+            "it": "5 min",
+            "sv": "5 min",
+            "no": "5 min",
+            "es": "5 min",
+            "da": "5 min",
+            "ru": "5 мин",
+            "pl": "5 min",
+            "ko": "5분",
+            "ar": "5 د"
+          }
+        },
+        {
+          "id": "never",
+          "title": {
+            "en": "Never",
+            "nl": "Nooit",
+            "de": "Nie",
+            "fr": "Jamais",
+            "it": "Mai",
+            "sv": "Aldrig",
+            "no": "Aldri",
+            "es": "Nunca",
+            "da": "Aldrig",
+            "ru": "Никогда",
+            "pl": "Nigdy",
+            "ko": "안 함",
+            "ar": "أبدًا"
+          }
+        }
+      ]
+    },
+    {
+      "id": "smart",
+      "type": "checkbox",
+      "title": {
+        "en": "Smart rotate",
+        "nl": "Slim wisselen",
+        "de": "Intelligent wechseln",
+        "fr": "Rotation intelligente",
+        "it": "Rotazione intelligente",
+        "sv": "Smart växling",
+        "no": "Smart bytte",
+        "es": "Rotación inteligente",
+        "da": "Smart skift",
+        "ru": "Умное переключение",
+        "pl": "Inteligentne przełączanie",
+        "ko": "스마트 전환",
+        "ar": "تبديل ذكي"
+      },
+      "hint": {
+        "en": "Brings a page forward while something happens: music playing, a timer running, an alarm, someone on a camera, or a door open or unlocked.",
+        "nl": "Haalt een pagina naar voren zolang er iets gebeurt: muziek speelt, een timer loopt, een alarm, iemand op een camera of een deur open of ontgrendeld.",
+        "de": "Holt eine Seite nach vorn, solange etwas passiert: Musik läuft, ein Timer läuft, ein Alarm, jemand vor einer Kamera oder eine Tür offen oder entriegelt.",
+        "fr": "Met une page en avant tant qu'il se passe quelque chose : musique en cours, minuteur actif, alarme, quelqu'un devant une caméra, ou une porte ouverte ou déverrouillée.",
+        "it": "Porta avanti una pagina mentre succede qualcosa: musica in riproduzione, un timer attivo, un allarme, qualcuno davanti a una telecamera o una porta aperta o sbloccata.",
+        "sv": "Visar en sida medan något händer: musik spelas, en timer går, ett larm, någon på en kamera eller en dörr som är öppen eller olåst.",
+        "no": "Viser en side mens noe skjer: musikk spiller, en tidtaker går, en alarm, noen på et kamera eller en dør som er åpen eller ulåst.",
+        "es": "Muestra una página mientras ocurre algo: música sonando, un temporizador en marcha, una alarma, alguien ante una cámara o una puerta abierta o sin cerrojo.",
+        "da": "Viser en side, mens noget sker: musik spiller, en timer kører, en alarm, nogen på et kamera eller en dør, der er åben eller ulåst.",
+        "ru": "Выводит страницу вперёд, пока что-то происходит: играет музыка, идёт таймер, тревога, кто-то на камере или дверь открыта или не заперта.",
+        "pl": "Wysuwa stronę na przód, gdy coś się dzieje: gra muzyka, działa minutnik, alarm, ktoś przed kamerą albo drzwi otwarte lub odblokowane.",
+        "ko": "무언가 일어나는 동안 해당 페이지를 앞으로 가져옵니다: 음악 재생, 타이머 작동, 경보, 카메라에 사람 감지, 문 열림 또는 잠금 해제.",
+        "ar": "يُظهر صفحة أثناء حدوث شيء: تشغيل موسيقى، مؤقت يعمل، إنذار، شخص أمام كاميرا، أو باب مفتوح أو غير مقفل."
+      },
+      "value": true
+    },
+    {
+      "id": "resumeAfter",
+      "type": "dropdown",
+      "title": {
+        "en": "Pause after a swipe",
+        "nl": "Pauze na vegen",
+        "de": "Pause nach Wischen",
+        "fr": "Pause après un balayage",
+        "it": "Pausa dopo uno scorrimento",
+        "sv": "Paus efter svep",
+        "no": "Pause etter sveip",
+        "es": "Pausa tras deslizar",
+        "da": "Pause efter swipe",
+        "ru": "Пауза после пролистывания",
+        "pl": "Pauza po przesunięciu",
+        "ko": "스와이프 후 일시정지",
+        "ar": "إيقاف مؤقت بعد السحب"
+      },
+      "value": "60",
+      "values": [
+        {
+          "id": "30",
+          "title": {
+            "en": "30 s",
+            "nl": "30 s",
+            "de": "30 s",
+            "fr": "30 s",
+            "it": "30 s",
+            "sv": "30 s",
+            "no": "30 s",
+            "es": "30 s",
+            "da": "30 s",
+            "ru": "30 с",
+            "pl": "30 s",
+            "ko": "30초",
+            "ar": "30 ث"
+          }
+        },
+        {
+          "id": "60",
+          "title": {
+            "en": "1 min",
+            "nl": "1 min",
+            "de": "1 min",
+            "fr": "1 min",
+            "it": "1 min",
+            "sv": "1 min",
+            "no": "1 min",
+            "es": "1 min",
+            "da": "1 min",
+            "ru": "1 мин",
+            "pl": "1 min",
+            "ko": "1분",
+            "ar": "1 د"
+          }
+        },
+        {
+          "id": "120",
+          "title": {
+            "en": "2 min",
+            "nl": "2 min",
+            "de": "2 min",
+            "fr": "2 min",
+            "it": "2 min",
+            "sv": "2 min",
+            "no": "2 min",
+            "es": "2 min",
+            "da": "2 min",
+            "ru": "2 мин",
+            "pl": "2 min",
+            "ko": "2분",
+            "ar": "2 د"
+          }
+        },
+        {
+          "id": "300",
+          "title": {
+            "en": "5 min",
+            "nl": "5 min",
+            "de": "5 min",
+            "fr": "5 min",
+            "it": "5 min",
+            "sv": "5 min",
+            "no": "5 min",
+            "es": "5 min",
+            "da": "5 min",
+            "ru": "5 мин",
+            "pl": "5 min",
+            "ko": "5분",
+            "ar": "5 د"
+          }
+        }
+      ]
+    },
+    {
+      "id": "showDots",
+      "type": "checkbox",
+      "title": {
+        "en": "Show page dots",
+        "nl": "Paginapunten tonen",
+        "de": "Seitenpunkte zeigen",
+        "fr": "Afficher les points de page",
+        "it": "Mostra i punti pagina",
+        "sv": "Visa sidpunkter",
+        "no": "Vis sideprikker",
+        "es": "Mostrar puntos de página",
+        "da": "Vis sideprikker",
+        "ru": "Показывать точки страниц",
+        "pl": "Pokaż kropki stron",
+        "ko": "페이지 점 표시",
+        "ar": "إظهار نقاط الصفحات"
+      },
+      "value": true
+    },
+    {
+      "id": "dotsPosition",
+      "type": "dropdown",
+      "title": {
+        "en": "  – Position",
+        "nl": "  – Positie",
+        "de": "  – Position",
+        "fr": "  – Position",
+        "it": "  – Posizione",
+        "sv": "  – Placering",
+        "no": "  – Plassering",
+        "es": "  – Posición",
+        "da": "  – Placering",
+        "ru": "  – Положение",
+        "pl": "  – Położenie",
+        "ko": "  – 위치",
+        "ar": "  – الموضع"
+      },
+      "value": "below",
+      "values": [
+        {
+          "id": "below",
+          "title": {
+            "en": "Below the widget",
+            "nl": "Onder de widget",
+            "de": "Unter dem Widget",
+            "fr": "Sous le widget",
+            "it": "Sotto il widget",
+            "sv": "Under widgeten",
+            "no": "Under widgeten",
+            "es": "Debajo del widget",
+            "da": "Under widgetten",
+            "ru": "Под виджетом",
+            "pl": "Pod widżetem",
+            "ko": "위젯 아래",
+            "ar": "أسفل العنصر"
+          }
+        },
+        {
+          "id": "above",
+          "title": {
+            "en": "Above the widget",
+            "nl": "Boven de widget",
+            "de": "Über dem Widget",
+            "fr": "Au-dessus du widget",
+            "it": "Sopra il widget",
+            "sv": "Ovanför widgeten",
+            "no": "Over widgeten",
+            "es": "Encima del widget",
+            "da": "Over widgetten",
+            "ru": "Над виджетом",
+            "pl": "Nad widżetem",
+            "ko": "위젯 위",
+            "ar": "أعلى العنصر"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dotsSize",
+      "type": "dropdown",
+      "title": {
+        "en": "  – Size",
+        "nl": "  – Grootte",
+        "de": "  – Größe",
+        "fr": "  – Taille",
+        "it": "  – Dimensione",
+        "sv": "  – Storlek",
+        "no": "  – Størrelse",
+        "es": "  – Tamaño",
+        "da": "  – Størrelse",
+        "ru": "  – Размер",
+        "pl": "  – Rozmiar",
+        "ko": "  – 크기",
+        "ar": "  – الحجم"
+      },
+      "value": "small",
+      "values": [
+        {
+          "id": "small",
+          "title": {
+            "en": "Small",
+            "nl": "Klein",
+            "de": "Klein",
+            "fr": "Petits",
+            "it": "Piccoli",
+            "sv": "Små",
+            "no": "Små",
+            "es": "Pequeños",
+            "da": "Små",
+            "ru": "Маленькие",
+            "pl": "Małe",
+            "ko": "작게",
+            "ar": "صغيرة"
+          }
+        },
+        {
+          "id": "large",
+          "title": {
+            "en": "Large (easier to tap)",
+            "nl": "Groot (makkelijker te tikken)",
+            "de": "Groß (leichter zu tippen)",
+            "fr": "Grands (plus faciles à toucher)",
+            "it": "Grandi (più facili da toccare)",
+            "sv": "Stora (lättare att trycka på)",
+            "no": "Store (lettere å trykke på)",
+            "es": "Grandes (más fáciles de tocar)",
+            "da": "Store (nemmere at trykke på)",
+            "ru": "Большие (легче нажимать)",
+            "pl": "Duże (łatwiej trafić)",
+            "ko": "크게 (누르기 쉬움)",
+            "ar": "كبيرة (أسهل للنقر)"
+          }
+        }
+      ]
+    }
+  ],
+  "api": {
+    "getPages": {
+      "method": "GET",
+      "path": "/pages"
+    },
+    "call": {
+      "method": "POST",
+      "path": "/call"
+    }
+  }
+}

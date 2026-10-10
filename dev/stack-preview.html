@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Stack preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/stack/public/widget.css">
+  <script src="../widgets/stack/public/widget.js"></script>
+  <script src="../widgets/stack/public/mount.js"></script>
+  <!-- On the Homey the stack loads its pages' files itself (../<widget>/); here they're loaded up front. -->
+  <link rel="stylesheet" href="../widgets/values/public/widget.css">
+  <script src="../widgets/values/public/widget.js"></script>
+  <script src="../widgets/values/public/mount.js"></script>
+  <link rel="stylesheet" href="../widgets/timers/public/widget.css">
+  <script src="../widgets/timers/public/widget.js"></script>
+  <script src="../widgets/timers/public/mount.js"></script>
+  <link rel="stylesheet" href="../widgets/flows/public/widget.css">
+  <script src="../widgets/flows/public/widget.js"></script>
+  <script src="../widgets/flows/public/mount.js"></script>
+  <link rel="stylesheet" href="../widgets/locks/public/widget.css">
+  <script src="../widgets/locks/public/widget.js"></script>
+  <script src="../widgets/locks/public/mount.js"></script>
+  <script src="i18n.js"></script>
+  <style>
+    /* The widgets' stylesheets make html and body transparent (!important): the dashboard shows through. */
+    html, body { background: #111217 !important; }
+    body { padding: 24px 16px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; font: 12px Roboto, sans-serif; }
+    .dash { box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px;
+      --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .col > span { color: #9C9DA5; }
+    .controls { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
+    .controls button { font: inherit; padding: 6px 10px; border-radius: 6px; border: 0; background: #2E3039; color: #EDEEF0; cursor: pointer; }
+    .height { color: #6B6C75; }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <button id="unlock">Unlock the back door</button>
+    <button id="lock">Lock it</button>
+    <button id="timer">Start a 1 min timer</button>
+    <button id="flow">Flow: bring Flow Buttons forward (1 min)</button>
+    <button id="resume">Flow: back to rotation</button>
+  </div>
+  <div class="col"><span>358 px · dark · every 10 s <b class="height" id="h1"></b></span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · light · never rotates · large dots above <b class="height" id="h2"></b></span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>300 px · dark · no key</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+
+  <script>
+    // A simulated Homey: the app's realtime events go to every widget, and each page's /call is answered here.
+    const listeners = new Map();
+    const emit = (event, data) => (listeners.get(event) || []).forEach(fn => fn(data));
+    let backLocked = true;
+    let timers = [];
+
+    const PAGES = [
+      { id: 'w-values', type: 'values', title: null, deviceIds: [], settings: { columns: '3', slot1: { id: 'fridge:measure_temperature' }, slot2: { id: 'living:measure_temperature' }, slot3: { id: 'living:measure_humidity' } } },
+      { id: 'w-timers', type: 'timers', title: null, deviceIds: [], settings: { minutes1: 5, minutes2: 10, minutes3: 15, minutes4: 30, sound: false } },
+      { id: 'w-flows', type: 'flows', title: null, deviceIds: [], settings: { columns: '2', flow1: { id: 'flow:night' }, color1: 'purple', icon1: { id: 'moon' }, flow2: { id: 'flow:morning' }, color2: 'yellow', icon2: { id: 'sun' } } },
+      { id: 'w-locks', type: 'locks', title: null, deviceIds: ['front', 'back'], settings: { view: 'summary' } },
+    ];
+
+    const value = (deviceId, capabilityId, name, title, units, v) =>
+      ({ deviceId, capabilityId, name, capability: { title, type: 'number', units, decimals: 1 }, value: v });
+    const lock = (id, name, locked) => ({ id, name, icon: null, caps: { locked: { value: locked, setable: true, lastUpdated: Date.now() - 20 * 60e3 } } });
+    const ANSWERS = {
+      'values GET /state': () => [value('fridge', 'measure_temperature', 'Fridge', 'Temperature', '°C', 4.2),
+        value('living', 'measure_temperature', 'Living room', 'Temperature', '°C', 21.5), value('living', 'measure_humidity', 'Living room', 'Humidity', '%', 48)],
+      'timers GET /state': () => ({ instance: 'w-timers', timers, now: Date.now() }),
+      'timers POST /start': (b) => { startTimer(b.body.minutes, b.body.label); return { instance: 'w-timers', timers, now: Date.now() }; },
+      'timers POST /action': (b) => { timers = []; emit('timers:state', { instance: 'w-timers', timers, now: Date.now() }); return { instance: 'w-timers', timers, now: Date.now() }; },
+      'flows GET /state': () => [{ id: 'flow:night', name: 'Good night', enabled: true, triggerable: true, advanced: false },
+        { id: 'flow:morning', name: 'Good morning', enabled: true, triggerable: true, advanced: true }],
+      'flows POST /trigger': () => ({ ok: true }),
+      'locks GET /state': () => ({ devices: [lock('front', 'Front door', true), lock('back', 'Back door', backLocked)], language: 'en' }),
+      'locks POST /set': (b) => { setBack(b.body.value); return {}; },
+    };
+
+    function startTimer(minutes, label) {
+      timers = [{ id: `t${Date.now()}`, label: label || '', duration: minutes * 60e3, endsAt: Date.now() + minutes * 60e3, remaining: null, doneAt: null }];
+      emit('timers:state', { instance: 'w-timers', timers, now: Date.now() });
+    }
+    function setBack(locked) {
+      backLocked = locked;
+      emit('locks:state', { deviceId: 'back', capabilityId: 'locked', value: locked, t: Date.now() });
+    }
+
+    function fakeHomey(settings, { pages = PAGES, noKey = false, heightEl } = {}) {
+      return {
+        __: (key, tokens) => (typeof devT === 'function' ? devT(key, tokens) : key), // open with ?lang=en for the strings
+        getSettings: () => settings,
+        on: (event, fn) => listeners.set(event, [...(listeners.get(event) || []), fn]),
+        ready: ({ height }) => { if (heightEl) heightEl.textContent = `${height} px`; },
+        setHeight: (h) => { if (heightEl) heightEl.textContent = `${h} px`; },
+        hapticFeedback: () => {},
+        api: async (method, path, body) => {
+          await new Promise(r => setTimeout(r, 150));
+          if (path.startsWith('/pages')) return noKey ? { ok: false, reason: 'noKey' } : { ok: true, pages, requests: [], language: 'en' };
+          const answer = ANSWERS[`${body.type} ${body.method} ${body.path}`];
+          if (!answer) throw new Error(`No mock for ${body.type} ${body.method} ${body.path}`);
+          return answer(body);
+        },
+      };
+    }
+
+    function mountAt(id, Homey) {
+      const host = document.getElementById(id);
+      mountStackWidget(Homey, { root: host, frame: host });
+    }
+
+    mountAt('w1', fakeHomey({ dashboard: { id: 'd' }, interval: '10', smart: true, resumeAfter: '30', showDots: true }, { heightEl: document.getElementById('h1') }));
+    mountAt('w2', fakeHomey({ dashboard: { id: 'd' }, interval: 'never', smart: true, showDots: true, dotsPosition: 'above', dotsSize: 'large' }, { heightEl: document.getElementById('h2') }));
+    mountAt('w3', fakeHomey({ dashboard: { id: 'd' } }, { noKey: true }));
+
+    document.getElementById('unlock').onclick = () => setBack(false);
+    document.getElementById('lock').onclick = () => setBack(true);
+    document.getElementById('timer').onclick = () => startTimer(1, '');
+    document.getElementById('flow').onclick = () => emit('stack:show', { type: 'flows', until: Date.now() + 60e3 });
+    document.getElementById('resume').onclick = () => emit('stack:resume', {});
+    // ?act=unlock (or timer, flow …) presses that button 1.5 s in, for a headless screenshot.
+    const act = new URLSearchParams(location.search).get('act');
+    if (act) setTimeout(() => document.getElementById(act).click(), 1500);
+  </script>
+</body>
+</html>

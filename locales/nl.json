@@ -75,7 +75,7 @@
     "copied": "Gekopieerd naar klembord",
     "shareTitle": "Widgetkeeper-diagnose",
     "varTitle": "API-sleutel",
-    "varHelp": "Homey laat apps zelf geen flowvariabelen wijzigen of flows starten. Maak in de Homey-webapp onder Instellingen → API-sleutels een API-sleutel die variabelen mag wijzigen en flows mag starten, en plak hem hier. Hij blijft op je Homey.",
+    "varHelp": "Homey laat apps zelf geen flowvariabelen wijzigen of flows starten. Maak in de Homey-webapp onder Instellingen → API-sleutels een API-sleutel die variabelen mag wijzigen en flows mag starten, en plak hem hier. Hij blijft op je Homey. Voor de slimme stapel moet hij ook dashboards mogen lezen.",
     "varKey": "API-sleutel",
     "varSave": "Opslaan",
     "varRemove": "Verwijderen",
@@ -86,8 +86,11 @@
     "varRemoved": "Verwijderd.",
     "varIsSet": "Er is een sleutel opgeslagen.",
     "varNotSet": "Geen sleutel opgeslagen: de widgets tonen variabelen en flows, maar kunnen ze niet wijzigen of starten.",
-    "varKeyScope": "De API-sleutel mag geen variabelen wijzigen en geen flows starten.",
-    "varKeyInvalid": "De API-sleutel werd niet geaccepteerd."
+    "varKeyScope": "De API-sleutel mag geen variabelen wijzigen, flows starten of dashboards lezen.",
+    "varKeyInvalid": "De API-sleutel werd niet geaccepteerd.",
+    "varDashboards": "De slimme stapel kan dashboards lezen.",
+    "varNoDashboards": "Hij mag geen dashboards lezen, wat de slimme stapel nodig heeft.",
+    "varSavedDashboards": "Opgeslagen. De sleutel mag dashboards lezen voor de slimme stapel, maar geen variabelen wijzigen of flows starten."
   },
   "heatmap": {
     "selectDevice": "Kies een apparaat en een waarde in de widgetinstellingen.",
@@ -304,5 +307,17 @@
     "keyScope": "De API-sleutel mag dit niet uitvoeren. Speakeracties hebben rechten nodig om flows te beheren.",
     "keyInvalid": "De API-sleutel is niet geaccepteerd.",
     "speakerAction": "Speakeractie"
+  },
+  "stack": {
+    "selectDashboard": "Kies een dashboard in de widgetinstellingen.",
+    "noKey": "Voeg een API-sleutel toe in de app-instellingen om het dashboard te lezen.",
+    "keyScope": "De API-sleutel mag geen dashboards lezen.",
+    "keyInvalid": "De API-sleutel is niet geaccepteerd.",
+    "dashboardMissing": "Het dashboard is niet gevonden.",
+    "noPages": "Het dashboard heeft geen Widgetkeeper-widgets.",
+    "error": "Kon de stapel niet laden.",
+    "pageFailed": "Kon deze widget niet tonen.",
+    "pageCount": "__count__ Widgetkeeper-widgets",
+    "keyHint": "Widgetkeeper → Configureren: een API-sleutel die dashboards mag lezen."
   }
 }

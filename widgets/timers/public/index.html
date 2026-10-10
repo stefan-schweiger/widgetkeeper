@@ -5,25 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="widget.css">
   <script src="widget.js"></script>
+  <script src="mount.js"></script>
 </head>
 <body class="homey-widget-full">
   <div id="root"></div>
   <script>
-    const REFRESH_MS = 5 * 60e3; // resyncs in case a realtime event was missed
-
-    // Load marks for the app's diagnostics log, sent with the first request only.
-    let perf = '';
-    function loadMarks(sdkAt) {
-      const nav = performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
-      return [Math.round(performance.timeOrigin), nav ? Math.round(nav.responseEnd) : -1,
-        Math.round(sdkAt), Math.round(performance.now())].join(',');
-    }
-    function perfParam() {
-      const p = perf ? `&perf=${perf}` : '';
-      perf = '';
-      return p;
-    }
-
     // Homey's Android app already scales its type tokens by the system font scale (calc(1.1 * 14px)), and
     // the WebView's text zoom then scales all text again, so token text came out 1.21x where the native tiles
     // are 1.1x. Divide the tokens by the zoom (measured: a 100px font computes as 110px), so they render at
@@ -47,70 +33,7 @@
 
     function onHomeyReady(Homey) {
       undoTextZoom();
-      const sdkAt = performance.now();
-      const settings = Homey.getSettings() || {};
-      let readySent = false;
-      let loaded = false;
-      let instance = '';
-
-      const widget = createTimersWidget(document.getElementById('root'), {
-        t: (key, tokens) => Homey.__(key, tokens),
-        presets: timerPresetsFromSettings(settings),
-        sound: settings.sound !== false,
-        onStart: (minutes, label) => Homey.api('POST', '/start', { instance, minutes, label }),
-        onAction: (id, action) => Homey.api('POST', '/action', { instance, id, action }),
-        onHaptic: () => {
-          try { if (Homey.hapticFeedback) Homey.hapticFeedback(); } catch (e) { /* not on every platform */ }
-        },
-        onHeight: () => {
-          if (!readySent) return;
-          Homey.setHeight(bodyHeight());
-        },
-      });
-
-      function bodyHeight() {
-        return Math.ceil(document.body.getBoundingClientRect().height);
-      }
-
-      // Shown once the text font has loaded (at most 1 s), so the text doesn't pop in.
-      let readyStarted = false;
-      async function ready() {
-        if (readyStarted) return;
-        readyStarted = true;
-        if (document.fonts && document.fonts.ready) {
-          await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1000))]);
-        }
-        readySent = true;
-        Homey.ready({ height: bodyHeight() });
-      }
-
-      async function load() {
-        try {
-          widget.setState(await Homey.api('GET', `/state?instance=${encodeURIComponent(instance)}${perfParam()}`));
-          loaded = true;
-        } catch (err) {
-          console.error(err);
-          // A failed refresh keeps the timers; only a failed first load replaces them with the error.
-          widget.setMessage(widget.t('error'), loaded);
-        }
-        ready();
-      }
-
-      // Every screen showing this widget gets the same timers: the app sends each change to all of them.
-      Homey.on('timers:state', (data) => {
-        if (data && data.instance === instance) widget.setState(data);
-      });
-      // A tablet waking up: its timers may have moved on while it slept.
-      document.addEventListener('visibilitychange', () => { if (!document.hidden && loaded) load(); });
-
-      Promise.resolve(typeof Homey.getWidgetInstanceId === 'function' ? Homey.getWidgetInstanceId() : '')
-        .then((id) => { instance = typeof id === 'string' && id ? id : 'default'; })
-        .catch(() => { instance = 'default'; })
-        .then(() => {
-          perf = loadMarks(sdkAt);
-          setInterval(load, REFRESH_MS);
-          load();
-        });
+      mountTimersWidget(Homey, { root: document.getElementById('root'), frame: document.body });
     }
   </script>
 </body>
