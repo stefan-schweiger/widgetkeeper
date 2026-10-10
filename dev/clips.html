@@ -21,12 +21,14 @@
   <link rel="stylesheet" href="../widgets/timers/public/widget.css">
   <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
   <link rel="stylesheet" href="../widgets/media/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sensordots/public/widget.css">
   <script src="../widgets/lights/public/widget.js"></script>
   <script src="../widgets/stack/public/widget.js"></script>
   <script src="../widgets/values/public/widget.js"></script>
   <script src="../widgets/timers/public/widget.js"></script>
   <script src="../widgets/cameras/public/widget.js"></script>
   <script src="../widgets/media/public/widget.js"></script>
+  <script src="../widgets/sensordots/public/widget.js"></script>
   <!-- Only for each widget's frame classes, which the stack puts on its slides (the clips create the widgets themselves). -->
   <script src="../widgets/values/public/mount.js"></script>
   <script src="../widgets/timers/public/mount.js"></script>
@@ -76,6 +78,8 @@
   <div class="callout-area"><div class="callout" id="callout"></div></div>
   <section class="clip" id="lights"><div id="w-lights"></div></section>
   <section class="clip" id="stack"><div id="w-stack"></div></section>
+  <section class="clip" id="timers"><div id="w-timers"></div></section>
+  <section class="clip" id="sensordots"><div id="w-sensordots"></div></section>
   <section class="clip" id="media"><div class="card mw-frame"><div id="w-media"></div></div></section>
   <div class="finger" id="finger"></div>
 
@@ -104,6 +108,9 @@
         next: '<path d="M6 6l8 6-8 6z"/><path d="M18 6v12"/>',
         mute: '<path d="M4 10v4h4l5 4V6L8 10z"/><path d="M17 10l4 4M21 10l-4 4"/>',
         more: '<circle cx="6" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="18" cy="12" r="1"/>',
+        plus: '<path d="M12 5v14M5 12h14"/>',
+        pause: '<path d="M9 6v12M15 6v12"/>',
+        dots: '<circle cx="7" cy="7" r="2"/><circle cx="17" cy="7" r="2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2" fill="#FFFFFF"/>',
         speaker: '<rect x="6" y="3" width="12" height="18" rx="2"/><circle cx="12" cy="14" r="3"/><path d="M12 7h0"/>',
       };
       // The callout: the old one fades up, the new one slides down into place.
@@ -145,6 +152,54 @@
           });
           // The speaker list grows the card while it's open: the render script records tall and crops (`grow`).
           return { grow: true };
+        },
+
+        // Timers: the kitchen's presets, with a simulated app (lib/TimerService.ts's actions) answering each tap.
+        timers() {
+          const MINUTE = 60e3;
+          let server = null; // the app's one timer
+          const answer = () => ({ timers: server ? [{ ...server }] : [], now: Date.now() });
+          const later = value => new Promise(r => setTimeout(() => r(value), 250));
+          const w = createTimersWidget(el('w-timers'), {
+            sound: false,
+            presets: findWidget('timers').presets,
+            onStart: (minutes, label) => {
+              server = { id: 't1', label, duration: minutes * MINUTE, endsAt: Date.now() + minutes * MINUTE, remaining: null, doneAt: null };
+              return later(answer());
+            },
+            onAction: (id, action) => {
+              const now = Date.now();
+              if (action === 'cancel' || action === 'dismiss') server = null;
+              else if (action === 'pause') { server.remaining = server.endsAt - now; server.endsAt = null; }
+              else if (action === 'resume') { server.endsAt = now + server.remaining; server.remaining = null; }
+              else if (action === 'add') { server.duration += MINUTE; if (server.endsAt != null) server.endsAt += MINUTE; else server.remaining += MINUTE; }
+              return later(answer());
+            },
+          });
+          w.setState({ timers: [], now: Date.now() });
+          return {
+            // Skips to the last seconds, as the app's realtime event would show it on another screen.
+            almostDone: () => { server.endsAt = Date.now() + 4200; server.remaining = null; w.setState(answer()); },
+          };
+        },
+
+        // Sensor Dots: the security dashboard's doors and motion sensors, all quiet but the open garage; then someone
+        // comes home through the front door and walks to the kitchen.
+        sensordots() {
+          const dots = JSON.parse(JSON.stringify(findWidget('sensordots')));
+          for (const d of dots.devices) if (d.id === 'd2') d.alarms[0].value = false;
+          const w = createSensorDotsWidget(el('w-sensordots'), { ...dots.opts, locale: LOCALE });
+          w.setState({ devices: dots.devices, language: 'en' });
+          const push = (deviceId, capabilityId, value) => w.pushChange({ deviceId, capabilityId, value, t: Date.now() });
+          return {
+            comeHome: () => {
+              const steps = [
+                [0, 'd1', 'alarm_contact', true], [700, 'd2', 'alarm_motion', true], [2200, 'd1', 'alarm_contact', false],
+                [3000, 'd4', 'alarm_motion', true], [4200, 'd2', 'alarm_motion', false],
+              ];
+              for (const [ms, id, cap, value] of steps) setTimeout(() => push(id, cap, value), ms);
+            },
+          };
         },
 
         // Smart Stack: four of Solbakken's widgets, turning every 3 s here (30 s by default); then a swipe, and someone

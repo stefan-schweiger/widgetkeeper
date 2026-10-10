@@ -1,7 +1,7 @@
 // The widgets of dev/screenshots.html: the real widget code with the made-up home of showcase-data.js ("Solbakken",
 // the showcase dashboards' data, so no real home's names or readings end up in the README), mounted into the elements
-// with the ids w-elec, w-thermo, w-qa, w-sa, w-sd, w-weather, w-heatmap, w-cameras, w-values, w-sparklines, w-variables,
-// w-flows, w-price, w-timers, w-timers-running, w-locks and w-curtains. Most go through showcase-mount.js's MOUNT with a
+// with the ids w-elec, w-thermo, w-qa, w-sa, w-weather, w-heatmap, w-cameras, w-values, w-sparklines, w-variables,
+// w-flows, w-price, w-locks and w-curtains. Most go through showcase-mount.js's MOUNT with a
 // showcase entry (`findWidget()`); only the README's own changes are here. Needs the widget scripts,
 // temp/screenshot-icons.js, showcase-data.js and showcase-mount.js loaded first, and the showcase's fixed clock
 // (fixed-clock.js), so every render is the same.
@@ -17,9 +17,6 @@
   MOUNT.quickactions(el('w-qa'), { devices: [...findWidget('quickactions', 0).devices, ...findWidget('quickactions', 3).devices] });
 
   MOUNT.sensoralarms(el('w-sa'), findWidget('sensoralarms', 1)); // security: with the door contacts
-
-  const dots = findWidget('sensordots'); // security: the garage door open, its overlay showing
-  MOUNT.sensordots(el('w-sd'), { ...dots, opts: { ...dots.opts, locale: LOCALE } });
 
   MOUNT.values(el('w-values'), findWidget('values', 1)); // security: batteries in red, yellow and green
 
@@ -45,12 +42,6 @@
   });
 
   MOUNT.price(el('w-price'), findWidget('price')); // energy: the evening peak
-
-  // Kitchen's timer twice for the README: its presets, then its pizza timer in their place. Counted from the
-  // showcase's fixed now, so the shot stays the same.
-  const kitchen = findWidget('timers');
-  MOUNT.timers(el('w-timers'), { presets: kitchen.presets, timers: [] });
-  MOUNT.timers(el('w-timers-running'), { presets: kitchen.presets, timers: kitchen.timers });
 
   const doors = findWidget('locks'); // security: the shed unlocked and the garage open, here with the list showing
   MOUNT.locks(el('w-locks'), { ...doors, opts: { ...doors.opts, view: 'list' } });

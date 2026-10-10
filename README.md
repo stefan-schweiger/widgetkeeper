@@ -109,7 +109,7 @@ Tiles that show *No alarm*, the alarm that's on or how many, and turn red while 
 **Settings:** sensors, count motion and contact, tile names.
 
 ## Sensor Dots
-<img src="docs/screenshots/sensordots.png" alt="Sensor Dots on a Homey dashboard" width="358">
+<img src="docs/clips/sensordots.webp" alt="Sensor Dots on a Homey dashboard: dots lighting up as someone comes in through the front door, then tapped for the kitchen's motion and the open garage" width="358">
 
 Motion, contact and camera sensors as a grid of dots that light up while active. Tap a dot for its name and since when, such as *Garage · Open since 18:17*.
 
@@ -181,7 +181,7 @@ The electricity price now, and the coming 12, 24 or 36 hours as small bars in on
 **Settings:** hours ahead, colour by level, tariffs and taxes.
 
 ## Timers
-<img src="docs/screenshots/timers.png" alt="Timers on a Homey dashboard" width="358">
+<img src="docs/clips/timers.webp" alt="Timers on a Homey dashboard: a pizza timer started from its preset, given a minute more, paused and resumed, then run out in red and dismissed" width="358">
 
 Up to four preset buttons, such as *Eggs · 7 min*. A started timer takes their place: tap to pause, **+1** for a minute more, **✕** to cancel. It beeps and turns red when done. The timer runs on Homey, so every screen sees it and the Flow card **A timer finished** fires with no dashboard open.
 

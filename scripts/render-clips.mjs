@@ -22,7 +22,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 /**
  * Each clip: what the finger does, step by step. `tap`/`drag` take a CSS selector and the match's index (`i`), and
  * points as fractions of its box (`x`, `y`, default the middle). `say` sets the callout under the widget (with an
- * `icon`: rotate, swipe, tap, drag, colour, bell, volume, next, mute, more or speaker); `run` calls a page control.
+ * `icon`: rotate, swipe, tap, drag, colour, bell, volume, next, mute, more, plus, pause, dots or speaker); `run` calls a page control.
  */
 const CLIPS = {
   lights: [
@@ -79,6 +79,45 @@ const CLIPS = {
     { wait: 1700 },
     { tap: '.mw-spk', i: 1 },
     { wait: 2600 },
+  ],
+  timers: [
+    { say: 'Tap a preset to start a timer', icon: 'tap' },
+    { wait: 1000 },
+    { tap: '.tm-preset', i: 1 },
+    { wait: 2200 },
+    { say: '+1 for a minute more', icon: 'plus' },
+    { wait: 800 },
+    { tap: '.tm-add' },
+    { wait: 1600 },
+    { say: 'Tap the timer to pause or resume it', icon: 'pause' },
+    { wait: 800 },
+    { tap: '.tm-row', x: 0.3 },
+    { wait: 1800 },
+    { tap: '.tm-row', x: 0.3 },
+    { wait: 1400 },
+    { say: 'When it runs out, it turns red and beeps', icon: 'bell' },
+    { run: 'almostDone' },
+    { wait: 6500 },
+    { say: 'Tap to dismiss it', icon: 'tap' },
+    { wait: 800 },
+    { tap: '.tm-row', x: 0.3 },
+    { wait: 1800 },
+  ],
+  sensordots: [
+    { say: 'A dot lights up while a sensor is active', icon: 'dots' },
+    { wait: 900 },
+    { run: 'comeHome' },
+    { wait: 5200 },
+    { say: 'Tap a dot for its name and since when', icon: 'tap' },
+    { wait: 900 },
+    { tap: '.sd-cell', i: 3 },
+    { wait: 2200 },
+    { tap: '.sd-panel' },
+    { wait: 700 },
+    { tap: '.sd-cell', i: 8 },
+    { wait: 2400 },
+    { tap: '.sd-panel' },
+    { wait: 1200 },
   ],
   stack: [
     { say: 'Turns on its own (every 30 s, sped up here)', icon: 'rotate' },
