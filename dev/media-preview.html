@@ -34,7 +34,7 @@
   <div class="col"><span>358 px · dark · nothing picked</span><div class="card mw-frame homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
 
   <script>
-    const SOURCES = [{ id: 'card:tv', name: 'TV' }, { id: 'card:line', name: 'Line-in' }, { id: 'flow:movie', name: 'Movie night' }];
+    const SOURCES = [{ id: 'card:tv', name: 'TV', icon: 'tv' }, { id: 'card:line', name: 'Line-in', icon: 'plug' }, { id: 'flow:movie', name: 'Movie night' }];
     mountMockMedia(document.getElementById('w1'), mockSpeaker('Kitchen', 0), { buttons: SOURCES, canSwitch: true, t: devT });
     mountMockMedia(document.getElementById('w2'), mockSpeaker('Living room', 1, { playing: false }), { showShuffle: true, t: devT });
     mountMockMedia(document.getElementById('w3'), mockSpeaker('TV', 2, { track: 'HDMI', muted: true, volume: 0.25 }),

@@ -80,14 +80,17 @@ export default class FlowService {
 
   /**
    * The built-in icons, by their names in Homey's language and in its alphabetical order, each with a preview of
-   * the button (`iconImage()`). The widget draws them (`ICONS` in widget.js).
+   * the button (`iconImage()`). The widget draws them (`ICONS` in widget.js). With `none` (the media widget's
+   * optional icons), "None" comes first, so an icon can be removed again; the widgets skip the id `none`.
    */
-  listIcons(query: string): AutocompleteItem[] {
+  listIcons(query: string, { none = false } = {}): AutocompleteItem[] {
     const language = this.homey.i18n.getLanguage();
-    return FLOW_ICONS
+    const items = FLOW_ICONS
       .map(id => ({ id, name: this.homey.__(`flows.icons.${id}`) || id, image: iconImage(id) }))
       .filter(i => matches(query, i.name, i.id))
       .sort((a, b) => a.name.localeCompare(b.name, language));
+    const noneName = this.homey.__('flows.none') || 'None';
+    return none && matches(query, noneName) ? [{ name: noneName, id: 'none' }, ...items] : items;
   }
 
   // ---------------------------------------------------------------- state

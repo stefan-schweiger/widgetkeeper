@@ -347,6 +347,25 @@
       }
     },
     {
+      "id": "button1Icon",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
       "id": "button1Name",
       "type": "text",
       "title": {
@@ -401,6 +420,25 @@
       }
     },
     {
+      "id": "button2Icon",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
       "id": "button2Name",
       "type": "text",
       "title": {
@@ -440,6 +478,25 @@
       }
     },
     {
+      "id": "button3Icon",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
       "id": "button3Name",
       "type": "text",
       "title": {
@@ -476,6 +533,25 @@
         "pl": "Przycisk 4",
         "ko": "버튼 4",
         "ar": "الزر 4"
+      }
+    },
+    {
+      "id": "button4Icon",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
       }
     },
     {

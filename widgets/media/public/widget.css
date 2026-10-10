@@ -220,6 +220,7 @@ button.mw-who.pressing { opacity: .6; }
 .mw-chip-text { display: block; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mw-chip .mw-glyph { width: 18px; height: 18px; flex-shrink: 0; color: var(--mw-muted); }
 .mw-chip.mw-toggle.on .mw-glyph { color: var(--mw-accent); }
+.mw-chip:not(.mw-toggle).on .mw-glyph { color: var(--mw-text); }
 .mw-chip .mw-badge { right: 6px; top: 2px; }
 .mw-chip.one .mw-badge { display: block; }
 .mw-chip.pressing { transform: scale(.96); }

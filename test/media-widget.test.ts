@@ -62,7 +62,20 @@ describe('mediaButtonsFromSettings', () => {
       button2: { id: 'none', name: 'None' },
       button3: { id: 'flow:f1', name: 'Movie time' },
       button3Name: '  ',
-    })).toEqual([{ id: 'card:homey:device:k:tv', name: 'TV' }, { id: 'flow:f1', name: 'Movie time' }]);
+    })).toEqual([{ id: 'card:homey:device:k:tv', name: 'TV', icon: null }, { id: 'flow:f1', name: 'Movie time', icon: null }]);
+  });
+
+  it('takes an icon from the Flow Buttons set, and none for None or an unknown id', () => {
+    const icons = (button1Icon: any) => win.mediaButtonsFromSettings({ button1: { id: 'flow:f1', name: 'Movie' }, button1Icon })[0].icon;
+    expect(icons({ id: 'tv', name: 'TV' })).toBe('tv');
+    expect(icons({ id: 'none', name: 'None' })).toBeNull();
+    expect(icons({ id: 'toString', name: '?' })).toBeNull();
+    expect(icons(undefined)).toBeNull();
+  });
+
+  it('has the same icons as Flow Buttons (the settings list those)', async () => {
+    const { FLOW_ICON_PATHS } = await import('../lib/FlowService.js');
+    expect(win.MEDIA_BUTTON_ICON_PATHS).toEqual(FLOW_ICON_PATHS);
   });
 });
 
@@ -248,6 +261,14 @@ describe('buttons', () => {
     click('.mw-more');
     vi.advanceTimersByTime(8100);
     expect(q('.mw-card').classList.contains('panel-open')).toBe(false);
+  });
+
+  it('draws a button icon before its name', () => {
+    const { root, click } = widget(speaker(), { buttons: [{ id: 'flow:f1', name: 'TV', icon: 'tv' }, { id: 'flow:f2', name: 'Plain', icon: null }] });
+    click('.mw-more');
+    const chips = root.querySelectorAll<HTMLElement>('.mw-chip');
+    expect(chips[0].querySelector('.mw-glyph path')!.getAttribute('d')).toBe(win.MEDIA_BUTTON_ICON_PATHS.tv.d);
+    expect(chips[1].querySelector('.mw-glyph')).toBeNull();
   });
 
   it('hides ⋯ without buttons', () => {

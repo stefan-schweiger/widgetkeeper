@@ -87,6 +87,9 @@ describe('listFlows', () => {
     expect(service.listIcons('').map(i => i.id)).toEqual([...FLOW_ICONS].sort());
     expect(service.listIcons('moo').map(i => i.id)).toEqual(['moon']);
     expect(service.listIcons('moo')[0].image).toMatch(/^data:image\/png;base64,/);
+    // The media widget's icons are optional: None first.
+    expect(service.listIcons('', { none: true })[0]).toEqual({ name: 'None', id: 'none' });
+    expect(service.listIcons('moo', { none: true }).map(i => i.id)).toEqual(['moon']);
   });
 
   it('has a preview of every icon, rendered from its current path (else run `npm run flow-icons`)', () => {
