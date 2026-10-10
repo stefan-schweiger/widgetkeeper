@@ -676,7 +676,8 @@
           const text = el('span', { class: 'mw-spk-text' }, row);
           el('span', { class: 'mw-spk-name', dir: 'auto', text: sp.name }, text);
           const sum = speakerSummary(sp);
-          if (sum.text) el('span', { class: `mw-spk-sub${sum.playing ? ' playing' : ''}`, dir: 'auto', text: sum.text }, text);
+          // Not when it only repeats the name (a speaker named after its room, the TV playing TV).
+          if (sum.text && sum.text.toLowerCase() !== String(sp.name || '').toLowerCase()) el('span', { class: `mw-spk-sub${sum.playing ? ' playing' : ''}`, dir: 'auto', text: sum.text }, text);
           if (current) row.appendChild(glyph('check', 'mw-spk-check'));
           onTap(row, (e) => { e.stopPropagation(); pickSpeaker(sp.id); });
           rows.push(row);

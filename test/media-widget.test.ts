@@ -348,7 +348,7 @@ describe('switching speaker', () => {
     expect(onListSpeakers).toHaveBeenCalled();
     const rows = [...document.querySelectorAll('.mw-spk')];
     expect(rows.map(r => r.querySelector('.mw-spk-name')!.textContent)).toEqual(['Bedroom', 'Kitchen', 'TV']);
-    expect(rows.map(r => r.querySelector('.mw-spk-sub')?.textContent)).toEqual(['Let It Be · The Beatles', 'Kitchen', 'TV']);
+    expect(rows.map(r => r.querySelector('.mw-spk-sub')?.textContent)).toEqual(['Let It Be · The Beatles', undefined, undefined]);
     expect(rows[1].classList.contains('current')).toBe(true);
     expect(rows[1].querySelector('.mw-mask')).toBeTruthy();
   });

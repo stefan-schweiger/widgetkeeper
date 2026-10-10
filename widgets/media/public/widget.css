@@ -179,29 +179,30 @@ button.mw-who.pressing { opacity: .6; }
 .mw-main { transition: opacity .15s; }
 .mw-card.panel-open .mw-main, .mw-card.speakers-open .mw-main, .mw-card.speakers-open .mw-panel { visibility: hidden; opacity: 0; }
 
-/* The speaker list: only laid out while open, so a list longer than the card grows the widget then. */
+/* The speaker list: only laid out while open, so a list longer than the card grows the widget then. One 36 px line
+   per speaker: the icon, the name and, beside it, what it plays. */
 .mw-speakers { grid-area: 1 / 1; min-width: 0; display: none; flex-direction: column; }
 .mw-card.speakers-open .mw-speakers { display: flex; }
-.mw-speakers-head { display: flex; align-items: center; justify-content: space-between; height: 28px; margin-top: -6px; }
+.mw-speakers-head { display: flex; align-items: center; justify-content: space-between; height: 24px; margin-top: -6px; }
 .mw-speakers-head .mw-close { margin: 0 -8px 0 0; }
 .mw-speakers-title { font-size: 12px; line-height: 16px; color: var(--mw-muted); }
 .mw-speakers-list { display: flex; flex-direction: column; }
 .mw-spk {
-  appearance: none; border: 0; margin: 0 -8px; padding: 6px 8px; font: inherit; color: var(--mw-text);
-  background: transparent; border-radius: var(--mw-radius); min-height: 48px; text-align: left;
-  display: flex; align-items: center; gap: var(--homey-su-3, 12px); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  appearance: none; border: 0; margin: 0 -8px; padding: 0 8px; font: inherit; color: var(--mw-text);
+  background: transparent; border-radius: var(--mw-radius); min-height: 36px; text-align: left;
+  display: flex; align-items: center; gap: var(--homey-su-2, 8px); cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
 .mw-spk.pressing { background: var(--mw-grey); }
 .mw-spk.current { background: color-mix(in srgb, var(--mw-accent) 18%, var(--mw-card)); }
 .mw-spk:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--mw-accent); }
-.mw-spk-icon { width: 20px; height: 20px; flex-shrink: 0; display: block; color: var(--mw-muted); }
+.mw-spk-icon { width: 16px; height: 16px; flex-shrink: 0; display: block; color: var(--mw-muted); }
 .mw-spk.current .mw-spk-icon { color: var(--mw-accent); }
-.mw-spk-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.mw-spk-text { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 6px; }
 .mw-spk-name, .mw-spk-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mw-spk-name { font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); font-weight: var(--mw-bold); }
-.mw-spk-sub { font-size: 12px; line-height: 16px; color: var(--mw-muted); }
+.mw-spk-name { flex-shrink: 0; max-width: 60%; font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); font-weight: var(--mw-bold); }
+.mw-spk-sub { flex: 1; min-width: 0; font-size: 12px; line-height: 16px; color: var(--mw-muted); }
 .mw-spk-sub.playing { color: color-mix(in srgb, var(--mw-accent) 75%, var(--mw-text)); }
-.mw-spk-check { width: 20px; height: 20px; flex-shrink: 0; display: block; color: var(--mw-accent); }
+.mw-spk-check { width: 16px; height: 16px; flex-shrink: 0; display: block; color: var(--mw-accent); }
 .mw-spk-check svg { width: 100%; height: 100%; display: block; }
 .mw-spk-empty { font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); color: var(--mw-muted); padding: 8px 0; }
 .mw-btn.mw-close { width: 36px; height: 36px; background: transparent; color: var(--mw-muted); margin: -6px -8px 0 0; }
