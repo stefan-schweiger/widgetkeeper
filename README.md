@@ -195,7 +195,7 @@ Locks, doors, windows and garage doors in one line: *All locked and closed*, or 
 **Settings:** devices, one line or the full list, allow unlocking.
 
 ## Curtains
-<img src="docs/screenshots/curtains.png" alt="Curtains on a Homey dashboard" width="358">
+<img src="docs/clips/curtains.webp" alt="Curtains on a Homey dashboard: an open curtain tapped closed, a closed one tapped open and sent back with a second tap, and a blind dragged most of the way up" width="358">
 
 Curtains and blinds as tiles: tap to open or close (the corner label says which), or use the slider for anything between. A tap while it moves sends it back.
 

@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
   <link rel="stylesheet" href="../widgets/media/public/widget.css">
   <link rel="stylesheet" href="../widgets/sensordots/public/widget.css">
+  <link rel="stylesheet" href="../widgets/curtains/public/widget.css">
   <script src="../widgets/lights/public/widget.js"></script>
   <script src="../widgets/stack/public/widget.js"></script>
   <script src="../widgets/values/public/widget.js"></script>
@@ -29,6 +30,7 @@
   <script src="../widgets/cameras/public/widget.js"></script>
   <script src="../widgets/media/public/widget.js"></script>
   <script src="../widgets/sensordots/public/widget.js"></script>
+  <script src="../widgets/curtains/public/widget.js"></script>
   <!-- Only for each widget's frame classes, which the stack puts on its slides (the clips create the widgets themselves). -->
   <script src="../widgets/values/public/mount.js"></script>
   <script src="../widgets/timers/public/mount.js"></script>
@@ -80,6 +82,7 @@
   <section class="clip" id="stack"><div id="w-stack"></div></section>
   <section class="clip" id="timers"><div id="w-timers"></div></section>
   <section class="clip" id="sensordots"><div id="w-sensordots"></div></section>
+  <section class="clip" id="curtains"><div id="w-curtains"></div></section>
   <section class="clip" id="media"><div class="card mw-frame"><div id="w-media"></div></div></section>
   <div class="finger" id="finger"></div>
 
@@ -200,6 +203,40 @@
               for (const [ms, id, cap, value] of steps) setTimeout(() => push(id, cap, value), ms);
             },
           };
+        },
+
+        // Curtains: Solbakken's four, with simulated motors (a full run takes 4 s, reported every 0.4 s, with the motor
+        // state), as dev/curtains-preview.html.
+        curtains() {
+          const cap = value => ({ value, setable: true });
+          const devices = [
+            { id: 'c1', name: 'Garden window', kind: 'curtain', caps: { windowcoverings_set: cap(1), windowcoverings_state: cap('idle') } },
+            { id: 'c2', name: 'Terrace door', kind: 'curtain', caps: { windowcoverings_set: cap(0.6), windowcoverings_state: cap('idle') } },
+            { id: 'c3', name: 'Bedroom', kind: 'curtain', caps: { windowcoverings_set: cap(0), windowcoverings_state: cap('idle') } },
+            { id: 'c4', name: 'Office blind', kind: 'blinds', caps: { windowcoverings_set: cap(0.35), windowcoverings_state: cap('idle') } },
+          ];
+          const runs = new Map();
+          let w;
+          const push = (deviceId, capabilityId, value) => w.pushChange({ deviceId, capabilityId, value });
+          function run(d, target) {
+            clearInterval(runs.get(d.id));
+            const pos = () => d.caps.windowcoverings_set.value;
+            push(d.id, 'windowcoverings_state', target > pos() ? 'up' : 'down');
+            runs.set(d.id, setInterval(() => {
+              const p = pos(), step = 0.1;
+              const next = Math.abs(target - p) <= step ? target : p + Math.sign(target - p) * step;
+              push(d.id, 'windowcoverings_set', Math.round(next * 100) / 100);
+              if (next === target) { clearInterval(runs.get(d.id)); push(d.id, 'windowcoverings_state', 'idle'); }
+            }, 400));
+          }
+          const onSet = (deviceId, change) => new Promise((resolve) => setTimeout(() => {
+            const d = devices.find(x => x.id === deviceId);
+            run(d, change.position != null ? change.position : change.action === 'open' ? 1 : 0);
+            resolve();
+          }, 300));
+          w = createCurtainsWidget(el('w-curtains'), { onSet });
+          w.setState(devices);
+          return {};
         },
 
         // Smart Stack: four of Solbakken's widgets, turning every 3 s here (30 s by default); then a swipe, and someone

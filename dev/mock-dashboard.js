@@ -1,7 +1,7 @@
 // The widgets of dev/screenshots.html: the real widget code with the made-up home of showcase-data.js ("Solbakken",
 // the showcase dashboards' data, so no real home's names or readings end up in the README), mounted into the elements
 // with the ids w-elec, w-thermo, w-qa, w-sa, w-weather, w-heatmap, w-cameras, w-values, w-sparklines, w-variables,
-// w-flows, w-price, w-locks and w-curtains. Most go through showcase-mount.js's MOUNT with a
+// w-flows, w-price and w-locks. Most go through showcase-mount.js's MOUNT with a
 // showcase entry (`findWidget()`); only the README's own changes are here. Needs the widget scripts,
 // temp/screenshot-icons.js, showcase-data.js and showcase-mount.js loaded first, and the showcase's fixed clock
 // (fixed-clock.js), so every render is the same.
@@ -45,17 +45,6 @@
 
   const doors = findWidget('locks'); // security: the shed unlocked and the garage open, here with the list showing
   MOUNT.locks(el('w-locks'), { ...doors, opts: { ...doors.opts, view: 'list' } });
-
-  // Solbakken's curtains (four more than the Evening dashboard's two): one open, one closing (so a tap would open it again), one closed and a
-  // blind part open.
-  const cap = value => ({ value, setable: true });
-  const curtains = createCurtainsWidget(el('w-curtains'), {});
-  curtains.setState([
-    { id: 'c1', name: 'Garden window', kind: 'curtain', caps: { windowcoverings_set: cap(1), windowcoverings_state: cap('idle') } },
-    { id: 'c2', name: 'Terrace door', kind: 'curtain', caps: { windowcoverings_set: cap(0.6), windowcoverings_state: cap('down') } },
-    { id: 'c3', name: 'Bedroom', kind: 'curtain', caps: { windowcoverings_set: cap(0), windowcoverings_state: cap('idle') } },
-    { id: 'c4', name: 'Office blind', kind: 'blinds', caps: { windowcoverings_set: cap(0.35), windowcoverings_state: cap('idle') } },
-  ]);
 
   MOUNT.cameras(el('w-cameras'), { cameras: findWidget('cameras', 1).cameras.slice(0, 4) });
 
