@@ -22,6 +22,7 @@ const MOUNT = {
   locks: (el, w) => createLocksWidget(el, w.opts || {}).setState({ devices: w.devices, language: 'en' }),
   sparklines: (el, w) => createSparklinesWidget(el, w.opts || {}).setState(w.slots),
   lights: (el, w) => createLightsWidget(el, w.opts || {}).setState(w.devices),
+  curtains: (el, w) => createCurtainsWidget(el, w.opts || {}).setState(w.devices),
   cameras: (el, w) => { const x = createCamerasWidget(el, w.opts || {}); x.setState(w.cameras); x.refresh(); },
   heatmap: (el, w) => createHeatmapWidget(el, { locale: LOCALE, ...w.opts }).setData(w.data),
   // The made-up speakers of mock-media.js (drawn covers); the fixed clock keeps the position still.

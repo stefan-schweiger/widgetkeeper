@@ -83,192 +83,162 @@ Several widgets in one spot, one at a time, with the one that matters brought fo
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
-Live power use (30 seconds to 1 hour), the hourly price from yesterday to 12 hours ahead, the last 24 hours of usage and the cheapest upcoming hour. Tap a chart, or hover with a mouse, to see the value at that moment.
+Live power use, the hourly price from yesterday to 12 hours ahead (with your tariffs and taxes from Homey Energy), the last 24 hours of usage and the cheapest hour ahead. Tap a chart to see its values. Works with a fixed price too, and shows solar export below zero.
 
-Works with dynamic prices or a fixed price set in Homey Energy (Homey Pro 12.6 or later); with a fixed price the header shows it and usage gets its own chart. Dynamic prices include the tariffs and taxes you set up in Homey Energy, as in Homey's own Energy tab. Solar export shows below zero in yellow. Needs a device that reports power.
-
-**Settings:** power meter, live chart time span, show electricity prices, include tariffs and taxes (on by default; off shows the spot price), usage history (on the price chart or separate, neutral or purple), smooth lines, lowest price in the next 12 h, 24 h or both.
+**Settings:** power meter, live time span, prices, tariffs and taxes, usage history, smooth lines, lowest price in 12 h / 24 h, compact layout.
 
 ## Thermostat Shortcuts
 <img src="docs/screenshots/thermostat.png" alt="Thermostat Shortcuts on a Homey dashboard" width="358">
 
-Three one-tap presets for a thermostat, heat pump or air conditioner, such as *Off*, *Heat 21°* and *Heat 24° · Fan level 5*. Each sets on/off, the target temperature, the mode and one extra option such as the fan speed. The matching preset lights up; otherwise the widget shows the device's current state.
+Three one-tap presets for a thermostat, heat pump or air conditioner, such as *Off*, *Heat 21°* and *Heat 24° · Fan level 5*. The matching preset lights up.
 
-**Settings:** thermostat or aircon, and per button: power (on, off or unchanged), mode, temperature, and a fan or other setting.
+**Settings:** the device, compact layout, and per button: power, mode, temperature and one extra option such as the fan speed.
 
 ## Device Quick Actions
 <img src="docs/screenshots/quickactions.png" alt="Device Quick Actions on a Homey dashboard" width="358">
 
-Half-height tiles that run a device's quick action with one tap, the same as the round button on Homey's own tile: on/off, lock/unlock, play/pause or a button press. A tile is highlighted while the device is on, locked or playing.
+Half-height tiles that run a device's quick action with one tap (on/off, lock, play/pause, a button), highlighted while it's on.
 
-**Settings:** devices, active style (blue tint or lighter tile).
+**Settings:** devices, active style.
 
 ## Sensor Alarms
 <img src="docs/screenshots/sensoralarms.png" alt="Sensor Alarms on a Homey dashboard" width="358">
 
-Tiles in the style of Homey's temperature tiles that show *No alarm*, the alarm that's on (such as *Smoke alarm*) or the number of alarms, and turn red while one is on. Every alarm counts, including those added by apps, such as radon.
+Tiles that show *No alarm*, the alarm that's on or how many, and turn red while one is. Every alarm counts, including apps' own such as radon. Tap a tile for all of its alarms.
 
-**Settings:** sensors, count motion and contact as alarms (off by default).
+**Settings:** sensors, count motion and contact, tile names.
 
 ## Sensor Dots
 <img src="docs/screenshots/sensordots.png" alt="Sensor Dots on a Homey dashboard" width="358">
 
-Motion sensors, door and window contacts and camera detections (person, vehicle, pet) as a grid of dots: grey while quiet, blue while active, as many per row as fit. Tap a dot to show its name, what's active and since when, such as *Garage · Open since 18:17*, over its row; tap that line to close it.
+Motion, contact and camera sensors as a grid of dots that light up while active. Tap a dot for its name and since when, such as *Garage · Open since 18:17*.
 
-**Settings:** sensors, title (an optional header inside the tile), colour when idle (grey by default) and when active (blue by default): grey, blue, red, orange, yellow, green or purple.
+**Settings:** sensors, title, idle and active colours.
 
 ## Weather Forecast
 <img src="docs/screenshots/weather.png" alt="Weather Forecast on a Homey dashboard" width="358">
 
-The next 36 hours for your Homey's location from [MET Norway](https://www.met.no/en) ([yr.no](https://www.yr.no)): icon, temperature, precipitation and wind for each hour, with today's and tomorrow's high and low underneath. Swipe sideways to see further ahead.
+The next 36 hours from [MET Norway](https://www.met.no/en) ([yr.no](https://www.yr.no)), hour by hour, with today's and tomorrow's high and low. Swipe sideways to see further ahead.
 
-**Settings:** compact or detailed columns, one or two rows, every 1, 2 or 3 hours, colour theme.
+**Settings:** compact or detailed, one or two rows, 1–3 hours per column, colour theme.
 
 Weather data from MET Norway, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Icons: [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
 
 ## Insights Heatmap
 <img src="docs/screenshots/heatmap.png" alt="Insights Heatmap on a Homey dashboard" width="358">
 
-A week of one Insights value as a grid of weekdays and hours, with a scale and a marker at the current value. Works with numbers (light, temperature, power …) and on/off values (motion, contact …), shown as the share of each hour they were on. On/off history fills in over the first days, as Insights keeps only their last 50 changes.
+A week of one Insights value as a grid of days and hours: numbers such as light or temperature, or how much of each hour a sensor was on.
 
-**Settings:** device and value, this week or the last 3–14 days, 1–3 hours per column, colour (blue, red, orange, yellow, green or purple), show scale, show legend.
+**Settings:** device and value, this week or the last 3–14 days, hours per column, colour, scale, legend.
 
 ## Cameras
 <img src="docs/screenshots/cameras.png" alt="Cameras on a Homey dashboard" width="358">
 
-Your cameras in a grid of snapshots that refresh every few seconds. Tap one to watch it live through Homey's own live view; tap again to go back.
+Your cameras as a grid of snapshots that refresh every few seconds. Tap one to watch it live.
 
-**Settings:** cameras, refresh interval (5 s to 1 min).
+**Settings:** cameras, refresh interval.
 
 ## Device Values
 <img src="docs/screenshots/values.png" alt="Device Values on a Homey dashboard" width="358">
 
-Half-height tiles that each show one device value, such as a temperature, a battery level or on/off, updated live. Percentages can fill their tile in red, yellow or green.
+Half-height tiles that each show one live device value. Percentages can fill their tile by level, and the Flow card **Set the tile colour of … to …** colours a tile, such as a fridge going red when it's too warm.
 
-A Flow can colour the tiles: the action card **Set the tile colour of … to …** gives every tile showing that value red, orange, yellow, green, blue or purple, and Default resets it. For example, a fridge thermometer blue below 5 °C and red above, or an internet check green while it passes and red when its alarm goes off.
-
-**Settings:** up to six values, 3 or 2 tiles per row, fill percentages by level with adjustable limits.
+**Settings:** up to six values with optional names, 3 or 2 per row, percentage fill and its limits.
 
 ## Light Controls
 <img src="docs/clips/lights.webp" alt="Light Controls on a Homey dashboard: a light turned on, dimmed with the bar, and given a colour and a white" width="358">
 
-Compact light tiles, six in the space of three of Homey's light cards. Tap a tile to turn the light on or off, drag or tap the bar to set the brightness, and tap the colour button (a half-filled circle, or a thermometer on white-only lights, in the light's colour) to pick a colour or a white from a row of swatches. On Android, tap the bar instead of dragging. Lights in the same room can share one tile that controls them all. Plugs and switches that only turn on and off get a tile without the bar.
+Six lights in the space of three of Homey's light cards. Tap a tile to switch it, drag or tap the bar to dim, and tap the colour button for colours and whites. Lights in a room can share one tile.
 
-**Settings:** lights, group by room, the brightness bar's far left (turns the light off, or dims to 1 % and stays on), colour palette (bright colours, warm from red to cool white, or dusk).
+**Settings:** lights, group by room, what the bar's far left does, colour palette.
 
 ## Sparklines
 <img src="docs/screenshots/sparklines.png" alt="Sparklines on a Homey dashboard" width="358">
 
-Device Values' tiles with a small chart of each value from Insights, with its highest and lowest, following the live value.
+Device Values' tiles with a small live chart of each value and its highest and lowest.
 
-**Settings:** up to six values, time span (1 h, 6 h, 24 h or 7 days), 2 or 1 tiles per row.
+**Settings:** up to six values, time span (1 hour to 7 days), 2 or 1 per row.
 
 ## Flow Variables
 <img src="docs/screenshots/variables.png" alt="Flow Variables on a Homey dashboard" width="358">
 
-Homey's Logic variables as compact rows that show the full name: a switch for a yes/no variable, − and + for a number, and the text for a string. Tap a number or a text to type a new value. Changes made by flows show up live.
+Logic variables as compact rows with their full name: a switch for yes/no, − and + for a number, and the text for a string. Tap a number or text to type a value. Needs an [API key](#api-key) to change them.
 
-**Settings:** up to ten variables, 1 or 2 columns, and the step for − and +.
-
-Homey doesn't let apps change variables on their own, so changing them needs a Homey API key. In the Homey web app, create one under **Settings → API Keys** with permission to change variables. Then paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey. Without a key the widget shows the variables but can't change them.
+**Settings:** up to ten variables with optional names, 1 or 2 columns, the − and + step.
 
 ## Flow Buttons
 <img src="docs/screenshots/flows.png" alt="Flow Buttons on a Homey dashboard" width="358">
 
-Flows and Advanced Flows as compact rows, the size of Flow Variables' rows: a round button in its own colour and icon, then the flow's name. Tap anywhere on a row to start the flow; the button spins while it starts and shows a check mark once it has. A flow that's turned off is dimmed.
+Flows and Advanced Flows as rows with a round button in your colour and icon. Tap a row to start the flow. Needs an [API key](#api-key).
 
-**Settings:** up to eight flows, each with a colour (blue, red, orange, yellow, green, purple or grey) and an icon (44 to pick from), in 1 or 2 columns. Only flows that can be started by hand are listed.
-
-Like changing variables, starting flows needs a Homey API key, here with permission to start flows. One key can do both: create it under **Settings → API Keys** in the Homey web app and paste it under **Apps → Widgetkeeper → Configure**. Without a key the widget shows the flows, and a tap says how to add one.
+**Settings:** up to eight flows, each with a colour, an icon and an optional name; 1 or 2 columns.
 
 ## Price Badge
 <img src="docs/screenshots/price.png" alt="Price Badge on a Homey dashboard" width="358">
 
-The electricity price now, the next hour's (with an arrow up or down) and the cheapest hour in the next 12 or 24 hours, in one compact tile. The tile is green, yellow or red by where the price now sits among today's prices. It uses the same prices as the Electricity Overview, from Homey Energy with your tariffs and taxes, and needs no meter. With a fixed price it shows just that price.
+The electricity price now, the next hour's and the cheapest hour ahead in one tile, green, yellow or red by today's price level. Uses the Electricity Overview's prices and needs no meter.
 
-**Settings:** show the next hour (on by default), the lowest price (next 12 hours by default, next 24 hours or off), colour by price level (on by default), include tariffs and taxes (on by default).
+**Settings:** next hour, lowest in 12 h or 24 h, colour by level, tariffs and taxes.
 
 ## Timers
 <img src="docs/screenshots/timers.png" alt="Timers on a Homey dashboard" width="358">
 
-Up to four preset buttons, such as *5 min* or *Eggs · 7 min*. Tap one to start the timer: it takes the buttons' place, so the widget always takes the same space, and shows the time left, filling down as it runs. Tap it to pause or resume it, **+1** adds a minute and **✕** cancels it (the buttons come back). When it runs out it turns red and the screen beeps for a minute; tap it to dismiss it. One timer runs at a time; for two, add a second widget.
+Up to four preset buttons, such as *Eggs · 7 min*. A started timer takes their place: tap to pause, **+1** for a minute more, **✕** to cancel. It beeps and turns red when done. The timer runs on Homey, so every screen sees it and the Flow card **A timer finished** fires with no dashboard open.
 
-The timer runs on your Homey, not on the screen: every phone or tablet showing the dashboard sees the same timer, and the Flow card **A timer finished** (with the timer's name and minutes) fires even with no dashboard open, so Homey can announce it or flash a light.
-
-**Settings:** four timers, each with its minutes (0 hides it; 0.5 is 30 seconds) and an optional name, and whether to beep (on by default; phones and tablets only play sound after the widget has been touched once).
+**Settings:** four presets with minutes and an optional name, sound.
 
 ## Locks and Doors
 <img src="docs/screenshots/locks.png" alt="Locks and Doors on a Homey dashboard" width="358">
 
-Locks, door and window contacts and garage doors in one line: *All locked and closed* with a green padlock, or the device that isn't (*Back door · Unlocked since 18:12*), or how many aren't (*2 open or unlocked*) on a red tile. Tap it for the list of every device and its state, with a **Lock** or **Close** button for a lock or garage door that isn't secure, and **Lock all** for several.
+Locks, doors, windows and garage doors in one line: *All locked and closed*, or what isn't, on a red tile. Tap it for the list, with **Lock** and **Close** buttons.
 
-**Settings:** devices, show one line (tap for the list; the default) or every device, and allow unlocking and opening (off by default: the widget can only lock and close).
+**Settings:** devices, one line or the full list, allow unlocking.
 
 ## Curtains
 <img src="docs/screenshots/curtains.png" alt="Curtains on a Homey dashboard" width="358">
 
-Curtains and blinds as tiles, two per row. Tap a tile to open or close it, the way curtains used to toggle in Homey; the pill in its corner always says what a tap will do (**Open** or **Close**), so a half-open curtain never leaves you guessing. A tap while it moves sends it back the other way. The slider sets any position in between, and the icon's drapes follow the real position. A curtain that's moving shows where it's heading.
+Curtains and blinds as tiles: tap to open or close (the corner label says which), or use the slider for anything between. A tap while it moves sends it back.
 
-**Settings:** devices; what a tap does for a half-open curtain (go to the nearer end, the default, or reverse its last move); position 100% means closed (for curtains such as SwitchBot that count the other way); show the state under the name (on by default; off makes the tiles lower); group by room (curtains in the same room share one tile that moves them all).
-
-Works with curtains that have a position, ones with just open, stop and close, and ones that are only open or closed. Homey's Android app takes over a drag on the slider, so there you tap the slider where you want it.
+**Settings:** devices, what a tap does halfway, inverted position, state line, group by room.
 
 ## Media
 <img src="docs/clips/media.webp" alt="Media on a Homey dashboard: the volume turned up, the next track, mute, the TV as the source from behind ⋯, and a switch to another speaker" width="358">
 
-One speaker as a compact card: the album art, the track and the artist, previous, play and next, and mute on the right. The volume is a bar between − and + on its own line, or just − and + next to play, with the level as a ring around mute. It moves on every tap of − or +, and a burst of taps is sent once, so it never runs ahead of you; set a maximum volume and neither + nor the bar goes past it. On TV or line-in the card says so instead of greying out, and mute and the volume keep working.
+One speaker as a card: album art, the track, play controls, mute, and a volume that moves on every tap but never overshoots or passes your maximum. Shows TV and line-in instead of old album art. Tap the name to switch speaker. Up to four buttons behind ⋯ run the speaker's own actions (such as *Set source to TV*) or flows; they need an [API key](#api-key).
 
-Tap the speaker's name (with its device icon) to switch to another speaker; each screen remembers its own choice, and the speaker in the settings stays the default.
-
-Up to four buttons, behind ⋯ in the corner, run the speaker's own actions, such as *Set source to TV* or *Set source to Line-In*, or any flow. A button for the TV is lit while the speaker plays from the TV, and so is ⋯. After a switch, a speaker action runs as the same action of the new speaker, and is hidden when that speaker doesn't have it. The buttons need an API key in Widgetkeeper's app settings, which may manage flows for the speaker's actions (or only start flows, for flows).
-
-**Settings:** the speaker, switching speaker (on by default), the volume as a bar or as buttons, the volume step (2, 5 or 10 %), the maximum volume, the progress bar and time (on by default), shuffle and repeat (off by default; with the volume as buttons they're behind ⋯ too), and four buttons, each with an optional icon and name.
-
-Works with any speaker in Homey; made with Sonos in mind.
+**Settings:** speaker, speaker switching, volume as a bar or buttons, volume step and maximum, progress, shuffle and repeat, four buttons with an icon and a name.
 
 ## Smart Stack
 <img src="docs/clips/stack.webp" width="382" alt="A Smart Stack on a Homey dashboard: it turns through four widgets, is swiped by hand, and brings the cameras forward when someone is at the door">
 
-Widgetkeeper widgets from another dashboard, one at a time in the space of one. Set up a dashboard with the widgets you want to rotate (for example cameras, the speaker and a timer), then put a Smart Stack on your main dashboard and pick that dashboard. The stack turns to the next widget every 30 seconds (or 10 s to 5 min, or never), and its height follows the widget it shows. Swipe, or tap the dots under it, to move by hand; the stack then holds still for a minute.
+Widgetkeeper widgets from another dashboard, one at a time in the space of one. It turns every 30 seconds, and swipes or the dots move it by hand. Smart rotate brings a widget forward while something happens on it: music plays, a timer runs, a camera sees someone, a door is open. A Flow card can bring one forward too. Needs an [API key](#api-key) to read the dashboard.
 
-With smart rotate on, a widget comes forward while something happens on it: the speaker plays, a timer runs or rings, a camera sees someone, a sensor alarm goes off, or a door is open or unlocked. When several do, they take turns; one you swipe away from only comes back the next time it starts. The Flow card *Bring a widget forward on Smart Stacks for … minutes* does the same from any Flow (a doorbell, say), and *Return Smart Stacks to rotation* ends it.
-
-The widgets in a stack are the real ones, with the settings and devices you gave them on the other dashboard; a timer started in the stack is the same timer as on that dashboard. Only Widgetkeeper widgets can be in a stack: Homey's own widgets and other apps' are left out.
-
-Homey doesn't let an app read your dashboards, so the stack needs an API key in Widgetkeeper's app settings that may read dashboards. In Homey's Android app a swipe may be taken by the dashboard; the dots always work.
-
-**Settings:** the dashboard, how often it turns (30 s by default), smart rotate (on by default), how long it holds still after a swipe (1 min by default) and the page dots (on by default; below or above the widget, small or large).
+**Settings:** dashboard, interval, smart rotate, pause after a swipe, dots.
 
 ## Dashboard examples
-Seven dashboards from a made-up house, on a tablet in Homey's dark mode.
-
-**Home:** electricity, the heat pump, flow buttons, the weather, lights, quick actions, sensor alarms, cameras, sparklines and a motion heatmap.
-
+**Home**
 <img src="docs/showcase/home.png" alt="A home dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
-**Energy:** electricity with a separate purple usage chart, a power heatmap in orange, sparklines of the big consumers, the price badge at the evening peak, the heat pump, the weather in detail, appliance quick actions, device values (*Today* coloured green by a Flow) and the car charging flags.
-
+**Energy**
 <img src="docs/showcase/energy.png" alt="An energy dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
-**Security:** six cameras, sensor alarms with motion and contact counted, locks and doors with the shed unlocked, door locks, a motion heatmap, battery levels filled by level, flow variables, outdoor lights, sensor dots with the garage door open and the weather.
-
+**Security**
 <img src="docs/showcase/security.png" alt="A security dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
-**Climate:** the heat pump, a bedroom radiator and the bathroom floor heating, room temperatures and humidity as device values, a week of the living room's temperature in red, sparklines, the weather coloured by temperature, flow buttons for airing out and frost guard, and the night setpoint.
-
+**Climate**
 <img src="docs/showcase/climate.png" alt="A climate dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
-**Evening:** lights grouped by room with the dusk palette, flow buttons for movie time, dinner and good night, quick actions for the TV, speaker and locks, the heat pump, two cameras, the weather in two rows of 2-hour steps, the living room speaker, and the evening's flags.
-
+**Evening**
 <img src="docs/showcase/evening.png" alt="An evening dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
-**Garden:** four garden cameras, outdoor lights, a detailed two-row forecast with sky colours, a week of daylight in yellow, temperature and wind sparklines, soil moisture filled by level, flow buttons for watering and mowing, and sensor dots with someone on the driveway.
-
+**Garden**
 <img src="docs/showcase/garden.png" alt="A garden dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
-**Kitchen:** electricity with the cheapest hours in the next 12 and 24, flow buttons such as *Dinner's ready*, appliance quick actions, the fridge and freezer coloured by a Flow, smoke and water alarms, a pizza timer, the kitchen lights, a shopping list and the hallway camera.
-
+**Kitchen**
 <img src="docs/showcase/kitchen.png" alt="A kitchen dashboard with Widgetkeeper widgets on a tablet" width="100%">
+
+## API key
+Homey doesn't let apps change variables, start flows or read dashboards on their own, so Flow Variables, Flow Buttons, Media's buttons and Smart Stack need a Homey API key. Create one in the Homey web app under **Settings → API Keys** with those permissions, and paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey.
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic, following Homey's language.

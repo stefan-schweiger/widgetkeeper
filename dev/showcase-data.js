@@ -455,6 +455,11 @@
             ['advanced:v1', 'Movie time', 'purple', 'tv'], ['flow:v2', 'Dinner', 'orange', 'bulb'],
             ['flow:v3', 'Reading light', 'yellow', 'star'], ['flow:v4', 'Good night', 'blue', 'moon'],
           ]),
+          // Dusk: the living room curtain on its way down, the terrace door's already closed.
+          { type: 'curtains', devices: [
+            { id: 'ec1', name: 'Living room', kind: 'curtain', caps: { windowcoverings_set: { value: 0.45, setable: true }, windowcoverings_state: { value: 'down', setable: true } } },
+            { id: 'ec2', name: 'Terrace door', kind: 'curtain', caps: { windowcoverings_set: { value: 0, setable: true }, windowcoverings_state: { value: 'idle', setable: true } } },
+          ] },
           { type: 'sparklines', slots: indoorSparks.slice(0, 2) },
         ],
         [

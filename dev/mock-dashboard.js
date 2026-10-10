@@ -55,7 +55,7 @@
   const doors = findWidget('locks'); // security: the shed unlocked and the garage open, here with the list showing
   MOUNT.locks(el('w-locks'), { ...doors, opts: { ...doors.opts, view: 'list' } });
 
-  // Solbakken's curtains (no showcase dashboard has them): one open, one closing (so a tap would open it again), one closed and a
+  // Solbakken's curtains (four more than the Evening dashboard's two): one open, one closing (so a tap would open it again), one closed and a
   // blind part open.
   const cap = value => ({ value, setable: true });
   const curtains = createCurtainsWidget(el('w-curtains'), {});
