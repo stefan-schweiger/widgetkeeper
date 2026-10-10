@@ -4,6 +4,17 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ## 0.9.0
 
+### New: Smart Stack
+- Widgetkeeper widgets from another dashboard, one at a time in the space of one, like a Smart Stack on a phone. Set up a dashboard with the widgets to rotate, then pick it in the stack.
+- It turns to the next widget every 30 seconds (or 10 s to 5 min, or never). Swipe or tap the dots to move by hand; it then holds still for a minute.
+- Smart rotate brings a widget forward while something happens on it: the speaker plays, a timer runs, a camera sees someone, a sensor alarm goes off, or a door is open or unlocked.
+- New Flow cards: *Bring a widget forward on Smart Stacks for … minutes* and *Return Smart Stacks to rotation*.
+- The dots can sit below or above the widget, small or large.
+- Needs a Homey API key in the app settings that may read dashboards.
+
+### Electricity prices
+- Electricity Overview and Price Badge: dynamic prices now include the tariffs and taxes set up in Homey Energy, so they match Homey's own Energy tab. New setting, *Include tariffs and taxes* (on by default); turn it off to see the spot price.
+
 ### New: Curtains
 - Curtains and blinds as tiles, two per row. Tap a tile to open or close it, the way curtains used to work in Homey. A label in the corner always says which it will do (**Open** or **Close**), so a half-open curtain never leaves you guessing.
 - Tap while it moves to send it back the other way. The slider sets any position in between.
@@ -21,6 +32,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Up to four buttons for the speaker's own actions, such as *Set source to TV*, or any flow. They sit behind **⋯**. Running a speaker action needs a Homey API key with permission to manage flows.
 - Tap the speaker's name to switch to another speaker. Each screen remembers its choice; the speaker in the settings stays the default.
 - Shuffle and repeat, and the progress line, are settings.
+- Each button can have an icon.
 
 ### Tile names
 - Device Values, Flow Variables and Flow Buttons: give each tile, row or button its own name with the new *– Name* setting under it.
@@ -54,6 +66,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Timers: a quick tap on a timer that is just starting is no longer lost, and a failed change puts the timer back as it was.
 - Flow Variables: a value you just changed is no longer overwritten by an older one.
 - Numbered settings (*Tile 4*, *Button 2*) show their number on iOS.
+- A short swipe across a tile or button no longer counts as a tap.
 
 ## 0.8.0
 

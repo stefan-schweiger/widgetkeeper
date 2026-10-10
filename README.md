@@ -85,9 +85,9 @@ Several widgets in one spot, one at a time, with the one that matters brought fo
 
 Live power use (30 seconds to 1 hour), the hourly price from yesterday to 12 hours ahead, the last 24 hours of usage and the cheapest upcoming hour. Tap a chart, or hover with a mouse, to see the value at that moment.
 
-Works with dynamic prices or a fixed price set in Homey Energy (Homey Pro 12.6 or later); with a fixed price the header shows it and usage gets its own chart. Solar export shows below zero in yellow. Needs a device that reports power.
+Works with dynamic prices or a fixed price set in Homey Energy (Homey Pro 12.6 or later); with a fixed price the header shows it and usage gets its own chart. Dynamic prices include the tariffs and taxes you set up in Homey Energy, as in Homey's own Energy tab. Solar export shows below zero in yellow. Needs a device that reports power.
 
-**Settings:** power meter, live chart time span, show electricity prices, usage history (on the price chart or separate, neutral or purple), smooth lines, lowest price in the next 12 h, 24 h or both.
+**Settings:** power meter, live chart time span, show electricity prices, include tariffs and taxes (on by default; off shows the spot price), usage history (on the price chart or separate, neutral or purple), smooth lines, lowest price in the next 12 h, 24 h or both.
 
 ## Thermostat Shortcuts
 <img src="docs/screenshots/thermostat.png" alt="Thermostat Shortcuts on a Homey dashboard" width="358">
@@ -177,16 +177,16 @@ Homey doesn't let apps change variables on their own, so changing them needs a H
 
 Flows and Advanced Flows as compact rows, the size of Flow Variables' rows: a round button in its own colour and icon, then the flow's name. Tap anywhere on a row to start the flow; the button spins while it starts and shows a check mark once it has. A flow that's turned off is dimmed.
 
-**Settings:** up to eight flows, each with a colour (blue, red, orange, yellow, green, purple or grey) and an icon (21 to pick from), in 1 or 2 columns. Only flows that can be started by hand are listed.
+**Settings:** up to eight flows, each with a colour (blue, red, orange, yellow, green, purple or grey) and an icon (44 to pick from), in 1 or 2 columns. Only flows that can be started by hand are listed.
 
 Like changing variables, starting flows needs a Homey API key, here with permission to start flows. One key can do both: create it under **Settings → API Keys** in the Homey web app and paste it under **Apps → Widgetkeeper → Configure**. Without a key the widget shows the flows, and a tap says how to add one.
 
 ## Price Badge
 <img src="docs/screenshots/price.png" alt="Price Badge on a Homey dashboard" width="358">
 
-The electricity price now, the next hour's (with an arrow up or down) and the cheapest hour in the next 12 or 24 hours, in one compact tile. The tile is green, yellow or red by where the price now sits among today's prices. It uses the same prices as the Electricity Overview, from Homey Energy, and needs no meter. With a fixed price it shows just that price.
+The electricity price now, the next hour's (with an arrow up or down) and the cheapest hour in the next 12 or 24 hours, in one compact tile. The tile is green, yellow or red by where the price now sits among today's prices. It uses the same prices as the Electricity Overview, from Homey Energy with your tariffs and taxes, and needs no meter. With a fixed price it shows just that price.
 
-**Settings:** show the next hour (on by default), the lowest price (next 12 hours by default, next 24 hours or off), colour by price level (on by default).
+**Settings:** show the next hour (on by default), the lowest price (next 12 hours by default, next 24 hours or off), colour by price level (on by default), include tariffs and taxes (on by default).
 
 ## Timers
 <img src="docs/screenshots/timers.png" alt="Timers on a Homey dashboard" width="358">
@@ -222,7 +222,7 @@ Tap the speaker's name (with its device icon) to switch to another speaker; each
 
 Up to four buttons, behind ⋯ in the corner, run the speaker's own actions, such as *Set source to TV* or *Set source to Line-In*, or any flow. A button for the TV is lit while the speaker plays from the TV, and so is ⋯. After a switch, a speaker action runs as the same action of the new speaker, and is hidden when that speaker doesn't have it. The buttons need an API key in Widgetkeeper's app settings, which may manage flows for the speaker's actions (or only start flows, for flows).
 
-**Settings:** the speaker, switching speaker (on by default), the volume as a bar or as buttons, the volume step (2, 5 or 10 %), the maximum volume, the progress bar and time (on by default), shuffle and repeat (off by default; with the volume as buttons they're behind ⋯ too), and four buttons, each with an optional name.
+**Settings:** the speaker, switching speaker (on by default), the volume as a bar or as buttons, the volume step (2, 5 or 10 %), the maximum volume, the progress bar and time (on by default), shuffle and repeat (off by default; with the volume as buttons they're behind ⋯ too), and four buttons, each with an optional icon and name.
 
 Works with any speaker in Homey; made with Sonos in mind.
 
