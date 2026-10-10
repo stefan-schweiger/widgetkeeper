@@ -3,7 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
 import { API_KEY_SETTING, KeyError } from '../lib/PersonalApiKey.js';
 import StackService, { dashboardPages, STACK_RESUME_EVENT, STACK_SHOW_EVENT, STACK_TYPES } from '../lib/StackService.js';
-import stackApi, { findRoute } from '../widgets/stack/api.js';
+import stackApi, { PAGE_APIS } from '../widgets/stack/api.js';
+import { findWidgetRoute } from '../lib/widgetRoutes.js';
 
 vi.mock('homey-api', () => homeyApiMock);
 
@@ -156,11 +157,11 @@ describe('stack widget API', () => {
 
   it("finds a page's route only among its widget's own", () => {
     const homey = homeyWith({});
-    expect(findRoute(homey, 'timers', 'POST', '/start')).toBe('start');
-    expect(findRoute(homey, 'timers', 'GET', '/state')).toBe('getState');
-    expect(findRoute(homey, 'timers', 'GET', '/start')).toBeNull();
-    expect(findRoute(homey, 'stack', 'POST', '/call')).toBeNull();
-    expect(findRoute(homey, '../../api', 'GET', '/diagnostics')).toBeNull();
+    expect(findWidgetRoute(homey, PAGE_APIS, 'timers', 'POST', '/start')).toBe('start');
+    expect(findWidgetRoute(homey, PAGE_APIS, 'timers', 'GET', '/state')).toBe('getState');
+    expect(findWidgetRoute(homey, PAGE_APIS, 'timers', 'GET', '/start')).toBeNull();
+    expect(findWidgetRoute(homey, PAGE_APIS, 'stack', 'POST', '/call')).toBeNull();
+    expect(findWidgetRoute(homey, PAGE_APIS, '../../api', 'GET', '/diagnostics')).toBeNull();
   });
 
   it("hands a page's request to its widget's API, as from its own frame", async () => {

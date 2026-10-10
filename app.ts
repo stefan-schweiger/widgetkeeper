@@ -134,7 +134,7 @@ export default class WidgetkeeperApp extends Homey.App {
     for (const [type, listeners] of Object.entries(this.web.autocompletes)) {
       const widget = this.homey.dashboards.getWidget(type);
       for (const [setting, listener] of Object.entries(listeners)) {
-        widget.registerSettingAutocompleteListener(setting, (query, settings) => listener(query, settings));
+        widget.registerSettingAutocompleteListener(setting, listener);
       }
     }
   }

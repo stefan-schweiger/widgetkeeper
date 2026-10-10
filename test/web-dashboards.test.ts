@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
-import { fakeApi, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
+import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
+import PersonalApiKey from '../lib/PersonalApiKey.js';
 import WebDashboardService, { passesDeviceFilter, WEB_DASHBOARDS_SETTING, WEB_ENABLED_SETTING } from '../lib/WebDashboardService.js';
 import { widgetAutocompletes } from '../lib/widgetAutocompletes.js';
 import api from '../api.js';
@@ -170,9 +171,38 @@ describe('web dashboards: the app API', () => {
     await expect(api.postWebCall({ homey, body: { type: 'constructor', method: 'GET', path: '/x' } })).rejects.toThrow(/Not a widget route/);
     // The stack's own routes are reachable from a web frame (a stack on a web dashboard), unlike from a stack page.
     homey.app.stack = { getPages: vi.fn(async () => ({ ok: true, pages: [] })) };
-    homey.app.apiKey = { has: () => true };
-    await expect(api.postWebCall({ homey, body: { type: 'stack', method: 'GET', path: '/pages', query: { dashboardId: 'd' } } }))
+    homey.app.apiKey = new PersonalApiKey(homey, vi.fn());
+    keyApis.set('page-key', { sessions: { getSessionMe: async () => ({ scopes: ['homey.dashboard.readonly'] }) } });
+    await expect(api.postWebCall({ homey, body: { type: 'stack', method: 'GET', path: '/pages', query: { dashboardId: 'd' }, key: 'page-key' } }))
       .resolves.toMatchObject({ ok: true, pages: [] });
+    keyApis.delete('page-key');
+  });
+
+  it("runs a route that acts with the stored key only when the page's own key may do the same", async () => {
+    const { homey } = setup();
+    const trigger = vi.fn(async () => ({ ok: true }));
+    const setVariable = vi.fn(async () => ({ ok: true }));
+    homey.app.flows = { trigger };
+    homey.app.variables = { set: setVariable };
+    homey.app.apiKey = new PersonalApiKey(homey, vi.fn());
+    keyApis.set('weak', { sessions: { getSessionMe: async () => ({ scopes: ['homey.app.control'] }) } });
+    keyApis.set('flows', { sessions: { getSessionMe: async () => ({ scopes: ['homey.flow.start'] }) } });
+    const call = (type: string, path: string, body: object, key?: string) =>
+      api.postWebCall({ homey, body: { type, method: 'POST', path, body, key } });
+    await expect(call('flows', '/trigger', { id: 'flow:a' }, 'weak')).resolves.toEqual({ ok: false, reason: 'keyScope' });
+    await expect(call('flows', '/trigger', { id: 'flow:a' })).resolves.toEqual({ ok: false, reason: 'keyInvalid' });
+    await expect(call('flows', '/trigger', { id: 'flow:a' }, 'nope')).resolves.toEqual({ ok: false, reason: 'keyInvalid' });
+    await expect(call('variables', '/set', { id: 'v', value: true }, 'flows')).resolves.toEqual({ ok: false, reason: 'keyScope' });
+    // Through a Smart Stack on the page, and a speaker's card (which needs homey.flow, not only flow.start).
+    await expect(call('stack', '/call', { type: 'flows', method: 'POST', path: '/trigger', body: { id: 'flow:a' } }, 'weak'))
+      .resolves.toEqual({ ok: false, reason: 'keyScope' });
+    await expect(call('media', '/button', { deviceId: 'd', id: 'card:homey:device:d:x' }, 'flows')).resolves.toEqual({ ok: false, reason: 'keyScope' });
+    expect(trigger).not.toHaveBeenCalled();
+    expect(setVariable).not.toHaveBeenCalled();
+    await call('flows', '/trigger', { id: 'flow:a' }, 'flows');
+    expect(trigger).toHaveBeenCalledTimes(1);
+    keyApis.delete('weak');
+    keyApis.delete('flows');
   });
 });
 

@@ -1,8 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { isStackType } from '../../lib/StackService.js';
 import { keyResult, logPerf } from '../../lib/widgetApi.js';
-import { callWidgetRoute, findWidgetRoute, type WidgetApis } from '../../lib/widgetRoutes.js';
+import { callWidgetRoute, type WidgetApis } from '../../lib/widgetRoutes.js';
 import electricity from '../electricity/api.js';
 import thermostat from '../thermostat/api.js';
 import quickactions from '../quickactions/api.js';
@@ -30,11 +29,6 @@ export const PAGE_APIS: WidgetApis = {
   lights, sparklines, variables, flows, price, timers, locks, curtains, media,
 };
 
-/** A page's API route (`findWidgetRoute()`), or null; a stack's own routes can't be reached from a page. */
-export function findRoute(homey: Homey, type: string, method: string, path: string): string | null {
-  return isStackType(type) ? findWidgetRoute(homey, PAGE_APIS, type, method, path) : null;
-}
-
 export default {
   /**
    * `dashboardId`: that dashboard's pages (this app's widgets on it) and the Flow requests running. Without a
@@ -52,14 +46,13 @@ export default {
 
   /**
    * `{type, method, path, query, body}`: a page's own request (`Homey.api(method, path, body)` in its widget),
-   * handed to that widget's API as if it came from its own frame.
+   * handed to that widget's API as if it came from its own frame. `PAGE_APIS` has no `stack`, so a stack's own
+   * routes can't be reached from a page.
    */
   async call({ homey, body }: {
     homey: Homey,
     body: { type?: unknown, method?: unknown, path?: unknown, query?: unknown, body?: unknown },
   }) {
-    const type = String(body?.type ?? '');
-    if (!isStackType(type)) throw new Error(`Not a widget route: ${type} ${body?.method} ${body?.path}`);
-    return callWidgetRoute(homey, PAGE_APIS, type, String(body?.method ?? ''), String(body?.path ?? ''), body?.query, body?.body);
+    return callWidgetRoute(homey, PAGE_APIS, String(body?.type ?? ''), String(body?.method ?? ''), String(body?.path ?? ''), body?.query, body?.body);
   },
 };

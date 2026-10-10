@@ -15,6 +15,8 @@ const USES = {
   variables: ['homey.logic', 'homey'],
   flows: ['homey.flow.start', 'homey.flow', 'homey'],
   dashboards: ['homey.dashboard.readonly', 'homey.dashboard', 'homey'],
+  /** A device's Flow action card (Media's buttons): `runFlowCardAction` needs `homey.flow`. */
+  cards: ['homey.flow', 'homey'],
 } as const;
 
 export type KeyUse = keyof typeof USES;
@@ -32,6 +34,12 @@ export const isMissingScopes = (err: unknown) => /missing scopes/i.test(String((
 /** A key revoked after it was saved: `createLocalAPI` only pings, so it's the write that finds out. */
 export const isUnauthorized = (err: unknown) => (err as any)?.statusCode === 401
   || /invalid (session|token)|unauthori[sz]ed/i.test(String((err as any)?.message ?? err));
+
+/** Whether a key with these scopes may be used for `use`. */
+export const scopesAllow = (scopes: readonly string[], use: KeyUse) => scopes.some(sc => (USES[use] as readonly string[]).includes(sc));
+
+/** How long another key's scopes (`scopesOf()`) are remembered. */
+const SCOPES_TTL_MS = 60e3;
 
 export type SaveResult = { ok: true, variables: boolean, flows: boolean, dashboards: boolean } | { ok: false, reason: KeyProblem };
 
@@ -56,6 +64,8 @@ export default class PersonalApiKey {
 
   /** The API made with the key, rebuilt when the key changes. */
   private cached: { key: string, api: Promise<any> } | null = null;
+  /** Other keys' scopes (`scopesOf()`), by key, for a minute. */
+  private scopes = new Map<string, { at: number, scopes: Promise<string[] | null> }>();
 
   constructor(
     private homey: Homey.App['homey'],
@@ -87,7 +97,7 @@ export default class PersonalApiKey {
       this.log('The API key was not accepted:', String((err as any)?.message ?? err));
       return { ok: false, reason: 'keyInvalid' };
     }
-    const may = (use: KeyUse) => scopes.some(sc => (USES[use] as readonly string[]).includes(sc));
+    const may = (use: KeyUse) => scopesAllow(scopes, use);
     const variables = may('variables');
     const flows = may('flows');
     const dashboards = may('dashboards');
@@ -114,6 +124,24 @@ export default class PersonalApiKey {
       }
       throw err;
     }
+  }
+
+  /**
+   * Another key's scopes (the web dashboards page's own key), or null for a key Homey doesn't accept. Remembered
+   * for a minute, so a page's requests don't each ask Homey.
+   */
+  scopesOf(token: string): Promise<string[] | null> {
+    const now = Date.now();
+    for (const [k, entry] of this.scopes) if (now - entry.at > SCOPES_TTL_MS) this.scopes.delete(k);
+    let entry = this.scopes.get(token);
+    if (!entry) {
+      const scopes = this.create(token)
+        .then(async api => (await api.sessions.getSessionMe())?.scopes ?? [])
+        .catch(() => null);
+      entry = { at: now, scopes };
+      this.scopes.set(token, entry);
+    }
+    return entry.scopes;
   }
 
   private api(): Promise<any> {

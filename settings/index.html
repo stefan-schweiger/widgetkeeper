@@ -88,13 +88,29 @@
         node.placeholder = t(node.dataset.i18nLabel);
       }
 
-      /** Copies text, falling back to a selection where the Homey app's web view doesn't allow the async clipboard. */
+      /**
+       * Copies text, falling back to a selection where the Homey app's web view doesn't allow the async clipboard:
+       * `from` (a text field), else a field of its own for the moment. Answers whether it was copied.
+       */
       async function copyText(text, from) {
         try {
           await navigator.clipboard.writeText(text);
+          return true;
         } catch (e) {
-          if (from) { from.focus(); from.select(); }
-          document.execCommand('copy');
+          const field = from || document.createElement('textarea');
+          if (!from) {
+            field.value = text;
+            field.setAttribute('readonly', '');
+            field.style.position = 'fixed';
+            field.style.opacity = '0';
+            document.body.append(field);
+          }
+          field.focus();
+          field.select();
+          let ok = false;
+          try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+          if (!from) field.remove();
+          return ok;
         }
       }
 
@@ -183,8 +199,16 @@
       });
       $('webCopy').addEventListener('click', async () => {
         if (!webUrl.textContent) return;
-        await copyText(webUrl.href);
-        webStatus.textContent = t('copied');
+        if (await copyText(webUrl.href)) {
+          webStatus.textContent = t('copied');
+        } else {
+          // Not copied: the address selected, to copy by hand.
+          const range = document.createRange();
+          range.selectNodeContents(webUrl);
+          const sel = window.getSelection();
+          if (sel) { sel.removeAllRanges(); sel.addRange(range); }
+          webStatus.textContent = '';
+        }
       });
 
       // ---- Diagnostics ----
@@ -223,8 +247,7 @@
       select.addEventListener('change', load);
       $('refresh').addEventListener('click', load);
       $('copy').addEventListener('click', async () => {
-        await copyText(report.value, report);
-        status.textContent = t('copied');
+        if (await copyText(report.value, report)) status.textContent = t('copied');
       });
       load();
       Homey.ready();

@@ -205,6 +205,16 @@
     let socketGen = 0;
     let retryMs = 2000;
     let lostAt = null;
+    let activeSocket = null;
+
+    /** Closes the socket and stops its retries (a rejected key). */
+    function stopSocket() {
+      socketGen++;
+      socketStarted = false;
+      retryMs = 2000;
+      if (activeSocket) { try { activeSocket.close(); } catch (e) { /* closed */ } }
+      activeSocket = null;
+    }
 
     function ack(socket, event, data) {
       return new Promise((resolve, reject) => {
@@ -233,6 +243,7 @@
       if (typeof window.io !== 'function' || !setup) return;
       const gen = ++socketGen;
       const socket = window.io(location.origin, { transports: ['websocket'], autoConnect: false, reconnection: false, forceNew: true });
+      activeSocket = socket;
       let failed = false;
       const fail = (why) => {
         if (failed || gen !== socketGen) return;
@@ -261,6 +272,7 @@
         socket.on('disconnect', () => fail('disconnected'));
         ns.on('disconnect', () => fail('namespace disconnected'));
         if (failed) return;
+        if (gen !== socketGen) { socket.close(); return; } // stopped meanwhile
         retryMs = 2000;
         setLive(true);
         if (lostAt != null && Date.now() - lostAt > STALE_AFTER_MS) reloadFrames();
@@ -312,6 +324,9 @@
       const def = types.get(w.type);
       switch (msg.event) {
         case 'getInitialData':
+          // A new document in the frame (it reloads when it's moved): the old one's listeners and pending answers go.
+          dropListeners(frame);
+          frame.gen++;
           reply(frame, id, null, {
             settings: clone(w.settings || {}),
             deviceIds: (w.deviceIds || []).slice(),
@@ -336,8 +351,10 @@
           const [path, qs] = String(data.path || '').split('?');
           const query = {};
           new URLSearchParams(qs || '').forEach((v, k) => { query[k] = v; });
-          request('POST', '/web/call', { type: w.type, method: String(data.method || 'GET').toUpperCase(), path, query, body: data.body == null ? {} : data.body })
-            .then(result => reply(frame, id, null, result), err => reply(frame, id, err));
+          // The page's key goes along: a route that acts with the app's stored key checks that this key may too.
+          const gen = frame.gen;
+          request('POST', '/web/call', { type: w.type, method: String(data.method || 'GET').toUpperCase(), path, query, body: data.body == null ? {} : data.body, key })
+            .then(result => { if (frame.gen === gen) reply(frame, id, null, result); }, err => { if (frame.gen === gen) reply(frame, id, err); });
           break;
         }
         case 'registerRealtimeListener': {
@@ -374,14 +391,19 @@
       if (msg && msg.type === 'tx') handle(frame, msg);
     });
 
+    function dropListeners(frame) {
+      for (const { event, fn } of frame.subs.values()) {
+        const set = listeners.get(event);
+        if (set) set.delete(fn);
+      }
+      frame.subs.clear();
+    }
+
     /** Forgets the frames no longer on the page, with their realtime listeners. */
     function sweepFrames() {
       for (const frame of [...frames]) {
         if (frame.iframe.isConnected) continue;
-        for (const { event, fn } of frame.subs.values()) {
-          const set = listeners.get(event);
-          if (set) set.delete(fn);
-        }
+        dropListeners(frame);
         frames.delete(frame);
       }
     }
@@ -400,7 +422,9 @@
     }
 
     function clearRoot() {
+      if (drag) endDrag(false);
       setTitle(null);
+      root.classList.remove('editing');
       root.textContent = '';
       current = null;
       sweepFrames();
@@ -606,13 +630,18 @@
       });
 
       const remove = confirmButton('wd-btn danger', t('deleteDashboard'), async () => {
-        try {
-          await request('DELETE', `/web/dashboards/${encodeURIComponent(d.id)}`);
-          dashboards = dashboards.filter(x => x.id !== d.id);
-          location.hash = '#/';
-        } catch (err) {
-          failed(err);
-        }
+        // After the saves already queued, and no save of it after (a name field's change can fire on the way).
+        deleted.add(d.id);
+        saving = saving.then(async () => {
+          try {
+            await request('DELETE', `/web/dashboards/${encodeURIComponent(d.id)}`);
+            dashboards = dashboards.filter(x => x.id !== d.id);
+            location.hash = '#/';
+          } catch (err) {
+            deleted.delete(d.id);
+            failed(err);
+          }
+        });
       }, t('tapAgain'));
 
       const done = el('a', 'wd-btn primary', t('done'));
@@ -640,6 +669,7 @@
      */
     function syncGrid() {
       if (!current) return;
+      if (drag) endDrag(false); // its widget may be rebuilt
       const { dashboard, grid, widgets, editing } = current;
       grid.style.setProperty('--cols', String(dashboard.columns.length));
       while (grid.children.length < dashboard.columns.length) grid.append(el('section', 'wd-col'));
@@ -699,7 +729,7 @@
       iframe.src = `../widgets/${encodeURIComponent(w.type)}/index.html?widgetInstanceId=${encodeURIComponent(instance)}`;
       wrap.append(iframe);
       node.append(wrap);
-      frames.add({ widget: clone(w), iframe, subs: new Map() });
+      frames.add({ widget: clone(w), iframe, subs: new Map(), gen: 0 });
       return node;
     }
 
@@ -873,14 +903,26 @@
     }
 
     let saving = Promise.resolve();
-    /** Saves the dashboard as it is now (one save at a time, in order). */
+    const deleted = new Set(); // dashboards being deleted, or deleted: never saved again
+    /**
+     * Saves the dashboard as it is now (one save at a time, in order). When nothing changed meanwhile, the editor
+     * takes the app's copy, so a value it corrected (a clamped number, a new widget id) shows and is sent on.
+     */
     function persist() {
       const snapshot = clone(current.dashboard);
       saving = saving.then(async () => {
+        if (deleted.has(snapshot.id)) return;
         try {
           const saved = await request('PUT', '/web/dashboards', snapshot);
+          if (deleted.has(saved.id)) return;
           const i = dashboards.findIndex(d => d.id === saved.id);
           if (i >= 0) dashboards[i] = saved; else dashboards.push(saved);
+          if (current && current.dashboard.id === saved.id
+            && JSON.stringify(current.dashboard) === JSON.stringify(snapshot)
+            && JSON.stringify(saved) !== JSON.stringify(snapshot)) {
+            current.dashboard = clone(saved);
+            syncGrid();
+          }
         } catch (err) {
           failed(err, t('saveFailed'));
         }
@@ -888,9 +930,17 @@
       return saving;
     }
 
+    /** A key Homey no longer accepts: not kept, and the socket that used it stops. */
+    function forgetKey() {
+      key = null;
+      storageSet(KEY_STORAGE, null);
+      stopSocket();
+      setLive(false);
+    }
+
     function failed(err, message) {
       console.error(err);
-      if (err && err.unauthorized) { renderKey(t('keyRejected')); return; }
+      if (err && err.unauthorized) { forgetKey(); renderKey(t('keyRejected')); return; }
       if (err && /turned off/.test(String(err.message))) { start(); return; } // turned off meanwhile
       toast(message || t('loadFailed'));
     }
@@ -1191,8 +1241,7 @@
         route();
       } catch (err) {
         if (err.unauthorized) {
-          key = null;
-          storageSet(KEY_STORAGE, null);
+          forgetKey();
           renderKey(t('keyRejected'));
         } else {
           renderFailed();

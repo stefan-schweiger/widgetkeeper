@@ -1,6 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from './app.js';
-import { callWidgetRoute, type WidgetApis } from './lib/widgetRoutes.js';
+import { scopesAllow } from './lib/PersonalApiKey.js';
+import { callWidgetRoute, routeKeyUse, type WidgetApis } from './lib/widgetRoutes.js';
 import stack, { PAGE_APIS } from './widgets/stack/api.js';
 
 type Homey = App['homey'];
@@ -54,12 +55,13 @@ export default {
     const language = homey.i18n.getLanguage();
     // Turned off: only what the page needs to say so.
     if (!app.web.enabled) return { appId: homey.manifest.id, disabled: true, language, strings: await app.web.appStrings(language) };
+    // The Homey id is for the realtime socket's handshake (`handshakeClient {token, homeyId}`).
+    const [homeyId, strings] = await Promise.all([homey.cloud.getHomeyId(), app.web.appStrings(language)]);
     return {
       appId: homey.manifest.id,
-      // For the realtime socket's handshake (`handshakeClient {token, homeyId}`).
-      homeyId: await homey.cloud.getHomeyId(),
+      homeyId,
       language,
-      strings: await app.web.appStrings(language),
+      strings,
       widgets: app.web.widgetTypes(language),
       dashboards: app.web.list(),
     };
@@ -99,14 +101,25 @@ export default {
   },
 
   /**
-   * `{type, method, path, query, body}`: a web dashboard widget's own request (`Homey.api(method, path, body)` in
-   * its frame), handed to that widget's API as if it came from a Homey dashboard.
+   * `{type, method, path, query, body, key}`: a web dashboard widget's own request (`Homey.api(method, path, body)`
+   * in its frame), handed to that widget's API as if it came from a Homey dashboard. A route that acts with the
+   * app's stored key (a variable, a flow, a speaker's card, a dashboard; `routeKeyUse()`) runs only when the page's
+   * own `key` may do the same, so a weaker key can't borrow the stored one's permissions. Otherwise it answers
+   * `{ok: false, reason}`, as those routes do without a usable key.
    */
   async postWebCall({ homey, body }: {
     homey: Homey,
-    body: { type?: unknown, method?: unknown, path?: unknown, query?: unknown, body?: unknown },
+    body: { type?: unknown, method?: unknown, path?: unknown, query?: unknown, body?: unknown, key?: unknown },
   }) {
-    (homey.app as WidgetkeeperApp).web.assertEnabled();
-    return callWidgetRoute(homey, WEB_APIS, String(body?.type ?? ''), String(body?.method ?? ''), String(body?.path ?? ''), body?.query, body?.body);
+    const app = homey.app as WidgetkeeperApp;
+    app.web.assertEnabled();
+    const [type, method, path] = [String(body?.type ?? ''), String(body?.method ?? ''), String(body?.path ?? '')];
+    const use = routeKeyUse(type, method, path, body?.body);
+    if (use) {
+      const scopes = typeof body?.key === 'string' && body.key ? await app.apiKey.scopesOf(body.key) : null;
+      if (!scopes) return { ok: false, reason: 'keyInvalid' };
+      if (!scopesAllow(scopes, use)) return { ok: false, reason: 'keyScope' };
+    }
+    return callWidgetRoute(homey, WEB_APIS, type, method, path, body?.query, body?.body);
   },
 };
