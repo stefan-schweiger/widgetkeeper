@@ -213,9 +213,6 @@
     "low": "Low",
     "medium": "Medium",
     "high": "High",
-    "nextHour": "Next hour",
-    "lowest12": "Lowest 12h",
-    "lowest24": "Lowest 24h",
     "fixedPrice": "Fixed price",
     "noPrices": "No electricity prices. Set them up in Homey Energy.",
     "error": "Could not load the prices."

@@ -18,25 +18,27 @@
 <body>
   <div class="col"><span>358 px (phone) · dark · high</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
   <div class="col"><span>358 px · light · high</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
-  <div class="col"><span>358 px · dark · low, lowest 24h</span><div class="dash homey-dark-mode" style="width:358px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · dark · low, 24 h</span><div class="dash homey-dark-mode" style="width:358px"><div id="w3"></div></div></div>
   <div class="col"><span>358 px · light · medium</span><div class="dash light" style="width:358px"><div id="w4"></div></div></div>
   <div class="col"><span>300 px · dark</span><div class="dash homey-dark-mode" style="width:300px"><div id="w5"></div></div></div>
-  <div class="col"><span>358 px · dark · no tint</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
-  <div class="col"><span>358 px · dark · now only</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
+  <div class="col"><span>358 px · dark · level colours off</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px · dark · 36 h, tomorrow out</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
   <div class="col"><span>358 px · dark · fixed price</span><div class="dash homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
   <div class="col"><span>358 px · dark · no prices</span><div class="dash homey-dark-mode" style="width:358px"><div id="w9"></div></div></div>
 
-  <div class="col"><span>300 px · dark · 24h, SEK</span><div class="dash homey-dark-mode" style="width:300px"><div id="w10"></div></div></div>
+  <div class="col"><span>300 px · dark · 24 h, SEK</span><div class="dash homey-dark-mode" style="width:300px"><div id="w10"></div></div></div>
   <div class="col"><span>300 px · light · EUR</span><div class="dash light" style="width:324px"><div id="w11"></div></div></div>
+  <div class="col"><span>358 px · dark · 36 h at 09:00 (tomorrow not out)</span><div class="dash homey-dark-mode" style="width:358px"><div id="w12"></div></div></div>
+  <div class="col"><span>300 px · dark · 36 h</span><div class="dash homey-dark-mode" style="width:300px"><div id="w13"></div></div></div>
 
   <script>
     // A made-up Danish spot-price day: cheap at night, peaks at 8 and 18.
     const DAY = [1.30, 1.25, 1.22, 1.20, 1.22, 1.35, 1.75, 2.25, 2.38, 2.05, 1.75, 1.50, 1.30, 1.22, 1.25, 1.40, 1.85, 2.30, 2.58, 2.50, 2.15, 1.80, 1.60, 1.42];
-    /** 49 slots around `hour` today, as `/price` sends them. */
-    function snapshot(hour) {
+    /** 49 slots (61 for 36 hours) around `hour` today, as `/price` sends them. */
+    function snapshot(hour, ahead = 36) {
       const at = new Date(); at.setHours(hour, 20, 0, 0);
       const first = new Date(at); first.setMinutes(0); first.setHours(first.getHours() - 24);
-      const prices = Array.from({ length: 49 }, (_, i) => {
+      const prices = Array.from({ length: 25 + ahead }, (_, i) => {
         const start = first.getTime() + i * 36e5;
         return { start, price: Math.round(DAY[new Date(start).getHours()] * (i > 36 ? 0.9 : 1) * 100) / 100 };
       });
@@ -50,15 +52,18 @@
       return w;
     }
     mount('w1', 18); mount('w2', 18);
-    mount('w3', 2, { nextLow: '24' });
+    mount('w3', 2, { hours: '24' });
     mount('w4', 16);
     mount('w5', 18);
     mount('w6', 18, { tint: false });
-    mount('w7', 18, { showNext: false, nextLow: 'none' });
+    mount('w7', 18, { hours: '36' });
     mount('w8', 18, {}, s => { s.fixedPrice = 2.1; });
-    mount('w10', 18, { nextLow: '24' }, s => { s.currency = 'SEK'; s.prices.forEach(p => { p.price = Math.round(p.price * 1.45 * 100) / 100; }); });
+    mount('w10', 18, { hours: '24' }, s => { s.currency = 'SEK'; s.prices.forEach(p => { p.price = Math.round(p.price * 1.45 * 100) / 100; }); });
     mount('w11', 18, {}, s => { s.currency = 'EUR'; s.prices.forEach(p => { p.price = Math.round(p.price * 13.4) / 100; }); });
     mount('w9', 18, {}, s => { s.prices.forEach(p => { p.price = null; }); });
+    // Tomorrow's prices come out around 13:00: at 09:00 only today's are known.
+    mount('w12', 9, { hours: '36' }, s => { const end = new Date(s.prices[24].start); end.setHours(24, 0, 0, 0); s.prices.forEach(p => { if (p.start >= end.getTime()) p.price = null; }); });
+    mount('w13', 18, { hours: '36' }, s => { const end = new Date(s.prices[24].start); end.setHours(48, 0, 0, 0); s.prices.forEach(p => { if (p.start >= end.getTime()) p.price = null; }); });
   </script>
 </body>
 </html>

@@ -213,9 +213,6 @@
     "low": "낮음",
     "medium": "보통",
     "high": "높음",
-    "nextHour": "다음 시간",
-    "lowest12": "최저가 12h",
-    "lowest24": "최저가 24h",
     "fixedPrice": "고정 요금",
     "noPrices": "전기 요금이 없습니다. Homey 에너지에서 설정하세요.",
     "error": "가격을 불러올 수 없습니다."

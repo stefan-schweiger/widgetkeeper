@@ -1,21 +1,20 @@
 /*
- * Price Badge: the electricity price now, the next hour's and the lowest coming hour, in one compact tile. The
- * tile is tinted by where the price now sits in today's range (low, medium or high).
+ * Price Badge: the electricity price now with its level (where it sits in today's range: low, medium or high), and
+ * the coming 12, 24 or 36 hours as small bars in their level colours, with a dot over the cheapest.
  * Plain browser JS (served as-is).
  */
 (function () {
   'use strict';
 
   const HOUR = 36e5;
+  /** Hours between the axis labels, per window. */
+  const TICK_STEP = { 12: 3, 24: 6, 36: 12 };
 
   const DEFAULT_STRINGS = {
     now: 'Now',
     low: 'Low',
     medium: 'Medium',
     high: 'High',
-    nextHour: 'Next hour',
-    lowest12: 'Lowest 12h',
-    lowest24: 'Lowest 24h',
     fixedPrice: 'Fixed price',
     noPrices: 'No electricity prices. Set them up in Homey Energy.',
     error: 'Could not load the prices.',
@@ -77,8 +76,8 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, locale?: string, showNext?: boolean,
-   *   nextLow?: string, tint?: boolean, now?: () => number, onHeight?: (h: number) => void }} opts
+   * @param {{ t?: (key: string, tokens?: object) => string, locale?: string, hours?: string | number,
+   *   tint?: boolean, now?: () => number, onHeight?: (h: number) => void }} opts
    */
   function createPriceWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -87,8 +86,7 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
     const clock = opts.now || (() => Date.now());
-    const showNext = opts.showNext !== false;
-    const nextLow = ['none', '12', '24'].includes(opts.nextLow) ? opts.nextLow : '12';
+    const hours = [12, 24, 36].includes(Number(opts.hours)) ? Number(opts.hours) : 12;
 
     const nfCache = {};
     const nf = (v, d) => {
@@ -96,9 +94,17 @@
       return nfCache[d].format(v);
     };
     const pad2 = n => String(n).padStart(2, '0');
-    const hhmm = ms => { const d = new Date(ms); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
+    /** The short weekday in Homey's language (the midnight label). */
+    const weekdays = {};
+    const weekday = ms => {
+      const lang = (snapshot && snapshot.language) || 'en';
+      if (!weekdays[lang]) {
+        try { weekdays[lang] = new Intl.DateTimeFormat(lang, { weekday: 'short' }); } catch { weekdays[lang] = new Intl.DateTimeFormat('en', { weekday: 'short' }); }
+      }
+      return weekdays[lang].format(new Date(ms));
+    };
 
-    let snapshot = null; // { prices: [{start, price}], fixedPrice, currency }
+    let snapshot = null; // { prices: [{start, price}], fixedPrice, currency, language }
     let messageText = null;
     let messageTimer = null;
     let hourTimer = null;
@@ -106,14 +112,20 @@
     root.classList.add('pb');
     if (opts.tint === false) root.classList.add('no-tint');
     const tile = el('div', { class: 'pb-tile' }, root);
-    const cells = {};
-    for (const id of ['now', 'next', 'low']) {
-      const cell = el('div', { class: `pb-cell pb-${id}` }, tile);
-      cells[id] = { cell, label: el('div', { class: 'pb-label', dir: 'auto' }, cell), value: el('div', { class: 'pb-value' }, cell) };
-    }
+    const nowCell = el('div', { class: 'pb-now' }, tile);
+    const labelEl = el('div', { class: 'pb-label', dir: 'auto' }, nowCell);
+    const valueEl = el('div', { class: 'pb-value' }, nowCell);
+    const numberEl = el('span', { class: 'pb-number' }, valueEl);
+    const unitEl = el('span', { class: 'pb-unit' }, valueEl);
+    const chart = el('div', { class: 'pb-chart', 'aria-hidden': 'true' }, tile);
+    const barsEl = el('div', { class: 'pb-bars' }, chart);
+    const axisEl = el('div', { class: 'pb-axis' }, chart);
     const messageEl = el('div', { class: 'pb-message', dir: 'auto' }, root);
+    // Kept across renders, like the Electricity Overview's SVG elements.
+    const bars = Array.from({ length: hours }, () => el('div', { class: 'pb-bar' }, barsEl));
+    chart.dataset.hours = String(hours);
 
-    /** `/price`'s answer: `{prices, fixedPrice, currency}`. */
+    /** `/price`'s answer: `{prices, fixedPrice, currency, language}`. */
     function setState(state) {
       snapshot = state && Array.isArray(state.prices) ? state : null;
       messageText = null;
@@ -130,46 +142,75 @@
       render();
     }
 
-    function setCell(id, label, value) {
-      const c = cells[id];
-      c.cell.style.display = value == null ? 'none' : '';
-      c.label.textContent = label || '';
-      c.value.textContent = value || '';
+    /** The prices of the local day holding `ms`, cached in `cache` by its midnight. */
+    function dayPrices(slots, ms, cache) {
+      const d = new Date(ms);
+      d.setHours(0, 0, 0, 0);
+      const from = d.getTime();
+      if (!cache[from]) {
+        const end = new Date(d);
+        end.setDate(end.getDate() + 1);
+        cache[from] = slots.filter(s => s.start >= from && s.start < end.getTime()).map(s => s.price);
+      }
+      return cache[from];
     }
 
-    /** What the tile shows at `now`, or null without a price for the current hour. */
+    /**
+     * What the tile shows at `now`, or null without a price for the current hour: the price now with its level,
+     * and the coming `hours` from the current one as bars. Each bar has its level in its own day, so tomorrow's
+     * cheap hours are green against tomorrow; the heights share one scale, the window's lowest to highest.
+     */
     function model(now) {
       if (!snapshot) return null;
       const slots = snapshot.prices;
       const unit = currencyUnit(snapshot.currency);
       if (typeof snapshot.fixedPrice === 'number') {
-        return { level: null, now: { label: t('fixedPrice'), value: `${nf(snapshot.fixedPrice, 2)} ${unit}` } };
+        return { level: null, label: t('fixedPrice'), value: nf(snapshot.fixedPrice, 2), unit, bars: null };
       }
       const i = slotAt(slots, now);
       const price = i >= 0 ? slots[i].price : null;
       if (typeof price !== 'number') return null;
-      const midnight = new Date(now);
-      midnight.setHours(0, 0, 0, 0);
-      const dayEnd = new Date(midnight);
-      dayEnd.setDate(dayEnd.getDate() + 1);
-      const today = slots.filter(s => s.start >= midnight.getTime() && s.start < dayEnd.getTime()).map(s => s.price);
-      const level = priceLevel(price, today);
-      const m = { level, now: { label: `${t('now')} · ${t(level)}`, value: `${nf(price, 2)} ${unit}` } };
-      const next = slots[i + 1];
-      if (showNext && next && typeof next.price === 'number') {
-        const arrow = next.price > price + 1e-9 ? '↑' : next.price < price - 1e-9 ? '↓' : '→';
-        m.next = { label: t('nextHour'), value: `${arrow} ${nf(next.price, 2)} ${unit}` };
+      const days = {};
+      const level = priceLevel(price, dayPrices(slots, now, days));
+      const first = slots[i].start;
+      const window = Array.from({ length: hours }, (_, k) => {
+        const start = first + k * HOUR;
+        const s = slots[i + k];
+        const p = s && s.start === start && typeof s.price === 'number' ? s.price : null;
+        return { start, price: p, level: p == null ? null : priceLevel(p, dayPrices(slots, start, days)), height: 0, lowest: false };
+      });
+      const known = window.filter(b => b.price != null).map(b => b.price);
+      const min = Math.min(...known);
+      const max = Math.max(...known);
+      const flat = max - min < 1e-9;
+      const low = lowestSlot(slots, i, hours - 1);
+      for (const b of window) {
+        if (b.price != null) b.height = flat ? 0.6 : 0.2 + 0.8 * (b.price - min) / (max - min);
+        b.lowest = !flat && low >= 0 && b.start === slots[low].start;
       }
-      if (nextLow !== 'none') {
-        const low = lowestSlot(slots, i, Number(nextLow));
-        if (low >= 0) {
-          m.low = {
-            label: t(nextLow === '24' ? 'lowest24' : 'lowest12'),
-            value: `${low === i ? t('now') : hhmm(slots[low].start)} · ${nf(slots[low].price, 2)} ${unit}`,
-          };
-        }
+      // Labels on the step's local hours, clear of "Now" and the right edge; midnight shows the weekday.
+      const step = TICK_STEP[hours];
+      const ticks = [];
+      window.forEach((b, k) => {
+        const h = new Date(b.start).getHours();
+        if (h % step || k < hours * 0.18 || k > hours * 0.92) return;
+        ticks.push({ at: k / hours, text: h === 0 ? weekday(b.start) : pad2(h) });
+      });
+      return { level, label: t(level), value: nf(price, 2), unit, bars: window, ticks };
+    }
+
+    function renderBars(m) {
+      bars.forEach((bar, k) => {
+        const b = m.bars[k];
+        bar.className = `pb-bar${k === 0 ? ' now' : ''}${b.price == null ? ' none' : ''}${b.lowest ? ' lowest' : ''}`;
+        if (b.level) bar.dataset.level = b.level; else delete bar.dataset.level;
+        bar.style.height = b.price == null ? '' : `${Math.round(b.height * 100)}%`;
+      });
+      axisEl.textContent = '';
+      el('span', { class: 'pb-tick pb-tick-now', text: t('now'), dir: 'auto' }, axisEl);
+      for (const tick of m.ticks) {
+        el('span', { class: 'pb-tick', text: tick.text, style: `left:${(tick.at * 100).toFixed(2)}%` }, axisEl);
       }
-      return m;
     }
 
     let lastHeight = 0;
@@ -178,11 +219,12 @@
       const m = model(now);
       tile.style.display = m ? '' : 'none';
       if (m) {
-        tile.dataset.level = m.level || '';
-        if (!m.level) delete tile.dataset.level;
-        setCell('now', m.now.label, m.now.value);
-        setCell('next', m.next && m.next.label, m.next && m.next.value);
-        setCell('low', m.low && m.low.label, m.low && m.low.value);
+        if (m.level) tile.dataset.level = m.level; else delete tile.dataset.level;
+        labelEl.textContent = m.label;
+        numberEl.textContent = m.value;
+        unitEl.textContent = m.unit;
+        chart.style.display = m.bars ? '' : 'none';
+        if (m.bars) renderBars(m);
       }
       const text = messageText || (snapshot && !m ? t('noPrices') : null);
       messageEl.textContent = text || '';

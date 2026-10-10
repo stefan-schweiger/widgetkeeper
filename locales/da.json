@@ -213,9 +213,6 @@
     "low": "Lav",
     "medium": "Middel",
     "high": "Høj",
-    "nextHour": "Næste time",
-    "lowest12": "Lavest 12 t",
-    "lowest24": "Lavest 24 t",
     "fixedPrice": "Fast pris",
     "noPrices": "Ingen elpriser. Sæt dem op i Homey Energi.",
     "error": "Kunne ikke indlæse priserne."

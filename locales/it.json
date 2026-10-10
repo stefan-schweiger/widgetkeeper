@@ -213,9 +213,6 @@
     "low": "Basso",
     "medium": "Medio",
     "high": "Alto",
-    "nextHour": "Ora successiva",
-    "lowest12": "Min. 12h",
-    "lowest24": "Min. 24h",
     "fixedPrice": "Prezzo fisso",
     "noPrices": "Nessun prezzo dell'elettricità. Impostali in Homey Energia.",
     "error": "Impossibile caricare i prezzi."

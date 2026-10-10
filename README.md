@@ -58,7 +58,7 @@ Start flows with one tap: a round button in the colour and icon you pick, with t
 
 <p><a href="#price-badge"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/price-dark.png"><img src="docs/previews/price-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#price-badge"><b>Price Badge</b></a><br>
-The electricity price now, the next hour's and the cheapest hour ahead in one compact tile<br clear="left"></p>
+The electricity price now and the coming hours as small bars, green, yellow or red<br clear="left"></p>
 
 <p><a href="#timers"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/timers-dark.png"><img src="docs/previews/timers-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#timers"><b>Timers</b></a><br>
@@ -176,9 +176,9 @@ Flows and Advanced Flows as rows with a round button in your colour and icon. Ta
 ## Price Badge
 <img src="docs/screenshots/price.png" alt="Price Badge on a Homey dashboard" width="358">
 
-The electricity price now, the next hour's and the cheapest hour ahead in one tile, green, yellow or red by today's price level. Uses the Electricity Overview's prices and needs no meter.
+The electricity price now, and the coming 12, 24 or 36 hours as small bars in one tile: green, yellow or red by each hour's level in its day, with a dot over the cheapest. Uses the Electricity Overview's prices and needs no meter.
 
-**Settings:** next hour, lowest in 12 h or 24 h, colour by level, tariffs and taxes.
+**Settings:** hours ahead, colour by level, tariffs and taxes.
 
 ## Timers
 <img src="docs/screenshots/timers.png" alt="Timers on a Homey dashboard" width="358">

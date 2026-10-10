@@ -16,6 +16,7 @@ const USAGE_STEP = 5 * MINUTE;
 const USAGE_TTL = 5 * MINUTE;
 const PRICE_PAST_HOURS = 24;
 const PRICE_FUTURE_HOURS = 24; // the chart shows 12; the lowest-price footer can look 24 ahead
+const PRICE_FUTURE_HOURS_MAX = 36; // the Price Badge's longest window
 const IDLE_TIMEOUT = 10 * MINUTE;
 const POWER_LOGS = ['measure_power', 'energy_power']; // in order of preference
 const PRICE_TYPE_TTL = 5 * MINUTE; // a change in Homey's Energy settings shows within this
@@ -28,7 +29,7 @@ export type Snapshot = {
   meterError: string | null, // why the selected meter could not be read
   priceError: string | null, // why the current hour's price could not be read (null when it's simply not set up)
   live: Sample[], // raw readings for the last hour, oldest first (the widget resamples)
-  prices: ({ start: number, price: number | null })[], // 49 hourly slots, index 24 = current hour
+  prices: ({ start: number, price: number | null })[], // 49 hourly slots (61 with `futureHours: 36`), index 24 = current hour
   fixedPrice: number | null, // Homey's fixed price per kWh, when Energy is set to a fixed price (every slot has it)
   usage: Sample[], // 5-min averages from the first price slot up to now
   currency: string | null,
@@ -94,8 +95,12 @@ export default class ElectricityService {
   }
 
 
-  /** `costs: false` gives the bare spot prices, without Homey Energy's costs (the widgets' `priceCosts` setting). */
-  async getSnapshot(deviceId: string | null, { costs = true }: { costs?: boolean } = {}): Promise<Snapshot> {
+  /**
+   * `costs: false` gives the bare spot prices, without Homey Energy's costs (the widgets' `priceCosts` setting).
+   * `futureHours` (24 by default, at most 36) is how many slots follow the current one.
+   */
+  async getSnapshot(deviceId: string | null, { costs = true, futureHours = PRICE_FUTURE_HOURS }:
+    { costs?: boolean, futureHours?: number } = {}): Promise<Snapshot> {
     const now = Date.now();
     const hourStart = floorTo(now, HOUR);
     const firstSlot = hourStart - PRICE_PAST_HOURS * HOUR;
@@ -117,7 +122,7 @@ export default class ElectricityService {
         fixedPrice = settings.fixed;
         return this.getPriceSlots(firstSlot, tm, settings, (day, err) => {
           if (day === this.localDate(hourStart)) priceError = message(err);
-        });
+        }, Math.min(PRICE_FUTURE_HOURS_MAX, Math.max(PRICE_FUTURE_HOURS, Math.round(futureHours) || 0)));
       }).catch(err => { this.log('Price error', err); priceError = message(err); return []; }),
     ]);
 
@@ -348,8 +353,8 @@ export default class ElectricityService {
   }
 
   private async getPriceSlots(firstSlot: number, tm: Timings, settings: PriceSettings,
-    onDayError?: (day: string, err: unknown) => void): Promise<Snapshot['prices']> {
-    const count = PRICE_PAST_HOURS + 1 + PRICE_FUTURE_HOURS;
+    onDayError?: (day: string, err: unknown) => void, futureHours = PRICE_FUTURE_HOURS): Promise<Snapshot['prices']> {
+    const count = PRICE_PAST_HOURS + 1 + futureHours;
     const fixedPrice = settings.fixed;
     if (fixedPrice != null) {
       if (this.currency == null) await tm.time('currency', () => this.loadCurrency());
@@ -359,10 +364,13 @@ export default class ElectricityService {
     const days = new Set<string>();
     for (let t = firstSlot; t <= lastSlot; t += HOUR) days.add(this.localDate(t));
 
-    // A day that fails (e.g. tomorrow before publication) leaves its slots empty, not the others.
+    // A day that fails (e.g. tomorrow before publication) leaves its slots empty, not the others. The day after
+    // tomorrow (a 36-hour window) is rarely out, so its failure is only debug.
+    const tomorrow = this.localDate(floorTo(Date.now(), HOUR) + 24 * HOUR);
     const [dayHours] = await Promise.all([
       Promise.all([...days].map(day => tm.time(day, () => this.getPriceDay(day)).catch(err => {
-        this.log(`Price error for ${day}`, err);
+        if (day > tomorrow) this.debug(`No prices yet for ${day}`, err);
+        else this.log(`Price error for ${day}`, err);
         onDayError?.(day, err);
         return null;
       }))),

@@ -11,11 +11,14 @@
   --pb-green: var(--homey-color-green, #71D51B);
   --pb-yellow: #F5C518;
   --pb-red: var(--homey-color-red, #F25F5C);
-  --pb-tint-mix: 22%; /* Device Values' Flow colour tint */
+  --pb-blue: var(--homey-color-blue, #2F8DF6); /* the bars with the level colours off */
+  --pb-track: color-mix(in srgb, var(--pb-muted) 30%, var(--pb-tile)); /* an hour without a price */
   /* Homey's type scale: only these size/line-height pairs are used natively. */
   --pb-fs-small: var(--homey-font-size-small, 14px); --pb-lh-small: var(--homey-line-height-small, 20px);
-  --pb-fs-default: var(--homey-font-size-default, 17px); --pb-lh-default: var(--homey-line-height-default, 24px);
+  --pb-fs-large: var(--homey-font-size-large, 20px); --pb-lh-large: var(--homey-line-height-large, 28px);
+  --pb-fs-xlarge: var(--homey-font-size-xlarge, 24px); --pb-lh-xlarge: var(--homey-line-height-xlarge, 32px);
   --pb-fs-label: 12px; --pb-lh-label: 16px; /* the Electricity Overview's labels: a step below Homey's scale */
+  --pb-medium: var(--homey-font-weight-medium, 500);
   --pb-bold: var(--homey-font-weight-bold, 700);
   --pb-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
 }
@@ -34,53 +37,70 @@ html, body { background: transparent !important; }
 /* Text is dir="auto" so RTL labels get their punctuation right; the layout itself stays LTR. */
 .pb [dir="auto"] { text-align: left; }
 
-/* One compact tile (60 px): up to three cells, each a label over a value. */
+/* One compact tile (68 px): the price now (its level over the price) on the left, the coming hours as bars. */
 .pb-tile {
-  position: relative; display: flex; gap: var(--homey-su-3, 12px); min-width: 0;
-  background: var(--pb-tile); border-radius: var(--pb-radius); padding: 10px 12px;
-  user-select: none; -webkit-user-select: none; transition: background-color .15s;
+  position: relative; display: flex; align-items: stretch; gap: 14px; min-width: 0;
+  background: var(--pb-tile); border-radius: var(--pb-radius); padding: var(--homey-su-2, 8px) var(--homey-su-3, 12px);
+  user-select: none; -webkit-user-select: none;
 }
 /* The native tiles' 1px rim, brightest along the top. */
 .homey-dark-mode .pb-tile::after, .pb.homey-dark-mode .pb-tile::after {
   content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
 }
-/* The price now: tinted by its level in today's range, like a Device Values tile coloured by a Flow. */
-.pb-tile[data-level="low"] { --pb-level: var(--pb-green); }
-.pb-tile[data-level="medium"] { --pb-level: var(--pb-yellow); }
-.pb-tile[data-level="high"] { --pb-level: var(--pb-red); }
-.pb-tile[data-level] { background: color-mix(in srgb, var(--pb-level) var(--pb-tint-mix), var(--pb-tile)); }
-.pb.no-tint .pb-tile[data-level] { background: var(--pb-tile); }
+.pb [data-level="low"] { --pb-level: var(--pb-green); }
+.pb [data-level="medium"] { --pb-level: var(--pb-yellow); }
+.pb [data-level="high"] { --pb-level: var(--pb-red); }
+/* Without the level colours (the tint setting off) every bar is Homey's blue. */
+.pb.no-tint [data-level] { --pb-level: var(--pb-blue); }
 
-/* Sized by their content, then the spare room shared out. The lowest (`03:00 · 1.20 kr.`) is the widest value,
-   so it never shrinks and its label doesn't size it (width 0 with a 100 % minimum); the other two give way,
-   cutting a long label (Russian's `Следующий час`) before their price. */
-.pb-cell { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
-.pb-low { flex-shrink: 0; max-width: 100%; }
-.pb-low .pb-label { width: 0; min-width: 100%; }
+.pb-now { flex: 0 0 auto; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+/* The level word, with a lightning bolt so the tile reads as electricity without a title. Both in the level's
+   colour, mixed with the text colour so yellow still reads on a light tile; muted without a level (a fixed price)
+   and with the level colours off. Device Values' bolt, filled. */
 .pb-label {
-  display: flex; align-items: center; gap: 6px;
-  font-size: var(--pb-fs-label); line-height: var(--pb-lh-label); color: var(--pb-muted);
+  display: flex; align-items: center; gap: 4px;
+  font-size: var(--pb-fs-label); line-height: var(--pb-lh-label); font-weight: var(--pb-medium); color: var(--pb-muted);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-/* A lightning bolt before "Now · High", so the tile reads as electricity at a glance (no room for a title in
-   60 px). It takes the level's colour: the only level cue when the tint is off. Mixed with the text colour, so
-   yellow still reads on a light tile; muted without a level (a fixed price). Device Values' bolt, filled. */
-.pb-now .pb-label::before {
-  content: ''; flex: 0 0 auto; width: 10px; height: 13px; margin-right: -2px; background: var(--pb-muted);
+.pb-label::before {
+  content: ''; flex: 0 0 auto; width: 10px; height: 13px; background: currentColor;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='3.4 1.4 16.2 21.2'%3E%3Cpath d='M13 2 4 14h7l-1 8 9-12h-7z' stroke='%23000' stroke-width='1.2' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='3.4 1.4 16.2 21.2'%3E%3Cpath d='M13 2 4 14h7l-1 8 9-12h-7z' stroke='%23000' stroke-width='1.2' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
 }
-.pb-tile[data-level] .pb-now .pb-label::before { background: color-mix(in srgb, var(--pb-level) 85%, var(--pb-text)); }
+.pb-tile[data-level] .pb-label { color: color-mix(in srgb, var(--pb-level) 80%, var(--pb-text)); }
+.pb.no-tint .pb-tile[data-level] .pb-label { color: var(--pb-muted); }
+/* 24 bold, Homey's xlarge value size; the unit 14 medium and muted. */
 .pb-value {
-  /* 17 bold, Homey's own value size. */
-  font-size: var(--pb-fs-default); line-height: var(--pb-lh-default); font-weight: var(--pb-bold);
-  font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: var(--pb-fs-xlarge); line-height: var(--pb-lh-xlarge); font-weight: var(--pb-bold);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
 }
-/* Three values don't fit at 17 on a narrow widget (300 px): 14/20, Homey's small size. */
+.pb-unit { font-size: var(--pb-fs-small); font-weight: var(--pb-medium); color: var(--pb-muted); margin-left: 3px; }
+
+/* The bars: one per hour from the current one, as tall as their price in the window's range (20–100 %). */
+.pb-chart { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; }
+.pb-bars { height: 34px; display: flex; align-items: flex-end; gap: 2px; padding-top: 6px; }
+.pb-chart[data-hours="24"] .pb-bars, .pb-chart[data-hours="36"] .pb-bars { gap: 1px; }
+.pb-bar {
+  position: relative; flex: 1 1 0; min-width: 0; border-radius: 2px 2px 1px 1px;
+  background: color-mix(in srgb, var(--pb-level, var(--pb-muted)) 50%, var(--pb-tile));
+}
+.pb-bar.now { background: var(--pb-level, var(--pb-text)); }
+/* An hour without a price yet (tomorrow before publication): a stub on the baseline. */
+.pb-bar.none { height: 2px; background: var(--pb-track); }
+/* A dot over the cheapest hour. */
+.pb-bar.lowest::after {
+  content: ''; position: absolute; left: 50%; top: -6px; width: 4px; height: 4px; margin-left: -2px;
+  border-radius: 50%; background: var(--pb-text);
+}
+.pb-axis { position: relative; height: var(--pb-lh-label); margin-top: 2px; font-size: var(--pb-fs-label); line-height: var(--pb-lh-label); color: var(--pb-muted); white-space: nowrap; }
+.pb-tick { position: absolute; top: 0; transform: translateX(-50%); }
+.pb-tick-now { left: 0; transform: none; }
+
+/* A narrow widget (300 px): the price at 20/28. */
 @container pb (max-width: 339px) {
-  .pb-value { font-size: var(--pb-fs-small); line-height: var(--pb-lh-small); }
-  .pb-tile { padding: 12px 10px; gap: var(--homey-su-2, 8px); }
+  .pb-value { font-size: var(--pb-fs-large); line-height: var(--pb-lh-large); }
+  .pb-tile { gap: var(--homey-su-3, 12px); padding-inline: 10px; }
 }
 
 .pb-message { font-size: var(--pb-fs-small); line-height: var(--pb-lh-small); color: var(--pb-muted); }

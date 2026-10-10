@@ -213,9 +213,6 @@
     "low": "Niedrig",
     "medium": "Mittel",
     "high": "Hoch",
-    "nextHour": "Nächste Stunde",
-    "lowest12": "Tiefst 12h",
-    "lowest24": "Tiefst 24h",
     "fixedPrice": "Festpreis",
     "noPrices": "Keine Strompreise. Richte sie in Homey Energie ein.",
     "error": "Die Preise konnten nicht geladen werden."

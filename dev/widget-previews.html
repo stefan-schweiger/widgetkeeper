@@ -442,19 +442,22 @@ function flowButtons(t, theme) {
   </div>`;
 }
 
-// Price Badge: one tile tinted by the price level, with three cells (a label over a value); the first has the level dot.
+// Price Badge: one tile with the price now (the red level dot and label over the value) and the coming hours as bars
+// in their level colours, the current one full strength and a dot over the cheapest.
 function priceBadge(t, theme) {
-  const RED = '#F25F5C';
+  const RED = '#F25F5C', YELLOW = '#F5C518';
   const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
-  const bg = `color-mix(in srgb, ${RED} 22%, ${tileBg})`;
   const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
-  const label = theme === 'dark' ? 'rgba(237,238,240,.45)' : 'rgba(31,32,41,.4)';
-  const cell = ([lw, vw, dot]) => `<div style="flex:1;display:flex;flex-direction:column;gap:18px">
-      <div style="display:flex;align-items:center;gap:14px">${dot ? `<div style="width:22px;height:22px;border-radius:50%;background:${RED}"></div>` : ''}${pill(lw, 22, label)}</div>
-      ${pill(vw, 40, t.fg)}
-    </div>`;
-  return `<div style="width:880px;height:168px;border-radius:32px;background:${bg};box-shadow:${shadow};padding:0 40px;box-sizing:border-box;display:flex;align-items:center;gap:40px">
-    ${[[120, 200, true], [90, 150], [150, 220]].map(cell).join('')}
+  const mix = c => `color-mix(in srgb, ${c} 50%, ${tileBg})`;
+  const DAY = [2.58, 2.50, 2.15, 1.80, 1.60, 1.42, 1.30, 1.25, 1.22, 1.20, 1.22, 1.35];
+  const lv = p => (p > 2.12 ? RED : p > 1.66 ? YELLOW : t.green);
+  const bars = DAY.map((p, i) => `<div style="flex:1;height:${Math.round(20 + 80 * (p - 1.2) / 1.38)}%;border-radius:6px 6px 3px 3px;background:${i ? mix(lv(p)) : lv(p)};position:relative">${i === 9 ? `<div style="position:absolute;left:50%;top:-22px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:${t.fg}"></div>` : ''}</div>`).join('');
+  return `<div style="width:880px;height:200px;border-radius:32px;background:${tileBg};box-shadow:${shadow};padding:0 40px;box-sizing:border-box;display:flex;align-items:center;gap:44px">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div style="display:flex;align-items:center;gap:14px"><div style="width:22px;height:22px;border-radius:50%;background:${RED}"></div>${pill(90, 22, RED)}</div>
+      ${pill(190, 48, t.fg)}
+    </div>
+    <div style="flex:1;height:120px;display:flex;align-items:flex-end;gap:7px">${bars}</div>
   </div>`;
 }
 

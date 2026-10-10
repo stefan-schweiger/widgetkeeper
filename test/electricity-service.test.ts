@@ -60,6 +60,26 @@ describe('price slots', () => {
     expect(language).toBe('en');
   });
 
+  it('looks up to 36 hours ahead with futureHours, the day after tomorrow quietly empty', async () => {
+    vi.setSystemTime(new Date('2026-01-15T18:20:00').getTime());
+    const log = vi.fn();
+    const { api, homey } = setup({
+      prices: ({ date }) => { if (date === '2026-01-17') throw new Error('Not published yet'); return dayPrices(date); },
+    });
+    const service = new ElectricityService(homey, log);
+    const { prices, priceError } = await service.getSnapshot(null, { futureHours: 36 });
+    expect(prices).toHaveLength(61);
+    expect(prices[60].start).toBe(new Date('2026-01-17T06:00:00').getTime());
+    expect(prices[53].price).toBe(2.3); // 23:00 tomorrow
+    expect(prices.slice(54).every(p => p.price == null)).toBe(true);
+    expect(priceError).toBeNull();
+    expect(fetchesFor(api, '2026-01-17')).toBe(1);
+    expect(log.mock.calls.some(([msg]) => String(msg).includes('2026-01-17'))).toBe(false);
+    // Capped at 36, and never below the Electricity Overview's 24.
+    expect((await service.getSnapshot(null, { futureHours: 99 })).prices).toHaveLength(61);
+    expect((await service.getSnapshot(null, { futureHours: 6 })).prices).toHaveLength(49);
+  });
+
   it('leaves only the slots of a day that failed empty', async () => {
     const { service } = setup({
       prices: ({ date }) => {

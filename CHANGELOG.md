@@ -12,6 +12,10 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - The dots can sit below or above the widget, small or large.
 - Needs a Homey API key in the app settings that may read dashboards.
 
+### Price Badge
+- A new look: the price now with its level, and the coming hours as small bars in their colours, with a dot over the cheapest. New setting, *Hours ahead*: 12, 24 or 36. Hours without a price yet stay empty.
+- The *Show the next hour* and *Lowest price* settings are gone: the bars show both.
+
 ### Electricity prices
 - Electricity Overview and Price Badge: dynamic prices now include the tariffs and taxes set up in Homey Energy, so they match Homey's own Energy tab. New setting, *Include tariffs and taxes* (on by default); turn it off to see the spot price.
 

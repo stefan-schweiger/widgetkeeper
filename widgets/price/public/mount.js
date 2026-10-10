@@ -26,8 +26,7 @@ window.mountPriceWidget = function (Homey, { root, frame }) {
 
   const widget = window.createPriceWidget(root, {
     t: (key, tokens) => Homey.__(key, tokens),
-    showNext: settings.showNext !== false,
-    nextLow: settings.nextLow,
+    hours: settings.hours,
     tint: settings.tint !== false,
     onHeight: () => {
       if (!readySent) return;
@@ -53,7 +52,7 @@ window.mountPriceWidget = function (Homey, { root, frame }) {
 
   async function load() {
     try {
-      widget.setState(await Homey.api('GET', `/price?${[settings.priceCosts === false ? 'costs=0' : '', perfParam().slice(1)].filter(Boolean).join('&')}`));
+      widget.setState(await Homey.api('GET', `/price?${[settings.priceCosts === false ? 'costs=0' : '', Number(settings.hours) > 24 ? 'hours=36' : '', perfParam().slice(1)].filter(Boolean).join('&')}`));
       loaded = true;
     } catch (err) {
       console.error(err);

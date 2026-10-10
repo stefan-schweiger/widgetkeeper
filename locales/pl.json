@@ -213,9 +213,6 @@
     "low": "Niska",
     "medium": "Średnia",
     "high": "Wysoka",
-    "nextHour": "Następna godzina",
-    "lowest12": "Min. 12 h",
-    "lowest24": "Min. 24 h",
     "fixedPrice": "Stała cena",
     "noPrices": "Brak cen prądu. Ustaw je w Homey Energia.",
     "error": "Nie udało się wczytać cen."

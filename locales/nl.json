@@ -213,9 +213,6 @@
     "low": "Laag",
     "medium": "Gemiddeld",
     "high": "Hoog",
-    "nextHour": "Volgend uur",
-    "lowest12": "Laagst 12u",
-    "lowest24": "Laagst 24u",
     "fixedPrice": "Vaste prijs",
     "noPrices": "Geen elektriciteitsprijzen. Stel ze in bij Homey Energie.",
     "error": "Kan de prijzen niet laden."
