@@ -9,7 +9,7 @@
     showcase-data.js, in Homey's dark mode at a phone's widget width (358 px), like the screenshots. `?c=<clip>` shows
     one; scripts/render-clips.mjs then drives it with real touch events (Edge's DevTools protocol) and records it.
     Each clip's widgets answer like a device would (a light reports its new brightness after a moment).
-    A drawn finger shows every touch, and the caption over the widget says what happens.
+    A drawn finger shows every touch, and a callout over the widget (an icon and a line of text) says what happens.
     `window.clipReady` resolves once the clip is drawn; `window.clip` has the clip's own controls (the render script's
     `run` steps call them, e.g. a camera seeing someone).
   -->
@@ -50,9 +50,26 @@
     html, body { background: transparent !important; }
     body { width: 358px; margin: 0; font-family: Roboto, sans-serif; }
     .clip[hidden] { display: none; }
-    /* What happens, over the widget: grey that reads on GitHub's light and dark pages alike. */
-    .caption { height: 36px; display: flex; align-items: center; font-size: 14px; line-height: 20px; color: #8B949E; transition: opacity .25s; }
-    .caption.fading { opacity: 0; }
+    /*
+     * What happens, over the widget: a dark pill (Homey's dark tile, with its rim) with a blue icon and white text,
+     * which reads on GitHub's light and dark pages alike. A new one slides up as the old one fades.
+     */
+    .callout-area { height: 52px; display: flex; align-items: flex-start; justify-content: center; }
+    .callout {
+      display: inline-flex; align-items: center; gap: 10px; height: 36px; padding: 0 16px 0 6px; border-radius: 18px;
+      background: #2B2C36; box-shadow: inset 0 1px 0 rgb(255 255 255 / .06), inset 0 0 0 1px rgb(255 255 255 / .04), 0 4px 14px rgb(0 0 0 / .25);
+      color: #EDEEF0; font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap;
+      transition: opacity .25s ease, transform .25s ease;
+    }
+    .callout.out { opacity: 0; transform: translateY(-6px); }
+    .callout:empty { display: none; }
+    .callout-icon { width: 24px; height: 24px; border-radius: 50%; background: #2F8DF6; display: flex; align-items: center; justify-content: center; flex: none; }
+    .callout-icon svg { width: 14px; height: 14px; fill: none; stroke: #FFFFFF; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    /*
+     * Homey's dark dashboard behind a widget whose parts sit right on it (the stack's dots), so they read on GitHub's
+     * light page too. 12 px around the widget, which keeps its 358 px (the page is 24 px wider).
+     */
+    .backdrop { background: #111217; border-radius: 20px; padding: 12px; }
     /* A non-transparent widget's frame, as in the screenshots. */
     .card { background: #181920; border-radius: 20px; padding: 16px; box-sizing: border-box; }
     /* The finger: where a touch is, pressed while it's down. */
@@ -65,9 +82,10 @@
   </style>
 </head>
 <body>
-  <div class="caption" id="caption"></div>
+  <div class="callout-area"><div class="callout" id="callout"></div></div>
   <section class="clip" id="lights"><div id="w-lights"></div></section>
   <section class="clip" id="stack"><div id="w-stack"></div></section>
+  <section class="clip" id="media"><div class="card mw-frame"><div id="w-media"></div></div></section>
   <div class="finger" id="finger"></div>
 
   <script>
@@ -85,11 +103,31 @@
       addEventListener('touchmove', at, { capture: true, passive: true });
       addEventListener('touchend', () => finger.classList.remove('down'), { capture: true, passive: true });
 
-      // The caption crossfades to a new text.
-      const caption = el('caption');
-      function say(text) {
-        caption.classList.add('fading');
-        setTimeout(() => { caption.textContent = text; caption.classList.remove('fading'); }, 250);
+      // The callout's icons: 24 px grid, drawn in white on the blue circle.
+      const ICONS = {
+        rotate: '<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/>',
+        swipe: '<path d="M19 12H5"/><path d="M10 7l-5 5 5 5"/>',
+        tap: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/>',
+        drag: '<path d="M4 12h16"/><circle cx="9" cy="12" r="3"/>',
+        colour: '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="#FFFFFF"/>',
+        bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21h4"/>',
+        volume: '<path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a7.5 7.5 0 0 1 0 11"/>',
+        next: '<path d="M6 6l8 6-8 6z"/><path d="M18 6v12"/>',
+        mute: '<path d="M4 10v4h4l5 4V6L8 10z"/><path d="M17 10l4 4M21 10l-4 4"/>',
+        more: '<circle cx="6" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="18" cy="12" r="1"/>',
+        speaker: '<rect x="6" y="3" width="12" height="18" rx="2"/><circle cx="12" cy="14" r="3"/><path d="M12 7h0"/>',
+      };
+      // The callout: the old one fades up, the new one slides down into place.
+      const callout = el('callout');
+      function say(text, icon) {
+        callout.classList.add('out');
+        setTimeout(() => {
+          callout.innerHTML = `${icon ? `<span class="callout-icon"><svg viewBox="0 0 24 24">${ICONS[icon] || ''}</svg></span>` : ''}<span></span>`;
+          callout.lastChild.textContent = text;
+          callout.style.paddingLeft = icon ? '' : '16px';
+          void callout.offsetWidth;
+          callout.classList.remove('out');
+        }, 250);
       }
 
       const CLIPS = {
@@ -109,6 +147,17 @@
           return {};
         },
 
+        // Media: Solbakken's living room speaker (dev/mock-media.js answers like a speaker), with the TV and line-in
+        // buttons behind ⋯ and the other speakers to switch to.
+        media() {
+          mountMockMedia(el('w-media'), mockSpeaker('Living room', 0), {
+            canSwitch: true,
+            buttons: [{ id: 'card:tv', name: 'TV', icon: 'tv' }, { id: 'card:line', name: 'Line-in', icon: 'plug' }, { id: 'flow:f1', name: 'Movie night', icon: 'star' }],
+          });
+          // The speaker list grows the card while it's open: the render script records tall and crops (`grow`).
+          return { grow: true };
+        },
+
         // Smart Stack: four of Solbakken's widgets, turning every 3 s here (30 s by default); then a swipe, and someone
         // at the door brings the cameras forward.
         stack() {
@@ -118,7 +167,7 @@
             { id: 'p-media', type: 'media', title: null, settings: {}, deviceIds: [] },
             { id: 'p-cams', type: 'cameras', title: null, settings: {}, deviceIds: [] },
           ];
-          const w = createStackWidget(el('w-stack'), { intervalMs: 3000, resumeAfterMs: 3500 });
+          const w = createStackWidget(el('w-stack'), { intervalMs: 3000, resumeAfterMs: 3500, dotsPosition: 'above', dotsSize: 'large' });
           const slides = w.setPages(PAGES);
           const values = find('values', 2) || find('values');
           createValuesWidget(slides[0].root, values.opts || {}).setState(values.slots);
@@ -132,8 +181,14 @@
           // Its height follows the page; the clip is as tall as the tallest, so nothing below it jumps in the video.
           let tallest = 0;
           for (const s of slides) tallest = Math.max(tallest, Math.ceil(s.frame.getBoundingClientRect().height));
+          const dots = Math.ceil(el('w-stack').querySelector('.sk-dots').getBoundingClientRect().height);
+          el('stack').style.minHeight = `${tallest + dots + 24}px`; // the clip's frame stays the same size
+          el('stack').classList.add('backdrop');
+          document.body.style.width = '382px';
+          el('stack').style.boxSizing = 'border-box';
           return {
-            minHeight: tallest + 20,
+            minHeight: tallest + dots + 24,
+            width: 382,
             doorbell: () => w.setAttention('p-cams', true),
           };
         },
@@ -142,7 +197,7 @@
       window.clip = Object.assign({ say }, CLIPS[only]());
       window.clipReady = document.fonts.ready
         .then(() => new Promise(r => setTimeout(r, 600))) // the camera snapshots and icons decode
-        .then(() => Math.max(Math.ceil(document.body.getBoundingClientRect().height), 36 + (window.clip.minHeight || 0)));
+        .then(() => Math.max(Math.ceil(document.body.getBoundingClientRect().height), (window.clip.minHeight || 0) + 52)); // + the callout
     })();
   </script>
 </body>

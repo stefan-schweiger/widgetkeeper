@@ -14,6 +14,8 @@ const EDGE = process.env.EDGE || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Appl
 const page = pathToFileURL(resolve('dev/clips.html')).href;
 const WIDTH = 358;
 const SCALE = 2;
+/** A clip that grows (`window.clip.grow`) is recorded this tall, then cropped to the tallest content of any frame. */
+const GROW_HEIGHT = 900;
 /** The longest a frame is held in the WebP; a capture that took longer is still one frame. */
 const MAX_FRAME_MS = 200;
 
@@ -21,21 +23,22 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 /**
  * Each clip: what the finger does, step by step. `tap`/`drag` take a CSS selector and the match's index (`i`), and
- * points as fractions of its box (`x`, `y`, default the middle). `say` sets the caption; `run` calls a page control.
+ * points as fractions of its box (`x`, `y`, default the middle). `say` sets the callout under the widget (with an
+ * `icon`: rotate, swipe, tap, drag, colour, bell, volume, next, mute, more or speaker); `run` calls a page control.
  */
 const CLIPS = {
   lights: [
-    { say: 'Tap a light to turn it on or off' },
+    { say: 'Tap a light to turn it on or off', icon: 'tap' },
     { wait: 900 },
     { tap: '.lc-tile', i: 4, y: 0.3 },
     { wait: 1300 },
-    { say: 'Drag the bar to dim it' },
+    { say: 'Drag the bar to dim it', icon: 'drag' },
     { wait: 700 },
     { drag: '.lc-bar', i: 0, from: { x: 0.55 }, to: { x: 0.12 }, ms: 1100 },
     { wait: 900 },
     { drag: '.lc-bar', i: 0, from: { x: 0.12 }, to: { x: 0.8 }, ms: 900 },
     { wait: 1100 },
-    { say: 'The chip picks a colour or a white' },
+    { say: 'The chip picks a colour or a white', icon: 'colour' },
     { wait: 700 },
     { tap: '.lc-chip', i: 1 },
     { wait: 1200 },
@@ -46,17 +49,50 @@ const CLIPS = {
     { tap: '.lc-swatch', i: 0 }, // the coolest white (a whites-only light), so the change shows
     { wait: 1800 },
   ],
+  media: [
+    { wait: 500 },
+    { say: 'Tap + as often as you like: no overshoot', icon: 'volume' },
+    { wait: 1100 },
+    { tap: '.mw-step', i: 1 },
+    { wait: 250 },
+    { tap: '.mw-step', i: 1 },
+    { wait: 250 },
+    { tap: '.mw-step', i: 1 },
+    { wait: 1500 },
+    { say: 'Skip to the next track', icon: 'next' },
+    { wait: 900 },
+    { tap: '[data-control="next"]' },
+    { wait: 1900 },
+    { say: 'Mute with one tap', icon: 'mute' },
+    { wait: 800 },
+    { tap: '.mw-mute' },
+    { wait: 1400 },
+    { tap: '.mw-mute' },
+    { wait: 1000 },
+    { say: 'Buttons behind ⋯, like TV as the source', icon: 'more' },
+    { wait: 900 },
+    { tap: '.mw-more' },
+    { wait: 1300 },
+    { tap: '.mw-chip', i: 0 },
+    { wait: 2600 },
+    { say: 'Tap the name to switch speaker', icon: 'speaker' },
+    { wait: 900 },
+    { tap: '.mw-who' },
+    { wait: 1700 },
+    { tap: '.mw-spk', i: 1 },
+    { wait: 2600 },
+  ],
   stack: [
-    { say: 'Turns to the next widget (every 30 s; sped up here)' },
+    { say: 'Turns on its own (every 30 s, sped up here)', icon: 'rotate' },
     { wait: 6600 },
-    { say: 'Swipe, or tap the dots, to move by hand' },
+    { say: 'Swipe, or tap a dot, to move by hand', icon: 'swipe' },
     { wait: 600 },
     // Headless Edge scrolls half as far as dispatched touch moves go, so the finger runs on past the left edge.
     { drag: '.sk-track', i: 0, from: { x: 0.97, y: 0.5 }, to: { x: -0.25, y: 0.5 }, ms: 600, hold: 30 },
     { wait: 1500 },
     { tap: '.sk-dot', i: 0 },
     { wait: 2600 },
-    { say: 'Someone at the door: the cameras come forward' },
+    { say: 'Someone at the door: cameras come forward', icon: 'bell' },
     { wait: 900 },
     { run: 'doorbell' },
     { wait: 3500 },
@@ -113,7 +149,7 @@ const touch = (send, type, p) => send('Input.dispatchTouchEvent', { type, touchP
 
 async function step(send, s) {
   if (s.wait) return sleep(s.wait);
-  if (s.say) return evaluate(send, `window.clip.say(${JSON.stringify(s.say)})`);
+  if (s.say) return evaluate(send, `window.clip.say(${JSON.stringify(s.say)}, ${JSON.stringify(s.icon || null)})`);
   if (s.run) return evaluate(send, `window.clip[${JSON.stringify(s.run)}]()`);
   // A value from the page, printed (for working out a clip's steps): `{ probe: 'expression' }`.
   if (s.probe) return console.log('probe', s.probe, '→', JSON.stringify(await evaluate(send, s.probe)));
@@ -163,7 +199,11 @@ async function record(id) {
       if (await evaluate(send, 'document.readyState === "complete" && !!window.clipReady').catch(() => false)) break;
       await sleep(100);
     }
-    const height = await evaluate(send, 'window.clipReady');
+    const grow = await evaluate(send, 'window.clipReady.then(() => !!window.clip.grow)');
+    let height = grow ? GROW_HEIGHT : await evaluate(send, 'window.clipReady');
+    // A clip may be wider than a widget (the stack's backdrop around it).
+    const width = (await evaluate(send, 'window.clip.width')) || WIDTH;
+    await send('Emulation.setDeviceMetricsOverride', { width, height: 1200, deviceScaleFactor: 1, mobile: true });
 
     // Screenshots as fast as they come, each with the time it was taken; the steps run meanwhile.
     const frames = [];
@@ -171,7 +211,7 @@ async function record(id) {
     const capture = (async () => {
       while (recording) {
         const at = Date.now();
-        const { data } = await send('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width: WIDTH, height, scale: SCALE } });
+        const { data } = await send('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width, height, scale: SCALE } });
         frames.push({ at, png: Buffer.from(data, 'base64') });
       }
     })();
@@ -179,13 +219,24 @@ async function record(id) {
     recording = false;
     await capture;
 
+    if (grow) {
+      // The lowest content row of any frame (the page is transparent below it).
+      let bottom = 0;
+      for (const f of frames) {
+        const { info } = await sharp(f.png).trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 1 }).toBuffer({ resolveWithObject: true });
+        bottom = Math.max(bottom, -info.trimOffsetTop + info.height);
+      }
+      const h = Math.ceil(bottom / SCALE) * SCALE;
+      for (const f of frames) f.png = await sharp(f.png).extract({ left: 0, top: 0, width: width * SCALE, height: h }).png().toBuffer();
+      height = h / SCALE;
+    }
     const delays = frames.map((f, i) => Math.min(MAX_FRAME_MS, Math.max(20, (frames[i + 1]?.at ?? f.at + 100) - f.at)));
     const out = `docs/clips/${id}.webp`;
     await sharp(frames.map(f => f.png), { join: { animated: true } })
       .webp({ loop: 0, delay: delays, quality: 80, effort: 6, smartSubsample: true })
       .toFile(out);
     const seconds = delays.reduce((a, b) => a + b, 0) / 1000;
-    console.log('wrote', out, `(${frames.length} frames, ${seconds.toFixed(1)} s, ${WIDTH}×${height} @${SCALE}x)`);
+    console.log('wrote', out, `(${frames.length} frames, ${seconds.toFixed(1)} s, ${width}×${height} @${SCALE}x)`);
   } finally {
     close();
   }

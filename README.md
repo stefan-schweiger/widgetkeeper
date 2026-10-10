@@ -214,7 +214,7 @@ Curtains and blinds as tiles, two per row. Tap a tile to open or close it, the w
 Works with curtains that have a position, ones with just open, stop and close, and ones that are only open or closed. Homey's Android app takes over a drag on the slider, so there you tap the slider where you want it.
 
 ## Media
-<img src="docs/screenshots/media.png" alt="Media on a Homey dashboard" width="358">
+<img src="docs/clips/media.webp" alt="Media on a Homey dashboard: the volume turned up, the next track, mute, the TV as the source from behind ⋯, and a switch to another speaker" width="358">
 
 One speaker as a compact card: the album art, the track and the artist, previous, play and next, and mute on the right. The volume is a bar between − and + on its own line, or just − and + next to play, with the level as a ring around mute. It moves on every tap of − or +, and a burst of taps is sent once, so it never runs ahead of you; set a maximum volume and neither + nor the bar goes past it. On TV or line-in the card says so instead of greying out, and mute and the volume keep working.
 
@@ -227,7 +227,7 @@ Up to four buttons, behind ⋯ in the corner, run the speaker's own actions, suc
 Works with any speaker in Homey; made with Sonos in mind.
 
 ## Smart Stack
-<img src="docs/clips/stack.webp" alt="A Smart Stack on a Homey dashboard: it turns through four widgets, is swiped by hand, and brings the cameras forward when someone is at the door" width="358">
+<img src="docs/clips/stack.webp" width="382" alt="A Smart Stack on a Homey dashboard: it turns through four widgets, is swiped by hand, and brings the cameras forward when someone is at the door">
 
 Widgetkeeper widgets from another dashboard, one at a time in the space of one. Set up a dashboard with the widgets you want to rotate (for example cameras, the speaker and a timer), then put a Smart Stack on your main dashboard and pick that dashboard. The stack turns to the next widget every 30 seconds (or 10 s to 5 min, or never), and its height follows the widget it shows. Swipe, or tap the dots under it, to move by hand; the stack then holds still for a minute.
 
