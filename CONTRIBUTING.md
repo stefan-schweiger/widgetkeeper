@@ -39,7 +39,7 @@ The npm scripts run the project-local CLI too. The render scripts need Microsoft
   - Stay on Homey's type scale. CLAUDE.md lists the tokens and the few deliberate exceptions.
 
 ### Previewing widgets in a browser
-`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/sensordots-preview.html`, `dev/weather-preview.html`, `dev/heatmap-preview.html`, `dev/values-preview.html`, `dev/lights-preview.html`, `dev/sparklines-preview.html`, `dev/variables-preview.html`, `dev/flows-preview.html`, `dev/price-preview.html`, `dev/timers-preview.html`, `dev/locks-preview.html`, `dev/curtains-preview.html`, `dev/media-preview.html`, `dev/cameras-preview.html` and `dev/stack-preview.html` render the widgets with mock data, outside Homey.
+`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/sensordots-preview.html`, `dev/weather-preview.html`, `dev/heatmap-preview.html`, `dev/values-preview.html`, `dev/lights-preview.html`, `dev/sparklines-preview.html`, `dev/variables-preview.html`, `dev/flows-preview.html`, `dev/price-preview.html`, `dev/timers-preview.html`, `dev/locks-preview.html`, `dev/curtains-preview.html`, `dev/media-preview.html`, `dev/cameras-preview.html`, `dev/stack-preview.html` and `dev/clock-preview.html` render the widgets with mock data, outside Homey.
 1. Serve the repo root, e.g. `python -m http.server 8765`.
 2. Open `/dev/preview.html`.
 3. Optionally add `#live=0.4` or `#price=0.3` to the URL to simulate scrubbing.
@@ -86,6 +86,7 @@ widgets/timers/                 widget manifest, api.ts, public/ (renderer)
 widgets/locks/                  widget manifest, api.ts, public/ (renderer)
 widgets/curtains/               widget manifest, api.ts, public/ (renderer)
 widgets/media/                  widget manifest, api.ts, public/ (renderer)
+widgets/clock/                  widget manifest, api.ts (the Weather Forecast's data), public/ (renderer)
 settings/                       app settings page (diagnostics)
 dev/                            browser previews with mock data; screenshots, showcase and clips pages for the README
 scripts/                        app image, widget preview, screenshot, showcase and clip renderers; diagnostics

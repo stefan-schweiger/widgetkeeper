@@ -423,6 +423,7 @@
       "locks": "Toutes les serrures et portes d'un coup d'œil.",
       "curtains": "Ouvrir, fermer ou régler rideaux et stores.",
       "media": "Musique, volume et sources d'une enceinte sur une carte.",
+      "clock": "L'heure et la date, avec la météo actuelle si vous voulez.",
       "stack": "Les widgets d'un autre tableau de bord, à tour de rôle."
     }
   }

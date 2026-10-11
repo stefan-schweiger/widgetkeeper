@@ -388,6 +388,24 @@
             "ko": "미디어",
             "ar": "الوسائط"
           }
+        },
+        {
+          "id": "clock",
+          "title": {
+            "en": "Clock",
+            "nl": "Klok",
+            "de": "Uhr",
+            "fr": "Horloge",
+            "it": "Orologio",
+            "sv": "Klocka",
+            "no": "Klokke",
+            "es": "Reloj",
+            "da": "Ur",
+            "ru": "Часы",
+            "pl": "Zegar",
+            "ko": "시계",
+            "ar": "الساعة"
+          }
         }
       ]
     },

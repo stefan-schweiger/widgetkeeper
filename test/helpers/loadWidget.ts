@@ -15,7 +15,7 @@ export function loadMount(name: WidgetName): any {
 }
 
 export type WidgetName = 'electricity' | 'thermostat' | 'quickactions' | 'sensoralarms' | 'sensordots' | 'weather' | 'heatmap'
-  | 'cameras' | 'values' | 'lights' | 'sparklines' | 'variables' | 'flows' | 'price' | 'timers' | 'locks' | 'curtains' | 'media'
+  | 'cameras' | 'values' | 'lights' | 'sparklines' | 'variables' | 'flows' | 'price' | 'timers' | 'locks' | 'curtains' | 'media' | 'clock'
   | 'stack';
 
 function loadScript(name: WidgetName, file: string): any {

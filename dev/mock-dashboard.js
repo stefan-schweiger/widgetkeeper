@@ -1,7 +1,7 @@
 // The widgets of dev/screenshots.html: the real widget code with the made-up home of showcase-data.js ("Solbakken",
 // the showcase dashboards' data, so no real home's names or readings end up in the README), mounted into the elements
 // with the ids w-elec, w-thermo, w-qa, w-sa, w-weather, w-heatmap, w-cameras, w-values, w-sparklines, w-variables,
-// w-flows, w-price and w-locks. Most go through showcase-mount.js's MOUNT with a
+// w-flows, w-price, w-locks and w-clock. Most go through showcase-mount.js's MOUNT with a
 // showcase entry (`findWidget()`); only the README's own changes are here. Needs the widget scripts,
 // temp/screenshot-icons.js, showcase-data.js and showcase-mount.js loaded first, and the showcase's fixed clock
 // (fixed-clock.js), so every render is the same.
@@ -51,4 +51,9 @@
   MOUNT.heatmap(el('w-heatmap'), findWidget('heatmap'));
 
   MOUNT.weather(el('w-weather'), { hours: findWidget('weather').hours });
+
+  // Home's weather, as the app's /clock reduces it: the current hour and the rest of today's high and low.
+  const hours = findWidget('weather').hours;
+  const today = hours.filter(h => new Date(h.t).toDateString() === new Date(hours[0].t).toDateString()).map(h => h.temp);
+  MOUNT.clock(el('w-clock'), { weather: { symbol: hours[0].symbol, temp: hours[0].temp, high: Math.max(...today), low: Math.min(...today), icon: null } });
 })();

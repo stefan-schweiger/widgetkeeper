@@ -29,6 +29,9 @@ const MOUNT = {
   media: (el, w) => mountMockMedia(el, mockSpeaker(...w.speaker), { now: () => SHOWCASE_NOW, ...w.opts }),
   weather: (el, w) => createWeatherWidget(el, { locale: LOCALE, iconBase: '../widgets/weather/public/icons/', ...w.opts })
     .setForecast({ hours: w.hours, language: 'en' }),
+  // The weather is the showcase's own (w.weather: {symbol, temp, high, low}); the icon comes from the files.
+  clock: (el, w) => createClockWidget(el, { locale: LOCALE, iconBase: '../widgets/weather/public/icons/', ...w.opts })
+    .setState({ language: 'en', weather: w.weather || null }),
 };
 
 const SHOWCASE_WIDGETS = Object.values(SHOWCASE).flatMap(board => board.columns.flat());

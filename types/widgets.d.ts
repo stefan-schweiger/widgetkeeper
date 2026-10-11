@@ -35,6 +35,7 @@ interface Window {
   createCurtainsWidget: (root: HTMLElement, opts?: object) => any;
   curtainAction: (c: object, rule?: string) => 'open' | 'close' | 'stop' | null;
   createMediaWidget: (root: HTMLElement, opts?: object) => any;
+  createClockWidget: (root: HTMLElement, opts?: object) => any;
   mediaSource: (caps: object) => 'tv' | 'lineIn' | null;
   mediaButtonsFromSettings: (settings: object) => { id: string, name: string, icon: string | null }[];
   MEDIA_BUTTON_ICON_PATHS: Record<string, { d: string, fill?: boolean }>;
@@ -50,6 +51,7 @@ interface Window {
   mountLightsWidget: MountWidget;
   mountLocksWidget: MountWidget;
   mountMediaWidget: MountWidget;
+  mountClockWidget: MountWidget;
   mountPriceWidget: MountWidget;
   mountQuickActionsWidget: MountWidget;
   mountSensorAlarmsWidget: MountWidget;

@@ -635,6 +635,24 @@
                   "ko": "미디어",
                   "ar": "الوسائط"
                 }
+              },
+              {
+                "id": "clock",
+                "title": {
+                  "en": "Clock",
+                  "nl": "Klok",
+                  "de": "Uhr",
+                  "fr": "Horloge",
+                  "it": "Orologio",
+                  "sv": "Klocka",
+                  "no": "Klokke",
+                  "es": "Reloj",
+                  "da": "Ur",
+                  "ru": "Часы",
+                  "pl": "Zegar",
+                  "ko": "시계",
+                  "ar": "الساعة"
+                }
               }
             ]
           },
@@ -1070,6 +1088,69 @@
         }
       },
       "id": "cameras"
+    },
+    "clock": {
+      "name": {
+        "en": "Clock",
+        "nl": "Klok",
+        "de": "Uhr",
+        "fr": "Horloge",
+        "it": "Orologio",
+        "sv": "Klocka",
+        "no": "Klokke",
+        "es": "Reloj",
+        "da": "Ur",
+        "ru": "Часы",
+        "pl": "Zegar",
+        "ko": "시계",
+        "ar": "الساعة"
+      },
+      "height": 76,
+      "transparent": true,
+      "settings": [
+        {
+          "id": "showWeather",
+          "type": "checkbox",
+          "title": {
+            "en": "Show the weather",
+            "nl": "Weer tonen",
+            "de": "Wetter anzeigen",
+            "fr": "Afficher la météo",
+            "it": "Mostra il meteo",
+            "sv": "Visa vädret",
+            "no": "Vis været",
+            "es": "Mostrar el tiempo",
+            "da": "Vis vejret",
+            "ru": "Показывать погоду",
+            "pl": "Pokaż pogodę",
+            "ko": "날씨 표시",
+            "ar": "عرض الطقس"
+          },
+          "hint": {
+            "en": "The weather now and today's high and low at the Homey's location, from MET Norway (yr.no).",
+            "nl": "Het weer nu en de hoogste en laagste temperatuur van vandaag op de locatie van de Homey, van MET Norway (yr.no).",
+            "de": "Das Wetter jetzt und die heutigen Höchst- und Tiefstwerte am Standort des Homey, von MET Norway (yr.no).",
+            "fr": "La météo actuelle et les températures max. et min. du jour à l'emplacement du Homey, par MET Norway (yr.no).",
+            "it": "Il meteo attuale e la massima e la minima di oggi nella posizione dell'Homey, da MET Norway (yr.no).",
+            "sv": "Vädret nu och dagens högsta och lägsta temperatur där Homey står, från MET Norway (yr.no).",
+            "no": "Været nå og dagens høyeste og laveste temperatur der Homey står, fra MET Norway (yr.no).",
+            "es": "El tiempo actual y la máxima y la mínima de hoy en la ubicación del Homey, de MET Norway (yr.no).",
+            "da": "Vejret nu og dagens højeste og laveste temperatur, hvor Homey står, fra MET Norway (yr.no).",
+            "ru": "Погода сейчас и максимум и минимум сегодня в месте, где стоит Homey, от MET Norway (yr.no).",
+            "pl": "Pogoda teraz oraz dzisiejsza najwyższa i najniższa temperatura w lokalizacji Homey, z MET Norway (yr.no).",
+            "ko": "Homey 위치의 현재 날씨와 오늘의 최고·최저 기온 (MET Norway, yr.no 제공).",
+            "ar": "الطقس الآن وأعلى وأدنى درجة حرارة اليوم في موقع Homey، من MET Norway (yr.no)."
+          },
+          "value": true
+        }
+      ],
+      "api": {
+        "getClock": {
+          "method": "GET",
+          "path": "/clock"
+        }
+      },
+      "id": "clock"
     },
     "curtains": {
       "name": {

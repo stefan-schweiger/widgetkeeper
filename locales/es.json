@@ -423,6 +423,7 @@
       "locks": "Todas las cerraduras y puertas de un vistazo.",
       "curtains": "Abre, cierra o ajusta cortinas y persianas.",
       "media": "La música, el volumen y las fuentes de un altavoz en una tarjeta.",
+      "clock": "La hora y la fecha, con el tiempo actual si quieres.",
       "stack": "Widgets de otro panel, por turnos."
     }
   }

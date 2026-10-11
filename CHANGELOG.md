@@ -4,6 +4,10 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ## 0.9.0
 
+### New: Clock
+- The time and the date in one tile, with the weather now (MET's icon and the temperature) and today's high and low. The weather is the Weather Forecast's, from MET Norway; turn it off with *Show the weather*.
+- The time follows the phone or tablet's own setting (24 or 12 hours), the date Homey's language.
+
 ### New: Web dashboards
 - Widgetkeeper widgets in any browser on your home network (a wall tablet, a computer, a TV), with the same settings and live updates as on a Homey dashboard. The address is in the app settings.
 - Build the dashboards on the page itself: columns of widgets, moved and set up in place, in light, dark or automatic. Drag a widget by its bar to move it. They're kept on your Homey.

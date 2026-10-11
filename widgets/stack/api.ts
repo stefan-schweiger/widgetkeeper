@@ -20,13 +20,14 @@ import timers from '../timers/api.js';
 import locks from '../locks/api.js';
 import curtains from '../curtains/api.js';
 import media from '../media/api.js';
+import clock from '../clock/api.js';
 
 type Homey = App['homey'];
 
 /** Each page widget's own API (its `api.ts`), by widget id. */
 export const PAGE_APIS: WidgetApis = {
   electricity, thermostat, quickactions, sensoralarms, sensordots, weather, heatmap, cameras, values,
-  lights, sparklines, variables, flows, price, timers, locks, curtains, media,
+  lights, sparklines, variables, flows, price, timers, locks, curtains, media, clock,
 };
 
 export default {

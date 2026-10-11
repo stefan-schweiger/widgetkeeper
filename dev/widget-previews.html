@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|sd-dark|sd-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|var-dark|var-light|sd-dark|sd-light|fb-dark|fb-light|pb-dark|pb-light|tm-dark|tm-light|lk-dark|lk-light|ct-dark|ct-light|mw-dark|mw-light|sk-dark|sk-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|sd-dark|sd-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|var-dark|var-light|sd-dark|sd-light|fb-dark|fb-light|pb-dark|pb-light|tm-dark|tm-light|lk-dark|lk-light|ct-dark|ct-light|mw-dark|mw-light|sk-dark|sk-light|ck-dark|ck-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -461,6 +461,30 @@ function priceBadge(t, theme) {
   </div>`;
 }
 
+// Clock: one tile, the time (real digits: they read the same in every language) over the date, and the weather on
+// the right: a sun behind a cloud and the temperature over today's high and low.
+function clock(t, theme) {
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const muted = theme === 'dark' ? 'rgba(237,238,240,.45)' : 'rgba(31,32,41,.4)';
+  const cloud = theme === 'dark' ? '#D9DCE3' : '#C9CDD6';
+  const sky = `<div style="position:relative;width:120px;height:96px">
+      <div style="position:absolute;left:8px;top:0;width:64px;height:64px;border-radius:50%;background:#F5C518"></div>
+      <div style="position:absolute;left:20px;bottom:6px;width:100px;height:44px;border-radius:22px;background:${cloud}"></div>
+      <div style="position:absolute;left:44px;bottom:24px;width:54px;height:54px;border-radius:50%;background:${cloud}"></div>
+    </div>`;
+  return `<div style="width:880px;height:248px;border-radius:32px;background:${tileBg};box-shadow:${shadow};padding:0 52px;box-sizing:border-box;display:flex;align-items:center;gap:40px">
+    <div style="flex:1;display:flex;flex-direction:column;gap:26px">
+      <div style="font-size:120px;line-height:110px;font-weight:700;color:${t.fg};font-variant-numeric:tabular-nums;letter-spacing:-2px">18:40</div>
+      ${pill(330, 34, muted)}
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:22px">
+      <div style="display:flex;align-items:center;gap:18px">${sky}${pill(110, 56, t.fg)}</div>
+      ${pill(170, 30, muted)}
+    </div>
+  </div>`;
+}
+
 // Timers: its two looks, one above the other: the four preset buttons, and a running timer (filling down in blue) in their place.
 function timers(t, theme) {
   const RED = '#F25F5C';
@@ -586,6 +610,8 @@ const PREVIEWS = [
   { id: 'mw-light',     label: '2j · Media — preview-light.png',                 theme: 'light', render: media },
   { id: 'sk-dark',      label: '2k · Smart Stack — preview-dark.png',            theme: 'dark',  render: stack },
   { id: 'sk-light',     label: '2l · Smart Stack — preview-light.png',           theme: 'light', render: stack },
+  { id: 'ck-dark',      label: '2m · Clock — preview-dark.png',                  theme: 'dark',  render: clock },
+  { id: 'ck-light',     label: '2n · Clock — preview-light.png',                 theme: 'light', render: clock },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');

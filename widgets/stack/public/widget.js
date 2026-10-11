@@ -15,6 +15,7 @@
     heatmap: 'mountHeatmapWidget', cameras: 'mountCamerasWidget', values: 'mountValuesWidget', lights: 'mountLightsWidget',
     sparklines: 'mountSparklinesWidget', variables: 'mountVariablesWidget', flows: 'mountFlowsWidget', price: 'mountPriceWidget',
     timers: 'mountTimersWidget', locks: 'mountLocksWidget', curtains: 'mountCurtainsWidget', media: 'mountMediaWidget',
+    clock: 'mountClockWidget',
   };
 
   const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];

@@ -423,6 +423,7 @@
       "locks": "Ogni serratura e porta a colpo d'occhio.",
       "curtains": "Apri, chiudi o regola tende e tapparelle.",
       "media": "Musica, volume e sorgenti di un altoparlante in una scheda.",
+      "clock": "L'ora e la data, con il meteo attuale se vuoi.",
       "stack": "Widget di un'altra dashboard, a turno."
     }
   }

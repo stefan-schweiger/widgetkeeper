@@ -423,6 +423,7 @@
       "locks": "Every lock and door at a glance.",
       "curtains": "Open, close or set curtains and blinds.",
       "media": "A speaker's music, volume and sources in one card.",
+      "clock": "The time and date, with the weather now if you like.",
       "stack": "Widgets from another dashboard, taking turns."
     }
   }

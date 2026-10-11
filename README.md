@@ -80,6 +80,9 @@ A speaker with its album art, mute, a volume that never overshoots and buttons f
 <a href="#smart-stack"><b>Smart Stack</b></a><br>
 Several widgets in one spot, one at a time, with the one that matters brought forward<br clear="left"></p>
 
+<p><a href="#clock"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/clock-dark.png"><img src="docs/previews/clock-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#clock"><b>Clock</b></a><br>
+The time and the date, with the weather now and today's high and low<br clear="left"></p>
 
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
@@ -215,6 +218,13 @@ One speaker as a card: album art, the track, play controls, mute, and a volume t
 Widgetkeeper widgets from another dashboard, one at a time in the space of one. It turns every 30 seconds, and swipes or the dots move it by hand. Smart rotate brings a widget forward while something happens on it: music plays, a timer runs, a camera sees someone, a door is open. A Flow card can bring one forward too. Needs an [API key](#api-key) to read the dashboard.
 
 **Settings:** dashboard, interval, smart rotate, pause after a swipe, dots.
+
+## Clock
+<img src="docs/screenshots/clock.png" alt="Clock on a Homey dashboard" width="358">
+
+The time and the date in one tile, with the weather now and today's high and low from [MET Norway](https://www.met.no/en), the Weather Forecast's data. The time follows your phone or tablet (24 or 12 hours), the date Homey's language.
+
+**Settings:** show the weather.
 
 ## Web dashboards
 Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an old iPad, a computer or a TV. Turn them on under **Apps → Widgetkeeper → Configure**, open the address shown there (`http://<your Homey's address>/app/com.thomassidor.widgetkeeper/settings/dashboard.html`), paste a Homey [API key](#api-key) (and, if you set one there, the web dashboards password), and build the dashboards on the page itself: columns of widgets, each with the same settings as on a Homey dashboard, in light, dark or automatic. They're the same widgets with the same live updates, and the dashboards are kept on your Homey, so every browser shows them. Home network only for now.
