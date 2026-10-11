@@ -749,61 +749,47 @@
      * is hidden, and not at all with reduced motion.
      */
     function widgetCarousel() {
+      // One widget at a time in a small card under the dashboards (a user found a row of large previews took the
+      // attention away from them): its preview, name and description, ‹ › and a count. It moves on every 6 s, but not
+      // while the mouse or focus is on it, for 15 s after a tap, while the page is hidden, or with reduced motion.
       const section = el('section', 'wd-carousel');
-      const head = el('div', 'wd-section-head');
-      const titles = el('div', 'wd-section-titles');
-      titles.append(el('h2', 'wd-h1', t('widgetsTitle')), el('p', 'wd-muted', t('widgetsText')));
-      const prev = button('wd-icon wd-nav', '', () => go(-1), t('previous'));
-      prev.append(icon('left'));
-      const next = button('wd-icon wd-nav', '', () => go(1), t('next'));
-      next.append(icon('right'));
-      const nav = el('div', 'wd-nav-row');
-      nav.append(prev, next);
-      head.append(titles, nav);
-
-      const track = el('div', 'wd-track');
-      track.tabIndex = 0;
-      track.setAttribute('role', 'region');
-      track.setAttribute('aria-label', t('widgetsTitle'));
+      section.setAttribute('aria-label', t('widgetsTitle'));
+      const head = el('div', 'wd-carousel-head');
+      head.append(el('h2', 'wd-carousel-title', t('widgetsTitle')), el('span', 'wd-muted wd-carousel-text', t('widgetsText')));
       const sorted = [...types.values()].sort((a, b) => a.name.localeCompare(b.name));
-      const slides = sorted.map((def) => {
-        const slide = el('article', 'wd-slide');
-        const art = el('div', 'wd-slide-art');
-        art.append(preview(def.type, 'wd-slide-img'));
-        const text = el('div', 'wd-slide-text');
-        text.append(el('h3', 'wd-slide-name', def.name), el('p', 'wd-muted', about(def.type)));
-        slide.append(art, text);
-        track.append(slide);
-        return slide;
-      });
-      const dots = el('div', 'wd-dots');
-      const dotButtons = slides.map((slide, i) => {
-        const dot = button('wd-dot', '', () => { hold(); scrollToSlide(i); }, sorted[i].name);
-        dots.append(dot);
-        return dot;
-      });
-      section.append(head, track, dots);
 
-      const step = () => (slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth) || 1;
-      const index = () => Math.round(track.scrollLeft / step());
-      const atEnd = () => track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
-      function scrollToSlide(i) {
-        track.scrollTo({ left: Math.max(0, i) * step(), behavior: 'smooth' });
+      const card = el('article', 'wd-spot');
+      const art = el('div', 'wd-spot-art');
+      const text = el('div', 'wd-spot-text');
+      const name = el('h3', 'wd-spot-name');
+      const desc = el('p', 'wd-muted wd-spot-about');
+      text.append(name, desc);
+      const nav = el('div', 'wd-spot-nav');
+      const prev = button('wd-icon wd-nav', '', () => { hold(); show(i - 1); }, t('previous'));
+      prev.append(icon('left'));
+      const next = button('wd-icon wd-nav', '', () => { hold(); show(i + 1); }, t('next'));
+      next.append(icon('right'));
+      const count = el('span', 'wd-spot-count');
+      nav.append(prev, count, next);
+      card.append(art, text, nav);
+      section.append(head, card);
+
+      let i = 0;
+      function show(n) {
+        i = (n + sorted.length) % sorted.length;
+        const def = sorted[i];
+        card.classList.add('swap');
+        // The new content fades in (CSS); the image is swapped once loaded, so it doesn't blink.
+        requestAnimationFrame(() => {
+          art.textContent = '';
+          art.append(preview(def.type, 'wd-spot-img'));
+          name.textContent = def.name;
+          desc.textContent = about(def.type);
+          count.textContent = `${i + 1} / ${sorted.length}`;
+          requestAnimationFrame(() => card.classList.remove('swap'));
+        });
       }
-      function go(dir) {
-        hold();
-        if (dir > 0 && atEnd()) scrollToSlide(0);
-        else if (dir < 0 && track.scrollLeft <= 4) scrollToSlide(slides.length - 1);
-        else scrollToSlide(index() + dir);
-      }
-      function paint() {
-        const i = index();
-        const end = atEnd();
-        dotButtons.forEach((dot, n) => dot.classList.toggle('on', end ? n === slides.length - 1 : n === i));
-      }
-      let raf = 0;
-      track.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(paint); }, { passive: true });
-      requestAnimationFrame(paint);
+      show(0);
 
       let heldUntil = 0;
       let hovered = false;
@@ -813,14 +799,13 @@
       section.addEventListener('pointerleave', () => { hovered = false; });
       section.addEventListener('focusin', () => { focused = true; });
       section.addEventListener('focusout', () => { focused = false; });
-      track.addEventListener('pointerdown', hold);
-      track.addEventListener('wheel', hold, { passive: true });
+      card.addEventListener('pointerdown', hold);
       const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const timer = setInterval(() => {
         if (!section.isConnected) { clearInterval(timer); return; }
         if (still || hovered || focused || document.hidden || Date.now() < heldUntil) return;
-        if (atEnd()) scrollToSlide(0); else scrollToSlide(index() + 1);
-      }, 5000);
+        show(i + 1);
+      }, 6000);
       return section;
     }
 

@@ -136,37 +136,40 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .wd-dash-plus svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
 .wd-dash-new-text { font-weight: 700; font-size: 17px; line-height: 24px; }
 
-.wd-carousel { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
-.wd-nav-row { display: flex; gap: 8px; flex: none; }
-.wd-nav.wd-nav { width: 40px; height: 40px; border-radius: 20px; background: var(--wd-raised); color: var(--wd-text); }
-.wd-track {
-  display: grid; grid-auto-flow: column; grid-auto-columns: clamp(230px, calc((100% - 48px) / 4), 300px); gap: 16px;
-  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
-  scrollbar-width: none; padding: 2px 2px 6px; margin: -2px -2px 0; outline: none;
+/* The widgets: one at a time in a small, quiet card under the dashboards (its preview, name and description). */
+.wd-carousel { display: flex; flex-direction: column; gap: 8px; margin-top: 28px; max-width: 640px; }
+.wd-carousel-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.wd-carousel-title { margin: 0; font-size: 17px; line-height: 24px; font-weight: 700; }
+.wd-carousel-text { font-size: 14px; line-height: 20px; }
+.wd-spot {
+  display: flex; align-items: center; gap: 14px; min-height: 88px; padding: 8px 8px 8px 8px;
+  border-radius: var(--wd-radius); background: var(--wd-tile); box-shadow: 0 0 0 1px var(--wd-line);
 }
-.wd-track::-webkit-scrollbar { display: none; }
+.homey-dark-mode .wd-spot { box-shadow: 0 0 0 1px rgba(255, 255, 255, .06); }
+.wd-spot-art { flex: none; width: 90px; height: 72px; border-radius: 8px; overflow: hidden; background: var(--wd-bg); }
+/* The previews are 1024 px squares with the drawing in the middle: the middle 80 %, 5:4. */
+.wd-spot-img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.wd-spot-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.wd-spot-name { margin: 0; font-size: 14px; line-height: 20px; font-weight: 700; }
+.wd-spot-about { margin: 0; font-size: 14px; line-height: 20px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.wd-spot-art, .wd-spot-text { transition: opacity .25s ease; }
+.wd-spot.swap .wd-spot-art, .wd-spot.swap .wd-spot-text { opacity: 0; transition: none; }
+.wd-spot-nav { flex: none; display: flex; align-items: center; gap: 2px; }
+.wd-spot-nav .wd-nav { width: 32px; height: 32px; }
+.wd-spot-nav .wd-nav svg { width: 18px; height: 18px; }
+.wd-spot-count { min-width: 44px; text-align: center; font-size: 12px; line-height: 16px; color: var(--wd-muted); font-variant-numeric: tabular-nums; }
+@media (max-width: 520px) {
+  .wd-spot { flex-wrap: wrap; }
+  .wd-spot-art { width: 72px; height: 58px; }
+  .wd-spot-text { flex-basis: calc(100% - 86px); }
+  .wd-spot-nav { margin-left: auto; }
+}
 @media (max-width: 720px) {
-  .wd-track { grid-auto-columns: 78%; }
   .wd-dashboards { grid-auto-rows: auto; }
   .wd-dash-new { flex-direction: row; min-height: 72px; }
   .wd-dash-plus { width: 36px; height: 36px; }
-  .wd-dots .wd-dot { width: 14px; }
 }
-.wd-slide { scroll-snap-align: start; display: flex; flex-direction: column; overflow: hidden; border-radius: 16px; background: var(--wd-tile); box-shadow: 0 0 0 1px var(--wd-line); }
-.homey-dark-mode .wd-slide { box-shadow: 0 0 0 1px rgba(255, 255, 255, .06); }
-.wd-slide-art { background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--wd-accent) 18%, var(--wd-bg)), var(--wd-bg) 75%); }
-/* The previews are 1024 px squares with the drawing in the middle: shown 5:4 (the middle 80 %). */
-.wd-slide-img { display: block; width: 100%; aspect-ratio: 5 / 4; object-fit: cover; }
-.wd-slide-text { display: flex; flex-direction: column; gap: 4px; padding: 12px 16px 16px; }
-.wd-slide-name { margin: 0; font-size: 17px; line-height: 24px; font-weight: 700; }
-.wd-dots { display: flex; justify-content: center; flex-wrap: wrap; }
-.wd-dot {
-  -webkit-appearance: none; appearance: none; border: 0; margin: 0; padding: 0; cursor: pointer; background: transparent;
-  width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;
-}
-.wd-dot::before { content: ""; width: 6px; height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--wd-muted) 55%, transparent); transition: width .2s ease, background-color .2s ease; }
-.wd-dot.on::before { width: 16px; background: var(--wd-accent); }
-@media (prefers-reduced-motion: reduce) { .wd-dash, .wd-dot::before { transition: none; } .wd-dash:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .wd-dash, .wd-spot-art, .wd-spot-text { transition: none; } .wd-dash:hover { transform: none; } }
 
 /* The dashboard: columns of widgets, as wide as a phone's or a tablet's dashboard column; one column on a phone. */
 .wd-grid {
