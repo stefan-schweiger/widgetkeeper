@@ -330,7 +330,7 @@
     "keyHint": "Widgetkeeper → Configure: an API key that may read dashboards."
   },
   "web": {
-    "title": "Web dashboards",
+    "title": "Web Dashboards",
     "keyTitle": "Connect to your Homey",
     "keyText": "Paste a personal API key. Make one in the Homey web app under Settings → API Keys. It stays in this browser.",
     "keyPlaceholder": "API key",

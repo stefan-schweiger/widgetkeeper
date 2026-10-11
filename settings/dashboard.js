@@ -18,7 +18,7 @@
 
   /** English, also the fallback while the app's strings haven't loaded (they're `web.*` in locales/<lang>.json). */
   const DEFAULT_STRINGS = {
-    title: 'Web dashboards',
+    title: 'Web Dashboards',
     keyTitle: 'Connect to your Homey',
     keyText: 'Paste a personal API key. Make one in the Homey web app under Settings → API Keys. It stays in this browser.',
     keyPlaceholder: 'API key',
@@ -179,6 +179,12 @@
     for (const hex of input.match(/.{1,4}/g) || []) out += String.fromCharCode(parseInt(hex, 16));
     return out;
   }
+
+  /** The app's logomark (assets/icon.svg): three rounded squares and a sparkle, stroked and filled in currentColor. */
+  const LOGO = '<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3">'
+    + '<rect x="11.5" y="11.5" width="17" height="17" rx="5"/><rect x="11.5" y="35.5" width="17" height="17" rx="5"/>'
+    + '<rect x="35.5" y="35.5" width="17" height="17" rx="5"/></g>'
+    + '<path d="M44 11Q44 20 53 20Q44 20 44 29Q44 20 35 20Q44 20 44 11Z" fill="currentColor"/></svg>';
 
   /** The bar's icons: 24 px paths, stroked in the text colour. */
   const ICONS = {
@@ -492,9 +498,23 @@
 
     // ---- Views ---------------------------------------------------------------------------------------------
 
-    /** The browser title: `Widgetkeeper - <dashboard name>` on a dashboard, else `Widgetkeeper`. */
+    /** The browser title: `Widgetkeeper - <dashboard name>` on a dashboard, else `Widgetkeeper Web Dashboards`. */
     function setTitle(dashboard) {
-      document.title = dashboard ? `Widgetkeeper - ${dashboard.name || t('untitled')}` : 'Widgetkeeper';
+      document.title = dashboard ? `Widgetkeeper - ${dashboard.name || t('untitled')}` : brandName();
+    }
+
+    /** `Widgetkeeper Web Dashboards`: the app's name, then the page's (`web.title`, in Homey's language). */
+    function brandName() {
+      return `Widgetkeeper ${t('title')}`;
+    }
+
+    /** The front page's title: the app icon (the logomark, white on the brand colour) and the name. */
+    function brand() {
+      const node = el('h1', 'wd-brand');
+      const mark = el('span', 'wd-logo');
+      mark.innerHTML = LOGO;
+      node.append(mark, el('span', 'wd-brand-name', brandName()));
+      return node;
     }
 
     function clearRoot() {
@@ -687,7 +707,7 @@
         storageSet(SESSION_STORAGE, null);
         location.reload();
       });
-      root.append(bar(el('span', 'wd-bar-title', t('title')), el('span', 'wd-spacer'), liveNote(), forget), page);
+      root.append(bar(brand(), el('span', 'wd-spacer'), liveNote(), forget), page);
     }
 
     /** A dashboard's card: a miniature of its columns (each widget as its preview), its name and widget count. */
