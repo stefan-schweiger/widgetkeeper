@@ -404,6 +404,13 @@
     "clearAll": "Clear all",
     "chosenCount": "__count__ chosen",
     "dragToOrder": "Drag to change the order.",
+    "chooseValue": "Choose a value",
+    "changeValue": "Change the value",
+    "allDevices": "All devices",
+    "noValues": "No matching values.",
+    "valueOn": "On",
+    "valueOff": "Off",
+    "missingValue": "Value not found",
     "about": {
       "electricity": "Live power, the day's prices and your usage in charts.",
       "thermostat": "Three preset buttons for a thermostat or an aircon.",

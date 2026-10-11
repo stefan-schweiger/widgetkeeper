@@ -153,6 +153,44 @@ describe('web dashboards: what the editor needs', () => {
     expect((await web.devices('lights', 'kitch')).map(d => d.id)).toEqual(['l1']);
   });
 
+  it('marks the device value slots for the value picker', () => {
+    const types = setup().web.widgetTypes('en');
+    const picker = (type: string) => types.find(t => t.type === type)!.settings.filter(s => s.picker === 'capability').map(s => s.id);
+    expect(picker('values')).toEqual(['slot1', 'slot2', 'slot3', 'slot4', 'slot5', 'slot6']);
+    expect(picker('sparklines')).toEqual(['slot1', 'slot2', 'slot3', 'slot4', 'slot5', 'slot6']);
+    expect(picker('flows')).toEqual([]); // other autocompletes keep the search list
+  });
+
+  it('gives the value picker each device with the values its slots may show, as they read now', async () => {
+    const homey = fakeHomey(fakeApi({
+      devices: [
+        {
+          id: 't1', name: 'Thermometer', class: 'sensor', zone: 'k', iconObj: { url: '/api/icon/t' },
+          capabilities: ['measure_temperature', 'alarm_battery', 'button'],
+          capabilitiesObj: {
+            measure_temperature: { type: 'number', title: 'Temperature', units: '°C', decimals: 1, value: 21.46, insights: true },
+            alarm_battery: { type: 'boolean', title: 'Battery alarm', value: false, insights: true },
+            button: { type: 'boolean', title: 'Button', getable: false, value: null },
+          },
+        },
+        { id: 'b1', name: 'Button', class: 'button', zone: 'k', capabilities: ['button'], capabilitiesObj: { button: { type: 'boolean', getable: false } } },
+      ] as any,
+      zones: { home: { name: 'Home', parent: null }, k: { name: 'Kitchen', parent: 'home' } } as any,
+    }));
+    homey.manifest = { ...homey.manifest, widgets: app.widgets };
+    const web = new WebDashboardService(homey, vi.fn(), {});
+    const values = await web.valueDevices('values');
+    expect(values).toHaveLength(1); // the button has nothing to show
+    expect(values[0]).toMatchObject({ id: 't1', name: 'Thermometer', zone: { id: 'k', name: 'Kitchen', path: [] }, icon: '/api/icon/t' });
+    expect(values[0].caps.map(c => [c.id, c.title, c.value])).toEqual([
+      ['measure_temperature', 'Temperature', 21.46], ['alarm_battery', 'Battery alarm', false],
+    ]);
+    // Sparklines only list logged numbers.
+    expect((await web.valueDevices('sparklines'))[0].caps.map(c => c.id)).toEqual(['measure_temperature']);
+    await expect(web.valueDevices('lights')).rejects.toThrow();
+    await expect(web.valueDevices('__proto__')).rejects.toThrow();
+  });
+
   it("calls an autocomplete setting's listener with the draft settings", async () => {
     const listener = vi.fn(async () => [{ name: 'One', id: '1' }]);
     const { web } = setup({ values: { slot1: listener } });

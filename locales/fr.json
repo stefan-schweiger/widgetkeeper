@@ -404,6 +404,13 @@
     "clearAll": "Tout effacer",
     "chosenCount": "__count__ choisis",
     "dragToOrder": "Faites glisser pour changer l'ordre.",
+    "chooseValue": "Choisir une valeur",
+    "changeValue": "Changer la valeur",
+    "allDevices": "Tous les appareils",
+    "noValues": "Aucune valeur correspondante.",
+    "valueOn": "Activé",
+    "valueOff": "Désactivé",
+    "missingValue": "Valeur introuvable",
     "about": {
       "electricity": "Puissance en direct, prix du jour et consommation en graphiques.",
       "thermostat": "Trois boutons préréglés pour un thermostat ou une clim.",

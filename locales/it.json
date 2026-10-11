@@ -404,6 +404,13 @@
     "clearAll": "Deseleziona tutto",
     "chosenCount": "__count__ scelti",
     "dragToOrder": "Trascina per cambiare l'ordine.",
+    "chooseValue": "Scegli un valore",
+    "changeValue": "Cambia il valore",
+    "allDevices": "Tutti i dispositivi",
+    "noValues": "Nessun valore corrispondente.",
+    "valueOn": "Acceso",
+    "valueOff": "Spento",
+    "missingValue": "Valore non trovato",
     "about": {
       "electricity": "Potenza in tempo reale, prezzi del giorno e consumi in grafici.",
       "thermostat": "Tre pulsanti preimpostati per un termostato o un condizionatore.",

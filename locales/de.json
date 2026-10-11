@@ -404,6 +404,13 @@
     "clearAll": "Alle abwählen",
     "chosenCount": "__count__ gewählt",
     "dragToOrder": "Ziehen, um die Reihenfolge zu ändern.",
+    "chooseValue": "Wert wählen",
+    "changeValue": "Wert ändern",
+    "allDevices": "Alle Geräte",
+    "noValues": "Keine passenden Werte.",
+    "valueOn": "Ein",
+    "valueOff": "Aus",
+    "missingValue": "Wert nicht gefunden",
     "about": {
       "electricity": "Aktuelle Leistung, die Tagespreise und dein Verbrauch in Diagrammen.",
       "thermostat": "Drei Vorwahltasten für ein Thermostat oder eine Klimaanlage.",

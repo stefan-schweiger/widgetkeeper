@@ -404,6 +404,13 @@
     "clearAll": "Odznacz wszystkie",
     "chosenCount": "Wybrano: __count__",
     "dragToOrder": "Przeciągnij, aby zmienić kolejność.",
+    "chooseValue": "Wybierz wartość",
+    "changeValue": "Zmień wartość",
+    "allDevices": "Wszystkie urządzenia",
+    "noValues": "Brak pasujących wartości.",
+    "valueOn": "Wł.",
+    "valueOff": "Wył.",
+    "missingValue": "Nie znaleziono wartości",
     "about": {
       "electricity": "Moc na żywo, ceny dnia i Twoje zużycie na wykresach.",
       "thermostat": "Trzy przyciski ustawień dla termostatu lub klimatyzatora.",

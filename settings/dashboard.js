@@ -92,6 +92,13 @@
     clearAll: 'Clear all',
     chosenCount: '__count__ chosen',
     dragToOrder: 'Drag to change the order.',
+    chooseValue: 'Choose a value',
+    changeValue: 'Change the value',
+    allDevices: 'All devices',
+    noValues: 'No matching values.',
+    valueOn: 'On',
+    valueOff: 'Off',
+    missingValue: 'Value not found',
     about: {
       electricity: 'Live power, the day\'s prices and your usage in charts.',
       thermostat: 'Three preset buttons for a thermostat or an aircon.',
@@ -1337,7 +1344,7 @@
             control.addEventListener('change', () => { draft.settings[s.id] = control.value; });
             break;
           case 'autocomplete':
-            control = autocompletePicker(def, s, draft);
+            control = s.picker === 'capability' ? valuePicker(def, s, draft) : autocompletePicker(def, s, draft);
             break;
           default: // text
             control = el('input', 'wd-input');
@@ -1575,6 +1582,237 @@
       draw();
       d.showModal();
       search.focus();
+    }
+
+    /**
+     * The devices with the values a widget's slots may show (`/web/values`), shared by its slots while they're open
+     * and read again after 30 s, so a dialog shows current readings.
+     */
+    const valueLists = new Map(); // type → {at, promise}
+    function valueDevices(type) {
+      const hit = valueLists.get(type);
+      if (hit && Date.now() - hit.at < 30e3) return hit.promise;
+      const promise = request('GET', `/web/values?type=${encodeURIComponent(type)}`).then(items => items || []);
+      promise.catch(() => valueLists.delete(type));
+      valueLists.set(type, { at: Date.now(), promise });
+      return promise;
+    }
+
+    /** A value as it reads now, for the picker: `21.5 °C`, `42%`, `On`, an enum's title, or `–`. */
+    function formatReading(cap) {
+      const v = cap.value;
+      if (v == null || v === '') return '–';
+      if (typeof v === 'boolean') return t(v ? 'valueOn' : 'valueOff');
+      if (typeof v === 'number') {
+        // Homey's `dim` and others are `%` from 0 to 1.
+        const n = cap.units === '%' && cap.max === 1 && (cap.min == null || cap.min === 0) ? v * 100 : v;
+        const digits = typeof cap.decimals === 'number' && cap.units !== '%' ? Math.min(cap.decimals, 2) : 1;
+        const text = new Intl.NumberFormat(undefined, { maximumFractionDigits: digits }).format(n);
+        if (!cap.units) return text;
+        return /^(°|%)/.test(cap.units) ? `${text}${cap.units}` : `${text} ${cap.units}`;
+      }
+      if (cap.values) {
+        const e = cap.values.find(x => x.id === String(v));
+        if (e) return e.title;
+      }
+      return String(v);
+    }
+
+    /** What a slot keeps (as its autocomplete's item, `listCapabilitySlots()`): the widgets read the id. */
+    function slotItem(dev, cap) {
+      const description = [dev.zone && dev.zone.name, cap.units].filter(Boolean).join(' · ');
+      return { id: `${dev.id}:${cap.id}`, name: `${dev.name} · ${cap.title}`, ...(description ? { description } : {}) };
+    }
+
+    /**
+     * A device value slot (Device Values' and Sparklines' tiles): the chosen value as a row (the device's icon, the
+     * value's name over the device and room; a tap changes it, ✕ empties the tile), or a button that opens the picker.
+     */
+    function valuePicker(def, s, draft) {
+      const wrap = el('div', 'wd-valsel');
+      let devices = null;
+      valueDevices(def.type).then((list) => { devices = list; draw(); }, () => {});
+
+      const find = (id) => {
+        const i = typeof id === 'string' ? id.indexOf(':') : -1;
+        if (i < 0 || !devices) return null;
+        const dev = devices.find(x => x.id === id.slice(0, i));
+        const cap = dev && dev.caps.find(c => c.id === id.slice(i + 1));
+        return cap ? { dev, cap } : null;
+      };
+      const open = async () => {
+        let list;
+        try { list = await valueDevices(def.type); } catch (err) { toast(String(err.message || err)); return; }
+        devices = list;
+        const v = draft.settings[s.id];
+        chooseValue(list, v && v.id, (item) => { draft.settings[s.id] = item; draw(); });
+      };
+
+      function draw() {
+        wrap.textContent = '';
+        const v = draft.settings[s.id];
+        const id = v && typeof v.id === 'string' && v.id.includes(':') ? v.id : null;
+        if (!id) {
+          wrap.append(button('wd-btn', t('chooseValue'), open));
+          return;
+        }
+        const hit = find(id);
+        const row = button(`wd-valrow${devices && !hit ? ' missing' : ''}`, '', open);
+        row.title = t('changeValue');
+        const text = el('span', 'wd-devtext');
+        if (hit) {
+          text.append(el('span', 'wd-devname', hit.cap.title),
+            el('span', 'wd-hint', [hit.dev.name, hit.dev.zone && hit.dev.zone.name].filter(Boolean).join(' · ')));
+        } else {
+          text.append(el('span', 'wd-devname', v.name || id), el('span', 'wd-hint', devices ? t('missingValue') : '…'));
+        }
+        row.append(deviceIcon(hit && hit.dev), text);
+        if (hit) row.append(el('span', 'wd-valreading', formatReading(hit.cap)));
+        const remove = button('wd-icon wd-devremove', '', () => { draft.settings[s.id] = null; draw(); }, t('clear'));
+        remove.append(icon('close'));
+        const line = el('div', 'wd-valline');
+        line.append(row, remove);
+        wrap.append(line);
+      }
+
+      draw();
+      return wrap;
+    }
+
+    /**
+     * The device value picker: the device picker's dialog (a search, the rooms as filters, each room's devices as
+     * tiles), where a device opens its values with their readings and a tap on one picks it. A search also lists the
+     * matching values straight away (`temperature` gives every temperature), so one tap is enough.
+     */
+    function chooseValue(devices, currentId, onDone) {
+      const { d, body } = dialog(t('chooseValue'));
+      d.classList.add('wide', 'tall');
+      const tools = el('div', 'wd-devtools');
+      const search = el('input', 'wd-input');
+      search.type = 'search';
+      search.placeholder = t('search');
+      const rooms = el('div', 'wd-rooms');
+      tools.append(search, rooms);
+      const box = el('div', 'wd-devgroups');
+      body.append(tools, box);
+      const actions = el('div', 'wd-actions');
+      actions.append(el('span', 'wd-spacer'), button('wd-btn quiet', t('cancel'), () => d.close()));
+      d.append(actions);
+
+      const pick = (dev, cap) => { onDone(slotItem(dev, cap)); d.close(); };
+
+      // The rooms, in the order of their place in the home, devices without one last (as the device picker).
+      const groups = new Map();
+      for (const dev of devices) {
+        const key = dev.zone ? dev.zone.id : '';
+        if (!groups.has(key)) groups.set(key, { key, label: dev.zone ? dev.zone.name : t('noRoom'), path: dev.zone ? dev.zone.path : [], devices: [] });
+        groups.get(key).devices.push(dev);
+      }
+      const sortKey = (g) => (g.key ? [...g.path, g.label].join('\u0000').toLowerCase() : '￿');
+      const ordered = [...groups.values()].sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
+      let room = 'all';
+      // The device whose values show, or null for the rooms; opens at the current choice's device.
+      const sep = typeof currentId === 'string' ? currentId.indexOf(':') : -1;
+      let device = sep > 0 ? devices.find(x => x.id === currentId.slice(0, sep)) || null : null;
+
+      function drawRooms() {
+        rooms.textContent = '';
+        rooms.hidden = !!device || ordered.length < 2;
+        const chip = (id, label, n) => {
+          const b = button(`wd-room${room === id ? ' on' : ''}`, '', () => { room = id; drawRooms(); draw(); });
+          b.append(el('span', null, label), el('span', 'wd-room-count', String(n)));
+          b.setAttribute('aria-pressed', String(room === id));
+          rooms.append(b);
+        };
+        chip('all', t('allRooms'), devices.length);
+        for (const g of ordered) chip(g.key, g.label, g.devices.length);
+      }
+
+      /** A value's row: its title over the device (with the device's icon when `withDevice`), and its reading. */
+      function valueRow(dev, cap, withDevice) {
+        const on = `${dev.id}:${cap.id}` === currentId;
+        const row = button(`wd-valoption${on ? ' on' : ''}`, '', () => pick(dev, cap));
+        const text = el('span', 'wd-devtext');
+        text.append(el('span', 'wd-devname', cap.title));
+        if (withDevice) text.append(el('span', 'wd-hint', dev.name));
+        if (withDevice) row.append(deviceIcon(dev));
+        row.append(text, el('span', 'wd-valreading', formatReading(cap)));
+        const mark = el('span', 'wd-valcheck');
+        if (on) mark.append(icon('check'));
+        row.append(mark);
+        return row;
+      }
+
+      function groupHead(g, extra) {
+        const head = el('div', 'wd-devgroup-head');
+        const title = el('div', 'wd-devgroup-title');
+        if (g.path.length) title.append(el('span', 'wd-hint', g.path.join(' › ')));
+        title.append(el('h3', 'wd-h2', g.label));
+        head.append(title);
+        if (extra) head.append(extra);
+        return head;
+      }
+
+      function draw() {
+        box.textContent = '';
+        drawRooms();
+        if (device) { drawDevice(); return; }
+        const q = search.value.trim().toLowerCase();
+        let shown = 0;
+        for (const g of ordered) {
+          if (room !== 'all' && room !== g.key) continue;
+          const section = el('section', 'wd-devgroup');
+          if (!q) {
+            // The devices as tiles; a tap opens its values.
+            const tiles = el('div', 'wd-devtiles');
+            for (const dev of g.devices) {
+              const chosen = sep > 0 && dev.id === currentId.slice(0, sep);
+              const tile = button(`wd-devtile${chosen ? ' on' : ''}`, '', () => { device = dev; box.scrollTop = 0; draw(); });
+              tile.append(deviceIcon(dev, 'large'), el('span', 'wd-devtile-name', dev.name),
+                el('span', 'wd-hint wd-valnames', dev.caps.map(c => c.title).join(', ')));
+              tiles.append(tile);
+            }
+            shown += g.devices.length;
+            section.append(groupHead(g), tiles);
+          } else {
+            // A search lists the values: all of a device whose name or room matches, else those whose title does.
+            const list = el('div', 'wd-vallist');
+            for (const dev of g.devices) {
+              const whole = `${dev.name} ${roomLabel(dev)}`.toLowerCase().includes(q);
+              for (const cap of dev.caps) {
+                if (!whole && !`${cap.title} ${cap.id}`.toLowerCase().includes(q)) continue;
+                list.append(valueRow(dev, cap, true));
+                shown++;
+              }
+            }
+            if (!list.childElementCount) continue;
+            section.append(groupHead(g), list);
+          }
+          box.append(section);
+        }
+        if (!shown) box.append(el('p', 'wd-hint', t(q ? 'noValues' : 'noDevices')));
+      }
+
+      /** One device's values, with a way back to the rooms. */
+      function drawDevice() {
+        const head = el('div', 'wd-valhead');
+        const back = button('wd-btn quiet small wd-valback', '', () => { device = null; draw(); search.focus(); });
+        back.append(icon('left'), el('span', null, t('allDevices')));
+        const who = el('div', 'wd-valwho');
+        const text = el('span', 'wd-devtext');
+        text.append(el('span', 'wd-devname', device.name), el('span', 'wd-hint', roomLabel(device)));
+        who.append(deviceIcon(device, 'large'), text);
+        head.append(back, who);
+        const list = el('div', 'wd-vallist');
+        for (const cap of device.caps) list.append(valueRow(device, cap, false));
+        box.append(head, list);
+      }
+
+      // Typing goes back to the rooms, where the search lists the matching values.
+      search.addEventListener('input', () => { device = null; draw(); });
+      draw();
+      d.showModal();
+      if (!device) search.focus();
     }
 
     /** An autocomplete setting: the choice, and a search through the app's own listener (with the draft's settings). */

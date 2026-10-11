@@ -404,6 +404,13 @@
     "clearAll": "Avmarkera alla",
     "chosenCount": "__count__ valda",
     "dragToOrder": "Dra för att ändra ordningen.",
+    "chooseValue": "Välj ett värde",
+    "changeValue": "Ändra värdet",
+    "allDevices": "Alla enheter",
+    "noValues": "Inga matchande värden.",
+    "valueOn": "På",
+    "valueOff": "Av",
+    "missingValue": "Värdet hittades inte",
     "about": {
       "electricity": "Effekt i realtid, dagens priser och din förbrukning i diagram.",
       "thermostat": "Tre förinställningsknappar för en termostat eller AC.",

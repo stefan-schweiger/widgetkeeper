@@ -52,11 +52,25 @@
         D('c1', 'Living room curtains', 'living', 'curtain', ['windowcoverings_set'], 'curtains'),
         D('c2', 'Bedroom blinds', 'bed', 'blinds', ['windowcoverings_set'], 'blinds'),
       ];
+      const N = (title, units, value, decimals = null, extra = {}) => ({ title, type: 'number', units, decimals, min: null, max: null, values: null, value, ...extra });
+      const B = (title, value) => ({ title, type: 'boolean', units: null, decimals: null, min: null, max: null, values: null, value });
+      const READINGS = {
+        onoff: B('Turned on', (d) => d.id.length % 2 === 0),
+        dim: N('Brightness', '%', (d) => (d.id.charCodeAt(1) * 7 % 10) / 10, 2, { min: 0, max: 1 }),
+        alarm_contact: B('Contact alarm', false),
+        alarm_motion: B('Motion alarm', (d) => d.id === 's2'),
+        alarm_smoke: B('Smoke alarm', false),
+        target_temperature: N('Target temperature', '°C', 21, 1),
+        measure_temperature: N('Temperature', '°C', 21.4, 1),
+        measure_power: N('Power', 'W', 1342),
+        locked: B('Locked', true),
+        windowcoverings_set: N('Position', '%', 0.6, 2, { min: 0, max: 1 }),
+      };
       const pathOf = (z) => { const out = []; let p = zones[z][1]; while (p) { out.unshift(zones[p][0]); p = zones[p][1]; } return out; };
       const W = (type, settings = {}, deviceIds = []) => ({ id: Math.random().toString(36).slice(2, 10), type, title: '', settings, deviceIds });
       let dashboards = [
         { id: 'home', name: 'Home', theme: 'auto', columns: [[W('electricity'), W('price')], [W('lights', {}, ['d1', 'd2', 'd5', 'd8']), W('thermostat')], [W('weather'), W('timers'), W('locks')]] },
-        { id: 'kitchen', name: 'Kitchen tablet', theme: 'dark', columns: [[W('timers'), W('media')], [W('flows'), W('sensordots')]] },
+        { id: 'kitchen', name: 'Kitchen tablet', theme: 'dark', columns: [[W('timers'), W('media')], [W('flows'), W('sensordots'), W('values', { slot1: { id: 't1:measure_temperature', name: 'Living room thermostat · Temperature', description: 'Living room · °C' } })]] },
         { id: 'hall', name: 'Hallway', theme: 'auto', columns: [[W('locks'), W('cameras'), W('sensoralarms')]] },
         { id: 'new', name: 'Spare room', theme: 'auto', columns: [[], [], []] },
       ];
@@ -88,6 +102,7 @@
             settings: (w.settings || []).map(s => ({
               id: s.id, type: s.type, title: loc(s.title) || s.id, hint: loc(s.hint) || null, value: s.value ?? null,
               ...(s.values ? { values: s.values.map(v => ({ id: String(v.id), title: loc(v.title) || String(v.id) })) } : {}),
+              ...((type === 'values' || type === 'sparklines') && /^slot\d+$/.test(s.id) ? { picker: 'capability' } : {}),
             })),
           }));
           return { appId: 'com.thomassidor.widgetkeeper', homeyId: 'preview', language: lang, strings, widgets, dashboards };
@@ -96,6 +111,18 @@
           const filter = manifest.widgets[q.get('type')]?.devices?.filter;
           return devices.filter(d => passes(d, filter))
             .map(d => ({ id: d.id, name: d.name, zone: d.zone ? { id: d.zone, name: zones[d.zone][0], path: pathOf(d.zone) } : null, icon: d.icon }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+        }
+        if (p === '/web/values') {
+          // Made-up readings: each device's capabilities as the value picker gets them (Sparklines: numbers only).
+          const numbersOnly = q.get('type') === 'sparklines';
+          return devices
+            .map(d => ({
+              id: d.id, name: d.name, zone: d.zone ? { id: d.zone, name: zones[d.zone][0], path: pathOf(d.zone) } : null, icon: d.icon,
+              caps: d.capabilities.filter(c => READINGS[c] && (!numbersOnly || READINGS[c].type === 'number'))
+                .map((c, i) => ({ id: c, ...READINGS[c], value: typeof READINGS[c].value === 'function' ? READINGS[c].value(d, i) : READINGS[c].value })),
+            }))
+            .filter(d => d.caps.length)
             .sort((a, b) => a.name.localeCompare(b.name));
         }
         if (p === '/web/dashboards' && method === 'PUT') {

@@ -404,6 +404,13 @@
     "clearAll": "إلغاء الكل",
     "chosenCount": "المختار: __count__",
     "dragToOrder": "اسحب لتغيير الترتيب.",
+    "chooseValue": "اختر قيمة",
+    "changeValue": "تغيير القيمة",
+    "allDevices": "كل الأجهزة",
+    "noValues": "لا توجد قيم مطابقة.",
+    "valueOn": "تشغيل",
+    "valueOff": "إيقاف",
+    "missingValue": "لم يتم العثور على القيمة",
     "about": {
       "electricity": "القدرة الحية وأسعار اليوم واستهلاكك في رسوم بيانية.",
       "thermostat": "ثلاثة أزرار مسبقة الضبط لمنظم حرارة أو مكيف.",

@@ -346,6 +346,34 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .wd-actions .wd-spacer { flex: 1 1 auto; }
 .wd-devcount { align-self: center; }
 
+/* A device value slot in the settings: the chosen value as a row (a tap changes it) and ✕, or the Choose button. */
+.wd-valsel { display: flex; flex-direction: column; align-items: flex-start; }
+.wd-valline { align-self: stretch; display: flex; align-items: center; gap: 4px; padding-right: 4px; border-radius: var(--wd-radius); background: var(--wd-raised); }
+.wd-valrow, .wd-valoption {
+  -webkit-appearance: none; appearance: none; border: 0; margin: 0; cursor: pointer; text-align: left;
+  display: flex; align-items: center; gap: 10px; min-width: 0; color: var(--wd-text); font-family: inherit;
+}
+.wd-valrow { flex: 1 1 auto; min-height: 48px; padding: 4px 8px; border-radius: var(--wd-radius); background: transparent; }
+.wd-valrow:hover { background: color-mix(in srgb, var(--wd-text) 6%, transparent); }
+.wd-valrow.missing .wd-devname { color: var(--wd-red); }
+/* A value's reading, on the right. */
+.wd-valreading {
+  flex: none; max-width: 40%; margin-left: auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 14px; line-height: 20px; color: var(--wd-muted); font-variant-numeric: tabular-nums;
+}
+/* The picker: a device's tile lists its values' names; the values are rows with their reading and a check on the current one. */
+.wd-valnames { font-weight: 400; margin-top: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.wd-vallist { display: flex; flex-direction: column; gap: 6px; }
+.wd-valoption { min-height: 52px; padding: 6px 12px; border-radius: 12px; background: var(--wd-raised); }
+.wd-valoption:hover { box-shadow: inset 0 0 0 1px var(--wd-muted); }
+.wd-valoption.on { background: color-mix(in srgb, var(--wd-accent) 16%, var(--wd-raised)); box-shadow: inset 0 0 0 2px var(--wd-accent); }
+.wd-valcheck { flex: none; display: flex; width: 20px; color: var(--wd-accent); }
+.wd-valcheck svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.wd-valhead { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
+.wd-valback svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; margin-left: -4px; }
+.wd-valwho { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.wd-valwho .wd-devname { font-size: 17px; line-height: 24px; }
+
 .wd-toast {
   position: fixed; left: 50%; bottom: 24px; z-index: 10; transform: translateX(-50%); max-width: calc(100vw - 32px);
   padding: 10px 16px; border-radius: 20px; background: #2B2C36; color: #FFFFFF; font-size: 14px; line-height: 20px;

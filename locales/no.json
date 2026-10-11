@@ -404,6 +404,13 @@
     "clearAll": "Fjern alle",
     "chosenCount": "__count__ valgt",
     "dragToOrder": "Dra for å endre rekkefølgen.",
+    "chooseValue": "Velg en verdi",
+    "changeValue": "Endre verdien",
+    "allDevices": "Alle enheter",
+    "noValues": "Ingen samsvarende verdier.",
+    "valueOn": "På",
+    "valueOff": "Av",
+    "missingValue": "Fant ikke verdien",
     "about": {
       "electricity": "Effekt i sanntid, dagens priser og forbruket ditt i diagrammer.",
       "thermostat": "Tre forhåndsvalgknapper for en termostat eller et klimaanlegg.",

@@ -404,6 +404,13 @@
     "clearAll": "Quitar todo",
     "chosenCount": "__count__ elegidos",
     "dragToOrder": "Arrastra para cambiar el orden.",
+    "chooseValue": "Elegir un valor",
+    "changeValue": "Cambiar el valor",
+    "allDevices": "Todos los dispositivos",
+    "noValues": "No hay valores que coincidan.",
+    "valueOn": "Encendido",
+    "valueOff": "Apagado",
+    "missingValue": "Valor no encontrado",
     "about": {
       "electricity": "Potencia en directo, los precios del día y tu consumo en gráficos.",
       "thermostat": "Tres botones predefinidos para un termostato o un aire acondicionado.",

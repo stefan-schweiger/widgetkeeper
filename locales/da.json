@@ -404,6 +404,13 @@
     "clearAll": "Fravælg alle",
     "chosenCount": "__count__ valgt",
     "dragToOrder": "Træk for at ændre rækkefølgen.",
+    "chooseValue": "Vælg en værdi",
+    "changeValue": "Skift værdien",
+    "allDevices": "Alle enheder",
+    "noValues": "Ingen matchende værdier.",
+    "valueOn": "Til",
+    "valueOff": "Fra",
+    "missingValue": "Værdien blev ikke fundet",
     "about": {
       "electricity": "Effekt lige nu, dagens priser og dit forbrug i grafer.",
       "thermostat": "Tre forvalgsknapper til en termostat eller et aircondition-anlæg.",

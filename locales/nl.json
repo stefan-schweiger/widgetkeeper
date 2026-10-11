@@ -404,6 +404,13 @@
     "clearAll": "Alles wissen",
     "chosenCount": "__count__ gekozen",
     "dragToOrder": "Sleep om de volgorde te wijzigen.",
+    "chooseValue": "Kies een waarde",
+    "changeValue": "Waarde wijzigen",
+    "allDevices": "Alle apparaten",
+    "noValues": "Geen passende waarden.",
+    "valueOn": "Aan",
+    "valueOff": "Uit",
+    "missingValue": "Waarde niet gevonden",
     "about": {
       "electricity": "Actueel vermogen, de prijzen van de dag en je verbruik in grafieken.",
       "thermostat": "Drie voorkeuzeknoppen voor een thermostaat of airco.",

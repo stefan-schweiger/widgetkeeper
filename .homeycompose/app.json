@@ -80,6 +80,10 @@
       "method": "GET",
       "path": "/web/devices"
     },
+    "getWebValues": {
+      "method": "GET",
+      "path": "/web/values"
+    },
     "postWebAutocomplete": {
       "method": "POST",
       "path": "/web/autocomplete"

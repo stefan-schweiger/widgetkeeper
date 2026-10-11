@@ -93,6 +93,13 @@ export default {
     return app.web.devices(query.type || '', query.query || '');
   },
 
+  /** The web dashboards' editor: the devices and their values for a widget's device value slots (`?type=`). */
+  async getWebValues({ homey, query }: { homey: Homey, query: Record<string, string> }) {
+    const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
+    return app.web.valueDevices(query.type || '');
+  },
+
   /** The web dashboards' editor: an autocomplete setting's items (`{type, setting, query, settings}`). */
   async postWebAutocomplete({ homey, query, body }: { homey: Homey, query?: Record<string, string>, body: Record<string, any> }) {
     const app = homey.app as WidgetkeeperApp;
