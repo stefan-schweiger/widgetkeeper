@@ -2,6 +2,8 @@
  * The web dashboards page (`settings/dashboard.html`): our widgets in any browser on the home network, laid out
  * on the page itself. Served by the Homey at `/app/<appId>/settings/dashboard.html`, with no login; everything it
  * reads or changes goes through the app's API with the personal API key the user pastes (kept in this browser).
+ * When the app settings set a password, the browser also signs in with it, and every request carries the session
+ * token that gives (`?session=`).
  *
  * Each widget runs in an iframe of its own, unchanged `index.html` (`../widgets/<id>/index.html`, into which the
  * Homey puts its widget SDK, as on a Homey dashboard). The SDK talks to its parent frame with Homey's crossframe
@@ -65,9 +67,57 @@
     save: 'Save',
     cancel: 'Cancel',
     saveFailed: 'Could not save the dashboard.',
+    passwordText: 'Enter the web dashboards password from the Widgetkeeper app settings.',
+    passwordPlaceholder: 'Password',
+    signIn: 'Sign in',
+    passwordWrong: 'Wrong password.',
+    passwordLocked: 'Too many tries. Try again in __seconds__ s.',
+    sessionEnded: 'You were signed out. The password may have changed.',
+    yourDashboards: 'Your dashboards',
+    dashboardsText: 'Open one on a wall tablet, a computer or a TV.',
+    widgetsTitle: 'Widgets',
+    widgetsText: 'Everything you can put on a dashboard.',
+    previous: 'Previous',
+    next: 'Next',
+    chooseDevices: 'Choose devices',
+    chooseDevice: 'Choose a device',
+    changeDevices: 'Change devices',
+    changeDevice: 'Change device',
+    noneChosen: 'None chosen yet.',
+    missingDevice: 'Device not found',
+    allRooms: 'All rooms',
+    chosen: 'Chosen',
+    noRoom: 'No room',
+    selectAll: 'Select all',
+    clearAll: 'Clear all',
+    chosenCount: '__count__ chosen',
+    dragToOrder: 'Drag to change the order.',
+    about: {
+      electricity: 'Live power, the day\'s prices and your usage in charts.',
+      thermostat: 'Three preset buttons for a thermostat or an aircon.',
+      quickactions: 'Small tiles that switch a device with one tap.',
+      sensoralarms: 'Tiles that turn red when a sensor raises an alarm.',
+      sensordots: 'Motion, doors and cameras as a grid of dots.',
+      weather: 'The next 36 hours, hour by hour.',
+      heatmap: 'A week of any value as a weekday × hour heatmap.',
+      cameras: 'Camera snapshots, with live video on a tap.',
+      values: 'Any device value as a compact tile.',
+      lights: 'Light tiles with brightness and colour at hand.',
+      sparklines: 'Values with a small chart of their recent history.',
+      variables: 'Flow variables as rows you can switch or change.',
+      flows: 'Start flows with a tap, in your colours and icons.',
+      price: 'The electricity price now and in the coming hours.',
+      timers: 'Kitchen timers that keep running on your Homey.',
+      locks: 'Every lock and door at a glance.',
+      curtains: 'Open, close or set curtains and blinds.',
+      media: 'A speaker\'s music, volume and sources in one card.',
+      stack: 'Widgets from another dashboard, taking turns.',
+    },
   };
 
   const KEY_STORAGE = 'widgetkeeper.web.key';
+  /** The session token from signing in with the web dashboards password (when one is set), on top of the key. */
+  const SESSION_STORAGE = 'widgetkeeper.web.session';
   const PREFIX = 'CF2_MESSAGE';
   const ACK_TIMEOUT_MS = 10e3;
   /** After a realtime outage this long, the frames reload: they may have missed changes (they re-read every 5 min). */
@@ -133,6 +183,12 @@
   const ICONS = {
     pen: 'M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16v4zM13.5 6.5l4 4',
     fullScreen: 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5',
+    plus: 'M12 5v14M5 12h14',
+    left: 'M15 5l-7 7 7 7',
+    right: 'M9 5l7 7-7 7',
+    check: 'M5 12.5l4.5 4.5L19 7.5',
+    grip: 'M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01',
+    close: 'M6 6l12 12M18 6L6 18',
   };
 
   function icon(name) {
@@ -153,6 +209,7 @@
 
   window.mountWebDashboards = function (root) {
     let key = storageGet(KEY_STORAGE);
+    let session = storageGet(SESSION_STORAGE);
     let setup = null; // `/web/setup`: {appId, homeyId, language, strings, widgets, dashboards}
     let types = new Map(); // widget id → its type (name, settings, devices …)
     let dashboards = [];
@@ -175,7 +232,8 @@
     async function request(method, path, body) {
       const headers = { Authorization: `Bearer ${key}` };
       if (body !== undefined) headers['Content-Type'] = 'application/json';
-      const res = await fetch(`/api/app/${APP_ID}${path}`, {
+      const url = session ? `${path}${path.includes('?') ? '&' : '?'}session=${encodeURIComponent(session)}` : path;
+      const res = await fetch(`/api/app/${APP_ID}${url}`, {
         method, headers, body: body === undefined ? undefined : JSON.stringify(body),
       });
       const text = await res.text();
@@ -184,8 +242,25 @@
       if (res.status === 401 || res.status === 403) {
         throw Object.assign(new Error((data && data.error) || `HTTP ${res.status}`), { unauthorized: true });
       }
-      if (!res.ok) throw new Error((data && (data.error || data.message)) || (typeof data === 'string' && data) || `HTTP ${res.status}`);
+      if (!res.ok) {
+        const err = new Error((data && (data.error || data.message)) || (typeof data === 'string' && data) || `HTTP ${res.status}`);
+        // Signed out of the password (it changed, or was set meanwhile): ask for it again.
+        if (/password required/.test(err.message)) { passwordLost(); throw Object.assign(err, { handled: true }); }
+        throw err;
+      }
       return data;
+    }
+
+    /** The password's session no longer counts: the socket stops, and the page asks for the password. */
+    function passwordLost() {
+      if (setup && setup.passwordRequired) return; // already asking (several frames' requests fail at once)
+      const had = !!session;
+      session = null;
+      storageSet(SESSION_STORAGE, null);
+      stopSocket();
+      setLive(false);
+      setup = setup && Object.assign({}, setup, { passwordRequired: true });
+      renderPassword(had ? t('sessionEnded') : '');
     }
 
     async function loadSetup() {
@@ -193,7 +268,7 @@
       types = new Map((setup.widgets || []).map(w => [w.type, w]));
       dashboards = setup.dashboards || [];
       if (setup.language) document.documentElement.lang = setup.language;
-      if (setup.disabled) return; // turned off in the app settings: `route()` says so
+      if (setup.disabled || setup.passwordRequired) return; // turned off, or the password first: `route()` says so
       if (!socketStarted) {
         socketStarted = true;
         connectSocket();
@@ -482,6 +557,49 @@
       input.focus();
     }
 
+    /** The web dashboards password (set in the app settings): asked after the key, before anything else. */
+    function renderPassword(message) {
+      clearRoot();
+      applyTheme('auto');
+      const input = el('input', 'wd-input');
+      input.type = 'password';
+      input.autocomplete = 'current-password';
+      input.placeholder = t('passwordPlaceholder');
+      const error = el('p', 'wd-error', message || '');
+      const go = button('wd-btn primary', t('signIn'), async () => {
+        if (!input.value) return;
+        go.disabled = true;
+        error.textContent = '';
+        try {
+          const res = await request('POST', '/web/login', { password: input.value });
+          if (!res || !res.ok) {
+            go.disabled = false;
+            error.textContent = res && res.reason === 'locked'
+              ? t('passwordLocked', { seconds: res.retryAfter || 60 }) : t('passwordWrong');
+            input.select();
+            return;
+          }
+          session = res.token;
+          storageSet(SESSION_STORAGE, session);
+          start();
+        } catch (err) {
+          go.disabled = false;
+          if (err && err.handled) return;
+          if (err && (err.unauthorized || /turned off/.test(String(err.message)))) { failed(err); return; }
+          error.textContent = t('loadFailed');
+        }
+      });
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') go.click(); });
+      const form = el('div', 'wd-row');
+      form.append(input, go);
+      const forget = button('wd-btn quiet', t('forgetKey'), () => {
+        storageSet(KEY_STORAGE, null);
+        location.reload();
+      });
+      root.append(centered(el('h1', 'wd-h1', t('title')), el('p', 'wd-muted', t('passwordText')), form, error, forget));
+      input.focus();
+    }
+
     function renderOff() {
       clearRoot();
       applyTheme('auto');
@@ -513,19 +631,37 @@
       return note;
     }
 
+    /** A widget type's short description (`web.about.<type>`). */
+    function about(type) {
+      const strings = setup && setup.strings && setup.strings.web;
+      const own = strings && strings.about && strings.about[type];
+      return (typeof own === 'string' && own) || DEFAULT_STRINGS.about[type] || '';
+    }
+
+    /** A widget type's own preview (as Homey's widget picker shows it), served beside its files, in the page's theme. */
+    function preview(type, className) {
+      const img = el('img', className);
+      img.src = `../widgets/${encodeURIComponent(type)}/preview-${isDark() ? 'dark' : 'light'}.png`;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.addEventListener('error', () => { img.style.visibility = 'hidden'; });
+      return img;
+    }
+
+    /** The front page: the dashboards as cards with a miniature of their columns, then a carousel of the widgets. */
     function renderList() {
       clearRoot();
       applyTheme('auto');
-      const list = el('div', 'wd-list');
-      if (!dashboards.length) list.append(el('p', 'wd-muted', t('noDashboards')));
-      for (const d of dashboards) {
-        const a = el('a', 'wd-item');
-        a.href = `#/d/${d.id}`;
-        const count = d.columns.reduce((n, c) => n + c.length, 0);
-        a.append(el('span', 'wd-item-name', d.name || t('untitled')), el('span', 'wd-muted', t('widgetCount', { count })));
-        list.append(a);
-      }
-      const add = button('wd-btn primary', t('newDashboard'), async () => {
+      const page = el('div', 'wd-home');
+
+      const head = el('div', 'wd-section-head');
+      const titles = el('div', 'wd-section-titles');
+      titles.append(el('h1', 'wd-h1', t('yourDashboards')), el('p', 'wd-muted', t('dashboardsText')));
+      head.append(titles);
+      const grid = el('div', 'wd-dashboards');
+      for (const d of dashboards) grid.append(dashboardCard(d));
+      const add = button('wd-dash wd-dash-new', '', async () => {
         add.disabled = true;
         try {
           const saved = await request('PUT', '/web/dashboards', { name: t('untitled'), theme: 'auto', columns: [[], [], []] });
@@ -536,14 +672,128 @@
           failed(err);
         }
       });
-      const forget = button('wd-btn quiet', t('forgetKey'), () => {
+      const plus = el('span', 'wd-dash-plus');
+      plus.append(icon('plus'));
+      add.append(plus, el('span', 'wd-dash-new-text', t('newDashboard')));
+      grid.append(add);
+      page.append(head, grid);
+      if (types.size) page.append(widgetCarousel());
+
+      const forget = button('wd-btn quiet', t('forgetKey'), async () => {
+        forget.disabled = true;
+        if (session) await request('POST', '/web/logout', {}).catch(() => {});
         storageSet(KEY_STORAGE, null);
+        storageSet(SESSION_STORAGE, null);
         location.reload();
       });
-      root.append(
-        bar(el('span', 'wd-bar-title', t('title')), el('span', 'wd-spacer'), liveNote(), forget),
-        centered(list, add),
-      );
+      root.append(bar(el('span', 'wd-bar-title', t('title')), el('span', 'wd-spacer'), liveNote(), forget), page);
+    }
+
+    /** A dashboard's card: a miniature of its columns (each widget as its preview), its name and widget count. */
+    function dashboardCard(d) {
+      const card = el('div', 'wd-dash');
+      const art = el('div', 'wd-dash-art');
+      const columns = d.columns.length ? d.columns : [[]];
+      for (const column of columns) {
+        const col = el('div', 'wd-dash-col');
+        for (const w of column.slice(0, 3)) col.append(preview(w.type, 'wd-dash-thumb'));
+        if (!column.length) col.append(el('span', 'wd-dash-thumb empty'));
+        art.append(col);
+      }
+      const link = el('a', 'wd-dash-link');
+      link.href = `#/d/${d.id}`;
+      const count = d.columns.reduce((n, c) => n + c.length, 0);
+      const info = el('span', 'wd-dash-info');
+      info.append(el('span', 'wd-dash-name', d.name || t('untitled')), el('span', 'wd-muted', t('widgetCount', { count })));
+      link.append(info);
+      const edit = el('a', 'wd-icon wd-dash-edit');
+      edit.href = `#/d/${d.id}/edit`;
+      edit.title = t('edit');
+      edit.setAttribute('aria-label', t('edit'));
+      edit.append(icon('pen'));
+      card.append(art, link, edit);
+      return card;
+    }
+
+    /**
+     * The widgets as a carousel: a native scroll-snap track (swipes and trackpads scroll it), arrows and dots, and it
+     * moves on by itself every 5 s, except while the pointer or focus is on it, for 15 s after a touch, while the page
+     * is hidden, and not at all with reduced motion.
+     */
+    function widgetCarousel() {
+      const section = el('section', 'wd-carousel');
+      const head = el('div', 'wd-section-head');
+      const titles = el('div', 'wd-section-titles');
+      titles.append(el('h2', 'wd-h1', t('widgetsTitle')), el('p', 'wd-muted', t('widgetsText')));
+      const prev = button('wd-icon wd-nav', '', () => go(-1), t('previous'));
+      prev.append(icon('left'));
+      const next = button('wd-icon wd-nav', '', () => go(1), t('next'));
+      next.append(icon('right'));
+      const nav = el('div', 'wd-nav-row');
+      nav.append(prev, next);
+      head.append(titles, nav);
+
+      const track = el('div', 'wd-track');
+      track.tabIndex = 0;
+      track.setAttribute('role', 'region');
+      track.setAttribute('aria-label', t('widgetsTitle'));
+      const sorted = [...types.values()].sort((a, b) => a.name.localeCompare(b.name));
+      const slides = sorted.map((def) => {
+        const slide = el('article', 'wd-slide');
+        const art = el('div', 'wd-slide-art');
+        art.append(preview(def.type, 'wd-slide-img'));
+        const text = el('div', 'wd-slide-text');
+        text.append(el('h3', 'wd-slide-name', def.name), el('p', 'wd-muted', about(def.type)));
+        slide.append(art, text);
+        track.append(slide);
+        return slide;
+      });
+      const dots = el('div', 'wd-dots');
+      const dotButtons = slides.map((slide, i) => {
+        const dot = button('wd-dot', '', () => { hold(); scrollToSlide(i); }, sorted[i].name);
+        dots.append(dot);
+        return dot;
+      });
+      section.append(head, track, dots);
+
+      const step = () => (slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth) || 1;
+      const index = () => Math.round(track.scrollLeft / step());
+      const atEnd = () => track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+      function scrollToSlide(i) {
+        track.scrollTo({ left: Math.max(0, i) * step(), behavior: 'smooth' });
+      }
+      function go(dir) {
+        hold();
+        if (dir > 0 && atEnd()) scrollToSlide(0);
+        else if (dir < 0 && track.scrollLeft <= 4) scrollToSlide(slides.length - 1);
+        else scrollToSlide(index() + dir);
+      }
+      function paint() {
+        const i = index();
+        const end = atEnd();
+        dotButtons.forEach((dot, n) => dot.classList.toggle('on', end ? n === slides.length - 1 : n === i));
+      }
+      let raf = 0;
+      track.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(paint); }, { passive: true });
+      requestAnimationFrame(paint);
+
+      let heldUntil = 0;
+      let hovered = false;
+      let focused = false;
+      function hold() { heldUntil = Date.now() + 15e3; }
+      section.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hovered = true; });
+      section.addEventListener('pointerleave', () => { hovered = false; });
+      section.addEventListener('focusin', () => { focused = true; });
+      section.addEventListener('focusout', () => { focused = false; });
+      track.addEventListener('pointerdown', hold);
+      track.addEventListener('wheel', hold, { passive: true });
+      const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const timer = setInterval(() => {
+        if (!section.isConnected) { clearInterval(timer); return; }
+        if (still || hovered || focused || document.hidden || Date.now() < heldUntil) return;
+        if (atEnd()) scrollToSlide(0); else scrollToSlide(index() + 1);
+      }, 5000);
+      return section;
     }
 
     function renderMissing() {
@@ -940,6 +1190,7 @@
 
     function failed(err, message) {
       console.error(err);
+      if (err && err.handled) return; // the password screen is up
       if (err && err.unauthorized) { forgetKey(); renderKey(t('keyRejected')); return; }
       if (err && /turned off/.test(String(err.message))) { start(); return; } // turned off meanwhile
       toast(message || t('loadFailed'));
@@ -978,15 +1229,11 @@
           current.dashboard.columns[column].push(w);
           persist();
           syncGrid();
-          editWidget(w.id);
+          editWidget(w.id, { pickDevices: true });
         });
-        // The widget's own preview (as Homey's widget picker shows it), served beside its files; in the dashboard's theme.
-        const img = el('img', 'wd-type-preview');
-        img.src = `../widgets/${encodeURIComponent(def.type)}/preview-${isDark() ? 'dark' : 'light'}.png`;
-        img.alt = '';
-        img.loading = 'lazy';
-        img.addEventListener('error', () => img.remove());
-        b.append(img, el('span', 'wd-type-name', def.name));
+        const text = el('span', 'wd-type-text');
+        text.append(el('span', 'wd-type-name', def.name), el('span', 'wd-type-about', about(def.type)));
+        b.append(preview(def.type, 'wd-type-preview'), text);
         list.append(b);
       }
       body.append(list);
@@ -1002,7 +1249,8 @@
       return row;
     }
 
-    function editWidget(id) {
+    /** A widget's settings; `pickDevices` (a widget just added) opens its device picker at once. */
+    function editWidget(id, { pickDevices = false } = {}) {
       const at = find(id);
       if (!at) return;
       const w = at.widget;
@@ -1019,7 +1267,7 @@
       title.addEventListener('input', () => { draft.title = title.value; });
       body.append(field(t('widgetTitle'), t('widgetTitleHint'), title, title.id));
 
-      if (def.devices) body.append(devicePicker(def, draft));
+      if (def.devices) body.append(devicePicker(def, draft, pickDevices));
 
       for (const s of def.settings) {
         let control;
@@ -1098,49 +1346,214 @@
       d.showModal();
     }
 
-    /** The widget's devices: a searchable list, ticked ones first (in the order they were ticked). */
-    function devicePicker(def, draft) {
+    /** A device's icon: Homey's own drawing (a black glyph, inverted in dark mode), else a rounded square. */
+    function deviceIcon(dev, className) {
+      const box = el('span', `wd-devicon${className ? ` ${className}` : ''}`);
+      if (dev && dev.icon) {
+        const img = el('img');
+        img.src = dev.icon;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.addEventListener('error', () => img.remove());
+        box.append(img);
+      }
+      return box;
+    }
+
+    /** `Kitchen`, or `Ground floor › Kitchen` when the room sits under another zone. */
+    const roomLabel = (dev) => (dev.zone ? [...dev.zone.path, dev.zone.name].join(' › ') : t('noRoom'));
+
+    /**
+     * The widget's devices in its settings: the chosen ones in their order (the widget's tiles follow it; drag the
+     * grip to change it, ✕ to drop one) and a button that opens the device picker.
+     */
+    function devicePicker(def, draft, openAtOnce) {
       const singular = def.devices.singular;
-      const wrap = el('div', 'wd-picker open');
+      const wrap = el('div', 'wd-devsel');
+      const list = el('div', 'wd-devlist');
+      const hint = el('p', 'wd-hint', t('dragToOrder'));
+      let byId = null; // id → device, once loaded
+      const loading = request('GET', `/web/devices?type=${encodeURIComponent(def.type)}`).then((items) => {
+        byId = new Map((items || []).map(d => [d.id, d]));
+        draw();
+        return items || [];
+      });
+      loading.catch((err) => { list.textContent = ''; list.append(el('p', 'wd-error', String(err.message || err))); });
+      const choose = button('wd-btn', '', async () => {
+        let items;
+        try { items = await loading; } catch (e) { return; }
+        chooseDevices(def, items, draft.deviceIds, (ids) => { draft.deviceIds = ids; draw(); });
+      });
+      wrap.append(list, hint, choose);
+
+      function draw() {
+        list.textContent = '';
+        const ids = draft.deviceIds;
+        choose.textContent = t(ids.length ? (singular ? 'changeDevice' : 'changeDevices') : (singular ? 'chooseDevice' : 'chooseDevices'));
+        hint.hidden = singular || ids.length < 2;
+        if (!ids.length) { list.append(el('p', 'wd-hint wd-devnone', t('noneChosen'))); return; }
+        for (const id of ids) {
+          const dev = (byId && byId.get(id)) || { id, name: byId ? t('missingDevice') : '…', zone: null, icon: null, missing: !!byId };
+          const row = el('div', `wd-devrow${dev.missing ? ' missing' : ''}`);
+          row.dataset.id = id;
+          if (!singular && ids.length > 1) {
+            const grip = el('span', 'wd-devgrip');
+            grip.title = t('drag');
+            grip.append(icon('grip'));
+            reorderBy(grip, row);
+            row.append(grip);
+          }
+          const text = el('span', 'wd-devtext');
+          text.append(el('span', 'wd-devname', dev.name));
+          if (byId && !dev.missing) text.append(el('span', 'wd-hint', roomLabel(dev)));
+          const remove = button('wd-icon wd-devremove', '', () => {
+            draft.deviceIds = draft.deviceIds.filter(x => x !== id);
+            draw();
+          }, t('remove'));
+          remove.append(icon('close'));
+          row.append(deviceIcon(dev), text, remove);
+          list.append(row);
+        }
+      }
+
+      /** Drag a row by its grip (pointer events, so touch works): the rows move as it passes their middles. */
+      function reorderBy(grip, row) {
+        grip.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          grip.setPointerCapture(e.pointerId);
+          row.classList.add('lifted');
+          const move = (ev) => {
+            const rows = [...list.querySelectorAll('.wd-devrow')].filter(r => r !== row);
+            const before = rows.find(r => { const b = r.getBoundingClientRect(); return ev.clientY < b.top + b.height / 2; });
+            if (before) { if (row.nextSibling !== before) list.insertBefore(row, before); } else if (list.lastChild !== row) list.append(row);
+          };
+          const up = () => {
+            grip.removeEventListener('pointermove', move);
+            grip.removeEventListener('pointerup', up);
+            grip.removeEventListener('pointercancel', up);
+            row.classList.remove('lifted');
+            draft.deviceIds = [...list.querySelectorAll('.wd-devrow')].map(r => r.dataset.id);
+            draw();
+          };
+          grip.addEventListener('pointermove', move);
+          grip.addEventListener('pointerup', up);
+          grip.addEventListener('pointercancel', up);
+        });
+      }
+
+      draw();
+      if (openAtOnce && !draft.deviceIds.length) setTimeout(() => choose.click(), 0);
+      return field(singular ? t('device') : t('devices'), null, wrap);
+    }
+
+    /**
+     * The device picker: a wide dialog over the settings, with a search, the rooms as filters and the devices grouped
+     * by room as tiles. One device: a tap picks it. Several: taps tick them (in that order), a room's Select all ticks
+     * the room, and Done keeps it.
+     */
+    function chooseDevices(def, items, current, onDone) {
+      const singular = def.devices.singular;
+      let chosen = current.slice();
+      const { d, body } = dialog(t(singular ? 'chooseDevice' : 'chooseDevices'));
+      d.classList.add('wide', 'tall');
+      const tools = el('div', 'wd-devtools');
       const search = el('input', 'wd-input');
       search.type = 'search';
       search.placeholder = t('search');
-      const list = el('div', 'wd-options');
-      wrap.append(search, list);
-      let all = null;
-      const draw = () => {
-        list.textContent = '';
-        if (!all) return;
+      const rooms = el('div', 'wd-rooms');
+      tools.append(search, rooms);
+      const groupsBox = el('div', 'wd-devgroups');
+      body.append(tools, groupsBox);
+      const count = el('span', 'wd-muted wd-devcount');
+      const actions = el('div', 'wd-actions');
+      if (singular) {
+        actions.append(button('wd-btn quiet', t('cancel'), () => d.close()));
+      } else {
+        actions.append(count, el('span', 'wd-spacer'), button('wd-btn quiet', t('cancel'), () => d.close()),
+          button('wd-btn primary', t('done'), () => { onDone(chosen); d.close(); }));
+      }
+      d.append(actions);
+
+      // The rooms, in the order of their place in the home (`Ground floor › Kitchen`), devices without one last.
+      const groups = new Map();
+      for (const dev of items) {
+        const key = dev.zone ? dev.zone.id : '';
+        if (!groups.has(key)) groups.set(key, { key, label: dev.zone ? dev.zone.name : t('noRoom'), path: dev.zone ? dev.zone.path : [], devices: [] });
+        groups.get(key).devices.push(dev);
+      }
+      const sortKey = (g) => (g.key ? [...g.path, g.label].join('\u0000').toLowerCase() : '\uffff');
+      const ordered = [...groups.values()].sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
+      let room = 'all'; // 'all', 'chosen' or a zone id ('' for no room)
+
+      function drawRooms() {
+        rooms.textContent = '';
+        const chip = (id, label, n) => {
+          const b = button(`wd-room${room === id ? ' on' : ''}`, '', () => { room = id; drawRooms(); draw(); });
+          b.append(el('span', null, label), el('span', 'wd-room-count', String(n)));
+          b.setAttribute('aria-pressed', String(room === id));
+          rooms.append(b);
+        };
+        chip('all', t('allRooms'), items.length);
+        if (!singular) chip('chosen', t('chosen'), chosen.length);
+        if (ordered.length > 1) for (const g of ordered) chip(g.key, g.label, g.devices.length);
+      }
+
+      function draw() {
         const q = search.value.trim().toLowerCase();
-        const byId = new Map(all.map(d => [d.id, d]));
-        const picked = draft.deviceIds.map(id => byId.get(id) || { id, name: id });
-        const rest = all.filter(d => !draft.deviceIds.includes(d.id));
-        const shown = [...picked, ...rest].filter(d => !q || `${d.name} ${d.description || ''}`.toLowerCase().includes(q));
-        if (!shown.length) list.append(el('p', 'wd-hint', t('noDevices')));
-        for (const dev of shown) {
-          const row = el('label', 'wd-option');
-          const box = el('input');
-          box.type = singular ? 'radio' : 'checkbox';
-          box.name = 'wd-devices';
-          box.checked = draft.deviceIds.includes(dev.id);
-          box.addEventListener('change', () => {
-            if (singular) draft.deviceIds = [dev.id];
-            else if (box.checked) draft.deviceIds.push(dev.id);
-            else draft.deviceIds = draft.deviceIds.filter(x => x !== dev.id);
-            draw();
-          });
-          const text = el('span', 'wd-option-text');
-          text.append(el('span', 'wd-option-name', dev.name));
-          if (dev.description) text.append(el('span', 'wd-hint', dev.description));
-          row.append(box, text);
-          list.append(row);
+        const scroll = groupsBox.scrollTop;
+        groupsBox.textContent = '';
+        count.textContent = t('chosenCount', { count: chosen.length });
+        let shown = 0;
+        for (const g of ordered) {
+          if (room !== 'all' && room !== 'chosen' && room !== g.key) continue;
+          const devices = g.devices.filter(dev => (room !== 'chosen' || chosen.includes(dev.id))
+            && (!q || `${dev.name} ${roomLabel(dev)}`.toLowerCase().includes(q)));
+          if (!devices.length) continue;
+          shown += devices.length;
+          const group = el('section', 'wd-devgroup');
+          const head = el('div', 'wd-devgroup-head');
+          const title = el('div', 'wd-devgroup-title');
+          if (g.path.length) title.append(el('span', 'wd-hint', g.path.join(' › ')));
+          title.append(el('h3', 'wd-h2', g.label));
+          head.append(title);
+          if (!singular) {
+            const all = devices.every(dev => chosen.includes(dev.id));
+            head.append(button('wd-btn quiet small', t(all ? 'clearAll' : 'selectAll'), () => {
+              if (all) chosen = chosen.filter(id => !devices.some(dev => dev.id === id));
+              else for (const dev of devices) if (!chosen.includes(dev.id)) chosen.push(dev.id);
+              drawRooms();
+              draw();
+            }));
+          }
+          const tiles = el('div', 'wd-devtiles');
+          for (const dev of devices) {
+            const on = chosen.includes(dev.id);
+            const tile = button(`wd-devtile${on ? ' on' : ''}`, '', () => {
+              if (singular) { onDone([dev.id]); d.close(); return; }
+              chosen = on ? chosen.filter(id => id !== dev.id) : [...chosen, dev.id];
+              drawRooms();
+              draw();
+            });
+            tile.setAttribute('aria-pressed', String(on));
+            const mark = el('span', 'wd-devcheck');
+            mark.append(icon('check'));
+            const order = chosen.indexOf(dev.id);
+            if (!singular && on && chosen.length > 1) mark.dataset.n = String(order + 1);
+            tile.append(deviceIcon(dev, 'large'), el('span', 'wd-devtile-name', dev.name), mark);
+            tiles.append(tile);
+          }
+          group.append(head, tiles);
+          groupsBox.append(group);
         }
-      };
+        if (!shown) groupsBox.append(el('p', 'wd-hint', t('noDevices')));
+        groupsBox.scrollTop = scroll;
+      }
+
       search.addEventListener('input', draw);
-      request('GET', `/web/devices?type=${encodeURIComponent(def.type)}`)
-        .then((items) => { all = items || []; draw(); })
-        .catch((err) => { list.append(el('p', 'wd-error', String(err.message || err))); });
-      return field(singular ? t('device') : t('devices'), null, wrap);
+      drawRooms();
+      draw();
+      d.showModal();
+      search.focus();
     }
 
     /** An autocomplete setting: the choice, and a search through the app's own listener (with the draft's settings). */
@@ -1227,6 +1640,7 @@
       if (!key) { renderKey(); return; }
       if (!setup) { start(); return; }
       if (setup.disabled) { renderOff(); return; }
+      if (setup.passwordRequired) { renderPassword(); return; }
       const m = location.hash.match(/^#\/d\/([A-Za-z0-9_-]+)(\/edit)?$/);
       if (!m) { renderList(); return; }
       const dashboard = dashboards.find(d => d.id === m[1]);

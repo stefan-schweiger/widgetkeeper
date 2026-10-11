@@ -4,6 +4,7 @@ import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.j
 import PersonalApiKey from '../lib/PersonalApiKey.js';
 import WebDashboardService, { passesDeviceFilter, WEB_DASHBOARDS_SETTING, WEB_ENABLED_SETTING } from '../lib/WebDashboardService.js';
 import { widgetAutocompletes } from '../lib/widgetAutocompletes.js';
+import WebPassword from '../lib/WebPassword.js';
 import api from '../api.js';
 
 vi.mock('homey-api', () => homeyApiMock);
@@ -16,7 +17,7 @@ function setup(autocompletes = {}, enabled = true) {
   if (enabled) homey.settings.set(WEB_ENABLED_SETTING, true);
   const log = vi.fn();
   const web = new WebDashboardService(homey, log, autocompletes);
-  homey.app = { web, log, debug: vi.fn() };
+  homey.app = { web, webPassword: new WebPassword(homey, log), log, debug: vi.fn() };
   return { homey, web, log };
 }
 
@@ -134,6 +135,24 @@ describe('web dashboards: what the editor needs', () => {
     expect(passesDeviceFilter(sensor, undefined)).toBe(true);
   });
 
+  it('gives the device picker the rooms (with the zones above them) and the icons', async () => {
+    const homey = fakeHomey(fakeApi({
+      devices: [
+        { id: 'l1', name: 'Pendant', class: 'light', capabilities: ['onoff', 'dim'], zone: 'k', iconObj: { url: '/api/icon/abc' } },
+        { id: 'l2', name: 'Lamp', class: 'light', capabilities: ['onoff'], zone: 'gone', iconOverride: 'christmas-lights' },
+        { id: 's1', name: 'Sensor', class: 'sensor', capabilities: ['measure_temperature'], zone: 'k' },
+      ] as any,
+      zones: { home: { name: 'Home', parent: null }, gf: { name: 'Ground floor', parent: 'home' }, k: { name: 'Kitchen', parent: 'gf' } } as any,
+    }));
+    homey.manifest = { ...homey.manifest, widgets: app.widgets };
+    const web = new WebDashboardService(homey, vi.fn(), {});
+    expect(await web.devices('lights')).toEqual([
+      { id: 'l2', name: 'Lamp', zone: null, icon: 'https://my.homey.app/img/devices/christmas-lights.svg' },
+      { id: 'l1', name: 'Pendant', zone: { id: 'k', name: 'Kitchen', path: ['Ground floor'] }, icon: '/api/icon/abc' },
+    ]);
+    expect((await web.devices('lights', 'kitch')).map(d => d.id)).toEqual(['l1']);
+  });
+
   it("calls an autocomplete setting's listener with the draft settings", async () => {
     const listener = vi.fn(async () => [{ name: 'One', id: '1' }]);
     const { web } = setup({ values: { slot1: listener } });
@@ -231,6 +250,11 @@ describe('web dashboards page', () => {
     expect(table).toBeTruthy();
     const strings = new Function(`return ${table![2]}`)();
     expect(strings).toEqual(en.web);
+  });
+
+  it('describes every widget type on the front page', () => {
+    const en = JSON.parse(readFileSync('locales/en.json', 'utf8'));
+    expect(Object.keys(en.web.about).sort()).toEqual(Object.keys(app.widgets).sort());
   });
 
   it('bundles the socket.io-client version installed', () => {

@@ -58,8 +58,19 @@
         <button class="homey-button-primary-shadow" id="webOpen" data-i18n="webOpen">Open</button>
         <button class="homey-button-secondary-shadow" id="webCopy" data-i18n="copy">Copy</button>
       </div>
+      <p class="homey-form-help status" id="webStatus" role="status"></p>
+      <!-- Optional: a password browsers sign in with instead of a personal API key. -->
+      <p class="homey-form-help" data-i18n="webPasswordHelp"></p>
+      <div class="key-state set" id="pwState" role="status" hidden><span></span></div>
+      <div class="homey-form-group">
+        <input class="homey-form-input" id="webPassword" type="password" autocomplete="new-password" spellcheck="false" data-i18n-label="webPassword">
+      </div>
+      <div class="row">
+        <button class="homey-button-primary-shadow" id="pwSave" data-i18n="webPasswordSave" disabled>Set password</button>
+        <button class="homey-button-secondary-shadow" id="pwRemove" data-i18n="webPasswordRemove" hidden>Remove password</button>
+      </div>
+      <p class="homey-form-help status" id="pwStatus" role="status"></p>
     </div>
-    <p class="homey-form-help status" id="webStatus" role="status"></p>
   </fieldset>
 
   <fieldset class="homey-form-fieldset">
@@ -210,6 +221,47 @@
           webStatus.textContent = '';
         }
       });
+
+      // ---- The web dashboards' password: checked and hashed by the app, never sent back. ----
+      const webPassword = $('webPassword');
+      const pwSave = $('pwSave');
+      const pwRemove = $('pwRemove');
+      const pwStatus = $('pwStatus');
+      const pwState = $('pwState');
+      let pwBusy = false;
+      const syncPasswordButtons = () => { pwSave.disabled = pwBusy || !webPassword.value; pwRemove.disabled = pwBusy; };
+      function showPasswordState() {
+        Homey.api('GET', '/web/password', null, (err, res) => {
+          if (err) return;
+          const set = !!(res && res.set);
+          pwRemove.hidden = !set;
+          pwState.hidden = !set;
+          pwState.firstChild.textContent = t('webPasswordIsSet');
+        });
+      }
+      function savePassword(password) {
+        pwBusy = true;
+        syncPasswordButtons();
+        pwStatus.textContent = '';
+        Homey.api('PUT', '/web/password', { password }, (err, res) => {
+          pwBusy = false;
+          syncPasswordButtons();
+          if (err) { pwStatus.textContent = err.message || String(err); return; }
+          if (res && res.ok) {
+            webPassword.value = '';
+            syncPasswordButtons();
+            pwStatus.textContent = t(password ? 'webPasswordSaved' : 'webPasswordRemoved');
+            showPasswordState();
+          } else {
+            pwStatus.textContent = t('webPasswordTooShort', { min: 8 });
+          }
+        });
+      }
+      webPassword.addEventListener('input', syncPasswordButtons);
+      webPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !pwSave.disabled) pwSave.click(); });
+      pwSave.addEventListener('click', () => { if (webPassword.value) savePassword(webPassword.value); });
+      pwRemove.addEventListener('click', () => savePassword(''));
+      showPasswordState();
 
       // ---- Diagnostics ----
       const select = $('device');

@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import type Homey from 'homey';
-import { listDevicesWhere, type AutocompleteItem } from './autocomplete.js';
+import { getAppApi } from './appApi.js';
 import type { AutocompleteListener, SettingItem } from './widgetAutocompletes.js';
 
 /** The app setting with the web dashboards (`WebDashboard[]`). */
@@ -47,6 +47,38 @@ export type WebWidgetType = {
   devices: { singular: boolean } | null,
   settings: WebSettingDef[],
 };
+
+/** A device the editor's device picker shows: its room (with the rooms above it) and its icon. */
+export type WebDevice = {
+  id: string,
+  name: string,
+  /** Its zone; `path` is the zones above it, below the top one (`['Ground floor']`). */
+  zone: { id: string, name: string, path: string[] } | null,
+  /** Same-origin `/api/icon/…` (Homey serves it without a login), or the user-picked icon from Homey's library. */
+  icon: string | null,
+};
+
+/** A device's icon for the page: the user-picked library icon, else the driver's (`lib/deviceIcon.ts` does the same). */
+function webIcon(device: any): string | null {
+  if (typeof device?.iconOverride === 'string' && /^[a-z0-9-]+$/.test(device.iconOverride)) {
+    return `https://my.homey.app/img/devices/${device.iconOverride}.svg`;
+  }
+  const url = device?.iconObj?.url;
+  return typeof url === 'string' && url.startsWith('/') ? url : null;
+}
+
+/** The zones above a zone, below the top one (the home), top-down. */
+function zonePath(zones: Record<string, any>, zoneId: string): string[] {
+  const path: string[] = [];
+  const seen = new Set([zoneId]);
+  let parent = zones[zoneId]?.parent;
+  while (parent && zones[parent] && !seen.has(parent) && zones[parent].parent) {
+    seen.add(parent);
+    path.unshift(String(zones[parent].name));
+    parent = zones[parent].parent;
+  }
+  return path;
+}
 
 /** A manifest text: the language's, else English. */
 function loc(text: unknown, language: string): string {
@@ -159,11 +191,26 @@ export default class WebDashboardService {
     }));
   }
 
-  /** The devices a widget's `devices` setting may pick (its manifest filter), by name. */
-  async devices(type: string, query = ''): Promise<AutocompleteItem[]> {
+  /** The devices a widget's `devices` setting may pick (its manifest filter), by name, with their rooms and icons. */
+  async devices(type: string, query = ''): Promise<WebDevice[]> {
     const w = this.manifestWidgets[type];
     if (!w?.devices) throw new Error(`No devices setting: ${type}`);
-    return listDevicesWhere(this.homey, query, d => passesDeviceFilter(d, w.devices.filter));
+    const api = await getAppApi(this.homey);
+    const [devices, zones] = await Promise.all([
+      api.devices.getDevices(),
+      api.zones.getZones().catch((): Record<string, any> => ({})),
+    ]) as [Record<string, any>, Record<string, any>];
+    const q = query.trim().toLowerCase();
+    return Object.values(devices)
+      .filter(d => passesDeviceFilter(d, w.devices.filter))
+      .map((d): WebDevice => ({
+        id: String(d.id),
+        name: String(d.name),
+        zone: d.zone && zones[d.zone] ? { id: String(d.zone), name: String(zones[d.zone].name), path: zonePath(zones, d.zone) } : null,
+        icon: webIcon(d),
+      }))
+      .filter(d => !q || `${d.name} ${d.zone?.name ?? ''}`.toLowerCase().includes(q))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   /** An autocomplete setting's items, from the same listener Homey's widget settings use. */

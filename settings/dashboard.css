@@ -20,6 +20,10 @@
   --wd-bg: #111217; /* Homey's dark dashboard, as behind the README screenshots */
   --wd-tile: #181920;
   --wd-raised: #2B2C36;
+  /* Homey's stylesheet sets these in dark mode; the fallbacks are for the dev preview, which has none. */
+  --wd-text: var(--homey-text-color, #FFFFFF);
+  --wd-muted: var(--homey-text-color-light, #9A9BA5);
+  --wd-line: var(--homey-line-color, #383944);
 }
 
 html { background-color: var(--wd-bg); font-family: Roboto, -apple-system, system-ui, sans-serif; }
@@ -82,12 +86,78 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .wd-error:empty { display: none; }
 .wd-row { display: flex; gap: 8px; align-items: center; }
 .wd-row .wd-input { flex: 1 1 auto; }
-.wd-list { display: flex; flex-direction: column; gap: 8px; }
-.wd-item {
-  display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px;
-  border-radius: var(--wd-radius); background: var(--wd-raised); color: var(--wd-text); text-decoration: none;
+
+/* The front page: the dashboards as cards (a miniature of their columns), then a carousel of the widgets. */
+.wd-home { box-sizing: border-box; max-width: 1240px; margin: 0 auto; padding: 16px 16px 48px; display: flex; flex-direction: column; gap: 20px; }
+.wd-section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-top: 12px; }
+.wd-section-titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.wd-section-head .wd-h1 { font-size: 24px; line-height: 32px; }
+.wd-dashboards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); grid-auto-rows: 1fr; gap: 16px; }
+.wd-dash {
+  position: relative; display: flex; flex-direction: column; overflow: hidden; border-radius: 16px;
+  background: var(--wd-tile); color: var(--wd-text); box-shadow: 0 0 0 1px var(--wd-line);
+  transition: transform .15s ease, box-shadow .15s ease;
 }
-.wd-item-name { font-weight: 700; font-size: 17px; line-height: 24px; }
+.homey-dark-mode .wd-dash { box-shadow: 0 0 0 1px rgba(255, 255, 255, .06); }
+.wd-dash:hover, .wd-dash:focus-within { transform: translateY(-2px); box-shadow: 0 0 0 2px var(--wd-accent), 0 10px 28px rgba(0, 0, 0, .18); }
+.wd-dash-art {
+  display: flex; gap: 6px; aspect-ratio: 16 / 9; padding: 10px; overflow: hidden; box-sizing: border-box;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--wd-accent) 14%, var(--wd-bg)), var(--wd-bg) 70%);
+}
+.wd-dash-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.wd-dash-thumb { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 6px; flex: none; background: var(--wd-raised); }
+.wd-dash-thumb.empty { background: transparent; outline: 1px dashed var(--wd-line); outline-offset: -1px; }
+.wd-dash-link { display: block; padding: 12px 52px 14px 16px; color: inherit; text-decoration: none; }
+.wd-dash-link::after { content: ""; position: absolute; inset: 0; } /* the whole card opens it */
+.wd-dash-link:focus-visible { outline: none; }
+.wd-dash-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.wd-dash-name { font-weight: 700; font-size: 17px; line-height: 24px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wd-dash-edit { position: absolute; right: 10px; bottom: 14px; z-index: 1; }
+.wd-dash-new {
+  -webkit-appearance: none; appearance: none; margin: 0; cursor: pointer; font-family: inherit;
+  align-items: center; justify-content: center; gap: 10px; min-height: 160px;
+  border: 1.5px dashed var(--wd-line); background: transparent; box-shadow: none; color: var(--wd-muted);
+}
+.homey-dark-mode .wd-dash-new { box-shadow: none; }
+.wd-dash-new:hover, .wd-dash-new:focus-visible { color: var(--wd-text); border-color: var(--wd-accent); box-shadow: none; }
+.wd-dash-plus {
+  display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 24px;
+  background: var(--wd-accent); color: #FFFFFF;
+}
+.wd-dash-plus svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.wd-dash-new-text { font-weight: 700; font-size: 17px; line-height: 24px; }
+
+.wd-carousel { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
+.wd-nav-row { display: flex; gap: 8px; flex: none; }
+.wd-nav.wd-nav { width: 40px; height: 40px; border-radius: 20px; background: var(--wd-raised); color: var(--wd-text); }
+.wd-track {
+  display: grid; grid-auto-flow: column; grid-auto-columns: clamp(230px, calc((100% - 48px) / 4), 300px); gap: 16px;
+  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+  scrollbar-width: none; padding: 2px 2px 6px; margin: -2px -2px 0; outline: none;
+}
+.wd-track::-webkit-scrollbar { display: none; }
+@media (max-width: 720px) {
+  .wd-track { grid-auto-columns: 78%; }
+  .wd-dashboards { grid-auto-rows: auto; }
+  .wd-dash-new { flex-direction: row; min-height: 72px; }
+  .wd-dash-plus { width: 36px; height: 36px; }
+  .wd-dots .wd-dot { width: 14px; }
+}
+.wd-slide { scroll-snap-align: start; display: flex; flex-direction: column; overflow: hidden; border-radius: 16px; background: var(--wd-tile); box-shadow: 0 0 0 1px var(--wd-line); }
+.homey-dark-mode .wd-slide { box-shadow: 0 0 0 1px rgba(255, 255, 255, .06); }
+.wd-slide-art { background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--wd-accent) 18%, var(--wd-bg)), var(--wd-bg) 75%); }
+/* The previews are 1024 px squares with the drawing in the middle: shown 5:4 (the middle 80 %). */
+.wd-slide-img { display: block; width: 100%; aspect-ratio: 5 / 4; object-fit: cover; }
+.wd-slide-text { display: flex; flex-direction: column; gap: 4px; padding: 12px 16px 16px; }
+.wd-slide-name { margin: 0; font-size: 17px; line-height: 24px; font-weight: 700; }
+.wd-dots { display: flex; justify-content: center; flex-wrap: wrap; }
+.wd-dot {
+  -webkit-appearance: none; appearance: none; border: 0; margin: 0; padding: 0; cursor: pointer; background: transparent;
+  width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;
+}
+.wd-dot::before { content: ""; width: 6px; height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--wd-muted) 55%, transparent); transition: width .2s ease, background-color .2s ease; }
+.wd-dot.on::before { width: 16px; background: var(--wd-accent); }
+@media (prefers-reduced-motion: reduce) { .wd-dash, .wd-dot::before { transition: none; } .wd-dash:hover { transform: none; } }
 
 /* The dashboard: columns of widgets, as wide as a phone's or a tablet's dashboard column; one column on a phone. */
 .wd-grid {
@@ -184,7 +254,8 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .wd-dialog.wide { width: min(920px, calc(100vw - 32px)); }
 .wd-dialog.wide .wd-types { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 @media (max-width: 860px) { .wd-dialog.wide .wd-types { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } }
-.wd-type-name { padding: 8px 12px 10px; }
+.wd-type-text { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px 12px; }
+.wd-type-about { font-weight: 400; font-size: 12px; line-height: 16px; color: var(--wd-muted); }
 .wd-type:hover { outline: 2px solid var(--wd-accent); outline-offset: -2px; }
 .wd-picker { display: flex; flex-direction: column; gap: 8px; }
 .wd-choice { justify-content: flex-start; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; border-radius: 8px; }
@@ -201,6 +272,70 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .wd-option-image { width: 24px; height: 24px; flex: none; border-radius: 12px; }
 .wd-option-text { display: flex; flex-direction: column; min-width: 0; }
 .wd-option-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
+
+/* The widget's devices in its settings: the chosen ones in order (drag the grip), then the button for the picker. */
+.wd-devsel { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.wd-devlist { align-self: stretch; display: flex; flex-direction: column; gap: 6px; }
+.wd-devrow {
+  display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 4px 4px 4px 8px;
+  border-radius: var(--wd-radius); background: var(--wd-raised);
+}
+.wd-devrow.lifted { position: relative; z-index: 1; outline: 2px solid var(--wd-accent); box-shadow: 0 6px 18px rgba(0, 0, 0, .25); }
+.wd-devrow.missing .wd-devname { color: var(--wd-red); }
+.wd-devgrip { flex: none; display: flex; width: 20px; height: 32px; align-items: center; justify-content: center; color: var(--wd-muted); cursor: grab; touch-action: none; }
+.wd-devgrip svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; }
+.wd-devtext { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.wd-devname { font-size: 14px; line-height: 20px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wd-devtext .wd-hint { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wd-devnone { padding: 4px 0; }
+.wd-devremove svg { width: 16px; height: 16px; }
+/* A device's icon: Homey's drawings are black glyphs, inverted in dark mode; a rounded square without one. */
+.wd-devicon {
+  flex: none; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px;
+  background: color-mix(in srgb, var(--wd-text) 8%, transparent);
+}
+.wd-devicon img { width: 22px; height: 22px; object-fit: contain; opacity: .85; }
+.homey-dark-mode .wd-devicon img { filter: invert(1); }
+.wd-devicon.large { width: 44px; height: 44px; border-radius: 12px; }
+.wd-devicon.large img { width: 30px; height: 30px; }
+
+/* The device picker: a tall dialog with the search and the rooms on top, and each room's devices as tiles. */
+.wd-dialog.tall { height: calc(100vh - 32px); display: flex; flex-direction: column; overflow: hidden; }
+.wd-dialog.tall .wd-dialog-body { flex: 1 1 auto; min-height: 0; padding-bottom: 0; gap: 12px; }
+.wd-devtools { display: flex; flex-direction: column; gap: 10px; }
+.wd-rooms { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: thin; padding-bottom: 2px; }
+.wd-room {
+  -webkit-appearance: none; appearance: none; border: 1px solid var(--wd-line); margin: 0; cursor: pointer; flex: none;
+  display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 16px;
+  background: transparent; color: var(--wd-text); font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap;
+}
+.wd-room:hover { border-color: var(--wd-muted); }
+.wd-room.on { background: var(--wd-accent); border-color: var(--wd-accent); color: #FFFFFF; }
+.wd-room-count { font-size: 12px; opacity: .7; }
+.wd-devgroups { flex: 1 1 auto; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 18px; padding: 4px 2px 16px; }
+.wd-devgroup-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.wd-devgroup-title { display: flex; flex-direction: column; min-width: 0; }
+.wd-devtiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.wd-devtile {
+  -webkit-appearance: none; appearance: none; border: 0; margin: 0; cursor: pointer; position: relative; text-align: left;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px; min-height: 104px; padding: 12px;
+  border-radius: 12px; background: var(--wd-raised); color: var(--wd-text);
+  font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 700;
+}
+.wd-devtile:hover { box-shadow: inset 0 0 0 1px var(--wd-muted); }
+.wd-devtile.on { background: color-mix(in srgb, var(--wd-accent) 16%, var(--wd-raised)); box-shadow: inset 0 0 0 2px var(--wd-accent); }
+.wd-devtile-name { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; }
+.wd-devcheck {
+  position: absolute; top: 10px; right: 10px; display: flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 11px; box-shadow: inset 0 0 0 1.5px var(--wd-line); color: transparent;
+}
+.wd-devcheck svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.wd-devtile.on .wd-devcheck { background: var(--wd-accent); box-shadow: none; color: #FFFFFF; }
+/* Several chosen: the tile shows its place in the order instead of the check. */
+.wd-devtile.on .wd-devcheck[data-n] svg { display: none; }
+.wd-devtile.on .wd-devcheck[data-n]::after { content: attr(data-n); font-size: 12px; line-height: 16px; font-weight: 700; }
+.wd-actions .wd-spacer { flex: 1 1 auto; }
+.wd-devcount { align-self: center; }
 
 .wd-toast {
   position: fixed; left: 50%; bottom: 24px; z-index: 10; transform: translateX(-50%); max-width: calc(100vw - 32px);

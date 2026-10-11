@@ -80,6 +80,7 @@ A speaker with its album art, mute, a volume that never overshoots and buttons f
 <a href="#smart-stack"><b>Smart Stack</b></a><br>
 Several widgets in one spot, one at a time, with the one that matters brought forward<br clear="left"></p>
 
+
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
@@ -216,7 +217,7 @@ Widgetkeeper widgets from another dashboard, one at a time in the space of one. 
 **Settings:** dashboard, interval, smart rotate, pause after a swipe, dots.
 
 ## Web dashboards
-Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an old iPad, a computer or a TV. Turn them on under **Apps → Widgetkeeper → Configure**, open the address shown there (`http://<your Homey's address>/app/com.thomassidor.widgetkeeper/settings/dashboard.html`), paste a Homey [API key](#api-key), and build the dashboards on the page itself: columns of widgets, each with the same settings as on a Homey dashboard, in light, dark or automatic. They're the same widgets with the same live updates, and the dashboards are kept on your Homey, so every browser shows them. Home network only for now.
+Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an old iPad, a computer or a TV. Turn them on under **Apps → Widgetkeeper → Configure**, open the address shown there (`http://<your Homey's address>/app/com.thomassidor.widgetkeeper/settings/dashboard.html`), paste a Homey [API key](#api-key) (and, if you set one there, the web dashboards password), and build the dashboards on the page itself: columns of widgets, each with the same settings as on a Homey dashboard, in light, dark or automatic. They're the same widgets with the same live updates, and the dashboards are kept on your Homey, so every browser shows them. Home network only for now.
 
 ## Dashboard examples
 **Home**

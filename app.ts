@@ -20,6 +20,7 @@ import ValueService from './lib/ValueService.js';
 import VariableService from './lib/VariableService.js';
 import WeatherService from './lib/WeatherService.js';
 import WebDashboardService from './lib/WebDashboardService.js';
+import WebPassword from './lib/WebPassword.js';
 import { widgetAutocompletes } from './lib/widgetAutocompletes.js';
 
 export default class WidgetkeeperApp extends Homey.App {
@@ -43,6 +44,8 @@ export default class WidgetkeeperApp extends Homey.App {
   media!: MediaService;
   stack!: StackService;
   web!: WebDashboardService;
+  /** The web dashboards' optional password and the browsers signed in with it. */
+  webPassword!: WebPassword;
   /** The user's personal API key, shared by Flow Variables, Flow Buttons, Media and the Smart Stack (the app's token may only read). */
   apiKey!: PersonalApiKey;
 
@@ -88,6 +91,7 @@ export default class WidgetkeeperApp extends Homey.App {
     this.stack = new StackService(this.homey, log, debug, this.apiKey);
     this.registerStackFlows();
     this.web = new WebDashboardService(this.homey, log, widgetAutocompletes(this));
+    this.webPassword = new WebPassword(this.homey, log);
     this.registerAutocompletes();
     this.debug('Widgetkeeper has been initialized');
   }

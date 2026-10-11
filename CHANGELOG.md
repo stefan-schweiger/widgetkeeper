@@ -8,7 +8,10 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Widgetkeeper widgets in any browser on your home network (a wall tablet, a computer, a TV), with the same settings and live updates as on a Homey dashboard. The address is in the app settings.
 - Build the dashboards on the page itself: columns of widgets, moved and set up in place, in light, dark or automatic. Drag a widget by its bar to move it. They're kept on your Homey.
 - Off until you turn them on in the app settings.
+- The front page shows your dashboards as cards with a miniature of their widgets, and a carousel of every widget with a short description.
+- Choosing devices: a large picker with the devices grouped by room, room filters, search and Select all per room; the chosen devices are listed in order and can be dragged into a new order.
 - The page asks for a Homey API key, which stays in that browser.
+- Optionally also a password, set in the app settings, which every browser must enter after its key.
 
 ### New: Smart Stack
 - Widgetkeeper widgets from another dashboard, one at a time in the space of one, like a Smart Stack on a phone. Set up a dashboard with the widgets to rotate, then pick it in the stack.

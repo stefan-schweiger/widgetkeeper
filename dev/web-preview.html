@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web dashboards preview</title>
+  <!--
+    The web dashboards page (settings/dashboard.html) with a simulated app API: the front page, the editor and the
+    device picker, on a made-up house. Serve the repo root (`python -m http.server 8765`) and open
+    /dev/web-preview.html (`?lang=de`; the colour scheme follows the browser's). The widget frames stay empty: they
+    need a Homey.
+  -->
+  <link rel="stylesheet" href="../settings/dashboard.css">
+  <script>
+    (function () {
+      const lang = new URLSearchParams(location.search).get('lang') || 'en';
+      try { localStorage.setItem('widgetkeeper.web.key', 'preview'); } catch (e) { /* private mode */ }
+      const loc = (text) => (text && typeof text === 'object' ? text[lang] || text.en : text) || '';
+      const icon = (name) => `https://my.homey.app/img/devices/${name}.svg`;
+
+      // A made-up house: zones with a floor above the rooms, and devices in them.
+      const zones = {
+        gf: ['Ground floor', null], ff: ['First floor', null],
+        living: ['Living room', 'gf'], kitchen: ['Kitchen', 'gf'], hall: ['Hallway', 'gf'],
+        bed: ['Bedroom', 'ff'], kids: ['Kids\' room', 'ff'], bath: ['Bathroom', 'ff'], garden: ['Garden', null],
+      };
+      const D = (id, name, zone, cls, caps, ic) => ({ id, name, zone, class: cls, capabilities: caps, icon: icon(ic) });
+      const LIGHT = ['onoff', 'dim'];
+      const devices = [
+        D('d1', 'Sofa lamp', 'living', 'light', LIGHT, 'light-bulb'),
+        D('d2', 'Ceiling light', 'living', 'light', LIGHT, 'light-bulb'),
+        D('d3', 'Reading light', 'living', 'light', LIGHT, 'light-bulb'),
+        D('d4', 'TV backlight', 'living', 'light', LIGHT, 'light-bulb'),
+        D('d5', 'Pendants', 'kitchen', 'light', LIGHT, 'light-bulb'),
+        D('d6', 'Worktop lights', 'kitchen', 'light', LIGHT, 'light-bulb'),
+        D('d7', 'Hall light', 'hall', 'light', LIGHT, 'light-bulb'),
+        D('d8', 'Bedside left', 'bed', 'light', LIGHT, 'light-bulb'),
+        D('d9', 'Bedside right', 'bed', 'light', LIGHT, 'light-bulb'),
+        D('d10', 'Night light', 'kids', 'light', LIGHT, 'light-bulb'),
+        D('d11', 'Mirror light', 'bath', 'light', LIGHT, 'light-bulb'),
+        D('d12', 'Garden spots', 'garden', 'socket', ['onoff'], 'plug'),
+        D('d13', 'Christmas lights', null, 'socket', ['onoff'], 'christmas-lights'),
+        D('s1', 'Front door', 'hall', 'sensor', ['alarm_contact'], 'door'),
+        D('s2', 'Hall motion', 'hall', 'sensor', ['alarm_motion'], 'motion-sensor'),
+        D('s3', 'Kitchen motion', 'kitchen', 'sensor', ['alarm_motion'], 'motion-sensor'),
+        D('s4', 'Smoke alarm', 'kitchen', 'sensor', ['alarm_smoke'], 'smoke-detector'),
+        D('s5', 'Back door', 'kitchen', 'sensor', ['alarm_contact'], 'door'),
+        D('t1', 'Living room thermostat', 'living', 'thermostat', ['target_temperature', 'measure_temperature'], 'thermostat'),
+        D('t2', 'Bathroom floor', 'bath', 'thermostat', ['target_temperature'], 'thermostat'),
+        D('m1', 'Meter', 'hall', 'sensor', ['measure_power'], 'socket'),
+        D('l1', 'Front door lock', 'hall', 'lock', ['locked'], 'lock'),
+        D('c1', 'Living room curtains', 'living', 'curtain', ['windowcoverings_set'], 'curtains'),
+        D('c2', 'Bedroom blinds', 'bed', 'blinds', ['windowcoverings_set'], 'blinds'),
+      ];
+      const pathOf = (z) => { const out = []; let p = zones[z][1]; while (p) { out.unshift(zones[p][0]); p = zones[p][1]; } return out; };
+      const W = (type, settings = {}, deviceIds = []) => ({ id: Math.random().toString(36).slice(2, 10), type, title: '', settings, deviceIds });
+      let dashboards = [
+        { id: 'home', name: 'Home', theme: 'auto', columns: [[W('electricity'), W('price')], [W('lights', {}, ['d1', 'd2', 'd5', 'd8']), W('thermostat')], [W('weather'), W('timers'), W('locks')]] },
+        { id: 'kitchen', name: 'Kitchen tablet', theme: 'dark', columns: [[W('timers'), W('media')], [W('flows'), W('sensordots')]] },
+        { id: 'hall', name: 'Hallway', theme: 'auto', columns: [[W('locks'), W('cameras'), W('sensoralarms')]] },
+        { id: 'new', name: 'Spare room', theme: 'auto', columns: [[], [], []] },
+      ];
+
+      let manifest = null;
+      let strings = null;
+      const ready = Promise.all([
+        fetch('/app.json').then(r => r.json()).then((m) => { manifest = m; }),
+        fetch(`/locales/${lang}.json`).then(r => r.json()).then((s) => { strings = s; }),
+      ]);
+      const passes = (d, filter) => {
+        if (!filter) return true;
+        const any = (v) => String(v).split('|');
+        if (filter.class && !any(filter.class).includes(d.class)) return false;
+        if (filter.capabilities && !any(filter.capabilities).some(c => d.capabilities.includes(c))) return false;
+        return true;
+      };
+      async function answer(method, path, body) {
+        await ready;
+        const [p, qs] = path.split('?');
+        const q = new URLSearchParams(qs || '');
+        if (p === '/web/setup') {
+          const widgets = Object.entries(manifest.widgets).map(([type, w]) => ({
+            type,
+            name: loc(w.name) || type,
+            height: w.height ?? null,
+            transparent: !!w.transparent,
+            devices: w.devices ? { singular: w.devices.singular === true } : null,
+            settings: (w.settings || []).map(s => ({
+              id: s.id, type: s.type, title: loc(s.title) || s.id, hint: loc(s.hint) || null, value: s.value ?? null,
+              ...(s.values ? { values: s.values.map(v => ({ id: String(v.id), title: loc(v.title) || String(v.id) })) } : {}),
+            })),
+          }));
+          return { appId: 'com.thomassidor.widgetkeeper', homeyId: 'preview', language: lang, strings, widgets, dashboards };
+        }
+        if (p === '/web/devices') {
+          const filter = manifest.widgets[q.get('type')]?.devices?.filter;
+          return devices.filter(d => passes(d, filter))
+            .map(d => ({ id: d.id, name: d.name, zone: d.zone ? { id: d.zone, name: zones[d.zone][0], path: pathOf(d.zone) } : null, icon: d.icon }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+        }
+        if (p === '/web/dashboards' && method === 'PUT') {
+          const saved = { ...body, id: body.id || Math.random().toString(36).slice(2, 10) };
+          dashboards = dashboards.filter(d => d.id !== saved.id).concat(saved);
+          return saved;
+        }
+        if (p.startsWith('/web/dashboards/') && method === 'DELETE') {
+          dashboards = dashboards.filter(d => d.id !== p.split('/').pop());
+          return { removed: true };
+        }
+        if (p === '/web/autocomplete') return [];
+        throw new Error(`Not in the preview: ${method} ${p}`);
+      }
+      const realFetch = window.fetch.bind(window);
+      window.fetch = async (url, init = {}) => {
+        const m = String(url).match(/^\/api\/app\/[^/]+(\/.*)$/);
+        if (!m) return realFetch(url, init);
+        try {
+          const data = await answer(init.method || 'GET', m[1], init.body ? JSON.parse(init.body) : undefined);
+          return new Response(JSON.stringify(data), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        } catch (err) {
+          return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+        }
+      };
+    })();
+  </script>
+  <script src="../settings/dashboard.js"></script>
+</head>
+<body>
+  <div id="app" class="wd"></div>
+  <script>
+    mountWebDashboards(document.getElementById('app'));
+  </script>
+</body>
+</html>
