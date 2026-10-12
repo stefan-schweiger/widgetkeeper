@@ -17,9 +17,9 @@ Hi all,
 
 I've been building **Widgetkeeper**, an app with dashboard widgets for Homey Pro. My aim was widgets that sit next to Homey's own without standing out: the same tile sizes, fonts, colours and dark mode, so a dashboard still looks like one dashboard.
 
-> :white_check_mark: **Widgetkeeper 0.7.0 is live in the Homey App Store:** https://homey.app/a/com.thomassidor.widgetkeeper/
+> :white_check_mark: **Widgetkeeper 0.8.0 is live in the Homey App Store:** https://homey.app/a/com.thomassidor.widgetkeeper/
 >
-> :test_tube: **Test version:** the next version (0.8.0) with six new widgets is in testing. Widgets and changes marked :soon: **Next version** below are only in the test version for now: https://homey.app/a/com.thomassidor.widgetkeeper/test/
+> :test_tube: **Test version:** the next version (0.9.0), with four new widgets and web dashboards, is in testing. Widgets and changes marked :soon: **Next version** below are only in the test version for now: https://homey.app/a/com.thomassidor.widgetkeeper/test/
 
 ## The widgets
 
@@ -27,37 +27,42 @@ Tap a name for the full description and settings on GitHub.
 
 | | Widget |
 |---|---|
-| [![Electricity Overview|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/electricity-dark.png)](https://github.com/thomassidor/widgetkeeper#electricity-overview) | :zap: **[Electricity Overview](https://github.com/thomassidor/widgetkeeper#electricity-overview)**<br>Live power use, hourly electricity prices and usage history on one card |
-| [![Thermostat Shortcuts|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/thermostat-dark.png)](https://github.com/thomassidor/widgetkeeper#thermostat-shortcuts) | :thermometer: **[Thermostat Shortcuts](https://github.com/thomassidor/widgetkeeper#thermostat-shortcuts)**<br>Three one-tap presets for a thermostat, heat pump or air conditioner |
-| [![Device Quick Actions|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/quickactions-dark.png)](https://github.com/thomassidor/widgetkeeper#device-quick-actions) | :radio_button: **[Device Quick Actions](https://github.com/thomassidor/widgetkeeper#device-quick-actions)**<br>Compact tiles that run a device's quick action with one tap |
-| [![Sensor Alarms|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/sensoralarms-dark.png)](https://github.com/thomassidor/widgetkeeper#sensor-alarms) | :rotating_light: **[Sensor Alarms](https://github.com/thomassidor/widgetkeeper#sensor-alarms)**<br>Tiles that show a sensor's alarm and turn red when one is on |
-| [![Sensor Dots|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/sensordots-dark.png)](https://github.com/thomassidor/widgetkeeper#sensor-dots) | :large_blue_circle: **[Sensor Dots](https://github.com/thomassidor/widgetkeeper#sensor-dots)** :soon: **Next version**<br>Many motion and contact sensors at a glance, as dots that change colour when active |
-| [![Weather Forecast|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/weather-dark.png)](https://github.com/thomassidor/widgetkeeper#weather-forecast) | :sun_behind_rain_cloud: **[Weather Forecast](https://github.com/thomassidor/widgetkeeper#weather-forecast)**<br>The next 36 hours, hour by hour, from MET Norway (yr.no) |
-| [![Insights Heatmap|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/heatmap-dark.png)](https://github.com/thomassidor/widgetkeeper#insights-heatmap) | :calendar: **[Insights Heatmap](https://github.com/thomassidor/widgetkeeper#insights-heatmap)**<br>A week of one value (light, temperature, motion …) as a grid of weekdays and hours |
-| [![Cameras|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/cameras-dark.png)](https://github.com/thomassidor/widgetkeeper#cameras) | :movie_camera: **[Cameras](https://github.com/thomassidor/widgetkeeper#cameras)**<br>Two to six cameras in one grid of snapshots; tap one to watch it live |
-| [![Device Values|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/values-dark.png)](https://github.com/thomassidor/widgetkeeper#device-values) | :1234: **[Device Values](https://github.com/thomassidor/widgetkeeper#device-values)**<br>Compact tiles that each show one value, such as a temperature, power or on/off |
-| [![Light Controls|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/lights-dark.png)](https://github.com/thomassidor/widgetkeeper#light-controls) | :bulb: **[Light Controls](https://github.com/thomassidor/widgetkeeper#light-controls)**<br>Compact light tiles with brightness, colour and colour temperature: six lights in the space of three |
-| [![Sparklines|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/sparklines-dark.png)](https://github.com/thomassidor/widgetkeeper#sparklines) | :chart_with_upwards_trend: **[Sparklines](https://github.com/thomassidor/widgetkeeper#sparklines)**<br>Tiles with a small chart of a value over the last hour, day or week, with its lowest and highest |
-| [![Flow Variables|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/variables-dark.png)](https://github.com/thomassidor/widgetkeeper#flow-variables) | :twisted_rightwards_arrows: **[Flow Variables](https://github.com/thomassidor/widgetkeeper#flow-variables)** :soon: **Next version**<br>Compact rows to switch flow variables on and off or change a number or text, with the full name |
-| [![Flow Buttons|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/flows-dark.png)](https://github.com/thomassidor/widgetkeeper#flow-buttons) | :arrow_forward: **[Flow Buttons](https://github.com/thomassidor/widgetkeeper#flow-buttons)** :soon: **Next version**<br>Start flows with one tap: a round button in the colour and icon you pick, with the flow's name |
-| [![Price Badge|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/price-dark.png)](https://github.com/thomassidor/widgetkeeper#price-badge) | :moneybag: **[Price Badge](https://github.com/thomassidor/widgetkeeper#price-badge)** :soon: **Next version**<br>The electricity price now, the next hour's and the cheapest hour ahead in one compact tile |
-| [![Timers|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/timers-dark.png)](https://github.com/thomassidor/widgetkeeper#timers) | :stopwatch: **[Timers](https://github.com/thomassidor/widgetkeeper#timers)** :soon: **Next version**<br>Kitchen timers from one-tap presets, with a Flow card when one runs out |
-| [![Locks and Doors|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/locks-dark.png)](https://github.com/thomassidor/widgetkeeper#locks-and-doors) | :lock: **[Locks and Doors](https://github.com/thomassidor/widgetkeeper#locks-and-doors)** :soon: **Next version**<br>One line that says whether every lock and door is locked and closed |
+| [![Electricity Overview|120x105](upload://oMEhI5X6oylOIbhUrqxxiyUoxzf.png)](https://github.com/thomassidor/widgetkeeper#electricity-overview) | **[Electricity Overview](https://github.com/thomassidor/widgetkeeper#electricity-overview)**<br>Live power use, hourly electricity prices and usage history on one card |
+| [![Thermostat Shortcuts|120x105](upload://g66Fnaa42AMdem0f5uFgnQ3hR5q.png)](https://github.com/thomassidor/widgetkeeper#thermostat-shortcuts) | **[Thermostat Shortcuts](https://github.com/thomassidor/widgetkeeper#thermostat-shortcuts)**<br>Three one-tap presets for a thermostat, heat pump or air conditioner |
+| [![Device Quick Actions|120x105](upload://yTXsDGAub174pYWjS1DGcv7xqsu.png)](https://github.com/thomassidor/widgetkeeper#device-quick-actions) | **[Device Quick Actions](https://github.com/thomassidor/widgetkeeper#device-quick-actions)**<br>Compact tiles that run a device's quick action with one tap |
+| [![Sensor Alarms|120x105](upload://m4NlWt6CsNVfv1DykQjmhPlBGu4.png)](https://github.com/thomassidor/widgetkeeper#sensor-alarms) | **[Sensor Alarms](https://github.com/thomassidor/widgetkeeper#sensor-alarms)**<br>Tiles that show a sensor's alarm and turn red when one is on |
+| [![Sensor Dots|120x105](upload://iK67QdGwZXYwsSxzTNqUiFBwG5b.png)](https://github.com/thomassidor/widgetkeeper#sensor-dots) | **[Sensor Dots](https://github.com/thomassidor/widgetkeeper#sensor-dots)**<br>Many motion and contact sensors at a glance, as dots that change colour when active |
+| [![Weather Forecast|120x105](upload://mSq2ChXKzi7UUZf9yHQwzP4NNpe.png)](https://github.com/thomassidor/widgetkeeper#weather-forecast) | **[Weather Forecast](https://github.com/thomassidor/widgetkeeper#weather-forecast)**<br>The next 36 hours, hour by hour, from MET Norway (yr.no) |
+| [![Insights Heatmap|120x105](upload://3gUl8mI2CJoJV7zKr6tEYUYoeYl.png)](https://github.com/thomassidor/widgetkeeper#insights-heatmap) | **[Insights Heatmap](https://github.com/thomassidor/widgetkeeper#insights-heatmap)**<br>A week of one value (light, temperature, motion …) as a grid of weekdays and hours |
+| [![Cameras|120x105](upload://6Q5LXvEo1fkSIC3v4ggQGBZTySd.png)](https://github.com/thomassidor/widgetkeeper#cameras) | **[Cameras](https://github.com/thomassidor/widgetkeeper#cameras)**<br>Two to six cameras in one grid of snapshots; tap one to watch it live |
+| [![Device Values|120x105](upload://zgUYM1Up2RJzfH0SpDCXRe65zL0.png)](https://github.com/thomassidor/widgetkeeper#device-values) | **[Device Values](https://github.com/thomassidor/widgetkeeper#device-values)**<br>Compact tiles that each show one value, such as a temperature, power or on/off |
+| [![Light Controls|120x105](upload://AjYtZ7AZ1HgIlONXnxY3mLs3bZQ.png)](https://github.com/thomassidor/widgetkeeper#light-controls) | **[Light Controls](https://github.com/thomassidor/widgetkeeper#light-controls)**<br>Compact light tiles with brightness, colour and colour temperature: six lights in the space of three |
+| [![Sparklines|120x105](upload://2O6XmLisgL4by57eSyvK95N9CCK.png)](https://github.com/thomassidor/widgetkeeper#sparklines) | **[Sparklines](https://github.com/thomassidor/widgetkeeper#sparklines)**<br>Tiles with a small chart of a value over the last hour, day or week, with its lowest and highest |
+| [![Flow Variables|120x105](upload://2yC3iwyQorF7EgKbHAXj0DVeaPb.png)](https://github.com/thomassidor/widgetkeeper#flow-variables) | **[Flow Variables](https://github.com/thomassidor/widgetkeeper#flow-variables)**<br>Compact rows to switch flow variables on and off or change a number or text, with the full name |
+| [![Flow Buttons|120x105](upload://7AaGEulpsjMyTI3zoYF2EWrkwmf.png)](https://github.com/thomassidor/widgetkeeper#flow-buttons) | **[Flow Buttons](https://github.com/thomassidor/widgetkeeper#flow-buttons)**<br>Start flows with one tap: a round button in the colour and icon you pick, with the flow's name |
+| [![Price Badge|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/price-dark.png)](https://github.com/thomassidor/widgetkeeper#price-badge) | **[Price Badge](https://github.com/thomassidor/widgetkeeper#price-badge)** :soon: **New look in the next version**<br>The electricity price now and the coming hours as small bars, green, yellow or red |
+| [![Timers|120x105](upload://pPwDIqa3j2tlueBKsKXFT86XgQk.png)](https://github.com/thomassidor/widgetkeeper#timers) | **[Timers](https://github.com/thomassidor/widgetkeeper#timers)**<br>Kitchen timers from one-tap presets, with a Flow card when one runs out |
+| [![Locks and Doors|120x105](upload://hgmETIkMBWjejFXPGKqlK1gzA2V.png)](https://github.com/thomassidor/widgetkeeper#locks-and-doors) | **[Locks and Doors](https://github.com/thomassidor/widgetkeeper#locks-and-doors)**<br>One line that says whether every lock and door is locked and closed |
+| [![Curtains|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/curtains-dark.png)](https://github.com/thomassidor/widgetkeeper#curtains) | **[Curtains](https://github.com/thomassidor/widgetkeeper#curtains)** :soon: **Next version**<br>Curtains and blinds that open or close with one tap, with a slider for anything in between |
+| [![Media|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/media-dark.png)](https://github.com/thomassidor/widgetkeeper#media) | **[Media](https://github.com/thomassidor/widgetkeeper#media)** :soon: **Next version**<br>A speaker with its album art, mute, a volume that never overshoots and buttons for its sources |
+| [![Smart Stack|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/stack-dark.png)](https://github.com/thomassidor/widgetkeeper#smart-stack) | **[Smart Stack](https://github.com/thomassidor/widgetkeeper#smart-stack)** :soon: **Next version**<br>Several widgets in one spot, one at a time, with the one that matters brought forward |
+| [![Clock|120x105](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/previews/clock-dark.png)](https://github.com/thomassidor/widgetkeeper#clock) | **[Clock](https://github.com/thomassidor/widgetkeeper#clock)** :soon: **Next version**<br>The time and the date, with the weather now and today's high and low |
 
 Every widget follows Homey's light and dark mode and is translated into all 13 of Homey's languages.
 
-## :soon: What's new in the next version (0.8.0)
+## :soon: What's new in the next version (0.9.0)
 
-Besides the six new widgets above:
+Besides the four new widgets above:
 
-* **Electricity Overview:** supports a fixed electricity price set in Homey Energy, shows solar export below zero in yellow, and the prices can be hidden.
-* **Device Values:** a Flow can colour a tile, such as red when the fridge is too warm.
-* **Light Controls:** plugs and wall switches set up as lights can be picked too, and a setting stops the brightness bar at 1 % instead of turning the light off.
-* **Insights Heatmap:** pick the colour.
-* **Thermostat Shortcuts:** a preset now always sets its temperature, also on aircons that keep a temperature per mode.
-* Clearer setting names and help texts, and a brief connection problem no longer hides a widget.
+* **Web dashboards:** your Widgetkeeper widgets in any browser on your home network, such as a wall tablet, an old iPad, a computer or a TV. Build the dashboards on the page itself; turn them on under **Apps → Widgetkeeper → Configure**.
+* **Electricity prices** now include the tariffs and taxes set up in Homey Energy, so they match Homey's own Energy tab (can be turned off).
+* **Price Badge:** a new look, with the coming 12, 24 or 36 hours as small bars and a dot over the cheapest.
+* **Tile names:** give tiles, rows and buttons your own names in Device Values, Flow Variables, Flow Buttons and Sensor Alarms.
+* **Electricity Overview** and **Thermostat Shortcuts:** a compact layout.
+* **Sparklines:** 2, 3 and 5 day spans. **Cameras:** cameras with only a video stream (such as Aqara) show a still from it.
+* **Locks and Doors:** a calmer list, with secure states in green and the rest in red.
 
-Flow Buttons and Flow Variables need a Homey API key, which you add in the app's settings (**Apps → Widgetkeeper → Configure**).
+Flow Buttons, Flow Variables, Smart Stack and Media's buttons need a Homey API key, which you add in the app's settings (**Apps → Widgetkeeper → Configure**).
 
 ## Dashboard examples
 
@@ -65,23 +70,23 @@ Seven dashboards from a made-up house, on a tablet in Homey's dark mode. Swipe t
 
 [grid mode=carousel]
 
-![Home dashboard|690x457](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/showcase/home.png)
+![Home dashboard|690x457](upload://hfq6wmR7epDOiBus9DcPc7f1E31.jpeg)
 
-![Energy dashboard|690x457](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/showcase/energy.png)
+![Energy dashboard|690x457](upload://fuKGZXGJqUzp85f6iROFWPo45Y0.jpeg)
 
-![Security dashboard|690x457](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/showcase/security.png)
+![Security dashboard|690x457](upload://eh7PyyQ9xdT3nAzCGlIZmyNW53L.jpeg)
 
-![Climate dashboard|690x457](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/showcase/climate.png)
+![Climate dashboard|690x457](upload://dZdzZlrILehWKSAXPECn8BVbBu4.jpeg)
 
-![Evening dashboard|690x457](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/showcase/evening.png)
+![Evening dashboard|690x457](upload://1Ip9LoGsmwR18kPaOFx7ssFlp2J.jpeg)
 
-![Garden dashboard|690x457](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/showcase/garden.png)
+![Garden dashboard|690x457](upload://5NRipDaEKeUr5FFmjH14KDkcfCn.jpeg)
 
 ![Kitchen dashboard|690x457](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/showcase/kitchen.png)
 
 [/grid]
 
-**Home**, **Energy**, **Security**, **Climate**, **Evening**, **Garden** and **Kitchen**. Some of them use widgets from the next version. What's on each one: https://github.com/thomassidor/widgetkeeper#dashboard-examples
+**Home**, **Energy**, **Security**, **Climate**, **Evening**, **Garden** and **Kitchen**. Some of them use widgets from the next version (the Kitchen has the new Clock, the Evening the Curtains and Media). What's on each one: https://github.com/thomassidor/widgetkeeper#dashboard-examples
 
 ## :speech_balloon: Feedback wanted
 

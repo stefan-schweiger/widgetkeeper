@@ -98,6 +98,13 @@
       };
     });
   }
+  // The weather as the app's /clock reduces it: the current hour, and the rest of today's high and low.
+  function clockWeather() {
+    const hours = weatherHours();
+    const day = new Date(hours[0].t).toDateString();
+    const today = hours.filter(h => new Date(h.t).toDateString() === day).map(h => h.temp);
+    return { symbol: hours[0].symbol, temp: hours[0].temp, high: Math.max(...today), low: Math.min(...today), icon: null };
+  }
 
   // ---- Heatmaps: the last 7 days up to now, the way the app sends `/history`.
 
@@ -544,6 +551,7 @@
           ]),
         ],
         [
+          { type: 'clock', weather: clockWeather() },
           { type: 'weather', opts: { theme: 'vivid' }, hours: weatherHours() },
           { type: 'quickactions', devices: [
             { id: 'kq1', name: 'Oven', icon: icon('oven'), quickAction: qa('onoff', true) },

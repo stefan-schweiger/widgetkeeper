@@ -138,7 +138,7 @@ A week of one Insights value as a grid of days and hours: numbers such as light 
 ## Cameras
 <img src="docs/screenshots/cameras.png" alt="Cameras on a Homey dashboard" width="358">
 
-Your cameras as a grid of snapshots that refresh every few seconds. Tap one to watch it live.
+Your cameras as a grid of snapshots that refresh every few seconds (cameras with only a video stream show a still from it). Tap one to watch it live.
 
 **Settings:** cameras, refresh interval.
 

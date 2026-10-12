@@ -12,7 +12,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Widgetkeeper widgets in any browser on your home network (a wall tablet, a computer, a TV), with the same settings and live updates as on a Homey dashboard. The address is in the app settings.
 - Build the dashboards on the page itself: columns of widgets, moved and set up in place, in light, dark or automatic. Drag a widget by its bar to move it. They're kept on your Homey.
 - Off until you turn them on in the app settings.
-- The front page shows your dashboards as cards with a miniature of their widgets, and a carousel of every widget with a short description.
+- The front page shows your dashboards as cards with a miniature of their widgets, and a card that steps through every widget with a short description.
 - Choosing devices: a large picker with the devices grouped by room, room filters, search and Select all per room; the chosen devices are listed in order and can be dragged into a new order.
 - The page asks for a Homey API key, which stays in that browser.
 - Optionally also a password, set in the app settings, which every browser must enter after its key.
@@ -69,6 +69,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - A calmer list: each device's state is green when it's secure and red when it isn't, and every button is the same grey.
 - **Lock all** sits in the top line while the list is open.
 - A lock that hasn't reported yet is never shown as locked.
+
+### Cameras
+- Cameras without snapshots, only a video stream (such as Aqara cameras), now show a still taken from the video, refreshed every minute or so.
 
 ### Flow Buttons
 - 44 icons, each shown with a picture in the settings.
