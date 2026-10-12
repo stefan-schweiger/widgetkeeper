@@ -229,6 +229,14 @@ The time and the date in one tile, with the weather now and today's high and low
 ## Web dashboards
 Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an old iPad, a computer or a TV. Turn them on under **Apps → Widgetkeeper → Configure**, open the address shown there (`http://<your Homey's address>/app/com.thomassidor.widgetkeeper/settings/dashboard.html`), paste a Homey [API key](#api-key) (and, if you set one there, the web dashboards password), and build the dashboards on the page itself: columns of widgets, each with the same settings as on a Homey dashboard, in light, dark or automatic. They're the same widgets with the same live updates, and the dashboards are kept on your Homey, so every browser shows them. Home network only for now.
 
+<img src="docs/web/dashboard.png" alt="A web dashboard with Widgetkeeper widgets in a browser window" width="100%">
+
+**Your dashboards:** the front page, with every dashboard and the widgets you can add.
+<img src="docs/web/front.png" alt="The web dashboards front page in a browser window" width="100%">
+
+**Editing:** move widgets by dragging or with the arrows, change their settings, add and remove them.
+<img src="docs/web/editor.png" alt="A web dashboard being edited in a browser window" width="100%">
+
 ## Dashboard examples
 **Home**
 <img src="docs/showcase/home.png" alt="A home dashboard with Widgetkeeper widgets on a tablet" width="100%">

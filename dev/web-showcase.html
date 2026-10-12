@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web dashboards showcase</title>
+  <!--
+    The web dashboards page (settings/dashboard.js) with the made-up home of showcase-data.js, in a drawn desktop
+    browser window: the showcase dashboards as web dashboards, their widgets mounted in place of the iframes (the
+    `mountWidget` hook) with the real widget code. `?v=dashboard|front|editor` picks the view, `&d=<id>` the
+    dashboard (default home). Serve the repo root (the page and mock-web-api.js fetch /app.json and /locales/en.json)
+    and open /dev/web-showcase.html; scripts/render-web-showcase.mjs (`npm run web-showcase [-- <view>…]`) renders
+    them to docs/web/<view>.png on a transparent background. The clock is fixed (fixed-clock.js), so every render is
+    the same.
+  -->
+  <script src="fixed-clock.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../settings/dashboard.css">
+  <link rel="stylesheet" href="../widgets/electricity/public/widget.css">
+  <link rel="stylesheet" href="../widgets/thermostat/public/widget.css">
+  <link rel="stylesheet" href="../widgets/quickactions/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sensoralarms/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sensordots/public/widget.css">
+  <link rel="stylesheet" href="../widgets/weather/public/widget.css">
+  <link rel="stylesheet" href="../widgets/heatmap/public/widget.css">
+  <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
+  <link rel="stylesheet" href="../widgets/values/public/widget.css">
+  <link rel="stylesheet" href="../widgets/variables/public/widget.css">
+  <link rel="stylesheet" href="../widgets/flows/public/widget.css">
+  <link rel="stylesheet" href="../widgets/price/public/widget.css">
+  <link rel="stylesheet" href="../widgets/timers/public/widget.css">
+  <link rel="stylesheet" href="../widgets/locks/public/widget.css">
+  <link rel="stylesheet" href="../widgets/lights/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sparklines/public/widget.css">
+  <link rel="stylesheet" href="../widgets/media/public/widget.css">
+  <link rel="stylesheet" href="../widgets/curtains/public/widget.css">
+  <link rel="stylesheet" href="../widgets/clock/public/widget.css">
+  <script src="../widgets/electricity/public/widget.js"></script>
+  <script src="../widgets/thermostat/public/widget.js"></script>
+  <script src="../widgets/quickactions/public/widget.js"></script>
+  <script src="../widgets/sensoralarms/public/widget.js"></script>
+  <script src="../widgets/sensordots/public/widget.js"></script>
+  <script src="../widgets/weather/public/widget.js"></script>
+  <script src="../widgets/heatmap/public/widget.js"></script>
+  <script src="../widgets/cameras/public/widget.js"></script>
+  <script src="../widgets/values/public/widget.js"></script>
+  <script src="../widgets/variables/public/widget.js"></script>
+  <script src="../widgets/flows/public/widget.js"></script>
+  <script src="../widgets/price/public/widget.js"></script>
+  <script src="../widgets/timers/public/widget.js"></script>
+  <script src="../widgets/locks/public/widget.js"></script>
+  <script src="../widgets/lights/public/widget.js"></script>
+  <script src="../widgets/sparklines/public/widget.js"></script>
+  <script src="../widgets/media/public/widget.js"></script>
+  <script src="../widgets/curtains/public/widget.js"></script>
+  <script src="../widgets/clock/public/widget.js"></script>
+  <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
+  <script src="mock-media.js"></script>
+  <script src="mock-util.js"></script>
+  <script src="showcase-data.js"></script>
+  <script src="showcase-mount.js"></script>
+  <script src="mock-web-api.js"></script>
+  <script>
+    // Dark, whatever the browser's colour scheme (the front page follows it; the dashboards are set to dark).
+    const realMatchMedia = window.matchMedia.bind(window);
+    window.matchMedia = (q) => (/prefers-color-scheme:\s*dark/.test(q)
+      ? { matches: true, media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }
+      : realMatchMedia(q));
+
+    // The showcase dashboards as web dashboards; each widget keeps its showcase entry for the mount.
+    const ENTRY = new Map();
+    const BOARDS = Object.entries(SHOWCASE).map(([id, board]) => ({
+      id, name: board.title, theme: 'dark',
+      columns: board.columns.map((column, c) => column.map((w, i) => {
+        const wid = `${id}-${c}-${i}`;
+        ENTRY.set(wid, w);
+        return { id: wid, type: w.type, title: '', settings: {}, deviceIds: [] };
+      })),
+    }));
+    mockWebApi({ lang: 'en', dashboards: BOARDS });
+
+    const params = new URLSearchParams(location.search);
+    const VIEW = params.get('v') || 'dashboard';
+    const BOARD = params.get('d') || 'home';
+    const HASH = VIEW === 'front' ? '#/' : VIEW === 'editor' ? `#/d/${BOARD}/edit` : `#/d/${BOARD}`;
+    history.replaceState(null, '', HASH);
+  </script>
+  <script src="../settings/dashboard.js"></script>
+  <style>
+    /* Transparent around the window: the render script screenshots with a transparent default background. */
+    html { background: transparent !important; }
+    body { margin: 0; padding: 24px 40px 64px; display: inline-block; background: transparent !important; font-family: Roboto, sans-serif; }
+
+    /* The browser window: a dark title bar with the tab, then the toolbar with the address. */
+    .window {
+      width: 1440px; border-radius: 12px; overflow: hidden; background: #202124;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 30px 60px -16px rgba(0, 0, 0, 0.55), 0 10px 20px rgba(0, 0, 0, 0.25);
+    }
+    .tabs { display: flex; align-items: flex-end; gap: 14px; height: 42px; padding: 0 12px; background: #1B1C1F; }
+    .lights { display: flex; gap: 8px; align-self: center; padding: 0 8px 0 4px; }
+    .lights span { width: 12px; height: 12px; border-radius: 50%; }
+    .lights span:nth-child(1) { background: #FF5F57; } .lights span:nth-child(2) { background: #FEBC2E; } .lights span:nth-child(3) { background: #28C840; }
+    .tab {
+      display: flex; align-items: center; gap: 10px; width: 260px; height: 34px; padding: 0 14px; box-sizing: border-box;
+      border-radius: 10px 10px 0 0; background: #2A2B2F; color: #E8EAED; font-size: 13px;
+    }
+    .tab img { width: 16px; height: 16px; }
+    .tab-title { flex: 1 1 auto; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .tab-x, .tab-new { color: #9AA0A6; font-size: 16px; line-height: 1; }
+    .tab-new { align-self: center; font-size: 20px; }
+    .toolbar { display: flex; align-items: center; gap: 14px; height: 44px; padding: 0 14px; background: #2A2B2F; border-bottom: 1px solid #111217; }
+    .toolbar svg { display: block; flex: none; }
+    .address {
+      flex: 1 1 auto; display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 14px; border-radius: 16px;
+      background: #1B1C1F; color: #9AA0A6; font-size: 14px; white-space: nowrap; overflow: hidden;
+    }
+    .address b { color: #E8EAED; font-weight: 400; }
+
+    /* The page: 1440 × 860, anything taller cut off, like a page you'd scroll. */
+    .viewport { position: relative; height: 860px; overflow: hidden; background: var(--wd-bg); }
+    .viewport > .wd { min-height: 860px; }
+    /* No socket in the render: no "No live updates". */
+    .wd-live { display: none !important; }
+    /* A non-transparent widget's frame: Homey's widget padding, as the widget's own body has in an iframe. */
+    .wd-frame.card > .sc-body { padding: 16px; }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="tabs">
+      <span class="lights"><span></span><span></span><span></span></span>
+      <span class="tab"><img id="favicon" alt=""><span class="tab-title" id="tab-title"></span><span class="tab-x">×</span></span>
+      <span class="tab-new">+</span>
+    </div>
+    <div class="toolbar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9AA0A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9AA0A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg>
+      <span class="address">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9AA0A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M4 17h6M18 7h2M14 17h6"/><circle cx="16" cy="7" r="2"/><circle cx="12" cy="17" r="2"/></svg>
+        <span><b>192.168.1.20</b>/app/com.thomassidor.widgetkeeper/settings/dashboard.html<span id="hash"></span></span>
+      </span>
+    </div>
+    <div class="viewport"><div id="app" class="wd"></div></div>
+  </div>
+
+  <script>
+    // The widgets drawn on Homey's default widget background get its dark frame, as in showcase.html.
+    const FRAME = { thermostat: 'tw-frame', media: 'mw-frame', weather: 'wf-frame', heatmap: 'hm-frame' };
+    mountWebDashboards(document.getElementById('app'), {
+      mountWidget(w, wrap) {
+        const el = document.createElement('div');
+        if (wrap.classList.contains('card')) {
+          const body = document.createElement('div');
+          body.className = `sc-body ${FRAME[w.type] || ''}`;
+          body.append(el);
+          wrap.append(body);
+        } else wrap.append(el);
+        MOUNT[w.type](el, ENTRY.get(w.id));
+      },
+    });
+    document.getElementById('favicon').src = document.querySelector('link[rel=icon]')?.href
+      || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232A1958'/%3E%3Cg fill='none' stroke='%23fff' stroke-width='3'%3E%3Crect x='11.5' y='11.5' width='17' height='17' rx='5'/%3E%3Crect x='11.5' y='35.5' width='17' height='17' rx='5'/%3E%3Crect x='35.5' y='35.5' width='17' height='17' rx='5'/%3E%3C/g%3E%3Cpath d='M44 11Q44 20 53 20Q44 20 44 29Q44 20 35 20Q44 20 44 11Z' fill='%23fff'/%3E%3C/svg%3E";
+    document.getElementById('hash').textContent = HASH === '#/' ? '' : HASH;
+    // The front page's previews load lazily, so a render caught some of them still loading: load them all at once.
+    new MutationObserver(() => {
+      for (const img of document.querySelectorAll('img[loading="lazy"]')) img.loading = 'eager';
+    }).observe(document.getElementById('app'), { childList: true, subtree: true });
+
+    // The page's size, for the render script, once the page and its fonts are there; the tab shows the page's title.
+    document.fonts.ready.then(() => setTimeout(() => {
+      document.getElementById('tab-title').textContent = document.title;
+      const r = document.body.getBoundingClientRect();
+      document.body.dataset.width = String(Math.ceil(r.width));
+      document.body.dataset.height = String(Math.ceil(r.height));
+    }, 800));
+  </script>
+</body>
+</html>

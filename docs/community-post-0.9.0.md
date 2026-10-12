@@ -2,7 +2,8 @@
 A reply in the Homey Community topic (homeyCommunityTopicId 160453) announcing 0.9.0 in the test version.
 Paste everything below this comment into the forum editor.
 
-- Images are the README's on GitHub main (docs/clips/*.webp are animated, docs/screenshots/clock.png);
+- Images are the README's on GitHub main (docs/clips/*.webp are animated, docs/screenshots/clock.png,
+  docs/web/*.png);
   Discourse copies them on save. Push them before posting.
 - When 0.9.0 goes live, say so in a short reply of its own and update the first post.
 -->
@@ -38,6 +39,16 @@ The time and the date, with the weather now and today's high and low.
 ### :desktop_computer: Web dashboards
 
 Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an old iPad, a computer or a TV. Build the dashboards on the page itself, with the same settings and live updates as on Homey. Turn them on under **Apps → Widgetkeeper → Configure**; the page asks for a Homey API key, and optionally a password.
+
+[grid mode=carousel]
+
+![A web dashboard in a browser|690x470](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/web/dashboard.png)
+
+![The web dashboards front page|690x470](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/web/front.png)
+
+![Editing a web dashboard|690x470](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/web/editor.png)
+
+[/grid]
 
 ### Also new
 

@@ -19,6 +19,7 @@
     "screenshots": "node scripts/render-screenshots.mjs",
     "clips": "node scripts/render-clips.mjs",
     "showcase": "node scripts/render-showcase.mjs",
+    "web-showcase": "node scripts/render-web-showcase.mjs",
     "flow-icons": "node scripts/render-flow-icons.mjs",
     "web-socket": "node scripts/build-web-socket.mjs",
     "diagnostics": "node scripts/diagnostics.mjs",

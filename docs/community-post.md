@@ -4,6 +4,7 @@ Paste everything below this comment into the forum editor.
 
 - Preview images are the README's (docs/previews/*-dark.png on GitHub main); Discourse copies
   them on save. So are the dashboards (docs/showcase/*.png, 2816 × 1864, shown at 690 × 457).
+  The web dashboards are docs/web/*.png (3040 × 2070, shown at 690 × 470).
   upload:// images are ones already in the topic.
 - Mark anything that's only in the test version with ":soon: **Next version**". When a version
   goes live, remove its marks, update "What's new in the next version" and the version numbers.
@@ -61,6 +62,18 @@ Besides the four new widgets above:
 * **Electricity Overview** and **Thermostat Shortcuts:** a compact layout.
 * **Sparklines:** 2, 3 and 5 day spans. **Cameras:** cameras with only a video stream (such as Aqara) show a still from it.
 * **Locks and Doors:** a calmer list, with secure states in green and the rest in red.
+
+The web dashboards in a browser: a dashboard, the front page and the editor. Swipe through them:
+
+[grid mode=carousel]
+
+![A web dashboard in a browser|690x470](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/web/dashboard.png)
+
+![The web dashboards front page|690x470](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/web/front.png)
+
+![Editing a web dashboard|690x470](https://raw.githubusercontent.com/thomassidor/widgetkeeper/main/docs/web/editor.png)
+
+[/grid]
 
 Flow Buttons, Flow Variables, Smart Stack and Media's buttons need a Homey API key, which you add in the app's settings (**Apps → Widgetkeeper → Configure**).
 

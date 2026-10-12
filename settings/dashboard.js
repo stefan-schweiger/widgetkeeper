@@ -221,7 +221,11 @@
   /** The app id from this page's path (`/app/<appId>/settings/dashboard.html`). */
   const APP_ID = (location.pathname.match(/\/app\/([^/]+)\//) || [])[1] || 'com.thomassidor.widgetkeeper';
 
-  window.mountWebDashboards = function (root) {
+  /**
+   * `opts.mountWidget(widget, wrap)`, when given, draws a widget into `wrap` in place of its iframe (the dev renders,
+   * `dev/web-showcase.html`, mount the widgets with made-up data; `dashboard.html` never passes it).
+   */
+  window.mountWebDashboards = function (root, opts = {}) {
     let key = storageGet(KEY_STORAGE);
     let session = storageGet(SESSION_STORAGE);
     let setup = null; // `/web/setup`: {appId, homeyId, language, strings, widgets, dashboards}
@@ -983,6 +987,11 @@
         return node;
       }
       const wrap = el('div', def.transparent ? 'wd-frame' : 'wd-frame card');
+      if (opts.mountWidget) {
+        node.append(wrap);
+        opts.mountWidget(clone(w), wrap);
+        return node;
+      }
       const iframe = document.createElement('iframe');
       iframe.title = w.title || def.name;
       iframe.style.height = `${def.height || 120}px`;
