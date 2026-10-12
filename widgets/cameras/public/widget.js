@@ -1,7 +1,8 @@
 /*
  * Cameras: a grid of camera snapshots, 2 per row (16:9; a lone or odd last tile spans the row), each
  * refreshed every few seconds. Tapping a camera with video plays it live over the whole widget (WebRTC
- * through Homey's own video server); tapping again, or 5 minutes, ends it.
+ * through Homey's own video server); tapping again, or 5 minutes, ends it. A camera with video but no
+ * snapshot (Aqara's) gets a frame grabbed from a short-lived stream instead, at most once a minute.
  * Plain browser JS (served as-is).
  */
 (function () {
@@ -13,6 +14,9 @@
   const FRAME_CHECK_MS = 5000; // how often a live stream's decoded frames are counted
   const KEEPALIVE_MS = 10e3;
   const ICE_WAIT_MS = 2000; // Homey's answer has every candidate, so the offer is sent once gathering is done
+  const GRAB_MIN_MS = 60e3; // a video-only camera's frame grab: each one opens a stream through Homey
+  const GRAB_RETRY_MS = 5 * 60e3; // after a failed grab
+  const GRAB_WIDTH = 640; // px; a grabbed frame is scaled down to this
 
   const DEFAULT_STRINGS = {
     selectDevices: 'Select cameras in the widget settings.',
@@ -37,6 +41,20 @@
   }
 
   /** Loads an image off-screen, so a tile only swaps once the new snapshot has decoded. */
+  /** The video's current frame as a JPEG data URL, or null before it has a size. */
+  function captureFrame(video) {
+    const w = video.videoWidth, h = video.videoHeight;
+    if (!w || !h) return null;
+    const scale = Math.min(1, GRAB_WIDTH / w);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(w * scale);
+    canvas.height = Math.round(h * scale);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/jpeg', 0.8);
+  }
+
   function preload(src) {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -61,6 +79,7 @@
     };
     const now = opts.now || (() => Date.now());
     const refreshMs = opts.refreshMs || 10e3;
+    const grabMs = Math.max(GRAB_MIN_MS, refreshMs);
 
     let devices = []; // [{ id, name, icon, image: { id, url, lastUpdated } | null, video } | { id, missing }]
     let messageText = null;
@@ -76,13 +95,17 @@
     let refreshing = false;
     /** The tile playing live, with its connection. */
     let live = null;
+    /** The frame grab under way (a video-only camera). */
+    let grab = null;
+    const grabReported = new Set();
 
     root.classList.add('cw');
     const grid = el('div', { class: 'cw-grid' }, root);
     const messageEl = el('div', { class: 'cw-message', dir: 'auto' }, root);
     /**
      * @type {Map<string, {tile: HTMLElement, img: HTMLImageElement, video: HTMLVideoElement, icon: HTMLElement,
-     *   name: HTMLElement, badge: HTMLElement, note: HTMLElement, loadedAt: number, noteTimer: any}>}
+     *   name: HTMLElement, badge: HTMLElement, note: HTMLElement, loadedAt: number, noteTimer: any,
+     *   grabAt: number | null, grabFailed: boolean}>}
      */
     const tiles = new Map();
 
@@ -143,16 +166,18 @@
       refreshing = true;
       try {
         for (const d of devices.slice()) {
-          if ('missing' in d || !d.image) continue;
+          if ('missing' in d) continue;
           if (live && live.id === d.id && live.playing) continue;
           const tile = tiles.get(d.id);
           if (!tile) continue;
+          if (!d.image) {
+            if (d.video) await grabInto(d, tile);
+            continue;
+          }
           try {
             const src = await loadSnapshot(d);
             if (tiles.get(d.id) !== tile) continue;
-            tile.img.src = src;
-            tile.loadedAt = now();
-            tile.tile.classList.add('loaded');
+            showImage(tile, src);
           } catch (err) {
             console.error(err);
           }
@@ -163,11 +188,103 @@
       }
     }
 
+    function showImage(tile, src) {
+      tile.img.src = src;
+      tile.loadedAt = now();
+      tile.tile.classList.add('loaded');
+    }
+
+    /**
+     * A video-only camera's picture: a frame from its stream, one stream at a time, at most every grabMs
+     * (GRAB_RETRY_MS after a failure), and never while a camera is live.
+     */
+    async function grabInto(d, tile) {
+      if (live || grab) return;
+      if (tile.grabAt != null && now() - tile.grabAt < (tile.grabFailed ? GRAB_RETRY_MS : grabMs)) return;
+      tile.grabAt = now();
+      try {
+        const src = await grabFrame(d, tile);
+        if (src == null || tiles.get(d.id) !== tile) return; // cancelled, or the camera went
+        tile.grabFailed = false;
+        showImage(tile, src);
+      } catch (err) {
+        tile.grabFailed = true;
+        if (!grabReported.has(d.id) && opts.report) opts.report(`frame grab of ${d.name} failed: ${err && err.message ? err.message : err}`);
+        grabReported.add(d.id);
+        render();
+      }
+      updateBadge(d.id);
+    }
+
+    /** Opens a stream just long enough to draw its first frame; resolves null when cancelled. */
+    function grabFrame(d, tile) {
+      return new Promise((resolve, reject) => {
+        if (typeof RTCPeerConnection !== 'function') { reject(new Error('no WebRTC')); return; }
+        const pc = new RTCPeerConnection();
+        const video = tile.video;
+        let finished = false;
+        let retry = null;
+        const finish = (result) => {
+          if (finished) return;
+          finished = true;
+          clearTimeout(timer);
+          clearTimeout(retry);
+          video.removeEventListener('playing', onPlaying);
+          if (grab === g) grab = null;
+          try { pc.close(); } catch (err) { /* already closed */ }
+          video.pause();
+          video.srcObject = null;
+          if (result instanceof Error) reject(result);
+          else resolve(result);
+        };
+        const g = { id: d.id, cancel: () => finish(null) };
+        grab = g;
+        const timer = setTimeout(() => finish(new Error('no video after 15 s')), LIVE_TIMEOUT_MS);
+        const take = () => {
+          if (finished) return;
+          let src = null;
+          try { src = captureFrame(video); } catch (err) { finish(err); return; }
+          if (src) finish(src);
+          else retry = setTimeout(take, 250); // no size yet
+        };
+        const onPlaying = () => {
+          if (typeof video.requestVideoFrameCallback === 'function') video.requestVideoFrameCallback(() => take());
+          else retry = setTimeout(take, 100);
+        };
+        video.addEventListener('playing', onPlaying);
+        pc.ontrack = (e) => {
+          if (finished) return;
+          video.srcObject = e.streams && e.streams[0] ? e.streams[0] : new MediaStream([e.track]);
+          const p = video.play();
+          if (p && p.catch) p.catch(() => {});
+        };
+        pc.onconnectionstatechange = () => {
+          if (pc.connectionState === 'failed') finish(new Error('connection failed'));
+        };
+        openStream(pc, d.video, () => !finished)
+          .catch(err => finish(err instanceof Error ? err : new Error(String(err))));
+      });
+    }
+
+    /** Sends the offer and sets Homey's answer; null when `current()` says the stream was dropped meanwhile. */
+    async function openStream(pc, videoId, current) {
+      pc.addTransceiver('video', { direction: 'recvonly' });
+      await pc.setLocalDescription(await pc.createOffer());
+      await waitForIce(pc);
+      if (!current()) return null;
+      const res = await api('POST', '/video/offer', { videoId, offer: pc.localDescription.sdp });
+      if (!current()) return null;
+      await pc.setRemoteDescription({ type: 'answer', sdp: res.answer });
+      return res;
+    }
+
     /** A snapshot that hasn't refreshed for two intervals shows the time it was taken. */
     function updateBadge(id) {
       const tile = tiles.get(id);
       if (!tile) return;
-      const stale = tile.loadedAt > 0 && now() - tile.loadedAt > 2 * refreshMs + 5000;
+      const d = devices.find(x => x.id === id);
+      const every = d && !('missing' in d) && !d.image ? grabMs : refreshMs;
+      const stale = tile.loadedAt > 0 && now() - tile.loadedAt > 2 * every + 5000;
       tile.badge.textContent = stale
         ? new Date(tile.loadedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
       tile.badge.style.display = stale ? '' : 'none';
@@ -198,7 +315,7 @@
       reportHeight();
     }
 
-    function stopLive() {
+    function stopLive(refreshAfter = true) {
       if (!live) return;
       const l = live;
       live = null;
@@ -209,12 +326,20 @@
       try { l.pc.close(); } catch (err) { /* already closed */ }
       const tile = tiles.get(l.id);
       if (tile) {
+        // A video-only camera keeps the last frame it showed live.
+        const d = devices.find(x => x.id === l.id);
+        if (l.playing && d && !('missing' in d) && !d.image) {
+          let src = null;
+          try { src = captureFrame(tile.video); } catch (err) { /* no frame */ }
+          if (src) { tile.grabAt = now(); tile.grabFailed = false; showImage(tile, src); }
+        }
         tile.video.pause();
         tile.video.srcObject = null;
         tile.tile.classList.remove('live', 'connecting');
         expand(tile, false);
+        render();
       }
-      refresh();
+      if (refreshAfter) refresh();
     }
 
     function waitForIce(pc) {
@@ -230,6 +355,7 @@
     async function startLive(d) {
       const tile = tiles.get(d.id);
       if (!tile || typeof RTCPeerConnection !== 'function') { note(d.id, t('liveFailed')); return; }
+      if (grab) grab.cancel(); // one stream at a time
       const pc = new RTCPeerConnection();
       const l = {
         id: d.id, pc, playing: false, timeout: null, maxTimer: null, keepAlive: null, frameCheck: null,
@@ -247,7 +373,6 @@
       expand(tile, true);
       l.timeout = setTimeout(() => fail('no video after 15 s'), LIVE_TIMEOUT_MS);
       l.maxTimer = setTimeout(() => { if (live === l) stopLive(); }, LIVE_MAX_MS);
-      pc.addTransceiver('video', { direction: 'recvonly' });
       pc.ontrack = (e) => {
         if (live !== l) return;
         tile.video.srcObject = e.streams && e.streams[0] ? e.streams[0] : new MediaStream([e.track]);
@@ -258,12 +383,8 @@
         if (pc.connectionState === 'failed') fail('connection failed');
       };
       try {
-        await pc.setLocalDescription(await pc.createOffer());
-        await waitForIce(pc);
-        if (live !== l) return;
-        const res = await api('POST', '/video/offer', { videoId: d.video, offer: pc.localDescription.sdp });
-        if (live !== l) return;
-        await pc.setRemoteDescription({ type: 'answer', sdp: res.answer });
+        const res = await openStream(pc, d.video, () => live === l);
+        if (!res) return;
         if (res.streamId) {
           l.keepAlive = setInterval(() => {
             api('POST', '/video/keepalive', { videoId: d.video, streamId: res.streamId }).catch((err) => {
@@ -339,7 +460,10 @@
       badge.style.display = 'none';
       const noteEl = el('span', { class: 'cw-note', dir: 'auto' }, node);
       noteEl.style.display = 'none';
-      tile = { tile: node, img, video, icon, name, badge, note: noteEl, loadedAt: 0, noteTimer: null };
+      tile = {
+        tile: node, img, video, icon, name, badge, note: noteEl, loadedAt: 0, noteTimer: null,
+        grabAt: null, grabFailed: false,
+      };
 
       // Taps come from the touch events, like Quick Actions: a touch that ends within TAP_SLOP of where it
       // started. A drag is left to the dashboard, so it still scrolls.
@@ -389,12 +513,14 @@
         setMask(tile.icon, missing ? null : d.icon);
         tile.icon.classList.toggle('fallback', missing || !d.icon);
         tile.tile.classList.toggle('missing', missing);
-        tile.tile.classList.toggle('no-image', !missing && !d.image);
+        // "No snapshot": no image and no video to grab a frame from, or a failed grab before any frame.
+        const empty = !missing && !d.image && (!d.video || (tile.grabFailed && !tile.loadedAt));
+        tile.tile.classList.toggle('no-image', empty);
         tile.tile.classList.toggle('has-video', !missing && !!d.video);
         // A lone tile, or the last of an odd number, spans the row.
         tile.tile.classList.toggle('wide', i === devices.length - 1 && devices.length % 2 === 1);
-        if (!missing && !d.image) tile.note.style.display = 'none';
-        tile.tile.setAttribute('data-empty', !missing && !d.image ? t('noImage') : '');
+        if (empty) tile.note.style.display = 'none';
+        tile.tile.setAttribute('data-empty', empty ? t('noImage') : '');
       });
       grid.style.display = devices.length ? '' : 'none';
       messageEl.textContent = messageText || '';
@@ -410,7 +536,10 @@
     }
 
     /** Ends live view, e.g. when the dashboard goes to the background. */
-    function pause() { stopLive(); }
+    function pause() {
+      if (grab) grab.cancel();
+      stopLive(false);
+    }
 
     return { setState, setMessage, refresh, render, pause, t, routeOf: (id) => (appRoute.has(id) ? 'app' : 'direct') };
   }

@@ -18,10 +18,11 @@
 </head>
 <body>
   <div class="col"><span>358 px (phone) · dark · 6 cameras</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
-  <div class="col"><span>300 px · dark · 3 cameras, one without a snapshot</span><div class="dash homey-dark-mode" style="width:300px"><div id="w2"></div></div></div>
+  <div class="col"><span>300 px · dark · 3 cameras, one without a snapshot (its frame grab fails: no API)</span><div class="dash homey-dark-mode" style="width:300px"><div id="w2"></div></div></div>
   <div class="col"><span>358 px · light · 2 cameras, one unavailable</span><div class="dash light" style="width:358px"><div id="w3"></div></div></div>
   <div class="col"><span>358 px · dark · live (a looping canvas stands in for the stream)</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
   <div class="col"><span>358 px · dark · live, 6 cameras (the widget keeps its height)</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px · dark · video but no snapshot (Aqara): a frame grabbed from the stream</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
   <div class="col"><span>358 px · no cameras</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
 
   <script>
@@ -70,6 +71,12 @@
     });
     live6.setState(all);
     live6.refresh().then(() => document.querySelector('#w6 .cw-tile[data-device="garden"]').click());
+
+    const grabbed = createCamerasWidget(document.getElementById('w7'), {
+      t: devT, api: async () => ({ answer: 'mock', streamId: null }),
+    });
+    grabbed.setState([{ ...all[2], image: null }, { ...all[0], image: null }]);
+    grabbed.refresh();
 
     const empty = createCamerasWidget(document.getElementById('w5'), { t: devT });
     empty.setMessage(empty.t('selectDevices'));

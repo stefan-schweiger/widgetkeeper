@@ -4,7 +4,7 @@ import { loadWidget } from './helpers/loadWidget.js';
 
 let win: any;
 beforeAll(() => { win = loadWidget('cameras'); });
-afterEach(() => { document.body.innerHTML = ''; vi.unstubAllGlobals(); });
+afterEach(() => { document.body.innerHTML = ''; vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
 /** Images load (or fail, for URLs containing "broken") on the next tick, like a browser's would. */
 let loaded: string[] = [];
@@ -53,10 +53,12 @@ describe('grid', () => {
     expect(wide(6)).toEqual([false, false, false, false, false, false]);
   });
 
-  it('marks cameras without a snapshot and unavailable ones', () => {
-    const { tile } = widget([cam('a', { image: null }), { id: 'gone', missing: true }]);
+  it('marks cameras without a snapshot or video and unavailable ones', () => {
+    const { tile } = widget([cam('a', { image: null, video: null }), cam('v', { image: null }), { id: 'gone', missing: true }]);
     expect(tile('a').classList.contains('no-image')).toBe(true);
     expect(tile('a').getAttribute('data-empty')).toBe('No snapshot');
+    // A camera with video gets a frame from it instead.
+    expect(tile('v').classList.contains('no-image')).toBe(false);
     expect(tile('gone').classList.contains('missing')).toBe(true);
     expect(tile('gone').querySelector('.cw-name')!.textContent).toBe('Unavailable');
   });
@@ -119,6 +121,21 @@ function stubPeerConnection() {
     close() { this.closed = true; }
   });
   return pcs;
+}
+
+/** Canvas drawing: happy-dom has none, so a frame comes out as a fixed data URL. */
+function stubCanvas() {
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ drawImage() {} } as any);
+  vi.spyOn(HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue('data:image/jpeg;base64,FRAME');
+}
+
+/** The tile's video starts playing at 1280 × 720. */
+function playing(tile: HTMLElement) {
+  const video = tile.querySelector('video')!;
+  Object.defineProperty(video, 'videoWidth', { value: 1280, configurable: true });
+  Object.defineProperty(video, 'videoHeight', { value: 720, configurable: true });
+  video.dispatchEvent(new Event('playing'));
+  return video;
 }
 
 const offerApi = () => vi.fn(async (_m: string, path: string): Promise<any> => (path === '/video/offer' ? { answer: 'v=0 answer', streamId: 's1' } : {}));
@@ -188,6 +205,19 @@ describe('live view', () => {
     expect(grid.style.minHeight).toBe('180px');
   });
 
+  it('keeps a video-only camera\'s last live frame when live view ends', async () => {
+    const pcs = stubPeerConnection();
+    stubCanvas();
+    const { tile } = widget([cam('a', { image: null })], offerApi());
+    tile('a').click();
+    await vi.waitFor(() => expect(pcs[0]?.remote).toBeTruthy());
+    const video = playing(tile('a'));
+    expect(video).toBeTruthy();
+    tile('a').click();
+    expect(tile('a').querySelector('img')!.getAttribute('src')).toBe('data:image/jpeg;base64,FRAME');
+    expect(tile('a').classList.contains('loaded')).toBe(true);
+  });
+
   it('ends live view when the stream stops sending frames', async () => {
     vi.useFakeTimers();
     try {
@@ -216,5 +246,91 @@ describe('live view', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+});
+
+describe('frame grabs (video, no snapshot)', () => {
+  it('grabs a frame from the stream, shows it and closes the stream', async () => {
+    const pcs = stubPeerConnection();
+    stubCanvas();
+    const api = offerApi();
+    const { w, tile } = widget([cam('a', { image: null, video: 'vid-a' })], api);
+    const done = w.refresh();
+    await vi.waitFor(() => expect(pcs[0]?.remote).toEqual({ type: 'answer', sdp: 'v=0 answer' }));
+    expect(api).toHaveBeenCalledWith('POST', '/video/offer', { videoId: 'vid-a', offer: 'v=0 offer' });
+    playing(tile('a'));
+    await done;
+    expect(pcs[0].closed).toBe(true);
+    expect(tile('a').querySelector('img')!.getAttribute('src')).toBe('data:image/jpeg;base64,FRAME');
+    expect(tile('a').classList.contains('loaded')).toBe(true);
+    expect(tile('a').classList.contains('live')).toBe(false);
+    expect(tile('a').classList.contains('no-image')).toBe(false);
+    // Not again within the minute.
+    await w.refresh();
+    expect(pcs).toHaveLength(1);
+  });
+
+  it('grabs again after a minute', async () => {
+    const pcs = stubPeerConnection();
+    stubCanvas();
+    let clock = 1000;
+    const { w, tile } = widget([cam('a', { image: null })], offerApi(), () => clock);
+    const first = w.refresh();
+    await vi.waitFor(() => expect(pcs[0]?.remote).toBeTruthy());
+    playing(tile('a'));
+    await first;
+    clock += 60e3;
+    w.refresh();
+    await vi.waitFor(() => expect(pcs).toHaveLength(2));
+  });
+
+  it('does not grab while a camera is live', async () => {
+    const pcs = stubPeerConnection();
+    const { w, tile } = widget([cam('a'), cam('b', { image: null })], offerApi());
+    tile('a').click();
+    await vi.waitFor(() => expect(pcs).toHaveLength(1));
+    await w.refresh();
+    expect(pcs).toHaveLength(1);
+  });
+
+  it('a tap during a grab cancels it and goes live', async () => {
+    const pcs = stubPeerConnection();
+    const api = offerApi();
+    const { w, tile } = widget([cam('a', { image: null })], api);
+    const done = w.refresh();
+    await vi.waitFor(() => expect(pcs[0]?.remote).toBeTruthy());
+    tile('a').click();
+    await done;
+    expect(pcs[0].closed).toBe(true);
+    expect(pcs).toHaveLength(2);
+    expect(pcs[1].closed).toBe(false);
+    expect(tile('a').classList.contains('connecting')).toBe(true);
+  });
+
+  it('reports a failed grab once and says there is no snapshot', async () => {
+    stubPeerConnection();
+    let clock = 1000;
+    const api = vi.fn(async (): Promise<any> => { throw new Error('H.265 not supported'); });
+    const { w, tile, report } = widget([cam('a', { image: null })], api, () => clock);
+    await w.refresh();
+    expect(report).toHaveBeenCalledWith('frame grab of Cam a failed: H.265 not supported');
+    expect(tile('a').classList.contains('no-image')).toBe(true);
+    expect(tile('a').getAttribute('data-empty')).toBe('No snapshot');
+    // Retried after 5 minutes, without a second report.
+    clock += 60e3;
+    await w.refresh();
+    expect(api).toHaveBeenCalledTimes(1);
+    clock += 5 * 60e3;
+    await w.refresh();
+    expect(api).toHaveBeenCalledTimes(2);
+    expect(report).toHaveBeenCalledTimes(1);
+  });
+
+  it('sends no offer for a camera with neither snapshot nor video', async () => {
+    const pcs = stubPeerConnection();
+    const { w, api } = widget([cam('a', { image: null, video: null })], offerApi());
+    await w.refresh();
+    expect(pcs).toHaveLength(0);
+    expect(api).not.toHaveBeenCalled();
   });
 });
