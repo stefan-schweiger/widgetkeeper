@@ -168,7 +168,7 @@ Half-height tiles that each show one live device value. Percentages can fill the
 ## Light Controls
 <img src="docs/clips/lights.webp" alt="Light Controls on a Homey dashboard: a light turned on, dimmed with the bar, and given a colour and a white" width="358">
 
-Six lights in the space of three of Homey's light cards. Tap a tile to switch it, drag or tap the bar to dim, and tap the colour button for colours and whites. Lights in a room can share one tile.
+Six lights in the space of three of Homey's light cards. Tap a tile to switch it, drag or tap the bar to dim, and tap the colour button for colours and whites. Lights in a room can share one tile. The Room's Moods palette puts the room's Homey Moods on the colour button instead of the colours and whites; starting one needs an [API key](#api-key).
 
 **Settings:** lights, group by room, what the bar's far left does, colour palette.
 
@@ -299,7 +299,7 @@ Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an
 <img src="docs/showcase/kitchen.png" alt="A kitchen dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
 ## API key
-Homey doesn't let apps change variables, start flows or read dashboards on their own, so Variables, Flow Buttons, Media's buttons and Smart Stack need a Homey API key. Create one in the Homey web app under **Settings → API Keys** with those permissions, and paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey. The web dashboards ask for a key of their own, which stays in that browser.
+Homey doesn't let apps change variables, start flows, read dashboards or start Moods on their own, so Variables, Flow Buttons, Media's buttons, Smart Stack and Light Controls' Moods need a Homey API key. Create one in the Homey web app under **Settings → API Keys** with those permissions, and paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey. The web dashboards ask for a key of their own, which stays in that browser.
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic, following Homey's language.

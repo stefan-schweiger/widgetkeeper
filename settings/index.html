@@ -29,7 +29,7 @@
   </style>
 </head>
 <body>
-  <!-- The personal API key: what the app's own token may not do (variables, flows, speaker actions, dashboards). -->
+  <!-- The personal API key: what the app's own token may not do (variables, flows, speaker actions, dashboards, Moods). -->
   <fieldset class="homey-form-fieldset">
     <legend class="homey-form-legend" data-i18n="varTitle">API key</legend>
     <p class="homey-form-help" data-i18n="varHelp"></p>
@@ -155,12 +155,15 @@
           if (res && res.ok) {
             varKey.value = '';
             syncKeyButtons();
-            // A key may allow only some of it (the answer says what): variables, flows, dashboards (the Smart Stack).
+            // A key may allow only some of it (the answer says what): variables, flows, dashboards (the Smart Stack),
+            // Moods (Light Controls).
+            const moods = t(res.moods ? 'varMoods' : 'varNoMoods');
             if (!key) varStatus.textContent = t('varRemoved');
-            else if (!res.variables && !res.flows) varStatus.textContent = t('varSavedDashboards');
-            else {
+            else if (!res.variables && !res.flows) {
+              varStatus.textContent = res.dashboards ? `${t('varSavedDashboards')} ${moods}` : t('varSavedMoods');
+            } else {
               const saved = !res.variables ? 'varSavedFlows' : !res.flows ? 'varSavedVariables' : 'varSaved';
-              varStatus.textContent = `${t(saved)} ${t(res.dashboards ? 'varDashboards' : 'varNoDashboards')}`;
+              varStatus.textContent = `${t(saved)} ${t(res.dashboards ? 'varDashboards' : 'varNoDashboards')} ${moods}`;
             }
             showKeyState(true);
           } else {

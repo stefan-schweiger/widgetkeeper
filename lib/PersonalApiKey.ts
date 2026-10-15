@@ -17,6 +17,8 @@ const USES = {
   dashboards: ['homey.dashboard.readonly', 'homey.dashboard', 'homey'],
   /** A device's Flow action card (Media's buttons): `runFlowCardAction` needs `homey.flow`. */
   cards: ['homey.flow', 'homey'],
+  /** Light Controls' Moods (`palette: moods`): `setMood` needs `homey.mood.set`. */
+  moods: ['homey.mood.set', 'homey.mood', 'homey'],
 } as const;
 
 export type KeyUse = keyof typeof USES;
@@ -41,7 +43,7 @@ export const scopesAllow = (scopes: readonly string[], use: KeyUse) => scopes.so
 /** How long another key's scopes (`scopesOf()`) are remembered. */
 const SCOPES_TTL_MS = 60e3;
 
-export type SaveResult = { ok: true, variables: boolean, flows: boolean, dashboards: boolean } | { ok: false, reason: KeyProblem };
+export type SaveResult = { ok: true, variables: boolean, flows: boolean, dashboards: boolean, moods: boolean } | { ok: false, reason: KeyProblem };
 
 const shared = new WeakMap<object, PersonalApiKey>();
 
@@ -80,14 +82,14 @@ export default class PersonalApiKey {
 
   /**
    * Checks a key and saves it (an empty key removes it). A key Homey doesn't accept, or one that may do none of
-   * the uses (change variables, start flows, read dashboards), isn't saved. The result says what the saved key may do.
+   * the uses (change variables, start flows, read dashboards, start Moods), isn't saved. The result says what the saved key may do.
    */
   async save(key: string): Promise<SaveResult> {
     key = key.trim();
     if (!key) {
       this.homey.settings.unset(API_KEY_SETTING);
       this.cached = null;
-      return { ok: true, variables: false, flows: false, dashboards: false };
+      return { ok: true, variables: false, flows: false, dashboards: false, moods: false };
     }
     let scopes: string[] = [];
     try {
@@ -101,10 +103,11 @@ export default class PersonalApiKey {
     const variables = may('variables');
     const flows = may('flows');
     const dashboards = may('dashboards');
-    if (!variables && !flows && !dashboards) return { ok: false, reason: 'keyScope' };
+    const moods = may('moods');
+    if (!variables && !flows && !dashboards && !moods) return { ok: false, reason: 'keyScope' };
     this.homey.settings.set(API_KEY_SETTING, key);
     this.cached = null;
-    return { ok: true, variables, flows, dashboards };
+    return { ok: true, variables, flows, dashboards, moods };
   }
 
   /**

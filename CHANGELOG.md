@@ -33,6 +33,10 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Sparklines and Device Values
 - Every battery tile shows the same battery icon. Some devices brought their own, so tiles side by side looked different.
 
+### Light Controls
+- A new colour palette, *Room's Moods*: the colour button shows the Homey Moods of the light's room (or of the room's tile, grouped by room) in place of the colours and whites, and a tap starts one. A room without Moods keeps the colours. Starting a Mood needs an API key that may start Moods. A user asked for it.
+- A tile whose lights shine in different colours shows them all: the tile, the brightness bar and the colour button blend up to four colours. This covers Homey's own light groups (which showed the last colour set on the group, not what their lights show, for example after a Mood) and lights grouped by room.
+
 ### Cameras
 - Live view tries the camera's other streams when one won't play, such as a 4K H.265 stream, which Homey can't stream to a dashboard: a Reolink camera's sub stream then plays instead. A user's camera showed only *Live view failed*.
 - When every stream of a camera is H.265, the tile says so, and suggests setting the camera to H.264. A Reolink camera on a Home Hub or an NVR has only one stream.

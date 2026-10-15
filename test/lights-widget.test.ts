@@ -396,3 +396,149 @@ describe('group by room', () => {
     expect(ids(root)).toEqual(['a', 'b']);
   });
 });
+
+describe('room moods', () => {
+  const stue = { id: 'z1', name: 'Stue' };
+  const kokken = { id: 'z2', name: 'Køkken' };
+  const moods = [
+    { id: 'm1', name: 'Cosy', zone: 'z1', colors: [{ hue: 0.08, saturation: 0.8 }, { temperature: 1 }] },
+    { id: 'm2', name: 'Bright', zone: 'z1', colors: [{ temperature: 0 }] },
+    { id: 'm3', name: 'Dinner', zone: 'z2', colors: [] },
+  ];
+  const withZone = (d: any, zone: any) => ({ ...d, zone });
+  function moodWidget(devices: any[], onMood: any = vi.fn(async () => {}), groupByZone = false) {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const onSet = vi.fn(async () => {});
+    const w = win.createLightsWidget(root, { onSet, onMood, groupByZone, palette: 'moods' });
+    w.setState(devices);
+    w.setMoods(moods);
+    const tile = (id: string) => root.querySelector<HTMLElement>(`.lc-tile[data-device="${id}"]`)!;
+    const open = (id: string) => tile(id).querySelector<HTMLElement>('.lc-chip')!.click();
+    const panel = () => root.querySelector<HTMLElement>('.lc-panel')!;
+    const pills = () => [...panel().querySelectorAll<HTMLElement>('.lc-mood')];
+    return { w, root, tile, open, panel, pills, onSet, onMood };
+  }
+
+  it("shows only the room's Moods, without colours or whites", () => {
+    const { open, pills, panel } = moodWidget([withZone(hueGo(), stue)]);
+    open('hue');
+    expect(pills().map(p => p.textContent)).toEqual(['Cosy', 'Bright']);
+    expect(panel().querySelectorAll('.lc-swatch')).toHaveLength(0);
+    expect(panel().classList.contains('moods')).toBe(true);
+    expect(panel().querySelector('.lc-close')).not.toBeNull();
+    const dots = pills().map(p => p.querySelector<HTMLElement>('.lc-mood-dot')!.style.getPropertyValue('--lc-swatch'));
+    expect(dots[0]).toMatch(/^linear-gradient\(135deg, hsl\(29 80% 70%\), rgb\(255 176 84\)\)$/);
+    expect(dots[1]).toBe('rgb(214 232 255)');
+  });
+
+  it('keeps the colours for a room without Moods, and no dot for a Mood without colours', () => {
+    const { open, pills, panel, w } = moodWidget([withZone(hueGo(), { id: 'z9', name: 'Loft' })]);
+    open('hue');
+    expect(pills()).toHaveLength(0);
+    expect(panel().querySelectorAll('.lc-swatch')).toHaveLength(7 + 5);
+    expect(panel().classList.contains('moods')).toBe(false);
+    w.setMoods([{ ...moods[2], zone: 'z9' }]);
+    expect(pills().map(p => p.textContent)).toEqual(['Dinner']);
+    expect(pills()[0].querySelector('.lc-mood-dot')).toBeNull();
+  });
+
+  it('gives a light with only brightness the chip when its room has Moods', () => {
+    const { tile, w } = moodWidget([withZone(spots(0.5), kokken), withZone({ ...spots(0.5), id: 's2' }, { id: 'z9', name: 'Loft' })]);
+    const chip = (id: string) => tile(id).querySelector<HTMLElement>('.lc-chip')!;
+    expect(chip('spots').style.display).toBe('');
+    expect(chip('spots').getAttribute('aria-label')).toBe('Moods');
+    expect(chip('s2').style.display).toBe('none');
+    w.setMoods([]);
+    expect(chip('spots').style.display).toBe('none');
+  });
+
+  it("uses a grouped room's Moods", () => {
+    const { open, pills } = moodWidget([withZone(bulb(), stue), withZone(hueGo(), stue)], undefined, true);
+    open('zone:z1');
+    expect(pills().map(p => p.textContent)).toEqual(['Cosy', 'Bright']);
+  });
+
+  it('starts a Mood on a tap and closes, without setting the lights itself', () => {
+    const { open, pills, panel, onMood, onSet } = moodWidget([withZone(hueGo(), stue)]);
+    open('hue');
+    pills()[1].click();
+    expect(onMood).toHaveBeenCalledWith('m2');
+    expect(onSet).not.toHaveBeenCalled();
+    expect(panel().style.display).toBe('none');
+  });
+
+  it('says what to do without a usable API key', async () => {
+    const onMood = vi.fn(async () => { throw Object.assign(new Error('keyScope'), { reason: 'keyScope' }); });
+    const { open, pills, root, tile } = moodWidget([withZone(hueGo(), stue)], onMood);
+    open('hue');
+    pills()[0].click();
+    await vi.waitFor(() => expect(root.querySelector('.lc-message')!.textContent).toBe('The API key may not start Moods.'));
+    expect(tile('hue').classList.contains('shake')).toBe(true);
+    onMood.mockRejectedValueOnce(new Error('boom'));
+    open('hue');
+    pills()[0].click();
+    await vi.waitFor(() => expect(root.querySelector('.lc-message')!.textContent).toBe('Could not start Cosy.'));
+  });
+
+  it('shows no Moods with another palette', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const w = win.createLightsWidget(root, { palette: 'warm' });
+    w.setState([withZone(hueGo(), stue)]);
+    w.setMoods(moods);
+    root.querySelector<HTMLElement>('.lc-chip')!.click();
+    expect(root.querySelectorAll('.lc-mood')).toHaveLength(0);
+  });
+});
+
+describe('several colours', () => {
+  const colour = (id: string, hue: number, on = true) => ({ id, caps: { onoff: cap(on), dim: cap(0.7), light_hue: cap(hue), light_saturation: cap(1), light_mode: cap('color') } });
+  const group = (lights: any[]) => ({ ...colour('group', 0.75), name: 'Ceiling spots', icon: null, zone: null, groupLights: lights });
+  const blend = (tile: HTMLElement) => ({
+    multi: tile.classList.contains('multi'),
+    light: tile.style.getPropertyValue('--lc-light'),
+    tint: tile.style.getPropertyValue('--lc-tint-bg'),
+    pie: tile.style.getPropertyValue('--lc-pie'),
+  });
+
+  it("blends a Homey group's lit lights instead of the group's own colour", () => {
+    const { tile } = widget([group([colour('s1', 0), colour('s2', 1 / 3), colour('s3', 2 / 3), colour('s4', 0.5, false)])]);
+    const b = blend(tile('group'));
+    expect(b.multi).toBe(true);
+    expect(b.light).toBe('hsl(0 100% 62%)'); // the first light's, not the group's purple
+    expect(b.tint).toBe('linear-gradient(135deg, color-mix(in srgb, hsl(0 100% 62%) var(--lc-tint), var(--lc-tile)), '
+      + 'color-mix(in srgb, hsl(120 100% 62%) var(--lc-tint), var(--lc-tile)), color-mix(in srgb, hsl(240 100% 62%) var(--lc-tint), var(--lc-tile)))');
+    expect(b.pie).toMatch(/^conic-gradient\(.*hsl\(0 100% 62%\).* 0% 33\.3+\d*%, .*hsl\(240 100% 62%\).* 66\.6+\d*% 100%\)$/);
+    expect(tile('group').querySelector<HTMLElement>('.lc-chip-glyph')!.style.getPropertyValue('--lc-mask')).not.toBe('');
+  });
+
+  it("shows one colour when the group's lights share it, and the group's own while they're all off", () => {
+    const { tile, w } = widget([group([colour('s1', 0.1), colour('s2', 0.1)])]);
+    expect(blend(tile('group'))).toMatchObject({ multi: false, light: 'hsl(36 100% 62%)', tint: '' });
+    w.setState([group([colour('s1', 0.1, false), colour('s2', 0.5, false)])]);
+    expect(blend(tile('group'))).toMatchObject({ multi: false, light: 'hsl(270 100% 62%)' });
+  });
+
+  it("follows the group's lights' realtime changes, and a colour picked on the group at once", () => {
+    const onSet = vi.fn(async () => {});
+    const { tile, w, root } = widget([group([colour('s1', 0.1), colour('s2', 0.1)])], onSet);
+    w.pushChange({ deviceId: 's2', capabilityId: 'light_hue', value: 0.6 });
+    expect(blend(tile('group')).multi).toBe(true);
+    tile('group').querySelector<HTMLElement>('.lc-chip')!.click();
+    root.querySelectorAll<HTMLElement>('.lc-swatch')[0].click(); // red
+    expect(onSet).toHaveBeenCalledWith('group', { hue: 0, saturation: 1 });
+    expect(blend(tile('group'))).toMatchObject({ multi: false, light: 'hsl(0 100% 62%)' });
+  });
+
+  it("blends a room's tile when its lit lights differ", () => {
+    const zone = { id: 'z1', name: 'Stue' };
+    const { tile } = widget([
+      { ...colour('a', 0), name: 'a', icon: null, zone },
+      { ...colour('b', 0.6), name: 'b', icon: null, zone },
+      { ...colour('c', 0.3, false), name: 'c', icon: null, zone },
+    ], undefined, true);
+    expect(blend(tile('zone:z1'))).toMatchObject({ multi: true, light: 'hsl(0 100% 62%)' });
+    expect(blend(tile('zone:z1')).tint).not.toContain('hsl(108'); // c is off
+  });
+});

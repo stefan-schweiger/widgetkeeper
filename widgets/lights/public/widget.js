@@ -1,8 +1,9 @@
 /*
  * Light Controls: compact light tiles, two per row (no brightness text: the bar shows it, and the space
  * goes to the colour chip's tap area). A tap on the tile turns the light on or off; the bar at the bottom
- * sets the brightness (0 = off); lights without brightness (plugs, switches) have no bar. The chip opens a panel of colour and white swatches over the tile's row:
- * taps only, as Homey's Android app takes any drag. Plain browser JS (served as-is).
+ * sets the brightness (0 = off); lights without brightness (plugs, switches) have no bar. The chip opens a panel of colour and white swatches over the tile's row
+ * (with `palette: moods`, the room's Homey Moods in place of the colours): taps only, as Homey's Android app takes
+ * any drag. Plain browser JS (served as-is).
  */
 (function () {
   'use strict';
@@ -19,7 +20,14 @@
     temperature: 'Colour temperature',
     color: 'Colour',
     close: 'Close',
+    noKey: 'To start Moods, add an API key in the app settings.',
+    keyScope: 'The API key may not start Moods.',
+    keyInvalid: 'The API key was not accepted.',
+    moodFailed: 'Could not start __name__.',
+    moods: 'Moods',
   };
+  /** Why the app couldn't start a Mood (`{ok: false, reason}`): no usable personal API key. */
+  const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
 
   const svg = (viewBox, body) => `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`)}`;
   // A thermometer with a sun ray, for the temperature chip.
@@ -27,11 +35,15 @@
   // A half-filled circle, for the chip of a light with colour: a ring with its right half filled.
   const HUE_GLYPH = svg('2 2 20 20', '<circle cx="12" cy="12" r="9" stroke-width="1.6"/><path fill="#000" stroke="none" d="M12 3a9 9 0 0 1 0 18z"/>');
   const CLOSE_GLYPH =svg('5 5 14 14', '<path d="M6 6l12 12M18 6L6 18"/>');
+  // A full circle, for the chip of a tile whose lights shine in several colours: filled with a pie of them.
+  const PIE_GLYPH = svg('2 2 20 20', '<circle cx="12" cy="12" r="9" fill="#000" stroke="none"/>');
+  /** At most this many colours on a tile whose lights shine in several. */
+  const MAX_COLORS = 4;
 
-  /** The panel's colours (hue in degrees, at full saturation) and whites (temperature, 0 = cool). */
   /**
    * The swatch palettes (the `palette` setting): 7 colours for the first row (hue in degrees, saturation 0–1)
-   * and 5 whites for the second (colour temperature, 0 = cool), each row in the order shown.
+   * and 5 whites for the second (colour temperature, 0 = cool), each row in the order shown. `moods` has no entry:
+   * it puts the room's Moods in the first row, and a room without Moods gets the default colours.
    */
   const PALETTES = {
     // Bright colours around the wheel, and whites from cool to warm.
@@ -99,6 +111,7 @@
    * @param {{ t?: (key: string, tokens?: object) => string,
    *   onSet?: (deviceId: string, change: {dim?: number, onoff?: boolean, temperature?: number,
    *     hue?: number, saturation?: number}) => Promise<any>,
+   *   onMood?: (moodId: string) => Promise<any>,
    *   onHeight?: (h: number) => void, groupByZone?: boolean, palette?: string, barMin?: string }} opts
    */
   function createLightsWidget(root, opts = {}) {
@@ -129,12 +142,18 @@
     let panelFor = null; // the tile id the panel is open for
     let panelKey = ''; // which swatches it holds, so it's only rebuilt when that changes
     const palette = PALETTES[opts.palette] || PALETTES.default;
+    /** `palette: moods`: the room's Moods (`setMoods()`) in place of the colours. */
+    const useMoods = opts.palette === 'moods';
+    /** @type {{id: string, name: string, zone: string, colors: ({hue: number, saturation: number} | {temperature: number})[]}[]} */
+    let moods = [];
     /** The bar's lowest value: 0 turns the light off (the default); `barMin: '1'` stops at 1 %, so it stays on. */
     const barFloor = opts.barMin === '1' ? 0.01 : 0;
     const level = x => Math.max(barFloor, snap(x));
     let panelTimer = null;
     /** @type {{node: HTMLElement, swatch: {hue?: number, sat?: number, k?: number}}[]} */
     let swatches = [];
+    /** The panel's Moods (`palette: moods`), while it shows a room's. */
+    let moodRow = null;
     for (const type of ['touchstart', 'pointerdown']) panel.addEventListener(type, () => armPanel(), { passive: true });
     const messageEl = el('div', { class: 'lc-message', dir: 'auto' }, root);
     let lastTouchTap = 0;
@@ -155,10 +174,26 @@
       render();
     }
 
+    /** The Moods of the lights' rooms (`palette: moods`). */
+    function setMoods(list) {
+      moods = Array.isArray(list) ? list : [];
+      render();
+    }
+
+    /** A light and, for a Homey group device, the lights in it (`groupLights`). */
+    const withGroup = d => [d, ...(Array.isArray(d.groupLights) ? d.groupLights : [])];
+
     function pushChange({ deviceId, capabilityId, value }) {
-      const d = devices.find(x => x.id === deviceId);
-      if (!d || !d.caps || !d.caps[capabilityId]) return;
-      d.caps[capabilityId].value = value;
+      // The device itself, or a light in a group device (both, when it's picked too).
+      let hit = false;
+      for (const d of devices) {
+        for (const x of 'missing' in d ? [] : withGroup(d)) {
+          if (x.id !== deviceId || !x.caps || !x.caps[capabilityId]) continue;
+          x.caps[capabilityId].value = value;
+          hit = true;
+        }
+      }
+      if (!hit) return;
       if (capabilityId === 'dim') noteDim(deviceId, value);
       const key = `${deviceId}:${capabilityId}`;
       const o = optimistic.get(key);
@@ -185,10 +220,13 @@
       return d.caps[capabilityId] ? d.caps[capabilityId].value : null;
     }
 
+    /** Shows `values` while the device confirms them; a group device's lights take them on too. */
     function hope(d, values) {
       const until = Date.now() + OPTIMISTIC_MS;
-      for (const [id, value] of Object.entries(values)) {
-        if (d.caps[id]) optimistic.set(`${d.id}:${id}`, { value, until });
+      for (const x of withGroup(d)) {
+        for (const [id, value] of Object.entries(values)) {
+          if (x.caps[id]) optimistic.set(`${x.id}:${id}`, { value, until });
+        }
       }
       setTimeout(render, OPTIMISTIC_MS + 50);
     }
@@ -241,6 +279,25 @@
     /** The light a tile's colour comes from: the first one that is on, else the first. */
     const lead = item => item.members.find(isOn) || item.members[0];
 
+    /** The colour a light shines in, from its shown (optimistic) values. */
+    const colorOf = d => lightColor(Object.fromEntries(Object.keys(d.caps).map(k => [k, { value: shown(d, k) }])));
+    /**
+     * The colours a tile's lit lights shine in, without repeats (at most MAX_COLORS): a Homey group device counts
+     * its lit lights (its own colour is only the last one set on the group; a Mood may have given them several),
+     * any other light itself while it's on. Empty while nothing is on.
+     */
+    function colorsOf(item) {
+      const out = [];
+      for (const d of item.members) {
+        const group = Array.isArray(d.groupLights) ? d.groupLights.filter(isOn) : [];
+        for (const x of group.length ? group : isOn(d) ? [d] : []) {
+          const c = colorOf(x);
+          if (!out.includes(c)) out.push(c);
+        }
+      }
+      return out.slice(0, MAX_COLORS);
+    }
+
     /** A tap on a tile: turns all its lights off when any is on, else all on. */
     function toggle(id) {
       const item = itemOf(id);
@@ -270,6 +327,15 @@
     const settable = (d, id) => !!d.caps[id] && d.caps[id].setable !== false;
     const hasColor = item => item.members.some(d => settable(d, 'light_hue'));
     const hasTemp = item => item.members.some(d => settable(d, 'light_temperature'));
+    /** The room a tile is in: a grouped room's, or its light's. */
+    const zoneOf = item => (item.id.startsWith('zone:') ? item.id.slice(5) : (item.members[0].zone ? item.members[0].zone.id : null));
+    /** The Moods of a tile's room, with `palette: moods`. */
+    function roomMoods(item) {
+      const zone = useMoods ? zoneOf(item) : null;
+      return zone ? moods.filter(m => m.zone === zone) : [];
+    }
+    /** Whether a tile has the chip: colour, colour temperature or its room's Moods. */
+    const hasChip = item => hasColor(item) || hasTemp(item) || roomMoods(item).length > 0;
 
     /**
      * A swatch was tapped: sets the colour (or white) of each light on the tile that can show it, and
@@ -296,6 +362,32 @@
       for (const [d, change] of changes) send(item, d, change);
     }
 
+    /** A Mood was tapped: Homey starts it (through the API key), and the lights report their new state. */
+    async function startMood(id, mood) {
+      closePanel();
+      if (!opts.onMood) return;
+      try {
+        await opts.onMood(mood.id);
+      } catch (err) {
+        console.error(err);
+        const tile = tiles.get(id);
+        if (tile) {
+          tile.tile.classList.remove('shake');
+          void tile.tile.offsetWidth; // restart the animation
+          tile.tile.classList.add('shake');
+        }
+        const reason = err && err.reason;
+        setMessage(KEY_PROBLEMS.includes(reason) ? t(reason) : t('moodFailed', { name: mood.name }), true);
+      }
+    }
+
+    /** A Mood's colours as the pill's dot: one colour, or a gradient through them (none without colours). */
+    function moodDot(colors) {
+      const list = (colors || []).map(c => ('temperature' in c ? temperatureColor(c.temperature) : hueColor(c.hue, c.saturation)));
+      if (!list.length) return null;
+      return list.length === 1 ? list[0] : `linear-gradient(135deg, ${list.join(', ')})`;
+    }
+
     function armPanel() {
       clearTimeout(panelTimer);
       panelTimer = setTimeout(closePanel, PANEL_MS);
@@ -318,18 +410,34 @@
 
     /**
      * Fills the panel for `d` from the palette: the colours (with colour) in the first row, then the whites
-     * (the temperatures, or a plain white without them), and the close button in the last column.
+     * (the temperatures, or a plain white without them), and the close button in the last column. With
+     * `palette: moods`, a room with Moods gets only them (no colours or whites), as pills in two rows beside the
+     * close button that scroll sideways when they don't fit (one row while they fit in one).
      */
     function buildPanel(d) {
       const color = hasColor(d);
       const temp = hasTemp(d);
-      const key = `${color}:${temp}`;
+      const room = roomMoods(d);
+      const key = `${color}:${temp}:${JSON.stringify(room.map(m => [m.id, m.name, m.colors]))}`;
       if (key === panelKey) return;
       panelKey = key;
       panel.textContent = '';
       swatches = [];
+      moodRow = null;
+      panel.classList.toggle('moods', room.length > 0);
+      if (room.length) {
+        const row = el('div', { class: 'lc-moods' }, panel);
+        moodRow = row;
+        for (const mood of room) {
+          const node = el('button', { type: 'button', class: 'lc-mood' }, row);
+          const dot = moodDot(mood.colors);
+          if (dot) el('span', { class: 'lc-mood-dot' }, node).style.setProperty('--lc-swatch', dot);
+          el('span', { class: 'lc-mood-name', dir: 'auto', text: mood.name }, node);
+          onTap(node, () => { if (panelFor != null) startMood(panelFor, mood); });
+        }
+      }
       /** @type {{hue?: number, sat?: number, k?: number}[]} */
-      const list = [
+      const list = room.length ? [] : [
         ...(color ? palette.colors.map(([hue, sat]) => ({ hue, sat })) : []),
         ...(temp ? palette.whites.map(k => ({ k })) : color ? [{ hue: 0, sat: 0 }] : []),
       ];
@@ -366,7 +474,7 @@
     function renderPanel() {
       const d = panelFor != null ? itemOf(panelFor) : null;
       const tile = d ? tiles.get(d.id) : null;
-      if (!d || !tile || !(hasColor(d) || hasTemp(d))) {
+      if (!d || !tile || !hasChip(d)) {
         if (panelFor != null) { panelFor = null; clearTimeout(panelTimer); }
         panel.style.display = 'none';
         return;
@@ -376,6 +484,11 @@
       panel.style.display = '';
       panel.style.top = `${tile.tile.offsetTop}px`;
       panel.style.height = `${tile.tile.offsetHeight}px`;
+      // The Moods take one row while they fit in it, else two.
+      if (moodRow) {
+        moodRow.classList.add('one-row');
+        if (moodRow.scrollWidth > moodRow.clientWidth + 1) moodRow.classList.remove('one-row');
+      }
     }
 
     /**
@@ -505,6 +618,23 @@
       return tile;
     }
 
+    /**
+     * The gradients of a tile whose lights shine in several colours: the tint (diagonal, mixed into the tile as
+     * one colour is), the bar's fill (left to right, mixed as the fill is) and the chip's pie. Null clears them.
+     */
+    function setBlend(node, colors) {
+      const props = colors ? {
+        '--lc-tint-bg': `linear-gradient(135deg, ${colors.map(c => `color-mix(in srgb, ${c} var(--lc-tint), var(--lc-tile))`).join(', ')})`,
+        '--lc-fill-bg': `linear-gradient(to right, ${colors.map(c => `color-mix(in srgb, ${c} var(--lc-fill-share), var(--lc-fill-with))`).join(', ')})`,
+        '--lc-pie': `conic-gradient(${colors.map((c, i) => `color-mix(in srgb, ${c} var(--lc-fill-share), var(--lc-fill-with)) ${(i / colors.length) * 100}% ${((i + 1) / colors.length) * 100}%`).join(', ')})`,
+      } : { '--lc-tint-bg': '', '--lc-fill-bg': '', '--lc-pie': '' };
+      for (const [k, v] of Object.entries(props)) {
+        if (node.style.getPropertyValue(k) === v) continue;
+        if (v) node.style.setProperty(k, v);
+        else node.style.removeProperty(k);
+      }
+    }
+
     function setMask(node, url) {
       const v = url ? `url("${url}")` : '';
       if (node.style.getPropertyValue('--lc-mask') !== v) node.style.setProperty('--lc-mask', v);
@@ -571,20 +701,26 @@
         setMask(tile.icon, d.icon);
         tile.icon.classList.toggle('fallback', !d.icon);
         const color = hasColor(d);
-        const l = lead(d);
-        const caps = Object.fromEntries(Object.keys(l.caps).map(k => [k, { value: shown(l, k) }]));
+        const colors = colorsOf(d);
+        // Several colours: the tile's tint, the bar and the chip blend them (the first stays --lc-light).
+        const multi = colors.length > 1;
         const on = itemOn(d);
         const drag = drags.get(d.id);
         const x = drag != null ? level(drag) : itemBrightness(d);
 
-        tile.chip.style.display = color || hasTemp(d) ? '' : 'none';
-        tile.chip.setAttribute('aria-label', t(color ? 'color' : 'temperature'));
+        const temp = hasTemp(d);
+        // A light with only its room's Moods gets the colour chip's glyph.
+        const hueChip = color || !temp;
+        tile.chip.style.display = hasChip(d) ? '' : 'none';
+        tile.chip.setAttribute('aria-label', t(color ? 'color' : temp ? 'temperature' : 'moods'));
         tile.chip.classList.toggle('active', panelFor === d.id);
-        tile.chipGlyph.classList.toggle('hue', color);
-        setMask(tile.chipGlyph, color ? HUE_GLYPH : TEMP_GLYPH);
+        tile.chipGlyph.classList.toggle('hue', hueChip || multi);
+        setMask(tile.chipGlyph, multi ? PIE_GLYPH : hueChip ? HUE_GLYPH : TEMP_GLYPH);
         tile.tile.classList.toggle('on', on || (drag != null && x > 0));
         tile.tile.classList.toggle('no-dim', !d.members.some(m => m.caps.dim)); // on/off only: no bar
-        tile.tile.style.setProperty('--lc-light', lightColor(caps));
+        tile.tile.style.setProperty('--lc-light', colors[0] || colorOf(lead(d)));
+        tile.tile.classList.toggle('multi', multi);
+        setBlend(tile.tile, multi ? colors : null);
         tile.tile.style.setProperty('--lc-x', String(x));
         tile.bar.setAttribute('aria-valuenow', String(Math.round(x * 100)));
       }
@@ -598,7 +734,7 @@
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    return { setState, pushChange, setMessage, render, t };
+    return { setState, setMoods, pushChange, setMessage, render, t };
   }
 
   window.createLightsWidget = createLightsWidget;

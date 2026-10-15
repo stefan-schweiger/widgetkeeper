@@ -6163,19 +6163,19 @@
             "ar": "لوحة الألوان"
           },
           "hint": {
-            "en": "The colours offered by a light’s colour button.",
-            "nl": "De kleuren die de kleurknop van een lamp aanbiedt.",
-            "de": "Die Farben, die die Farbtaste einer Lampe anbietet.",
-            "fr": "Les couleurs proposées par le bouton couleur d'une lampe.",
-            "it": "I colori offerti dal pulsante colore di una luce.",
-            "sv": "Färgerna som en lampas färgknapp erbjuder.",
-            "no": "Fargene som en lampes fargeknapp tilbyr.",
-            "es": "Los colores que ofrece el botón de color de una luz.",
-            "da": "Farverne, som en lampes farveknap tilbyder.",
-            "ru": "Цвета, которые предлагает кнопка цвета светильника.",
-            "pl": "Kolory dostępne pod przyciskiem koloru lampy.",
-            "ko": "조명의 색상 버튼에 표시되는 색상입니다.",
-            "ar": "الألوان التي يعرضها زر لون المصباح."
+            "en": "The colours offered by a light’s colour button. Room’s Moods shows the Homey Moods of the light’s room instead of the colours; starting one needs the API key on the app’s settings page.",
+            "nl": "De kleuren die de kleurknop van een lamp aanbiedt. Moods van de kamer toont de Homey Moods van de kamer van de lamp in plaats van de kleuren; om er een te starten is de API-sleutel op de instellingenpagina van de app nodig.",
+            "de": "Die Farben, die die Farbtaste einer Lampe anbietet. Moods des Raums zeigt statt der Farben die Homey Moods des Raums der Lampe; zum Starten wird der API-Schlüssel auf der Einstellungsseite der App benötigt.",
+            "fr": "Les couleurs proposées par le bouton couleur d'une lampe. Moods de la pièce affiche les Moods Homey de la pièce de la lampe à la place des couleurs ; en lancer un nécessite la clé API dans les réglages de l'app.",
+            "it": "I colori offerti dal pulsante colore di una luce. Mood della stanza mostra i Mood di Homey della stanza della luce al posto dei colori; per avviarne uno serve la chiave API nelle impostazioni dell'app.",
+            "sv": "Färgerna som en lampas färgknapp erbjuder. Rummets Moods visar Homey Moods för lampans rum i stället för färgerna; för att starta en behövs API-nyckeln på appens inställningssida.",
+            "no": "Fargene som en lampes fargeknapp tilbyr. Rommets Moods viser Homey Moods for lampens rom i stedet for fargene; for å starte en trengs API-nøkkelen på appens innstillingsside.",
+            "es": "Los colores que ofrece el botón de color de una luz. Moods de la habitación muestra los Moods de Homey de la habitación de la luz en lugar de los colores; para iniciar uno se necesita la clave API en los ajustes de la app.",
+            "da": "Farverne, som en lampes farveknap tilbyder. Rummets Moods viser Homey Moods for lampens rum i stedet for farverne; for at starte en skal API-nøglen på appens indstillingsside bruges.",
+            "ru": "Цвета, которые предлагает кнопка цвета светильника. «Настроения комнаты» показывают вместо цветов Moods Homey комнаты светильника; для запуска нужен API-ключ на странице настроек приложения.",
+            "pl": "Kolory dostępne pod przyciskiem koloru lampy. Nastroje pokoju pokazują zamiast kolorów Moods Homey pokoju lampy; do uruchomienia potrzebny jest klucz API na stronie ustawień aplikacji.",
+            "ko": "조명의 색상 버튼에 표시되는 색상입니다. 방의 무드는 색상 대신 조명이 있는 방의 Homey 무드를 표시합니다. 무드를 시작하려면 앱 설정 페이지의 API 키가 필요합니다.",
+            "ar": "الألوان التي يعرضها زر لون المصباح. «أجواء الغرفة» تعرض أجواء Homey لغرفة المصباح بدلًا من الألوان؛ ويتطلب تشغيلها مفتاح API في صفحة إعدادات التطبيق."
           },
           "value": "default",
           "values": [
@@ -6232,6 +6232,24 @@
                 "ko": "해 질 녘",
                 "ar": "الغسق"
               }
+            },
+            {
+              "id": "moods",
+              "title": {
+                "en": "Room’s Moods",
+                "nl": "Moods van de kamer",
+                "de": "Moods des Raums",
+                "fr": "Moods de la pièce",
+                "it": "Mood della stanza",
+                "sv": "Rummets Moods",
+                "no": "Rommets Moods",
+                "es": "Moods de la habitación",
+                "da": "Rummets Moods",
+                "ru": "Настроения комнаты",
+                "pl": "Nastroje pokoju",
+                "ko": "방의 무드",
+                "ar": "أجواء الغرفة"
+              }
             }
           ]
         }
@@ -6244,6 +6262,14 @@
         "set": {
           "method": "POST",
           "path": "/set"
+        },
+        "getMoods": {
+          "method": "GET",
+          "path": "/moods"
+        },
+        "setMood": {
+          "method": "POST",
+          "path": "/mood"
         }
       },
       "id": "lights"

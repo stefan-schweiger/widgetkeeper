@@ -20,6 +20,9 @@
   <div class="col"><span>358 px · light</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
   <div class="col"><span>300 px · dark</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
   <div class="col"><span>358 px · grouped by room</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · room's Moods · dark</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px · room's Moods · light</span><div class="dash light" style="width:358px"><div id="w7"></div></div></div>
+  <div class="col"><span>300 px · room's Moods, grouped</span><div class="dash homey-dark-mode" style="width:300px"><div id="w8"></div></div></div>
   <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
 
   <script>
@@ -34,25 +37,62 @@
       { id: 'e', name: 'Office ceiling', icon: null, caps: { onoff: cap(true), dim: cap(1), light_temperature: cap(0.1), light_mode: cap('temperature') } },
       { id: 'f', name: 'Bedroom', icon: null, caps: { dim: cap(0) } },
       { id: 'h', name: 'LED strip', icon: null, zone: stue, caps: { onoff: cap(true), dim: cap(0.8), light_hue: cap(0.92), light_saturation: cap(1) } },
+      // A Homey group device after a Mood: its own colour is the last set on the group (purple), its spots differ.
+      { id: 'grp', name: 'Ceiling spots', icon: null, zone: null, caps: { onoff: cap(true), dim: cap(0.7), light_hue: cap(0.75), light_saturation: cap(1), light_temperature: cap(0.8), light_mode: cap('color') },
+        groupLights: [0.95, 0.12, 0.55].map((hue, i) => ({ id: `grp${i}`, caps: { onoff: cap(true), dim: cap(0.7), light_hue: cap(hue), light_saturation: cap(0.6), light_mode: cap('color') } })) },
       { id: 'g', missing: true },
     ];
+    // The rooms' Moods (palette: moods): what each sets on its lights (the app sends the colours only).
+    const moods = [
+      { id: 'm1', name: 'Cosy evening', zone: 'z1', devices: { a: { onoff: true, dim: 0.3, light_mode: 'temperature', light_temperature: 1 }, d: { onoff: true, dim: 0.4, light_mode: 'color', light_hue: 0.07, light_saturation: 0.85 }, h: { onoff: true, dim: 0.3, light_hue: 0.95, light_saturation: 0.7 } } },
+      { id: 'm2', name: 'Movie night', zone: 'z1', devices: { a: { onoff: false }, d: { onoff: true, dim: 0.15, light_mode: 'color', light_hue: 0.68, light_saturation: 0.9 }, h: { onoff: true, dim: 0.2, light_hue: 0.75, light_saturation: 1 } } },
+      { id: 'm3', name: 'Bright', zone: 'z1', devices: { a: { onoff: true, dim: 1, light_mode: 'temperature', light_temperature: 0.1 }, d: { onoff: true, dim: 1, light_mode: 'temperature', light_temperature: 0.2 } } },
+      { id: 'm4', name: 'Reading', zone: 'z1', devices: { a: { onoff: true, dim: 0.8, light_mode: 'temperature', light_temperature: 0.5 } } },
+      { id: 'm7', name: 'Dinner party', zone: 'z1', devices: { d: { onoff: true, dim: 0.5, light_mode: 'color', light_hue: 0.1, light_saturation: 0.6 }, h: { onoff: true, dim: 0.4, light_hue: 0.02, light_saturation: 0.8 } } },
+      { id: 'm8', name: 'Morning', zone: 'z1', devices: { a: { onoff: true, dim: 0.9, light_mode: 'temperature', light_temperature: 0.3 } } },
+      { id: 'm9', name: 'Night light', zone: 'z1', devices: { a: { onoff: false }, h: { onoff: true, dim: 0.05, light_hue: 0.08, light_saturation: 1 } } },
+      { id: 'm10', name: 'Focus', zone: 'z1', devices: { a: { onoff: true, dim: 1, light_mode: 'temperature', light_temperature: 0 } } },
+      { id: 'm5', name: 'Cooking', zone: 'z2', devices: { b: { onoff: true, dim: 1, light_temperature: 0.2 }, c: { onoff: true, dim: 1 } } },
+      { id: 'm6', name: 'Dinner', zone: 'z2', devices: { b: { onoff: true, dim: 0.3, light_temperature: 0.9 }, c: { onoff: false } } },
+    ];
+    // The colours the app reads from a Mood (moodColors() in lib/LightService.ts).
+    const moodColors = m => Object.values(m.devices).filter(s => s.onoff !== false).map(s => (
+      (s.light_mode === 'color' || (s.light_mode == null && s.light_temperature == null)) && s.light_hue != null
+        ? { hue: s.light_hue, saturation: s.light_saturation ?? 1 }
+        : s.light_temperature != null ? { temperature: s.light_temperature } : null)).filter(Boolean).slice(0, 4);
+    const roomMoods = moods.map(({ devices, ...m }) => ({ ...m, colors: moodColors({ devices }) }));
+
     // Simulates the device: the change is reported back after a moment.
-    function mount(id, groupByZone = false) {
+    function mount(id, groupByZone = false, palette = new URLSearchParams(location.search).get('palette') || undefined) {
       let w;
       const onSet = (deviceId, change) => new Promise((resolve) => setTimeout(() => {
-        const push = (capabilityId, value) => w.pushChange({ deviceId, capabilityId, value });
+        // A group's lights report the group's change too.
+        const ids = [deviceId, ...((lights().find(d => d.id === deviceId) || {}).groupLights || []).map(m => m.id)];
+        const push = (capabilityId, value) => { for (const id of ids) w.pushChange({ deviceId: id, capabilityId, value }); };
         if ('dim' in change) { if (change.dim === 0) push('onoff', false); else { push('dim', change.dim); push('onoff', true); } }
         if ('onoff' in change) push('onoff', change.onoff);
         if ('hue' in change) { push('light_mode', 'color'); push('light_hue', change.hue); push('light_saturation', change.saturation); push('onoff', true); }
         if ('temperature' in change) { push('light_mode', 'temperature'); push('light_temperature', change.temperature); push('onoff', true); }
         resolve();
       }, 400));
-      const palette = new URLSearchParams(location.search).get('palette') || undefined; // ?palette=warm|dusk
-      w = createLightsWidget(document.getElementById(id), { t: devT, onSet, groupByZone, palette });
+      // Homey starts the Mood: its lights report what it set. "Movie night" fails, as without an API key.
+      const onMood = moodId => new Promise((resolve, reject) => setTimeout(() => {
+        if (moodId === 'm2') { reject(Object.assign(new Error('noKey'), { reason: 'noKey' })); return; }
+        for (const [deviceId, state] of Object.entries(moods.find(m => m.id === moodId).devices)) {
+          for (const [capabilityId, value] of Object.entries(state)) w.pushChange({ deviceId, capabilityId, value });
+        }
+        resolve();
+      }, 400));
+      // ?palette=warm|dusk|moods
+      w = createLightsWidget(document.getElementById(id), { t: devT, onSet, onMood, groupByZone, palette });
       w.setState(lights());
+      if (palette === 'moods') w.setMoods(roomMoods);
     }
     for (const id of ['w1', 'w2', 'w3']) mount(id);
     mount('w5', true);
+    mount('w6', false, 'moods');
+    mount('w7', false, 'moods');
+    mount('w8', true, 'moods');
     // ?open=d opens that light's swatch panel in every widget, for screenshots.
     const openId = new URLSearchParams(location.search).get('open');
     if (openId) for (const chip of document.querySelectorAll(`.lc-tile[data-device="${openId}"] .lc-chip`)) chip.click();

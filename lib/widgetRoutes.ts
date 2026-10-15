@@ -31,7 +31,7 @@ export function callWidgetRoute(homey: Homey, apis: WidgetApis, type: string, me
 
 /**
  * The personal API key use a widget route acts with (the app's stored key: changing a variable, starting a flow,
- * running a speaker's card, reading a dashboard), or null for a route that doesn't. A Smart Stack's `/call` is its
+ * running a speaker's card, reading a dashboard, starting a Mood), or null for a route that doesn't. A Smart Stack's `/call` is its
  * page's route.
  */
 export function routeKeyUse(type: string, method: string, path: string, body: unknown): KeyUse | null {
@@ -41,6 +41,7 @@ export function routeKeyUse(type: string, method: string, path: string, body: un
     case 'flows POST /trigger': return 'flows';
     case 'media POST /button': return String(b.id ?? '').startsWith('card:') ? 'cards' : 'flows';
     case 'stack GET /pages': return 'dashboards';
+    case 'lights POST /mood': return 'moods';
     case 'stack POST /call': return routeKeyUse(String(b.type ?? ''), String(b.method ?? ''), String(b.path ?? ''), b.body);
     default: return null;
   }

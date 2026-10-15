@@ -59,6 +59,11 @@ html, body { background: transparent !important; }
   background: linear-gradient(to bottom, color-mix(in srgb, var(--lc-light) var(--lc-tint), var(--lc-tile)),
     color-mix(in srgb, var(--lc-light) calc(var(--lc-tint) / 2), var(--lc-tile)));
 }
+/* Lights in several colours (a Homey group after a Mood, a room's tile): the tint runs diagonally through them
+   (`--lc-tint-bg`, set by the widget), fading to half towards the bottom as one colour does. */
+.lc-tile.on.multi {
+  background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--lc-tile) 50%, transparent)), var(--lc-tint-bg);
+}
 
 .lc-top { display: flex; align-items: center; gap: 6px; height: 20px; }
 .lc-icon, .lc-chip-glyph, .lc-close-glyph {
@@ -93,6 +98,8 @@ html, body { background: transparent !important; }
   background: color-mix(in srgb, var(--lc-light) var(--lc-fill-share), var(--lc-fill-with));
 }
 .lc-chip-glyph.hue { width: 20px; height: 20px; }
+/* Several colours: a pie of them. */
+.lc-tile.multi .lc-chip-glyph { background: var(--lc-pie); }
 .lc-tile:not(.on) .lc-chip-glyph { filter: saturate(.55) brightness(.8); }
 .lc-chip.active::before { background: color-mix(in srgb, var(--lc-accent) 20%, transparent); }
 .lc-chip:active::before { background: color-mix(in srgb, var(--lc-text) 12%, transparent); }
@@ -114,6 +121,7 @@ html, body { background: transparent !important; }
   position: absolute; inset: 0 auto 0 0; width: calc(var(--lc-x) * 100%);
   background: color-mix(in srgb, var(--lc-light) var(--lc-fill-share), var(--lc-fill-with)); border-radius: inherit;
 }
+.lc-tile.multi .lc-fill { background: var(--lc-fill-bg); }
 .lc-tile:not(.on) .lc-fill { background: var(--lc-muted); }
 .lc-knob {
   position: absolute; top: 7px; width: 14px; height: 14px; border-radius: 50%;
@@ -153,6 +161,31 @@ html, body { background: transparent !important; }
   background: var(--lc-track); color: var(--lc-muted);
 }
 .lc-close-glyph { width: 12px; height: 12px; -webkit-mask-position: center; mask-position: center; }
+/* The room's Moods (`palette: moods`), the whole panel but the close button (no colours or whites): pills
+   (Variables' grey) in two rows, filled top to bottom, that scroll sideways when they don't fit; one row while
+   they fit in one (`.one-row`, measured). Native scrolling, so a swipe across them isn't a tap. */
+.lc-panel.moods .lc-close { grid-row: 1 / 3; }
+.lc-moods {
+  grid-column: 1 / 7; grid-row: 1 / 3; justify-self: stretch; align-self: stretch; min-width: 0;
+  display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, 32px); grid-auto-columns: max-content;
+  align-content: center; gap: 6px; overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  /* A soft right edge, so a pill cut off there reads as more to scroll to. */
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 12px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 12px), transparent);
+}
+.lc-moods.one-row { grid-template-rows: 32px; }
+.lc-moods::-webkit-scrollbar { display: none; }
+.lc-mood {
+  appearance: none; border: 0; margin: 0; font: inherit; cursor: pointer; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent; transition: transform .1s;
+  display: flex; align-items: center; gap: 6px; height: 32px; max-width: 180px; padding: 0 12px 0 10px;
+  border-radius: 16px; background: var(--lc-track); color: var(--lc-text);
+  font-size: 12px; line-height: 16px; font-weight: var(--homey-font-weight-medium, 500);
+}
+.lc-mood-dot { flex-shrink: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--lc-swatch); box-shadow: inset 0 0 0 1px rgb(0 0 0 / .12); }
+.lc-mood-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lc-mood.pressing { transform: scale(.95); }
 @keyframes lc-panel-in { from { opacity: 0; transform: scale(.98); } }
 
 .lc-message { font-size: var(--lc-fs-small); line-height: var(--lc-lh-small); color: var(--lc-muted); }

@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fakeApi, fakeDevice, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
-import LightService, { LIGHTS_STATE_EVENT } from '../lib/LightService.js';
+import { fakeApi, fakeDevice, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
+import LightService, { GROUP_DRIVER, LIGHTS_STATE_EVENT } from '../lib/LightService.js';
+import { API_KEY_SETTING } from '../lib/PersonalApiKey.js';
+import { routeKeyUse } from '../lib/widgetRoutes.js';
 
 vi.mock('homey-api', () => homeyApiMock);
 
@@ -167,5 +169,96 @@ describe('set', () => {
     await expect(service.set('bulb', { hue: 0.5, saturation: 3 })).rejects.toThrow(/Invalid saturation/);
     await expect(service.set('plug', { temperature: 0.5 })).rejects.toThrow(/colour temperature/);
     await expect(service.set('bulb', {})).rejects.toThrow(/Nothing to set/);
+  });
+});
+
+describe('moods', () => {
+  const moods = {
+    m1: {
+      id: 'm1', name: 'Relax', zone: 'z1', preset: null, devices: {
+        bulb: { state: { onoff: true, dim: 0.4, light_mode: 'color', light_hue: 0.6, light_saturation: 0.5 } },
+        dimmer: { state: { onoff: true, dim: 0.2 } },
+        spot: { state: { onoff: true, light_temperature: 0.8 } },
+        off: { state: { onoff: false, light_hue: 0.1 } },
+      },
+    },
+    m2: { id: 'm2', name: 'Bright', zone: 'z1', devices: { bulb: { state: { onoff: true, light_mode: 'temperature', light_hue: 0.3, light_temperature: 0.1 } } } },
+    m3: { id: 'm3', name: 'Cinema', zone: 'z2', devices: {} },
+  };
+
+  function withMoods() {
+    const { homey, service } = setup();
+    const getMoods = vi.fn(async () => moods);
+    const setMood = vi.fn(async () => {});
+    (homey.fakeApi as any).moods = { getMoods };
+    keyApis.set('key', { moods: { setMood } });
+    return { homey, service, getMoods, setMood };
+  }
+
+  afterEach(() => { keyApis.clear(); });
+
+  it("lists the zones' Moods by name, with the colours they give their lights, and shares the read", async () => {
+    const { service, getMoods } = withMoods();
+    expect(await service.getMoods(['z1'])).toEqual([
+      { id: 'm2', name: 'Bright', zone: 'z1', colors: [{ temperature: 0.1 }] },
+      { id: 'm1', name: 'Relax', zone: 'z1', colors: [{ hue: 0.6, saturation: 0.5 }, { temperature: 0.8 }] },
+    ]);
+    expect(await service.getMoods(['z2', 'z9'])).toEqual([{ id: 'm3', name: 'Cinema', zone: 'z2', colors: [] }]);
+    expect(await service.getMoods([])).toEqual([]);
+    expect(getMoods).toHaveBeenCalledTimes(1);
+  });
+
+  it('starts a Mood through the personal API key', async () => {
+    const { homey, service, setMood } = withMoods();
+    await expect(service.setMood('m1')).rejects.toMatchObject({ reason: 'noKey' });
+    homey.settings.set(API_KEY_SETTING, 'key');
+    await service.setMood('m1');
+    expect(setMood).toHaveBeenCalledWith({ id: 'm1' });
+    setMood.mockRejectedValueOnce(new Error('Missing Scopes: homey.mood.set'));
+    await expect(service.setMood('m1')).rejects.toMatchObject({ reason: 'keyScope' });
+    await expect(service.setMood('')).rejects.toThrow(/Invalid mood id/);
+    expect(await service.describeMoods()).toMatchObject({ perZone: { z1: 2, z2: 1 }, started: 1 });
+  });
+
+  it('starting a Mood uses the moods permission on the web dashboards', () => {
+    expect(routeKeyUse('lights', 'POST', '/mood', { id: 'm1' })).toBe('moods');
+    expect(routeKeyUse('stack', 'POST', '/call', { type: 'lights', method: 'POST', path: '/mood' })).toBe('moods');
+    expect(routeKeyUse('lights', 'POST', '/set', {})).toBe(null);
+  });
+});
+
+describe('Homey group devices', () => {
+  const spot = (id: string, hue: number, on = true) => fakeDevice({
+    id, name: id, caps: { onoff: { type: 'boolean', value: on }, dim: { type: 'number', value: 0.7 }, light_hue: { type: 'number', value: hue } },
+  });
+  function groupSetup() {
+    const group: any = fakeDevice({ id: 'group', name: 'Ceiling spots', caps: { onoff: { type: 'boolean', value: true }, dim: { type: 'number', value: 0.7 }, light_hue: { type: 'number', value: 0.7 } } });
+    group.driverId = GROUP_DRIVER;
+    group.settings = { deviceIds: ['s1', 's2', 'gone', 'sensor'] };
+    const sensor = fakeDevice({ id: 'sensor', caps: { measure_temperature: { type: 'number', value: 20 } } });
+    const devices = [group, spot('s1', 0.1), spot('s2', 0.5, false), sensor];
+    return { ...setup(devices), group };
+  }
+
+  it("sends a group's lights with it, leaving out missing ones and ones that aren't lights", async () => {
+    const { service } = groupSetup();
+    const [entry] = await service.getState(['group']);
+    expect(entry).toMatchObject({ id: 'group', caps: { light_hue: { value: 0.7 } } });
+    expect((entry as any).groupLights).toEqual([
+      { id: 's1', caps: { onoff: { value: true, setable: true }, dim: { value: 0.7, setable: true }, light_hue: { value: 0.1, setable: true } } },
+      { id: 's2', caps: { onoff: { value: false, setable: true }, dim: { value: 0.7, setable: true }, light_hue: { value: 0.5, setable: true } } },
+    ]);
+  });
+
+  it("sends a group's lights' changes as realtime events", async () => {
+    const { service, homey, devices } = groupSetup();
+    await service.getState(['group']);
+    (devices[1] as any).report('light_hue', 0.3);
+    expect(homey.api.realtime).toHaveBeenCalledWith(LIGHTS_STATE_EVENT, { deviceId: 's1', capabilityId: 'light_hue', value: 0.3 });
+  });
+
+  it('sends no groupLights for other devices', async () => {
+    const { service } = setup();
+    expect(await service.getState(['bulb'])).not.toHaveProperty('0.groupLights');
   });
 });

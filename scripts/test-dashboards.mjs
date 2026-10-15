@@ -262,11 +262,16 @@ const BUILD = {
     const dimOnly = where(d => cls(d) === 'light' && has(d, 'dim') && !has(d, 'light_hue'));
     const onoffOnly = where(d => ['light', 'socket'].includes(cls(d)) && has(d, 'onoff') && !has(d, 'dim'), 4);
     const all = where(d => cls(d) === 'light');
+    // The lights in rooms with Homey Moods, for the `moods` palette (none without Moods).
+    const moodZones = new Set(Object.values(await homeyApi('GET', '/api/manager/moods/mood').catch(() => ({}))).map(m => m.zone));
+    const inMoodRooms = where(d => cls(d) === 'light' && moodZones.has(d.zone));
     return { cols: 3, widgets: [
       w('lights', 'Colour lights · defaults', {}, colour.slice(0, 6)),
       w('lights', 'Grouped by room', { groupByZone: true }, all.slice(0, 20)),
       w('lights', 'Warm palette · bar stops at 1 %', { palette: 'warm', barMin: '1' }, colour.slice(6, 10)),
       w('lights', 'Dusk palette', { palette: 'dusk' }, colour.slice(0, 4)),
+      w('lights', "Room's Moods · a tile per light", { palette: 'moods' }, inMoodRooms.slice(0, 6)),
+      w('lights', "Room's Moods · grouped by room, other rooms without", { palette: 'moods', groupByZone: true }, [...inMoodRooms, ...all.filter(id => !inMoodRooms.includes(id))].slice(0, 20)),
       w('lights', 'Dimmable, no colour', {}, dimOnly.slice(0, 6)),
       w('lights', 'On/off only · deleted device', {}, [...onoffOnly, MISSING]),
       w('lights', 'One light', {}, colour.slice(0, 1)),

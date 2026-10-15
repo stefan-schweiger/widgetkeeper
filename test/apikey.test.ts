@@ -24,10 +24,10 @@ describe('save', () => {
   it('saves a key and says what it may do, and removes it again', async () => {
     const { homey, key } = setup();
     keyApis.set('both', keyApi(['homey.logic', 'homey.flow.start']));
-    expect(await key.save(' both ')).toEqual({ ok: true, variables: true, flows: true, dashboards: false });
+    expect(await key.save(' both ')).toEqual({ ok: true, variables: true, flows: true, dashboards: false, moods: false });
     expect(homey.settings.get(API_KEY_SETTING)).toBe('both');
     expect(key.has()).toBe(true);
-    expect(await key.save('')).toEqual({ ok: true, variables: false, flows: false, dashboards: false });
+    expect(await key.save('')).toEqual({ ok: true, variables: false, flows: false, dashboards: false, moods: false });
     expect(key.has()).toBe(false);
   });
 
@@ -36,11 +36,13 @@ describe('save', () => {
     keyApis.set('vars', keyApi(['homey.logic']));
     keyApis.set('flows', keyApi(['homey.flow.start']));
     keyApis.set('owner', keyApi(['homey']));
-    expect(await key.save('vars')).toEqual({ ok: true, variables: true, flows: false, dashboards: false });
-    expect(await key.save('flows')).toEqual({ ok: true, variables: false, flows: true, dashboards: false });
-    expect(await key.save('owner')).toEqual({ ok: true, variables: true, flows: true, dashboards: true });
+    expect(await key.save('vars')).toEqual({ ok: true, variables: true, flows: false, dashboards: false, moods: false });
+    expect(await key.save('flows')).toEqual({ ok: true, variables: false, flows: true, dashboards: false, moods: false });
+    expect(await key.save('owner')).toEqual({ ok: true, variables: true, flows: true, dashboards: true, moods: true });
     keyApis.set('dash', keyApi(['homey.dashboard.readonly']));
-    expect(await key.save('dash')).toEqual({ ok: true, variables: false, flows: false, dashboards: true });
+    expect(await key.save('dash')).toEqual({ ok: true, variables: false, flows: false, dashboards: true, moods: false });
+    keyApis.set('moods', keyApi(['homey.mood.set']));
+    expect(await key.save('moods')).toEqual({ ok: true, variables: false, flows: false, dashboards: false, moods: true });
   });
 
   it("doesn't save a key Homey refuses or one that may do neither", async () => {

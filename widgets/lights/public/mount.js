@@ -21,6 +21,8 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
 
   const sdkAt = performance.now();
   let deviceIds = [];
+  /** The lights whose realtime events count: the picked ones, and the lights in Homey group devices among them. */
+  let watched = new Set();
   let readySent = false;
   let loaded = false;
 
@@ -31,6 +33,11 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
     palette: settings.palette,
     barMin: settings.barMin,
     onSet: (deviceId, change) => Homey.api('POST', '/set', { deviceId, ...change }),
+    onMood: async (id) => {
+      const res = await Homey.api('POST', '/mood', { id });
+      // No usable API key: the widget says what to do (see the app settings).
+      if (res && res.ok === false) throw Object.assign(new Error(res.reason), { reason: res.reason });
+    },
     onHeight: () => {
       if (!readySent) return;
       Homey.setHeight(bodyHeight());
@@ -60,8 +67,12 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
       return;
     }
     try {
-      widget.setState(await Homey.api('GET', `/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${perfParam()}`));
+      const state = await Homey.api('GET', `/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${perfParam()}`);
+      widget.setState(state);
+      watched = new Set(deviceIds);
+      for (const d of Array.isArray(state) ? state : []) for (const m of (d && d.groupLights) || []) watched.add(m.id);
       loaded = true;
+      loadMoods(state);
     } catch (err) {
       console.error(err);
       // A failed refresh keeps the tiles; only a failed first load replaces them with the error.
@@ -70,8 +81,21 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
     ready();
   }
 
+  /** `palette: moods`: the Moods of the lights' rooms. A failed read keeps the last ones. */
+  async function loadMoods(state) {
+    if (settings.palette !== 'moods' || !Array.isArray(state)) return;
+    const zones = [...new Set(state.map(d => d.zone && d.zone.id).filter(Boolean))];
+    if (!zones.length) return;
+    try {
+      const res = await Homey.api('GET', `/moods?zones=${zones.map(encodeURIComponent).join(',')}`);
+      widget.setMoods(res && res.moods);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   Homey.on('lights:state', (data) => {
-    if (data && deviceIds.includes(data.deviceId)) widget.pushChange(data);
+    if (data && (watched.has(data.deviceId) || deviceIds.includes(data.deviceId))) widget.pushChange(data);
   });
 
   Promise.resolve(typeof Homey.getDeviceIds === 'function' ? Homey.getDeviceIds() : [])
