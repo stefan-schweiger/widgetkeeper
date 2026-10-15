@@ -399,3 +399,39 @@ describe('switching speaker', () => {
     expect(q('.mw-who .mw-who-icon').classList.contains('mw-mask')).toBe(true);
   });
 });
+
+describe('large layout', () => {
+  const buttons = [{ id: 'flow:f1', name: 'Movie time' }];
+
+  it('puts the album art above the rest, at the full width', () => {
+    const { root, q } = widget(speaker(), { layout: 'large' });
+    expect(root.classList.contains('mw-large')).toBe(true);
+    const main = q('.mw-main');
+    expect(q('.mw-art').parentElement).toBe(main);
+    expect(main.firstElementChild).toBe(q('.mw-art'));
+    expect(q('.mw-art').nextElementSibling).toBe(q('.mw-now'));
+  });
+
+  it('keeps the art beside the track in the compact card', () => {
+    const { root, q } = widget(speaker(), { layout: 'compact' });
+    expect(root.classList.contains('mw-large')).toBe(false);
+    expect(q('.mw-art').parentElement).toBe(q('.mw-now'));
+    expect(q('.mw-now').firstElementChild).toBe(q('.mw-art'));
+  });
+
+  it('switches speaker, mutes and opens the overlay as the compact card does', async () => {
+    const onSwitch = vi.fn();
+    const onListSpeakers = vi.fn(async () => [{ id: 'b', name: 'Bedroom', icon: null, caps: {} }]);
+    const { q, click, onSet } = widget(speaker(), { layout: 'large', buttons, canSwitch: true, onSwitch, onListSpeakers });
+    click('.mw-mute');
+    expect(onSet).toHaveBeenCalledWith('volume_mute', true);
+    click('.mw-more');
+    expect(q('.mw-card').classList.contains('panel-open')).toBe(true);
+    click('.mw-close');
+    expect(q('.mw-card').classList.contains('panel-open')).toBe(false);
+    click('.mw-who');
+    await vi.advanceTimersByTimeAsync(0);
+    document.querySelector<HTMLElement>('.mw-spk')!.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+    expect(onSwitch).toHaveBeenCalledWith('b');
+  });
+});

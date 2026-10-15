@@ -32,6 +32,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Sparklines and Device Values
 - Every battery tile shows the same battery icon. Some devices brought their own, so tiles side by side looked different.
+### Media
+- A large layout: the album art across the whole widget, with the track, the artist and the buttons below it in bigger text and sizes. A user asked for it to read the widget more easily. Pick it with the new *Layout* setting; the compact card stays the default.
+
 ### Variables
 - Set a lowest and highest number for the number variables: − and + stop there, and a typed number is kept within them. A user asked for 0 to 1 in steps of 0.05, for a percentage kept in a variable.
 - Read only: the rows show each variable's name and value, with a dot and Yes/No instead of a switch, and nothing to tap. No API key is needed. A user wanted the rows for information only.

@@ -52,6 +52,79 @@
       }
     },
     {
+      "id": "layout",
+      "type": "dropdown",
+      "value": "compact",
+      "title": {
+        "en": "Layout",
+        "nl": "Indeling",
+        "de": "Layout",
+        "fr": "Disposition",
+        "it": "Layout",
+        "sv": "Layout",
+        "no": "Oppsett",
+        "es": "Diseño",
+        "da": "Layout",
+        "ru": "Макет",
+        "pl": "Układ",
+        "ko": "레이아웃",
+        "ar": "التخطيط"
+      },
+      "values": [
+        {
+          "id": "compact",
+          "title": {
+            "en": "Compact",
+            "nl": "Compact",
+            "de": "Kompakt",
+            "fr": "Compacte",
+            "it": "Compatto",
+            "sv": "Kompakt",
+            "no": "Kompakt",
+            "es": "Compacto",
+            "da": "Kompakt",
+            "ru": "Компактный",
+            "pl": "Kompaktowy",
+            "ko": "컴팩트",
+            "ar": "مضغوط"
+          }
+        },
+        {
+          "id": "large",
+          "title": {
+            "en": "Large: full-width album art",
+            "nl": "Groot: albumhoes over de volle breedte",
+            "de": "Groß: Albumcover in voller Breite",
+            "fr": "Grande : pochette sur toute la largeur",
+            "it": "Grande: copertina a tutta larghezza",
+            "sv": "Stor: skivomslag i full bredd",
+            "no": "Stor: albumbilde i full bredde",
+            "es": "Grande: portada a todo el ancho",
+            "da": "Stor: albumcover i fuld bredde",
+            "ru": "Крупный: обложка во всю ширину",
+            "pl": "Duży: okładka na całą szerokość",
+            "ko": "크게: 전체 너비 앨범 아트",
+            "ar": "كبير: غلاف الألبوم بعرض كامل"
+          }
+        }
+      ],
+      "hint": {
+        "en": "Large puts the album art across the whole widget, with bigger text and buttons below it.",
+        "nl": "Groot zet de albumhoes over de hele widget, met grotere tekst en knoppen eronder.",
+        "de": "Groß zeigt das Albumcover über das ganze Widget, mit größerem Text und größeren Tasten darunter.",
+        "fr": "Grande affiche la pochette sur tout le widget, avec un texte et des boutons plus grands en dessous.",
+        "it": "Grande mostra la copertina su tutto il widget, con testo e pulsanti più grandi sotto.",
+        "sv": "Stor visar skivomslaget över hela widgeten, med större text och knappar under.",
+        "no": "Stor viser albumbildet over hele widgeten, med større tekst og knapper under.",
+        "es": "Grande muestra la portada en todo el widget, con texto y botones más grandes debajo.",
+        "da": "Stor viser albumcoveret over hele widgetten, med større tekst og knapper nedenunder.",
+        "ru": "Крупный показывает обложку во весь виджет, а под ней — более крупный текст и кнопки.",
+        "pl": "Duży pokazuje okładkę na całym widżecie, a pod nią większy tekst i przyciski.",
+        "ko": "크게는 앨범 아트를 위젯 전체 너비로 보여 주고, 그 아래에 더 큰 글자와 버튼을 둡니다.",
+        "ar": "يعرض الخيار كبير غلاف الألبوم على عرض الأداة كلها، مع نص وأزرار أكبر تحته."
+      }
+    },
+    {
       "id": "switchSpeakers",
       "type": "checkbox",
       "value": true,

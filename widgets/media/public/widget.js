@@ -6,6 +6,8 @@
  * once and a burst is sent once, so it never overshoots, and `maxVolume` caps it. On TV or line-in the card says so
  * instead of greying out: mute and the volume are what matter there. With `canSwitch`, a tap on the speaker's name
  * (its device icon, the name and a ⌄) lists every speaker, and picking one switches the card to it.
+ * `layout: 'large'` puts the album art above everything at the full width, with bigger text and buttons below it
+ * (the same parts; only their order and the CSS differ).
  * Plain browser JS (served as-is).
  */
 (function () {
@@ -229,7 +231,7 @@
    *   onArt?: () => Promise<{type: string, data: string}>,
    *   onReport?: (text: string) => void, onHaptic?: () => void, onHeight?: (h: number) => void,
    *   buttons?: {id: string, name: string, icon?: string | null}[], volumeStep?: number, maxVolume?: number, showShuffle?: boolean,
-   *   volumeLayout?: 'line' | 'buttons', showProgress?: boolean, now?: () => number,
+   *   volumeLayout?: 'line' | 'buttons', layout?: 'compact' | 'large', showProgress?: boolean, now?: () => number,
    *   canSwitch?: boolean, onListSpeakers?: () => Promise<any[]>, onSwitch?: (id: string) => void }} opts
    */
   function createMediaWidget(root, opts = {}) {
@@ -268,12 +270,16 @@
 
     root.classList.add('mw');
     root.classList.toggle('mw-volume-buttons', volumeButtons);
+    /** The album art at the full width above the rest (wk-046), instead of beside the track. */
+    const large = opts.layout === 'large';
+    root.classList.toggle('mw-large', large);
     const card = el('div', { class: 'mw-card' }, root);
     // The main view and the overlay share one grid cell, so the card is as tall as the taller of the two and
     // opening the overlay never changes the widget's height.
     const main = el('div', { class: 'mw-main' }, card);
+    const artBox = el('div', { class: 'mw-art' }, large ? main : null);
     const nowPlaying = el('div', { class: 'mw-now' }, main);
-    const artBox = el('div', { class: 'mw-art' }, nowPlaying);
+    if (!large) nowPlaying.appendChild(artBox);
     const artImg = el('div', { class: 'mw-art-img' }, artBox);
     let artGlyphName = null;
     const info = el('div', { class: 'mw-info' }, nowPlaying);

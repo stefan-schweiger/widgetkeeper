@@ -410,6 +410,8 @@ const BUILD = {
       w('media', 'Buttons (TV, card, flow)', { device: tv.device, ...buttons }),
       w('media', 'Volume buttons · shuffle in overlay · buttons', { device: tv.device, volumeLayout: 'buttons', showShuffle: true, ...buttons }),
       w('media', 'Step 2 · no progress · volume buttons', { device: sp(3), volumeStep: '2', showProgress: false, volumeLayout: 'buttons' }),
+      w('media', 'Large', { device: sp(0), layout: 'large' }),
+      w('media', 'Large · volume buttons · shuffle · buttons', { device: tv.device, layout: 'large', volumeLayout: 'buttons', showShuffle: true, ...buttons }),
       w('media', 'Nothing picked'),
     ] };
   },

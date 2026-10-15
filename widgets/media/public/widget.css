@@ -234,6 +234,68 @@ button.mw-who.pressing { opacity: .6; }
 .mw-message { font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); color: var(--mw-muted); }
 .mw-message.error { color: var(--mw-red); }
 
+/* Large (wk-046, a user's request for readability): the album art square at the full width above everything, then
+   the speaker, the track (24/32 bold), artist · album (17/24), and bigger buttons. The same parts as the compact
+   card; only the order (widget.js) and these sizes differ. */
+.mw-large {
+  --mw-fs-xlarge: var(--homey-font-size-xlarge, 24px); --mw-lh-xlarge: var(--homey-line-height-xlarge, 32px);
+  container: mw / inline-size;
+}
+.mw-large .mw-main { gap: var(--homey-su-3, 12px); }
+.mw-large .mw-art { width: 100%; height: auto; aspect-ratio: 1; }
+.mw-large .mw-art-glyph { width: 96px; height: 96px; }
+.mw-large .mw-now { align-items: flex-start; }
+.mw-large .mw-who-icon, .mw-large .mw-chevron { width: 16px; height: 16px; }
+.mw-large .mw-name { font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); }
+.mw-large button.mw-who { padding: 6px 6px 6px 0; margin: -6px 0 -2px; }
+.mw-large .mw-title { font-size: var(--mw-fs-xlarge); line-height: var(--mw-lh-xlarge); }
+.mw-large .mw-sub { font-size: var(--mw-fs-default); line-height: var(--mw-lh-default); }
+.mw-large .mw-progress { height: 4px; margin-top: 10px; }
+.mw-large .mw-progress-text { margin-top: 4px; font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); }
+.mw-large .mw-btn.mw-more { width: 44px; height: 44px; margin: -10px -10px 0 -4px; }
+.mw-large .mw-more .mw-glyph { width: 24px; height: 24px; }
+.mw-large .mw-controls { gap: 6px; }
+.mw-large .mw-transport, .mw-large .mw-mute { width: 52px; height: 52px; }
+.mw-large .mw-transport .mw-glyph, .mw-large .mw-mute .mw-glyph { width: 24px; height: 24px; }
+.mw-large .mw-play { width: 56px; height: 56px; }
+.mw-large .mw-play .mw-glyph { width: 28px; height: 28px; }
+.mw-large .mw-small .mw-glyph { width: 22px; height: 22px; }
+.mw-large .mw-step { width: 44px; height: 44px; }
+.mw-large .mw-step .mw-glyph { width: 20px; height: 20px; }
+.mw-large .mw-bar { height: 44px; }
+.mw-large .mw-track { top: 18px; height: 8px; border-radius: 4px; }
+.mw-large .mw-knob { top: 13px; width: 18px; height: 18px; left: calc(var(--mw-x) * (100% - 18px)); }
+.mw-large.mw-volume-buttons .mw-controls { gap: var(--homey-su, 4px); }
+.mw-large.mw-volume-buttons .mw-transport:not(.mw-play) { width: 52px; height: 52px; }
+.mw-large.mw-volume-buttons .mw-step { width: 40px; height: 40px; }
+/* The overlay's pills and the speaker list, a size up too. */
+.mw-large .mw-chip { height: 44px; padding: 0 18px; border-radius: 22px; font-size: var(--mw-fs-default); line-height: var(--mw-lh-default); }
+.mw-large .mw-chip .mw-glyph { width: 20px; height: 20px; }
+.mw-large .mw-btn.mw-close { width: 44px; height: 44px; margin: -10px -10px 0 0; }
+.mw-large .mw-close .mw-glyph { width: 24px; height: 24px; }
+.mw-large .mw-speakers-head { height: 32px; margin-top: -8px; }
+.mw-large .mw-speakers-head .mw-close { margin: 0 -10px 0 0; }
+.mw-large .mw-speakers-title { font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); }
+.mw-large .mw-spk { min-height: 48px; }
+.mw-large .mw-spk-icon, .mw-large .mw-spk-check { width: 20px; height: 20px; }
+.mw-large .mw-spk-name, .mw-large .mw-spk-empty { font-size: var(--mw-fs-default); line-height: var(--mw-lh-default); }
+.mw-large .mw-spk-sub { font-size: var(--mw-fs-small); line-height: var(--mw-lh-small); }
+.mw-large .mw-message { font-size: var(--mw-fs-default); line-height: var(--mw-lh-default); }
+/* A narrow widget (300 px: 268 of content): the buttons as the compact card's, so the row still fits. */
+@container mw (max-width: 319px) {
+  .mw-large .mw-controls { gap: var(--homey-su, 4px); }
+  .mw-large .mw-transport, .mw-large .mw-mute { width: 44px; height: 44px; }
+  .mw-large .mw-transport .mw-glyph, .mw-large .mw-mute .mw-glyph { width: 22px; height: 22px; }
+  .mw-large .mw-play { width: 48px; height: 48px; }
+  .mw-large .mw-play .mw-glyph { width: 24px; height: 24px; }
+  .mw-large .mw-small { width: 32px; }
+  .mw-large .mw-small .mw-glyph { width: 20px; height: 20px; }
+  .mw-large.mw-volume-buttons .mw-controls { gap: var(--homey-su, 4px); }
+  .mw-large.mw-volume-buttons .mw-transport:not(.mw-play) { width: 40px; height: 40px; }
+  .mw-large.mw-volume-buttons .mw-play, .mw-large.mw-volume-buttons .mw-mute { width: 44px; height: 44px; }
+  .mw-large.mw-volume-buttons .mw-step { width: 36px; height: 36px; }
+}
+
 @keyframes mw-shake {
   20%, 60% { transform: translateX(-4px); }
   40%, 80% { transform: translateX(4px); }

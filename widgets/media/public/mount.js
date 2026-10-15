@@ -55,6 +55,7 @@ window.mountMediaWidget = function (Homey, { root, frame }) {
       load();
     },
     volumeLayout: settings.volumeLayout === 'buttons' ? 'buttons' : 'line',
+    layout: settings.layout === 'large' ? 'large' : 'compact',
     onSet: (capabilityId, value) => Homey.api('POST', '/set', {
       deviceId, capabilityId, value, maxVolume: maxVolume > 0 && maxVolume < 100 ? maxVolume / 100 : 1,
     }),

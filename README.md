@@ -235,9 +235,9 @@ Curtains and blinds as tiles: tap to open or close (the corner label says which)
 ## Media
 <img src="docs/clips/media.webp" alt="Media on a Homey dashboard: the volume turned up, the next track, mute, the TV as the source from behind ⋯, and a switch to another speaker" width="358">
 
-One speaker as a card: album art, the track, play controls, mute, and a volume that moves on every tap but never overshoots or passes your maximum. Shows TV and line-in instead of old album art. Tap the name to switch speaker. Up to four buttons behind ⋯ run the speaker's own actions (such as *Set source to TV*) or flows; they need an [API key](#api-key).
+One speaker as a card: album art, the track, play controls, mute, and a volume that moves on every tap but never overshoots or passes your maximum. Shows TV and line-in instead of old album art. Tap the name to switch speaker. Up to four buttons behind ⋯ run the speaker's own actions (such as *Set source to TV*) or flows; they need an [API key](#api-key). A large layout puts the album art across the whole widget, with bigger text and buttons below it.
 
-**Settings:** speaker, speaker switching, volume as a bar or buttons, volume step and maximum, progress, shuffle and repeat, four buttons with an icon and a name.
+**Settings:** layout (compact or large), speaker, speaker switching, volume as a bar or buttons, volume step and maximum, progress, shuffle and repeat, four buttons with an icon and a name.
 
 ## Smart Stack
 <img src="docs/clips/stack.webp" width="382" alt="A Smart Stack on a Homey dashboard: it turns through four widgets, is swiped by hand, and brings the cameras forward when someone is at the door">
