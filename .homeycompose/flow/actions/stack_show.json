@@ -86,19 +86,19 @@
         {
           "id": "thermostat",
           "title": {
-            "en": "Thermostat Shortcuts",
-            "nl": "Thermostaatsnelkoppelingen",
-            "de": "Thermostat-Schnelltasten",
-            "fr": "Raccourcis thermostat",
-            "it": "Scorciatoie termostato",
-            "sv": "Termostatgenvägar",
-            "no": "Termostatsnarveier",
-            "es": "Accesos directos de termostato",
-            "da": "Termostatgenveje",
-            "ru": "Быстрые кнопки термостата",
-            "pl": "Skróty termostatu",
-            "ko": "온도 조절기 바로가기",
-            "ar": "اختصارات منظم الحرارة"
+            "en": "Thermostat Presets",
+            "nl": "Thermostaatstanden",
+            "de": "Thermostat-Presets",
+            "fr": "Préréglages thermostat",
+            "it": "Preimpostazioni termostato",
+            "sv": "Termostatlägen",
+            "no": "Termostatinnstillinger",
+            "es": "Ajustes del termostato",
+            "da": "Termostatindstillinger",
+            "ru": "Пресеты термостата",
+            "pl": "Ustawienia termostatu",
+            "ko": "온도 조절기 프리셋",
+            "ar": "إعدادات منظم الحرارة"
           }
         },
         {
@@ -140,19 +140,19 @@
         {
           "id": "sensordots",
           "title": {
-            "en": "Sensor Dots",
-            "nl": "Sensorstippen",
-            "de": "Sensorpunkte",
-            "fr": "Points capteurs",
-            "it": "Punti sensori",
-            "sv": "Sensorprickar",
-            "no": "Sensorprikker",
-            "es": "Puntos de sensores",
-            "da": "Sensorprikker",
-            "ru": "Точки датчиков",
-            "pl": "Kropki czujników",
-            "ko": "센서 점",
-            "ar": "نقاط المستشعرات"
+            "en": "Activity Dots",
+            "nl": "Activiteitsstippen",
+            "de": "Aktivitätspunkte",
+            "fr": "Points d'activité",
+            "it": "Punti attività",
+            "sv": "Aktivitetsprickar",
+            "no": "Aktivitetsprikker",
+            "es": "Puntos de actividad",
+            "da": "Aktivitetsprikker",
+            "ru": "Точки активности",
+            "pl": "Kropki aktywności",
+            "ko": "활동 점",
+            "ar": "نقاط النشاط"
           }
         },
         {
@@ -264,6 +264,24 @@
           }
         },
         {
+          "id": "charts",
+          "title": {
+            "en": "Charts",
+            "nl": "Grafieken",
+            "de": "Diagramme",
+            "fr": "Graphiques",
+            "it": "Grafici",
+            "sv": "Diagram",
+            "no": "Diagrammer",
+            "es": "Gráficos",
+            "da": "Grafer",
+            "ru": "Графики",
+            "pl": "Wykresy",
+            "ko": "차트",
+            "ar": "المخططات"
+          }
+        },
+        {
           "id": "variables",
           "title": {
             "en": "Flow Variables",
@@ -302,19 +320,19 @@
         {
           "id": "price",
           "title": {
-            "en": "Price Badge",
-            "nl": "Prijsbadge",
-            "de": "Preis-Badge",
-            "fr": "Badge de prix",
-            "it": "Badge prezzo",
-            "sv": "Prisbricka",
-            "no": "Prismerke",
-            "es": "Insignia de precio",
-            "da": "Prismærke",
-            "ru": "Значок цены",
-            "pl": "Plakietka ceny",
-            "ko": "가격 배지",
-            "ar": "شارة السعر"
+            "en": "Energy Price Strip",
+            "nl": "Energieprijsstrook",
+            "de": "Energiepreis-Leiste",
+            "fr": "Bandeau prix de l'énergie",
+            "it": "Barra prezzo energia",
+            "sv": "Energiprisremsa",
+            "no": "Energiprisstripe",
+            "es": "Barra de precio de energía",
+            "da": "Energiprisbjælke",
+            "ru": "Полоса цен на энергию",
+            "pl": "Pasek cen energii",
+            "ko": "에너지 가격 바",
+            "ar": "شريط سعر الطاقة"
           }
         },
         {
@@ -405,6 +423,24 @@
             "pl": "Zegar",
             "ko": "시계",
             "ar": "الساعة"
+          }
+        },
+        {
+          "id": "textline",
+          "title": {
+            "en": "Notes",
+            "nl": "Notities",
+            "de": "Notizen",
+            "fr": "Notes",
+            "it": "Note",
+            "sv": "Anteckningar",
+            "no": "Notater",
+            "es": "Notas",
+            "da": "Noter",
+            "ru": "Заметки",
+            "pl": "Notatki",
+            "ko": "메모",
+            "ar": "ملاحظات"
           }
         }
       ]

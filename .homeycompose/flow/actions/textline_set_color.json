@@ -1,0 +1,265 @@
+{
+  "id": "textline_set_color",
+  "title": {
+    "en": "Write on a note in a colour",
+    "nl": "Op een notitie schrijven in een kleur",
+    "de": "Auf eine Notiz in einer Farbe schreiben",
+    "fr": "Écrire sur une note en couleur",
+    "it": "Scrivi su una nota a colori",
+    "sv": "Skriv på en anteckning i en färg",
+    "no": "Skriv på et notat i en farge",
+    "es": "Escribir en una nota en un color",
+    "da": "Skriv på en note i en farve",
+    "ru": "Написать в заметке цветом",
+    "pl": "Napisz na notatce w kolorze",
+    "ko": "색상으로 메모에 쓰기",
+    "ar": "الكتابة على ملاحظة بلون"
+  },
+  "titleFormatted": {
+    "en": "Write [[text]] on the note [[board]] in [[color]]",
+    "nl": "Schrijf [[text]] op de notitie [[board]] in [[color]]",
+    "de": "[[text]] auf die Notiz [[board]] in [[color]] schreiben",
+    "fr": "Écrire [[text]] sur la note [[board]] en [[color]]",
+    "it": "Scrivi [[text]] sulla nota [[board]] in [[color]]",
+    "sv": "Skriv [[text]] på anteckningen [[board]] i [[color]]",
+    "no": "Skriv [[text]] på notatet [[board]] i [[color]]",
+    "es": "Escribir [[text]] en la nota [[board]] en [[color]]",
+    "da": "Skriv [[text]] på noten [[board]] i [[color]]",
+    "ru": "Написать [[text]] в заметке [[board]], цвет [[color]]",
+    "pl": "Napisz [[text]] na notatce [[board]] w kolorze [[color]]",
+    "ko": "메모 [[board]]에 [[color]](으)로 [[text]] 쓰기",
+    "ar": "اكتب [[text]] على الملاحظة [[board]] باللون [[color]]"
+  },
+  "hint": {
+    "en": "As Write on a note, with a colour: a tinted tile, or the Post-it's paper. Default uses the widget's own colour.",
+    "nl": "Zoals Op een notitie schrijven, met een kleur: een gekleurde tegel of het papier van de Post-it. Standaard gebruikt de eigen kleur van de widget.",
+    "de": "Wie Auf eine Notiz schreiben, mit einer Farbe: eine getönte Kachel oder das Papier der Haftnotiz. Standard nutzt die eigene Farbe des Widgets.",
+    "fr": "Comme Écrire sur une note, avec une couleur : une tuile teintée ou le papier du Post-it. Par défaut utilise la couleur du widget.",
+    "it": "Come Scrivi su una nota, con un colore: un riquadro colorato o la carta del Post-it. Predefinito usa il colore del widget.",
+    "sv": "Som Skriv på en anteckning, med en färg: en tonad ruta eller Post-it-lappens papper. Standard använder widgetens egen färg.",
+    "no": "Som Skriv på et notat, med en farge: en farget flis eller Post-it-lappens papir. Standard bruker widgetens egen farge.",
+    "es": "Como Escribir en una nota, con un color: un mosaico teñido o el papel del Post-it. Predeterminado usa el color del widget.",
+    "da": "Som Skriv på en note, med en farve: et tonet felt eller Post-it-sedlens papir. Standard bruger widgettens egen farve.",
+    "ru": "Как «Написать в заметке», но с цветом: тонированная плитка или бумага стикера. «По умолчанию» — собственный цвет виджета.",
+    "pl": "Jak Napisz na notatce, z kolorem: zabarwiony kafelek albo papier karteczki. Domyślny używa koloru widżetu.",
+    "ko": "메모에 쓰기와 같으며 색상이 있습니다: 색이 입혀진 타일 또는 포스트잇의 종이. 기본값은 위젯 자체 색상을 사용합니다.",
+    "ar": "مثل الكتابة على ملاحظة، مع لون: بلاطة ملوّنة أو ورق الملاحظة اللاصقة. الافتراضي يستخدم لون الأداة نفسها."
+  },
+  "args": [
+    {
+      "type": "autocomplete",
+      "name": "board",
+      "title": {
+        "en": "Note",
+        "nl": "Notitie",
+        "de": "Notiz",
+        "fr": "Note",
+        "it": "Nota",
+        "sv": "Anteckning",
+        "no": "Notat",
+        "es": "Nota",
+        "da": "Note",
+        "ru": "Заметка",
+        "pl": "Notatka",
+        "ko": "메모",
+        "ar": "الملاحظة"
+      },
+      "placeholder": {
+        "en": "Note",
+        "nl": "Notitie",
+        "de": "Notiz",
+        "fr": "Note",
+        "it": "Nota",
+        "sv": "Anteckning",
+        "no": "Notat",
+        "es": "Nota",
+        "da": "Note",
+        "ru": "Заметка",
+        "pl": "Notatka",
+        "ko": "메모",
+        "ar": "الملاحظة"
+      }
+    },
+    {
+      "type": "text",
+      "name": "text",
+      "title": {
+        "en": "Text",
+        "nl": "Tekst",
+        "de": "Text",
+        "fr": "Texte",
+        "it": "Testo",
+        "sv": "Text",
+        "no": "Tekst",
+        "es": "Texto",
+        "da": "Tekst",
+        "ru": "Текст",
+        "pl": "Tekst",
+        "ko": "텍스트",
+        "ar": "النص"
+      },
+      "placeholder": {
+        "en": "Dinner at 6",
+        "nl": "Eten om 6 uur",
+        "de": "Essen um 6",
+        "fr": "Dîner à 18 h",
+        "it": "Cena alle 6",
+        "sv": "Middag kl. 18",
+        "no": "Middag kl. 18",
+        "es": "Cena a las 6",
+        "da": "Aftensmad kl. 18",
+        "ru": "Ужин в 6",
+        "pl": "Obiad o 18",
+        "ko": "6시에 저녁",
+        "ar": "العشاء في 6"
+      }
+    },
+    {
+      "type": "dropdown",
+      "name": "color",
+      "title": {
+        "en": "Colour",
+        "nl": "Kleur",
+        "de": "Farbe",
+        "fr": "Couleur",
+        "it": "Colore",
+        "sv": "Färg",
+        "no": "Farge",
+        "es": "Color",
+        "da": "Farve",
+        "ru": "Цвет",
+        "pl": "Kolor",
+        "ko": "색상",
+        "ar": "اللون"
+      },
+      "values": [
+        {
+          "id": "default",
+          "title": {
+            "en": "Default",
+            "nl": "Standaard",
+            "de": "Standard",
+            "fr": "Par défaut",
+            "it": "Predefinito",
+            "sv": "Standard",
+            "no": "Standard",
+            "es": "Predeterminado",
+            "da": "Standard",
+            "ru": "По умолчанию",
+            "pl": "Domyślny",
+            "ko": "기본값",
+            "ar": "افتراضي"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        }
+      ]
+    }
+  ]
+}

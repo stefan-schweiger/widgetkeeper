@@ -51,6 +51,8 @@
     "closed": "Lukket",
     "motion": "Bevægelse",
     "noMotion": "Ingen bevægelse",
+    "presence": "Tilstedeværelse",
+    "noPresence": "Ingen tilstedeværelse",
     "nothingDetected": "Intet registreret",
     "since": "siden __time__"
   },
@@ -135,6 +137,13 @@
     "selectSlots": "Vælg enhedsværdier i widgetindstillingerne.",
     "error": "Kunne ikke hente værdierne.",
     "unavailable": "Utilgængelig"
+  },
+  "charts": {
+    "now": "Nu",
+    "selectChart": "Vælg en enhedsværdi i widgetindstillingerne.",
+    "error": "Kunne ikke hente grafen.",
+    "unavailable": "Utilgængelig",
+    "noHistory": "Ingen historik endnu."
   },
   "lights": {
     "selectDevices": "Vælg lys i widgetindstillingerne.",
@@ -317,6 +326,15 @@
     "keyInvalid": "API-nøglen blev ikke godkendt.",
     "speakerAction": "Højttalerhandling"
   },
+  "textline": {
+    "noMessage": "Ingen besked",
+    "typeNote": "Skriv din note i widgettens indstillinger.",
+    "variableMissing": "Variablen blev ikke fundet",
+    "selectVariable": "Vælg en tekstvariabel i widgettens indstillinger.",
+    "error": "Kunne ikke indlæse teksten.",
+    "boardInUse": "Har en tekst",
+    "boardNew": "Ny note"
+  },
   "stack": {
     "selectDashboard": "Vælg et dashboard i widgetens indstillinger.",
     "noKey": "Tilføj en API-nøgle i appens indstillinger for at læse dashboardet.",
@@ -423,6 +441,7 @@
       "values": "Enhver enhedsværdi som en kompakt flise.",
       "lights": "Lysfliser med lysstyrke og farve lige ved hånden.",
       "sparklines": "Værdier med en lille graf over deres seneste historik.",
+      "charts": "Én eller to grafer over en vilkårlig værdi, som el-graferne.",
       "variables": "Flow-variabler som rækker, du kan slå til og fra eller ændre.",
       "flows": "Start flows med et tryk, i dine farver og ikoner.",
       "price": "Elprisen nu og de næste timer.",
@@ -431,6 +450,8 @@
       "curtains": "Åbn, luk eller indstil gardiner og persienner.",
       "media": "En højttalers musik, lydstyrke og kilder i ét kort.",
       "clock": "Klokken og datoen, med vejret lige nu, hvis du vil.",
+      "textline": "En note på et felt eller en Post-it-seddel, skrevet ind eller skrevet af dine Flows.",
+      "spacer": "Tom plads til at flugte widgets i kolonner.",
       "stack": "Widgets fra et andet dashboard, på skift."
     }
   }

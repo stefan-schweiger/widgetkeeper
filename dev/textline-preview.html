@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notes widget preview</title>
+  <link rel="stylesheet" href="../widgets/textline/public/widget.css">
+  <script src="../widgets/textline/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <link rel="stylesheet" href="preview.css">
+  <style>
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px; }
+    button { margin: 8px 0; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark · tile, icon</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div>
+    <button id="post">Simulate a Flow: “Dryer done” in red</button></div>
+  <div class="col"><span>358 px · light · tile, centred, blue</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>358 px · dark · tile, long text, scroll</span><div class="dash homey-dark-mode" style="width:358px"><div id="w3"></div></div></div>
+  <div class="col"><span>300 px · dark · tile, long text, cut off, large</span><div class="dash homey-dark-mode" style="width:300px"><div id="w4"></div></div></div>
+  <div class="col"><span>358 px · dark · tile, empty board</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · dark · Post-it</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px · light · Post-it, long text, pink</span><div class="dash light" style="width:358px"><div id="w7"></div></div></div>
+  <div class="col"><span>300 px · dark · Post-it, blue, Cyrillic, large</span><div class="dash homey-dark-mode" style="width:300px"><div id="w8"></div></div></div>
+  <div class="col"><span>358 px · dark · Post-it, green, Arabic, centred</span><div class="dash homey-dark-mode" style="width:358px"><div id="w9"></div></div></div>
+  <div class="col"><span>358 px · light · tile, variable missing</span><div class="dash light" style="width:358px"><div id="w10"></div></div></div>
+  <div class="col"><span>358 px · light · Post-it, typed with line breaks</span><div class="dash light" style="width:358px"><div id="w11"></div></div></div>
+  <div class="col"><span>358 px · dark · tile, nothing typed yet</span><div class="dash homey-dark-mode" style="width:358px"><div id="w12"></div></div></div>
+
+  <script>
+    // `?lang=de` uses locales/de.json (dev/i18n.js).
+    const LANG = new URLSearchParams(location.search).get('lang') || 'en';
+    const board = (text, color = null) => ({ key: 'note', name: 'Note', text, color, updatedAt: Date.now() });
+    const LONG = 'The washing machine is done, please hang up the laundry before you go to bed tonight';
+    (async () => {
+      const t = devT;
+      function mount(id, state, opts = {}) {
+        const w = createTextLineWidget(document.getElementById(id), { t, seed: id, source: 'flow', ...opts });
+        w.setState({ language: LANG, board: null, variable: null, ...state });
+        return w;
+      }
+      const w1 = mount('w1', { board: board('Dinner at 6') }, { icon: 'bell' });
+      mount('w2', { board: board('Mum is on her way home') }, { align: 'center', color: 'blue' });
+      mount('w3', { board: board(LONG) }, { overflow: 'scroll', icon: 'home' });
+      mount('w4', { board: board(LONG) }, { size: 'large' });
+      mount('w5', { board: board('') });
+      mount('w6', { board: board('Buy milk 🥛') }, { style: 'postit' });
+      mount('w7', { board: board(LONG) }, { style: 'postit', color: 'red' });
+      mount('w8', { board: board('Купить хлеб и молоко') }, { style: 'postit', color: 'blue', size: 'large' });
+      mount('w9', { board: board('العشاء في الساعة السادسة') }, { style: 'postit', color: 'green', align: 'center' });
+      mount('w10', { variable: { id: 'v1', missing: true } }, { source: 'variable' });
+      mount('w11', {}, { source: 'typed', style: 'postit', color: 'orange', message: 'Back at 5\nFeed the cat' });
+      mount('w12', {}, { source: 'typed' });
+      let n = 0;
+      document.getElementById('post').onclick = () => {
+        w1.setState({ board: n++ % 2 ? board('Dinner at 6') : board('Dryer done', 'red') });
+      };
+    })();
+  </script>
+</body>
+</html>

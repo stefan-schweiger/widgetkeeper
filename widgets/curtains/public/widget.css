@@ -59,7 +59,8 @@ html, body { background: transparent !important; }
     color-mix(in srgb, var(--ct-accent) calc(var(--ct-tint) / 2), var(--ct-tile)));
 }
 
-.ct-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; height: 22px; }
+/* 20px like Light Controls' icon row, so the tiles line up beside them (88px); the 22px pill overhangs it by 1px. */
+.ct-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; height: 20px; }
 .ct-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--ct-muted); }
 .ct-icon rect { transition: x .3s, width .3s, height .3s; }
 .ct-tile.open .ct-icon, .ct-tile.moving .ct-icon { color: var(--ct-text); }

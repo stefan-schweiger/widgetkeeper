@@ -1,5 +1,5 @@
 /*
- * Sensor Dots: motion, contact and camera-detection sensors as a grid of dots, in one colour while idle and
+ * Activity Dots: motion, presence, contact and camera-detection sensors as a grid of dots, in one colour while idle and
  * another while active (settings; grey and blue by default). A tap on a dot opens an overlay over its row with the device's name, what's active and since when;
  * a tap on the overlay closes it.
  * Plain browser JS (served as-is).
@@ -15,6 +15,8 @@
     closed: 'Closed',
     motion: 'Motion',
     noMotion: 'No motion',
+    presence: 'Presence',
+    noPresence: 'No presence',
     nothingDetected: 'Nothing detected',
     since: 'since __time__',
   };
@@ -176,7 +178,7 @@
       return (d.alarms || []).some(a => a.value === false) ? 'idle' : 'unknown';
     }
 
-    /** "Open", "Motion, Person Detected", "Closed", "No motion" …, then "since 18:32" when known. */
+    /** "Open", "Motion, Person Detected", "Closed", "No presence", "No motion" …, then "since 18:32" when known. */
     function stateText(d) {
       if ('missing' in d) return t('unavailable');
       const alarms = d.alarms || [];
@@ -187,12 +189,14 @@
         const labels = [];
         for (const a of active) {
           const id = baseId(a);
-          const label = id === 'alarm_contact' ? t('open') : id === 'alarm_motion' ? t('motion') : baseTitle(a.title);
+          const label = id === 'alarm_contact' ? t('open') : id === 'alarm_motion' ? t('motion')
+            : id === 'alarm_presence' ? t('presence') : baseTitle(a.title);
           if (!labels.includes(label)) labels.push(label);
         }
         text = labels.join(', ');
       } else if (alarms.some(a => a.value === false)) {
         text = alarms.some(a => baseId(a) === 'alarm_contact') ? t('closed')
+          : alarms.some(a => baseId(a) === 'alarm_presence') ? t('noPresence')
           : alarms.some(a => baseId(a) === 'alarm_motion') ? t('noMotion') : t('nothingDetected');
       } else {
         return '–';

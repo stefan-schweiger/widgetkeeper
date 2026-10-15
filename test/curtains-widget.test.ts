@@ -243,3 +243,101 @@ describe('groupByZone', () => {
     expect(onSet.mock.calls).toEqual([['a', { position: 0 }], ['b', { position: 0 }]]);
   });
 });
+
+describe('blinds that only tilt', () => {
+  const tilt = (id: string, value: number | null) => ({ id, name: id, kind: 'blinds', zone: null, caps: { windowcoverings_tilt_set: cap(value) } });
+
+  it('reads 50% as open and both ends as closed (SwitchBot, the default)', () => {
+    const { action, state } = widget([tilt('a', 0.5), tilt('b', 0), tilt('c', 1), tilt('d', 0.8)]);
+    expect([state('a'), action('a')]).toEqual(['Open', 'close']);
+    expect([state('b'), action('b')]).toEqual(['Closed', 'open']);
+    expect([state('c'), action('c')]).toEqual(['Closed', 'open']);
+    expect(state('d')).toBe('40% open');
+  });
+
+  it('opens to 50% and closes to the nearer end', () => {
+    // 60% open on the down side (e) and the up side (f) close; 40% open (d) opens.
+    const { tap, onSet } = widget([tilt('a', 0.5), tilt('b', 0), tilt('d', 0.8), tilt('e', 0.3), tilt('f', 0.7)]);
+    tap('a'); tap('b'); tap('d'); tap('e'); tap('f');
+    expect(onSet.mock.calls).toEqual([
+      ['a', { position: 0 }], ['b', { position: 0.5 }], ['d', { position: 0.5 }], ['e', { position: 0 }], ['f', { position: 1 }],
+    ]);
+  });
+
+  it('sets how open it is on the side it is on, with the bar', () => {
+    const { barAt, tile, onSet } = widget([tilt('up', 0.9), tilt('down', 0.1)]);
+    expect(tile('up').classList.contains('no-position')).toBe(false);
+    barAt('up', 0.6);
+    barAt('down', 0.6);
+    expect(onSet.mock.calls).toEqual([['up', { position: 0.7 }], ['down', { position: 0.3 }]]);
+  });
+
+  it('keeps moving through the null a SwitchBot reports on its way', () => {
+    const { w, tap, state, onSet } = widget([tilt('a', 1)]);
+    tap('a');
+    expect(onSet).toHaveBeenLastCalledWith('a', { position: 0.5 });
+    w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_tilt_set', value: null });
+    expect(state('a')).toBe('Opening…');
+    w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_tilt_set', value: 0.5 });
+    expect(state('a')).toBe('Open');
+  });
+
+  it('stays on its side while the tilt is unknown', () => {
+    const { w, barAt, onSet } = widget([tilt('a', 0.9)]);
+    w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_tilt_set', value: null });
+    barAt('a', 0.4);
+    expect(onSet).toHaveBeenLastCalledWith('a', { position: 0.8 });
+  });
+
+  it('reads the tilt as a position with `openAt: end`, flipped by `invert`', () => {
+    const plainTilt = widget([tilt('a', 0.3)], { openAt: 'end' });
+    expect(plainTilt.state('a')).toBe('30% open');
+    plainTilt.tap('a');
+    expect(plainTilt.onSet).toHaveBeenLastCalledWith('a', { position: 1 });
+    const inverted = widget([tilt('b', 0.3)], { openAt: 'end', invert: true });
+    expect(inverted.state('b')).toBe('70% open');
+    inverted.tap('b'); // 70% open: closes, to 100%
+    expect(inverted.onSet).toHaveBeenLastCalledWith('b', { position: 1 });
+  });
+
+  it('keeps the position of a blind that has both', () => {
+    const { state } = widget([{ id: 'a', name: 'a', kind: 'blinds', zone: null, caps: { windowcoverings_set: cap(1), windowcoverings_tilt_set: cap(0) } }]);
+    expect(state('a')).toBe('Open');
+  });
+});
+
+describe('vertical blinds (openAt: middle)', () => {
+  const vertical = (id: string, position: number) => ({
+    id, name: id, kind: 'blinds', zone: null, caps: { windowcoverings_set: cap(position), windowcoverings_state: cap('idle') },
+  });
+
+  it('reads 50% as open and both ends as closed, in either direction', () => {
+    const { state, action } = widget([vertical('a', 0.5), vertical('b', 0), vertical('c', 1), vertical('d', 0.2), vertical('e', 0.8)], { openAt: 'middle' });
+    expect([state('a'), action('a')]).toEqual(['Open', 'close']);
+    expect([state('b'), action('b')]).toEqual(['Closed', 'open']);
+    expect([state('c'), action('c')]).toEqual(['Closed', 'open']);
+    expect([state('d'), state('e')]).toEqual(['40% open', '40% open']);
+  });
+
+  it('opens to 50% and closes to the nearer end, and the bar stays on its side', () => {
+    const { tap, barAt, onSet } = widget([vertical('a', 1), vertical('b', 0.5), vertical('c', 0.7), vertical('d', 0.9)], { openAt: 'middle' });
+    tap('a'); tap('b'); tap('c');
+    barAt('d', 0.6);
+    expect(onSet.mock.calls).toEqual([['a', { position: 0.5 }], ['b', { position: 0 }], ['c', { position: 1 }], ['d', { position: 0.7 }]]);
+  });
+
+  it('takes its direction from the position, not the motor', () => {
+    const { w, tap, state } = widget([vertical('a', 0.8)], { openAt: 'middle' });
+    tap('a'); // 40% open: opens, down to 50%
+    w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_state', value: 'down' });
+    expect(state('a')).toBe('Opening…');
+    w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_set', value: 0.5 });
+    w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_state', value: 'idle' });
+    expect(state('a')).toBe('Open');
+  });
+
+  it('leaves a plain position alone by default (only tilt-only blinds open at 50%)', () => {
+    const { state } = widget([vertical('a', 0.5)]);
+    expect(state('a')).toBe('50% open');
+  });
+});

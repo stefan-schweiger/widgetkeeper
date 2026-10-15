@@ -14,6 +14,7 @@ import QuickActionService from './lib/QuickActionService.js';
 import SensorAlarmService from './lib/SensorAlarmService.js';
 import SparklineService from './lib/SparklineService.js';
 import StackService, { STACK_RESUME_CARD, STACK_SHOW_CARD } from './lib/StackService.js';
+import TextLineService, { TEXTLINE_CLEAR_CARD, TEXTLINE_SET_CARD, TEXTLINE_SET_COLOR_CARD } from './lib/TextLineService.js';
 import ThermostatService from './lib/ThermostatService.js';
 import TimerService, { TIMER_FINISHED_CARD, timerDurationText, type Timer } from './lib/TimerService.js';
 import ValueService from './lib/ValueService.js';
@@ -43,6 +44,7 @@ export default class WidgetkeeperApp extends Homey.App {
   curtains!: CurtainService;
   media!: MediaService;
   stack!: StackService;
+  textLines!: TextLineService;
   web!: WebDashboardService;
   /** The web dashboards' optional password and the browsers signed in with it. */
   webPassword!: WebPassword;
@@ -90,6 +92,8 @@ export default class WidgetkeeperApp extends Homey.App {
     this.media.start();
     this.stack = new StackService(this.homey, log, debug, this.apiKey);
     this.registerStackFlows();
+    this.textLines = new TextLineService(this.homey, log, debug);
+    this.registerTextLineFlows();
     this.web = new WebDashboardService(this.homey, log, widgetAutocompletes(this));
     this.webPassword = new WebPassword(this.homey, log);
     this.registerAutocompletes();
@@ -158,6 +162,21 @@ export default class WidgetkeeperApp extends Homey.App {
       .registerRunListener(async (args: { widget: string, minutes: number }) => this.stack.show(args.widget, args.minutes));
     this.homey.flow.getActionCard(STACK_RESUME_CARD)
       .registerRunListener(async () => this.stack.resume());
+  }
+
+  /** The Flow cards that write on and clear a Notes widget's named note. */
+  private registerTextLineFlows() {
+    type BoardArg = { board?: { id?: string, name?: string } };
+    const board = (args: BoardArg) => args.board?.id ?? args.board?.name;
+    for (const id of [TEXTLINE_SET_CARD, TEXTLINE_SET_COLOR_CARD, TEXTLINE_CLEAR_CARD]) {
+      this.homey.flow.getActionCard(id).registerArgumentAutocompleteListener('board', async query => this.textLines.listBoards(query));
+    }
+    this.homey.flow.getActionCard(TEXTLINE_SET_CARD)
+      .registerRunListener(async (args: BoardArg & { text: string }) => this.textLines.set(board(args), args.text));
+    this.homey.flow.getActionCard(TEXTLINE_SET_COLOR_CARD)
+      .registerRunListener(async (args: BoardArg & { text: string, color: string }) => this.textLines.set(board(args), args.text, args.color));
+    this.homey.flow.getActionCard(TEXTLINE_CLEAR_CARD)
+      .registerRunListener(async (args: BoardArg) => this.textLines.clear(board(args)));
   }
 
   /** The Flow card *A timer finished*: the timer's name (or its duration, as the widget shows it) and its minutes. */

@@ -11,8 +11,8 @@ const page = pathToFileURL(resolve('dev/widget-previews.html')).href;
 // The page's frame ids are `<prefix>-dark` and `<prefix>-light`; each goes to widgets/<widget>/preview-<theme>.png.
 const WIDGETS = {
   elec: 'electricity', thermo: 'thermostat', qa: 'quickactions', sa: 'sensoralarms', sd: 'sensordots', weather: 'weather',
-  hm: 'heatmap', cam: 'cameras', val: 'values', lc: 'lights', spark: 'sparklines', var: 'variables', fb: 'flows',
-  pb: 'price', tm: 'timers', lk: 'locks', ct: 'curtains', mw: 'media', sk: 'stack', ck: 'clock',
+  hm: 'heatmap', cam: 'cameras', val: 'values', lc: 'lights', spark: 'sparklines', chart: 'charts', var: 'variables', fb: 'flows',
+  pb: 'price', tm: 'timers', lk: 'locks', ct: 'curtains', mw: 'media', sk: 'stack', ck: 'clock', sp: 'spacer', tl: 'textline',
 };
 const OUT = Object.fromEntries(Object.entries(WIDGETS).flatMap(([prefix, widget]) =>
   ['dark', 'light'].map(theme => [`${prefix}-${theme}`, { widget, theme, out: `widgets/${widget}/preview-${theme}.png` }])));

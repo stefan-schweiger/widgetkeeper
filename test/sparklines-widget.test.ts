@@ -91,6 +91,16 @@ describe('render', () => {
     expect(tiles()[0].classList.contains('missing')).toBe(true);
   });
 
+  it("uses the capability's own icon, but always the glyph for batteries", () => {
+    const icon = 'data:image/svg+xml;base64,QUJD';
+    const battery = (extra: object) => temp({ capabilityId: 'measure_battery', capability: cap({ units: '%', ...extra }), value: 80 });
+    const { tiles } = widget([temp({ capability: cap({ icon }) }), battery({ icon }), battery({})]);
+    const mask = (t: HTMLElement) => (t.querySelector('.sl-icon') as HTMLElement).style.getPropertyValue('--sl-mask');
+    expect(mask(tiles()[0])).toBe(`url("${icon}")`);
+    expect(mask(tiles()[1])).not.toBe(`url("${icon}")`);
+    expect(mask(tiles()[1])).toBe(mask(tiles()[2]));
+  });
+
   it('uses 2 columns unless the setting says 1', () => {
     expect(widget([temp()]).root.dataset.columns).toBe('2');
     expect(widget([temp()], { columns: '1' }).root.dataset.columns).toBe('1');

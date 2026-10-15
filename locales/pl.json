@@ -51,6 +51,8 @@
     "closed": "Zamknięte",
     "motion": "Ruch",
     "noMotion": "Brak ruchu",
+    "presence": "Obecność",
+    "noPresence": "Brak obecności",
     "nothingDetected": "Nic nie wykryto",
     "since": "od __time__"
   },
@@ -135,6 +137,13 @@
     "selectSlots": "Wybierz wartości w ustawieniach widżetu.",
     "error": "Nie udało się wczytać wartości.",
     "unavailable": "Niedostępne"
+  },
+  "charts": {
+    "now": "Teraz",
+    "selectChart": "Wybierz wartość urządzenia w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać wykresu.",
+    "unavailable": "Niedostępne",
+    "noHistory": "Brak historii."
   },
   "lights": {
     "selectDevices": "Wybierz światła w ustawieniach widżetu.",
@@ -317,6 +326,15 @@
     "keyInvalid": "Klucz API nie został zaakceptowany.",
     "speakerAction": "Akcja głośnika"
   },
+  "textline": {
+    "noMessage": "Brak wiadomości",
+    "typeNote": "Wpisz notatkę w ustawieniach widżetu.",
+    "variableMissing": "Nie znaleziono zmiennej",
+    "selectVariable": "Wybierz zmienną tekstową w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać tekstu.",
+    "boardInUse": "Ma tekst",
+    "boardNew": "Nowa notatka"
+  },
   "stack": {
     "selectDashboard": "Wybierz pulpit w ustawieniach widżetu.",
     "noKey": "Aby odczytać pulpit, dodaj klucz API w ustawieniach aplikacji.",
@@ -423,6 +441,7 @@
       "values": "Dowolna wartość urządzenia jako kompaktowy kafelek.",
       "lights": "Kafelki świateł z jasnością i kolorem pod ręką.",
       "sparklines": "Wartości z małym wykresem ich niedawnej historii.",
+      "charts": "Jeden lub dwa wykresy dowolnej wartości, jak te dla prądu.",
       "variables": "Zmienne Flow jako wiersze do przełączania lub zmiany.",
       "flows": "Uruchamiaj Flow jednym dotknięciem, w Twoich kolorach i ikonach.",
       "price": "Cena prądu teraz i w najbliższych godzinach.",
@@ -431,6 +450,8 @@
       "curtains": "Otwieraj, zamykaj lub ustawiaj zasłony i rolety.",
       "media": "Muzyka, głośność i źródła głośnika na jednej karcie.",
       "clock": "Godzina i data, a jeśli chcesz, aktualna pogoda.",
+      "textline": "Notatka na kafelku albo karteczce, wpisana przez Ciebie lub przez Twoje Flow.",
+      "spacer": "Pusta przestrzeń do wyrównania widżetów w kolumnach.",
       "stack": "Widżety z innego pulpitu, na zmianę."
     }
   }

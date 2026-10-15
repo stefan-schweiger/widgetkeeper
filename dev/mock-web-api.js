@@ -37,7 +37,7 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
         settings: (w.settings || []).map(s => ({
           id: s.id, type: s.type, title: loc(s.title) || s.id, hint: loc(s.hint) || null, value: s.value ?? null,
           ...(s.values ? { values: s.values.map(v => ({ id: String(v.id), title: loc(v.title) || String(v.id) })) } : {}),
-          ...((type === 'values' || type === 'sparklines') && /^slot\d+$/.test(s.id) ? { picker: 'capability' } : {}),
+          ...(((type === 'values' || type === 'sparklines') && /^slot\d+$/.test(s.id)) || (type === 'charts' && /^chart\d$/.test(s.id)) ? { picker: 'capability' } : {}),
         })),
       }));
       return { appId: 'com.thomassidor.widgetkeeper', homeyId: 'preview', language: lang, strings, widgets, dashboards };
@@ -49,8 +49,8 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
         .sort((a, b) => a.name.localeCompare(b.name));
     }
     if (p === '/web/values') {
-      // Made-up readings: each device's capabilities as the value picker gets them (Sparklines: numbers only).
-      const numbersOnly = q.get('type') === 'sparklines';
+      // Made-up readings: each device's capabilities as the value picker gets them (Sparklines and Charts: numbers only).
+      const numbersOnly = q.get('type') === 'sparklines' || q.get('type') === 'charts';
       return devices
         .map(d => ({
           id: d.id, name: d.name, zone: zoneOf(d), icon: d.icon,

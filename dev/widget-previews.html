@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|sd-dark|sd-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|var-dark|var-light|sd-dark|sd-light|fb-dark|fb-light|pb-dark|pb-light|tm-dark|tm-light|lk-dark|lk-light|ct-dark|ct-light|mw-dark|mw-light|sk-dark|sk-light|ck-dark|ck-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|sd-dark|sd-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|chart-dark|chart-light|var-dark|var-light|sd-dark|sd-light|fb-dark|fb-light|pb-dark|pb-light|tm-dark|tm-light|lk-dark|lk-light|ct-dark|ct-light|mw-dark|mw-light|sk-dark|sk-light|ck-dark|ck-light|sp-dark|sp-light|tl-dark|tl-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -260,7 +260,7 @@ function sensorAlarms(t, theme) {
   </div>`;
 }
 
-// Sensor Dots is transparent: one tile (with an optional header) of dots, grey while idle and blue while active
+// Activity Dots is transparent: one tile (with an optional header) of dots, grey while idle and blue while active
 // (the default colours).
 function sensorDots(t, theme) {
   const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
@@ -363,6 +363,34 @@ function heatmap(t, theme) {
   </div>`;
 }
 
+// Charts: the simple version, one chart and nothing else (no chip, no header): a smooth purple line with its area
+// over a light grid and the dot on the latest value. Purple, so it doesn't read as the Electricity Overview.
+function charts(t, theme) {
+  const PURPLE = '#9033FC';
+  const series = [0.35, 0.3, 0.26, 0.24, 0.3, 0.45, 0.62, 0.74, 0.8, 0.76, 0.66, 0.55, 0.5, 0.56, 0.68, 0.72, 0.6, 0.5];
+  const H = 440, PAD = 28, R = 24; // R: room for the dot at the right end
+  const w = W - R;
+  const xy = series.map((v, i) => [w * i / (series.length - 1), PAD + (1 - v) * (H - 2 * PAD)]);
+  // A monotone-ish smooth line: cubic segments with horizontal handles.
+  const line = `M${xy[0][0].toFixed(1)} ${xy[0][1].toFixed(1)}` + xy.slice(1).map(([x, y], i) => {
+    const [px, py] = xy[i], h = (x - px) / 2;
+    return `C${(px + h).toFixed(1)} ${py.toFixed(1)} ${(x - h).toFixed(1)} ${y.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`;
+  }).join('');
+  const grid = Array.from({ length: 3 }, (_, j) => `M0 ${(H * j / 3 + 2).toFixed(1)}H${W}`).join('');
+  const [lx, ly] = xy[xy.length - 1];
+  return `<div class="card">
+    <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+      <defs><linearGradient id="chart-fill-${theme}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${PURPLE}" stop-opacity=".45"/><stop offset="1" stop-color="${PURPLE}" stop-opacity="0"/></linearGradient></defs>
+      <path d="${grid}" fill="none" stroke="${t.grid}" stroke-width="3"/>
+      <path d="M0 ${H - 2}H${W}" fill="none" stroke="${t.grid}" stroke-width="4"/>
+      <path d="${line}L${w} ${H}L0 ${H}Z" fill="url(#chart-fill-${theme})"/>
+      <path d="${line}" fill="none" stroke="${PURPLE}" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="${lx}" cy="${ly}" r="20" fill="${theme === 'dark' ? '#1F2029' : '#FFFFFF'}" stroke="${PURPLE}" stroke-width="7"/>
+      <circle cx="${lx}" cy="${ly}" r="10" fill="${PURPLE}"/>
+    </svg>
+  </div>`;
+}
+
 // Sparklines: Device Values' tiles, 2 per row, each with a small blue line chart (and a faint area) between the
 // icon/value row and the name, and the min/max as two small muted labels at the chart's right edge.
 function sparklines(t, theme) {
@@ -442,7 +470,7 @@ function flowButtons(t, theme) {
   </div>`;
 }
 
-// Price Badge: one tile with the price now (the red level dot and label over the value) and the coming hours as bars
+// Energy Price Strip: one tile with the price now (the red level dot and label over the value) and the coming hours as bars
 // in their level colours, the current one full strength and a dot over the cheapest.
 function priceBadge(t, theme) {
   const RED = '#F25F5C', YELLOW = '#F5C518';
@@ -481,6 +509,54 @@ function clock(t, theme) {
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:22px">
       <div style="display:flex;align-items:center;gap:18px">${sky}${pill(110, 56, t.fg)}</div>
       ${pill(170, 30, muted)}
+    </div>
+  </div>`;
+}
+
+// Spacer: two columns of widgets whose bottoms line up, because a spacer (a dashed outline with a ↕) sits in the
+// shorter one. The spacer itself draws nothing on a dashboard; the outline only shows where it is.
+function spacer(t, theme) {
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const muted = theme === 'dark' ? 'rgba(237,238,240,.45)' : 'rgba(31,32,41,.4)';
+  const tile = h => `<div style="height:${h}px;border-radius:28px;background:${tileBg};box-shadow:${shadow};padding:36px;box-sizing:border-box;display:flex;flex-direction:column;gap:20px">
+      ${pill(180, 34, t.fg)}${h > 200 ? pill(240, 26, muted) : ''}
+    </div>`;
+  const arrow = `<svg width="44" height="84" viewBox="0 0 44 84" fill="none" stroke="${BLUE}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 6V78M8 20L22 6L36 20M8 64L22 78L36 64"/></svg>`;
+  const gap = '<div style="height:40px"></div>';
+  return `<div style="width:880px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start">
+    <div>${tile(340)}${gap}${tile(160)}</div>
+    <div>${tile(180)}${gap}
+      <div style="height:120px;border-radius:28px;border:5px dashed ${BLUE};box-sizing:border-box;display:flex;align-items:center;justify-content:center">${arrow}</div>
+      ${gap}${tile(160)}</div>
+  </div>`;
+}
+
+// Notes: its two looks, one above the other: a tile with an icon and one line of text, and a yellow Post-it tilted
+// on the dashboard with a folded corner and three lines of handwriting (scribbles, so it reads the same in every language).
+function textLine(t, theme) {
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const bell = `<svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="${t.fg}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 21h4"/></svg>`;
+  const scribble = (w, y, seed) => {
+    let d = `M0 ${y}`;
+    for (let x = 0; x < w; x += 22) d += `q11 ${seed % 2 ? -16 : 16} 22 ${((x / 22 + seed) % 3) - 1}`;
+    return d;
+  };
+  const ink = '#22305E';
+  return `<div style="width:880px;display:flex;flex-direction:column;align-items:center;gap:72px">
+    <div style="width:880px;height:150px;border-radius:32px;background:${tileBg};box-shadow:${shadow};padding:0 48px;box-sizing:border-box;display:flex;align-items:center;gap:32px">
+      ${bell}${pill(440, 40, t.fg)}
+    </div>
+    <div style="position:relative;width:560px;transform:rotate(-3deg);filter:drop-shadow(0 3px 3px rgba(0,0,0,.16)) drop-shadow(0 8px 10px rgba(0,0,0,.12))">
+      <div style="position:absolute;z-index:0;left:18px;right:60px;bottom:12px;height:40px;border-radius:50%;box-shadow:0 22px 28px rgba(0,0,0,.4)"></div>
+      <div style="position:relative;z-index:1;height:420px;background:linear-gradient(180deg,#FFF4A0 0%,#FFEF7A 35%,#FFEF7A 70%,#FBE35E 100%);border-radius:3px;-webkit-mask-image:linear-gradient(315deg,transparent 46px,#000 47px);mask-image:linear-gradient(315deg,transparent 46px,#000 47px);display:flex;align-items:center;justify-content:center">
+        <div style="position:absolute;right:0;bottom:0;width:65px;height:65px;background:linear-gradient(to bottom right,#E9D157 0%,#C9B24A 50%,transparent 50%);filter:drop-shadow(-2px -2px 3px rgba(0,0,0,.18))"></div>
+        <svg width="420" height="230" viewBox="0 0 420 230" fill="none" stroke="${ink}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="${scribble(380, 40, 1)}"/><path d="${scribble(320, 118, 2)}"/><path d="${scribble(220, 196, 3)}"/>
+        </svg>
+      </div>
     </div>
   </div>`;
 }
@@ -574,14 +650,14 @@ function stack(t, theme) {
 const PREVIEWS = [
   { id: 'elec-dark',    label: '1a · Electricity Overview — preview-dark.png', theme: 'dark',  render: electricity },
   { id: 'elec-light',   label: '1b · Electricity Overview — preview-light.png', theme: 'light', render: electricity },
-  { id: 'thermo-dark',  label: '1c · Thermostat Shortcuts — preview-dark.png',  theme: 'dark',  render: thermostat },
-  { id: 'thermo-light', label: '1d · Thermostat Shortcuts — preview-light.png', theme: 'light', render: thermostat },
+  { id: 'thermo-dark',  label: '1c · Thermostat Presets — preview-dark.png',  theme: 'dark',  render: thermostat },
+  { id: 'thermo-light', label: '1d · Thermostat Presets — preview-light.png', theme: 'light', render: thermostat },
   { id: 'qa-dark',      label: '1e · Device Quick Actions — preview-dark.png',  theme: 'dark',  render: quickActions },
   { id: 'qa-light',     label: '1f · Device Quick Actions — preview-light.png', theme: 'light', render: quickActions },
   { id: 'sa-dark',      label: '1i · Sensor Alarms — preview-dark.png',          theme: 'dark',  render: sensorAlarms },
   { id: 'sa-light',     label: '1j · Sensor Alarms — preview-light.png',         theme: 'light', render: sensorAlarms },
-  { id: 'sd-dark',      label: '1w · Sensor Dots — preview-dark.png',            theme: 'dark',  render: sensorDots },
-  { id: 'sd-light',     label: '1x · Sensor Dots — preview-light.png',           theme: 'light', render: sensorDots },
+  { id: 'sd-dark',      label: '1w · Activity Dots — preview-dark.png',            theme: 'dark',  render: sensorDots },
+  { id: 'sd-light',     label: '1x · Activity Dots — preview-light.png',           theme: 'light', render: sensorDots },
   { id: 'weather-dark',  label: '1g · Weather Forecast — preview-dark.png',      theme: 'dark',  render: weather },
   { id: 'weather-light', label: '1h · Weather Forecast — preview-light.png',     theme: 'light', render: weather },
   { id: 'hm-dark',      label: '1k · Insights Heatmap — preview-dark.png',       theme: 'dark',  render: heatmap },
@@ -594,12 +670,14 @@ const PREVIEWS = [
   { id: 'lc-light',     label: '1r · Light Controls — preview-light.png',        theme: 'light', render: lightControls },
   { id: 'spark-dark',   label: '1s · Sparklines — preview-dark.png',             theme: 'dark',  render: sparklines },
   { id: 'spark-light',  label: '1t · Sparklines — preview-light.png',            theme: 'light', render: sparklines },
+  { id: 'chart-dark',   label: '2s · Charts — preview-dark.png',                 theme: 'dark',  render: charts },
+  { id: 'chart-light',  label: '2t · Charts — preview-light.png',                theme: 'light', render: charts },
   { id: 'var-dark',     label: '1u · Flow Variables — preview-dark.png',         theme: 'dark',  render: flowVariables },
   { id: 'var-light',    label: '1v · Flow Variables — preview-light.png',        theme: 'light', render: flowVariables },
   { id: 'fb-dark',      label: '1y · Flow Buttons — preview-dark.png',           theme: 'dark',  render: flowButtons },
   { id: 'fb-light',     label: '1z · Flow Buttons — preview-light.png',          theme: 'light', render: flowButtons },
-  { id: 'pb-dark',      label: '2a · Price Badge — preview-dark.png',            theme: 'dark',  render: priceBadge },
-  { id: 'pb-light',     label: '2b · Price Badge — preview-light.png',           theme: 'light', render: priceBadge },
+  { id: 'pb-dark',      label: '2a · Energy Price Strip — preview-dark.png',            theme: 'dark',  render: priceBadge },
+  { id: 'pb-light',     label: '2b · Energy Price Strip — preview-light.png',           theme: 'light', render: priceBadge },
   { id: 'tm-dark',      label: '2c · Timers — preview-dark.png',                 theme: 'dark',  render: timers },
   { id: 'tm-light',     label: '2d · Timers — preview-light.png',                theme: 'light', render: timers },
   { id: 'lk-dark',      label: '2e · Locks and Doors — preview-dark.png',        theme: 'dark',  render: locks },
@@ -612,6 +690,10 @@ const PREVIEWS = [
   { id: 'sk-light',     label: '2l · Smart Stack — preview-light.png',           theme: 'light', render: stack },
   { id: 'ck-dark',      label: '2m · Clock — preview-dark.png',                  theme: 'dark',  render: clock },
   { id: 'ck-light',     label: '2n · Clock — preview-light.png',                 theme: 'light', render: clock },
+  { id: 'sp-dark',      label: '2o · Spacer — preview-dark.png',                 theme: 'dark',  render: spacer },
+  { id: 'sp-light',     label: '2p · Spacer — preview-light.png',                theme: 'light', render: spacer },
+  { id: 'tl-dark',      label: '2q · Notes — preview-dark.png',                  theme: 'dark',  render: textLine },
+  { id: 'tl-light',     label: '2r · Notes — preview-light.png',                 theme: 'light', render: textLine },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');

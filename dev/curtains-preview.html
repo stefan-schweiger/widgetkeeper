@@ -33,6 +33,7 @@
       { id: 'd', name: 'Bedroom right', kind: 'curtain', zone: bedroom, caps: { windowcoverings_set: cap(0.35) } },
       { id: 'e', name: 'Office blind', kind: 'blinds', caps: { windowcoverings_state: cap('idle') } },
       { id: 'f', name: 'Skylight', kind: 'blinds', caps: { windowcoverings_closed: cap(true) } },
+      { id: 'h', name: 'Kitchen tilt', kind: 'blinds', caps: { windowcoverings_tilt_set: cap(0.5) } },
       { id: 'g', missing: true },
     ];
     // Simulates the motors: a full run takes 4 s, reported every 0.4 s, with the motor state.
@@ -62,7 +63,10 @@
       }
       const onSet = (deviceId, change) => new Promise((resolve) => setTimeout(() => {
         const d = devices.find(x => x.id === deviceId);
-        if (change.position != null) run(d, change.position);
+        if (d.caps.windowcoverings_tilt_set) { // a SwitchBot Blind Tilt: null while it turns, then where it got to
+          push(deviceId, 'windowcoverings_tilt_set', null);
+          setTimeout(() => push(deviceId, 'windowcoverings_tilt_set', change.position), 1500);
+        } else if (change.position != null) run(d, change.position);
         else if (d.caps.windowcoverings_closed) push(deviceId, 'windowcoverings_closed', change.action === 'close');
         else run(d, change.action === 'open' ? 1 : 0);
         resolve();

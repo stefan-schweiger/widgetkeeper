@@ -111,6 +111,7 @@
       values: 'Any device value as a compact tile.',
       lights: 'Light tiles with brightness and colour at hand.',
       sparklines: 'Values with a small chart of their recent history.',
+      charts: 'One or two charts of any value, like the electricity ones.',
       variables: 'Flow variables as rows you can switch or change.',
       flows: 'Start flows with a tap, in your colours and icons.',
       price: 'The electricity price now and in the coming hours.',
@@ -119,6 +120,8 @@
       curtains: 'Open, close or set curtains and blinds.',
       media: 'A speaker\'s music, volume and sources in one card.',
       clock: 'The time and date, with the weather now if you like.',
+      textline: 'A note on a tile or a Post-it, typed in or written by your Flows.',
+      spacer: 'Empty space to line up widgets in columns.',
       stack: 'Widgets from another dashboard, taking turns.',
     },
   };

@@ -51,7 +51,7 @@ api.ts                          App API (diagnostics for the settings page)
 lib/ElectricityService.ts       live buffer, insights usage, Homey Energy prices
 lib/ThermostatService.ts        thermostat state tracking and preset apply
 lib/QuickActionService.ts       quick-action state tracking and triggering
-lib/SensorAlarmService.ts       alarm capability tracking (Sensor Alarms and Sensor Dots)
+lib/SensorAlarmService.ts       alarm capability tracking (Sensor Alarms and Activity Dots)
 lib/WeatherService.ts           MET Norway forecast fetching and caching
 lib/HeatmapService.ts           Insights history and on/off recording for the heatmap
 lib/ValueService.ts             capability value tracking for Device Values

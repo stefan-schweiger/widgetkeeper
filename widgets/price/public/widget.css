@@ -77,10 +77,14 @@ html, body { background: transparent !important; }
 }
 .pb-unit { font-size: var(--pb-fs-small); font-weight: var(--pb-medium); color: var(--pb-muted); margin-left: 3px; }
 
-/* The bars: one per hour from the current one, as tall as their price in the window's range (20–100 %). */
+/* The bars: one per hour (or quarter) from the current one, as tall as their price in the window's range (20–100 %). */
 .pb-chart { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; }
 .pb-bars { height: 34px; display: flex; align-items: flex-end; gap: 2px; padding-top: 6px; }
 .pb-chart[data-hours="24"] .pb-bars, .pb-chart[data-hours="36"] .pb-bars { gap: 1px; }
+/* 15-minute prices: four bars an hour (48 to 144), so thinner gaps, none from 24 h. */
+.pb-chart[data-quarters] .pb-bars { gap: 1px; }
+.pb-chart[data-quarters][data-hours="24"] .pb-bars, .pb-chart[data-quarters][data-hours="36"] .pb-bars { gap: 0; }
+.pb-chart[data-quarters] .pb-bar { border-radius: 1px 1px 0 0; }
 .pb-bar {
   position: relative; flex: 1 1 0; min-width: 0; border-radius: 2px 2px 1px 1px;
   background: color-mix(in srgb, var(--pb-level, var(--pb-muted)) 50%, var(--pb-tile));

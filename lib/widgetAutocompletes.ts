@@ -42,6 +42,8 @@ export function widgetAutocompletes(app: WidgetkeeperApp): Record<string, Record
     add('values', `slot${n}`, query => app.values.listSlots(query));
     add('sparklines', `slot${n}`, query => app.sparklines.listSlots(query));
   }
+  // Charts: each chart's value, from Sparklines' list (logged numbers).
+  for (const n of [1, 2]) add('charts', `chart${n}`, query => app.sparklines.listSlots(query));
 
   // Flow variables: every slot lists all Logic variables.
   for (const n of VARIABLE_SLOTS) add('variables', `slot${n}`, query => app.variables.listVariables(query));
@@ -51,6 +53,10 @@ export function widgetAutocompletes(app: WidgetkeeperApp): Record<string, Record
     add('flows', `flow${n}`, query => app.flows.listFlows(query));
     add('flows', `icon${n}`, async query => app.flows.listIcons(query));
   }
+
+  // Notes: a text variable to show, and the tile's icon.
+  add('textline', 'variable', query => app.variables.listVariables(query, { types: ['string'] }));
+  add('textline', 'icon', async query => app.flows.listIcons(query, { none: true }));
 
   // Media: the speaker, then each button's Flow card of that speaker or flow, and its icon.
   add('media', 'device', query => app.media.listDevices(query));

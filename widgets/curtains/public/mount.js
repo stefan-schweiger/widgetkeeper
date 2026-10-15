@@ -30,6 +30,7 @@ window.mountCurtainsWidget = function (Homey, { root, frame }) {
     groupByZone: settings.groupByZone === true,
     between: settings.between,
     invert: settings.invert === true,
+    openAt: settings.openAt,
     showState: settings.showState !== false,
     onSet: (deviceId, change) => Homey.api('POST', '/set', { deviceId, ...change }),
     onHeight: () => {

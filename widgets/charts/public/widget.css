@@ -1,0 +1,45 @@
+/*
+ * Charts: the shared chart look (../electricity/chart.css, loaded first, scoped by `.ew`) in the chart's colour.
+ * `data-color` on each chart and header column picks it from the Heatmap's and Device Values' palette.
+ */
+.ch { --ch-color: var(--ew-blue); }
+.ch [data-color="red"] { --ch-color: var(--homey-color-red, #F25F5C); }
+.ch [data-color="orange"] { --ch-color: var(--homey-color-orange, #F07A1F); }
+.ch [data-color="yellow"] { --ch-color: #F5C518; }
+.ch [data-color="green"] { --ch-color: var(--ew-green); }
+.ch [data-color="purple"] { --ch-color: #9033FC; }
+.ch [data-color="blue"] { --ch-color: var(--ew-blue); }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+
+.ch .ch-value { color: var(--ch-color); gap: 3px; }
+.ch .ch-value.tight { gap: 0; }
+/* Yellow text is mixed with the text colour, as Activity Dots' active text, so it reads on a light card. */
+.ch .ew-hcol[data-color="yellow"] .ch-value { color: color-mix(in srgb, var(--ch-color) 75%, var(--ew-text)); }
+.ch .ew-hcol .ch-value.export { color: var(--ew-export); }
+
+.ch .ew-chip.series { max-width: 100%; min-width: 0; }
+/* Two series on one chart: their chips share the row (left scale, right scale) and shorten to fit. */
+.ch .ew-chips { gap: 6px; }
+.ch .ew-chip.series > span { overflow: hidden; text-overflow: ellipsis; }
+.ch .ew-chip.series i { background: var(--ch-color); flex-shrink: 0; }
+.ch .series-line { stroke: var(--ch-color); stroke-width: 2; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.ch .series-stop { stop-color: var(--ch-color); }
+.ch .series-bars { fill: color-mix(in srgb, var(--ch-color) 70%, transparent); }
+.ch .series-bars .bar.selected { fill: var(--ch-color); }
+.ch .dot-ring.series { stroke: var(--ch-color); }
+.ch .dot-core.series { fill: var(--ch-color); }
+/* Below zero, with the chart's `negative` setting; `exportSplit()` in chart.js clips it. */
+.ch .series-line.export { stroke: var(--ew-export); }
+.ch .series-stop.export { stop-color: var(--ew-export); }
+.ch .series-bars.export { fill: color-mix(in srgb, var(--ew-export) 70%, transparent); }
+.ch .series-bars.export .bar.selected { fill: var(--ew-export); }
+.ch .dot-ring.export { stroke: var(--ew-export); }
+.ch .dot-core.export { fill: var(--ew-export); }
+
+/* A chart without anything to draw keeps its chip, with the reason under it. */
+.ch .ch-chart.empty { min-height: 0; }
+.ch .ch-chart.empty .ew-chips { position: static; }
+.ch .ch-note { padding-bottom: 0; }

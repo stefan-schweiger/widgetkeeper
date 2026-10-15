@@ -93,7 +93,7 @@
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string,
    *   onSet?: (deviceId: string, change: {action?: string, position?: number}) => Promise<any>,
-   *   onHeight?: (h: number) => void, groupByZone?: boolean, between?: string, invert?: boolean, showState?: boolean }} opts
+   *   onHeight?: (h: number) => void, groupByZone?: boolean, between?: string, invert?: boolean, openAt?: string, showState?: boolean }} opts
    */
   function createCurtainsWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -104,11 +104,49 @@
     const rule = opts.between === 'reverse' ? 'reverse' : 'nearer';
     /**
      * Homey's position is 1 = open, but some drivers (SwitchBot's curtains) report 0 = open and 1 = closed; the
-     * `invert` setting flips it. The widget works in open-ness (1 = open): `pos()` turns a device's position
-     * into that and back.
+     * `invert` setting flips it. The widget works in open-ness (1 = open): `toOpen()` and `fromOpen()` turn a
+     * device's position into that and back.
      */
     const invert = opts.invert === true;
-    const pos = v => (invert ? 1 - v : v);
+    /**
+     * Where a blind is fully open (`openAt`). `end`: at 1 (Homey's standard; `invert` applies). `middle`: at 0.5,
+     * with 0 and 1 both closed, one way or the other (vertical slatted blinds that tilt as they turn, a user's
+     * Zemismart). `middleTilt` (the default): `middle` only for blinds that only tilt (their position is
+     * `windowcoverings_tilt_set`; SwitchBot's Blind Tilt reads 0 and 1 as slats down and up), `end` for the rest.
+     */
+    const openAt = opts.openAt === 'end' || opts.openAt === 'middle' ? opts.openAt : 'middleTilt';
+    /** The capability that is a curtain's position: `windowcoverings_set`, else the tilt, else null. */
+    const posCap = d => (d.caps.windowcoverings_set ? 'windowcoverings_set' : d.caps.windowcoverings_tilt_set ? 'windowcoverings_tilt_set' : null);
+    const isMiddle = d => (openAt === 'middle' ? !!posCap(d) : openAt === 'middleTilt' && posCap(d) === 'windowcoverings_tilt_set');
+    /**
+     * A middle-open blind's last known position, for which side a move stays on (a SwitchBot tilt reports null
+     * while it moves).
+     */
+    const lastSide = new Map();
+    /** A device's position (its own scale) as open-ness (1 = open). */
+    function toOpen(d, v) {
+      if (isMiddle(d)) return 1 - Math.abs(2 * v - 1);
+      return invert ? 1 - v : v;
+    }
+    /** Open-ness back to the device's scale; a middle-open blind stays on the side it's on (down when unknown). */
+    function fromOpen(d, o) {
+      if (!isMiddle(d)) return invert ? 1 - o : o;
+      const up = (lastSide.get(d.id) || 0) > 0.5;
+      return Math.round((up ? 1 - o / 2 : o / 2) * 1000) / 1000;
+    }
+    function noteSide(d) {
+      const cap = d.caps ? posCap(d) : null;
+      const v = cap ? d.caps[cap].value : null;
+      if (typeof v === 'number' && Number.isFinite(v)) lastSide.set(d.id, v);
+    }
+    /**
+     * Whether the motor's `up`/`down` says opening/closing. Not for a middle-open blind: going up past 0.5
+     * closes it, so its direction comes from the position.
+     */
+    const motorSaysDirection = d => !!d.caps.windowcoverings_state && !isMiddle(d);
+    /** Whether the widget can send this curtain a position. */
+    const canPosition = d => { const cap = posCap(d); return !!cap && d.caps[cap].setable !== false; };
+    const ALL_CAPS = ['windowcoverings_set', 'windowcoverings_state', 'windowcoverings_closed', 'windowcoverings_tilt_set'];
 
     let devices = []; // [{ id, name, kind, zone, caps } | { id, missing }]
     /**
@@ -138,6 +176,7 @@
 
     function setState(list) {
       devices = Array.isArray(list) ? list : [];
+      for (const d of devices) noteSide(d);
       messageText = null;
       render();
     }
@@ -150,14 +189,18 @@
       // Any report replaces what was hoped for: a curtain reports where it is, also on its way.
       optimistic.delete(`${deviceId}:${capabilityId}`);
       if (capabilityId === 'windowcoverings_state') {
-        if (value === 'up') lastDir.set(deviceId, 1);
-        else if (value === 'down') lastDir.set(deviceId, -1);
+        if (value === 'up' && motorSaysDirection(d)) lastDir.set(deviceId, 1);
+        else if (value === 'down' && motorSaysDirection(d)) lastDir.set(deviceId, -1);
         else if (value === 'idle') pending.delete(deviceId);
-      } else if (capabilityId === 'windowcoverings_set') {
-        if (typeof old === 'number' && typeof value === 'number' && value !== old) lastDir.set(deviceId, pos(value) > pos(old) ? 1 : -1);
-        // There: the motor state hoped for on the tap no longer counts.
+      } else if (capabilityId === posCap(d)) {
+        if (typeof old === 'number' && typeof value === 'number' && value !== old) {
+          const from = toOpen(d, old), to = toOpen(d, value);
+          if (from !== to) lastDir.set(deviceId, to > from ? 1 : -1);
+        }
+        noteSide(d);
+        // There: the motor state hoped for on the tap no longer counts. (A SwitchBot tilt reports null on its way.)
         const p = pending.get(deviceId);
-        if (p && typeof value === 'number' && Math.abs(pos(value) - p.value) <= END) optimistic.delete(`${deviceId}:windowcoverings_state`);
+        if (p && typeof value === 'number' && Math.abs(toOpen(d, value) - p.value) <= END) optimistic.delete(`${deviceId}:windowcoverings_state`);
       } else if (capabilityId === 'windowcoverings_closed') {
         pending.delete(deviceId);
         if (typeof value === 'boolean') lastDir.set(deviceId, value ? -1 : 1);
@@ -188,9 +231,10 @@
 
     /** One curtain as `curtainAction()` sees it. */
     function view(d) {
-      const raw = d.caps.windowcoverings_set ? num(shown(d, 'windowcoverings_set')) : null;
-      const position = raw == null ? null : pos(raw);
-      const motor = d.caps.windowcoverings_state ? shown(d, 'windowcoverings_state') : null;
+      const cap = posCap(d);
+      const raw = cap ? num(shown(d, cap)) : null;
+      const position = raw == null ? null : toOpen(d, raw);
+      const motor = motorSaysDirection(d) ? shown(d, 'windowcoverings_state') : null;
       const closedValue = d.caps.windowcoverings_closed ? shown(d, 'windowcoverings_closed') : null;
       let moving = motor === 'up' ? 1 : motor === 'down' ? -1 : 0;
       const p = pending.get(d.id);
@@ -202,7 +246,7 @@
         moving,
         closed,
         lastDir: lastDir.get(d.id) || 0,
-        canMove: ['windowcoverings_set', 'windowcoverings_state', 'windowcoverings_closed'].some(id => settable(d, id)),
+        canMove: ALL_CAPS.some(id => settable(d, id)),
         target: p && moving ? p.value : null,
       };
     }
@@ -243,7 +287,7 @@
       } catch (err) {
         console.error(err);
         pending.delete(d.id);
-        for (const id of ['windowcoverings_set', 'windowcoverings_state', 'windowcoverings_closed']) optimistic.delete(`${d.id}:${id}`);
+        for (const id of ALL_CAPS) optimistic.delete(`${d.id}:${id}`);
         const tile = tiles.get(item.id);
         if (tile) {
           tile.tile.classList.remove('shake');
@@ -276,15 +320,16 @@
       for (const d of item.members) {
         if (!view(d).canMove) continue;
         const open = action === 'open';
-        // With a position, the widget sends the end itself, so `invert` applies; else the app picks the motor or open/closed.
-        changes.push([d, settable(d, 'windowcoverings_set') ? { position: pos(open ? 1 : 0) } : { action }]);
-        if (!d.caps.windowcoverings_set && !settable(d, 'windowcoverings_state')) {
+        // With a position (or a tilt), the widget sends the end itself, so `invert` and `openAt` apply; else the app
+        // picks the motor or open/closed.
+        changes.push([d, canPosition(d) ? { position: fromOpen(d, open ? 1 : 0) } : { action }]);
+        if (!posCap(d) && !settable(d, 'windowcoverings_state')) {
           // Only open/closed: it's there as soon as the device says so.
           optimistic.set(`${d.id}:windowcoverings_closed`, { value: !open, until: Date.now() + OPTIMISTIC_MS });
           lastDir.set(d.id, open ? 1 : -1);
         } else {
           // Also while it moves the other way: the motor's `up`/`down` is hoped over until it reports.
-          if (d.caps.windowcoverings_state) optimistic.set(`${d.id}:windowcoverings_state`, { value: open ? 'up' : 'down', until: Date.now() + OPTIMISTIC_MS });
+          if (motorSaysDirection(d)) optimistic.set(`${d.id}:windowcoverings_state`, { value: open ? 'up' : 'down', until: Date.now() + OPTIMISTIC_MS });
           expectMove(d, open ? 1 : 0, open ? 1 : -1);
         }
       }
@@ -300,14 +345,14 @@
       const value = Math.round(clamp01(x) * 100) / 100;
       const changes = [];
       for (const d of item.members) {
-        if (!settable(d, 'windowcoverings_set')) continue;
+        if (!canPosition(d)) continue;
         const from = view(d).position;
         if (from != null && Math.abs(from - value) <= END / 2) continue;
         expectMove(d, value, from != null && value < from ? -1 : 1);
         changes.push(d);
       }
       render();
-      for (const d of changes) send(item, d, { position: pos(value) });
+      for (const d of changes) send(item, d, { position: fromOpen(d, value) });
     }
 
     /**
@@ -519,7 +564,7 @@
         const drag = drags.get(item.id);
         const x = drag != null ? drag : v.position != null ? v.position : 0;
         const action = curtainAction(v, rule);
-        const hasPosition = item.members.some(d => settable(d, 'windowcoverings_set'));
+        const hasPosition = item.members.some(canPosition);
         const openness = v.position != null ? v.position : v.closed === true ? 0 : v.closed === false ? 1 : 0.5;
 
         tile.tile.classList.remove('missing');

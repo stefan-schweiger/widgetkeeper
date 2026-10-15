@@ -1,6 +1,7 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { Script } from 'node:vm';
 import { describe, expect, it } from 'vitest';
+import { DEPS, type WidgetName } from './helpers/loadWidget.js';
 
 // The widget tests load widget.js but not index.html, whose inline script wires it to Homey. A syntax
 // error there leaves the widget on Homey's spinner forever (a raw line break inside a regex did).
@@ -37,10 +38,12 @@ describe('copied widget helpers', () => {
     expectSame(WIDGETS.map(id => source(id, 'undoTextZoom', 'index.html')));
   });
 
-  it('loadMarks() is the same in every mount.js, and perfParam() in every one that has it', () => {
-    expectSame(WIDGETS.map(id => source(id, 'loadMarks', 'mount.js')));
+  it('loadMarks() is the same in every mount.js that makes requests, and perfParam() in every one that has it', () => {
+    // The spacer makes no requests, so it has neither.
+    const requesting = WIDGETS.filter(id => id !== 'spacer');
+    expectSame(requesting.map(id => source(id, 'loadMarks', 'mount.js')));
     // The stack's own requests carry no load marks. Weather's endpoint has no other query, so its perf= starts it.
-    expectSame(WIDGETS.filter(id => id !== 'stack').map(id => source(id, 'perfParam', 'mount.js')),
+    expectSame(requesting.filter(id => id !== 'stack').map(id => source(id, 'perfParam', 'mount.js')),
       s => s.replace('`?perf=', '`&perf='));
   });
 
@@ -50,6 +53,10 @@ describe('copied widget helpers', () => {
     expectSame(['lights', 'curtains'].map(id => source(id, 'onTap'))); // in the widget's closure
     expectSame(['flows', 'sensordots'].map(id => source(id, 'onTap')));
     expectSame(['timers', 'locks'].map(id => source(id, 'onTap'))); // stops the tap at a button inside a row
+  });
+
+  it('scaled() and formatNumber() are the same in Sparklines and Charts', () => {
+    for (const fn of ['scaled', 'formatNumber']) expectSame(['sparklines', 'charts'].map(id => source(id, fn)));
   });
 
   it('wireBar() is the same in Light Controls and Curtains', () => {
@@ -85,10 +92,35 @@ describe('copied widget helpers', () => {
   });
 });
 
+describe('shared files', () => {
+  /** The files an index.html loads besides its own widget.*, mount.js: `<widget>/<name>` (`../electricity/chart.js` → `electricity/chart.js`). */
+  const shared = (id: string, ext: string) => {
+    const html = readFileSync(`widgets/${id}/public/index.html`, 'utf8');
+    const refs = [...html.matchAll(/(?:src|href)="([^"]+)"/g)].map(m => m[1]).filter(r => r.endsWith(`.${ext}`));
+    return refs.filter(r => !['widget.js', 'widget.css', 'mount.js'].includes(r))
+      .map(r => (r.startsWith('../') ? r.slice(3) : `${id}/${r}`));
+  };
+  const stackDeps: Record<string, string[]> = new Function(`return ${readFileSync('widgets/stack/public/mount.js', 'utf8')
+    .match(/const DEPS = (\{[\s\S]*?\});/)![1]}`)();
+
+  it.each(WIDGETS)('%s: the Smart Stack and the tests load what its index.html loads first', (id) => {
+    const js = shared(id, 'js'), css = shared(id, 'css');
+    expect(js).toEqual(DEPS[id as WidgetName] || []);
+    expect(js.map(f => f.replace(/\.js$/, ''))).toEqual(stackDeps[id] || []);
+    expect(css.map(f => f.replace(/\.css$/, ''))).toEqual(stackDeps[id] || []);
+    for (const f of [...js, ...css]) expect(existsSync(`widgets/${f.replace('/', '/public/')}`)).toBe(true);
+  });
+
+  it('the chart module is loaded by the Electricity Overview and Charts', () => {
+    expect(Object.keys(stackDeps).sort()).toEqual(['charts', 'electricity']);
+  });
+});
+
 describe('fallback strings', () => {
   const en = JSON.parse(readFileSync('locales/en.json', 'utf8'));
-  // The stack has no fallback table: it shows the key. The clock has no strings (its text is all Intl's).
-  it.each(WIDGETS.filter(id => id !== 'stack' && id !== 'clock'))("%s: DEFAULT_STRINGS are en.json's", (id) => {
+  // The stack has no fallback table: it shows the key. The clock has no strings (its text is all Intl's), nor
+  // has the spacer.
+  it.each(WIDGETS.filter(id => id !== 'stack' && id !== 'clock' && id !== 'spacer'))("%s: DEFAULT_STRINGS are en.json's", (id) => {
     const js = readFileSync(`widgets/${id}/public/widget.js`, 'utf8').replace(/\r\n/g, '\n');
     const table = js.match(/\n( *)const DEFAULT_STRINGS = (\{[\s\S]*?\n\1\});/);
     const ns = js.match(/opts\.t\(`(\w+)\.\$\{/);

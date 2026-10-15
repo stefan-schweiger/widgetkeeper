@@ -2,6 +2,37 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 1.0.0
+
+### New names
+- Three widgets have clearer names: Price Badge is now **Energy Price Strip**, Thermostat Shortcuts is now **Thermostat Presets**, and Sensor Dots is now **Activity Dots**. Widgets already on a dashboard keep working and keep their settings.
+
+### New: Notes
+- A short message on the dashboard: one line of text on a tile, or a Post-it note stuck on the dashboard, tilted with a folded corner, in handwriting (up to three lines). A user asked for a single text line for small messages.
+- Type the message in the widget's settings, or let a Flow write it: *Write [text] on the note [name]* (also in a colour) and *Clear the note [name]*. Every Notes widget with that name shows it at once, on every screen. It can show a Logic text variable instead.
+- Settings for the alignment, the text size, an icon and the colour; long text on the tile is cut off or scrolls.
+
+### New: Spacer
+- An empty widget of the height you set in pixels, to line up widgets across a dashboard's columns at the top or the bottom. It's transparent in light and dark mode, and can go on web dashboards too.
+
+### New: Charts
+- One chart, two stacked, or two values on one chart with a scale each, of any value that Homey logs in Insights, drawn like Electricity Overview's charts: a line with an area, a line, or bars, over 1 hour to 7 days, in the colour you pick.
+- The value now sits at the top in the chart's colour (this can be turned off). Tap a chart to see the value at that moment.
+- The scale fits the values (so a room's 19–23 °C doesn't look flat) or starts at zero. Below zero can be drawn in yellow, as Electricity Overview draws solar export.
+
+### Curtains
+- Blinds that are fully open at 50%, with 0% and 100% both closed: vertical slatted blinds, and blinds that only tilt, such as SwitchBot Blind Tilt (these can now be picked too). A tap opens them to 50% or closes them to the nearer end, and the slider sets how far they're open. The new setting *Blinds are fully open at* chooses: 100%, 50% only for blinds that only tilt (the default), or 50% for all.
+- The tiles are as tall as Light Controls' again (they were 2 pixels taller), so the two line up side by side.
+
+### Electricity Overview and Energy Price Strip
+- 15-minute electricity prices, where Homey Energy has them: the price now is the current quarter's (it was the hour's average), the price chart steps every 15 minutes, and the lowest price is the cheapest quarter. The Energy Price Strip shows a bar per quarter. Markets with hourly prices look as before.
+
+### Activity Dots and Sensor Alarms
+- Presence sensors (such as the Aqara FP300) can be picked in Activity Dots: the dot lights up while someone is there, even sitting still, and the overlay says *Presence* or *No presence*. Sensor Alarms counts presence with motion and contact when *Count motion and contact as alarms* is on.
+
+### Sparklines and Device Values
+- Every battery tile shows the same battery icon. Some devices brought their own, so tiles side by side looked different.
+
 ## 0.9.0
 
 ### New: Clock

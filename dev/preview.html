@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Electricity widget preview</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/electricity/public/chart.css">
   <link rel="stylesheet" href="../widgets/electricity/public/widget.css">
+  <script src="../widgets/electricity/public/chart.js"></script>
   <script src="../widgets/electricity/public/widget.js"></script>
   <script src="i18n.js"></script>
   <script src="mock-util.js"></script>
@@ -29,6 +31,8 @@
   <div class="col"><span>400 px · light · solar export · separate usage · smooth</span><div class="card light" style="width:400px"><div id="w10"></div></div></div>
   <div class="col"><span>400 px · fixed price (Homey Energy)</span><div class="card homey-dark-mode" style="width:400px"><div id="w11"></div></div></div>
   <div class="col"><span>400 px · prices off</span><div class="card homey-dark-mode" style="width:400px"><div id="w12"></div></div></div>
+  <div class="col"><span>400 px · 15-minute prices</span><div class="card homey-dark-mode" style="width:400px"><div id="w13"></div></div></div>
+  <div class="col"><span>300 px · light · 15-minute prices · smooth · 12h + 24h</span><div class="card light" style="width:300px"><div id="w14"></div></div></div>
   <div class="col"><span>Compact · 400 px · default</span><div class="card homey-dark-mode" style="width:400px"><div id="c1"></div></div></div>
   <div class="col"><span>Compact · 300 px · light · 12h + 24h</span><div class="card light" style="width:300px"><div id="c2"></div></div></div>
   <div class="col"><span>Compact · 400 px · separate usage · solar export · smooth</span><div class="card homey-dark-mode" style="width:400px"><div id="c3"></div></div></div>
@@ -48,6 +52,8 @@
       [createElectricityWidget(document.getElementById('w10'), { locale: 'da-DK', t: devT }), mockSnapshot({ solar: true }), { separateUsage: true, smooth: true }],
       [createElectricityWidget(document.getElementById('w11'), { locale: 'da-DK', t: devT }), { ...mockSnapshot(), fixedPrice: 2 }, {}],
       [createElectricityWidget(document.getElementById('w12'), { locale: 'da-DK', t: devT }), mockSnapshot(), { showPrices: false }],
+      [createElectricityWidget(document.getElementById('w13'), { locale: 'da-DK', t: devT }), mockSnapshot({ quarters: true }), {}],
+      [createElectricityWidget(document.getElementById('w14'), { locale: 'da-DK', t: devT }), mockSnapshot({ quarters: true }), { smooth: true, nextLow: 'both' }],
       [createElectricityWidget(document.getElementById('c1'), { locale: 'da-DK', t: devT, layout: 'compact' }), mockSnapshot(), {}],
       [createElectricityWidget(document.getElementById('c2'), { locale: 'da-DK', t: devT, layout: 'compact' }), mockSnapshot(), { nextLow: 'both' }],
       [createElectricityWidget(document.getElementById('c3'), { locale: 'da-DK', t: devT, layout: 'compact' }), mockSnapshot({ solar: true }), { separateUsage: true, smooth: true }],

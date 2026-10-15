@@ -20,7 +20,7 @@
     "type": "global",
     "singular": false,
     "filter": {
-      "capabilities": "windowcoverings_set|windowcoverings_state|windowcoverings_closed"
+      "capabilities": "windowcoverings_set|windowcoverings_state|windowcoverings_closed|windowcoverings_tilt_set"
     }
   },
   "settings": [
@@ -131,6 +131,97 @@
         "ar": "فعّله للستائر التي تُبلغ 0% عندما تكون مفتوحة و100% عندما تكون مغلقة، مثل SwitchBot. ينطبق على كل الستائر في هذه الأداة."
       },
       "value": false
+    },
+    {
+      "id": "openAt",
+      "type": "dropdown",
+      "title": {
+        "en": "Blinds are fully open at",
+        "nl": "Lamellen zijn volledig open bij",
+        "de": "Jalousien sind ganz offen bei",
+        "fr": "Les stores sont entièrement ouverts à",
+        "it": "Le veneziane sono del tutto aperte al",
+        "sv": "Persiennerna är helt öppna vid",
+        "no": "Persiennene er helt åpne ved",
+        "es": "Las persianas están del todo abiertas al",
+        "da": "Persiennerne er helt åbne ved",
+        "ru": "Жалюзи полностью открыты при",
+        "pl": "Żaluzje są w pełni otwarte przy",
+        "ko": "블라인드가 완전히 열리는 위치",
+        "ar": "تكون الستائر مفتوحة بالكامل عند"
+      },
+      "hint": {
+        "en": "At 50%, 0% and 100% are both closed, one way or the other: vertical slatted blinds, or blinds that only tilt, such as SwitchBot Blind Tilt. A tap opens them to 50% or closes them to the nearer end.",
+        "nl": "Bij 50% zijn 0% en 100% allebei dicht, naar de ene of de andere kant: verticale lamellen, of lamellen die alleen kantelen, zoals SwitchBot Blind Tilt. Een tik opent ze tot 50% of sluit ze naar het dichtstbijzijnde uiteinde.",
+        "de": "Bei 50 % sind 0 % und 100 % beide zu, in die eine oder andere Richtung: vertikale Lamellen oder nur kippbare Jalousien wie SwitchBot Blind Tilt. Ein Tippen öffnet sie auf 50 % oder schließt sie zum näheren Ende.",
+        "fr": "À 50 %, 0 % et 100 % sont tous deux fermés, d'un côté ou de l'autre : stores à lamelles verticales, ou stores qui ne font que s'incliner, comme SwitchBot Blind Tilt. Un appui les ouvre à 50 % ou les ferme vers l'extrémité la plus proche.",
+        "it": "Al 50%, 0% e 100% sono entrambe chiuse, da un lato o dall'altro: tende a lamelle verticali, o veneziane che si inclinano soltanto, come SwitchBot Blind Tilt. Un tocco le apre al 50% o le chiude verso l'estremo più vicino.",
+        "sv": "Vid 50 % är både 0 % och 100 % stängda, åt ena eller andra hållet: vertikala lameller, eller persienner som bara vinklas, som SwitchBot Blind Tilt. Ett tryck öppnar dem till 50 % eller stänger dem mot närmaste ände.",
+        "no": "Ved 50 % er både 0 % og 100 % lukket, den ene eller andre veien: vertikale lameller, eller persienner som bare vinkles, som SwitchBot Blind Tilt. Et trykk åpner dem til 50 % eller lukker dem mot nærmeste ende.",
+        "es": "Al 50 %, 0 % y 100 % están ambas cerradas, hacia un lado u otro: lamas verticales, o persianas que solo se inclinan, como SwitchBot Blind Tilt. Un toque las abre al 50 % o las cierra hacia el extremo más cercano.",
+        "da": "Ved 50 % er både 0 % og 100 % lukket, den ene eller den anden vej: lodrette lameller, eller persienner, der kun vipper, som SwitchBot Blind Tilt. Et tryk åbner dem til 50 % eller lukker dem mod den nærmeste ende.",
+        "ru": "При 50 % и 0 %, и 100 % — закрыты, в одну или другую сторону: вертикальные жалюзи или жалюзи, которые только поворачиваются, например SwitchBot Blind Tilt. Касание открывает их до 50 % или закрывает к ближнему краю.",
+        "pl": "Przy 50% zarówno 0%, jak i 100% to zamknięte, w jedną lub drugą stronę: żaluzje pionowe lub żaluzje, które tylko się przechylają, np. SwitchBot Blind Tilt. Dotknięcie otwiera je do 50% lub zamyka do bliższego końca.",
+        "ko": "50%로 설정하면 0%와 100%는 모두 한쪽 또는 반대쪽으로 닫힘입니다. 세로 블라인드나 SwitchBot Blind Tilt처럼 기울기만 되는 블라인드용입니다. 탭하면 50%로 열리거나 더 가까운 끝으로 닫힙니다.",
+        "ar": "عند 50%، تكون 0% و100% كلتاهما مغلقة باتجاه أو بآخر: الستائر العمودية ذات الشرائح، أو الستائر التي تميل فقط مثل SwitchBot Blind Tilt. النقر يفتحها إلى 50% أو يغلقها نحو الطرف الأقرب."
+      },
+      "value": "middleTilt",
+      "values": [
+        {
+          "id": "end",
+          "title": {
+            "en": "100% (0% is closed)",
+            "nl": "100% (0% is dicht)",
+            "de": "100 % (0 % ist zu)",
+            "fr": "100 % (0 % est fermé)",
+            "it": "100% (0% è chiusa)",
+            "sv": "100 % (0 % är stängd)",
+            "no": "100 % (0 % er lukket)",
+            "es": "100 % (0 % es cerrada)",
+            "da": "100 % (0 % er lukket)",
+            "ru": "100 % (0 % — закрыты)",
+            "pl": "100% (0% to zamknięte)",
+            "ko": "100% (0%는 닫힘)",
+            "ar": "100% (0% مغلقة)"
+          }
+        },
+        {
+          "id": "middleTilt",
+          "title": {
+            "en": "50% for blinds that only tilt, else 100%",
+            "nl": "50% voor lamellen die alleen kantelen, anders 100%",
+            "de": "50 % bei nur kippbaren Jalousien, sonst 100 %",
+            "fr": "50 % pour les stores qui ne font que s'incliner, sinon 100 %",
+            "it": "50% per le veneziane che si inclinano soltanto, altrimenti 100%",
+            "sv": "50 % för persienner som bara vinklas, annars 100 %",
+            "no": "50 % for persienner som bare vinkles, ellers 100 %",
+            "es": "50 % para persianas que solo se inclinan; si no, 100 %",
+            "da": "50 % for persienner, der kun vipper, ellers 100 %",
+            "ru": "50 % для жалюзи, которые только поворачиваются, иначе 100 %",
+            "pl": "50% dla żaluzji, które tylko się przechylają, inaczej 100%",
+            "ko": "기울기만 되는 블라인드는 50%, 그 외는 100%",
+            "ar": "50% للستائر التي تميل فقط، وإلا 100%"
+          }
+        },
+        {
+          "id": "middle",
+          "title": {
+            "en": "50% for all (vertical blinds)",
+            "nl": "50% voor alle (verticale lamellen)",
+            "de": "50 % bei allen (vertikale Lamellen)",
+            "fr": "50 % pour tous (lamelles verticales)",
+            "it": "50% per tutte (lamelle verticali)",
+            "sv": "50 % för alla (vertikala lameller)",
+            "no": "50 % for alle (vertikale lameller)",
+            "es": "50 % para todas (lamas verticales)",
+            "da": "50 % for alle (lodrette lameller)",
+            "ru": "50 % для всех (вертикальные жалюзи)",
+            "pl": "50% dla wszystkich (żaluzje pionowe)",
+            "ko": "모두 50% (세로 블라인드)",
+            "ar": "50% للجميع (الستائر العمودية)"
+          }
+        }
+      ]
     },
     {
       "id": "showState",

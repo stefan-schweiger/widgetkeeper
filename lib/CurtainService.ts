@@ -9,9 +9,11 @@ export const CURTAINS_STATE_EVENT = 'curtains:state';
 /**
  * The capabilities a curtain tile reads; it needs at least one. `windowcoverings_set` is the position
  * (0 = closed, 1 = open), `windowcoverings_state` the motor (`up` opens, `down` closes, `idle` stops) and
- * `windowcoverings_closed` a plain open/closed.
+ * `windowcoverings_closed` a plain open/closed. `windowcoverings_tilt_set` is the position of a blind that only
+ * tilts (SwitchBot's Blind Tilt: 0 and 1 are both closed, 0.5 is open); the widget uses it when there's no
+ * `windowcoverings_set`, and reads it by its `tilt` setting.
  */
-export const CURTAIN_CAPS = ['windowcoverings_set', 'windowcoverings_state', 'windowcoverings_closed'] as const;
+export const CURTAIN_CAPS = ['windowcoverings_set', 'windowcoverings_state', 'windowcoverings_closed', 'windowcoverings_tilt_set'] as const;
 
 export type CurtainCap = CapState;
 
@@ -99,8 +101,10 @@ export default class CurtainService {
   }
 
   /**
-   * One change from a tile: `{position}` (0–1), or `{action}` (open or close). They go through the position
-   * when the device has one (a definite end), else the motor (`up`/`down`), else `windowcoverings_closed`.
+   * One change from a tile: `{position}` (0–1, the device's own scale), or `{action}` (open or close). A position
+   * goes to `windowcoverings_set`, else the tilt. An action goes through the position when the device has one (a
+   * definite end), else the motor (`up`/`down`), else `windowcoverings_closed`. Not the tilt: which end is open
+   * depends on the widget's `tilt` setting, so the widget sends a tilt blind a `{position}`.
    * Sent while it moves, they turn it round.
    */
   async set(deviceId: string, change: CurtainChange) {
@@ -116,8 +120,9 @@ export default class CurtainService {
     if (change.position !== undefined) {
       const p = change.position;
       if (typeof p !== 'number' || !Number.isFinite(p) || p < 0 || p > 1) throw new Error(`Invalid position ${JSON.stringify(p)}`);
-      if (!can('windowcoverings_set')) throw new Error(`${device.name} has no position`);
-      await send('windowcoverings_set', p);
+      if (can('windowcoverings_set')) await send('windowcoverings_set', p);
+      else if (can('windowcoverings_tilt_set')) await send('windowcoverings_tilt_set', p);
+      else throw new Error(`${device.name} has no position`);
     } else if (change.action === 'open' || change.action === 'close') {
       const open = change.action === 'open';
       if (can('windowcoverings_set')) await send('windowcoverings_set', open ? 1 : 0);

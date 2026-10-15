@@ -372,3 +372,43 @@ it('shows a message instead of the charts', () => {
   expect(messages()).toEqual(['Select a power meter in the widget settings.']);
   expect(shown(q('.ew-header'))).toBe(false);
 });
+
+describe('15-minute prices', () => {
+  const QUARTER = 15 * MIN;
+  /** `quarters` for snapshot(): 196 slots (index 96 = 10:00), 2.00 unless overridden by index. */
+  const quarters = (over: Record<number, number | null> = {}) => Array.from({ length: 49 * 4 },
+    (_, i) => ({ start: HOUR_START + (i - 96) * QUARTER, price: i in over ? over[i] : 2 }));
+
+  it('shows the current quarter in the header, with the minutes left of it', () => {
+    const { q, root } = widget(snapshot({ quarters: quarters({ 97: 0.31 }) }, { 24: 1.5 })); // 10:20 → 10:15–10:30
+    expect(q('.ew-hval.price')!.textContent).toBe('0,31 kr./kWh');
+    expect([...root.querySelectorAll('.ew-hsub')].map(e => e.textContent)).toEqual(['Using now', '10 min left']);
+  });
+
+  it('names the scrubbed quarter', () => {
+    const { root } = widget(snapshot({ quarters: quarters({ 98: 0.5 }) }));
+    const svg = root.querySelectorAll('svg')[2];
+    svg.getBoundingClientRect = () => ({ left: 0, top: 0 }) as DOMRect;
+    const sw = (368 - 38 - 4) / 37;
+    svg.dispatchEvent(new win.PointerEvent('pointermove', { clientX: 38 + 24 * sw + sw * 0.6, pointerType: 'mouse' }));
+    expect(root.querySelectorAll('.ew-hsub')[1].textContent).toMatch(/ 10:30–10:45$/);
+    expect(root.querySelector('.ew-hval.price')!.textContent).toBe('0,50 kr./kWh');
+  });
+
+  it('finds the cheapest quarter for the footer', () => {
+    const { footer } = widget(snapshot({ quarters: quarters({ 110: 1.1 }) }, { 27: 1.5 }));
+    expect(footer()).toBe('Lowest next 12h | 13:30•1,10 kr.');
+  });
+
+  it('draws a step per quarter', () => {
+    const flat = widget(snapshot()).q('.price-line')!.getAttribute('d');
+    const fine = widget(snapshot({ quarters: quarters({ 97: 3 }) })).q('.price-line')!.getAttribute('d');
+    expect(fine).not.toBe(flat);
+    expect(fine!.match(/L/g)!.length).toBe(flat!.match(/L/g)!.length + 4); // the step up and down within 10:00–11:00
+  });
+
+  it('ignores quarters that do not cover the slots', () => {
+    const { q } = widget(snapshot({ quarters: quarters().slice(0, 10) }, { 24: 1.5 }));
+    expect(q('.ew-hval.price')!.textContent).toBe('1,50 kr./kWh');
+  });
+});

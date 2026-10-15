@@ -4,7 +4,8 @@ const PB = [1.30, 1.25, 1.22, 1.20, 1.22, 1.35, 1.75, 2.25, 2.38, 2.05, 1.75, 1.
 const UB = [0.32, 0.30, 0.28, 0.29, 0.30, 0.35, 0.70, 1.10, 0.85, 0.55, 0.48, 0.52, 0.60, 0.50, 0.48, 0.55, 0.95, 1.60, 1.85, 1.40, 1.05, 0.80, 0.60, 0.42];
 
 // `solar`: solar panels export (negative power) around midday, and for the last 20 min of live readings.
-function mockSnapshot({ futureHours = 24, solar = false } = {}) {
+// `quarters`: 15-minute prices (a quarter-hour market), ramping within each hour towards the next one.
+function mockSnapshot({ futureHours = 24, solar = false, quarters = false } = {}) {
   const now = Date.now(), r = mockRng(4242);
   const hs = Math.floor(now / 3600e3) * 3600e3, mins = new Date(now).getMinutes();
   const prices = [];
@@ -40,5 +41,14 @@ function mockSnapshot({ futureHours = 24, solar = false } = {}) {
     if (solar && m > -20) v -= 1900;
     live.push({ t: Math.round(t), w: Math.round(v) });
   }
-  return { now, deviceName: 'Meter', live, prices, usage, currency: 'DKK' };
+  const snap = { now, deviceName: 'Meter', live, prices, usage, currency: 'DKK' };
+  if (quarters) {
+    const rq = mockRng(77); // its own, so the other mocks stay as they were
+    snap.quarters = prices.flatMap((p, i) => [0, 1, 2, 3].map(k => {
+      const next = prices[i + 1] && prices[i + 1].price != null ? prices[i + 1].price : p.price;
+      const price = p.price == null ? null : +(p.price + (next - p.price) * (k - 1.5) / 4 + (rq() - 0.5) * 0.3).toFixed(2);
+      return { start: p.start + k * 900e3, price };
+    }));
+  }
+  return snap;
 }

@@ -8,15 +8,15 @@ export const SA_STATE_EVENT = 'sensoralarms:state';
 
 /**
  * Alarms that report a state (someone moved, a door opened) rather than a fault; the widget setting decides.
- * Cameras' person, vehicle and pet detections are motion too.
+ * Presence (mmWave sensors such as the Aqara FP300) and cameras' person, vehicle and pet detections are motion too.
  */
-const STATE_ALARMS = new Set(['alarm_motion', 'alarm_contact', 'alarm_person', 'alarm_vehicle', 'alarm_pet']);
+const STATE_ALARMS = new Set(['alarm_motion', 'alarm_presence', 'alarm_contact', 'alarm_person', 'alarm_vehicle', 'alarm_pet']);
 
 export type SensorAlarm = {
   capabilityId: string,
   title: string,
   value: boolean | null,
-  /** Motion, contact or a camera detection: only counted when the widget's `includeStates` setting is on. */
+  /** Motion, presence, contact or a camera detection: only counted when the widget's `includeStates` setting is on. */
   state: boolean,
   /** When the value last changed (ms), from the capability's `lastUpdated`. */
   lastUpdated: number | null,

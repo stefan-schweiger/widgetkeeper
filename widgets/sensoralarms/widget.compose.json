@@ -40,19 +40,19 @@
         "ar": "احتساب الحركة والتلامس كإنذارات"
       },
       "hint": {
-        "en": "Off: an open door or detected motion doesn't turn the tile red.",
-        "nl": "Uit: een open deur of gedetecteerde beweging kleurt de tegel niet rood.",
-        "de": "Aus: Eine offene Tür oder erkannte Bewegung färbt die Kachel nicht rot.",
-        "fr": "Désactivé : une porte ouverte ou un mouvement détecté ne rend pas la tuile rouge.",
-        "it": "Disattivato: una porta aperta o un movimento rilevato non colorano di rosso il riquadro.",
-        "sv": "Av: en öppen dörr eller upptäckt rörelse gör inte rutan röd.",
-        "no": "Av: en åpen dør eller registrert bevegelse gjør ikke flisen rød.",
-        "es": "Desactivado: una puerta abierta o un movimiento detectado no ponen el mosaico en rojo.",
-        "da": "Fra: en åben dør eller registreret bevægelse gør ikke feltet rødt.",
-        "ru": "Выкл.: открытая дверь или движение не окрашивают плитку в красный.",
-        "pl": "Wył.: otwarte drzwi lub wykryty ruch nie barwią kafelka na czerwono.",
-        "ko": "끔: 열린 문이나 감지된 동작은 타일을 빨간색으로 표시하지 않습니다.",
-        "ar": "إيقاف: الباب المفتوح أو الحركة المكتشفة لا تجعل البلاطة حمراء."
+        "en": "Off: an open door, motion or presence doesn't turn the tile red.",
+        "nl": "Uit: een open deur, beweging of aanwezigheid kleurt de tegel niet rood.",
+        "de": "Aus: Eine offene Tür, Bewegung oder Anwesenheit färbt die Kachel nicht rot.",
+        "fr": "Désactivé : une porte ouverte, un mouvement ou une présence ne rend pas la tuile rouge.",
+        "it": "Disattivato: una porta aperta, un movimento o una presenza non colorano di rosso il riquadro.",
+        "sv": "Av: en öppen dörr, rörelse eller närvaro gör inte rutan röd.",
+        "no": "Av: en åpen dør, bevegelse eller tilstedeværelse gjør ikke flisen rød.",
+        "es": "Desactivado: una puerta abierta, un movimiento o una presencia no ponen el mosaico en rojo.",
+        "da": "Fra: en åben dør, bevægelse eller tilstedeværelse gør ikke feltet rødt.",
+        "ru": "Выкл.: открытая дверь, движение или присутствие не окрашивают плитку в красный.",
+        "pl": "Wył.: otwarte drzwi, ruch lub obecność nie barwią kafelka na czerwono.",
+        "ko": "끔: 열린 문, 동작 또는 재실은 타일을 빨간색으로 표시하지 않습니다.",
+        "ar": "إيقاف: الباب المفتوح أو الحركة أو التواجد لا يجعل البلاطة حمراء."
       },
       "value": false
     },

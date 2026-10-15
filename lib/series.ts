@@ -93,3 +93,31 @@ export function hourlyPrices(samples: Sample[]): Map<number, number> {
   for (const [h, a] of acc) out.set(h, a.s / a.n);
   return out;
 }
+
+export const QUARTER = 15 * MINUTE;
+
+/**
+ * Interval prices as 15-minute prices keyed by quarter start (ms), or null when the intervals are hourly (or
+ * longer), so hourly markets keep only their hours. A 30-minute interval fills both of its quarters; anything
+ * finer than 15 minutes is averaged.
+ */
+export function quarterPrices(samples: Sample[]): Map<number, number> | null {
+  let step = Infinity; // the interval length: the shortest gap between two prices
+  for (let i = 1; i < samples.length; i++) {
+    const d = samples[i].t - samples[i - 1].t;
+    if (d > 0 && d < step) step = d;
+  }
+  if (!(step < HOUR)) return null;
+  const acc = new Map<number, { s: number, n: number }>();
+  samples.forEach(p => {
+    for (let q = floorTo(p.t, QUARTER); q < p.t + step; q += QUARTER) { // the quarters the interval overlaps
+      const a = acc.get(q) ?? { s: 0, n: 0 };
+      a.s += p.w;
+      a.n++;
+      acc.set(q, a);
+    }
+  });
+  const out = new Map<number, number>();
+  for (const [q, a] of acc) out.set(q, a.s / a.n);
+  return out;
+}

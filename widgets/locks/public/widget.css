@@ -1,7 +1,7 @@
 /*
  * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
  * The fallbacks are the dark-theme values, used outside Homey (dev/locks-preview.html).
- * The tile copies Sensor Dots' (Device Quick Actions' fill, radius and rim); the red tint is Sensor Alarms'.
+ * The tile copies Activity Dots' (Device Quick Actions' fill, radius and rim); the red tint is Sensor Alarms'.
  */
 .lk {
   --lk-tile: var(--homey-background-color, #FFFFFF);

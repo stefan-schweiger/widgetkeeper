@@ -130,6 +130,15 @@ describe('render', () => {
     expect(mask(tiles()[1])).toMatch(/^url\("data:image\/svg\+xml;base64,/);
   });
 
+  it('always uses the built-in glyph for batteries, whatever the driver ships', () => {
+    const icon = 'data:image/svg+xml;base64,QUJD';
+    const battery = (extra: object) => ({ deviceId: 'c', capabilityId: 'measure_battery', name: 'Sensor', capability: cap('number', { units: '%', ...extra }), value: 80 });
+    const { tiles } = widget([battery({ icon }), battery({})]);
+    const mask = (t: HTMLElement) => (t.querySelector('.vt-icon') as HTMLElement).style.getPropertyValue('--vt-mask');
+    expect(mask(tiles()[0])).not.toBe(`url("${icon}")`);
+    expect(mask(tiles()[0])).toBe(mask(tiles()[1]));
+  });
+
   it('marks missing slots as unavailable', () => {
     const { tiles, text } = widget([{ deviceId: 'x', capabilityId: 'onoff', missing: true }]);
     expect(text('.vt-name')).toEqual(['Unavailable']);

@@ -152,9 +152,9 @@ const BUILD = {
   },
 
   async sensoralarms() {
-    const alarmCaps = d => (d.capabilities ?? []).filter(c => c.startsWith('alarm_') && !/^alarm_(battery|motion|contact|person|vehicle|pet|button)\b/.test(c));
+    const alarmCaps = d => (d.capabilities ?? []).filter(c => c.startsWith('alarm_') && !/^alarm_(battery|motion|presence|contact|person|vehicle|pet|button)\b/.test(c));
     const counted = where(d => alarmCaps(d).length > 0, 8);
-    const states = where(d => has(d, 'alarm_contact') || has(d, 'alarm_motion'), 6);
+    const states = where(d => has(d, 'alarm_contact') || has(d, 'alarm_motion') || has(d, 'alarm_presence'), 6);
     const none = where(d => !(d.capabilities ?? []).some(c => c.startsWith('alarm_')), 1);
     const named = counted.slice(0, 4);
     const nameOf = id => devices.find(d => d.id === id)?.name ?? '';
@@ -169,7 +169,7 @@ const BUILD = {
   },
 
   async sensordots() {
-    const motion = where(d => has(d, 'alarm_motion') && cls(d) !== 'camera');
+    const motion = where(d => (has(d, 'alarm_motion') || has(d, 'alarm_presence')) && cls(d) !== 'camera');
     const contact = where(d => has(d, 'alarm_contact'));
     const cams = where(d => cls(d) === 'camera');
     return { cols: 2, widgets: [
@@ -287,6 +287,27 @@ const BUILD = {
     return { cols: 2, widgets: out };
   },
 
+  async charts() {
+    const items = await autocomplete('charts', 'chart1');
+    const cap = c => i => i.id.endsWith(`:${c}`);
+    const temp = pick(items, cap('measure_temperature'))[0];
+    const power = pick(items, cap('measure_power'))[0];
+    const other = pick(items, i => i !== temp && i !== power, 3);
+    const missing = { id: `${MISSING}:measure_temperature`, name: 'Deleted device · Temperature' };
+    return { cols: 3, widgets: [
+      w('charts', 'One chart (defaults)', { chart1: temp }),
+      w('charts', 'Two · area + bars', { charts: '2', chart1: temp, chart2: power, style2: 'bars' }),
+      w('charts', 'Two · line, smooth 6 h + bars 7 d', { charts: '2', chart1: power, span1: '6h', style1: 'line', smooth1: true, chart2: power, span2: '7d', style2: 'bars', color2: 'orange' }),
+      w('charts', 'On one chart · area + line', { charts: 'overlay', chart1: temp, color1: 'purple', chart2: power, style2: 'line', smooth2: true, color2: 'orange' }),
+      w('charts', 'On one chart · bars + bars, from zero', { charts: 'overlay', chart1: power, span1: '6h', style1: 'bars', range1: 'zero', chart2: other[0] || temp, style2: 'bars' }),
+      w('charts', 'Start at zero · below zero yellow', { chart1: temp, range1: 'zero', negative1: true, color1: 'purple' }),
+      w('charts', '1 h · no header · own title', { chart1: power, span1: '1h', showHeader: false, title1: 'Power now' }),
+      ...other.map((item, i) => w('charts', `Other value ${i + 1} · ${['2d', '3d', '5d'][i]}`, { chart1: item, span1: ['2d', '3d', '5d'][i], color1: ['red', 'yellow', 'green'][i] })),
+      w('charts', 'Deleted device + empty', { charts: '2', chart1: missing }),
+      w('charts', 'Nothing picked'),
+    ] };
+  },
+
   async variables() {
     const items = pick(await autocomplete('variables', 'slot1'), () => true, 10);
     const missing = { id: 'missing-variable-0000', name: 'Deleted variable' };
@@ -347,13 +368,15 @@ const BUILD = {
   },
 
   async curtains() {
-    const ids = where(d => ['windowcoverings_set', 'windowcoverings_state', 'windowcoverings_closed'].some(c => has(d, c)));
+    const ids = where(d => ['windowcoverings_set', 'windowcoverings_state', 'windowcoverings_closed', 'windowcoverings_tilt_set'].some(c => has(d, c)));
     const note = ids.length ? '' : ' (no curtains on this Homey)';
     const set = ids.length ? ids : [MISSING];
     return { cols: 2, widgets: [
       w('curtains', `Defaults${note}`, {}, set),
       w('curtains', `Reverse of last move · inverted${note}`, { between: 'reverse', invert: true }, set),
       w('curtains', `No state line${note}`, { showState: false }, set),
+      w('curtains', `Open at 100%, also tilt-only blinds${note}`, { openAt: 'end' }, set),
+      w('curtains', `Open at 50% (vertical blinds)${note}`, { openAt: 'middle' }, set),
       w('curtains', `Grouped by room${note}`, { groupByZone: true }, set),
       w('curtains', 'A deleted device', {}, [MISSING]),
     ] };
@@ -395,6 +418,41 @@ const BUILD = {
     w('clock', ''), // no title
     w('clock', 'No weather', { showWeather: false }),
   ] }),
+
+  // Notes: typed messages, `Test …` notes only a Flow card writes to (until one does, they show the typed message),
+  // and variables. The `Note` one shows whatever a Flow last wrote.
+  async textline() {
+    const vars = pick(await autocomplete('textline', 'variable'), i => i.id !== 'none', 1);
+    const missing = { id: 'missing-variable-0000', name: 'Deleted variable' };
+    const icon = id => ({ id, name: EN.flows.icons[id] ?? id });
+    const long = 'A long typed message that does not fit on one line of the tile, so it has to be cut off or scroll';
+    return { cols: 3, widgets: [
+      w('textline', 'Defaults (nothing typed)'),
+      w('textline', 'Typed · icon · blue', { message: 'Back at 5', icon: icon('bell'), color: 'blue' }),
+      w('textline', 'Typed long · cut off · large · centred', { message: long, size: 'large', align: 'center' }),
+      w('textline', 'Typed long · scroll · small', { message: long, overflow: 'scroll', size: 'small', icon: icon('home') }),
+      ...['default', 'orange', 'red', 'purple', 'blue', 'green'].map(color =>
+        w('textline', `Post-it · ${color}`, { style: 'postit', message: 'Buy milk,\neggs and rye bread', color })),
+      w('textline', 'Post-it · long · right', { style: 'postit', message: long, align: 'right' }),
+      w('textline', 'Flow · note Note', { source: 'flow' }),
+      w('textline', 'Flow · Test note · typed fallback', { source: 'flow', board: 'Test note', message: 'Nothing written yet' }),
+      w('textline', vars.length ? `Variable · ${vars[0].name}` : 'Variable (none on this Homey)', { source: 'variable', variable: vars[0] ?? null }),
+      w('textline', 'Variable · deleted', { source: 'variable', variable: missing }),
+      w('textline', 'Variable · nothing picked', { source: 'variable' }),
+    ] };
+  },
+
+  // Four columns: a clock, a spacer of the height in its title, another clock, so the second row shows the gap Homey
+  // adds and how far each spacer moves it down.
+  spacer: () => {
+    const heights = [32, 0, 16, 76]; // the default, nothing, a little, a clock's height
+    const clock = title => w('clock', title, { showWeather: false });
+    return { cols: 4, widgets: [
+      ...heights.map(h => clock(`${h} px below${h === 32 ? ' (default)' : ''}`)),
+      ...heights.map(h => w('spacer', '', h === 32 ? {} : { height: h })),
+      ...heights.map(() => clock('')),
+    ] };
+  },
 
   async stack() {
     const boards = pick(await autocomplete('stack', 'dashboard'), i => !/^0 /.test(i.description ?? ''), 3);

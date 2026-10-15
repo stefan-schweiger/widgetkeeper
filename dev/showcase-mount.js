@@ -21,6 +21,7 @@ const MOUNT = {
   timers: (el, w) => createTimersWidget(el, { sound: false, now: () => SHOWCASE_NOW, presets: w.presets, ...w.opts }).setState({ timers: w.timers, now: SHOWCASE_NOW }),
   locks: (el, w) => createLocksWidget(el, w.opts || {}).setState({ devices: w.devices, language: 'en' }),
   sparklines: (el, w) => createSparklinesWidget(el, w.opts || {}).setState(w.slots),
+  charts: (el, w) => createChartsWidget(el, { locale: LOCALE, language: 'en', ...w.opts }).setState(w.charts),
   lights: (el, w) => createLightsWidget(el, w.opts || {}).setState(w.devices),
   curtains: (el, w) => createCurtainsWidget(el, w.opts || {}).setState(w.devices),
   cameras: (el, w) => { const x = createCamerasWidget(el, w.opts || {}); x.setState(w.cameras); x.refresh(); },
@@ -30,6 +31,7 @@ const MOUNT = {
   weather: (el, w) => createWeatherWidget(el, { locale: LOCALE, iconBase: '../widgets/weather/public/icons/', ...w.opts })
     .setForecast({ hours: w.hours, language: 'en' }),
   // The weather is the showcase's own (w.weather: {symbol, temp, high, low}); the icon comes from the files.
+  textline: (el, w) => createTextLineWidget(el, { reducedMotion: true, ...w.opts }).setState({ language: 'en', board: w.board || null, variable: w.variable || null }),
   clock: (el, w) => createClockWidget(el, { locale: LOCALE, iconBase: '../widgets/weather/public/icons/', ...w.opts })
     .setState({ language: 'en', weather: w.weather || null }),
 };

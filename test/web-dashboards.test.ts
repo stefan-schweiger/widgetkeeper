@@ -158,6 +158,7 @@ describe('web dashboards: what the editor needs', () => {
     const picker = (type: string) => types.find(t => t.type === type)!.settings.filter(s => s.picker === 'capability').map(s => s.id);
     expect(picker('values')).toEqual(['slot1', 'slot2', 'slot3', 'slot4', 'slot5', 'slot6']);
     expect(picker('sparklines')).toEqual(['slot1', 'slot2', 'slot3', 'slot4', 'slot5', 'slot6']);
+    expect(picker('charts')).toEqual(['chart1', 'chart2']);
     expect(picker('flows')).toEqual([]); // other autocompletes keep the search list
   });
 

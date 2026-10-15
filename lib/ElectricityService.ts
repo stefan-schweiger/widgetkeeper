@@ -4,8 +4,8 @@ import { localHour } from './heatmap.js';
 import { readFirstLog } from './insightsLog.js';
 import Timings from './Timings.js';
 import {
-  HOUR, MINUTE, SECOND, Sample,
-  bucketAverage, floorTo, hourlyPrices, parseInsightsEntries, parsePriceResponse,
+  HOUR, MINUTE, QUARTER, SECOND, Sample,
+  bucketAverage, floorTo, hourlyPrices, parseInsightsEntries, parsePriceResponse, quarterPrices,
 } from './series.js';
 import { parsePriceCosts } from './priceCosts.js';
 
@@ -16,7 +16,7 @@ const USAGE_STEP = 5 * MINUTE;
 const USAGE_TTL = 5 * MINUTE;
 const PRICE_PAST_HOURS = 24;
 const PRICE_FUTURE_HOURS = 24; // the chart shows 12; the lowest-price footer can look 24 ahead
-const PRICE_FUTURE_HOURS_MAX = 36; // the Price Badge's longest window
+const PRICE_FUTURE_HOURS_MAX = 36; // the Energy Price Strip's longest window
 const IDLE_TIMEOUT = 10 * MINUTE;
 const POWER_LOGS = ['measure_power', 'energy_power']; // in order of preference
 const PRICE_TYPE_TTL = 5 * MINUTE; // a change in Homey's Energy settings shows within this
@@ -30,6 +30,9 @@ export type Snapshot = {
   priceError: string | null, // why the current hour's price could not be read (null when it's simply not set up)
   live: Sample[], // raw readings for the last hour, oldest first (the widget resamples)
   prices: ({ start: number, price: number | null })[], // 49 hourly slots (61 with `futureHours: 36`), index 24 = current hour
+  // The same span in 15-minute slots (index 96 = the current hour's first quarter), only when Homey Energy has
+  // 15-minute prices (`prices` then has their hourly averages); null for hourly markets and a fixed price.
+  quarters: ({ start: number, price: number | null })[] | null,
   fixedPrice: number | null, // Homey's fixed price per kWh, when Energy is set to a fixed price (every slot has it)
   usage: Sample[], // 5-min averages from the first price slot up to now
   currency: string | null,
@@ -41,6 +44,14 @@ type PriceSettings = {
   costs: ((price: number) => number) | null, // Homey Energy's costs on the spot price (tariffs, taxes, VAT)
   costsExpression: string | null,
 };
+
+type PriceDay = {
+  at: number,
+  hours: Map<number, number>, // hourly prices (averages of shorter intervals) by hour start
+  quarters: Map<number, number> | null, // 15-minute prices by quarter start; null when the day's prices are hourly
+};
+
+type Slots = { prices: Snapshot['prices'], quarters: Snapshot['quarters'] };
 
 type Meter = {
   deviceId: string,
@@ -61,8 +72,8 @@ export default class ElectricityService {
   private meters = new Map<string, Meter>();
   private meterPromises = new Map<string, Promise<Meter>>();
   private logIds = new Map<string, string>(); // the power log that worked, per device; kept when a meter is dropped
-  private priceDays = new Map<string, { at: number, hours: Map<number, number> }>();
-  private pricePending = new Map<string, Promise<Map<number, number>>>();
+  private priceDays = new Map<string, PriceDay>();
+  private pricePending = new Map<string, Promise<PriceDay>>();
   private currency: string | null = null;
   private currencyPending: Promise<void> | null = null;
   private priceType: PriceSettings & { at: number } | null = null;
@@ -110,7 +121,7 @@ export default class ElectricityService {
     let priceError: string | null = null;
     let fixedPrice: number | null = null;
     const message = (err: unknown) => (err instanceof Error ? err.message : String(err));
-    const [meter, prices] = await Promise.all([
+    const [meter, { prices, quarters }] = await Promise.all([
       deviceId ? tm.time('meter', () => this.ensureMeter(deviceId, tm)).catch(err => {
         this.log('Meter error', err);
         meterError = message(err);
@@ -123,7 +134,7 @@ export default class ElectricityService {
         return this.getPriceSlots(firstSlot, tm, settings, (day, err) => {
           if (day === this.localDate(hourStart)) priceError = message(err);
         }, Math.min(PRICE_FUTURE_HOURS_MAX, Math.max(PRICE_FUTURE_HOURS, Math.round(futureHours) || 0)));
-      }).catch(err => { this.log('Price error', err); priceError = message(err); return []; }),
+      }).catch(err => { this.log('Price error', err); priceError = message(err); return { prices: [], quarters: null }; }),
     ]);
 
     let usage: Sample[] = [];
@@ -140,6 +151,7 @@ export default class ElectricityService {
       priceError,
       live: meter ? meter.live.slice() : [],
       prices,
+      quarters,
       fixedPrice,
       usage,
       currency: this.currency,
@@ -349,16 +361,21 @@ export default class ElectricityService {
   /** Price type, fixed price and costs, for the diagnostics report. */
   async describe() {
     const { fixed, costsExpression } = await this.getPriceSettings();
-    return { priceType: fixed == null ? 'dynamic' : 'fixed', fixedPrice: fixed, priceCosts: costsExpression, currency: this.currency };
+    // The interval of today's spot prices, once read (15 in quarter-hour markets, 60 in hourly ones).
+    const today = this.priceDays.get(this.localDate(Date.now()));
+    const priceInterval = !today?.hours.size ? null : today.quarters ? 15 : 60;
+    return {
+      priceType: fixed == null ? 'dynamic' : 'fixed', fixedPrice: fixed, priceCosts: costsExpression, priceInterval, currency: this.currency,
+    };
   }
 
   private async getPriceSlots(firstSlot: number, tm: Timings, settings: PriceSettings,
-    onDayError?: (day: string, err: unknown) => void, futureHours = PRICE_FUTURE_HOURS): Promise<Snapshot['prices']> {
+    onDayError?: (day: string, err: unknown) => void, futureHours = PRICE_FUTURE_HOURS): Promise<Slots> {
     const count = PRICE_PAST_HOURS + 1 + futureHours;
     const fixedPrice = settings.fixed;
     if (fixedPrice != null) {
       if (this.currency == null) await tm.time('currency', () => this.loadCurrency());
-      return Array.from({ length: count }, (_, i) => ({ start: firstSlot + i * HOUR, price: fixedPrice }));
+      return { prices: Array.from({ length: count }, (_, i) => ({ start: firstSlot + i * HOUR, price: fixedPrice })), quarters: null };
     }
     const lastSlot = firstSlot + (count - 1) * HOUR;
     const days = new Set<string>();
@@ -367,7 +384,7 @@ export default class ElectricityService {
     // A day that fails (e.g. tomorrow before publication) leaves its slots empty, not the others. The day after
     // tomorrow (a 36-hour window) is rarely out, so its failure is only debug.
     const tomorrow = this.localDate(floorTo(Date.now(), HOUR) + 24 * HOUR);
-    const [dayHours] = await Promise.all([
+    const [priceDays] = await Promise.all([
       Promise.all([...days].map(day => tm.time(day, () => this.getPriceDay(day)).catch(err => {
         if (day > tomorrow) this.debug(`No prices yet for ${day}`, err);
         else this.log(`Price error for ${day}`, err);
@@ -377,15 +394,24 @@ export default class ElectricityService {
       this.currency == null ? tm.time('currency', () => this.loadCurrency()) : null,
     ]);
     const hours = new Map<number, number>();
-    for (const day of dayHours) {
-      for (const [h, p] of day ?? []) hours.set(h, p);
+    const quarters = new Map<number, number>();
+    for (const day of priceDays) {
+      for (const [h, p] of day?.hours ?? []) hours.set(h, p);
+      for (const [q, p] of day?.quarters ?? []) quarters.set(q, p);
     }
+    const withCosts = (spot: number | undefined) => (spot == null ? null : settings.costs ? round4(settings.costs(spot)) : spot);
 
-    return Array.from({ length: count }, (_, i) => {
-      const start = firstSlot + i * HOUR;
-      const spot = hours.get(start);
-      return { start, price: spot == null ? null : settings.costs ? round4(settings.costs(spot)) : spot };
-    });
+    return {
+      prices: Array.from({ length: count }, (_, i) => {
+        const start = firstSlot + i * HOUR;
+        return { start, price: withCosts(hours.get(start)) };
+      }),
+      // A day with hourly prices among quarter-hour ones (a market changing over) repeats each hour's price.
+      quarters: !quarters.size ? null : Array.from({ length: count * 4 }, (_, i) => {
+        const start = firstSlot + i * QUARTER;
+        return { start, price: withCosts(quarters.get(start) ?? hours.get(floorTo(start, HOUR))) };
+      }),
+    };
   }
 
   private loadCurrency(): Promise<void> {
@@ -402,12 +428,12 @@ export default class ElectricityService {
     return this.currencyPending;
   }
 
-  /** One day's hourly prices. Concurrent requests for a day (warm-up, several widgets) share one fetch. */
-  private getPriceDay(day: string): Promise<Map<number, number>> {
+  /** One day's prices. Concurrent requests for a day (warm-up, several widgets) share one fetch. */
+  private getPriceDay(day: string): Promise<PriceDay> {
     const cached = this.priceDays.get(day);
     // Complete days are cached for good; empty/partial days (tomorrow before publication) are
     // retried every 15 minutes.
-    if (cached && (cached.hours.size >= 23 || Date.now() - cached.at < 15 * MINUTE)) return Promise.resolve(cached.hours);
+    if (cached && (cached.hours.size >= 23 || Date.now() - cached.at < 15 * MINUTE)) return Promise.resolve(cached);
     let p = this.pricePending.get(day);
     if (!p) {
       p = this.fetchPriceDay(day).finally(() => this.pricePending.delete(day));
@@ -416,7 +442,7 @@ export default class ElectricityService {
     return p;
   }
 
-  private async fetchPriceDay(day: string): Promise<Map<number, number>> {
+  private async fetchPriceDay(day: string): Promise<PriceDay> {
     const now = Date.now();
     const api = await getAppApi(this.homey);
     const res = await api.energy.fetchDynamicElectricityPrices({ date: day });
@@ -424,12 +450,13 @@ export default class ElectricityService {
       this.loggedPriceSample = true;
       this.debug(`Price response sample for ${day}:`, JSON.stringify(res)?.slice(0, 600));
     }
-    const hours = hourlyPrices(parsePriceResponse(res));
-    this.priceDays.set(day, { at: now, hours });
+    const samples = parsePriceResponse(res);
+    const entry: PriceDay = { at: now, hours: hourlyPrices(samples), quarters: quarterPrices(samples) };
+    this.priceDays.set(day, entry);
     for (const key of this.priceDays.keys()) {
       if (key < this.localDate(now - 3 * 24 * HOUR)) this.priceDays.delete(key);
     }
-    return hours;
+    return entry;
   }
 
   /** YYYY-MM-DD in Homey's timezone (through the heatmap's cached formatter: this runs ~50 times per snapshot). */

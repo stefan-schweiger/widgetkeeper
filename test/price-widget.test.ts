@@ -110,3 +110,55 @@ describe('render', () => {
     expect(message().classList.contains('error')).toBe(true);
   });
 });
+
+describe('15-minute prices', () => {
+  const QUARTER = HOUR / 4;
+  /** `snapshot()` plus its span in quarters: the hour's price, the first quarter of each hour 0.4 dearer. */
+  function quarterSnapshot(ahead = 24, edit?: (price: number, start: Date) => number | null) {
+    const s = snapshot(undefined, ahead);
+    const quarters = s.prices.flatMap(h => [0, 1, 2, 3].map(k => {
+      const start = new Date(h.start + k * QUARTER);
+      const p = (h.price as number) + (k === 0 ? 0.4 : 0);
+      return { start: start.getTime(), price: edit ? edit(p, start) : p };
+    }));
+    return { ...s, quarters };
+  }
+
+  it("shows the current quarter's price and a bar per quarter", () => {
+    const { now, bars, ticks, chart } = widget(quarterSnapshot(24, (p, start) => (start.getHours() === 18 && start.getMinutes() === 15 ? 0.31 : p)));
+    expect(now()).toEqual(['Low', '0.31kr.']); // 18:15–18:30
+    const b = bars();
+    expect(b).toHaveLength(48);
+    expect(b[0].classList.contains('now')).toBe(true);
+    expect(chart().dataset.quarters).toBe('');
+    expect(ticks()).toEqual(['Now', '21', 'Wed', '03']); // on the hours, as with hourly bars
+    // The cheapest quarter from 18:15: 18:15 itself.
+    expect(b.findIndex(x => x.classList.contains('lowest'))).toBe(0);
+  });
+
+  it('puts the dot on the cheapest quarter ahead', () => {
+    const { bars } = widget(quarterSnapshot());
+    // 03:00's quarters are the cheapest; its first is dearer, so 03:15 (from 18:15: 9 h = 36 quarters).
+    expect(bars().findIndex(x => x.classList.contains('lowest'))).toBe(36);
+  });
+
+  it('shows 96 and 144 quarters for 24 and 36 hours', () => {
+    expect(widget(quarterSnapshot(), { hours: '24' }).bars()).toHaveLength(96);
+    expect(widget(quarterSnapshot(36), { hours: '36' }).bars()).toHaveLength(144);
+  });
+
+  it('moves on to the next quarter', () => {
+    const { now } = widget(quarterSnapshot());
+    expect(now()[1]).toBe('2.58kr.');
+    vi.advanceTimersByTime(45 * 60e3); // 18:20 → 19:05
+    expect(now()[1]).toBe(`${(2.50 + 0.4).toFixed(2)}kr.`);
+  });
+
+  it('goes back to hourly bars without quarters', () => {
+    const { w, bars, chart } = widget(quarterSnapshot());
+    expect(bars()).toHaveLength(48);
+    w.setState(snapshot());
+    expect(bars()).toHaveLength(12);
+    expect(chart().dataset.quarters).toBeUndefined();
+  });
+});

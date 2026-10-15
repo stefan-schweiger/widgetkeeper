@@ -51,6 +51,8 @@
     "closed": "Dicht",
     "motion": "Beweging",
     "noMotion": "Geen beweging",
+    "presence": "Aanwezigheid",
+    "noPresence": "Geen aanwezigheid",
     "nothingDetected": "Niets gedetecteerd",
     "since": "sinds __time__"
   },
@@ -135,6 +137,13 @@
     "selectSlots": "Kies apparaatwaarden in de widgetinstellingen.",
     "error": "Kan de waarden niet laden.",
     "unavailable": "Niet beschikbaar"
+  },
+  "charts": {
+    "now": "Nu",
+    "selectChart": "Kies een apparaatwaarde in de widgetinstellingen.",
+    "error": "Kon de grafiek niet laden.",
+    "unavailable": "Niet beschikbaar",
+    "noHistory": "Nog geen geschiedenis."
   },
   "lights": {
     "selectDevices": "Kies lampen in de widgetinstellingen.",
@@ -317,6 +326,15 @@
     "keyInvalid": "De API-sleutel is niet geaccepteerd.",
     "speakerAction": "Speakeractie"
   },
+  "textline": {
+    "noMessage": "Geen bericht",
+    "typeNote": "Typ je notitie in de widgetinstellingen.",
+    "variableMissing": "Variabele niet gevonden",
+    "selectVariable": "Kies een tekstvariabele in de widgetinstellingen.",
+    "error": "Kon de tekst niet laden.",
+    "boardInUse": "Heeft een tekst",
+    "boardNew": "Nieuwe notitie"
+  },
   "stack": {
     "selectDashboard": "Kies een dashboard in de widgetinstellingen.",
     "noKey": "Voeg een API-sleutel toe in de app-instellingen om het dashboard te lezen.",
@@ -423,6 +441,7 @@
       "values": "Elke apparaatwaarde als compacte tegel.",
       "lights": "Lichttegels met helderheid en kleur bij de hand.",
       "sparklines": "Waarden met een kleine grafiek van hun recente verloop.",
+      "charts": "Eén of twee grafieken van elke waarde, zoals die van stroom.",
       "variables": "Flow-variabelen als rijen om te schakelen of te wijzigen.",
       "flows": "Start flows met een tik, in je eigen kleuren en iconen.",
       "price": "De stroomprijs nu en in de komende uren.",
@@ -431,6 +450,8 @@
       "curtains": "Gordijnen en zonwering openen, sluiten of instellen.",
       "media": "Muziek, volume en bronnen van een speaker in één kaart.",
       "clock": "De tijd en datum, desgewenst met het weer van nu.",
+      "textline": "Een notitie op een tegel of een Post-it, zelf getypt of door je Flows geschreven.",
+      "spacer": "Lege ruimte om widgets in kolommen gelijk te zetten.",
       "stack": "Widgets van een ander dashboard, om de beurt."
     }
   }

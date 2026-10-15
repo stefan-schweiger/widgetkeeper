@@ -20,6 +20,11 @@ const cam = (person = false, motion = false) => ({
   id: 'cam', name: 'Driveway', icon: null,
   alarms: [alarm('alarm_motion', motion, 'Motion alarm', at('2026-10-08T18:00:00')), alarm('alarm_person', person, 'Person Detected', at('2026-10-08T18:10:00'))],
 });
+/** A mmWave presence sensor (the Aqara FP300 reports both). */
+const office = (present = false, moving = false) => ({
+  id: 'office', name: 'Office', icon: null,
+  alarms: [alarm('alarm_motion', moving, 'Motion alarm', at('2026-10-08T18:05:00')), alarm('alarm_presence', present, 'Presence detected', at('2026-10-08T18:20:00'))],
+});
 
 function widget(state: any) {
   const root = document.createElement('div');
@@ -115,6 +120,22 @@ describe('overlay', () => {
     expect(personOnly.panelText()).toBe(`Driveway|Nothing detected since ${time('2026-10-08T18:10:00')}`);
   });
 
+  it('says presence for presence sensors, and no presence while idle', () => {
+    const still = widget([office(true)]);
+    expect(still.cell('office').dataset.level).toBe('active');
+    still.cell('office').click();
+    expect(still.panelText()).toBe(`Office|Presence since ${time('2026-10-08T18:20:00')}`);
+    document.body.innerHTML = '';
+    const moving = widget([office(true, true)]);
+    moving.cell('office').click();
+    expect(moving.panelText()).toBe(`Office|Motion, Presence since ${time('2026-10-08T18:20:00')}`);
+    document.body.innerHTML = '';
+    const empty = widget([office()]);
+    expect(empty.cell('office').dataset.level).toBe('idle');
+    empty.cell('office').click();
+    expect(empty.panelText()).toBe(`Office|No presence since ${time('2026-10-08T18:20:00')}`);
+  });
+
   it('says closed, and a dash without a value', () => {
     const closed = widget([door(false)]);
     closed.cell('door').click();
@@ -165,6 +186,12 @@ describe('updates', () => {
     w.pushChange({ deviceId: 'door', capabilityId: 'alarm_smoke', value: true });
     w.pushChange({ deviceId: 'other', capabilityId: 'alarm_contact', value: false });
     expect(node.dataset.level).toBe('active');
+  });
+
+  it('lights a presence sensor on a realtime presence change', () => {
+    const { w, cell } = widget([office()]);
+    w.pushChange({ deviceId: 'office', capabilityId: 'alarm_presence', value: true, t: at('2026-10-08T18:39:00') });
+    expect(cell('office').dataset.level).toBe('active');
   });
 
   it('a persistent message replaces the dots, a transient one keeps them', () => {

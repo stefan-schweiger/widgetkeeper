@@ -117,7 +117,7 @@
     });
   }
 
-  /** As Sensor Dots: the time today, the weekday and time within 6 days, else the date. */
+  /** As Activity Dots: the time today, the weekday and time within 6 days, else the date. */
   function formatSince(ms, now, language, locale) {
     const at = new Date(ms);
     const time = at.toLocaleTimeString(locale || [], { hour: 'numeric', minute: '2-digit' });

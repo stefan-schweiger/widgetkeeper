@@ -7,7 +7,8 @@ type Homey = App['homey'];
 export default {
   /**
    * The Electricity Overview's hourly price slots (24 back, the current hour, 24 ahead; 36 with `hours=36`),
-   * without a meter: `{prices, fixedPrice, currency, language}`. `costs=0`: the bare spot prices.
+   * and in quarter-hour markets the same span in 15-minute slots (`quarters`, else null), without a meter:
+   * `{prices, quarters, fixedPrice, currency, language}`. `costs=0`: the bare spot prices.
    */
   async getPrice({ homey, query }: {
     homey: Homey,
@@ -15,13 +16,13 @@ export default {
   }) {
     const app = homey.app as WidgetkeeperApp;
     logPerf(app, 'Price badge', query);
-    const { prices, priceError, fixedPrice, currency, language } = await app.electricity.getSnapshot(null, {
+    const { prices, quarters, priceError, fixedPrice, currency, language } = await app.electricity.getSnapshot(null, {
       costs: query.costs !== '0',
       futureHours: query.hours === '36' ? 36 : 24,
     });
     // A failed read is an error (the widget keeps the last prices), not "set them up in Homey Energy".
-    const current = prices[24]; // the current hour
+    const current = prices[24]; // the current hour (a quarter-hour market's hourly average)
     if (priceError && current?.price == null) throw new Error(`Could not read the prices: ${priceError}`);
-    return { prices, fixedPrice, currency, language };
+    return { prices, quarters, fixedPrice, currency, language };
   },
 };

@@ -1,0 +1,58 @@
+{
+  "name": {
+    "en": "Spacer",
+    "nl": "Afstandhouder",
+    "de": "Abstandhalter",
+    "fr": "Espace",
+    "it": "Spaziatore",
+    "sv": "Mellanrum",
+    "no": "Mellomrom",
+    "es": "Espaciador",
+    "da": "Mellemrum",
+    "ru": "Отступ",
+    "pl": "Odstęp",
+    "ko": "여백",
+    "ar": "مسافة فارغة"
+  },
+  "height": 32,
+  "transparent": true,
+  "settings": [
+    {
+      "id": "height",
+      "type": "number",
+      "title": {
+        "en": "Height (pixels)",
+        "nl": "Hoogte (pixels)",
+        "de": "Höhe (Pixel)",
+        "fr": "Hauteur (pixels)",
+        "it": "Altezza (pixel)",
+        "sv": "Höjd (pixlar)",
+        "no": "Høyde (piksler)",
+        "es": "Altura (píxeles)",
+        "da": "Højde (pixels)",
+        "ru": "Высота (пиксели)",
+        "pl": "Wysokość (piksele)",
+        "ko": "높이 (픽셀)",
+        "ar": "الارتفاع (بكسل)"
+      },
+      "hint": {
+        "en": "Empty space, to line up widgets across columns. Homey keeps its usual gap above and below it.",
+        "nl": "Lege ruimte, om widgets in verschillende kolommen gelijk te zetten. Homey houdt de gewone ruimte erboven en eronder.",
+        "de": "Leerer Platz, um Widgets über Spalten hinweg auszurichten. Homey lässt darüber und darunter den üblichen Abstand.",
+        "fr": "Un espace vide, pour aligner les widgets d'une colonne à l'autre. Homey garde son écart habituel au-dessus et en dessous.",
+        "it": "Spazio vuoto, per allineare i widget tra le colonne. Homey mantiene il solito spazio sopra e sotto.",
+        "sv": "Tomt utrymme för att linjera widgetar mellan kolumner. Homey behåller sitt vanliga mellanrum över och under.",
+        "no": "Tomt rom for å linje opp widgeter på tvers av kolonner. Homey beholder det vanlige mellomrommet over og under.",
+        "es": "Espacio vacío para alinear widgets entre columnas. Homey mantiene su separación habitual arriba y abajo.",
+        "da": "Tom plads til at flugte widgets på tværs af kolonner. Homey beholder sit sædvanlige mellemrum over og under.",
+        "ru": "Пустое место, чтобы выровнять виджеты в разных колонках. Homey сохраняет обычный отступ сверху и снизу.",
+        "pl": "Pusta przestrzeń do wyrównania widżetów w różnych kolumnach. Homey zachowuje zwykły odstęp nad i pod nią.",
+        "ko": "여러 열의 위젯을 맞추기 위한 빈 공간입니다. Homey는 위아래에 평소 간격을 유지합니다.",
+        "ar": "مساحة فارغة لمحاذاة الأدوات بين الأعمدة. يحتفظ Homey بالفراغ المعتاد فوقها وتحتها."
+      },
+      "value": 32,
+      "min": 0,
+      "max": 800
+    }
+  ]
+}

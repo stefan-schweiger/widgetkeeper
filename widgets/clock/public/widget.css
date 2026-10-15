@@ -1,7 +1,7 @@
 /*
  * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
  * The fallbacks are the dark-theme values, used outside Homey (dev/clock-preview.html).
- * The tile copies the Price Badge's (widgets/price/public/widget.css), which copies Device Values'.
+ * The tile copies the Energy Price Strip's (widgets/price/public/widget.css), which copies Device Values'.
  */
 .ck {
   --ck-tile: var(--homey-background-color, #FFFFFF);

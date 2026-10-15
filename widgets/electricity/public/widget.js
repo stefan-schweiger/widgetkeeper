@@ -1,33 +1,26 @@
 /*
- * Electricity Overview widget renderer: live power, hourly price with usage trace, lowest price.
+ * Electricity Overview widget renderer: live power, hourly (or 15-minute) price with usage trace, lowest price.
  * Plain browser JS (widget public files are served as-is). See the design spec for every
- * measurement used below.
+ * measurement used below. The drawing itself is chart.js (`window.WidgetkeeperChart`), shared with Charts.
  */
 (function () {
   'use strict';
 
-  const MIN = 60e3;
-  const HOUR = 60 * MIN;
+  const C = window.WidgetkeeperChart; // chart.js, loaded first
+  const { MIN, HOUR, L, X_LABEL_GAP, X_LABEL_H, LABEL_PAD, LABEL_MIN_GAP, el, clear, show, f1, niceStep, smoothValues, p985, p015 } = C;
   const NOW_SLOT = 24; // index of the current hour in the price slots
   const CHART_SLOTS = NOW_SLOT + 13; // the charts show 24 h back and 12 h ahead
-  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const QUARTER = 15 * MIN; // 15-minute prices (`quarters`), in quarter-hour markets
 
-  const L = 38; // left gutter
   // Chip row → top grid line, and the plot heights, per `layout`. Compact: a tighter chip row and
   // flatter plots (with smaller gaps and header in widget.css), about 350 px against 483.
   const DIMS = {
     standard: { CHIP_H: 38, LIVE_H: 83, PRICE_H: 122, USAGE_H: 100 },
     compact: { CHIP_H: 32, LIVE_H: 48, PRICE_H: 72, USAGE_H: 56 },
   };
-  const X_LABEL_GAP = 5;
-  const X_LABEL_H = 14;
   const R_USAGE = 34; // right gutter when the usage scale sits on the price chart
-  const LABEL_PAD = 8; // y label ↔ axis
-  const LABEL_MIN_GAP = 16; // min vertical distance between y labels
   const LIVE_POINTS = 120; // live chart resolution, whatever the window
-  const SMOOTH_PASSES = 6; // `smooth` setting: averaging passes over the live and usage traces
-  const STEP_RADIUS = 5; // `smooth` setting: corner radius on the price steps
-  const LIVE_KEEP =62 * MIN; // raw readings kept client-side (longest window + margin)
+  const LIVE_KEEP = 62 * MIN; // raw readings kept client-side (longest window + margin)
 
   const DEFAULT_STRINGS = {
     usingNow: 'Using now',
@@ -47,13 +40,6 @@
     error: 'Could not load data.',
   };
 
-  function niceStep(raw) {
-    if (!(raw > 0)) return 1;
-    const p = Math.pow(10, Math.floor(Math.log10(raw)));
-    const f = raw / p;
-    return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
-  }
-
   function currencyUnits(code) {
     switch ((code || '').toUpperCase()) {
       case '':
@@ -63,84 +49,6 @@
       case 'EUR': return { value: '€', chip: '€' };
       default: return { value: code, chip: code };
     }
-  }
-
-  function el(tag, attrs, parent) {
-    const node = tag.startsWith('svg:') ? document.createElementNS(SVG_NS, tag.slice(4)) : document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
-  }
-
-  function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
-  function show(node, on) { node.style.display = on ? '' : 'none'; }
-  function f1(n) { return Math.round(n * 10) / 10; }
-
-  /** Smoothed values for the `smooth` setting: six [1 2 1]/4 passes; the ends stay put. */
-  function smoothValues(vs) {
-    let q = vs;
-    for (let k = 0; k < SMOOTH_PASSES; k++) {
-      q = q.map((v, i) => i === 0 || i === q.length - 1 ? v : (q[i - 1] + 2 * v + q[i + 1]) / 4);
-    }
-    return q;
-  }
-
-  /**
-   * Path segments (after the M) through `pts` ([x, y] with rising x): a monotone cubic
-   * (Fritsch–Carlson, like d3's curveMonotoneX), which never overshoots between points.
-   */
-  function monotonePath(pts) {
-    const n = pts.length;
-    if (n < 3) return pts.slice(1).map(([x, y]) => `L${f1(x)} ${f1(y)}`).join('');
-    const s = [], m = [];
-    for (let i = 0; i < n - 1; i++) s.push((pts[i + 1][1] - pts[i][1]) / ((pts[i + 1][0] - pts[i][0]) || 1e-9));
-    m[0] = s[0];
-    m[n - 1] = s[n - 2];
-    for (let i = 1; i < n - 1; i++) {
-      if (s[i - 1] * s[i] <= 0) { m[i] = 0; continue; }
-      const h0 = pts[i][0] - pts[i - 1][0], h1 = pts[i + 1][0] - pts[i][0];
-      const w0 = (h0 + 2 * h1) / (3 * (h0 + h1));
-      m[i] = 1 / (w0 / s[i - 1] + (1 - w0) / s[i]);
-    }
-    let d = '';
-    for (let i = 0; i < n - 1; i++) {
-      const [x0, y0] = pts[i], [x1, y1] = pts[i + 1], h = (x1 - x0) / 3;
-      d += `C${f1(x0 + h)} ${f1(y0 + m[i] * h)} ${f1(x1 - h)} ${f1(y1 - m[i + 1] * h)} ${f1(x1)} ${f1(y1)}`;
-    }
-    return d;
-  }
-
-  /** Path segments (after the M) through the corners of a step line, rounded with radius `r`. */
-  function roundedPath(pts, r) {
-    let d = '';
-    for (let i = 1; i < pts.length; i++) {
-      const [x, y] = pts[i];
-      if (i === pts.length - 1) { d += `L${f1(x)} ${f1(y)}`; break; }
-      const [ax, ay] = pts[i - 1], [bx, by] = pts[i + 1];
-      const d0 = Math.hypot(x - ax, y - ay), d1 = Math.hypot(bx - x, by - y);
-      const rr = Math.min(r, d0 / 2, d1 / 2);
-      d += `L${f1(x - (x - ax) / d0 * rr)} ${f1(y - (y - ay) / d0 * rr)}`
-        + `Q${f1(x)} ${f1(y)} ${f1(x + (bx - x) / d1 * rr)} ${f1(y + (by - y) / d1 * rr)}`;
-    }
-    return d;
-  }
-
-  /** 98.5th percentile, used to size usage scales so single spikes don't flatten the trace. */
-  function p985(values) {
-    const v = [...values].sort((a, b) => a - b);
-    return v.length ? v[Math.min(v.length - 1, Math.floor(v.length * 0.985))] : 1;
-  }
-
-  /** 1.5th percentile, or 0 when that's not negative: how far a usage scale reaches below zero (solar export). */
-  function p015(values) {
-    const v = [...values].sort((a, b) => a - b);
-    return v.length ? Math.min(0, v[Math.floor(v.length * 0.015)]) : 0;
   }
 
   /**
@@ -191,17 +99,14 @@
       return nfCache[key].format(v);
     };
     // Negative power (solar export) gets a real minus sign: −1,5k.
-    const kW = v => (v < 0 ? '−' + kW(-v)
-      : v >= 1000 ? nf(v / 1000, v % 1000 ? 1 : 0) + 'k' : nf(Math.round(v)));
+    const kW = v => C.compactNumber(nf, v);
     const watts = v => (v < 0 ? '−' + nf(-v) : nf(v));
     const pad2 = n => String(n).padStart(2, '0');
     const hhmm = ms => { const d = new Date(ms); return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); };
     const hhmmss = ms => hhmm(ms) + ':' + pad2(new Date(ms).getSeconds());
     const hour = ms => new Date(ms).getHours() + ':00';
     /** Relative live-axis label: 1h, 30m, 2,5m, 30s. */
-    const ago = ms => (ms >= HOUR && ms % HOUR === 0 ? `${ms / HOUR}h`
-      : ms >= MIN ? `${nf(ms / MIN, ms % MIN ? 1 : 0)}m`
-        : `${Math.round(ms / 1000)}s`);
+    const ago = ms => C.ago(ms, nf);
     const weekday = (ms, lang) => new Intl.DateTimeFormat(lang || 'en', { weekday: 'short' }).format(new Date(ms));
 
     const layout = opts.layout === 'compact' ? 'compact' : 'standard'; // missing on widgets placed before the setting
@@ -218,8 +123,8 @@
       fineIdx: null, // usage/price scrub: 5-min index from the first slot
     };
 
-    let gradientCounter = 0;
-    const uid = 'ew' + Math.random().toString(36).slice(2, 7);
+    const kit = C.createKit();
+    const { text, gradient, dot, chip, prepareSvg } = kit;
 
     // Persistent skeleton. The SVG elements must survive re-renders: replacing the element under
     // a finger drops the touch pointer capture and ends the scrub.
@@ -266,13 +171,17 @@
       const pricesOn = state.settings.showPrices !== false && (d.fixedPrice != null || slots.some(s => s.price != null));
       const fixed = pricesOn && d.fixedPrice != null;
       const hasPrices = pricesOn && !fixed;
+      // Quarter-hour markets: the price parts use the 15-minute prices on the same hourly axis (4 steps per hour).
+      const allQuarters = hasPrices && Array.isArray(d.quarters) && d.quarters.length >= allSlots.length * 4 ? d.quarters : null;
+      const quarters = allQuarters && allQuarters.slice(0, CHART_SLOTS * 4);
+      const nowQ = NOW_SLOT * 4 + (slots[NOW_SLOT] ? Math.min(3, Math.max(0, Math.floor((now - slots[NOW_SLOT].start) / QUARTER))) : 0);
       const showUsage = state.settings.showUsage !== false && usageByIdx.size > 0;
       const separate = showUsage && (!hasPrices || state.settings.separateUsage === true);
       const usageOnPrice = showUsage && !separate; // trace + right scale on the price chart
       const pw = Math.max(40, w - L - (usageOnPrice ? R_USAGE : 4));
       const liveTime = windowMs < 10 * MIN ? hhmmss : hhmm;
       return {
-        d, w, now, windowMs, live, liveTime, slots, allSlots, firstSlot, usageByIdx,
+        d, w, now, windowMs, live, liveTime, slots, allSlots, firstSlot, usageByIdx, quarters, allQuarters, nowQ,
         showUsage, separate, usageOnPrice, pw, pricesOn, hasPrices, fixed,
       };
     }
@@ -326,13 +235,13 @@
         leftSub = hhmm(m.firstSlot + state.fineIdx * 5 * MIN);
       }
 
-      const selIdx = state.slotIdx == null ? NOW_SLOT : state.slotIdx;
-      const sel = m.slots[selIdx];
+      const { slot: sel, len } = selected(m);
       const price = m.fixed ? m.d.fixedPrice : sel ? sel.price : null;
+      const minutes = new Date().getMinutes();
       const priceSub = m.fixed ? t('fixedPrice')
         : state.slotIdx == null || !sel
-          ? t('minutesRemaining', { minutes: 60 - new Date().getMinutes() })
-          : `${weekday(sel.start, m.d.language)} ${hhmm(sel.start)}–${hhmm(sel.start + HOUR)}`;
+          ? t('minutesRemaining', { minutes: m.quarters ? 15 - minutes % 15 : 60 - minutes })
+          : `${weekday(sel.start, m.d.language)} ${hhmm(sel.start)}–${hhmm(sel.start + len)}`;
 
       clear(header);
       header.classList.toggle('one', !m.pricesOn);
@@ -350,76 +259,9 @@
       el('div', { class: 'ew-hsub', dir: 'auto', text: priceSub }, rc);
     }
 
-    function chip(parent, kind, label, unit) {
-      const c = el('span', { class: `ew-chip ${kind}` }, parent);
-      el('i', null, c);
-      const s = el('span', { text: label }, c);
-      el('span', { class: 'unit', text: ` – ${unit}` }, s);
-    }
-
-    function text(svg, x, y, label, anchor, baseline) {
-      return el('svg:text', { x: f1(x), y: f1(y), 'text-anchor': anchor, 'dominant-baseline': baseline, text: label }, svg);
-    }
-
-    function gradient(svg, cls, stops, attrs) {
-      const id = `${uid}g${++gradientCounter}`;
-      const defs = el('svg:defs', null, svg);
-      const g = el('svg:linearGradient', { id, x1: 0, y1: 0, x2: 0, y2: 1, ...attrs }, defs);
-      for (const [offset, opacity] of stops) el('svg:stop', { class: cls, offset, 'stop-opacity': opacity }, g);
-      return `url(#${id})`;
-    }
-
-    function dot(svg, x, y, kind, small) {
-      el('svg:circle', { class: `dot-ring ${kind}`, cx: f1(x), cy: f1(y), r: small ? 6.5 : 7 }, svg);
-      el('svg:circle', { class: `dot-core ${kind}`, cx: f1(x), cy: f1(y), r: small ? 3.5 : 4 }, svg);
-    }
-
-    /**
-     * Draws `draw(clip, exp)` twice when a power scale reaches below zero: clipped above `zeroY`
-     * as usual, and below it with the `export` look (solar export is yellow). Otherwise once, unclipped.
-     */
-    function exportSplit(svg, zeroY, base, draw) {
-      if (!(zeroY < base)) { draw(null, false); return; }
-      const defs = el('svg:defs', null, svg);
-      const clip = (y, h) => {
-        const id = `${uid}c${++gradientCounter}`;
-        el('svg:rect', { x: -1000, y: f1(y), width: 1e4, height: f1(h) }, el('svg:clipPath', { id }, defs));
-        return `url(#${id})`;
-      };
-      draw(clip(-1000, zeroY + 1000), false);
-      draw(clip(zeroY, 1000), true);
-    }
-
-    function prepareSvg(svg, w, h) {
-      clear(svg);
-      svg.setAttribute('width', w);
-      svg.setAttribute('height', h);
-      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-    }
-
-    /**
-     * Left W scale for a plot of height `h` starting at `top`: grid, thinned labels, axis.
-     * A negative `min` (solar export) extends it below zero in whole steps, like negative prices,
-     * with a zero line; `zeroY` is that line's y (the plot's base when nothing is negative).
-     */
+    /** The W scale: from zero, extended below it in whole steps when there's export. */
     function wattScale(svg, max, h, top, pw, rightExt, min = 0) {
-      const step = niceStep((max - min) / 3);
-      const kPos = Math.ceil(max / step - 1e-9), kNeg = Math.ceil(-min / step - 1e-9), k = kPos + kNeg;
-      const axisMax = step * kPos, axisMin = -step * kNeg;
-      const y = kNeg
-        ? v => Math.min(top + h + 2, top + h * (1 - (v - axisMin) / (axisMax - axisMin)))
-        : v => top + h * (1 - Math.max(0, v) / axisMax);
-      let grid = '';
-      const every = Math.max(1, Math.ceil(LABEL_MIN_GAP / (h / k)));
-      for (let j = 0; j <= k; j++) {
-        const v = axisMin + step * j;
-        if (j > 0) grid += `M${L - 6} ${f1(y(v))}H${L + pw + rightExt}`;
-        if ((kNeg ? j - kNeg : k - j) % every === 0) text(svg, L - LABEL_PAD, y(v), kW(v), 'end', 'central');
-      }
-      el('svg:path', { class: 'grid', d: grid }, svg);
-      const zeroY = y(0);
-      if (kNeg) el('svg:path', { class: 'axis', d: `M${L - 6} ${f1(zeroY)}H${L + pw + rightExt}` }, svg);
-      return { y, axisMax, zeroY };
+      return kit.valueScale(svg, { max, min, h, top, pw, rightExt, format: kW });
     }
 
     function renderLive(chart, m) {
@@ -438,23 +280,14 @@
       const fill = gradient(svg, 'live-stop', [[0, 0.45], [1, 0]]);
       const { y, zeroY } = wattScale(svg, Math.max(1, ...live.map(p => p.w)), LIVE_H, top, pw, 0,
         Math.min(0, ...live.map(p => p.w)));
-      el('svg:path', { class: 'axis', d: `M${L} ${top - 6}V${base}H${L + pw}M${L - 6} ${base}H${L}` }, svg);
+      kit.axis(svg, top, base, pw);
 
       // With `smooth`, the line (and the dot) follow the smoothed values; the header keeps the real ones.
       const ws = state.settings.smooth ? smoothValues(live.map(p => p.w)) : live.map(p => p.w);
       const pts = ws.map((w, i) => [xs[i], y(w)]);
-      const line = `M${f1(pts[0][0])} ${f1(pts[0][1])}` + (state.settings.smooth
-        ? monotonePath(pts) : pts.slice(1).map(([x, yy]) => `L${f1(x)} ${f1(yy)}`).join(''));
+      const line = C.linePath(pts, state.settings.smooth);
       const area = `${line}L${f1(xs[xs.length - 1])} ${f1(zeroY)}L${f1(xs[0])} ${f1(zeroY)}Z`;
-      exportSplit(svg, zeroY, base, (clip, exp) => {
-        // Split: each side fades towards the zero line.
-        const f = !clip ? fill : gradient(svg, exp ? 'live-stop export' : 'live-stop', [[0, exp ? 0 : 0.45], [1, exp ? 0.45 : 0]],
-          { gradientUnits: 'userSpaceOnUse', x1: 0, x2: 0, y1: f1(exp ? zeroY : top), y2: f1(exp ? base : zeroY) });
-        el('svg:path', { d: area, fill: f, 'clip-path': clip }, svg);
-      });
-      exportSplit(svg, zeroY, base, (clip, exp) => {
-        el('svg:path', { class: `live-line${exp ? ' export' : ''}`, d: line, 'clip-path': clip }, svg);
-      });
+      kit.trace(svg, { line, area, fill, kind: 'live', lineClass: 'live-line', stops: [0.45, 0], zeroY, top, base });
 
       const idx = state.liveIdx == null ? live.length - 1 : Math.min(state.liveIdx, live.length - 1);
       if (state.liveIdx != null) el('svg:path', { class: 'cursor', d: `M${f1(xs[idx])} ${top}V${base}` }, svg);
@@ -468,18 +301,31 @@
 
     /** Vertical lines at midnight (day boundaries) on a slot chart. */
     function midnightLines(svg, slots, sw, top, base) {
-      let d = '';
-      slots.forEach((s, i) => {
-        if (i > 0 && new Date(s.start).getHours() === 0) d += `M${f1(L + i * sw)} ${top - 6}V${base}`;
-      });
-      if (d) el('svg:path', { class: 'midnight', d }, svg);
+      const xs = [];
+      slots.forEach((s, i) => { if (i > 0 && new Date(s.start).getHours() === 0) xs.push(L + i * sw); });
+      kit.midnightLines(svg, xs, top, base);
     }
 
-    /** Band marking the selected (or current) hour on a slot chart. */
-    function slotBand(svg, sw, top, h) {
-      const selIdx = state.slotIdx == null ? NOW_SLOT : state.slotIdx;
-      el('svg:rect', { class: 'band', x: f1(L + selIdx * sw), y: top - 6, width: f1(sw), height: h + 6 }, svg);
-      return selIdx;
+    /**
+     * The selected (or current) price slot: an hour, or with 15-minute prices the quarter under the finger
+     * (`fineIdx` is in 5-minute steps, 3 to a quarter). `idx` indexes `steps` (`m.quarters` or `m.slots`),
+     * `per` is the steps per hour, `len` a step's length.
+     */
+    function selected(m) {
+      if (!m.quarters) {
+        const idx = state.slotIdx == null ? NOW_SLOT : state.slotIdx;
+        return { idx, slot: m.slots[idx], steps: m.slots, per: 1, len: HOUR };
+      }
+      const idx = state.slotIdx == null ? m.nowQ
+        : Math.min(state.slotIdx * 4 + 3, Math.max(state.slotIdx * 4, Math.floor((state.fineIdx || 0) / 3)));
+      return { idx, slot: m.quarters[idx], steps: m.quarters, per: 4, len: QUARTER };
+    }
+
+    /** Band marking the selected (or current) hour, or quarter, on a slot chart. */
+    function slotBand(svg, m, sw, top, h) {
+      const sel = selected(m);
+      el('svg:rect', { class: 'band', x: f1(L + sel.idx * sw / sel.per), y: top - 6, width: f1(sw / sel.per), height: h + 6 }, svg);
+      return sel;
     }
 
     /**
@@ -500,8 +346,7 @@
         const vs = smooth ? smoothValues(seg.map(e => e[1])) : seg.map(e => e[1]);
         const pts = seg.map(([j], i) => [fx(j), y(vs[i])]);
         seg.forEach(([j], i) => yAt.set(j, pts[i][1]));
-        const d = `M${f1(pts[0][0])} ${f1(pts[0][1])}` + (smooth
-          ? monotonePath(pts) : pts.slice(1).map(([x, yy]) => `L${f1(x)} ${f1(yy)}`).join(''));
+        const d = C.linePath(pts, smooth);
         line += d;
         area += `${d}V${f1(base)}H${f1(pts[0][0])}Z`;
       }
@@ -526,20 +371,12 @@
       const y = v => Math.max(top - 2, scale.y(v));
       const fx = j => L + (j + 0.5) / 12 * sw;
       midnightLines(svg, slots, sw, top, base);
-      slotBand(svg, sw, top, USAGE_H);
-      el('svg:path', { class: 'axis', d: `M${L} ${top - 6}V${base}H${L + pw}M${L - 6} ${base}H${L}` }, svg);
+      slotBand(svg, m, sw, top, USAGE_H);
+      kit.axis(svg, top, base, pw);
 
       const { zeroY } = scale;
       const { line, area, yAt } = usagePaths(m, fx, y, zeroY);
-      exportSplit(svg, zeroY, base, (clip, exp) => {
-        const f = !clip ? gradient(svg, 'usage-stop', [[0, 0.22], [1, 0.02]])
-          : gradient(svg, exp ? 'usage-stop export' : 'usage-stop', [[0, exp ? 0.02 : 0.22], [1, exp ? 0.22 : 0.02]],
-            { gradientUnits: 'userSpaceOnUse', x1: 0, x2: 0, y1: f1(exp ? zeroY : top), y2: f1(exp ? base : zeroY) });
-        el('svg:path', { d: area, fill: f, 'clip-path': clip }, svg);
-      });
-      exportSplit(svg, zeroY, base, (clip, exp) => {
-        el('svg:path', { class: `usage-line solo${exp ? ' export' : ''}`, d: line, 'clip-path': clip }, svg);
-      });
+      kit.trace(svg, { line, area, kind: 'usage', lineClass: 'usage-line solo', stops: [0.22, 0.02], zeroY, top, base });
 
       // Marker at the scrubbed 5 min, else at the latest reading, like the live and price dots.
       const idx = state.fineIdx != null && m.usageByIdx.has(state.fineIdx)
@@ -564,7 +401,8 @@
       geom.slots = { sw, n };
 
       // Price scale. Negative prices extend the scale below zero in whole steps.
-      const known = slots.map(s => s.price).filter(p => p != null);
+      const steps = m.quarters || slots, per = m.quarters ? 4 : 1, ssw = sw / per; // price steps: hours or quarters
+      const known = steps.map(s => s.price).filter(p => p != null);
       const maxP = Math.max(0.01, ...known), minP = Math.min(0, ...known);
       const pst = niceStep((maxP - minP) / 3);
       let kPos = Math.ceil(maxP / pst - 1e-9), kNeg = Math.ceil(-minP / pst - 1e-9);
@@ -611,7 +449,7 @@
       midnightLines(svg, slots, sw, top, base);
 
       // 2. Hover / current-hour band
-      const selIdx = slotBand(svg, sw, top, PRICE_H);
+      const sel = slotBand(svg, m, sw, top, PRICE_H);
 
       // 3. Axes
       let axis = `M${L} ${top - 6}V${base}H${L + pw}`;
@@ -622,26 +460,23 @@
       // 4. Usage trace
       const usage = showUsage ? usagePaths(m, fx, uy, base) : null;
       if (usage) {
-        exportSplit(svg, uZero, base, (clip, exp) => {
-          el('svg:path', { class: `usage-line${exp ? ' export' : ''}`, d: usage.line, 'clip-path': clip }, svg);
-        });
+        kit.trace(svg, { line: usage.line, kind: 'usage', lineClass: 'usage-line', zeroY: uZero, top, base });
       }
 
       // 5–6. Price area + step line, broken where prices are missing. With `smooth`, the steps'
       // corners are rounded.
       let line = '', area = '', pts = null, lastKnown = -1;
-      for (let i = 0; i <= n; i++) {
-        const p = i < n ? slots[i].price : null;
+      for (let i = 0; i <= steps.length; i++) {
+        const p = i < steps.length ? steps[i].price : null;
         if (p != null) {
-          const yy = py(p), x0 = L + i * sw, x1 = L + (i + 1) * sw;
+          const yy = py(p), x0 = L + i * ssw, x1 = L + (i + 1) * ssw;
           if (!pts) pts = [[x0, yy]];
           else if (yy !== pts[pts.length - 1][1]) pts.push([x0, yy]);
           else pts.pop(); // same price: extend the previous step
           pts.push([x1, yy]);
           lastKnown = i;
         } else if (pts) {
-          const seg = `M${f1(pts[0][0])} ${f1(pts[0][1])}` + (state.settings.smooth
-            ? roundedPath(pts, STEP_RADIUS) : pts.slice(1).map(([x, yy]) => `L${f1(x)} ${f1(yy)}`).join(''));
+          const seg = C.stepPath(pts, state.settings.smooth);
           line += seg;
           area += `${seg}V${base}H${f1(pts[0][0])}Z`;
           pts = null;
@@ -650,8 +485,8 @@
       el('svg:path', { d: area, fill }, svg);
       el('svg:path', { class: 'price-line', d: line }, svg);
 
-      // 7. Future overlay, up to the last published hour
-      const fStart = L + (NOW_SLOT + 1) * sw, fEnd = L + (lastKnown + 1) * sw;
+      // 7. Future overlay, up to the last published hour (or quarter)
+      const fStart = L + ((m.quarters ? m.nowQ : NOW_SLOT) + 1) * ssw, fEnd = L + (lastKnown + 1) * ssw;
       if (fEnd > fStart) el('svg:rect', { class: 'future', x: f1(fStart), y: top - 6, width: f1(fEnd - fStart), height: PRICE_H + 6 }, svg);
 
       // 8. Usage scrub dot
@@ -661,8 +496,7 @@
       }
 
       // 9. Price dot
-      const sel = slots[selIdx];
-      if (sel && sel.price != null) dot(svg, L + selIdx * sw + sw / 2, py(sel.price), 'price');
+      if (sel.slot && sel.slot.price != null) dot(svg, L + sel.idx * ssw + ssw / 2, py(sel.slot.price), 'price');
 
       slotLabels(svg, slots, sw, pw, base);
     }
@@ -683,7 +517,7 @@
       for (const q of kept) text(svg, q.x, ly, q.label, q.anchor, 'hanging');
     }
 
-    /** The cheapest slot from `from` up to `hours` ahead (the first of equal ones), or -1. As the Price Badge. */
+    /** The cheapest slot from `from` up to `hours` ahead (the first of equal ones), or -1. As the Energy Price Strip. */
     function lowestSlot(slots, from, hours) {
       let low = -1;
       for (let i = from; i <= from + hours && i < slots.length; i++) {
@@ -698,9 +532,11 @@
      * when the 12h and 24h lowest are the same slot it's shown once, with the unit.
      */
     function renderFooter(footer, m, mode) {
-      const slots = m.allSlots;
+      // With 15-minute prices: the cheapest quarter, from the current one.
+      const per = m.allQuarters ? 4 : 1;
+      const slots = m.allQuarters || m.allSlots, from = m.allQuarters ? m.nowQ : NOW_SLOT;
       const lows = (mode === 'both' ? [12, 24] : [mode === '24' ? 24 : 12])
-        .map(h => lowestSlot(slots, NOW_SLOT, h)).filter((i, k, a) => i >= 0 && a.indexOf(i) === k);
+        .map(h => lowestSlot(slots, from, h * per)).filter((i, k, a) => i >= 0 && a.indexOf(i) === k);
       clear(footer);
       if (!lows.length) { show(footer, false); return; }
       const both = lows.length > 1;
@@ -710,7 +546,7 @@
       lows.forEach((low, k) => {
         const s = slots[low];
         if (k) el('span', { class: 'div', text: '/' }, r);
-        el('span', { class: 'when ew-num', text: low === NOW_SLOT ? t('now') : hhmm(s.start) }, r);
+        el('span', { class: 'when ew-num', text: low === from ? t('now') : hhmm(s.start) }, r);
         el('span', { class: 'sep', text: '•' }, r);
         el('span', { class: 'price ew-num', text: both ? nf(s.price, 2) : `${nf(s.price, 2)} ${cur.value}` }, r);
       });
@@ -718,7 +554,7 @@
 
     // ------------------------------------------------------------------ interaction
 
-    const pointerX = (e, svg) => e.clientX - svg.getBoundingClientRect().left;
+    const pointerX = C.pointerX;
 
     function scrubLive(e) {
       const g = geom.live;
@@ -745,32 +581,11 @@
       if (state.slotIdx != null || state.fineIdx != null) { state.slotIdx = null; state.fineIdx = null; render(); }
     };
 
-    // The usage and price charts share the 37-slot x axis, so they share scrub state.
-    // Mouse: scrub on hover, reset on leave. Touch: a tap or drag selects; the selection stays
-    // TOUCH_HOLD_MS after the finger lifts. That also makes taps work on Homey's Android app,
-    // whose dashboard takes over a drag (pointercancel) about 100 ms in, whatever the page does.
-    const TOUCH_HOLD_MS = 3000;
-    const liveHold = { timer: null }, slotsHold = { timer: null }; // usage + price share one
-    for (const [svg, scrub, reset, hold] of [
-      [ui.live.svg, e => scrubLive(e), resetLive, liveHold],
-      [ui.usage.svg, e => scrubSlots(e, ui.usage.svg), resetSlots, slotsHold],
-      [ui.price.svg, e => scrubSlots(e, ui.price.svg), resetSlots, slotsHold],
-    ]) {
-      svg.addEventListener('pointerdown', e => { clearTimeout(hold.timer); scrub(e); });
-      svg.addEventListener('pointermove', scrub);
-      svg.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') reset(); });
-      for (const ev of ['pointerup', 'pointercancel']) {
-        svg.addEventListener(ev, e => {
-          if (e.pointerType === 'mouse') return;
-          clearTimeout(hold.timer);
-          hold.timer = setTimeout(reset, TOUCH_HOLD_MS);
-        });
-      }
-      // Without this, Homey's dashboard scrolls and cancels the touch (iOS honours it; Android doesn't).
-      for (const ev of ['touchstart', 'touchmove']) {
-        svg.addEventListener(ev, e => { if (e.cancelable) e.preventDefault(); }, { passive: false });
-      }
-    }
+    // The usage and price charts share the 37-slot x axis, so they share scrub state (and the touch hold).
+    const liveHold = { timer: null }, slotsHold = { timer: null };
+    C.attachScrub(ui.live.svg, e => scrubLive(e), resetLive, liveHold);
+    C.attachScrub(ui.usage.svg, e => scrubSlots(e, ui.usage.svg), resetSlots, slotsHold);
+    C.attachScrub(ui.price.svg, e => scrubSlots(e, ui.price.svg), resetSlots, slotsHold);
 
     const ro = new ResizeObserver(entries => {
       const w = Math.round(entries[0].contentRect.width);

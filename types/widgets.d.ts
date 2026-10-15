@@ -9,6 +9,10 @@ interface Window {
   mountWebDashboards: (root: HTMLElement) => void;
   io: (url: string, opts?: object) => any;
   createElectricityWidget: (root: HTMLElement, opts?: object) => any;
+  /** The chart module shared by the Electricity Overview and Charts (widgets/electricity/public/chart.js). */
+  WidgetkeeperChart: any;
+  createChartsWidget: (root: HTMLElement, opts?: object) => any;
+  chartBuckets: (points: [number, number][], from: number, to: number, bucketMs: number) => { t: number, v: number | null }[];
   createThermostatWidget: (root: HTMLElement, opts?: object) => any;
   createQuickActionsWidget: (root: HTMLElement, opts?: object) => any;
   createSensorAlarmsWidget: (root: HTMLElement, opts?: object) => any;
@@ -36,6 +40,13 @@ interface Window {
   curtainAction: (c: object, rule?: string) => 'open' | 'close' | 'stop' | null;
   createMediaWidget: (root: HTMLElement, opts?: object) => any;
   createClockWidget: (root: HTMLElement, opts?: object) => any;
+  createTextLineWidget: (root: HTMLElement, opts?: object) => any;
+  textLineBoardKey: (name: unknown) => string;
+  textLineContent: (state: object, t: (key: string) => string) => { text: string, muted: boolean };
+  textLineTilt: (seed: unknown) => number;
+  TEXTLINE_ICON_PATHS: Record<string, { d: string, fill?: boolean }>;
+  createSpacerWidget: (root: HTMLElement, opts?: { height?: unknown }) => { height: number };
+  spacerHeight: (value: unknown) => number;
   mediaSource: (caps: object) => 'tv' | 'lineIn' | null;
   mediaButtonsFromSettings: (settings: object) => { id: string, name: string, icon: string | null }[];
   MEDIA_BUTTON_ICON_PATHS: Record<string, { d: string, fill?: boolean }>;
@@ -52,11 +63,14 @@ interface Window {
   mountLocksWidget: MountWidget;
   mountMediaWidget: MountWidget;
   mountClockWidget: MountWidget;
+  mountTextLineWidget: MountWidget;
+  mountSpacerWidget: MountWidget;
   mountPriceWidget: MountWidget;
   mountQuickActionsWidget: MountWidget;
   mountSensorAlarmsWidget: MountWidget;
   mountSensorDotsWidget: MountWidget;
   mountSparklinesWidget: MountWidget;
+  mountChartsWidget: MountWidget;
   mountThermostatWidget: MountWidget;
   mountTimersWidget: MountWidget;
   mountValuesWidget: MountWidget;

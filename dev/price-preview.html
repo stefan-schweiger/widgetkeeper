@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Price badge widget preview</title>
+  <title>Energy Price Strip widget preview</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../widgets/price/public/widget.css">
   <script src="../widgets/price/public/widget.js"></script>
@@ -30,6 +30,11 @@
   <div class="col"><span>300 px · light · EUR</span><div class="dash light" style="width:324px"><div id="w11"></div></div></div>
   <div class="col"><span>358 px · dark · 36 h at 09:00 (tomorrow not out)</span><div class="dash homey-dark-mode" style="width:358px"><div id="w12"></div></div></div>
   <div class="col"><span>300 px · dark · 36 h</span><div class="dash homey-dark-mode" style="width:300px"><div id="w13"></div></div></div>
+
+  <div class="col"><span>358 px · dark · 15-minute prices, EUR</span><div class="dash homey-dark-mode" style="width:358px"><div id="q1"></div></div></div>
+  <div class="col"><span>358 px · light · 15 min, 24 h</span><div class="dash light" style="width:358px"><div id="q2"></div></div></div>
+  <div class="col"><span>358 px · dark · 15 min, 36 h, tomorrow out</span><div class="dash homey-dark-mode" style="width:358px"><div id="q3"></div></div></div>
+  <div class="col"><span>300 px · dark · 15 min, 36 h at 09:00 (tomorrow not out)</span><div class="dash homey-dark-mode" style="width:300px"><div id="q4"></div></div></div>
 
   <script>
     // A made-up Danish spot-price day: cheap at night, peaks at 8 and 18.
@@ -64,6 +69,25 @@
     // Tomorrow's prices come out around 13:00: at 09:00 only today's are known.
     mount('w12', 9, { hours: '36' }, s => { const end = new Date(s.prices[24].start); end.setHours(24, 0, 0, 0); s.prices.forEach(p => { if (p.start >= end.getTime()) p.price = null; }); });
     mount('w13', 18, { hours: '36' }, s => { const end = new Date(s.prices[24].start); end.setHours(48, 0, 0, 0); s.prices.forEach(p => { if (p.start >= end.getTime()) p.price = null; }); });
+
+    // A quarter-hour market (in euros): each hour's quarters ramp towards the next hour, with some noise.
+    function quarters(s, until) {
+      let seed = 7;
+      const noise = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647 - 0.5; };
+      s.currency = 'EUR';
+      s.prices.forEach(p => { p.price = Math.round(p.price * 13.4) / 100; });
+      s.quarters = s.prices.flatMap((p, i) => [0, 1, 2, 3].map(k => {
+        const start = p.start + k * 9e5;
+        const next = s.prices[i + 1] ? s.prices[i + 1].price : p.price;
+        const price = until && start >= until ? null : Math.round((p.price + (next - p.price) * (k - 1.5) / 4 + noise() * 0.04) * 1000) / 1000;
+        return { start, price };
+      }));
+    }
+    const midnight = (s, h) => { const d = new Date(s.prices[24].start); d.setHours(h, 0, 0, 0); return d.getTime(); };
+    mount('q1', 18, {}, s => quarters(s));
+    mount('q2', 18, { hours: '24' }, s => quarters(s));
+    mount('q3', 18, { hours: '36' }, s => quarters(s, midnight(s, 48)));
+    mount('q4', 9, { hours: '36' }, s => quarters(s, midnight(s, 24)));
   </script>
 </body>
 </html>

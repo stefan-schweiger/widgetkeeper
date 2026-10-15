@@ -51,6 +51,8 @@
     "closed": "Chiuso",
     "motion": "Movimento",
     "noMotion": "Nessun movimento",
+    "presence": "Presenza",
+    "noPresence": "Nessuna presenza",
     "nothingDetected": "Nulla rilevato",
     "since": "da __time__"
   },
@@ -135,6 +137,13 @@
     "selectSlots": "Scegli i valori nelle impostazioni del widget.",
     "error": "Impossibile caricare i valori.",
     "unavailable": "Non disponibile"
+  },
+  "charts": {
+    "now": "Ora",
+    "selectChart": "Scegli un valore del dispositivo nelle impostazioni del widget.",
+    "error": "Impossibile caricare il grafico.",
+    "unavailable": "Non disponibile",
+    "noHistory": "Ancora nessuna cronologia."
   },
   "lights": {
     "selectDevices": "Scegli le luci nelle impostazioni del widget.",
@@ -317,6 +326,15 @@
     "keyInvalid": "La chiave API non è stata accettata.",
     "speakerAction": "Azione dell’altoparlante"
   },
+  "textline": {
+    "noMessage": "Nessun messaggio",
+    "typeNote": "Scrivi la tua nota nelle impostazioni del widget.",
+    "variableMissing": "Variabile non trovata",
+    "selectVariable": "Scegli una variabile di testo nelle impostazioni del widget.",
+    "error": "Impossibile caricare il testo.",
+    "boardInUse": "Ha un testo",
+    "boardNew": "Nuova nota"
+  },
   "stack": {
     "selectDashboard": "Scegli una dashboard nelle impostazioni del widget.",
     "noKey": "Per leggere la dashboard, aggiungi una chiave API nelle impostazioni dell'app.",
@@ -423,6 +441,7 @@
       "values": "Qualsiasi valore di un dispositivo come tessera compatta.",
       "lights": "Tessere delle luci con luminosità e colore a portata di mano.",
       "sparklines": "Valori con un piccolo grafico del loro andamento recente.",
+      "charts": "Uno o due grafici di qualsiasi valore, come quelli dell'elettricità.",
       "variables": "Variabili dei Flow come righe da attivare o modificare.",
       "flows": "Avvia i Flow con un tocco, nei tuoi colori e icone.",
       "price": "Il prezzo dell'elettricità ora e nelle prossime ore.",
@@ -431,6 +450,8 @@
       "curtains": "Apri, chiudi o regola tende e tapparelle.",
       "media": "Musica, volume e sorgenti di un altoparlante in una scheda.",
       "clock": "L'ora e la data, con il meteo attuale se vuoi.",
+      "textline": "Una nota su un riquadro o un Post-it, scritta da te o dai tuoi Flow.",
+      "spacer": "Spazio vuoto per allineare i widget nelle colonne.",
       "stack": "Widget di un'altra dashboard, a turno."
     }
   }

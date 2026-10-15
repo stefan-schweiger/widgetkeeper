@@ -1,7 +1,7 @@
 // The widgets of dev/screenshots.html: the real widget code with the made-up home of showcase-data.js ("Solbakken",
 // the showcase dashboards' data, so no real home's names or readings end up in the README), mounted into the elements
-// with the ids w-elec, w-thermo, w-qa, w-sa, w-weather, w-heatmap, w-cameras, w-values, w-sparklines, w-variables,
-// w-flows, w-price, w-locks and w-clock. Most go through showcase-mount.js's MOUNT with a
+// with the ids w-elec, w-thermo, w-qa, w-sa, w-weather, w-heatmap, w-cameras, w-values, w-sparklines, w-charts, w-variables,
+// w-flows, w-price, w-locks, w-clock and w-textline(-note). Most go through showcase-mount.js's MOUNT with a
 // showcase entry (`findWidget()`); only the README's own changes are here. Needs the widget scripts,
 // temp/screenshot-icons.js, showcase-data.js and showcase-mount.js loaded first, and the showcase's fixed clock
 // (fixed-clock.js), so every render is the same.
@@ -21,6 +21,22 @@
   MOUNT.values(el('w-values'), findWidget('values', 1)); // security: batteries in red, yellow and green
 
   MOUNT.sparklines(el('w-sparklines'), { slots: findWidget('sparklines').slots });
+
+  // Charts isn't on a showcase dashboard: the README's two, from the sparklines' made-up 24 hours (outdoor, main meter).
+  const sparkSlot = (deviceId) => {
+    for (let n = 0; findWidget('sparklines', n); n++) {
+      const s = findWidget('sparklines', n).slots.find(x => x.deviceId === deviceId);
+      if (s) return s;
+    }
+    return null;
+  };
+  MOUNT.charts(el('w-charts'), {
+    opts: { charts: [{ span: '24h', color: 'purple', smooth: true }, { span: '24h', style: 'bars', color: 'orange' }] },
+    charts: [['g1', 'Temperature'], ['m1', 'Power']].map(([id, title]) => {
+      const s = sparkSlot(id);
+      return { ...s, capability: { ...s.capability, title } };
+    }),
+  });
 
   // Not on a showcase dashboard any more (Home's flags made way for Flow Buttons): the README's own four.
   MOUNT.variables(el('w-variables'), { vars: [
@@ -53,4 +69,9 @@
   MOUNT.weather(el('w-weather'), { hours: findWidget('weather').hours });
 
   MOUNT.clock(el('w-clock'), findWidget('clock'));
+
+  // Notes' two looks: a tile a Flow wrote on in blue, and the Kitchen's Post-it.
+  const board = (text, color = null) => ({ key: 'note', name: 'Note', text, color, updatedAt: SHOWCASE_NOW });
+  MOUNT.textline(el('w-textline'), { opts: { source: 'flow', icon: 'bell' }, board: board('The washing machine is done', 'blue') });
+  MOUNT.textline(el('w-textline-note'), findWidget('textline'));
 })();

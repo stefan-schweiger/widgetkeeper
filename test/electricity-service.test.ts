@@ -368,3 +368,54 @@ describe('usage', () => {
     expect(live[0]).toEqual({ t: NOW - 20 * MINUTE, w: 250 }); // the hour's history before the first reading
   });
 });
+
+describe('15-minute prices', () => {
+  const QUARTER = 15 * MINUTE;
+  /** Homey's response for a local day in a quarter-hour market: the hour / 10, plus 0.04 per quarter into it. */
+  function quarterDayPrices(date: string) {
+    const start = new Date(`${date}T00:00:00`).getTime();
+    const end = new Date(new Date(start + 26 * HOUR).toDateString()).getTime();
+    const pricesPerInterval = [];
+    for (let t = start; t < end; t += QUARTER) {
+      const d = new Date(t);
+      pricesPerInterval.push({ periodStart: d.toISOString(), periodEnd: new Date(t + QUARTER).toISOString(), value: d.getHours() / 10 + d.getMinutes() / 15 * 0.04 });
+    }
+    return { priceUnit: 'EUR', interval: 15, pricesPerInterval };
+  }
+
+  it('adds the quarters, with index 96 at the current hour, and keeps the hourly averages', async () => {
+    const { service } = setup({ prices: ({ date }) => quarterDayPrices(date) });
+    const { prices, quarters } = await service.getSnapshot(null);
+    expect(prices).toHaveLength(49);
+    expect(prices[24].price).toBeCloseTo(1.06); // 10:00–11:00: 1 + (0 + 0.04 + 0.08 + 0.12) / 4
+    expect(quarters).toHaveLength(196);
+    expect(quarters![96]).toEqual({ start: HOUR_START, price: 1 });
+    expect(quarters![97]).toEqual({ start: HOUR_START + QUARTER, price: 1.04 });
+    expect(quarters![0].start).toBe(HOUR_START - 24 * HOUR);
+    expect(quarters!.every(q => q.price != null)).toBe(true);
+    expect((await service.getSnapshot(null, { futureHours: 36 })).quarters).toHaveLength(244);
+    expect(await service.describe()).toMatchObject({ priceInterval: 15 });
+  });
+
+  it('puts the costs on each quarter', async () => {
+    const { service } = setup({ prices: ({ date }) => quarterDayPrices(date), priceCosts: { mathExpression: '{{([[price]]+0.5)*1.25}}' } });
+    const { quarters } = await service.getSnapshot(null);
+    expect(quarters![97].price).toBe(1.925); // (1.04 + 0.5) * 1.25
+    expect((await service.getSnapshot(null, { costs: false })).quarters![97].price).toBe(1.04);
+  });
+
+  it('repeats the hourly price for a day that has only hours', async () => {
+    const { service } = setup({ prices: ({ date }) => (date === '2026-01-16' ? dayPrices(date) : quarterDayPrices(date)) });
+    const { quarters } = await service.getSnapshot(null);
+    const tomorrow = quarters!.filter(q => q.start >= new Date('2026-01-16T03:00:00').getTime() && q.start < new Date('2026-01-16T04:00:00').getTime());
+    expect(tomorrow.map(q => q.price)).toEqual([0.3, 0.3, 0.3, 0.3]);
+  });
+
+  it('has no quarters in an hourly market or with a fixed price', async () => {
+    const hourly = setup();
+    expect((await hourly.service.getSnapshot(null)).quarters).toBeNull();
+    expect(await hourly.service.describe()).toMatchObject({ priceInterval: 60 });
+    const fixed = setup({ prices: ({ date }) => quarterDayPrices(date), priceType: 'fixed', fixedPrice: { value: { costs: { user_fixed_base: { value: 2 } } } } });
+    expect((await fixed.service.getSnapshot(null)).quarters).toBeNull();
+  });
+});

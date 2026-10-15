@@ -75,6 +75,7 @@ export type WebValueDevice = WebDevice & {
 const CAPABILITY_SLOTS: Record<string, { setting: RegExp, caps: (device: any) => string[] }> = {
   values: { setting: /^slot\d+$/, caps: valueCaps },
   sparklines: { setting: /^slot\d+$/, caps: sparkCaps },
+  charts: { setting: /^chart\d$/, caps: sparkCaps },
 };
 
 /** A device's icon for the page: the user-picked library icon, else the driver's (`lib/deviceIcon.ts` does the same). */
@@ -235,7 +236,7 @@ export default class WebDashboardService {
   }
 
   /**
-   * The device value picker of a widget's slots (Device Values, Sparklines): every device with a value the slots may
+   * The device value picker of a widget's slots (Device Values, Sparklines, Charts): every device with a value the slots may
    * show, by name, with its room, icon and those values (in the device's order) as they read now.
    */
   async valueDevices(type: string): Promise<WebValueDevice[]> {

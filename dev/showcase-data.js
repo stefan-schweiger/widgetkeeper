@@ -163,7 +163,7 @@
 
   const qa = (capabilityId, value) => ({ capabilityId, value, actionable: true, momentary: false, icon: null });
   const alarm = (capabilityId, value, title, state = false) => ({ capabilityId, title, value, state });
-  /** A motion, contact or camera detection for Sensor Dots, changed `min` minutes ago. */
+  /** A motion, contact or camera detection for Activity Dots, changed `min` minutes ago. */
   const sensor = (capabilityId, value, title, min) => ({ ...alarm(capabilityId, value, title, true), lastUpdated: NOW - min * MIN });
   const contactDot = (id, name, open, min) => ({ id, name, icon: null, alarms: [sensor('alarm_contact', open, 'Contact alarm', min)] });
   const motionDot = (id, name, on, min) => ({ id, name, icon: null, alarms: [sensor('alarm_motion', on, 'Motion alarm', min)] });
@@ -574,10 +574,8 @@
         ],
         [
           { type: 'lights', devices: [lights[2], lights[3], lights[0], lights[1]] },
-          { type: 'variables', opts: { columns: '1' }, vars: [
-            { id: 'kx1', name: 'Shopping list', type: 'string', value: 'Milk, eggs, rye bread' },
-            { id: 'kx2', name: 'Dishwasher emptied', type: 'boolean', value: false },
-          ] },
+          // The shopping list, typed on a Post-it.
+          { type: 'textline', opts: { style: 'postit', seed: 'kitchen', message: 'Milk, eggs, rye bread' } },
           { type: 'cameras', cameras: [cam('door', 'Hallway')] },
         ],
       ],

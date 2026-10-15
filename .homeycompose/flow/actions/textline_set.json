@@ -1,0 +1,118 @@
+{
+  "id": "textline_set",
+  "title": {
+    "en": "Write on a note",
+    "nl": "Op een notitie schrijven",
+    "de": "Auf eine Notiz schreiben",
+    "fr": "Écrire sur une note",
+    "it": "Scrivi su una nota",
+    "sv": "Skriv på en anteckning",
+    "no": "Skriv på et notat",
+    "es": "Escribir en una nota",
+    "da": "Skriv på en note",
+    "ru": "Написать в заметке",
+    "pl": "Napisz na notatce",
+    "ko": "메모에 쓰기",
+    "ar": "الكتابة على ملاحظة"
+  },
+  "titleFormatted": {
+    "en": "Write [[text]] on the note [[board]]",
+    "nl": "Schrijf [[text]] op de notitie [[board]]",
+    "de": "[[text]] auf die Notiz [[board]] schreiben",
+    "fr": "Écrire [[text]] sur la note [[board]]",
+    "it": "Scrivi [[text]] sulla nota [[board]]",
+    "sv": "Skriv [[text]] på anteckningen [[board]]",
+    "no": "Skriv [[text]] på notatet [[board]]",
+    "es": "Escribir [[text]] en la nota [[board]]",
+    "da": "Skriv [[text]] på noten [[board]]",
+    "ru": "Написать [[text]] в заметке [[board]]",
+    "pl": "Napisz [[text]] na notatce [[board]]",
+    "ko": "메모 [[board]]에 [[text]] 쓰기",
+    "ar": "اكتب [[text]] على الملاحظة [[board]]"
+  },
+  "hint": {
+    "en": "Every Notes widget with this note name shows it, on every screen. The name is the widget's Note name setting (Note by default).",
+    "nl": "Elke Notities-widget met deze notitienaam toont het, op elk scherm. De naam is de instelling Naam van de notitie (standaard Notitie).",
+    "de": "Jedes Notizen-Widget mit diesem Notiznamen zeigt ihn, auf jedem Bildschirm. Der Name ist die Einstellung Name der Notiz (standardmäßig Notiz).",
+    "fr": "Chaque widget Notes portant ce nom de note l'affiche, sur chaque écran. Le nom est le réglage Nom de la note du widget (Note par défaut).",
+    "it": "Ogni widget Note con questo nome di nota lo mostra, su ogni schermo. Il nome è l'impostazione Nome della nota (Nota per impostazione predefinita).",
+    "sv": "Alla Anteckningar-widgetar med det här namnet visar den, på alla skärmar. Namnet är inställningen Anteckningens namn (Anteckning som standard).",
+    "no": "Alle Notater-widgeter med dette navnet viser den, på alle skjermer. Navnet er innstillingen Notatets navn (Notat som standard).",
+    "es": "Cada widget Notas con este nombre de nota lo muestra, en cada pantalla. El nombre es el ajuste Nombre de la nota (Nota por defecto).",
+    "da": "Alle Noter-widgets med dette navn viser den, på alle skærme. Navnet er widgettens indstilling Notens navn (Note som standard).",
+    "ru": "Все виджеты «Заметки» с этим именем показывают его на всех экранах. Имя — настройка «Имя заметки» (по умолчанию «Заметка»).",
+    "pl": "Każdy widżet Notatki o tej nazwie pokazuje go na każdym ekranie. Nazwa to ustawienie Nazwa notatki (domyślnie Notatka).",
+    "ko": "이 이름의 모든 메모 위젯이 모든 화면에 표시합니다. 이름은 위젯의 메모 이름 설정입니다(기본값: 메모).",
+    "ar": "تعرضه كل أدوات الملاحظات بهذا الاسم في كل شاشة. الاسم هو إعداد اسم الملاحظة في الأداة (الملاحظة افتراضيًا)."
+  },
+  "args": [
+    {
+      "type": "autocomplete",
+      "name": "board",
+      "title": {
+        "en": "Note",
+        "nl": "Notitie",
+        "de": "Notiz",
+        "fr": "Note",
+        "it": "Nota",
+        "sv": "Anteckning",
+        "no": "Notat",
+        "es": "Nota",
+        "da": "Note",
+        "ru": "Заметка",
+        "pl": "Notatka",
+        "ko": "메모",
+        "ar": "الملاحظة"
+      },
+      "placeholder": {
+        "en": "Note",
+        "nl": "Notitie",
+        "de": "Notiz",
+        "fr": "Note",
+        "it": "Nota",
+        "sv": "Anteckning",
+        "no": "Notat",
+        "es": "Nota",
+        "da": "Note",
+        "ru": "Заметка",
+        "pl": "Notatka",
+        "ko": "메모",
+        "ar": "الملاحظة"
+      }
+    },
+    {
+      "type": "text",
+      "name": "text",
+      "title": {
+        "en": "Text",
+        "nl": "Tekst",
+        "de": "Text",
+        "fr": "Texte",
+        "it": "Testo",
+        "sv": "Text",
+        "no": "Tekst",
+        "es": "Texto",
+        "da": "Tekst",
+        "ru": "Текст",
+        "pl": "Tekst",
+        "ko": "텍스트",
+        "ar": "النص"
+      },
+      "placeholder": {
+        "en": "Dinner at 6",
+        "nl": "Eten om 6 uur",
+        "de": "Essen um 6",
+        "fr": "Dîner à 18 h",
+        "it": "Cena alle 6",
+        "sv": "Middag kl. 18",
+        "no": "Middag kl. 18",
+        "es": "Cena a las 6",
+        "da": "Aftensmad kl. 18",
+        "ru": "Ужин в 6",
+        "pl": "Obiad o 18",
+        "ko": "6시에 저녁",
+        "ar": "العشاء في 6"
+      }
+    }
+  ]
+}

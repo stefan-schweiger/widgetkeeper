@@ -34,6 +34,7 @@ describe('alarmCaps', () => {
         alarm_smoke: { type: 'boolean', value: false, title: 'Smoke alarm' },
         'alarm_generic.leak': { type: 'boolean', value: true },
         alarm_motion: { type: 'boolean', value: null },
+        alarm_presence: { type: 'boolean', value: true, title: 'Presence detected' },
         alarm_person: { type: 'boolean', value: false, title: 'Person Detected' },
         alarm_level: { type: 'number', value: 3 },
         measure_temperature: { type: 'number', value: 20 },
@@ -43,6 +44,7 @@ describe('alarmCaps', () => {
       { capabilityId: 'alarm_smoke', title: 'Smoke alarm', value: false, state: false, lastUpdated: null },
       { capabilityId: 'alarm_generic.leak', title: 'alarm_generic.leak', value: true, state: false, lastUpdated: null },
       { capabilityId: 'alarm_motion', title: 'alarm_motion', value: null, state: true, lastUpdated: null },
+      { capabilityId: 'alarm_presence', title: 'Presence detected', value: true, state: true, lastUpdated: null },
       { capabilityId: 'alarm_person', title: 'Person Detected', value: false, state: true, lastUpdated: null },
     ]);
   });

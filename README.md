@@ -8,8 +8,8 @@ Extra dashboard widgets for Homey Pro, made to sit naturally next to Homey's own
 <a href="#electricity-overview"><b>Electricity Overview</b></a><br>
 Live power use, hourly electricity prices and usage history on one card<br clear="left"></p>
 
-<p><a href="#thermostat-shortcuts"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/thermostat-dark.png"><img src="docs/previews/thermostat-light.png" alt="" width="120" align="left"></picture></a>
-<a href="#thermostat-shortcuts"><b>Thermostat Shortcuts</b></a><br>
+<p><a href="#thermostat-presets"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/thermostat-dark.png"><img src="docs/previews/thermostat-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#thermostat-presets"><b>Thermostat Presets</b></a><br>
 Three one-tap presets for a thermostat, heat pump or air conditioner<br clear="left"></p>
 
 <p><a href="#device-quick-actions"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/quickactions-dark.png"><img src="docs/previews/quickactions-light.png" alt="" width="120" align="left"></picture></a>
@@ -20,8 +20,8 @@ Compact tiles that run a device's quick action with one tap<br clear="left"></p>
 <a href="#sensor-alarms"><b>Sensor Alarms</b></a><br>
 Tiles that show a sensor's alarm and turn red when one is on<br clear="left"></p>
 
-<p><a href="#sensor-dots"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/sensordots-dark.png"><img src="docs/previews/sensordots-light.png" alt="" width="120" align="left"></picture></a>
-<a href="#sensor-dots"><b>Sensor Dots</b></a><br>
+<p><a href="#activity-dots"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/sensordots-dark.png"><img src="docs/previews/sensordots-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#activity-dots"><b>Activity Dots</b></a><br>
 Many motion and contact sensors at a glance, as dots that change colour when active<br clear="left"></p>
 
 <p><a href="#weather-forecast"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/weather-dark.png"><img src="docs/previews/weather-light.png" alt="" width="120" align="left"></picture></a>
@@ -48,6 +48,10 @@ Compact light tiles with brightness, colour and colour temperature: six lights i
 <a href="#sparklines"><b>Sparklines</b></a><br>
 Tiles with a small chart of a value over the last hour, day or week, with its lowest and highest<br clear="left"></p>
 
+<p><a href="#charts"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/charts-dark.png"><img src="docs/previews/charts-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#charts"><b>Charts</b></a><br>
+One or two charts of any value over the last hour, day or week, drawn like Electricity Overview's<br clear="left"></p>
+
 <p><a href="#flow-variables"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/variables-dark.png"><img src="docs/previews/variables-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#flow-variables"><b>Flow Variables</b></a><br>
 Compact rows to switch flow variables on and off or change a number or text, with the full name<br clear="left"></p>
@@ -56,8 +60,8 @@ Compact rows to switch flow variables on and off or change a number or text, wit
 <a href="#flow-buttons"><b>Flow Buttons</b></a><br>
 Start flows with one tap: a round button in the colour and icon you pick, with the flow's name<br clear="left"></p>
 
-<p><a href="#price-badge"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/price-dark.png"><img src="docs/previews/price-light.png" alt="" width="120" align="left"></picture></a>
-<a href="#price-badge"><b>Price Badge</b></a><br>
+<p><a href="#energy-price-strip"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/price-dark.png"><img src="docs/previews/price-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#energy-price-strip"><b>Energy Price Strip</b></a><br>
 The electricity price now and the coming hours as small bars, green, yellow or red<br clear="left"></p>
 
 <p><a href="#timers"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/timers-dark.png"><img src="docs/previews/timers-light.png" alt="" width="120" align="left"></picture></a>
@@ -84,6 +88,14 @@ Several widgets in one spot, one at a time, with the one that matters brought fo
 <a href="#clock"><b>Clock</b></a><br>
 The time and the date, with the weather now and today's high and low<br clear="left"></p>
 
+<p><a href="#notes"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/textline-dark.png"><img src="docs/previews/textline-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#notes"><b>Notes</b></a><br>
+A note on a tile or a handwritten Post-it, typed in or written by your Flows<br clear="left"></p>
+
+<p><a href="#spacer"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/spacer-dark.png"><img src="docs/previews/spacer-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#spacer"><b>Spacer</b></a><br>
+Empty space of the height you set, to line up widgets across columns<br clear="left"></p>
+
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
 
@@ -91,8 +103,10 @@ Live power use, the hourly price from yesterday to 12 hours ahead (with your tar
 
 **Settings:** power meter, live time span, prices, tariffs and taxes, usage history, smooth lines, lowest price in 12 h / 24 h, compact layout.
 
-## Thermostat Shortcuts
-<img src="docs/screenshots/thermostat.png" alt="Thermostat Shortcuts on a Homey dashboard" width="358">
+<a name="thermostat-shortcuts"></a>
+
+## Thermostat Presets
+<img src="docs/screenshots/thermostat.png" alt="Thermostat Presets on a Homey dashboard" width="358">
 
 Three one-tap presets for a thermostat, heat pump or air conditioner, such as *Off*, *Heat 21°* and *Heat 24° · Fan level 5*. The matching preset lights up.
 
@@ -112,8 +126,10 @@ Tiles that show *No alarm*, the alarm that's on or how many, and turn red while 
 
 **Settings:** sensors, count motion and contact, tile names.
 
-## Sensor Dots
-<img src="docs/clips/sensordots.webp" alt="Sensor Dots on a Homey dashboard: dots lighting up as someone comes in through the front door, then tapped for the kitchen's motion and the open garage" width="358">
+<a name="sensor-dots"></a>
+
+## Activity Dots
+<img src="docs/clips/sensordots.webp" alt="Activity Dots on a Homey dashboard: dots lighting up as someone comes in through the front door, then tapped for the kitchen's motion and the open garage" width="358">
 
 Motion, contact and camera sensors as a grid of dots that light up while active. Tap a dot for its name and since when, such as *Garage · Open since 18:17*.
 
@@ -163,6 +179,13 @@ Device Values' tiles with a small live chart of each value and its highest and l
 
 **Settings:** up to six values, time span (1 hour to 7 days), 2 or 1 per row.
 
+## Charts
+<img src="docs/screenshots/charts.png" alt="Charts on a Homey dashboard: the outdoor temperature as a line, and the power use as bars" width="358">
+
+One chart, two stacked, or two values on one chart (each with its own scale), of any value that Homey logs in Insights, drawn like Electricity Overview's charts. The value now sits at the top in the chart's colour. Tap a chart to see the value at that moment.
+
+**Settings:** one chart, two stacked or two on one chart; for each, the value, the time span (1 hour to 7 days), line with area, line or bars, the colour, a scale that fits the values or starts at zero, below zero in yellow, a smooth line and a title. The values at the top can be turned off.
+
 ## Flow Variables
 <img src="docs/screenshots/variables.png" alt="Flow Variables on a Homey dashboard" width="358">
 
@@ -177,8 +200,10 @@ Flows and Advanced Flows as rows with a round button in your colour and icon. Ta
 
 **Settings:** up to eight flows, each with a colour, an icon and an optional name; 1 or 2 columns.
 
-## Price Badge
-<img src="docs/screenshots/price.png" alt="Price Badge on a Homey dashboard" width="358">
+<a name="price-badge"></a>
+
+## Energy Price Strip
+<img src="docs/screenshots/price.png" alt="Energy Price Strip on a Homey dashboard" width="358">
 
 The electricity price now, and the coming 12, 24 or 36 hours as small bars in one tile: green, yellow or red by each hour's level in its day, with a dot over the cheapest. Uses the Electricity Overview's prices and needs no meter.
 
@@ -225,6 +250,18 @@ Widgetkeeper widgets from another dashboard, one at a time in the space of one. 
 The time and the date in one tile, with the weather now and today's high and low from [MET Norway](https://www.met.no/en), the Weather Forecast's data. The time follows your phone or tablet (24 or 12 hours), the date Homey's language.
 
 **Settings:** show the weather.
+
+## Notes
+<img src="docs/screenshots/textline.png" alt="Notes on a Homey dashboard: a blue tile and a yellow Post-it note" width="358">
+
+A short message on the dashboard, as a tile with one line of text or as a Post-it note stuck on it, tilted, with a folded corner and written in handwriting. Type the message in the widget's settings, or let a Flow write it: *Write [text] on the note [name]*, optionally in a colour (red for *Dryer done*), and *Clear the note [name]*. Every Notes widget with that name shows it, on every screen, at once. It can show a Logic text variable instead. On the tile, long text is cut off or scrolls; the Post-it wraps it to three lines.
+
+**Settings:** style (tile or Post-it), text from (the message typed in the settings, a Flow card or a text variable), message, note name, variable, alignment, text size, long text, icon, colour.
+
+## Spacer
+An empty widget of the height you set, in pixels, to line up widgets of different heights at the top or bottom across a dashboard's columns. It's transparent in light and dark mode, and Homey keeps its usual gap above and below it.
+
+**Settings:** height.
 
 ## Web dashboards
 Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an old iPad, a computer or a TV. Turn them on under **Apps → Widgetkeeper → Configure**, open the address shown there (`http://<your Homey's address>/app/com.thomassidor.widgetkeeper/settings/dashboard.html`), paste a Homey [API key](#api-key) (and, if you set one there, the web dashboards password), and build the dashboards on the page itself: columns of widgets, each with the same settings as on a Homey dashboard, in light, dark or automatic. They're the same widgets with the same live updates, and the dashboards are kept on your Homey, so every browser shows them. Home network only for now.

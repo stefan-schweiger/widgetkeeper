@@ -13,9 +13,9 @@
     electricity: 'mountElectricityWidget', thermostat: 'mountThermostatWidget', quickactions: 'mountQuickActionsWidget',
     sensoralarms: 'mountSensorAlarmsWidget', sensordots: 'mountSensorDotsWidget', weather: 'mountWeatherWidget',
     heatmap: 'mountHeatmapWidget', cameras: 'mountCamerasWidget', values: 'mountValuesWidget', lights: 'mountLightsWidget',
-    sparklines: 'mountSparklinesWidget', variables: 'mountVariablesWidget', flows: 'mountFlowsWidget', price: 'mountPriceWidget',
+    sparklines: 'mountSparklinesWidget', charts: 'mountChartsWidget', variables: 'mountVariablesWidget', flows: 'mountFlowsWidget', price: 'mountPriceWidget',
     timers: 'mountTimersWidget', locks: 'mountLocksWidget', curtains: 'mountCurtainsWidget', media: 'mountMediaWidget',
-    clock: 'mountClockWidget',
+    clock: 'mountClockWidget', textline: 'mountTextLineWidget',
   };
 
   const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
@@ -26,7 +26,7 @@
    * Sensor Alarms' "states" (lib/SensorAlarmService.ts): only counted with the widget's `includeStates`. Used for an
    * alarm an event brings that the last read didn't have.
    */
-  const STATE_ALARMS = ['alarm_motion', 'alarm_contact', 'alarm_person', 'alarm_vehicle', 'alarm_pet'];
+  const STATE_ALARMS = ['alarm_motion', 'alarm_presence', 'alarm_contact', 'alarm_person', 'alarm_vehicle', 'alarm_pet'];
   /** Locks and Doors: a value that isn't secure (`LOCK_CAPS` in lib/LockService.ts). */
   const INSECURE = { locked: false, alarm_contact: true, garagedoor_closed: false };
 

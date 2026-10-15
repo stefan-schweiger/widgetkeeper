@@ -83,11 +83,11 @@ export default class VariableService {
 
   // ---------------------------------------------------------------- settings autocomplete
 
-  /** Every variable, sorted by name, described by its type and current value. */
-  async listVariables(query: string): Promise<AutocompleteItem[]> {
+  /** Every variable (or only those of `types`), sorted by name, described by its type and current value. */
+  async listVariables(query: string, { types }: { types?: VariableType[] } = {}): Promise<AutocompleteItem[]> {
     const api = await getAppApi(this.homey);
     const all = Object.values(await api.logic.getVariables({ $cache: false }) as Record<string, any>)
-      .map(toVariable).filter((v): v is Variable => v !== null);
+      .map(toVariable).filter((v): v is Variable => v !== null && (!types || types.includes(v.type)));
     const items = all
       .filter(v => matches(query, v.name))
       .sort((a, b) => a.name.localeCompare(b.name))

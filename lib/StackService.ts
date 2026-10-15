@@ -13,10 +13,10 @@ const DESCRIBE_TIMEOUT_MS = 5e3;
 /** The longest a Flow may bring a page forward. */
 const MAX_SHOW_MINUTES = 24 * 60;
 
-/** The widgets a stack can show: every widget of this app but the stack itself. Keep in step with `TYPES` in widget.js. */
+/** The widgets a stack can show: every widget of this app but the stack itself and the (empty) spacer. Keep in step with `TYPES` in widget.js. */
 export const STACK_TYPES = [
   'electricity', 'thermostat', 'quickactions', 'sensoralarms', 'sensordots', 'weather', 'heatmap', 'cameras', 'values',
-  'lights', 'sparklines', 'variables', 'flows', 'price', 'timers', 'locks', 'curtains', 'media', 'clock',
+  'lights', 'sparklines', 'charts', 'variables', 'flows', 'price', 'timers', 'locks', 'curtains', 'media', 'clock', 'textline',
 ] as const;
 
 export type StackType = typeof STACK_TYPES[number];

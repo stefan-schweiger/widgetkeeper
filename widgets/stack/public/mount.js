@@ -102,7 +102,21 @@ window.mountStackWidget = function (Homey, { root, frame }) {
     };
   }
 
-  /** Each page's widget files, once per widget type: `../<type>/widget.css`, `widget.js` and `mount.js`. */
+  /**
+   * The files a widget's index.html loads before its own, as `<widget>/<name>` (both a .css and a .js): the chart
+   * module, which Charts loads from the Electricity Overview's folder. test/widget-html.test.ts checks this
+   * against the index.html files.
+   */
+  const DEPS = {
+    electricity: ['electricity/chart'],
+    charts: ['electricity/chart'],
+  };
+
+  /**
+   * Each page's widget files, once per widget type: its `DEPS` (once per page), then `../<type>/widget.css`,
+   * `widget.js` and `mount.js`.
+   */
+  const depsLoaded = new Map();
   function loadAssets(types) {
     const load = (tag, attrs) => new Promise((resolve) => {
       const el = document.createElement(tag);
@@ -113,6 +127,15 @@ window.mountStackWidget = function (Homey, { root, frame }) {
     });
     return Promise.all(types.map(async (type) => {
       if (window[window.STACK_TYPES[type]]) return; // already there (the previews load them up front)
+      await Promise.all((DEPS[type] || []).map((dep) => {
+        if (!depsLoaded.has(dep)) {
+          depsLoaded.set(dep, Promise.all([
+            load('link', { rel: 'stylesheet', href: `../${dep}.css` }),
+            load('script', { src: `../${dep}.js`, async: false }),
+          ]));
+        }
+        return depsLoaded.get(dep);
+      }));
       await Promise.all([
         load('link', { rel: 'stylesheet', href: `../${type}/widget.css` }),
         load('script', { src: `../${type}/widget.js`, async: false }),

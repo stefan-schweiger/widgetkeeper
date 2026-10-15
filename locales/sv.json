@@ -51,6 +51,8 @@
     "closed": "Stängd",
     "motion": "Rörelse",
     "noMotion": "Ingen rörelse",
+    "presence": "Närvaro",
+    "noPresence": "Ingen närvaro",
     "nothingDetected": "Inget upptäckt",
     "since": "sedan __time__"
   },
@@ -135,6 +137,13 @@
     "selectSlots": "Välj enhetsvärden i widgetinställningarna.",
     "error": "Kunde inte läsa in värdena.",
     "unavailable": "Inte tillgänglig"
+  },
+  "charts": {
+    "now": "Nu",
+    "selectChart": "Välj ett enhetsvärde i widgetinställningarna.",
+    "error": "Kunde inte läsa in diagrammet.",
+    "unavailable": "Inte tillgänglig",
+    "noHistory": "Ingen historik än."
   },
   "lights": {
     "selectDevices": "Välj lampor i widgetinställningarna.",
@@ -317,6 +326,15 @@
     "keyInvalid": "API-nyckeln godkändes inte.",
     "speakerAction": "Högtalaråtgärd"
   },
+  "textline": {
+    "noMessage": "Inget meddelande",
+    "typeNote": "Skriv din anteckning i widgetens inställningar.",
+    "variableMissing": "Variabeln hittades inte",
+    "selectVariable": "Välj en textvariabel i widgetens inställningar.",
+    "error": "Kunde inte läsa in texten.",
+    "boardInUse": "Har en text",
+    "boardNew": "Ny anteckning"
+  },
   "stack": {
     "selectDashboard": "Välj en instrumentpanel i widgetens inställningar.",
     "noKey": "Lägg till en API-nyckel i appens inställningar för att läsa instrumentpanelen.",
@@ -423,6 +441,7 @@
       "values": "Valfritt enhetsvärde som en kompakt ruta.",
       "lights": "Ljusrutor med ljusstyrka och färg nära till hands.",
       "sparklines": "Värden med ett litet diagram över deras senaste historik.",
+      "charts": "Ett eller två diagram över valfritt värde, som elens.",
       "variables": "Flow-variabler som rader att slå om eller ändra.",
       "flows": "Starta flöden med ett tryck, i dina färger och ikoner.",
       "price": "Elpriset nu och de kommande timmarna.",
@@ -431,6 +450,8 @@
       "curtains": "Öppna, stäng eller ställ in gardiner och persienner.",
       "media": "En högtalares musik, volym och källor i ett kort.",
       "clock": "Tid och datum, med vädret just nu om du vill.",
+      "textline": "En anteckning på en ruta eller en Post-it-lapp, inskriven eller skriven av dina Flows.",
+      "spacer": "Tomt utrymme för att linjera widgetar i kolumner.",
       "stack": "Widgets från en annan instrumentpanel, turvis."
     }
   }

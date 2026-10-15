@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  HOUR, MINUTE, bucketAverage, floorTo, hourlyPrices, parseInsightsEntries, parsePriceResponse,
+  HOUR, MINUTE, bucketAverage, floorTo, hourlyPrices, parseInsightsEntries, parsePriceResponse, quarterPrices,
 } from '../lib/series.js';
 
 const T0 = Date.UTC(2026, 0, 15, 10); // a whole hour
@@ -104,5 +104,25 @@ describe('hourlyPrices', () => {
     const q = (i: number, w: number) => ({ t: T0 + i * 15 * MINUTE, w });
     const hours = hourlyPrices([q(0, 1), q(1, 2), q(2, 3), q(3, 4), q(4, 10)]);
     expect([...hours]).toEqual([[T0, 2.5], [T0 + HOUR, 10]]);
+  });
+});
+
+describe('quarterPrices', () => {
+  const at = (minutes: number, w: number) => ({ t: T0 + minutes * MINUTE, w });
+
+  it('keys 15-minute prices by quarter', () => {
+    expect([...quarterPrices([at(0, 1), at(15, 2), at(30, 3), at(45, 4)])!])
+      .toEqual([[T0, 1], [T0 + 15 * MINUTE, 2], [T0 + 30 * MINUTE, 3], [T0 + 45 * MINUTE, 4]]);
+  });
+
+  it('is null for hourly prices', () => {
+    expect(quarterPrices([at(0, 1), at(60, 2), at(120, 3)])).toBeNull();
+    expect(quarterPrices([at(0, 1)])).toBeNull();
+    expect(quarterPrices([])).toBeNull();
+  });
+
+  it('fills both quarters of a 30-minute price and averages finer ones', () => {
+    expect([...quarterPrices([at(0, 1), at(30, 2)])!]).toEqual([[T0, 1], [T0 + 15 * MINUTE, 1], [T0 + 30 * MINUTE, 2], [T0 + 45 * MINUTE, 2]]);
+    expect([...quarterPrices([at(0, 1), at(5, 2), at(10, 3)])!]).toEqual([[T0, 2]]);
   });
 });

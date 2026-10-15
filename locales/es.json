@@ -51,6 +51,8 @@
     "closed": "Cerrado",
     "motion": "Movimiento",
     "noMotion": "Sin movimiento",
+    "presence": "Presencia",
+    "noPresence": "Sin presencia",
     "nothingDetected": "Nada detectado",
     "since": "desde __time__"
   },
@@ -135,6 +137,13 @@
     "selectSlots": "Elige valores en los ajustes del widget.",
     "error": "No se pudieron cargar los valores.",
     "unavailable": "No disponible"
+  },
+  "charts": {
+    "now": "Ahora",
+    "selectChart": "Elige un valor de dispositivo en los ajustes del widget.",
+    "error": "No se pudo cargar el gráfico.",
+    "unavailable": "No disponible",
+    "noHistory": "Aún no hay historial."
   },
   "lights": {
     "selectDevices": "Elige luces en los ajustes del widget.",
@@ -317,6 +326,15 @@
     "keyInvalid": "La clave API no se ha aceptado.",
     "speakerAction": "Acción del altavoz"
   },
+  "textline": {
+    "noMessage": "Sin mensaje",
+    "typeNote": "Escribe tu nota en los ajustes del widget.",
+    "variableMissing": "Variable no encontrada",
+    "selectVariable": "Elige una variable de texto en los ajustes del widget.",
+    "error": "No se pudo cargar el texto.",
+    "boardInUse": "Tiene un texto",
+    "boardNew": "Nota nueva"
+  },
   "stack": {
     "selectDashboard": "Elige un panel en los ajustes del widget.",
     "noKey": "Para leer el panel, añade una clave API en los ajustes de la app.",
@@ -423,6 +441,7 @@
       "values": "Cualquier valor de un dispositivo como ficha compacta.",
       "lights": "Fichas de luces con brillo y color a mano.",
       "sparklines": "Valores con un pequeño gráfico de su historial reciente.",
+      "charts": "Uno o dos gráficos de cualquier valor, como los de electricidad.",
       "variables": "Variables de Flow como filas para cambiar o activar.",
       "flows": "Inicia flujos con un toque, con tus colores e iconos.",
       "price": "El precio de la luz ahora y en las próximas horas.",
@@ -431,6 +450,8 @@
       "curtains": "Abre, cierra o ajusta cortinas y persianas.",
       "media": "La música, el volumen y las fuentes de un altavoz en una tarjeta.",
       "clock": "La hora y la fecha, con el tiempo actual si quieres.",
+      "textline": "Una nota en un mosaico o un Post-it, escrita por ti o por tus Flows.",
+      "spacer": "Espacio vacío para alinear widgets en columnas.",
       "stack": "Widgets de otro panel, por turnos."
     }
   }

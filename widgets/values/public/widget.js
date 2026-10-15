@@ -52,6 +52,14 @@
     return GLYPHS.gauge;
   }
 
+  /** The capability's own icon, else the glyph; batteries always get the glyph (drivers' own differ, some with a fixed level). */
+  function iconFor(s) {
+    if ('missing' in s) return glyph(s.capabilityId, null);
+    const base = s.capabilityId.split('.')[0];
+    if (base === 'measure_battery' || base === 'alarm_battery') return glyph(s.capabilityId, s.value);
+    return s.capability.icon || glyph(s.capabilityId, s.value);
+  }
+
   /** The tile colours a Flow can set (the `values_set_color` card). */
   const COLORS = new Set(['red', 'orange', 'yellow', 'green', 'blue', 'purple']);
 
@@ -223,7 +231,7 @@
         const missing = 'missing' in s;
         tile.name.textContent = missing ? t('unavailable') : s.name;
         tile.value.textContent = missing ? '' : formatValue(s.capability, s.value, t);
-        setMask(tile.icon, missing ? glyph(s.capabilityId, null) : (s.capability.icon || glyph(s.capabilityId, s.value)));
+        setMask(tile.icon, iconFor(s));
         tile.tile.classList.toggle('active', !missing && s.capability.type === 'boolean' && s.value === true);
         // Percentages can fill the tile from the left, coloured by level.
         const percent = !missing && opts.percentFill ? percentOf(s.capability, s.value) : null;

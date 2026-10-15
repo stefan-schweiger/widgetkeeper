@@ -1,0 +1,687 @@
+{
+  "name": {
+    "en": "Notes",
+    "nl": "Notities",
+    "de": "Notizen",
+    "fr": "Notes",
+    "it": "Note",
+    "sv": "Anteckningar",
+    "no": "Notater",
+    "es": "Notas",
+    "da": "Noter",
+    "ru": "Заметки",
+    "pl": "Notatki",
+    "ko": "메모",
+    "ar": "ملاحظات"
+  },
+  "height": 48,
+  "transparent": true,
+  "settings": [
+    {
+      "id": "style",
+      "type": "dropdown",
+      "title": {
+        "en": "Style",
+        "nl": "Stijl",
+        "de": "Stil",
+        "fr": "Style",
+        "it": "Stile",
+        "sv": "Stil",
+        "no": "Stil",
+        "es": "Estilo",
+        "da": "Stil",
+        "ru": "Стиль",
+        "pl": "Styl",
+        "ko": "스타일",
+        "ar": "النمط"
+      },
+      "value": "tile",
+      "values": [
+        {
+          "id": "tile",
+          "title": {
+            "en": "Tile",
+            "nl": "Tegel",
+            "de": "Kachel",
+            "fr": "Tuile",
+            "it": "Riquadro",
+            "sv": "Ruta",
+            "no": "Flis",
+            "es": "Mosaico",
+            "da": "Felt",
+            "ru": "Плитка",
+            "pl": "Kafelek",
+            "ko": "타일",
+            "ar": "بلاطة"
+          }
+        },
+        {
+          "id": "postit",
+          "title": {
+            "en": "Post-it note",
+            "nl": "Post-it-briefje",
+            "de": "Haftnotiz",
+            "fr": "Post-it",
+            "it": "Post-it",
+            "sv": "Post-it-lapp",
+            "no": "Post-it-lapp",
+            "es": "Nota Post-it",
+            "da": "Post-it-seddel",
+            "ru": "Стикер",
+            "pl": "Karteczka",
+            "ko": "포스트잇",
+            "ar": "ملاحظة لاصقة"
+          }
+        }
+      ]
+    },
+    {
+      "id": "source",
+      "type": "dropdown",
+      "title": {
+        "en": "Text from",
+        "nl": "Tekst van",
+        "de": "Text aus",
+        "fr": "Texte depuis",
+        "it": "Testo da",
+        "sv": "Text från",
+        "no": "Tekst fra",
+        "es": "Texto de",
+        "da": "Tekst fra",
+        "ru": "Текст из",
+        "pl": "Tekst z",
+        "ko": "텍스트 출처",
+        "ar": "النص من"
+      },
+      "value": "typed",
+      "values": [
+        {
+          "id": "typed",
+          "title": {
+            "en": "The message below",
+            "nl": "Het bericht hieronder",
+            "de": "Der Nachricht unten",
+            "fr": "Le message ci-dessous",
+            "it": "Il messaggio qui sotto",
+            "sv": "Meddelandet nedan",
+            "no": "Meldingen nedenfor",
+            "es": "El mensaje de abajo",
+            "da": "Beskeden nedenfor",
+            "ru": "Сообщения ниже",
+            "pl": "Wiadomości poniżej",
+            "ko": "아래 메시지",
+            "ar": "الرسالة أدناه"
+          }
+        },
+        {
+          "id": "flow",
+          "title": {
+            "en": "A Flow card",
+            "nl": "Een Flow-kaart",
+            "de": "Einer Flow-Karte",
+            "fr": "Une carte Flow",
+            "it": "Una scheda Flow",
+            "sv": "Ett Flow-kort",
+            "no": "Et Flow-kort",
+            "es": "Una tarjeta de Flow",
+            "da": "Et Flow-kort",
+            "ru": "Карточки Flow",
+            "pl": "Karty Flow",
+            "ko": "Flow 카드",
+            "ar": "بطاقة Flow"
+          }
+        },
+        {
+          "id": "variable",
+          "title": {
+            "en": "A text variable",
+            "nl": "Een tekstvariabele",
+            "de": "Einer Textvariable",
+            "fr": "Une variable texte",
+            "it": "Una variabile di testo",
+            "sv": "En textvariabel",
+            "no": "En tekstvariabel",
+            "es": "Una variable de texto",
+            "da": "En tekstvariabel",
+            "ru": "Текстовой переменной",
+            "pl": "Zmiennej tekstowej",
+            "ko": "텍스트 변수",
+            "ar": "متغير نصي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "message",
+      "type": "textarea",
+      "title": {
+        "en": "Message",
+        "nl": "Bericht",
+        "de": "Nachricht",
+        "fr": "Message",
+        "it": "Messaggio",
+        "sv": "Meddelande",
+        "no": "Melding",
+        "es": "Mensaje",
+        "da": "Besked",
+        "ru": "Сообщение",
+        "pl": "Wiadomość",
+        "ko": "메시지",
+        "ar": "الرسالة"
+      },
+      "hint": {
+        "en": "Your note. With a Flow card or a variable, it shows while they have no text.",
+        "nl": "Je notitie. Met een Flow-kaart of een variabele verschijnt het zolang die geen tekst hebben.",
+        "de": "Deine Notiz. Mit einer Flow-Karte oder Variable erscheint sie, solange diese keinen Text haben.",
+        "fr": "Votre note. Avec une carte Flow ou une variable, elle s'affiche tant qu'elles n'ont pas de texte.",
+        "it": "La tua nota. Con una scheda Flow o una variabile, appare finché non hanno testo.",
+        "sv": "Din anteckning. Med ett Flow-kort eller en variabel visas den så länge de saknar text.",
+        "no": "Notatet ditt. Med et Flow-kort eller en variabel vises det så lenge de ikke har tekst.",
+        "es": "Tu nota. Con una tarjeta de Flow o una variable, aparece mientras no tengan texto.",
+        "da": "Din note. Med et Flow-kort eller en variabel vises den, så længe de ikke har tekst.",
+        "ru": "Ваша заметка. С карточкой Flow или переменной она видна, пока у них нет текста.",
+        "pl": "Twoja notatka. Przy karcie Flow lub zmiennej pojawia się, dopóki nie mają tekstu.",
+        "ko": "메모 내용입니다. Flow 카드나 변수를 쓰면 텍스트가 없을 때 표시됩니다.",
+        "ar": "ملاحظتك. مع بطاقة Flow أو متغير، تظهر ما دامت بلا نص."
+      },
+      "value": ""
+    },
+    {
+      "id": "board",
+      "type": "text",
+      "title": {
+        "en": "Note name",
+        "nl": "Naam van de notitie",
+        "de": "Name der Notiz",
+        "fr": "Nom de la note",
+        "it": "Nome della nota",
+        "sv": "Anteckningens namn",
+        "no": "Notatets navn",
+        "es": "Nombre de la nota",
+        "da": "Notens navn",
+        "ru": "Имя заметки",
+        "pl": "Nazwa notatki",
+        "ko": "메모 이름",
+        "ar": "اسم الملاحظة"
+      },
+      "hint": {
+        "en": "With a Flow card: the name the card writes to. Notes with the same name show the same text.",
+        "nl": "Met een Flow-kaart: de naam waar de kaart naar schrijft. Notities met dezelfde naam tonen dezelfde tekst.",
+        "de": "Mit einer Flow-Karte: der Name, auf den die Karte schreibt. Notizen mit demselben Namen zeigen denselben Text.",
+        "fr": "Avec une carte Flow : le nom sur lequel la carte écrit. Les notes de même nom affichent le même texte.",
+        "it": "Con una scheda Flow: il nome su cui scrive la scheda. Le note con lo stesso nome mostrano lo stesso testo.",
+        "sv": "Med ett Flow-kort: namnet kortet skriver till. Anteckningar med samma namn visar samma text.",
+        "no": "Med et Flow-kort: navnet kortet skriver til. Notater med samme navn viser samme tekst.",
+        "es": "Con una tarjeta de Flow: el nombre en el que escribe la tarjeta. Las notas con el mismo nombre muestran el mismo texto.",
+        "da": "Med et Flow-kort: navnet, kortet skriver til. Noter med samme navn viser samme tekst.",
+        "ru": "С карточкой Flow: имя, в которое пишет карточка. Заметки с одним именем показывают один текст.",
+        "pl": "Przy karcie Flow: nazwa, do której pisze karta. Notatki o tej samej nazwie pokazują ten sam tekst.",
+        "ko": "Flow 카드를 쓸 때 카드가 쓰는 이름입니다. 이름이 같은 메모는 같은 텍스트를 표시합니다.",
+        "ar": "مع بطاقة Flow: الاسم الذي تكتب إليه البطاقة. تعرض الملاحظات ذات الاسم نفسه النص نفسه."
+      },
+      "value": "Note"
+    },
+    {
+      "id": "variable",
+      "type": "autocomplete",
+      "title": {
+        "en": "Text variable",
+        "nl": "Tekstvariabele",
+        "de": "Textvariable",
+        "fr": "Variable texte",
+        "it": "Variabile di testo",
+        "sv": "Textvariabel",
+        "no": "Tekstvariabel",
+        "es": "Variable de texto",
+        "da": "Tekstvariabel",
+        "ru": "Текстовая переменная",
+        "pl": "Zmienna tekstowa",
+        "ko": "텍스트 변수",
+        "ar": "متغير نصي"
+      },
+      "hint": {
+        "en": "With a text variable: the Logic variable to show.",
+        "nl": "Met een tekstvariabele: de Logica-variabele om te tonen.",
+        "de": "Mit einer Textvariable: die anzuzeigende Logik-Variable.",
+        "fr": "Avec une variable texte : la variable Logique à afficher.",
+        "it": "Con una variabile di testo: la variabile Logica da mostrare.",
+        "sv": "Med en textvariabel: Logik-variabeln som ska visas.",
+        "no": "Med en tekstvariabel: Logikk-variabelen som skal vises.",
+        "es": "Con una variable de texto: la variable de Lógica que se muestra.",
+        "da": "Med en tekstvariabel: Logik-variablen, der skal vises.",
+        "ru": "С текстовой переменной: переменная логики для показа.",
+        "pl": "Przy zmiennej tekstowej: zmienna Logiki do pokazania.",
+        "ko": "텍스트 변수를 쓸 때 표시할 로직 변수입니다.",
+        "ar": "مع متغير نصي: متغير المنطق المراد عرضه."
+      }
+    },
+    {
+      "id": "align",
+      "type": "dropdown",
+      "title": {
+        "en": "Alignment",
+        "nl": "Uitlijning",
+        "de": "Ausrichtung",
+        "fr": "Alignement",
+        "it": "Allineamento",
+        "sv": "Justering",
+        "no": "Justering",
+        "es": "Alineación",
+        "da": "Justering",
+        "ru": "Выравнивание",
+        "pl": "Wyrównanie",
+        "ko": "정렬",
+        "ar": "المحاذاة"
+      },
+      "value": "left",
+      "values": [
+        {
+          "id": "left",
+          "title": {
+            "en": "Left",
+            "nl": "Links",
+            "de": "Links",
+            "fr": "Gauche",
+            "it": "Sinistra",
+            "sv": "Vänster",
+            "no": "Venstre",
+            "es": "Izquierda",
+            "da": "Venstre",
+            "ru": "По левому краю",
+            "pl": "Do lewej",
+            "ko": "왼쪽",
+            "ar": "يسار"
+          }
+        },
+        {
+          "id": "center",
+          "title": {
+            "en": "Centre",
+            "nl": "Midden",
+            "de": "Mitte",
+            "fr": "Centre",
+            "it": "Centro",
+            "sv": "Mitten",
+            "no": "Midten",
+            "es": "Centro",
+            "da": "Midte",
+            "ru": "По центру",
+            "pl": "Do środka",
+            "ko": "가운데",
+            "ar": "وسط"
+          }
+        },
+        {
+          "id": "right",
+          "title": {
+            "en": "Right",
+            "nl": "Rechts",
+            "de": "Rechts",
+            "fr": "Droite",
+            "it": "Destra",
+            "sv": "Höger",
+            "no": "Høyre",
+            "es": "Derecha",
+            "da": "Højre",
+            "ru": "По правому краю",
+            "pl": "Do prawej",
+            "ko": "오른쪽",
+            "ar": "يمين"
+          }
+        }
+      ]
+    },
+    {
+      "id": "size",
+      "type": "dropdown",
+      "title": {
+        "en": "Text size",
+        "nl": "Tekstgrootte",
+        "de": "Textgröße",
+        "fr": "Taille du texte",
+        "it": "Dimensione del testo",
+        "sv": "Textstorlek",
+        "no": "Tekststørrelse",
+        "es": "Tamaño del texto",
+        "da": "Tekststørrelse",
+        "ru": "Размер текста",
+        "pl": "Rozmiar tekstu",
+        "ko": "텍스트 크기",
+        "ar": "حجم النص"
+      },
+      "value": "default",
+      "values": [
+        {
+          "id": "small",
+          "title": {
+            "en": "Small",
+            "nl": "Klein",
+            "de": "Klein",
+            "fr": "Petite",
+            "it": "Piccola",
+            "sv": "Liten",
+            "no": "Liten",
+            "es": "Pequeño",
+            "da": "Lille",
+            "ru": "Маленький",
+            "pl": "Mały",
+            "ko": "작게",
+            "ar": "صغير"
+          }
+        },
+        {
+          "id": "default",
+          "title": {
+            "en": "Normal",
+            "nl": "Normaal",
+            "de": "Normal",
+            "fr": "Normale",
+            "it": "Normale",
+            "sv": "Normal",
+            "no": "Normal",
+            "es": "Normal",
+            "da": "Normal",
+            "ru": "Обычный",
+            "pl": "Normalny",
+            "ko": "보통",
+            "ar": "عادي"
+          }
+        },
+        {
+          "id": "large",
+          "title": {
+            "en": "Large",
+            "nl": "Groot",
+            "de": "Groß",
+            "fr": "Grande",
+            "it": "Grande",
+            "sv": "Stor",
+            "no": "Stor",
+            "es": "Grande",
+            "da": "Stor",
+            "ru": "Большой",
+            "pl": "Duży",
+            "ko": "크게",
+            "ar": "كبير"
+          }
+        }
+      ]
+    },
+    {
+      "id": "overflow",
+      "type": "dropdown",
+      "title": {
+        "en": "Long text",
+        "nl": "Lange tekst",
+        "de": "Langer Text",
+        "fr": "Texte long",
+        "it": "Testo lungo",
+        "sv": "Lång text",
+        "no": "Lang tekst",
+        "es": "Texto largo",
+        "da": "Lang tekst",
+        "ru": "Длинный текст",
+        "pl": "Długi tekst",
+        "ko": "긴 텍스트",
+        "ar": "النص الطويل"
+      },
+      "hint": {
+        "en": "On the tile. A Post-it note wraps up to three lines.",
+        "nl": "Op de tegel. Een Post-it-briefje loopt door tot drie regels.",
+        "de": "Auf der Kachel. Eine Haftnotiz bricht auf bis zu drei Zeilen um.",
+        "fr": "Sur la tuile. Un Post-it passe à la ligne, jusqu'à trois lignes.",
+        "it": "Sul riquadro. Un Post-it va a capo fino a tre righe.",
+        "sv": "På rutan. En Post-it-lapp radbryts till högst tre rader.",
+        "no": "På flisen. En Post-it-lapp brytes til høyst tre linjer.",
+        "es": "En el mosaico. Una nota Post-it ocupa hasta tres líneas.",
+        "da": "På feltet. En Post-it-seddel ombrydes til højst tre linjer.",
+        "ru": "На плитке. Стикер переносит текст максимум на три строки.",
+        "pl": "Na kafelku. Karteczka zawija tekst do trzech wierszy.",
+        "ko": "타일에 적용됩니다. 포스트잇은 최대 세 줄로 줄바꿈합니다.",
+        "ar": "على البلاطة. تلتف الملاحظة اللاصقة حتى ثلاثة أسطر."
+      },
+      "value": "ellipsis",
+      "values": [
+        {
+          "id": "ellipsis",
+          "title": {
+            "en": "Cut off with …",
+            "nl": "Afkappen met …",
+            "de": "Mit … kürzen",
+            "fr": "Couper avec …",
+            "it": "Tagliare con …",
+            "sv": "Korta med …",
+            "no": "Kutt med …",
+            "es": "Cortar con …",
+            "da": "Afkort med …",
+            "ru": "Обрезать с …",
+            "pl": "Uciąć z …",
+            "ko": "…로 자르기",
+            "ar": "قصّ مع …"
+          }
+        },
+        {
+          "id": "scroll",
+          "title": {
+            "en": "Scroll",
+            "nl": "Laten scrollen",
+            "de": "Laufen lassen",
+            "fr": "Faire défiler",
+            "it": "Scorrere",
+            "sv": "Rulla",
+            "no": "Rull",
+            "es": "Desplazar",
+            "da": "Rul",
+            "ru": "Прокручивать",
+            "pl": "Przewijać",
+            "ko": "스크롤",
+            "ar": "تمرير"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon",
+      "type": "autocomplete",
+      "title": {
+        "en": "Icon",
+        "nl": "Pictogram",
+        "de": "Symbol",
+        "fr": "Icône",
+        "it": "Icona",
+        "sv": "Ikon",
+        "no": "Ikon",
+        "es": "Icono",
+        "da": "Ikon",
+        "ru": "Значок",
+        "pl": "Ikona",
+        "ko": "아이콘",
+        "ar": "الأيقونة"
+      },
+      "hint": {
+        "en": "On the tile, before the text.",
+        "nl": "Op de tegel, voor de tekst.",
+        "de": "Auf der Kachel, vor dem Text.",
+        "fr": "Sur la tuile, avant le texte.",
+        "it": "Sul riquadro, prima del testo.",
+        "sv": "På rutan, före texten.",
+        "no": "På flisen, foran teksten.",
+        "es": "En el mosaico, antes del texto.",
+        "da": "På feltet, før teksten.",
+        "ru": "На плитке, перед текстом.",
+        "pl": "Na kafelku, przed tekstem.",
+        "ko": "타일에서 텍스트 앞에 표시됩니다.",
+        "ar": "على البلاطة، قبل النص."
+      }
+    },
+    {
+      "id": "color",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour",
+        "nl": "Kleur",
+        "de": "Farbe",
+        "fr": "Couleur",
+        "it": "Colore",
+        "sv": "Färg",
+        "no": "Farge",
+        "es": "Color",
+        "da": "Farve",
+        "ru": "Цвет",
+        "pl": "Kolor",
+        "ko": "색상",
+        "ar": "اللون"
+      },
+      "hint": {
+        "en": "A tinted tile, or the Post-it's paper (Default: a plain tile, a yellow note). A Flow card can set another.",
+        "nl": "Een gekleurde tegel of het papier van de Post-it (Standaard: een gewone tegel, een geel briefje). Een Flow-kaart kan een andere instellen.",
+        "de": "Eine getönte Kachel oder das Papier der Haftnotiz (Standard: eine schlichte Kachel, ein gelber Zettel). Eine Flow-Karte kann eine andere setzen.",
+        "fr": "Une tuile teintée, ou le papier du Post-it (Par défaut : une tuile simple, une note jaune). Une carte Flow peut en définir une autre.",
+        "it": "Un riquadro colorato o la carta del Post-it (Predefinito: un riquadro semplice, un foglietto giallo). Una scheda Flow può impostarne un altro.",
+        "sv": "En tonad ruta eller Post-it-lappens papper (Standard: en vanlig ruta, en gul lapp). Ett Flow-kort kan ange en annan.",
+        "no": "En farget flis eller Post-it-lappens papir (Standard: en vanlig flis, en gul lapp). Et Flow-kort kan angi en annen.",
+        "es": "Un mosaico teñido o el papel del Post-it (Predeterminado: un mosaico normal, una nota amarilla). Una tarjeta de Flow puede poner otro.",
+        "da": "Et tonet felt eller Post-it-sedlens papir (Standard: et almindeligt felt, en gul seddel). Et Flow-kort kan angive en anden.",
+        "ru": "Тонированная плитка или бумага стикера (по умолчанию: обычная плитка, жёлтый стикер). Карточка Flow может задать другой.",
+        "pl": "Zabarwiony kafelek albo papier karteczki (Domyślny: zwykły kafelek, żółta karteczka). Karta Flow może ustawić inny.",
+        "ko": "색이 입혀진 타일 또는 포스트잇의 종이 색입니다(기본값: 일반 타일, 노란 메모). Flow 카드로 다른 색을 설정할 수 있습니다.",
+        "ar": "بلاطة ملوّنة أو ورق الملاحظة اللاصقة (الافتراضي: بلاطة عادية، ملاحظة صفراء). يمكن لبطاقة Flow تعيين لون آخر."
+      },
+      "value": "default",
+      "values": [
+        {
+          "id": "default",
+          "title": {
+            "en": "Default",
+            "nl": "Standaard",
+            "de": "Standard",
+            "fr": "Par défaut",
+            "it": "Predefinito",
+            "sv": "Standard",
+            "no": "Standard",
+            "es": "Predeterminado",
+            "da": "Standard",
+            "ru": "По умолчанию",
+            "pl": "Domyślny",
+            "ko": "기본값",
+            "ar": "افتراضي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        }
+      ]
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    }
+  }
+}

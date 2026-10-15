@@ -44,6 +44,12 @@
     return GLYPHS.gauge;
   }
 
+  /** The capability's own icon, else the glyph; batteries always get the glyph (drivers' own differ, some with a fixed level). */
+  function iconFor(s) {
+    if ('missing' in s || s.capabilityId.split('.')[0] === 'measure_battery') return glyph(s.capabilityId);
+    return s.capability.icon || glyph(s.capabilityId);
+  }
+
   const TIGHT_UNITS = /^(°|%)/;
 
   /** A `%` number as 0–100 (a 0–1 range, like Homey's `dim`, is scaled up), else the number itself. */
@@ -226,7 +232,7 @@
         const missing = 'missing' in s;
         tile.name.textContent = missing ? t('unavailable') : s.name;
         tile.value.textContent = missing ? '' : formatValue(s.capability, s.value);
-        setMask(tile.icon, missing ? glyph(s.capabilityId) : (s.capability.icon || glyph(s.capabilityId)));
+        setMask(tile.icon, iconFor(s));
         drawChart(tile, s);
         tile.tile.classList.toggle('missing', missing);
         tile.tile.dataset.capability = s.capabilityId;

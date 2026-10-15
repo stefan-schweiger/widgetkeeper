@@ -1,12 +1,14 @@
 /*
- * Price Badge: the electricity price now with its level (where it sits in today's range: low, medium or high), and
- * the coming 12, 24 or 36 hours as small bars in their level colours, with a dot over the cheapest.
+ * Energy Price Strip: the electricity price now with its level (where it sits in today's range: low, medium or high), and
+ * the coming 12, 24 or 36 hours as small bars in their level colours, with a dot over the cheapest. With 15-minute
+ * prices (quarter-hour markets), the price now is the current quarter's and there's a bar per quarter.
  * Plain browser JS (served as-is).
  */
 (function () {
   'use strict';
 
   const HOUR = 36e5;
+  const QUARTER = HOUR / 4; // 15-minute prices (`quarters`), in quarter-hour markets
   /** Hours between the axis labels, per window. */
   const TICK_STEP = { 12: 3, 24: 6, 36: 12 };
 
@@ -59,9 +61,9 @@
     return k < 1 / 3 - 1e-9 ? 'low' : k > 2 / 3 + 1e-9 ? 'high' : 'medium';
   }
 
-  /** The index of the slot holding `now`, or -1. */
-  function slotAt(slots, now) {
-    return slots.findIndex(s => s.start <= now && now < s.start + HOUR);
+  /** The index of the slot (`len` ms long) holding `now`, or -1. */
+  function slotAt(slots, now, len = HOUR) {
+    return slots.findIndex(s => s.start <= now && now < s.start + len);
   }
 
   /** The cheapest slot from `from` up to `hours` ahead (the first of equal ones), or -1. As the Electricity Overview. */
@@ -107,7 +109,7 @@
     let snapshot = null; // { prices: [{start, price}], fixedPrice, currency, language }
     let messageText = null;
     let messageTimer = null;
-    let hourTimer = null;
+    let slotTimer = null;
 
     root.classList.add('pb');
     if (opts.tint === false) root.classList.add('no-tint');
@@ -121,11 +123,18 @@
     const barsEl = el('div', { class: 'pb-bars' }, chart);
     const axisEl = el('div', { class: 'pb-axis' }, chart);
     const messageEl = el('div', { class: 'pb-message', dir: 'auto' }, root);
-    // Kept across renders, like the Electricity Overview's SVG elements.
-    const bars = Array.from({ length: hours }, () => el('div', { class: 'pb-bar' }, barsEl));
+    // Kept across renders, like the Electricity Overview's SVG elements; made again only when the count changes
+    // (hourly ↔ 15-minute prices: 4 bars an hour).
+    let bars = [];
     chart.dataset.hours = String(hours);
+    function ensureBars(count) {
+      if (bars.length === count) return;
+      barsEl.textContent = '';
+      bars = Array.from({ length: count }, () => el('div', { class: 'pb-bar' }, barsEl));
+      if (count > hours) chart.dataset.quarters = ''; else delete chart.dataset.quarters;
+    }
 
-    /** `/price`'s answer: `{prices, fixedPrice, currency, language}`. */
+    /** `/price`'s answer: `{prices, quarters, fixedPrice, currency, language}` (`quarters`: 15-minute prices or null). */
     function setState(state) {
       snapshot = state && Array.isArray(state.prices) ? state : null;
       messageText = null;
@@ -156,25 +165,29 @@
     }
 
     /**
-     * What the tile shows at `now`, or null without a price for the current hour: the price now with its level,
-     * and the coming `hours` from the current one as bars. Each bar has its level in its own day, so tomorrow's
-     * cheap hours are green against tomorrow; the heights share one scale, the window's lowest to highest.
+     * What the tile shows at `now`, or null without a price for the current slot: the price now with its level,
+     * and the coming `hours` from the current slot as bars, one per hour or, with 15-minute prices, per quarter.
+     * Each bar has its level in its own day, so tomorrow's cheap hours are green against tomorrow; the heights
+     * share one scale, the window's lowest to highest.
      */
     function model(now) {
       if (!snapshot) return null;
-      const slots = snapshot.prices;
+      const fine = Array.isArray(snapshot.quarters) && snapshot.quarters.length > 0;
+      const slots = fine ? snapshot.quarters : snapshot.prices;
+      const len = fine ? QUARTER : HOUR;
+      const count = hours * HOUR / len;
       const unit = currencyUnit(snapshot.currency);
       if (typeof snapshot.fixedPrice === 'number') {
-        return { level: null, label: t('fixedPrice'), value: nf(snapshot.fixedPrice, 2), unit, bars: null };
+        return { level: null, label: t('fixedPrice'), value: nf(snapshot.fixedPrice, 2), unit, bars: null, len: HOUR };
       }
-      const i = slotAt(slots, now);
+      const i = slotAt(slots, now, len);
       const price = i >= 0 ? slots[i].price : null;
       if (typeof price !== 'number') return null;
       const days = {};
       const level = priceLevel(price, dayPrices(slots, now, days));
       const first = slots[i].start;
-      const window = Array.from({ length: hours }, (_, k) => {
-        const start = first + k * HOUR;
+      const window = Array.from({ length: count }, (_, k) => {
+        const start = first + k * len;
         const s = slots[i + k];
         const p = s && s.start === start && typeof s.price === 'number' ? s.price : null;
         return { start, price: p, level: p == null ? null : priceLevel(p, dayPrices(slots, start, days)), height: 0, lowest: false };
@@ -183,7 +196,7 @@
       const min = Math.min(...known);
       const max = Math.max(...known);
       const flat = max - min < 1e-9;
-      const low = lowestSlot(slots, i, hours - 1);
+      const low = lowestSlot(slots, i, count - 1);
       for (const b of window) {
         if (b.price != null) b.height = flat ? 0.6 : 0.2 + 0.8 * (b.price - min) / (max - min);
         b.lowest = !flat && low >= 0 && b.start === slots[low].start;
@@ -192,14 +205,16 @@
       const step = TICK_STEP[hours];
       const ticks = [];
       window.forEach((b, k) => {
-        const h = new Date(b.start).getHours();
-        if (h % step || k < hours * 0.18 || k > hours * 0.92) return;
-        ticks.push({ at: k / hours, text: h === 0 ? weekday(b.start) : pad2(h) });
+        const d = new Date(b.start);
+        const h = d.getHours();
+        if (d.getMinutes() || h % step || k < count * 0.18 || k > count * 0.92) return;
+        ticks.push({ at: k / count, text: h === 0 ? weekday(b.start) : pad2(h) });
       });
-      return { level, label: t(level), value: nf(price, 2), unit, bars: window, ticks };
+      return { level, label: t(level), value: nf(price, 2), unit, bars: window, ticks, len };
     }
 
     function renderBars(m) {
+      ensureBars(m.bars.length);
       bars.forEach((bar, k) => {
         const b = m.bars[k];
         bar.className = `pb-bar${k === 0 ? ' now' : ''}${b.price == null ? ' none' : ''}${b.lowest ? ' lowest' : ''}`;
@@ -230,16 +245,16 @@
       messageEl.textContent = text || '';
       messageEl.style.display = text ? '' : 'none';
       messageEl.classList.toggle('error', !!messageText && !!m);
-      scheduleHour(now);
+      scheduleNext(now, m ? m.len : HOUR);
 
       const h = Math.ceil(root.getBoundingClientRect().height);
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    /** Re-renders on the hour, when the current slot moves on (the 5-min refresh brings new days). */
-    function scheduleHour(now) {
-      if (hourTimer) clearTimeout(hourTimer);
-      hourTimer = setTimeout(render, Math.floor(now / HOUR) * HOUR + HOUR - now + 50);
+    /** Re-renders when the current slot (an hour or a quarter) moves on (the 5-min refresh brings new days). */
+    function scheduleNext(now, len) {
+      if (slotTimer) clearTimeout(slotTimer);
+      slotTimer = setTimeout(render, Math.floor(now / len) * len + len - now + 50);
     }
 
     return { setState, setMessage, render, t };

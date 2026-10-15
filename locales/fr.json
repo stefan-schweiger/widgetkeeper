@@ -51,6 +51,8 @@
     "closed": "Fermé",
     "motion": "Mouvement",
     "noMotion": "Aucun mouvement",
+    "presence": "Présence",
+    "noPresence": "Aucune présence",
     "nothingDetected": "Rien détecté",
     "since": "depuis __time__"
   },
@@ -135,6 +137,13 @@
     "selectSlots": "Choisissez des valeurs dans les réglages du widget.",
     "error": "Impossible de charger les valeurs.",
     "unavailable": "Indisponible"
+  },
+  "charts": {
+    "now": "Maint.",
+    "selectChart": "Choisissez une valeur d'appareil dans les réglages du widget.",
+    "error": "Impossible de charger le graphique.",
+    "unavailable": "Indisponible",
+    "noHistory": "Pas encore d'historique."
   },
   "lights": {
     "selectDevices": "Choisissez des lampes dans les réglages du widget.",
@@ -317,6 +326,15 @@
     "keyInvalid": "La clé API n’a pas été acceptée.",
     "speakerAction": "Action de l’enceinte"
   },
+  "textline": {
+    "noMessage": "Aucun message",
+    "typeNote": "Saisissez votre note dans les réglages du widget.",
+    "variableMissing": "Variable introuvable",
+    "selectVariable": "Choisissez une variable texte dans les réglages du widget.",
+    "error": "Impossible de charger le texte.",
+    "boardInUse": "A un texte",
+    "boardNew": "Nouvelle note"
+  },
   "stack": {
     "selectDashboard": "Choisissez un tableau de bord dans les réglages du widget.",
     "noKey": "Pour lire le tableau de bord, ajoutez une clé API dans les réglages de l'app.",
@@ -423,6 +441,7 @@
       "values": "N'importe quelle valeur d'appareil en tuile compacte.",
       "lights": "Des tuiles de lumières avec luminosité et couleur à portée.",
       "sparklines": "Des valeurs avec un petit graphique de leur historique.",
+      "charts": "Un ou deux graphiques de n'importe quelle valeur, comme ceux de l'électricité.",
       "variables": "Les variables de Flow en lignes à basculer ou modifier.",
       "flows": "Lancez des Flows d'un geste, avec vos couleurs et icônes.",
       "price": "Le prix de l'électricité maintenant et dans les prochaines heures.",
@@ -431,6 +450,8 @@
       "curtains": "Ouvrir, fermer ou régler rideaux et stores.",
       "media": "Musique, volume et sources d'une enceinte sur une carte.",
       "clock": "L'heure et la date, avec la météo actuelle si vous voulez.",
+      "textline": "Une note sur une tuile ou un Post-it, saisie par vous ou écrite par vos Flows.",
+      "spacer": "Un espace vide pour aligner les widgets en colonnes.",
       "stack": "Les widgets d'un autre tableau de bord, à tour de rôle."
     }
   }

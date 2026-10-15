@@ -111,3 +111,35 @@ describe('set', () => {
     expect(c.sent).toEqual(['windowcoverings_state="up"']);
   });
 });
+
+describe('blinds that only tilt', () => {
+  const tilt = (caps: object = {}) => fakeDevice({
+    id: 'tilt', name: 'Office blind', class: 'blinds',
+    caps: { windowcoverings_tilt_set: { type: 'number', value: 0.5 }, measure_battery: { type: 'number', value: 90 }, ...caps },
+  });
+
+  it('tracks the tilt and sends its changes', async () => {
+    const t = tilt();
+    const { service, homey } = setup([t]);
+    const [state] = await service.getState(['tilt']);
+    expect(state).toMatchObject({ id: 'tilt', kind: 'blinds', caps: { windowcoverings_tilt_set: { value: 0.5, setable: true } } });
+    expect(Object.keys((state as any).caps)).toEqual(['windowcoverings_tilt_set']);
+    t.report('windowcoverings_tilt_set', 0);
+    expect(homey.api.realtime).toHaveBeenCalledWith(CURTAINS_STATE_EVENT, { deviceId: 'tilt', capabilityId: 'windowcoverings_tilt_set', value: 0 });
+  });
+
+  it("sets a position as the tilt, but not an open or close (which end is open is the widget's setting)", async () => {
+    const t = tilt();
+    const { service } = setup([t]);
+    await service.set('tilt', { position: 0.5 });
+    expect(t.sent).toEqual(['windowcoverings_tilt_set=0.5']);
+    await expect(service.set('tilt', { action: 'open' })).rejects.toThrow("can't be opened or closed");
+  });
+
+  it('keeps the position for a blind that has both', async () => {
+    const t = tilt({ windowcoverings_set: { type: 'number', value: 1 } });
+    const { service } = setup([t]);
+    await service.set('tilt', { position: 0.3 });
+    expect(t.sent).toEqual(['windowcoverings_set=0.3']);
+  });
+});

@@ -51,6 +51,8 @@
     "closed": "Geschlossen",
     "motion": "Bewegung",
     "noMotion": "Keine Bewegung",
+    "presence": "Anwesenheit",
+    "noPresence": "Keine Anwesenheit",
     "nothingDetected": "Nichts erkannt",
     "since": "seit __time__"
   },
@@ -135,6 +137,13 @@
     "selectSlots": "Wähle Gerätewerte in den Widget-Einstellungen.",
     "error": "Werte konnten nicht geladen werden.",
     "unavailable": "Nicht verfügbar"
+  },
+  "charts": {
+    "now": "Jetzt",
+    "selectChart": "Wähle einen Gerätewert in den Widget-Einstellungen.",
+    "error": "Das Diagramm konnte nicht geladen werden.",
+    "unavailable": "Nicht verfügbar",
+    "noHistory": "Noch kein Verlauf."
   },
   "lights": {
     "selectDevices": "Wähle Lampen in den Widget-Einstellungen.",
@@ -317,6 +326,15 @@
     "keyInvalid": "Der API-Schlüssel wurde nicht akzeptiert.",
     "speakerAction": "Lautsprecheraktion"
   },
+  "textline": {
+    "noMessage": "Keine Nachricht",
+    "typeNote": "Gib deine Notiz in den Widget-Einstellungen ein.",
+    "variableMissing": "Variable nicht gefunden",
+    "selectVariable": "Wähle in den Widget-Einstellungen eine Textvariable.",
+    "error": "Der Text konnte nicht geladen werden.",
+    "boardInUse": "Hat einen Text",
+    "boardNew": "Neue Notiz"
+  },
   "stack": {
     "selectDashboard": "Wähle ein Dashboard in den Widget-Einstellungen.",
     "noKey": "Füge in den App-Einstellungen einen API-Schlüssel hinzu, um das Dashboard zu lesen.",
@@ -423,6 +441,7 @@
       "values": "Jeder Gerätewert als kompakte Kachel.",
       "lights": "Lichtkacheln mit Helligkeit und Farbe griffbereit.",
       "sparklines": "Werte mit einem kleinen Diagramm ihres Verlaufs.",
+      "charts": "Ein oder zwei Diagramme beliebiger Werte, wie die für Strom.",
       "variables": "Flow-Variablen als Zeilen zum Schalten oder Ändern.",
       "flows": "Flows per Tipp starten, in deinen Farben und Symbolen.",
       "price": "Der Strompreis jetzt und in den nächsten Stunden.",
@@ -431,6 +450,8 @@
       "curtains": "Vorhänge und Rollos öffnen, schließen oder einstellen.",
       "media": "Musik, Lautstärke und Quellen eines Lautsprechers auf einer Karte.",
       "clock": "Uhrzeit und Datum, auf Wunsch mit dem aktuellen Wetter.",
+      "textline": "Eine Notiz als Kachel oder Haftnotiz, selbst eingegeben oder von deinen Flows geschrieben.",
+      "spacer": "Leerer Platz, um Widgets in Spalten auszurichten.",
       "stack": "Widgets von einem anderen Dashboard, abwechselnd."
     }
   }

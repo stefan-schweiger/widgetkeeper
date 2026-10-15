@@ -1,0 +1,5 @@
+/* Nothing to see: the spacer is only its height, transparent in light and dark mode. */
+html, body { margin: 0; }
+/* Homey paints body light until .homey-dark-mode arrives (see Quick Actions), so transparent wins outright. */
+html, body { background: transparent !important; }
+.sp { display: block; width: 100%; }

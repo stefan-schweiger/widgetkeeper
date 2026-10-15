@@ -616,7 +616,7 @@
     onTap(speakersClose, (e) => { e.stopPropagation(); setSpeakers(false); });
     onTap(speakersPanel, () => setSpeakers(false));
     onTap(closeBtn, (e) => { e.stopPropagation(); setPanel(false); });
-    // A tap on the overlay outside its buttons closes it, as Sensor Dots' overlay.
+    // A tap on the overlay outside its buttons closes it, as Activity Dots' overlay.
     onTap(panel, () => setPanel(false));
 
     /** Opens or closes the speaker list, reading it again each time (the last read shows meanwhile). */

@@ -1,5 +1,5 @@
 /*
- * Thermostat Shortcuts: a header with the device and three preset buttons. A button is
+ * Thermostat Presets: a header with the device and three preset buttons. A button is
  * highlighted while the device's state matches its preset; when none matches, the header says
  * what the device is currently doing. Plain browser JS (served as-is).
  */

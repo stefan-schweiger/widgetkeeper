@@ -1,0 +1,84 @@
+{
+  "id": "textline_clear",
+  "title": {
+    "en": "Clear a note",
+    "nl": "Een notitie wissen",
+    "de": "Eine Notiz löschen",
+    "fr": "Effacer une note",
+    "it": "Cancella una nota",
+    "sv": "Rensa en anteckning",
+    "no": "Tøm et notat",
+    "es": "Borrar una nota",
+    "da": "Ryd en note",
+    "ru": "Очистить заметку",
+    "pl": "Wyczyść notatkę",
+    "ko": "메모 지우기",
+    "ar": "مسح ملاحظة"
+  },
+  "titleFormatted": {
+    "en": "Clear the note [[board]]",
+    "nl": "Wis de notitie [[board]]",
+    "de": "Die Notiz [[board]] löschen",
+    "fr": "Effacer la note [[board]]",
+    "it": "Cancella la nota [[board]]",
+    "sv": "Rensa anteckningen [[board]]",
+    "no": "Tøm notatet [[board]]",
+    "es": "Borrar la nota [[board]]",
+    "da": "Ryd noten [[board]]",
+    "ru": "Очистить заметку [[board]]",
+    "pl": "Wyczyść notatkę [[board]]",
+    "ko": "메모 [[board]] 지우기",
+    "ar": "امسح الملاحظة [[board]]"
+  },
+  "hint": {
+    "en": "The widgets show their own message again.",
+    "nl": "De widgets tonen weer hun eigen bericht.",
+    "de": "Die Widgets zeigen wieder ihre eigene Nachricht.",
+    "fr": "Les widgets affichent de nouveau leur propre message.",
+    "it": "I widget mostrano di nuovo il proprio messaggio.",
+    "sv": "Widgetarna visar sitt eget meddelande igen.",
+    "no": "Widgetene viser sin egen melding igjen.",
+    "es": "Los widgets vuelven a mostrar su propio mensaje.",
+    "da": "Widgettene viser deres egen besked igen.",
+    "ru": "Виджеты снова показывают своё сообщение.",
+    "pl": "Widżety znów pokazują własną wiadomość.",
+    "ko": "위젯이 다시 자체 메시지를 표시합니다.",
+    "ar": "تعرض الأدوات رسالتها الخاصة مجددًا."
+  },
+  "args": [
+    {
+      "type": "autocomplete",
+      "name": "board",
+      "title": {
+        "en": "Note",
+        "nl": "Notitie",
+        "de": "Notiz",
+        "fr": "Note",
+        "it": "Nota",
+        "sv": "Anteckning",
+        "no": "Notat",
+        "es": "Nota",
+        "da": "Note",
+        "ru": "Заметка",
+        "pl": "Notatka",
+        "ko": "메모",
+        "ar": "الملاحظة"
+      },
+      "placeholder": {
+        "en": "Note",
+        "nl": "Notitie",
+        "de": "Notiz",
+        "fr": "Note",
+        "it": "Nota",
+        "sv": "Anteckning",
+        "no": "Notat",
+        "es": "Nota",
+        "da": "Note",
+        "ru": "Заметка",
+        "pl": "Notatka",
+        "ko": "메모",
+        "ar": "الملاحظة"
+      }
+    }
+  ]
+}

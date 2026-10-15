@@ -1,0 +1,171 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/textline-preview.html).
+ * The tile copies Flow Variables' row (widgets/variables/public/widget.css); the colours are Device Values' Flow colours.
+ */
+
+/* Caveat (SIL Open Font License, fonts/OFL.txt): the Post-it's handwriting. Korean and Arabic use the system font. */
+@font-face {
+  font-family: 'Widgetkeeper Caveat'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url(fonts/caveat-cyrillic.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Widgetkeeper Caveat'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url(fonts/caveat-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
+    U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Widgetkeeper Caveat'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url(fonts/caveat-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F,
+    U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+.tl {
+  --tl-tile: var(--homey-background-color, #FFFFFF);
+  --tl-text: var(--homey-text-color, #EDEEF0);
+  --tl-muted: var(--homey-text-color-light, #9C9DA5);
+  --tl-red: var(--homey-color-red, #F25F5C);
+  --tl-orange: var(--homey-color-orange, #F07A1F);
+  --tl-yellow: #F5C518;
+  --tl-green: var(--homey-color-green, #71D51B);
+  --tl-blue: var(--homey-color-blue, #2F8DF6);
+  --tl-purple: #9033FC;
+  --tl-fill-mix: 22%; /* Device Values' Flow colour tint */
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --tl-fs-small: var(--homey-font-size-small, 14px); --tl-lh-small: var(--homey-line-height-small, 20px);
+  --tl-fs-default: var(--homey-font-size-default, 17px); --tl-lh-default: var(--homey-line-height-default, 24px);
+  --tl-fs-xlarge: var(--homey-font-size-xlarge, 24px); --tl-lh-xlarge: var(--homey-line-height-xlarge, 32px);
+  --tl-regular: var(--homey-font-weight-regular, 400);
+  --tl-medium: var(--homey-font-weight-medium, 500);
+  --tl-bold: var(--homey-font-weight-bold, 700);
+  --tl-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+}
+/* Dark mode: the tile looks like a native device tile, darker than the default widget background. */
+.homey-dark-mode .tl, .tl.homey-dark-mode { --tl-tile: #181920; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
+html, body { background: transparent !important; }
+
+.tl { min-width: 0; color: var(--tl-text); }
+.tl * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL text gets its punctuation right; the alignment is the setting's. */
+.tl [dir="auto"] { text-align: inherit; }
+
+/* ---------------------------------------------------------------- the tile */
+
+/* One line (48 px): the optional icon, then the text. */
+.tl-tile {
+  position: relative; display: flex; align-items: center; gap: var(--homey-su-2, 8px); min-width: 0; min-height: 48px;
+  background: var(--tl-tile); border-radius: var(--tl-radius); padding: var(--homey-su-3, 12px) var(--homey-su-4, 16px);
+  user-select: none; -webkit-user-select: none;
+}
+.tl[data-size="large"] .tl-tile { padding-block: var(--homey-su-2, 8px); }
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .tl-tile::after, .tl.homey-dark-mode .tl-tile::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.tl[data-align="center"] .tl-tile { justify-content: center; text-align: center; }
+.tl[data-align="right"] .tl-tile { justify-content: flex-end; text-align: right; }
+
+.tl-icon {
+  flex: 0 0 auto; width: var(--homey-icon-size-medium, 20px); height: var(--homey-icon-size-medium, 20px);
+  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.tl-icon .filled { fill: currentColor; stroke: none; }
+
+.tl-tile .tl-wrap { flex: 0 1 auto; min-width: 0; overflow: hidden; }
+.tl-tile .tl-text {
+  display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: var(--tl-fs-default); line-height: var(--tl-lh-default); font-weight: var(--tl-medium);
+}
+.tl[data-size="small"] .tl-tile .tl-text { font-size: var(--tl-fs-small); line-height: var(--tl-lh-small); font-weight: var(--tl-regular); }
+.tl[data-size="large"] .tl-tile .tl-text { font-size: var(--tl-fs-xlarge); line-height: var(--tl-lh-xlarge); font-weight: var(--tl-bold); }
+.tl.muted .tl-tile { color: var(--tl-muted); }
+
+/* Scrolling: the whole text, moved to its end and back, with a pause at each end and soft edges. */
+.tl-tile .tl-wrap.scrolling { flex: 1 1 auto; -webkit-mask-image: linear-gradient(to right, transparent, #000 8px, #000 calc(100% - 8px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8px, #000 calc(100% - 8px), transparent); }
+.tl-tile .tl-wrap.scrolling .tl-text {
+  display: inline-block; overflow: visible; text-overflow: clip; padding-inline: 8px; margin-inline: -8px;
+  animation: tl-scroll var(--tl-scroll-s, 8s) ease-in-out infinite alternate;
+}
+@keyframes tl-scroll {
+  0%, 15% { transform: translateX(0); }
+  85%, 100% { transform: translateX(var(--tl-shift, 0)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tl-tile .tl-wrap.scrolling .tl-text { animation: none; }
+}
+
+/* A colour (the setting's, or a Flow's): Device Values' tint. */
+.tl-tile[data-color="red"] { --tl-color: var(--tl-red); }
+.tl-tile[data-color="orange"] { --tl-color: var(--tl-orange); }
+.tl-tile[data-color="yellow"] { --tl-color: var(--tl-yellow); }
+.tl-tile[data-color="green"] { --tl-color: var(--tl-green); }
+.tl-tile[data-color="blue"] { --tl-color: var(--tl-blue); }
+.tl-tile[data-color="purple"] { --tl-color: var(--tl-purple); }
+.tl-tile[data-color] { background: color-mix(in srgb, var(--tl-color) var(--tl-fill-mix), var(--tl-tile)); }
+
+/* ---------------------------------------------------------------- the Post-it note */
+
+/* The frame leaves room around the note for its tilt and its shadow. It's paper, so it's the same in dark mode. */
+.tl[data-style="postit"] { padding: 18px 16px 24px; display: flex; justify-content: center; }
+/*
+ * The note holds the tilt and the shadows; the paper is its child, so the curl's shadow (::after) stays under it.
+ * The paper's own shadow is a drop-shadow on the note, so it follows the folded corner's cut.
+ */
+.tl-note {
+  --tl-paper: #FFEF7A; --tl-paper-top: #FFF4A0; --tl-paper-low: #FBE35E;
+  --tl-ink: #22305E; /* a ballpoint's blue-black */
+  --tl-fold: 24px; /* the folded corner's square */
+  position: relative; width: min(100%, 260px); transform: rotate(var(--tl-tilt, -2deg));
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / .16)) drop-shadow(0 3px 4px rgb(0 0 0 / .12));
+}
+.tl-paper {
+  position: relative; min-height: 150px; display: flex; align-items: center;
+  /* More room below than above: Caveat's letters sit low in their line, so even padding read as text below the middle. */
+  padding: 16px 16px 24px;
+  color: var(--tl-ink);
+  /* A touch lighter where the glue holds it flat, a little darker towards the lifted bottom. */
+  background: linear-gradient(180deg, var(--tl-paper-top) 0%, var(--tl-paper) 35%, var(--tl-paper) 70%, var(--tl-paper-low) 100%);
+  border-radius: 1px;
+  /* The bottom right corner cut off on the diagonal: it's folded over (::after). */
+  -webkit-mask-image: linear-gradient(315deg, transparent calc(var(--tl-fold) * .7071), #000 calc(var(--tl-fold) * .7071 + .5px));
+  mask-image: linear-gradient(315deg, transparent calc(var(--tl-fold) * .7071), #000 calc(var(--tl-fold) * .7071 + .5px));
+  user-select: none; -webkit-user-select: none;
+}
+/* The folded "ear": the cut-off corner turned over onto the paper, its underside a shade darker, with a soft shadow. */
+.tl-paper::after {
+  content: ''; position: absolute; right: 0; bottom: 0; width: var(--tl-fold); height: var(--tl-fold); pointer-events: none;
+  background: linear-gradient(to bottom right, color-mix(in srgb, var(--tl-paper-low) 92%, #000) 0%,
+    color-mix(in srgb, var(--tl-paper-low) 78%, #000) 50%, transparent 50%);
+  filter: drop-shadow(-1px -1px 1.5px rgb(0 0 0 / .18));
+}
+/* The lifted bottom: a soft shadow under the paper's lower edge, kept clear of the folded corner. */
+.tl-note::after {
+  content: ''; position: absolute; z-index: -1; left: 6px; right: 22px; bottom: 4px; height: 16px;
+  border-radius: 50%; box-shadow: 0 8px 10px rgb(0 0 0 / .32); pointer-events: none;
+}
+.tl-note .tl-wrap { flex: 1 1 auto; min-width: 0; }
+.tl-note .tl-text {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
+  font-family: 'Widgetkeeper Caveat', 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+  font-weight: 500; font-size: 30px; line-height: 1.1; overflow-wrap: anywhere;
+  white-space: pre-line; /* a typed message's line breaks; the tile's one line turns them into spaces */
+}
+.tl[data-align="center"] .tl-note { text-align: center; }
+.tl[data-align="right"] .tl-note { text-align: right; }
+.tl.muted .tl-note .tl-text { opacity: .55; }
+
+.tl-note[data-color="orange"] { --tl-paper: #FFCB8A; --tl-paper-top: #FFDDB2; --tl-paper-low: #FCBC6C; }
+.tl-note[data-color="red"] { --tl-paper: #FFA9B3; --tl-paper-top: #FFC6CD; --tl-paper-low: #FB939F; }
+.tl-note[data-color="purple"] { --tl-paper: #D6C1FF; --tl-paper-top: #E5D8FF; --tl-paper-low: #C8ADFB; }
+.tl-note[data-color="blue"] { --tl-paper: #A8D8FF; --tl-paper-top: #C6E6FF; --tl-paper-low: #92CCFB; }
+.tl-note[data-color="green"] { --tl-paper: #BDEDA0; --tl-paper-top: #D3F4BF; --tl-paper-low: #A9E486; }

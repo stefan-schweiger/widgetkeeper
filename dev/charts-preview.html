@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Charts widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/electricity/public/chart.css">
+  <link rel="stylesheet" href="../widgets/charts/public/widget.css">
+  <script src="../widgets/electricity/public/chart.js"></script>
+  <script src="../widgets/charts/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <link rel="stylesheet" href="preview.css">
+  <style>
+    .card { background: var(--homey-background-color, #1F2029); border-radius: 20px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.3); box-sizing: border-box; }
+    .light { color: var(--ew-text); }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark · one chart · 24 h · area</span><div class="card homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · light · two charts · area + bars</span><div class="card light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>300 px · dark · two charts · line (smooth) + bars 7 d</span><div class="card homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · dark · on one chart · area + smooth line</span><div class="card homey-dark-mode" style="width:358px"><div id="o1"></div></div></div>
+  <div class="col"><span>300 px · light · on one chart · bars + bars, from zero</span><div class="card light" style="width:300px"><div id="o2"></div></div></div>
+  <div class="col"><span>400 px · dark · outdoor below zero · yellow on (fit) / off (zero)</span><div class="card homey-dark-mode" style="width:400px"><div id="w4"></div></div></div>
+  <div class="col"><span>358 px · light · below zero in yellow · bars + line</span><div class="card light" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · dark · solar power, start at zero · no header</span><div class="card homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px · dark · 1 h, live every 2 s · tapped on load</span><div class="card homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
+  <div class="col"><span>358 px · dark · no history · missing device</span><div class="card homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
+  <div class="col"><span>358 px · nothing picked</span><div class="card homey-dark-mode" style="width:358px"><div id="w9"></div></div></div>
+
+  <script>
+    const HOUR = 3600e3;
+    const cap = (extra = {}) => ({ title: '', type: 'number', units: null, decimals: null, min: null, max: null, values: null, icon: null, ...extra });
+    /** 120 points over the span, from `f(x)` with x 0…1 (oldest → now). */
+    const series = (spanMs, f) => Array.from({ length: 120 }, (_, i) => [Date.now() - spanMs + (i + 0.5) * spanMs / 120, f(i / 119)]);
+    const round = (v, d) => Math.round(v * 10 ** d) / 10 ** d;
+    const day = (spanMs, x) => Math.sin((x * spanMs / (24 * HOUR) - 0.3) * 2 * Math.PI);
+    const entry = (deviceId, capabilityId, name, capability, points) => ({ deviceId, capabilityId, name, capability, value: points[points.length - 1][1], points });
+    const temp = spanMs => entry('a', 'measure_temperature', 'Living room', cap({ title: 'Temperature', units: '°C', decimals: 1 }),
+      series(spanMs, x => round(21.2 + 1.6 * day(spanMs, x) + 0.2 * Math.sin(x * 40), 1)));
+    const outdoor = spanMs => entry('o', 'measure_temperature', 'Outdoor', cap({ title: 'Temperature', units: '°C', decimals: 1 }),
+      series(spanMs, x => round(1.5 + 4.5 * day(spanMs, x) + 0.3 * Math.sin(x * 50), 1)));
+    const power = spanMs => entry('c', 'measure_power', 'Electricity Meter', cap({ title: 'Power', units: 'W', decimals: 0 }),
+      series(spanMs, x => Math.round(450 + (Math.sin(x * 23) > 0.6 ? 2400 : 0) + 120 * Math.sin(x * 90))));
+    const solar = spanMs => entry('s', 'measure_power', 'Electricity Meter', cap({ title: 'Power', units: 'W', decimals: 0 }),
+      series(spanMs, x => Math.round(600 - 2600 * Math.max(0, day(spanMs, x)) + 200 * Math.sin(x * 70))));
+    const hum = spanMs => entry('b', 'measure_humidity', 'Bathroom', cap({ title: 'Humidity', units: '%', decimals: 0 }),
+      series(spanMs, x => Math.round(62 - 14 * x + 9 * Math.max(0, Math.sin(x * 17)))));
+
+    const make = (id, opts) => createChartsWidget(document.getElementById(id), { t: devT, language: 'en', ...opts });
+    make('w1', { charts: [{ span: '24h' }] }).setState([temp(24 * HOUR)]);
+    make('w2', { charts: [{ span: '24h' }, { span: '24h', style: 'bars', color: 'green' }] }).setState([temp(24 * HOUR), power(24 * HOUR)]);
+    make('w3', { charts: [{ span: '2d', style: 'line', smooth: true, color: 'purple' }, { span: '7d', style: 'bars', color: 'orange' }] })
+      .setState([hum(48 * HOUR), power(168 * HOUR)]);
+    make('o1', { overlay: true, charts: [{ span: '24h', color: 'purple' }, { style: 'line', smooth: true, color: 'orange' }] }).setState([outdoor(24 * HOUR), power(24 * HOUR)]);
+    make('o2', { overlay: true, charts: [{ span: '6h', style: 'bars', range: 'zero' }, { style: 'bars', color: 'green' }] }).setState([power(6 * HOUR), solar(6 * HOUR)]);
+    make('w4', { charts: [{ span: '24h', negative: true }, { span: '24h', range: 'zero', color: 'red' }] }).setState([outdoor(24 * HOUR), outdoor(24 * HOUR)]);
+    make('w5', { charts: [{ span: '24h', style: 'bars', negative: true }, { span: '6h', style: 'line', negative: true, color: 'yellow' }] })
+      .setState([outdoor(24 * HOUR), solar(6 * HOUR)]);
+    make('w6', { showHeader: false, charts: [{ span: '24h', range: 'zero', negative: true, smooth: true, title: 'Solar' }] }).setState([solar(24 * HOUR)]);
+    const live = make('w7', { charts: [{ span: '1h' }, { span: '1h', style: 'bars', color: 'green' }] });
+    live.setState([temp(HOUR), power(HOUR)]);
+    let t = live && 21.4;
+    setInterval(() => {
+      t = round(t + (Math.random() - 0.5) * 0.4, 1);
+      live.pushChange({ deviceId: 'a', capabilityId: 'measure_temperature', value: t });
+    }, 2000);
+    const svg = document.querySelector('#w7 .ch-chart svg');
+    const r = svg.getBoundingClientRect();
+    svg.dispatchEvent(new PointerEvent('pointerdown', { clientX: r.left + r.width * 0.6, pointerType: 'mouse' }));
+    make('w8', { charts: [{ span: '24h' }, { span: '24h' }] }).setState([
+      { deviceId: 'g', capabilityId: 'measure_temperature', name: 'Garage', capability: cap({ title: 'Temperature', units: '°C', decimals: 1 }), value: null, points: [] },
+      { deviceId: 'h', capabilityId: 'measure_temperature', missing: true },
+    ]);
+    const empty = make('w9', {});
+    empty.setMessage(empty.t('selectChart'));
+  </script>
+</body>
+</html>

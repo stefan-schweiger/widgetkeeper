@@ -51,6 +51,8 @@
     "closed": "닫힘",
     "motion": "동작",
     "noMotion": "동작 없음",
+    "presence": "재실",
+    "noPresence": "재실 없음",
     "nothingDetected": "감지 없음",
     "since": "__time__부터"
   },
@@ -135,6 +137,13 @@
     "selectSlots": "위젯 설정에서 기기 값을 선택하세요.",
     "error": "값을 불러올 수 없습니다.",
     "unavailable": "사용할 수 없음"
+  },
+  "charts": {
+    "now": "지금",
+    "selectChart": "위젯 설정에서 기기 값을 선택하세요.",
+    "error": "차트를 불러올 수 없습니다.",
+    "unavailable": "사용할 수 없음",
+    "noHistory": "아직 기록이 없습니다."
   },
   "lights": {
     "selectDevices": "위젯 설정에서 조명을 선택하세요.",
@@ -317,6 +326,15 @@
     "keyInvalid": "API 키가 승인되지 않았습니다.",
     "speakerAction": "스피커 동작"
   },
+  "textline": {
+    "noMessage": "메시지 없음",
+    "typeNote": "위젯 설정에서 메모를 입력하세요.",
+    "variableMissing": "변수를 찾을 수 없음",
+    "selectVariable": "위젯 설정에서 텍스트 변수를 고르세요.",
+    "error": "텍스트를 불러올 수 없습니다.",
+    "boardInUse": "텍스트 있음",
+    "boardNew": "새 메모"
+  },
   "stack": {
     "selectDashboard": "위젯 설정에서 대시보드를 선택하세요.",
     "noKey": "대시보드를 읽으려면 앱 설정에서 API 키를 추가하세요.",
@@ -423,6 +441,7 @@
       "values": "기기 값을 컴팩트한 타일로.",
       "lights": "밝기와 색상을 바로 조절하는 조명 타일.",
       "sparklines": "최근 기록을 작은 차트로 보여 주는 값.",
+      "charts": "전기 차트처럼 어떤 값이든 차트 1~2개로 표시합니다.",
       "variables": "켜고 끄거나 바꿀 수 있는 플로우 변수 행.",
       "flows": "내 색상과 아이콘으로 탭 한 번에 플로우 시작.",
       "price": "지금과 앞으로 몇 시간의 전기 요금.",
@@ -431,6 +450,8 @@
       "curtains": "커튼과 블라인드를 열고 닫거나 조절.",
       "media": "스피커의 음악, 볼륨, 소스를 카드 하나에.",
       "clock": "시간과 날짜, 원하면 현재 날씨도 함께.",
+      "textline": "타일이나 포스트잇에 직접 입력하거나 Flow가 쓰는 메모입니다.",
+      "spacer": "열마다 위젯을 맞추는 빈 공간.",
       "stack": "다른 대시보드의 위젯을 번갈아."
     }
   }

@@ -337,19 +337,19 @@
               {
                 "id": "thermostat",
                 "title": {
-                  "en": "Thermostat Shortcuts",
-                  "nl": "Thermostaatsnelkoppelingen",
-                  "de": "Thermostat-Schnelltasten",
-                  "fr": "Raccourcis thermostat",
-                  "it": "Scorciatoie termostato",
-                  "sv": "Termostatgenvägar",
-                  "no": "Termostatsnarveier",
-                  "es": "Accesos directos de termostato",
-                  "da": "Termostatgenveje",
-                  "ru": "Быстрые кнопки термостата",
-                  "pl": "Skróty termostatu",
-                  "ko": "온도 조절기 바로가기",
-                  "ar": "اختصارات منظم الحرارة"
+                  "en": "Thermostat Presets",
+                  "nl": "Thermostaatstanden",
+                  "de": "Thermostat-Presets",
+                  "fr": "Préréglages thermostat",
+                  "it": "Preimpostazioni termostato",
+                  "sv": "Termostatlägen",
+                  "no": "Termostatinnstillinger",
+                  "es": "Ajustes del termostato",
+                  "da": "Termostatindstillinger",
+                  "ru": "Пресеты термостата",
+                  "pl": "Ustawienia termostatu",
+                  "ko": "온도 조절기 프리셋",
+                  "ar": "إعدادات منظم الحرارة"
                 }
               },
               {
@@ -391,19 +391,19 @@
               {
                 "id": "sensordots",
                 "title": {
-                  "en": "Sensor Dots",
-                  "nl": "Sensorstippen",
-                  "de": "Sensorpunkte",
-                  "fr": "Points capteurs",
-                  "it": "Punti sensori",
-                  "sv": "Sensorprickar",
-                  "no": "Sensorprikker",
-                  "es": "Puntos de sensores",
-                  "da": "Sensorprikker",
-                  "ru": "Точки датчиков",
-                  "pl": "Kropki czujników",
-                  "ko": "센서 점",
-                  "ar": "نقاط المستشعرات"
+                  "en": "Activity Dots",
+                  "nl": "Activiteitsstippen",
+                  "de": "Aktivitätspunkte",
+                  "fr": "Points d'activité",
+                  "it": "Punti attività",
+                  "sv": "Aktivitetsprickar",
+                  "no": "Aktivitetsprikker",
+                  "es": "Puntos de actividad",
+                  "da": "Aktivitetsprikker",
+                  "ru": "Точки активности",
+                  "pl": "Kropki aktywności",
+                  "ko": "활동 점",
+                  "ar": "نقاط النشاط"
                 }
               },
               {
@@ -515,6 +515,24 @@
                 }
               },
               {
+                "id": "charts",
+                "title": {
+                  "en": "Charts",
+                  "nl": "Grafieken",
+                  "de": "Diagramme",
+                  "fr": "Graphiques",
+                  "it": "Grafici",
+                  "sv": "Diagram",
+                  "no": "Diagrammer",
+                  "es": "Gráficos",
+                  "da": "Grafer",
+                  "ru": "Графики",
+                  "pl": "Wykresy",
+                  "ko": "차트",
+                  "ar": "المخططات"
+                }
+              },
+              {
                 "id": "variables",
                 "title": {
                   "en": "Flow Variables",
@@ -553,19 +571,19 @@
               {
                 "id": "price",
                 "title": {
-                  "en": "Price Badge",
-                  "nl": "Prijsbadge",
-                  "de": "Preis-Badge",
-                  "fr": "Badge de prix",
-                  "it": "Badge prezzo",
-                  "sv": "Prisbricka",
-                  "no": "Prismerke",
-                  "es": "Insignia de precio",
-                  "da": "Prismærke",
-                  "ru": "Значок цены",
-                  "pl": "Plakietka ceny",
-                  "ko": "가격 배지",
-                  "ar": "شارة السعر"
+                  "en": "Energy Price Strip",
+                  "nl": "Energieprijsstrook",
+                  "de": "Energiepreis-Leiste",
+                  "fr": "Bandeau prix de l'énergie",
+                  "it": "Barra prezzo energia",
+                  "sv": "Energiprisremsa",
+                  "no": "Energiprisstripe",
+                  "es": "Barra de precio de energía",
+                  "da": "Energiprisbjælke",
+                  "ru": "Полоса цен на энергию",
+                  "pl": "Pasek cen energii",
+                  "ko": "에너지 가격 바",
+                  "ar": "شريط سعر الطاقة"
                 }
               },
               {
@@ -657,6 +675,24 @@
                   "ko": "시계",
                   "ar": "الساعة"
                 }
+              },
+              {
+                "id": "textline",
+                "title": {
+                  "en": "Notes",
+                  "nl": "Notities",
+                  "de": "Notizen",
+                  "fr": "Notes",
+                  "it": "Note",
+                  "sv": "Anteckningar",
+                  "no": "Notater",
+                  "es": "Notas",
+                  "da": "Noter",
+                  "ru": "Заметки",
+                  "pl": "Notatki",
+                  "ko": "메모",
+                  "ar": "ملاحظات"
+                }
               }
             ]
           },
@@ -696,6 +732,473 @@
             "min": 0.5,
             "max": 1440,
             "step": 0.5
+          }
+        ]
+      },
+      {
+        "id": "textline_clear",
+        "title": {
+          "en": "Clear a note",
+          "nl": "Een notitie wissen",
+          "de": "Eine Notiz löschen",
+          "fr": "Effacer une note",
+          "it": "Cancella una nota",
+          "sv": "Rensa en anteckning",
+          "no": "Tøm et notat",
+          "es": "Borrar una nota",
+          "da": "Ryd en note",
+          "ru": "Очистить заметку",
+          "pl": "Wyczyść notatkę",
+          "ko": "메모 지우기",
+          "ar": "مسح ملاحظة"
+        },
+        "titleFormatted": {
+          "en": "Clear the note [[board]]",
+          "nl": "Wis de notitie [[board]]",
+          "de": "Die Notiz [[board]] löschen",
+          "fr": "Effacer la note [[board]]",
+          "it": "Cancella la nota [[board]]",
+          "sv": "Rensa anteckningen [[board]]",
+          "no": "Tøm notatet [[board]]",
+          "es": "Borrar la nota [[board]]",
+          "da": "Ryd noten [[board]]",
+          "ru": "Очистить заметку [[board]]",
+          "pl": "Wyczyść notatkę [[board]]",
+          "ko": "메모 [[board]] 지우기",
+          "ar": "امسح الملاحظة [[board]]"
+        },
+        "hint": {
+          "en": "The widgets show their own message again.",
+          "nl": "De widgets tonen weer hun eigen bericht.",
+          "de": "Die Widgets zeigen wieder ihre eigene Nachricht.",
+          "fr": "Les widgets affichent de nouveau leur propre message.",
+          "it": "I widget mostrano di nuovo il proprio messaggio.",
+          "sv": "Widgetarna visar sitt eget meddelande igen.",
+          "no": "Widgetene viser sin egen melding igjen.",
+          "es": "Los widgets vuelven a mostrar su propio mensaje.",
+          "da": "Widgettene viser deres egen besked igen.",
+          "ru": "Виджеты снова показывают своё сообщение.",
+          "pl": "Widżety znów pokazują własną wiadomość.",
+          "ko": "위젯이 다시 자체 메시지를 표시합니다.",
+          "ar": "تعرض الأدوات رسالتها الخاصة مجددًا."
+        },
+        "args": [
+          {
+            "type": "autocomplete",
+            "name": "board",
+            "title": {
+              "en": "Note",
+              "nl": "Notitie",
+              "de": "Notiz",
+              "fr": "Note",
+              "it": "Nota",
+              "sv": "Anteckning",
+              "no": "Notat",
+              "es": "Nota",
+              "da": "Note",
+              "ru": "Заметка",
+              "pl": "Notatka",
+              "ko": "메모",
+              "ar": "الملاحظة"
+            },
+            "placeholder": {
+              "en": "Note",
+              "nl": "Notitie",
+              "de": "Notiz",
+              "fr": "Note",
+              "it": "Nota",
+              "sv": "Anteckning",
+              "no": "Notat",
+              "es": "Nota",
+              "da": "Note",
+              "ru": "Заметка",
+              "pl": "Notatka",
+              "ko": "메모",
+              "ar": "الملاحظة"
+            }
+          }
+        ]
+      },
+      {
+        "id": "textline_set",
+        "title": {
+          "en": "Write on a note",
+          "nl": "Op een notitie schrijven",
+          "de": "Auf eine Notiz schreiben",
+          "fr": "Écrire sur une note",
+          "it": "Scrivi su una nota",
+          "sv": "Skriv på en anteckning",
+          "no": "Skriv på et notat",
+          "es": "Escribir en una nota",
+          "da": "Skriv på en note",
+          "ru": "Написать в заметке",
+          "pl": "Napisz na notatce",
+          "ko": "메모에 쓰기",
+          "ar": "الكتابة على ملاحظة"
+        },
+        "titleFormatted": {
+          "en": "Write [[text]] on the note [[board]]",
+          "nl": "Schrijf [[text]] op de notitie [[board]]",
+          "de": "[[text]] auf die Notiz [[board]] schreiben",
+          "fr": "Écrire [[text]] sur la note [[board]]",
+          "it": "Scrivi [[text]] sulla nota [[board]]",
+          "sv": "Skriv [[text]] på anteckningen [[board]]",
+          "no": "Skriv [[text]] på notatet [[board]]",
+          "es": "Escribir [[text]] en la nota [[board]]",
+          "da": "Skriv [[text]] på noten [[board]]",
+          "ru": "Написать [[text]] в заметке [[board]]",
+          "pl": "Napisz [[text]] na notatce [[board]]",
+          "ko": "메모 [[board]]에 [[text]] 쓰기",
+          "ar": "اكتب [[text]] على الملاحظة [[board]]"
+        },
+        "hint": {
+          "en": "Every Notes widget with this note name shows it, on every screen. The name is the widget's Note name setting (Note by default).",
+          "nl": "Elke Notities-widget met deze notitienaam toont het, op elk scherm. De naam is de instelling Naam van de notitie (standaard Notitie).",
+          "de": "Jedes Notizen-Widget mit diesem Notiznamen zeigt ihn, auf jedem Bildschirm. Der Name ist die Einstellung Name der Notiz (standardmäßig Notiz).",
+          "fr": "Chaque widget Notes portant ce nom de note l'affiche, sur chaque écran. Le nom est le réglage Nom de la note du widget (Note par défaut).",
+          "it": "Ogni widget Note con questo nome di nota lo mostra, su ogni schermo. Il nome è l'impostazione Nome della nota (Nota per impostazione predefinita).",
+          "sv": "Alla Anteckningar-widgetar med det här namnet visar den, på alla skärmar. Namnet är inställningen Anteckningens namn (Anteckning som standard).",
+          "no": "Alle Notater-widgeter med dette navnet viser den, på alle skjermer. Navnet er innstillingen Notatets navn (Notat som standard).",
+          "es": "Cada widget Notas con este nombre de nota lo muestra, en cada pantalla. El nombre es el ajuste Nombre de la nota (Nota por defecto).",
+          "da": "Alle Noter-widgets med dette navn viser den, på alle skærme. Navnet er widgettens indstilling Notens navn (Note som standard).",
+          "ru": "Все виджеты «Заметки» с этим именем показывают его на всех экранах. Имя — настройка «Имя заметки» (по умолчанию «Заметка»).",
+          "pl": "Każdy widżet Notatki o tej nazwie pokazuje go na każdym ekranie. Nazwa to ustawienie Nazwa notatki (domyślnie Notatka).",
+          "ko": "이 이름의 모든 메모 위젯이 모든 화면에 표시합니다. 이름은 위젯의 메모 이름 설정입니다(기본값: 메모).",
+          "ar": "تعرضه كل أدوات الملاحظات بهذا الاسم في كل شاشة. الاسم هو إعداد اسم الملاحظة في الأداة (الملاحظة افتراضيًا)."
+        },
+        "args": [
+          {
+            "type": "autocomplete",
+            "name": "board",
+            "title": {
+              "en": "Note",
+              "nl": "Notitie",
+              "de": "Notiz",
+              "fr": "Note",
+              "it": "Nota",
+              "sv": "Anteckning",
+              "no": "Notat",
+              "es": "Nota",
+              "da": "Note",
+              "ru": "Заметка",
+              "pl": "Notatka",
+              "ko": "메모",
+              "ar": "الملاحظة"
+            },
+            "placeholder": {
+              "en": "Note",
+              "nl": "Notitie",
+              "de": "Notiz",
+              "fr": "Note",
+              "it": "Nota",
+              "sv": "Anteckning",
+              "no": "Notat",
+              "es": "Nota",
+              "da": "Note",
+              "ru": "Заметка",
+              "pl": "Notatka",
+              "ko": "메모",
+              "ar": "الملاحظة"
+            }
+          },
+          {
+            "type": "text",
+            "name": "text",
+            "title": {
+              "en": "Text",
+              "nl": "Tekst",
+              "de": "Text",
+              "fr": "Texte",
+              "it": "Testo",
+              "sv": "Text",
+              "no": "Tekst",
+              "es": "Texto",
+              "da": "Tekst",
+              "ru": "Текст",
+              "pl": "Tekst",
+              "ko": "텍스트",
+              "ar": "النص"
+            },
+            "placeholder": {
+              "en": "Dinner at 6",
+              "nl": "Eten om 6 uur",
+              "de": "Essen um 6",
+              "fr": "Dîner à 18 h",
+              "it": "Cena alle 6",
+              "sv": "Middag kl. 18",
+              "no": "Middag kl. 18",
+              "es": "Cena a las 6",
+              "da": "Aftensmad kl. 18",
+              "ru": "Ужин в 6",
+              "pl": "Obiad o 18",
+              "ko": "6시에 저녁",
+              "ar": "العشاء في 6"
+            }
+          }
+        ]
+      },
+      {
+        "id": "textline_set_color",
+        "title": {
+          "en": "Write on a note in a colour",
+          "nl": "Op een notitie schrijven in een kleur",
+          "de": "Auf eine Notiz in einer Farbe schreiben",
+          "fr": "Écrire sur une note en couleur",
+          "it": "Scrivi su una nota a colori",
+          "sv": "Skriv på en anteckning i en färg",
+          "no": "Skriv på et notat i en farge",
+          "es": "Escribir en una nota en un color",
+          "da": "Skriv på en note i en farve",
+          "ru": "Написать в заметке цветом",
+          "pl": "Napisz na notatce w kolorze",
+          "ko": "색상으로 메모에 쓰기",
+          "ar": "الكتابة على ملاحظة بلون"
+        },
+        "titleFormatted": {
+          "en": "Write [[text]] on the note [[board]] in [[color]]",
+          "nl": "Schrijf [[text]] op de notitie [[board]] in [[color]]",
+          "de": "[[text]] auf die Notiz [[board]] in [[color]] schreiben",
+          "fr": "Écrire [[text]] sur la note [[board]] en [[color]]",
+          "it": "Scrivi [[text]] sulla nota [[board]] in [[color]]",
+          "sv": "Skriv [[text]] på anteckningen [[board]] i [[color]]",
+          "no": "Skriv [[text]] på notatet [[board]] i [[color]]",
+          "es": "Escribir [[text]] en la nota [[board]] en [[color]]",
+          "da": "Skriv [[text]] på noten [[board]] i [[color]]",
+          "ru": "Написать [[text]] в заметке [[board]], цвет [[color]]",
+          "pl": "Napisz [[text]] na notatce [[board]] w kolorze [[color]]",
+          "ko": "메모 [[board]]에 [[color]](으)로 [[text]] 쓰기",
+          "ar": "اكتب [[text]] على الملاحظة [[board]] باللون [[color]]"
+        },
+        "hint": {
+          "en": "As Write on a note, with a colour: a tinted tile, or the Post-it's paper. Default uses the widget's own colour.",
+          "nl": "Zoals Op een notitie schrijven, met een kleur: een gekleurde tegel of het papier van de Post-it. Standaard gebruikt de eigen kleur van de widget.",
+          "de": "Wie Auf eine Notiz schreiben, mit einer Farbe: eine getönte Kachel oder das Papier der Haftnotiz. Standard nutzt die eigene Farbe des Widgets.",
+          "fr": "Comme Écrire sur une note, avec une couleur : une tuile teintée ou le papier du Post-it. Par défaut utilise la couleur du widget.",
+          "it": "Come Scrivi su una nota, con un colore: un riquadro colorato o la carta del Post-it. Predefinito usa il colore del widget.",
+          "sv": "Som Skriv på en anteckning, med en färg: en tonad ruta eller Post-it-lappens papper. Standard använder widgetens egen färg.",
+          "no": "Som Skriv på et notat, med en farge: en farget flis eller Post-it-lappens papir. Standard bruker widgetens egen farge.",
+          "es": "Como Escribir en una nota, con un color: un mosaico teñido o el papel del Post-it. Predeterminado usa el color del widget.",
+          "da": "Som Skriv på en note, med en farve: et tonet felt eller Post-it-sedlens papir. Standard bruger widgettens egen farve.",
+          "ru": "Как «Написать в заметке», но с цветом: тонированная плитка или бумага стикера. «По умолчанию» — собственный цвет виджета.",
+          "pl": "Jak Napisz na notatce, z kolorem: zabarwiony kafelek albo papier karteczki. Domyślny używa koloru widżetu.",
+          "ko": "메모에 쓰기와 같으며 색상이 있습니다: 색이 입혀진 타일 또는 포스트잇의 종이. 기본값은 위젯 자체 색상을 사용합니다.",
+          "ar": "مثل الكتابة على ملاحظة، مع لون: بلاطة ملوّنة أو ورق الملاحظة اللاصقة. الافتراضي يستخدم لون الأداة نفسها."
+        },
+        "args": [
+          {
+            "type": "autocomplete",
+            "name": "board",
+            "title": {
+              "en": "Note",
+              "nl": "Notitie",
+              "de": "Notiz",
+              "fr": "Note",
+              "it": "Nota",
+              "sv": "Anteckning",
+              "no": "Notat",
+              "es": "Nota",
+              "da": "Note",
+              "ru": "Заметка",
+              "pl": "Notatka",
+              "ko": "메모",
+              "ar": "الملاحظة"
+            },
+            "placeholder": {
+              "en": "Note",
+              "nl": "Notitie",
+              "de": "Notiz",
+              "fr": "Note",
+              "it": "Nota",
+              "sv": "Anteckning",
+              "no": "Notat",
+              "es": "Nota",
+              "da": "Note",
+              "ru": "Заметка",
+              "pl": "Notatka",
+              "ko": "메모",
+              "ar": "الملاحظة"
+            }
+          },
+          {
+            "type": "text",
+            "name": "text",
+            "title": {
+              "en": "Text",
+              "nl": "Tekst",
+              "de": "Text",
+              "fr": "Texte",
+              "it": "Testo",
+              "sv": "Text",
+              "no": "Tekst",
+              "es": "Texto",
+              "da": "Tekst",
+              "ru": "Текст",
+              "pl": "Tekst",
+              "ko": "텍스트",
+              "ar": "النص"
+            },
+            "placeholder": {
+              "en": "Dinner at 6",
+              "nl": "Eten om 6 uur",
+              "de": "Essen um 6",
+              "fr": "Dîner à 18 h",
+              "it": "Cena alle 6",
+              "sv": "Middag kl. 18",
+              "no": "Middag kl. 18",
+              "es": "Cena a las 6",
+              "da": "Aftensmad kl. 18",
+              "ru": "Ужин в 6",
+              "pl": "Obiad o 18",
+              "ko": "6시에 저녁",
+              "ar": "العشاء في 6"
+            }
+          },
+          {
+            "type": "dropdown",
+            "name": "color",
+            "title": {
+              "en": "Colour",
+              "nl": "Kleur",
+              "de": "Farbe",
+              "fr": "Couleur",
+              "it": "Colore",
+              "sv": "Färg",
+              "no": "Farge",
+              "es": "Color",
+              "da": "Farve",
+              "ru": "Цвет",
+              "pl": "Kolor",
+              "ko": "색상",
+              "ar": "اللون"
+            },
+            "values": [
+              {
+                "id": "default",
+                "title": {
+                  "en": "Default",
+                  "nl": "Standaard",
+                  "de": "Standard",
+                  "fr": "Par défaut",
+                  "it": "Predefinito",
+                  "sv": "Standard",
+                  "no": "Standard",
+                  "es": "Predeterminado",
+                  "da": "Standard",
+                  "ru": "По умолчанию",
+                  "pl": "Domyślny",
+                  "ko": "기본값",
+                  "ar": "افتراضي"
+                }
+              },
+              {
+                "id": "red",
+                "title": {
+                  "en": "Red",
+                  "nl": "Rood",
+                  "de": "Rot",
+                  "fr": "Rouge",
+                  "it": "Rosso",
+                  "sv": "Röd",
+                  "no": "Rød",
+                  "es": "Rojo",
+                  "da": "Rød",
+                  "ru": "Красный",
+                  "pl": "Czerwony",
+                  "ko": "빨강",
+                  "ar": "أحمر"
+                }
+              },
+              {
+                "id": "orange",
+                "title": {
+                  "en": "Orange",
+                  "nl": "Oranje",
+                  "de": "Orange",
+                  "fr": "Orange",
+                  "it": "Arancione",
+                  "sv": "Orange",
+                  "no": "Oransje",
+                  "es": "Naranja",
+                  "da": "Orange",
+                  "ru": "Оранжевый",
+                  "pl": "Pomarańczowy",
+                  "ko": "주황",
+                  "ar": "برتقالي"
+                }
+              },
+              {
+                "id": "yellow",
+                "title": {
+                  "en": "Yellow",
+                  "nl": "Geel",
+                  "de": "Gelb",
+                  "fr": "Jaune",
+                  "it": "Giallo",
+                  "sv": "Gul",
+                  "no": "Gul",
+                  "es": "Amarillo",
+                  "da": "Gul",
+                  "ru": "Жёлтый",
+                  "pl": "Żółty",
+                  "ko": "노랑",
+                  "ar": "أصفر"
+                }
+              },
+              {
+                "id": "green",
+                "title": {
+                  "en": "Green",
+                  "nl": "Groen",
+                  "de": "Grün",
+                  "fr": "Vert",
+                  "it": "Verde",
+                  "sv": "Grön",
+                  "no": "Grønn",
+                  "es": "Verde",
+                  "da": "Grøn",
+                  "ru": "Зелёный",
+                  "pl": "Zielony",
+                  "ko": "초록",
+                  "ar": "أخضر"
+                }
+              },
+              {
+                "id": "blue",
+                "title": {
+                  "en": "Blue",
+                  "nl": "Blauw",
+                  "de": "Blau",
+                  "fr": "Bleu",
+                  "it": "Blu",
+                  "sv": "Blå",
+                  "no": "Blå",
+                  "es": "Azul",
+                  "da": "Blå",
+                  "ru": "Синий",
+                  "pl": "Niebieski",
+                  "ko": "파랑",
+                  "ar": "أزرق"
+                }
+              },
+              {
+                "id": "purple",
+                "title": {
+                  "en": "Purple",
+                  "nl": "Paars",
+                  "de": "Lila",
+                  "fr": "Violet",
+                  "it": "Viola",
+                  "sv": "Lila",
+                  "no": "Lilla",
+                  "es": "Morado",
+                  "da": "Lilla",
+                  "ru": "Фиолетовый",
+                  "pl": "Fioletowy",
+                  "ko": "보라",
+                  "ar": "بنفسجي"
+                }
+              }
+            ]
           }
         ]
       },
@@ -1093,6 +1596,1231 @@
       },
       "id": "cameras"
     },
+    "charts": {
+      "name": {
+        "en": "Charts",
+        "nl": "Grafieken",
+        "de": "Diagramme",
+        "fr": "Graphiques",
+        "it": "Grafici",
+        "sv": "Diagram",
+        "no": "Diagrammer",
+        "es": "Gráficos",
+        "da": "Grafer",
+        "ru": "Графики",
+        "pl": "Wykresy",
+        "ko": "차트",
+        "ar": "المخططات"
+      },
+      "height": 280,
+      "settings": [
+        {
+          "id": "charts",
+          "type": "dropdown",
+          "title": {
+            "en": "Charts",
+            "nl": "Grafieken",
+            "de": "Diagramme",
+            "fr": "Graphiques",
+            "it": "Grafici",
+            "sv": "Diagram",
+            "no": "Diagrammer",
+            "es": "Gráficos",
+            "da": "Grafer",
+            "ru": "Графики",
+            "pl": "Wykresy",
+            "ko": "차트",
+            "ar": "المخططات"
+          },
+          "hint": {
+            "en": "On one chart, the second value has its scale on the right.",
+            "nl": "In één grafiek staat de schaal van de tweede waarde rechts.",
+            "de": "In einem Diagramm steht die Skala des zweiten Werts rechts.",
+            "fr": "Dans un graphique, l’échelle de la deuxième valeur est à droite.",
+            "it": "In un grafico, la scala del secondo valore è a destra.",
+            "sv": "I ett diagram har det andra värdet sin skala till höger.",
+            "no": "I ett diagram har den andre verdien skalaen til høyre.",
+            "es": "En un gráfico, la escala del segundo valor está a la derecha.",
+            "da": "I én graf har den anden værdi sin skala til højre.",
+            "ru": "На одном графике шкала второго значения справа.",
+            "pl": "Na jednym wykresie skala drugiej wartości jest po prawej.",
+            "ko": "차트 1개에서는 두 번째 값의 눈금이 오른쪽에 있습니다.",
+            "ar": "في مخطط واحد، يكون مقياس القيمة الثانية على اليمين."
+          },
+          "value": "1",
+          "values": [
+            {
+              "id": "1",
+              "title": {
+                "en": "One chart",
+                "nl": "Eén grafiek",
+                "de": "Ein Diagramm",
+                "fr": "Un graphique",
+                "it": "Un grafico",
+                "sv": "Ett diagram",
+                "no": "Ett diagram",
+                "es": "Un gráfico",
+                "da": "Én graf",
+                "ru": "Один график",
+                "pl": "Jeden wykres",
+                "ko": "차트 1개",
+                "ar": "مخطط واحد"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Two charts, stacked",
+                "nl": "Twee grafieken onder elkaar",
+                "de": "Zwei Diagramme untereinander",
+                "fr": "Deux graphiques superposés",
+                "it": "Due grafici uno sopra l'altro",
+                "sv": "Två diagram, staplade",
+                "no": "To diagrammer, stablet",
+                "es": "Dos gráficos, uno sobre otro",
+                "da": "To grafer over hinanden",
+                "ru": "Два графика друг под другом",
+                "pl": "Dwa wykresy, jeden pod drugim",
+                "ko": "차트 2개, 위아래로",
+                "ar": "مخططان، أحدهما فوق الآخر"
+              }
+            },
+            {
+              "id": "overlay",
+              "title": {
+                "en": "Two, on one chart",
+                "nl": "Twee in één grafiek",
+                "de": "Zwei in einem Diagramm",
+                "fr": "Deux dans un graphique",
+                "it": "Due in un grafico",
+                "sv": "Två i ett diagram",
+                "no": "To i ett diagram",
+                "es": "Dos en un gráfico",
+                "da": "To i én graf",
+                "ru": "Два на одном графике",
+                "pl": "Dwa na jednym wykresie",
+                "ko": "차트 1개에 2개",
+                "ar": "اثنان في مخطط واحد"
+              }
+            }
+          ]
+        },
+        {
+          "id": "showHeader",
+          "type": "checkbox",
+          "title": {
+            "en": "Show the values at the top",
+            "nl": "Waarden bovenaan tonen",
+            "de": "Werte oben anzeigen",
+            "fr": "Afficher les valeurs en haut",
+            "it": "Mostra i valori in alto",
+            "sv": "Visa värdena överst",
+            "no": "Vis verdiene øverst",
+            "es": "Mostrar los valores arriba",
+            "da": "Vis værdierne øverst",
+            "ru": "Показывать значения вверху",
+            "pl": "Pokaż wartości u góry",
+            "ko": "맨 위에 값 표시",
+            "ar": "عرض القيم في الأعلى"
+          },
+          "hint": {
+            "en": "The latest value of each chart, in its colour. Tap a chart to see an earlier one.",
+            "nl": "De laatste waarde van elke grafiek, in zijn kleur. Tik op een grafiek voor een eerdere.",
+            "de": "Der letzte Wert jedes Diagramms, in seiner Farbe. Tippe auf ein Diagramm für einen früheren.",
+            "fr": "La dernière valeur de chaque graphique, dans sa couleur. Touchez un graphique pour une valeur antérieure.",
+            "it": "L'ultimo valore di ogni grafico, nel suo colore. Tocca un grafico per vederne uno precedente.",
+            "sv": "Det senaste värdet i varje diagram, i dess färg. Tryck på ett diagram för ett tidigare.",
+            "no": "Siste verdi i hvert diagram, i sin farge. Trykk på et diagram for en tidligere.",
+            "es": "El último valor de cada gráfico, en su color. Toca un gráfico para ver uno anterior.",
+            "da": "Den seneste værdi i hver graf, i dens farve. Tryk på en graf for en tidligere.",
+            "ru": "Последнее значение каждого графика, его цветом. Коснитесь графика, чтобы увидеть более раннее.",
+            "pl": "Ostatnia wartość każdego wykresu, w jego kolorze. Dotknij wykresu, aby zobaczyć wcześniejszą.",
+            "ko": "각 차트의 최신 값이 차트 색상으로 표시됩니다. 차트를 탭하면 이전 값을 볼 수 있습니다.",
+            "ar": "آخر قيمة لكل مخطط بلونه. المس المخطط لرؤية قيمة سابقة."
+          },
+          "value": true
+        },
+        {
+          "id": "chart1",
+          "type": "autocomplete",
+          "title": {
+            "en": "Chart 1: device value",
+            "nl": "Grafiek 1: apparaatwaarde",
+            "de": "Diagramm 1: Gerätewert",
+            "fr": "Graphique 1: valeur d'appareil",
+            "it": "Grafico 1: valore dispositivo",
+            "sv": "Diagram 1: enhetsvärde",
+            "no": "Diagram 1: enhetsverdi",
+            "es": "Gráfico 1: valor del dispositivo",
+            "da": "Graf 1: enhedsværdi",
+            "ru": "График 1: значение устройства",
+            "pl": "Wykres 1: wartość urządzenia",
+            "ko": "차트 1: 기기 값",
+            "ar": "المخطط 1: قيمة الجهاز"
+          },
+          "hint": {
+            "en": "Only numbers with Insights history are listed.",
+            "nl": "Alleen getallen met Insights-geschiedenis staan in de lijst.",
+            "de": "Nur Zahlen mit Insights-Verlauf stehen zur Auswahl.",
+            "fr": "Seuls les nombres avec un historique Insights sont proposés.",
+            "it": "Sono elencati solo i numeri con cronologia Insights.",
+            "sv": "Bara tal med Insights-historik visas.",
+            "no": "Bare tall med Insights-historikk vises.",
+            "es": "Solo aparecen números con historial de Insights.",
+            "da": "Kun tal med Insights-historik vises.",
+            "ru": "В списке только числа с историей Insights.",
+            "pl": "Lista zawiera tylko liczby z historią Insights.",
+            "ko": "Insights 기록이 있는 숫자만 나열됩니다.",
+            "ar": "تظهر فقط الأرقام التي لها سجل في Insights."
+          }
+        },
+        {
+          "id": "span1",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Time span",
+            "nl": "  – Periode",
+            "de": "  – Zeitraum",
+            "fr": "  – Période",
+            "it": "  – Periodo",
+            "sv": "  – Tidsperiod",
+            "no": "  – Tidsrom",
+            "es": "  – Periodo",
+            "da": "  – Tidsrum",
+            "ru": "  – Период",
+            "pl": "  – Okres",
+            "ko": "  – 기간",
+            "ar": "  – الفترة الزمنية"
+          },
+          "value": "24h",
+          "values": [
+            {
+              "id": "1h",
+              "title": {
+                "en": "1 hour",
+                "nl": "1 uur",
+                "de": "1 Stunde",
+                "fr": "1 heure",
+                "it": "1 ora",
+                "sv": "1 timme",
+                "no": "1 time",
+                "es": "1 hora",
+                "da": "1 time",
+                "ru": "1 час",
+                "pl": "1 godzina",
+                "ko": "1시간",
+                "ar": "ساعة واحدة"
+              }
+            },
+            {
+              "id": "6h",
+              "title": {
+                "en": "6 hours",
+                "nl": "6 uur",
+                "de": "6 Stunden",
+                "fr": "6 heures",
+                "it": "6 ore",
+                "sv": "6 timmar",
+                "no": "6 timer",
+                "es": "6 horas",
+                "da": "6 timer",
+                "ru": "6 часов",
+                "pl": "6 godzin",
+                "ko": "6시간",
+                "ar": "6 ساعات"
+              }
+            },
+            {
+              "id": "24h",
+              "title": {
+                "en": "24 hours",
+                "nl": "24 uur",
+                "de": "24 Stunden",
+                "fr": "24 heures",
+                "it": "24 ore",
+                "sv": "24 timmar",
+                "no": "24 timer",
+                "es": "24 horas",
+                "da": "24 timer",
+                "ru": "24 часа",
+                "pl": "24 godziny",
+                "ko": "24시간",
+                "ar": "24 ساعة"
+              }
+            },
+            {
+              "id": "2d",
+              "title": {
+                "en": "2 days",
+                "nl": "2 dagen",
+                "de": "2 Tage",
+                "fr": "2 jours",
+                "it": "2 giorni",
+                "sv": "2 dagar",
+                "no": "2 dager",
+                "es": "2 días",
+                "da": "2 dage",
+                "ru": "2 дня",
+                "pl": "2 dni",
+                "ko": "2일",
+                "ar": "يومان"
+              }
+            },
+            {
+              "id": "3d",
+              "title": {
+                "en": "3 days",
+                "nl": "3 dagen",
+                "de": "3 Tage",
+                "fr": "3 jours",
+                "it": "3 giorni",
+                "sv": "3 dagar",
+                "no": "3 dager",
+                "es": "3 días",
+                "da": "3 dage",
+                "ru": "3 дня",
+                "pl": "3 dni",
+                "ko": "3일",
+                "ar": "3 أيام"
+              }
+            },
+            {
+              "id": "5d",
+              "title": {
+                "en": "5 days",
+                "nl": "5 dagen",
+                "de": "5 Tage",
+                "fr": "5 jours",
+                "it": "5 giorni",
+                "sv": "5 dagar",
+                "no": "5 dager",
+                "es": "5 días",
+                "da": "5 dage",
+                "ru": "5 дней",
+                "pl": "5 dni",
+                "ko": "5일",
+                "ar": "5 أيام"
+              }
+            },
+            {
+              "id": "7d",
+              "title": {
+                "en": "7 days",
+                "nl": "7 dagen",
+                "de": "7 Tage",
+                "fr": "7 jours",
+                "it": "7 giorni",
+                "sv": "7 dagar",
+                "no": "7 dager",
+                "es": "7 días",
+                "da": "7 dage",
+                "ru": "7 дней",
+                "pl": "7 dni",
+                "ko": "7일",
+                "ar": "7 أيام"
+              }
+            }
+          ]
+        },
+        {
+          "id": "style1",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Style",
+            "nl": "  – Stijl",
+            "de": "  – Stil",
+            "fr": "  – Style",
+            "it": "  – Stile",
+            "sv": "  – Stil",
+            "no": "  – Stil",
+            "es": "  – Estilo",
+            "da": "  – Stil",
+            "ru": "  – Стиль",
+            "pl": "  – Styl",
+            "ko": "  – 스타일",
+            "ar": "  – النمط"
+          },
+          "value": "area",
+          "values": [
+            {
+              "id": "area",
+              "title": {
+                "en": "Line with area",
+                "nl": "Lijn met vlak",
+                "de": "Linie mit Fläche",
+                "fr": "Ligne avec aire",
+                "it": "Linea con area",
+                "sv": "Linje med yta",
+                "no": "Linje med flate",
+                "es": "Línea con área",
+                "da": "Linje med flade",
+                "ru": "Линия с заливкой",
+                "pl": "Linia z wypełnieniem",
+                "ko": "영역 포함 선",
+                "ar": "خط مع مساحة"
+              }
+            },
+            {
+              "id": "line",
+              "title": {
+                "en": "Line",
+                "nl": "Lijn",
+                "de": "Linie",
+                "fr": "Ligne",
+                "it": "Linea",
+                "sv": "Linje",
+                "no": "Linje",
+                "es": "Línea",
+                "da": "Linje",
+                "ru": "Линия",
+                "pl": "Linia",
+                "ko": "선",
+                "ar": "خط"
+              }
+            },
+            {
+              "id": "bars",
+              "title": {
+                "en": "Bars",
+                "nl": "Staven",
+                "de": "Balken",
+                "fr": "Barres",
+                "it": "Barre",
+                "sv": "Staplar",
+                "no": "Søyler",
+                "es": "Barras",
+                "da": "Søjler",
+                "ru": "Столбцы",
+                "pl": "Słupki",
+                "ko": "막대",
+                "ar": "أعمدة"
+              }
+            }
+          ]
+        },
+        {
+          "id": "color1",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Colour",
+            "nl": "  – Kleur",
+            "de": "  – Farbe",
+            "fr": "  – Couleur",
+            "it": "  – Colore",
+            "sv": "  – Färg",
+            "no": "  – Farge",
+            "es": "  – Color",
+            "da": "  – Farve",
+            "ru": "  – Цвет",
+            "pl": "  – Kolor",
+            "ko": "  – 색상",
+            "ar": "  – اللون"
+          },
+          "value": "blue",
+          "values": [
+            {
+              "id": "blue",
+              "title": {
+                "en": "Blue",
+                "nl": "Blauw",
+                "de": "Blau",
+                "fr": "Bleu",
+                "it": "Blu",
+                "sv": "Blå",
+                "no": "Blå",
+                "es": "Azul",
+                "da": "Blå",
+                "ru": "Синий",
+                "pl": "Niebieski",
+                "ko": "파랑",
+                "ar": "أزرق"
+              }
+            },
+            {
+              "id": "red",
+              "title": {
+                "en": "Red",
+                "nl": "Rood",
+                "de": "Rot",
+                "fr": "Rouge",
+                "it": "Rosso",
+                "sv": "Röd",
+                "no": "Rød",
+                "es": "Rojo",
+                "da": "Rød",
+                "ru": "Красный",
+                "pl": "Czerwony",
+                "ko": "빨강",
+                "ar": "أحمر"
+              }
+            },
+            {
+              "id": "orange",
+              "title": {
+                "en": "Orange",
+                "nl": "Oranje",
+                "de": "Orange",
+                "fr": "Orange",
+                "it": "Arancione",
+                "sv": "Orange",
+                "no": "Oransje",
+                "es": "Naranja",
+                "da": "Orange",
+                "ru": "Оранжевый",
+                "pl": "Pomarańczowy",
+                "ko": "주황",
+                "ar": "برتقالي"
+              }
+            },
+            {
+              "id": "yellow",
+              "title": {
+                "en": "Yellow",
+                "nl": "Geel",
+                "de": "Gelb",
+                "fr": "Jaune",
+                "it": "Giallo",
+                "sv": "Gul",
+                "no": "Gul",
+                "es": "Amarillo",
+                "da": "Gul",
+                "ru": "Жёлтый",
+                "pl": "Żółty",
+                "ko": "노랑",
+                "ar": "أصفر"
+              }
+            },
+            {
+              "id": "green",
+              "title": {
+                "en": "Green",
+                "nl": "Groen",
+                "de": "Grün",
+                "fr": "Vert",
+                "it": "Verde",
+                "sv": "Grön",
+                "no": "Grønn",
+                "es": "Verde",
+                "da": "Grøn",
+                "ru": "Зелёный",
+                "pl": "Zielony",
+                "ko": "초록",
+                "ar": "أخضر"
+              }
+            },
+            {
+              "id": "purple",
+              "title": {
+                "en": "Purple",
+                "nl": "Paars",
+                "de": "Lila",
+                "fr": "Violet",
+                "it": "Viola",
+                "sv": "Lila",
+                "no": "Lilla",
+                "es": "Morado",
+                "da": "Lilla",
+                "ru": "Фиолетовый",
+                "pl": "Fioletowy",
+                "ko": "보라",
+                "ar": "بنفسجي"
+              }
+            }
+          ]
+        },
+        {
+          "id": "range1",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Scale",
+            "nl": "  – Schaal",
+            "de": "  – Skala",
+            "fr": "  – Échelle",
+            "it": "  – Scala",
+            "sv": "  – Skala",
+            "no": "  – Skala",
+            "es": "  – Escala",
+            "da": "  – Skala",
+            "ru": "  – Шкала",
+            "pl": "  – Skala",
+            "ko": "  – 눈금",
+            "ar": "  – المقياس"
+          },
+          "value": "fit",
+          "values": [
+            {
+              "id": "fit",
+              "title": {
+                "en": "Fit to the values",
+                "nl": "Passend bij de waarden",
+                "de": "An die Werte angepasst",
+                "fr": "Ajustée aux valeurs",
+                "it": "Adattata ai valori",
+                "sv": "Anpassad till värdena",
+                "no": "Tilpasset verdiene",
+                "es": "Ajustada a los valores",
+                "da": "Tilpasset værdierne",
+                "ru": "По значениям",
+                "pl": "Dopasowana do wartości",
+                "ko": "값에 맞춤",
+                "ar": "ملائم للقيم"
+              }
+            },
+            {
+              "id": "zero",
+              "title": {
+                "en": "Start at zero",
+                "nl": "Begin bij nul",
+                "de": "Bei null beginnen",
+                "fr": "Commencer à zéro",
+                "it": "Parti da zero",
+                "sv": "Börja på noll",
+                "no": "Start på null",
+                "es": "Empezar en cero",
+                "da": "Start ved nul",
+                "ru": "Начинать с нуля",
+                "pl": "Zaczynaj od zera",
+                "ko": "0부터 시작",
+                "ar": "البدء من الصفر"
+              }
+            }
+          ]
+        },
+        {
+          "id": "negative1",
+          "type": "checkbox",
+          "title": {
+            "en": "  – Below zero in yellow",
+            "nl": "  – Onder nul in geel",
+            "de": "  – Unter null in Gelb",
+            "fr": "  – Sous zéro en jaune",
+            "it": "  – Sotto zero in giallo",
+            "sv": "  – Under noll i gult",
+            "no": "  – Under null i gult",
+            "es": "  – Bajo cero en amarillo",
+            "da": "  – Under nul i gult",
+            "ru": "  – Ниже нуля жёлтым",
+            "pl": "  – Poniżej zera na żółto",
+            "ko": "  – 0 미만은 노란색",
+            "ar": "  – ما دون الصفر بالأصفر"
+          },
+          "value": false
+        },
+        {
+          "id": "smooth1",
+          "type": "checkbox",
+          "title": {
+            "en": "  – Smooth line",
+            "nl": "  – Vloeiende lijn",
+            "de": "  – Geglättete Linie",
+            "fr": "  – Ligne lissée",
+            "it": "  – Linea smussata",
+            "sv": "  – Utjämnad linje",
+            "no": "  – Glatt linje",
+            "es": "  – Línea suavizada",
+            "da": "  – Udglattet linje",
+            "ru": "  – Сглаженная линия",
+            "pl": "  – Wygładzona linia",
+            "ko": "  – 부드러운 선",
+            "ar": "  – خط منعّم"
+          },
+          "value": false
+        },
+        {
+          "id": "title1",
+          "type": "text",
+          "title": {
+            "en": "  – Title",
+            "nl": "  – Titel",
+            "de": "  – Titel",
+            "fr": "  – Titre",
+            "it": "  – Titolo",
+            "sv": "  – Rubrik",
+            "no": "  – Tittel",
+            "es": "  – Título",
+            "da": "  – Titel",
+            "ru": "  – Заголовок",
+            "pl": "  – Tytuł",
+            "ko": "  – 제목",
+            "ar": "  – العنوان"
+          },
+          "hint": {
+            "en": "Optional. Without one, the device and value name the chart.",
+            "nl": "Optioneel. Zonder titel heet de grafiek naar het apparaat en de waarde.",
+            "de": "Optional. Ohne Titel benennen Gerät und Wert das Diagramm.",
+            "fr": "Facultatif. Sans titre, le graphique porte le nom de l'appareil et de la valeur.",
+            "it": "Facoltativo. Senza titolo, il grafico prende il nome da dispositivo e valore.",
+            "sv": "Valfritt. Utan rubrik namnges diagrammet efter enheten och värdet.",
+            "no": "Valgfritt. Uten tittel får diagrammet navn etter enheten og verdien.",
+            "es": "Opcional. Sin título, el gráfico toma el nombre del dispositivo y el valor.",
+            "da": "Valgfri. Uden titel får grafen navn efter enheden og værdien.",
+            "ru": "Необязательно. Без него график называется по устройству и значению.",
+            "pl": "Opcjonalnie. Bez tytułu wykres nazywa się od urządzenia i wartości.",
+            "ko": "선택 사항입니다. 없으면 기기와 값 이름이 사용됩니다.",
+            "ar": "اختياري. بدونه يُسمّى المخطط باسم الجهاز والقيمة."
+          },
+          "value": ""
+        },
+        {
+          "id": "chart2",
+          "type": "autocomplete",
+          "title": {
+            "en": "Chart 2: device value",
+            "nl": "Grafiek 2: apparaatwaarde",
+            "de": "Diagramm 2: Gerätewert",
+            "fr": "Graphique 2: valeur d'appareil",
+            "it": "Grafico 2: valore dispositivo",
+            "sv": "Diagram 2: enhetsvärde",
+            "no": "Diagram 2: enhetsverdi",
+            "es": "Gráfico 2: valor del dispositivo",
+            "da": "Graf 2: enhedsværdi",
+            "ru": "График 2: значение устройства",
+            "pl": "Wykres 2: wartość urządzenia",
+            "ko": "차트 2: 기기 값",
+            "ar": "المخطط 2: قيمة الجهاز"
+          },
+          "hint": {
+            "en": "Only with Charts set to two.",
+            "nl": "Alleen als Grafieken op twee staat.",
+            "de": "Nur wenn Diagramme auf zwei steht.",
+            "fr": "Seulement si Graphiques est réglé sur deux.",
+            "it": "Solo con Grafici impostato su due.",
+            "sv": "Bara när Diagram är satt till två.",
+            "no": "Bare når Diagrammer er satt til to.",
+            "es": "Solo con Gráficos en dos.",
+            "da": "Kun når Grafer er sat til to.",
+            "ru": "Только если в «Графики» выбрано два.",
+            "pl": "Tylko gdy Wykresy ustawiono na dwa.",
+            "ko": "차트를 두 개로 설정한 경우에만.",
+            "ar": "فقط عند ضبط المخططات على اثنين."
+          }
+        },
+        {
+          "id": "span2",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Time span",
+            "nl": "  – Periode",
+            "de": "  – Zeitraum",
+            "fr": "  – Période",
+            "it": "  – Periodo",
+            "sv": "  – Tidsperiod",
+            "no": "  – Tidsrom",
+            "es": "  – Periodo",
+            "da": "  – Tidsrum",
+            "ru": "  – Период",
+            "pl": "  – Okres",
+            "ko": "  – 기간",
+            "ar": "  – الفترة الزمنية"
+          },
+          "hint": {
+            "en": "On one chart, chart 1's is used.",
+            "nl": "In één grafiek geldt die van grafiek 1.",
+            "de": "In einem Diagramm gilt die von Diagramm 1.",
+            "fr": "Dans un graphique, celle du graphique 1 s’applique.",
+            "it": "In un grafico vale quella del grafico 1.",
+            "sv": "I ett diagram gäller diagram 1:s.",
+            "no": "I ett diagram gjelder diagram 1 sin.",
+            "es": "En un gráfico, se usa la del gráfico 1.",
+            "da": "I én graf gælder graf 1's.",
+            "ru": "На одном графике действует настройка графика 1.",
+            "pl": "Na jednym wykresie obowiązuje ustawienie wykresu 1.",
+            "ko": "차트 1개에서는 차트 1의 설정을 사용합니다.",
+            "ar": "في مخطط واحد، يُستخدم إعداد المخطط 1."
+          },
+          "value": "24h",
+          "values": [
+            {
+              "id": "1h",
+              "title": {
+                "en": "1 hour",
+                "nl": "1 uur",
+                "de": "1 Stunde",
+                "fr": "1 heure",
+                "it": "1 ora",
+                "sv": "1 timme",
+                "no": "1 time",
+                "es": "1 hora",
+                "da": "1 time",
+                "ru": "1 час",
+                "pl": "1 godzina",
+                "ko": "1시간",
+                "ar": "ساعة واحدة"
+              }
+            },
+            {
+              "id": "6h",
+              "title": {
+                "en": "6 hours",
+                "nl": "6 uur",
+                "de": "6 Stunden",
+                "fr": "6 heures",
+                "it": "6 ore",
+                "sv": "6 timmar",
+                "no": "6 timer",
+                "es": "6 horas",
+                "da": "6 timer",
+                "ru": "6 часов",
+                "pl": "6 godzin",
+                "ko": "6시간",
+                "ar": "6 ساعات"
+              }
+            },
+            {
+              "id": "24h",
+              "title": {
+                "en": "24 hours",
+                "nl": "24 uur",
+                "de": "24 Stunden",
+                "fr": "24 heures",
+                "it": "24 ore",
+                "sv": "24 timmar",
+                "no": "24 timer",
+                "es": "24 horas",
+                "da": "24 timer",
+                "ru": "24 часа",
+                "pl": "24 godziny",
+                "ko": "24시간",
+                "ar": "24 ساعة"
+              }
+            },
+            {
+              "id": "2d",
+              "title": {
+                "en": "2 days",
+                "nl": "2 dagen",
+                "de": "2 Tage",
+                "fr": "2 jours",
+                "it": "2 giorni",
+                "sv": "2 dagar",
+                "no": "2 dager",
+                "es": "2 días",
+                "da": "2 dage",
+                "ru": "2 дня",
+                "pl": "2 dni",
+                "ko": "2일",
+                "ar": "يومان"
+              }
+            },
+            {
+              "id": "3d",
+              "title": {
+                "en": "3 days",
+                "nl": "3 dagen",
+                "de": "3 Tage",
+                "fr": "3 jours",
+                "it": "3 giorni",
+                "sv": "3 dagar",
+                "no": "3 dager",
+                "es": "3 días",
+                "da": "3 dage",
+                "ru": "3 дня",
+                "pl": "3 dni",
+                "ko": "3일",
+                "ar": "3 أيام"
+              }
+            },
+            {
+              "id": "5d",
+              "title": {
+                "en": "5 days",
+                "nl": "5 dagen",
+                "de": "5 Tage",
+                "fr": "5 jours",
+                "it": "5 giorni",
+                "sv": "5 dagar",
+                "no": "5 dager",
+                "es": "5 días",
+                "da": "5 dage",
+                "ru": "5 дней",
+                "pl": "5 dni",
+                "ko": "5일",
+                "ar": "5 أيام"
+              }
+            },
+            {
+              "id": "7d",
+              "title": {
+                "en": "7 days",
+                "nl": "7 dagen",
+                "de": "7 Tage",
+                "fr": "7 jours",
+                "it": "7 giorni",
+                "sv": "7 dagar",
+                "no": "7 dager",
+                "es": "7 días",
+                "da": "7 dage",
+                "ru": "7 дней",
+                "pl": "7 dni",
+                "ko": "7일",
+                "ar": "7 أيام"
+              }
+            }
+          ]
+        },
+        {
+          "id": "style2",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Style",
+            "nl": "  – Stijl",
+            "de": "  – Stil",
+            "fr": "  – Style",
+            "it": "  – Stile",
+            "sv": "  – Stil",
+            "no": "  – Stil",
+            "es": "  – Estilo",
+            "da": "  – Stil",
+            "ru": "  – Стиль",
+            "pl": "  – Styl",
+            "ko": "  – 스타일",
+            "ar": "  – النمط"
+          },
+          "value": "area",
+          "values": [
+            {
+              "id": "area",
+              "title": {
+                "en": "Line with area",
+                "nl": "Lijn met vlak",
+                "de": "Linie mit Fläche",
+                "fr": "Ligne avec aire",
+                "it": "Linea con area",
+                "sv": "Linje med yta",
+                "no": "Linje med flate",
+                "es": "Línea con área",
+                "da": "Linje med flade",
+                "ru": "Линия с заливкой",
+                "pl": "Linia z wypełnieniem",
+                "ko": "영역 포함 선",
+                "ar": "خط مع مساحة"
+              }
+            },
+            {
+              "id": "line",
+              "title": {
+                "en": "Line",
+                "nl": "Lijn",
+                "de": "Linie",
+                "fr": "Ligne",
+                "it": "Linea",
+                "sv": "Linje",
+                "no": "Linje",
+                "es": "Línea",
+                "da": "Linje",
+                "ru": "Линия",
+                "pl": "Linia",
+                "ko": "선",
+                "ar": "خط"
+              }
+            },
+            {
+              "id": "bars",
+              "title": {
+                "en": "Bars",
+                "nl": "Staven",
+                "de": "Balken",
+                "fr": "Barres",
+                "it": "Barre",
+                "sv": "Staplar",
+                "no": "Søyler",
+                "es": "Barras",
+                "da": "Søjler",
+                "ru": "Столбцы",
+                "pl": "Słupki",
+                "ko": "막대",
+                "ar": "أعمدة"
+              }
+            }
+          ]
+        },
+        {
+          "id": "color2",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Colour",
+            "nl": "  – Kleur",
+            "de": "  – Farbe",
+            "fr": "  – Couleur",
+            "it": "  – Colore",
+            "sv": "  – Färg",
+            "no": "  – Farge",
+            "es": "  – Color",
+            "da": "  – Farve",
+            "ru": "  – Цвет",
+            "pl": "  – Kolor",
+            "ko": "  – 색상",
+            "ar": "  – اللون"
+          },
+          "value": "green",
+          "values": [
+            {
+              "id": "blue",
+              "title": {
+                "en": "Blue",
+                "nl": "Blauw",
+                "de": "Blau",
+                "fr": "Bleu",
+                "it": "Blu",
+                "sv": "Blå",
+                "no": "Blå",
+                "es": "Azul",
+                "da": "Blå",
+                "ru": "Синий",
+                "pl": "Niebieski",
+                "ko": "파랑",
+                "ar": "أزرق"
+              }
+            },
+            {
+              "id": "red",
+              "title": {
+                "en": "Red",
+                "nl": "Rood",
+                "de": "Rot",
+                "fr": "Rouge",
+                "it": "Rosso",
+                "sv": "Röd",
+                "no": "Rød",
+                "es": "Rojo",
+                "da": "Rød",
+                "ru": "Красный",
+                "pl": "Czerwony",
+                "ko": "빨강",
+                "ar": "أحمر"
+              }
+            },
+            {
+              "id": "orange",
+              "title": {
+                "en": "Orange",
+                "nl": "Oranje",
+                "de": "Orange",
+                "fr": "Orange",
+                "it": "Arancione",
+                "sv": "Orange",
+                "no": "Oransje",
+                "es": "Naranja",
+                "da": "Orange",
+                "ru": "Оранжевый",
+                "pl": "Pomarańczowy",
+                "ko": "주황",
+                "ar": "برتقالي"
+              }
+            },
+            {
+              "id": "yellow",
+              "title": {
+                "en": "Yellow",
+                "nl": "Geel",
+                "de": "Gelb",
+                "fr": "Jaune",
+                "it": "Giallo",
+                "sv": "Gul",
+                "no": "Gul",
+                "es": "Amarillo",
+                "da": "Gul",
+                "ru": "Жёлтый",
+                "pl": "Żółty",
+                "ko": "노랑",
+                "ar": "أصفر"
+              }
+            },
+            {
+              "id": "green",
+              "title": {
+                "en": "Green",
+                "nl": "Groen",
+                "de": "Grün",
+                "fr": "Vert",
+                "it": "Verde",
+                "sv": "Grön",
+                "no": "Grønn",
+                "es": "Verde",
+                "da": "Grøn",
+                "ru": "Зелёный",
+                "pl": "Zielony",
+                "ko": "초록",
+                "ar": "أخضر"
+              }
+            },
+            {
+              "id": "purple",
+              "title": {
+                "en": "Purple",
+                "nl": "Paars",
+                "de": "Lila",
+                "fr": "Violet",
+                "it": "Viola",
+                "sv": "Lila",
+                "no": "Lilla",
+                "es": "Morado",
+                "da": "Lilla",
+                "ru": "Фиолетовый",
+                "pl": "Fioletowy",
+                "ko": "보라",
+                "ar": "بنفسجي"
+              }
+            }
+          ]
+        },
+        {
+          "id": "range2",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Scale",
+            "nl": "  – Schaal",
+            "de": "  – Skala",
+            "fr": "  – Échelle",
+            "it": "  – Scala",
+            "sv": "  – Skala",
+            "no": "  – Skala",
+            "es": "  – Escala",
+            "da": "  – Skala",
+            "ru": "  – Шкала",
+            "pl": "  – Skala",
+            "ko": "  – 눈금",
+            "ar": "  – المقياس"
+          },
+          "hint": {
+            "en": "On one chart, chart 1's is used.",
+            "nl": "In één grafiek geldt die van grafiek 1.",
+            "de": "In einem Diagramm gilt die von Diagramm 1.",
+            "fr": "Dans un graphique, celle du graphique 1 s’applique.",
+            "it": "In un grafico vale quella del grafico 1.",
+            "sv": "I ett diagram gäller diagram 1:s.",
+            "no": "I ett diagram gjelder diagram 1 sin.",
+            "es": "En un gráfico, se usa la del gráfico 1.",
+            "da": "I én graf gælder graf 1's.",
+            "ru": "На одном графике действует настройка графика 1.",
+            "pl": "Na jednym wykresie obowiązuje ustawienie wykresu 1.",
+            "ko": "차트 1개에서는 차트 1의 설정을 사용합니다.",
+            "ar": "في مخطط واحد، يُستخدم إعداد المخطط 1."
+          },
+          "value": "fit",
+          "values": [
+            {
+              "id": "fit",
+              "title": {
+                "en": "Fit to the values",
+                "nl": "Passend bij de waarden",
+                "de": "An die Werte angepasst",
+                "fr": "Ajustée aux valeurs",
+                "it": "Adattata ai valori",
+                "sv": "Anpassad till värdena",
+                "no": "Tilpasset verdiene",
+                "es": "Ajustada a los valores",
+                "da": "Tilpasset værdierne",
+                "ru": "По значениям",
+                "pl": "Dopasowana do wartości",
+                "ko": "값에 맞춤",
+                "ar": "ملائم للقيم"
+              }
+            },
+            {
+              "id": "zero",
+              "title": {
+                "en": "Start at zero",
+                "nl": "Begin bij nul",
+                "de": "Bei null beginnen",
+                "fr": "Commencer à zéro",
+                "it": "Parti da zero",
+                "sv": "Börja på noll",
+                "no": "Start på null",
+                "es": "Empezar en cero",
+                "da": "Start ved nul",
+                "ru": "Начинать с нуля",
+                "pl": "Zaczynaj od zera",
+                "ko": "0부터 시작",
+                "ar": "البدء من الصفر"
+              }
+            }
+          ]
+        },
+        {
+          "id": "negative2",
+          "type": "checkbox",
+          "title": {
+            "en": "  – Below zero in yellow",
+            "nl": "  – Onder nul in geel",
+            "de": "  – Unter null in Gelb",
+            "fr": "  – Sous zéro en jaune",
+            "it": "  – Sotto zero in giallo",
+            "sv": "  – Under noll i gult",
+            "no": "  – Under null i gult",
+            "es": "  – Bajo cero en amarillo",
+            "da": "  – Under nul i gult",
+            "ru": "  – Ниже нуля жёлтым",
+            "pl": "  – Poniżej zera na żółto",
+            "ko": "  – 0 미만은 노란색",
+            "ar": "  – ما دون الصفر بالأصفر"
+          },
+          "value": false
+        },
+        {
+          "id": "smooth2",
+          "type": "checkbox",
+          "title": {
+            "en": "  – Smooth line",
+            "nl": "  – Vloeiende lijn",
+            "de": "  – Geglättete Linie",
+            "fr": "  – Ligne lissée",
+            "it": "  – Linea smussata",
+            "sv": "  – Utjämnad linje",
+            "no": "  – Glatt linje",
+            "es": "  – Línea suavizada",
+            "da": "  – Udglattet linje",
+            "ru": "  – Сглаженная линия",
+            "pl": "  – Wygładzona linia",
+            "ko": "  – 부드러운 선",
+            "ar": "  – خط منعّم"
+          },
+          "value": false
+        },
+        {
+          "id": "title2",
+          "type": "text",
+          "title": {
+            "en": "  – Title",
+            "nl": "  – Titel",
+            "de": "  – Titel",
+            "fr": "  – Titre",
+            "it": "  – Titolo",
+            "sv": "  – Rubrik",
+            "no": "  – Tittel",
+            "es": "  – Título",
+            "da": "  – Titel",
+            "ru": "  – Заголовок",
+            "pl": "  – Tytuł",
+            "ko": "  – 제목",
+            "ar": "  – العنوان"
+          },
+          "hint": {
+            "en": "Optional. Without one, the device and value name the chart.",
+            "nl": "Optioneel. Zonder titel heet de grafiek naar het apparaat en de waarde.",
+            "de": "Optional. Ohne Titel benennen Gerät und Wert das Diagramm.",
+            "fr": "Facultatif. Sans titre, le graphique porte le nom de l'appareil et de la valeur.",
+            "it": "Facoltativo. Senza titolo, il grafico prende il nome da dispositivo e valore.",
+            "sv": "Valfritt. Utan rubrik namnges diagrammet efter enheten och värdet.",
+            "no": "Valgfritt. Uten tittel får diagrammet navn etter enheten og verdien.",
+            "es": "Opcional. Sin título, el gráfico toma el nombre del dispositivo y el valor.",
+            "da": "Valgfri. Uden titel får grafen navn efter enheden og værdien.",
+            "ru": "Необязательно. Без него график называется по устройству и значению.",
+            "pl": "Opcjonalnie. Bez tytułu wykres nazywa się od urządzenia i wartości.",
+            "ko": "선택 사항입니다. 없으면 기기와 값 이름이 사용됩니다.",
+            "ar": "اختياري. بدونه يُسمّى المخطط باسم الجهاز والقيمة."
+          },
+          "value": ""
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        }
+      },
+      "id": "charts"
+    },
     "clock": {
       "name": {
         "en": "Clock",
@@ -1178,7 +2906,7 @@
         "type": "global",
         "singular": false,
         "filter": {
-          "capabilities": "windowcoverings_set|windowcoverings_state|windowcoverings_closed"
+          "capabilities": "windowcoverings_set|windowcoverings_state|windowcoverings_closed|windowcoverings_tilt_set"
         }
       },
       "settings": [
@@ -1289,6 +3017,97 @@
             "ar": "فعّله للستائر التي تُبلغ 0% عندما تكون مفتوحة و100% عندما تكون مغلقة، مثل SwitchBot. ينطبق على كل الستائر في هذه الأداة."
           },
           "value": false
+        },
+        {
+          "id": "openAt",
+          "type": "dropdown",
+          "title": {
+            "en": "Blinds are fully open at",
+            "nl": "Lamellen zijn volledig open bij",
+            "de": "Jalousien sind ganz offen bei",
+            "fr": "Les stores sont entièrement ouverts à",
+            "it": "Le veneziane sono del tutto aperte al",
+            "sv": "Persiennerna är helt öppna vid",
+            "no": "Persiennene er helt åpne ved",
+            "es": "Las persianas están del todo abiertas al",
+            "da": "Persiennerne er helt åbne ved",
+            "ru": "Жалюзи полностью открыты при",
+            "pl": "Żaluzje są w pełni otwarte przy",
+            "ko": "블라인드가 완전히 열리는 위치",
+            "ar": "تكون الستائر مفتوحة بالكامل عند"
+          },
+          "hint": {
+            "en": "At 50%, 0% and 100% are both closed, one way or the other: vertical slatted blinds, or blinds that only tilt, such as SwitchBot Blind Tilt. A tap opens them to 50% or closes them to the nearer end.",
+            "nl": "Bij 50% zijn 0% en 100% allebei dicht, naar de ene of de andere kant: verticale lamellen, of lamellen die alleen kantelen, zoals SwitchBot Blind Tilt. Een tik opent ze tot 50% of sluit ze naar het dichtstbijzijnde uiteinde.",
+            "de": "Bei 50 % sind 0 % und 100 % beide zu, in die eine oder andere Richtung: vertikale Lamellen oder nur kippbare Jalousien wie SwitchBot Blind Tilt. Ein Tippen öffnet sie auf 50 % oder schließt sie zum näheren Ende.",
+            "fr": "À 50 %, 0 % et 100 % sont tous deux fermés, d'un côté ou de l'autre : stores à lamelles verticales, ou stores qui ne font que s'incliner, comme SwitchBot Blind Tilt. Un appui les ouvre à 50 % ou les ferme vers l'extrémité la plus proche.",
+            "it": "Al 50%, 0% e 100% sono entrambe chiuse, da un lato o dall'altro: tende a lamelle verticali, o veneziane che si inclinano soltanto, come SwitchBot Blind Tilt. Un tocco le apre al 50% o le chiude verso l'estremo più vicino.",
+            "sv": "Vid 50 % är både 0 % och 100 % stängda, åt ena eller andra hållet: vertikala lameller, eller persienner som bara vinklas, som SwitchBot Blind Tilt. Ett tryck öppnar dem till 50 % eller stänger dem mot närmaste ände.",
+            "no": "Ved 50 % er både 0 % og 100 % lukket, den ene eller andre veien: vertikale lameller, eller persienner som bare vinkles, som SwitchBot Blind Tilt. Et trykk åpner dem til 50 % eller lukker dem mot nærmeste ende.",
+            "es": "Al 50 %, 0 % y 100 % están ambas cerradas, hacia un lado u otro: lamas verticales, o persianas que solo se inclinan, como SwitchBot Blind Tilt. Un toque las abre al 50 % o las cierra hacia el extremo más cercano.",
+            "da": "Ved 50 % er både 0 % og 100 % lukket, den ene eller den anden vej: lodrette lameller, eller persienner, der kun vipper, som SwitchBot Blind Tilt. Et tryk åbner dem til 50 % eller lukker dem mod den nærmeste ende.",
+            "ru": "При 50 % и 0 %, и 100 % — закрыты, в одну или другую сторону: вертикальные жалюзи или жалюзи, которые только поворачиваются, например SwitchBot Blind Tilt. Касание открывает их до 50 % или закрывает к ближнему краю.",
+            "pl": "Przy 50% zarówno 0%, jak i 100% to zamknięte, w jedną lub drugą stronę: żaluzje pionowe lub żaluzje, które tylko się przechylają, np. SwitchBot Blind Tilt. Dotknięcie otwiera je do 50% lub zamyka do bliższego końca.",
+            "ko": "50%로 설정하면 0%와 100%는 모두 한쪽 또는 반대쪽으로 닫힘입니다. 세로 블라인드나 SwitchBot Blind Tilt처럼 기울기만 되는 블라인드용입니다. 탭하면 50%로 열리거나 더 가까운 끝으로 닫힙니다.",
+            "ar": "عند 50%، تكون 0% و100% كلتاهما مغلقة باتجاه أو بآخر: الستائر العمودية ذات الشرائح، أو الستائر التي تميل فقط مثل SwitchBot Blind Tilt. النقر يفتحها إلى 50% أو يغلقها نحو الطرف الأقرب."
+          },
+          "value": "middleTilt",
+          "values": [
+            {
+              "id": "end",
+              "title": {
+                "en": "100% (0% is closed)",
+                "nl": "100% (0% is dicht)",
+                "de": "100 % (0 % ist zu)",
+                "fr": "100 % (0 % est fermé)",
+                "it": "100% (0% è chiusa)",
+                "sv": "100 % (0 % är stängd)",
+                "no": "100 % (0 % er lukket)",
+                "es": "100 % (0 % es cerrada)",
+                "da": "100 % (0 % er lukket)",
+                "ru": "100 % (0 % — закрыты)",
+                "pl": "100% (0% to zamknięte)",
+                "ko": "100% (0%는 닫힘)",
+                "ar": "100% (0% مغلقة)"
+              }
+            },
+            {
+              "id": "middleTilt",
+              "title": {
+                "en": "50% for blinds that only tilt, else 100%",
+                "nl": "50% voor lamellen die alleen kantelen, anders 100%",
+                "de": "50 % bei nur kippbaren Jalousien, sonst 100 %",
+                "fr": "50 % pour les stores qui ne font que s'incliner, sinon 100 %",
+                "it": "50% per le veneziane che si inclinano soltanto, altrimenti 100%",
+                "sv": "50 % för persienner som bara vinklas, annars 100 %",
+                "no": "50 % for persienner som bare vinkles, ellers 100 %",
+                "es": "50 % para persianas que solo se inclinan; si no, 100 %",
+                "da": "50 % for persienner, der kun vipper, ellers 100 %",
+                "ru": "50 % для жалюзи, которые только поворачиваются, иначе 100 %",
+                "pl": "50% dla żaluzji, które tylko się przechylają, inaczej 100%",
+                "ko": "기울기만 되는 블라인드는 50%, 그 외는 100%",
+                "ar": "50% للستائر التي تميل فقط، وإلا 100%"
+              }
+            },
+            {
+              "id": "middle",
+              "title": {
+                "en": "50% for all (vertical blinds)",
+                "nl": "50% voor alle (verticale lamellen)",
+                "de": "50 % bei allen (vertikale Lamellen)",
+                "fr": "50 % pour tous (lamelles verticales)",
+                "it": "50% per tutte (lamelle verticali)",
+                "sv": "50 % för alla (vertikala lameller)",
+                "no": "50 % for alle (vertikale lameller)",
+                "es": "50 % para todas (lamas verticales)",
+                "da": "50 % for alle (lodrette lameller)",
+                "ru": "50 % для всех (вертикальные жалюзи)",
+                "pl": "50% dla wszystkich (żaluzje pionowe)",
+                "ko": "모두 50% (세로 블라인드)",
+                "ar": "50% للجميع (الستائر العمودية)"
+              }
+            }
+          ]
         },
         {
           "id": "showState",
@@ -5168,19 +6987,19 @@
     },
     "price": {
       "name": {
-        "en": "Price Badge",
-        "nl": "Prijsbadge",
-        "de": "Preis-Badge",
-        "fr": "Badge de prix",
-        "it": "Badge prezzo",
-        "sv": "Prisbricka",
-        "no": "Prismerke",
-        "es": "Insignia de precio",
-        "da": "Prismærke",
-        "ru": "Значок цены",
-        "pl": "Plakietka ceny",
-        "ko": "가격 배지",
-        "ar": "شارة السعر"
+        "en": "Energy Price Strip",
+        "nl": "Energieprijsstrook",
+        "de": "Energiepreis-Leiste",
+        "fr": "Bandeau prix de l'énergie",
+        "it": "Barra prezzo energia",
+        "sv": "Energiprisremsa",
+        "no": "Energiprisstripe",
+        "es": "Barra de precio de energía",
+        "da": "Energiprisbjælke",
+        "ru": "Полоса цен на энергию",
+        "pl": "Pasek cen energii",
+        "ko": "에너지 가격 바",
+        "ar": "شريط سعر الطاقة"
       },
       "height": 68,
       "transparent": true,
@@ -5506,19 +7325,19 @@
             "ar": "احتساب الحركة والتلامس كإنذارات"
           },
           "hint": {
-            "en": "Off: an open door or detected motion doesn't turn the tile red.",
-            "nl": "Uit: een open deur of gedetecteerde beweging kleurt de tegel niet rood.",
-            "de": "Aus: Eine offene Tür oder erkannte Bewegung färbt die Kachel nicht rot.",
-            "fr": "Désactivé : une porte ouverte ou un mouvement détecté ne rend pas la tuile rouge.",
-            "it": "Disattivato: una porta aperta o un movimento rilevato non colorano di rosso il riquadro.",
-            "sv": "Av: en öppen dörr eller upptäckt rörelse gör inte rutan röd.",
-            "no": "Av: en åpen dør eller registrert bevegelse gjør ikke flisen rød.",
-            "es": "Desactivado: una puerta abierta o un movimiento detectado no ponen el mosaico en rojo.",
-            "da": "Fra: en åben dør eller registreret bevægelse gør ikke feltet rødt.",
-            "ru": "Выкл.: открытая дверь или движение не окрашивают плитку в красный.",
-            "pl": "Wył.: otwarte drzwi lub wykryty ruch nie barwią kafelka na czerwono.",
-            "ko": "끔: 열린 문이나 감지된 동작은 타일을 빨간색으로 표시하지 않습니다.",
-            "ar": "إيقاف: الباب المفتوح أو الحركة المكتشفة لا تجعل البلاطة حمراء."
+            "en": "Off: an open door, motion or presence doesn't turn the tile red.",
+            "nl": "Uit: een open deur, beweging of aanwezigheid kleurt de tegel niet rood.",
+            "de": "Aus: Eine offene Tür, Bewegung oder Anwesenheit färbt die Kachel nicht rot.",
+            "fr": "Désactivé : une porte ouverte, un mouvement ou une présence ne rend pas la tuile rouge.",
+            "it": "Disattivato: una porta aperta, un movimento o una presenza non colorano di rosso il riquadro.",
+            "sv": "Av: en öppen dörr, rörelse eller närvaro gör inte rutan röd.",
+            "no": "Av: en åpen dør, bevegelse eller tilstedeværelse gjør ikke flisen rød.",
+            "es": "Desactivado: una puerta abierta, un movimiento o una presencia no ponen el mosaico en rojo.",
+            "da": "Fra: en åben dør, bevægelse eller tilstedeværelse gør ikke feltet rødt.",
+            "ru": "Выкл.: открытая дверь, движение или присутствие не окрашивают плитку в красный.",
+            "pl": "Wył.: otwarte drzwi, ruch lub obecność nie barwią kafelka na czerwono.",
+            "ko": "끔: 열린 문, 동작 또는 재실은 타일을 빨간색으로 표시하지 않습니다.",
+            "ar": "إيقاف: الباب المفتوح أو الحركة أو التواجد لا يجعل البلاطة حمراء."
           },
           "value": false
         },
@@ -5568,19 +7387,19 @@
     },
     "sensordots": {
       "name": {
-        "en": "Sensor Dots",
-        "nl": "Sensorstippen",
-        "de": "Sensorpunkte",
-        "fr": "Points capteurs",
-        "it": "Punti sensori",
-        "sv": "Sensorprickar",
-        "no": "Sensorprikker",
-        "es": "Puntos de sensores",
-        "da": "Sensorprikker",
-        "ru": "Точки датчиков",
-        "pl": "Kropki czujników",
-        "ko": "센서 점",
-        "ar": "نقاط المستشعرات"
+        "en": "Activity Dots",
+        "nl": "Activiteitsstippen",
+        "de": "Aktivitätspunkte",
+        "fr": "Points d'activité",
+        "it": "Punti attività",
+        "sv": "Aktivitetsprickar",
+        "no": "Aktivitetsprikker",
+        "es": "Puntos de actividad",
+        "da": "Aktivitetsprikker",
+        "ru": "Точки активности",
+        "pl": "Kropki aktywności",
+        "ko": "활동 점",
+        "ar": "نقاط النشاط"
       },
       "height": 52,
       "transparent": true,
@@ -5588,7 +7407,7 @@
         "type": "global",
         "singular": false,
         "filter": {
-          "capabilities": "alarm_motion|alarm_contact|alarm_person|alarm_vehicle|alarm_pet"
+          "capabilities": "alarm_motion|alarm_presence|alarm_contact|alarm_person|alarm_vehicle|alarm_pet"
         }
       },
       "settings": [
@@ -5931,6 +7750,65 @@
         }
       },
       "id": "sensordots"
+    },
+    "spacer": {
+      "name": {
+        "en": "Spacer",
+        "nl": "Afstandhouder",
+        "de": "Abstandhalter",
+        "fr": "Espace",
+        "it": "Spaziatore",
+        "sv": "Mellanrum",
+        "no": "Mellomrom",
+        "es": "Espaciador",
+        "da": "Mellemrum",
+        "ru": "Отступ",
+        "pl": "Odstęp",
+        "ko": "여백",
+        "ar": "مسافة فارغة"
+      },
+      "height": 32,
+      "transparent": true,
+      "settings": [
+        {
+          "id": "height",
+          "type": "number",
+          "title": {
+            "en": "Height (pixels)",
+            "nl": "Hoogte (pixels)",
+            "de": "Höhe (Pixel)",
+            "fr": "Hauteur (pixels)",
+            "it": "Altezza (pixel)",
+            "sv": "Höjd (pixlar)",
+            "no": "Høyde (piksler)",
+            "es": "Altura (píxeles)",
+            "da": "Højde (pixels)",
+            "ru": "Высота (пиксели)",
+            "pl": "Wysokość (piksele)",
+            "ko": "높이 (픽셀)",
+            "ar": "الارتفاع (بكسل)"
+          },
+          "hint": {
+            "en": "Empty space, to line up widgets across columns. Homey keeps its usual gap above and below it.",
+            "nl": "Lege ruimte, om widgets in verschillende kolommen gelijk te zetten. Homey houdt de gewone ruimte erboven en eronder.",
+            "de": "Leerer Platz, um Widgets über Spalten hinweg auszurichten. Homey lässt darüber und darunter den üblichen Abstand.",
+            "fr": "Un espace vide, pour aligner les widgets d'une colonne à l'autre. Homey garde son écart habituel au-dessus et en dessous.",
+            "it": "Spazio vuoto, per allineare i widget tra le colonne. Homey mantiene il solito spazio sopra e sotto.",
+            "sv": "Tomt utrymme för att linjera widgetar mellan kolumner. Homey behåller sitt vanliga mellanrum över och under.",
+            "no": "Tomt rom for å linje opp widgeter på tvers av kolonner. Homey beholder det vanlige mellomrommet over og under.",
+            "es": "Espacio vacío para alinear widgets entre columnas. Homey mantiene su separación habitual arriba y abajo.",
+            "da": "Tom plads til at flugte widgets på tværs af kolonner. Homey beholder sit sædvanlige mellemrum over og under.",
+            "ru": "Пустое место, чтобы выровнять виджеты в разных колонках. Homey сохраняет обычный отступ сверху и снизу.",
+            "pl": "Pusta przestrzeń do wyrównania widżetów w różnych kolumnach. Homey zachowuje zwykły odstęp nad i pod nią.",
+            "ko": "여러 열의 위젯을 맞추기 위한 빈 공간입니다. Homey는 위아래에 평소 간격을 유지합니다.",
+            "ar": "مساحة فارغة لمحاذاة الأدوات بين الأعمدة. يحتفظ Homey بالفراغ المعتاد فوقها وتحتها."
+          },
+          "value": 32,
+          "min": 0,
+          "max": 800
+        }
+      ],
+      "id": "spacer"
     },
     "sparklines": {
       "name": {
@@ -6774,21 +8652,709 @@
       },
       "id": "stack"
     },
+    "textline": {
+      "name": {
+        "en": "Notes",
+        "nl": "Notities",
+        "de": "Notizen",
+        "fr": "Notes",
+        "it": "Note",
+        "sv": "Anteckningar",
+        "no": "Notater",
+        "es": "Notas",
+        "da": "Noter",
+        "ru": "Заметки",
+        "pl": "Notatki",
+        "ko": "메모",
+        "ar": "ملاحظات"
+      },
+      "height": 48,
+      "transparent": true,
+      "settings": [
+        {
+          "id": "style",
+          "type": "dropdown",
+          "title": {
+            "en": "Style",
+            "nl": "Stijl",
+            "de": "Stil",
+            "fr": "Style",
+            "it": "Stile",
+            "sv": "Stil",
+            "no": "Stil",
+            "es": "Estilo",
+            "da": "Stil",
+            "ru": "Стиль",
+            "pl": "Styl",
+            "ko": "스타일",
+            "ar": "النمط"
+          },
+          "value": "tile",
+          "values": [
+            {
+              "id": "tile",
+              "title": {
+                "en": "Tile",
+                "nl": "Tegel",
+                "de": "Kachel",
+                "fr": "Tuile",
+                "it": "Riquadro",
+                "sv": "Ruta",
+                "no": "Flis",
+                "es": "Mosaico",
+                "da": "Felt",
+                "ru": "Плитка",
+                "pl": "Kafelek",
+                "ko": "타일",
+                "ar": "بلاطة"
+              }
+            },
+            {
+              "id": "postit",
+              "title": {
+                "en": "Post-it note",
+                "nl": "Post-it-briefje",
+                "de": "Haftnotiz",
+                "fr": "Post-it",
+                "it": "Post-it",
+                "sv": "Post-it-lapp",
+                "no": "Post-it-lapp",
+                "es": "Nota Post-it",
+                "da": "Post-it-seddel",
+                "ru": "Стикер",
+                "pl": "Karteczka",
+                "ko": "포스트잇",
+                "ar": "ملاحظة لاصقة"
+              }
+            }
+          ]
+        },
+        {
+          "id": "source",
+          "type": "dropdown",
+          "title": {
+            "en": "Text from",
+            "nl": "Tekst van",
+            "de": "Text aus",
+            "fr": "Texte depuis",
+            "it": "Testo da",
+            "sv": "Text från",
+            "no": "Tekst fra",
+            "es": "Texto de",
+            "da": "Tekst fra",
+            "ru": "Текст из",
+            "pl": "Tekst z",
+            "ko": "텍스트 출처",
+            "ar": "النص من"
+          },
+          "value": "typed",
+          "values": [
+            {
+              "id": "typed",
+              "title": {
+                "en": "The message below",
+                "nl": "Het bericht hieronder",
+                "de": "Der Nachricht unten",
+                "fr": "Le message ci-dessous",
+                "it": "Il messaggio qui sotto",
+                "sv": "Meddelandet nedan",
+                "no": "Meldingen nedenfor",
+                "es": "El mensaje de abajo",
+                "da": "Beskeden nedenfor",
+                "ru": "Сообщения ниже",
+                "pl": "Wiadomości poniżej",
+                "ko": "아래 메시지",
+                "ar": "الرسالة أدناه"
+              }
+            },
+            {
+              "id": "flow",
+              "title": {
+                "en": "A Flow card",
+                "nl": "Een Flow-kaart",
+                "de": "Einer Flow-Karte",
+                "fr": "Une carte Flow",
+                "it": "Una scheda Flow",
+                "sv": "Ett Flow-kort",
+                "no": "Et Flow-kort",
+                "es": "Una tarjeta de Flow",
+                "da": "Et Flow-kort",
+                "ru": "Карточки Flow",
+                "pl": "Karty Flow",
+                "ko": "Flow 카드",
+                "ar": "بطاقة Flow"
+              }
+            },
+            {
+              "id": "variable",
+              "title": {
+                "en": "A text variable",
+                "nl": "Een tekstvariabele",
+                "de": "Einer Textvariable",
+                "fr": "Une variable texte",
+                "it": "Una variabile di testo",
+                "sv": "En textvariabel",
+                "no": "En tekstvariabel",
+                "es": "Una variable de texto",
+                "da": "En tekstvariabel",
+                "ru": "Текстовой переменной",
+                "pl": "Zmiennej tekstowej",
+                "ko": "텍스트 변수",
+                "ar": "متغير نصي"
+              }
+            }
+          ]
+        },
+        {
+          "id": "message",
+          "type": "textarea",
+          "title": {
+            "en": "Message",
+            "nl": "Bericht",
+            "de": "Nachricht",
+            "fr": "Message",
+            "it": "Messaggio",
+            "sv": "Meddelande",
+            "no": "Melding",
+            "es": "Mensaje",
+            "da": "Besked",
+            "ru": "Сообщение",
+            "pl": "Wiadomość",
+            "ko": "메시지",
+            "ar": "الرسالة"
+          },
+          "hint": {
+            "en": "Your note. With a Flow card or a variable, it shows while they have no text.",
+            "nl": "Je notitie. Met een Flow-kaart of een variabele verschijnt het zolang die geen tekst hebben.",
+            "de": "Deine Notiz. Mit einer Flow-Karte oder Variable erscheint sie, solange diese keinen Text haben.",
+            "fr": "Votre note. Avec une carte Flow ou une variable, elle s'affiche tant qu'elles n'ont pas de texte.",
+            "it": "La tua nota. Con una scheda Flow o una variabile, appare finché non hanno testo.",
+            "sv": "Din anteckning. Med ett Flow-kort eller en variabel visas den så länge de saknar text.",
+            "no": "Notatet ditt. Med et Flow-kort eller en variabel vises det så lenge de ikke har tekst.",
+            "es": "Tu nota. Con una tarjeta de Flow o una variable, aparece mientras no tengan texto.",
+            "da": "Din note. Med et Flow-kort eller en variabel vises den, så længe de ikke har tekst.",
+            "ru": "Ваша заметка. С карточкой Flow или переменной она видна, пока у них нет текста.",
+            "pl": "Twoja notatka. Przy karcie Flow lub zmiennej pojawia się, dopóki nie mają tekstu.",
+            "ko": "메모 내용입니다. Flow 카드나 변수를 쓰면 텍스트가 없을 때 표시됩니다.",
+            "ar": "ملاحظتك. مع بطاقة Flow أو متغير، تظهر ما دامت بلا نص."
+          },
+          "value": ""
+        },
+        {
+          "id": "board",
+          "type": "text",
+          "title": {
+            "en": "Note name",
+            "nl": "Naam van de notitie",
+            "de": "Name der Notiz",
+            "fr": "Nom de la note",
+            "it": "Nome della nota",
+            "sv": "Anteckningens namn",
+            "no": "Notatets navn",
+            "es": "Nombre de la nota",
+            "da": "Notens navn",
+            "ru": "Имя заметки",
+            "pl": "Nazwa notatki",
+            "ko": "메모 이름",
+            "ar": "اسم الملاحظة"
+          },
+          "hint": {
+            "en": "With a Flow card: the name the card writes to. Notes with the same name show the same text.",
+            "nl": "Met een Flow-kaart: de naam waar de kaart naar schrijft. Notities met dezelfde naam tonen dezelfde tekst.",
+            "de": "Mit einer Flow-Karte: der Name, auf den die Karte schreibt. Notizen mit demselben Namen zeigen denselben Text.",
+            "fr": "Avec une carte Flow : le nom sur lequel la carte écrit. Les notes de même nom affichent le même texte.",
+            "it": "Con una scheda Flow: il nome su cui scrive la scheda. Le note con lo stesso nome mostrano lo stesso testo.",
+            "sv": "Med ett Flow-kort: namnet kortet skriver till. Anteckningar med samma namn visar samma text.",
+            "no": "Med et Flow-kort: navnet kortet skriver til. Notater med samme navn viser samme tekst.",
+            "es": "Con una tarjeta de Flow: el nombre en el que escribe la tarjeta. Las notas con el mismo nombre muestran el mismo texto.",
+            "da": "Med et Flow-kort: navnet, kortet skriver til. Noter med samme navn viser samme tekst.",
+            "ru": "С карточкой Flow: имя, в которое пишет карточка. Заметки с одним именем показывают один текст.",
+            "pl": "Przy karcie Flow: nazwa, do której pisze karta. Notatki o tej samej nazwie pokazują ten sam tekst.",
+            "ko": "Flow 카드를 쓸 때 카드가 쓰는 이름입니다. 이름이 같은 메모는 같은 텍스트를 표시합니다.",
+            "ar": "مع بطاقة Flow: الاسم الذي تكتب إليه البطاقة. تعرض الملاحظات ذات الاسم نفسه النص نفسه."
+          },
+          "value": "Note"
+        },
+        {
+          "id": "variable",
+          "type": "autocomplete",
+          "title": {
+            "en": "Text variable",
+            "nl": "Tekstvariabele",
+            "de": "Textvariable",
+            "fr": "Variable texte",
+            "it": "Variabile di testo",
+            "sv": "Textvariabel",
+            "no": "Tekstvariabel",
+            "es": "Variable de texto",
+            "da": "Tekstvariabel",
+            "ru": "Текстовая переменная",
+            "pl": "Zmienna tekstowa",
+            "ko": "텍스트 변수",
+            "ar": "متغير نصي"
+          },
+          "hint": {
+            "en": "With a text variable: the Logic variable to show.",
+            "nl": "Met een tekstvariabele: de Logica-variabele om te tonen.",
+            "de": "Mit einer Textvariable: die anzuzeigende Logik-Variable.",
+            "fr": "Avec une variable texte : la variable Logique à afficher.",
+            "it": "Con una variabile di testo: la variabile Logica da mostrare.",
+            "sv": "Med en textvariabel: Logik-variabeln som ska visas.",
+            "no": "Med en tekstvariabel: Logikk-variabelen som skal vises.",
+            "es": "Con una variable de texto: la variable de Lógica que se muestra.",
+            "da": "Med en tekstvariabel: Logik-variablen, der skal vises.",
+            "ru": "С текстовой переменной: переменная логики для показа.",
+            "pl": "Przy zmiennej tekstowej: zmienna Logiki do pokazania.",
+            "ko": "텍스트 변수를 쓸 때 표시할 로직 변수입니다.",
+            "ar": "مع متغير نصي: متغير المنطق المراد عرضه."
+          }
+        },
+        {
+          "id": "align",
+          "type": "dropdown",
+          "title": {
+            "en": "Alignment",
+            "nl": "Uitlijning",
+            "de": "Ausrichtung",
+            "fr": "Alignement",
+            "it": "Allineamento",
+            "sv": "Justering",
+            "no": "Justering",
+            "es": "Alineación",
+            "da": "Justering",
+            "ru": "Выравнивание",
+            "pl": "Wyrównanie",
+            "ko": "정렬",
+            "ar": "المحاذاة"
+          },
+          "value": "left",
+          "values": [
+            {
+              "id": "left",
+              "title": {
+                "en": "Left",
+                "nl": "Links",
+                "de": "Links",
+                "fr": "Gauche",
+                "it": "Sinistra",
+                "sv": "Vänster",
+                "no": "Venstre",
+                "es": "Izquierda",
+                "da": "Venstre",
+                "ru": "По левому краю",
+                "pl": "Do lewej",
+                "ko": "왼쪽",
+                "ar": "يسار"
+              }
+            },
+            {
+              "id": "center",
+              "title": {
+                "en": "Centre",
+                "nl": "Midden",
+                "de": "Mitte",
+                "fr": "Centre",
+                "it": "Centro",
+                "sv": "Mitten",
+                "no": "Midten",
+                "es": "Centro",
+                "da": "Midte",
+                "ru": "По центру",
+                "pl": "Do środka",
+                "ko": "가운데",
+                "ar": "وسط"
+              }
+            },
+            {
+              "id": "right",
+              "title": {
+                "en": "Right",
+                "nl": "Rechts",
+                "de": "Rechts",
+                "fr": "Droite",
+                "it": "Destra",
+                "sv": "Höger",
+                "no": "Høyre",
+                "es": "Derecha",
+                "da": "Højre",
+                "ru": "По правому краю",
+                "pl": "Do prawej",
+                "ko": "오른쪽",
+                "ar": "يمين"
+              }
+            }
+          ]
+        },
+        {
+          "id": "size",
+          "type": "dropdown",
+          "title": {
+            "en": "Text size",
+            "nl": "Tekstgrootte",
+            "de": "Textgröße",
+            "fr": "Taille du texte",
+            "it": "Dimensione del testo",
+            "sv": "Textstorlek",
+            "no": "Tekststørrelse",
+            "es": "Tamaño del texto",
+            "da": "Tekststørrelse",
+            "ru": "Размер текста",
+            "pl": "Rozmiar tekstu",
+            "ko": "텍스트 크기",
+            "ar": "حجم النص"
+          },
+          "value": "default",
+          "values": [
+            {
+              "id": "small",
+              "title": {
+                "en": "Small",
+                "nl": "Klein",
+                "de": "Klein",
+                "fr": "Petite",
+                "it": "Piccola",
+                "sv": "Liten",
+                "no": "Liten",
+                "es": "Pequeño",
+                "da": "Lille",
+                "ru": "Маленький",
+                "pl": "Mały",
+                "ko": "작게",
+                "ar": "صغير"
+              }
+            },
+            {
+              "id": "default",
+              "title": {
+                "en": "Normal",
+                "nl": "Normaal",
+                "de": "Normal",
+                "fr": "Normale",
+                "it": "Normale",
+                "sv": "Normal",
+                "no": "Normal",
+                "es": "Normal",
+                "da": "Normal",
+                "ru": "Обычный",
+                "pl": "Normalny",
+                "ko": "보통",
+                "ar": "عادي"
+              }
+            },
+            {
+              "id": "large",
+              "title": {
+                "en": "Large",
+                "nl": "Groot",
+                "de": "Groß",
+                "fr": "Grande",
+                "it": "Grande",
+                "sv": "Stor",
+                "no": "Stor",
+                "es": "Grande",
+                "da": "Stor",
+                "ru": "Большой",
+                "pl": "Duży",
+                "ko": "크게",
+                "ar": "كبير"
+              }
+            }
+          ]
+        },
+        {
+          "id": "overflow",
+          "type": "dropdown",
+          "title": {
+            "en": "Long text",
+            "nl": "Lange tekst",
+            "de": "Langer Text",
+            "fr": "Texte long",
+            "it": "Testo lungo",
+            "sv": "Lång text",
+            "no": "Lang tekst",
+            "es": "Texto largo",
+            "da": "Lang tekst",
+            "ru": "Длинный текст",
+            "pl": "Długi tekst",
+            "ko": "긴 텍스트",
+            "ar": "النص الطويل"
+          },
+          "hint": {
+            "en": "On the tile. A Post-it note wraps up to three lines.",
+            "nl": "Op de tegel. Een Post-it-briefje loopt door tot drie regels.",
+            "de": "Auf der Kachel. Eine Haftnotiz bricht auf bis zu drei Zeilen um.",
+            "fr": "Sur la tuile. Un Post-it passe à la ligne, jusqu'à trois lignes.",
+            "it": "Sul riquadro. Un Post-it va a capo fino a tre righe.",
+            "sv": "På rutan. En Post-it-lapp radbryts till högst tre rader.",
+            "no": "På flisen. En Post-it-lapp brytes til høyst tre linjer.",
+            "es": "En el mosaico. Una nota Post-it ocupa hasta tres líneas.",
+            "da": "På feltet. En Post-it-seddel ombrydes til højst tre linjer.",
+            "ru": "На плитке. Стикер переносит текст максимум на три строки.",
+            "pl": "Na kafelku. Karteczka zawija tekst do trzech wierszy.",
+            "ko": "타일에 적용됩니다. 포스트잇은 최대 세 줄로 줄바꿈합니다.",
+            "ar": "على البلاطة. تلتف الملاحظة اللاصقة حتى ثلاثة أسطر."
+          },
+          "value": "ellipsis",
+          "values": [
+            {
+              "id": "ellipsis",
+              "title": {
+                "en": "Cut off with …",
+                "nl": "Afkappen met …",
+                "de": "Mit … kürzen",
+                "fr": "Couper avec …",
+                "it": "Tagliare con …",
+                "sv": "Korta med …",
+                "no": "Kutt med …",
+                "es": "Cortar con …",
+                "da": "Afkort med …",
+                "ru": "Обрезать с …",
+                "pl": "Uciąć z …",
+                "ko": "…로 자르기",
+                "ar": "قصّ مع …"
+              }
+            },
+            {
+              "id": "scroll",
+              "title": {
+                "en": "Scroll",
+                "nl": "Laten scrollen",
+                "de": "Laufen lassen",
+                "fr": "Faire défiler",
+                "it": "Scorrere",
+                "sv": "Rulla",
+                "no": "Rull",
+                "es": "Desplazar",
+                "da": "Rul",
+                "ru": "Прокручивать",
+                "pl": "Przewijać",
+                "ko": "스크롤",
+                "ar": "تمرير"
+              }
+            }
+          ]
+        },
+        {
+          "id": "icon",
+          "type": "autocomplete",
+          "title": {
+            "en": "Icon",
+            "nl": "Pictogram",
+            "de": "Symbol",
+            "fr": "Icône",
+            "it": "Icona",
+            "sv": "Ikon",
+            "no": "Ikon",
+            "es": "Icono",
+            "da": "Ikon",
+            "ru": "Значок",
+            "pl": "Ikona",
+            "ko": "아이콘",
+            "ar": "الأيقونة"
+          },
+          "hint": {
+            "en": "On the tile, before the text.",
+            "nl": "Op de tegel, voor de tekst.",
+            "de": "Auf der Kachel, vor dem Text.",
+            "fr": "Sur la tuile, avant le texte.",
+            "it": "Sul riquadro, prima del testo.",
+            "sv": "På rutan, före texten.",
+            "no": "På flisen, foran teksten.",
+            "es": "En el mosaico, antes del texto.",
+            "da": "På feltet, før teksten.",
+            "ru": "На плитке, перед текстом.",
+            "pl": "Na kafelku, przed tekstem.",
+            "ko": "타일에서 텍스트 앞에 표시됩니다.",
+            "ar": "على البلاطة، قبل النص."
+          }
+        },
+        {
+          "id": "color",
+          "type": "dropdown",
+          "title": {
+            "en": "Colour",
+            "nl": "Kleur",
+            "de": "Farbe",
+            "fr": "Couleur",
+            "it": "Colore",
+            "sv": "Färg",
+            "no": "Farge",
+            "es": "Color",
+            "da": "Farve",
+            "ru": "Цвет",
+            "pl": "Kolor",
+            "ko": "색상",
+            "ar": "اللون"
+          },
+          "hint": {
+            "en": "A tinted tile, or the Post-it's paper (Default: a plain tile, a yellow note). A Flow card can set another.",
+            "nl": "Een gekleurde tegel of het papier van de Post-it (Standaard: een gewone tegel, een geel briefje). Een Flow-kaart kan een andere instellen.",
+            "de": "Eine getönte Kachel oder das Papier der Haftnotiz (Standard: eine schlichte Kachel, ein gelber Zettel). Eine Flow-Karte kann eine andere setzen.",
+            "fr": "Une tuile teintée, ou le papier du Post-it (Par défaut : une tuile simple, une note jaune). Une carte Flow peut en définir une autre.",
+            "it": "Un riquadro colorato o la carta del Post-it (Predefinito: un riquadro semplice, un foglietto giallo). Una scheda Flow può impostarne un altro.",
+            "sv": "En tonad ruta eller Post-it-lappens papper (Standard: en vanlig ruta, en gul lapp). Ett Flow-kort kan ange en annan.",
+            "no": "En farget flis eller Post-it-lappens papir (Standard: en vanlig flis, en gul lapp). Et Flow-kort kan angi en annen.",
+            "es": "Un mosaico teñido o el papel del Post-it (Predeterminado: un mosaico normal, una nota amarilla). Una tarjeta de Flow puede poner otro.",
+            "da": "Et tonet felt eller Post-it-sedlens papir (Standard: et almindeligt felt, en gul seddel). Et Flow-kort kan angive en anden.",
+            "ru": "Тонированная плитка или бумага стикера (по умолчанию: обычная плитка, жёлтый стикер). Карточка Flow может задать другой.",
+            "pl": "Zabarwiony kafelek albo papier karteczki (Domyślny: zwykły kafelek, żółta karteczka). Karta Flow może ustawić inny.",
+            "ko": "색이 입혀진 타일 또는 포스트잇의 종이 색입니다(기본값: 일반 타일, 노란 메모). Flow 카드로 다른 색을 설정할 수 있습니다.",
+            "ar": "بلاطة ملوّنة أو ورق الملاحظة اللاصقة (الافتراضي: بلاطة عادية، ملاحظة صفراء). يمكن لبطاقة Flow تعيين لون آخر."
+          },
+          "value": "default",
+          "values": [
+            {
+              "id": "default",
+              "title": {
+                "en": "Default",
+                "nl": "Standaard",
+                "de": "Standard",
+                "fr": "Par défaut",
+                "it": "Predefinito",
+                "sv": "Standard",
+                "no": "Standard",
+                "es": "Predeterminado",
+                "da": "Standard",
+                "ru": "По умолчанию",
+                "pl": "Domyślny",
+                "ko": "기본값",
+                "ar": "افتراضي"
+              }
+            },
+            {
+              "id": "yellow",
+              "title": {
+                "en": "Yellow",
+                "nl": "Geel",
+                "de": "Gelb",
+                "fr": "Jaune",
+                "it": "Giallo",
+                "sv": "Gul",
+                "no": "Gul",
+                "es": "Amarillo",
+                "da": "Gul",
+                "ru": "Жёлтый",
+                "pl": "Żółty",
+                "ko": "노랑",
+                "ar": "أصفر"
+              }
+            },
+            {
+              "id": "orange",
+              "title": {
+                "en": "Orange",
+                "nl": "Oranje",
+                "de": "Orange",
+                "fr": "Orange",
+                "it": "Arancione",
+                "sv": "Orange",
+                "no": "Oransje",
+                "es": "Naranja",
+                "da": "Orange",
+                "ru": "Оранжевый",
+                "pl": "Pomarańczowy",
+                "ko": "주황",
+                "ar": "برتقالي"
+              }
+            },
+            {
+              "id": "red",
+              "title": {
+                "en": "Red",
+                "nl": "Rood",
+                "de": "Rot",
+                "fr": "Rouge",
+                "it": "Rosso",
+                "sv": "Röd",
+                "no": "Rød",
+                "es": "Rojo",
+                "da": "Rød",
+                "ru": "Красный",
+                "pl": "Czerwony",
+                "ko": "빨강",
+                "ar": "أحمر"
+              }
+            },
+            {
+              "id": "purple",
+              "title": {
+                "en": "Purple",
+                "nl": "Paars",
+                "de": "Lila",
+                "fr": "Violet",
+                "it": "Viola",
+                "sv": "Lila",
+                "no": "Lilla",
+                "es": "Morado",
+                "da": "Lilla",
+                "ru": "Фиолетовый",
+                "pl": "Fioletowy",
+                "ko": "보라",
+                "ar": "بنفسجي"
+              }
+            },
+            {
+              "id": "blue",
+              "title": {
+                "en": "Blue",
+                "nl": "Blauw",
+                "de": "Blau",
+                "fr": "Bleu",
+                "it": "Blu",
+                "sv": "Blå",
+                "no": "Blå",
+                "es": "Azul",
+                "da": "Blå",
+                "ru": "Синий",
+                "pl": "Niebieski",
+                "ko": "파랑",
+                "ar": "أزرق"
+              }
+            },
+            {
+              "id": "green",
+              "title": {
+                "en": "Green",
+                "nl": "Groen",
+                "de": "Grün",
+                "fr": "Vert",
+                "it": "Verde",
+                "sv": "Grön",
+                "no": "Grønn",
+                "es": "Verde",
+                "da": "Grøn",
+                "ru": "Зелёный",
+                "pl": "Zielony",
+                "ko": "초록",
+                "ar": "أخضر"
+              }
+            }
+          ]
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        }
+      },
+      "id": "textline"
+    },
     "thermostat": {
       "name": {
-        "en": "Thermostat Shortcuts",
-        "nl": "Thermostaatsnelkoppelingen",
-        "de": "Thermostat-Schnelltasten",
-        "fr": "Raccourcis thermostat",
-        "it": "Scorciatoie termostato",
-        "sv": "Termostatgenvägar",
-        "no": "Termostatsnarveier",
-        "es": "Accesos directos de termostato",
-        "da": "Termostatgenveje",
-        "ru": "Быстрые кнопки термостата",
-        "pl": "Skróty termostatu",
-        "ko": "온도 조절기 바로가기",
-        "ar": "اختصارات منظم الحرارة"
+        "en": "Thermostat Presets",
+        "nl": "Thermostaatstanden",
+        "de": "Thermostat-Presets",
+        "fr": "Préréglages thermostat",
+        "it": "Preimpostazioni termostato",
+        "sv": "Termostatlägen",
+        "no": "Termostatinnstillinger",
+        "es": "Ajustes del termostato",
+        "da": "Termostatindstillinger",
+        "ru": "Пресеты термостата",
+        "pl": "Ustawienia termostatu",
+        "ko": "온도 조절기 프리셋",
+        "ar": "إعدادات منظم الحرارة"
       },
       "height": 140,
       "transparent": false,

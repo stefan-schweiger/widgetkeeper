@@ -1,18 +1,18 @@
 {
   "name": {
-    "en": "Sensor Dots",
-    "nl": "Sensorstippen",
-    "de": "Sensorpunkte",
-    "fr": "Points capteurs",
-    "it": "Punti sensori",
-    "sv": "Sensorprickar",
-    "no": "Sensorprikker",
-    "es": "Puntos de sensores",
-    "da": "Sensorprikker",
-    "ru": "Точки датчиков",
-    "pl": "Kropki czujników",
-    "ko": "센서 점",
-    "ar": "نقاط المستشعرات"
+    "en": "Activity Dots",
+    "nl": "Activiteitsstippen",
+    "de": "Aktivitätspunkte",
+    "fr": "Points d'activité",
+    "it": "Punti attività",
+    "sv": "Aktivitetsprickar",
+    "no": "Aktivitetsprikker",
+    "es": "Puntos de actividad",
+    "da": "Aktivitetsprikker",
+    "ru": "Точки активности",
+    "pl": "Kropki aktywności",
+    "ko": "활동 점",
+    "ar": "نقاط النشاط"
   },
   "height": 52,
   "transparent": true,
@@ -20,7 +20,7 @@
     "type": "global",
     "singular": false,
     "filter": {
-      "capabilities": "alarm_motion|alarm_contact|alarm_person|alarm_vehicle|alarm_pet"
+      "capabilities": "alarm_motion|alarm_presence|alarm_contact|alarm_person|alarm_vehicle|alarm_pet"
     }
   },
   "settings": [

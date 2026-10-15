@@ -51,6 +51,8 @@
     "closed": "Lukket",
     "motion": "Bevegelse",
     "noMotion": "Ingen bevegelse",
+    "presence": "Tilstedeværelse",
+    "noPresence": "Ingen tilstedeværelse",
     "nothingDetected": "Ingenting registrert",
     "since": "siden __time__"
   },
@@ -135,6 +137,13 @@
     "selectSlots": "Velg enhetsverdier i widgetinnstillingene.",
     "error": "Kunne ikke laste inn verdiene.",
     "unavailable": "Utilgjengelig"
+  },
+  "charts": {
+    "now": "Nå",
+    "selectChart": "Velg en enhetsverdi i widgetinnstillingene.",
+    "error": "Kunne ikke laste diagrammet.",
+    "unavailable": "Utilgjengelig",
+    "noHistory": "Ingen historikk ennå."
   },
   "lights": {
     "selectDevices": "Velg lys i widgetinnstillingene.",
@@ -317,6 +326,15 @@
     "keyInvalid": "API-nøkkelen ble ikke godtatt.",
     "speakerAction": "Høyttalerhandling"
   },
+  "textline": {
+    "noMessage": "Ingen melding",
+    "typeNote": "Skriv notatet ditt i widgetinnstillingene.",
+    "variableMissing": "Fant ikke variabelen",
+    "selectVariable": "Velg en tekstvariabel i widgetinnstillingene.",
+    "error": "Kunne ikke laste inn teksten.",
+    "boardInUse": "Har en tekst",
+    "boardNew": "Nytt notat"
+  },
   "stack": {
     "selectDashboard": "Velg et dashbord i widgetinnstillingene.",
     "noKey": "Legg til en API-nøkkel i appinnstillingene for å lese dashbordet.",
@@ -423,6 +441,7 @@
       "values": "Enhver enhetsverdi som en kompakt flis.",
       "lights": "Lysfliser med lysstyrke og farge for hånden.",
       "sparklines": "Verdier med et lite diagram over den siste historikken.",
+      "charts": "Ett eller to diagrammer over en hvilken som helst verdi, som strømmens.",
       "variables": "Flow-variabler som rader du kan slå av og på eller endre.",
       "flows": "Start flows med ett trykk, i dine farger og ikoner.",
       "price": "Strømprisen nå og de neste timene.",
@@ -431,6 +450,8 @@
       "curtains": "Åpne, lukke eller stille gardiner og persienner.",
       "media": "En høyttalers musikk, volum og kilder i ett kort.",
       "clock": "Klokkeslett og dato, med været nå om du vil.",
+      "textline": "Et notat på en flis eller en Post-it-lapp, skrevet inn eller skrevet av Flowene dine.",
+      "spacer": "Tomt rom for å linje opp widgeter i kolonner.",
       "stack": "Widgeter fra et annet dashbord, etter tur."
     }
   }

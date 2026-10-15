@@ -13,6 +13,7 @@ import cameras from '../cameras/api.js';
 import values from '../values/api.js';
 import lights from '../lights/api.js';
 import sparklines from '../sparklines/api.js';
+import charts from '../charts/api.js';
 import variables from '../variables/api.js';
 import flows from '../flows/api.js';
 import price from '../price/api.js';
@@ -21,13 +22,14 @@ import locks from '../locks/api.js';
 import curtains from '../curtains/api.js';
 import media from '../media/api.js';
 import clock from '../clock/api.js';
+import textline from '../textline/api.js';
 
 type Homey = App['homey'];
 
 /** Each page widget's own API (its `api.ts`), by widget id. */
 export const PAGE_APIS: WidgetApis = {
   electricity, thermostat, quickactions, sensoralarms, sensordots, weather, heatmap, cameras, values,
-  lights, sparklines, variables, flows, price, timers, locks, curtains, media, clock,
+  lights, sparklines, charts, variables, flows, price, timers, locks, curtains, media, clock, textline,
 };
 
 export default {
