@@ -9,7 +9,7 @@
   const el = id => document.getElementById(id);
 
   const elec = findWidget('electricity');
-  MOUNT.electricity(el('w-elec'), { ...elec, settings: { ...elec.settings, liveWindow: 10, smooth: false } });
+  MOUNT.electricity(el('w-elec'), { ...elec, settings: { ...elec.settings, liveWindow: 10, smooth: false, nextLow: 'both' } });
 
   MOUNT.thermostat(el('w-thermo'), findWidget('thermostat'));
 
