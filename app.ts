@@ -48,7 +48,7 @@ export default class WidgetkeeperApp extends Homey.App {
   web!: WebDashboardService;
   /** The web dashboards' optional password and the browsers signed in with it. */
   webPassword!: WebPassword;
-  /** The user's personal API key, shared by Flow Variables, Flow Buttons, Media and the Smart Stack (the app's token may only read). */
+  /** The user's personal API key, shared by Variables, Flow Buttons, Media and the Smart Stack (the app's token may only read). */
   apiKey!: PersonalApiKey;
 
   async onInit() {

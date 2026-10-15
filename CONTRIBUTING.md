@@ -57,7 +57,7 @@ lib/HeatmapService.ts           Insights history and on/off recording for the he
 lib/ValueService.ts             capability value tracking for Device Values
 lib/LightService.ts             light state tracking and control for Light Controls
 lib/SparklineService.ts         Insights history for Sparklines (live values through ValueService)
-lib/VariableService.ts          Logic variables for Flow Variables (read, set, live updates)
+lib/VariableService.ts          Logic variables for Variables (read, set, live updates)
 lib/FlowService.ts              flows for Flow Buttons (list, start)
 lib/PersonalApiKey.ts           the user's API key for changing variables, starting flows and running speaker actions
 lib/TimerService.ts             the Timers widget's timers (run, save, Flow card)

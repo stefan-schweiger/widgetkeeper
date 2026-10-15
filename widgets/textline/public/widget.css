@@ -1,7 +1,7 @@
 /*
  * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
  * The fallbacks are the dark-theme values, used outside Homey (dev/textline-preview.html).
- * The tile copies Flow Variables' row (widgets/variables/public/widget.css); the colours are Device Values' Flow colours.
+ * The tile copies Variables' row (widgets/variables/public/widget.css); the colours are Device Values' Flow colours.
  */
 
 /* Caveat (SIL Open Font License, fonts/OFL.txt): the Post-it's handwriting. Korean and Arabic use the system font. */

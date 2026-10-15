@@ -1,5 +1,5 @@
 /*
- * Flow Variables: Homey's Logic variables as compact rows, 1 or 2 per line, each with the full name and
+ * Variables: Homey's Logic variables as compact rows, 1 or 2 per line, each with the full name and
  * a control: a switch for a yes/no variable, − value + for a number, the text for a string. A tap on the
  * value of a number or string opens an input for it.
  * Plain browser JS (served as-is).
@@ -16,6 +16,8 @@
     error: 'Could not load the variables.',
     failed: 'Could not change __name__.',
     missing: 'Variable not found',
+    yes: 'Yes',
+    no: 'No',
     noKey: 'To change variables, add an API key in the app settings.',
     keyScope: 'The API key may not change variables.',
     keyInvalid: 'The API key was not accepted.',
@@ -114,7 +116,7 @@
   /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, columns?: number|string, step?: number|string,
-   *   min?: number|string|null, max?: number|string|null, names?: string[],
+   *   min?: number|string|null, max?: number|string|null, names?: string[], readOnly?: boolean,
    *   onSet?: (id: string, value: boolean|number|string) => Promise<any>,
    *   onHeight?: (h: number) => void }} opts
    */
@@ -125,6 +127,8 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
     const step = Number(opts.step) > 0 ? Number(opts.step) : 1;
+    // Read only: the values without −/+, switches or inputs, and no taps (so no API key is needed).
+    const readOnly = opts.readOnly === true;
     // The lowest and highest number − / + and typing may set (either may be unset; swapped when given the wrong way round).
     let min = limitOf(opts.min);
     let max = limitOf(opts.max);
@@ -144,6 +148,7 @@
 
     root.classList.add('vr');
     root.dataset.columns = String(opts.columns) === '2' ? '2' : '1';
+    root.classList.toggle('vr-readonly', readOnly);
     const grid = el('div', { class: 'vr-grid' }, root);
     const messageEl = el('div', { class: 'vr-message', dir: 'auto' }, root);
     /** @type {{row: HTMLElement, name: HTMLElement, control: HTMLElement, kind: string|null, value?: HTMLElement,
@@ -218,7 +223,7 @@
 
     function toggle(index) {
       const v = vars[index];
-      if (!v || v.missing || v.type !== 'boolean') return;
+      if (readOnly || !v || v.missing || v.type !== 'boolean') return;
       const value = !shownValue(v);
       setOptimistic(v.id, value);
       render();
@@ -227,7 +232,7 @@
 
     function stepBy(index, dir) {
       const v = vars[index];
-      if (!v || v.missing || v.type !== 'number') return;
+      if (readOnly || !v || v.missing || v.type !== 'number') return;
       const current = shownValue(v);
       if (atLimit(current, dir)) return;
       // A value outside the limits (set by a Flow) goes to the nearer one.
@@ -245,7 +250,7 @@
     function edit(index) {
       const v = vars[index];
       const r = rows[index];
-      if (!v || v.missing || (v.type !== 'number' && v.type !== 'string') || !r || editing) return;
+      if (readOnly || !v || v.missing || (v.type !== 'number' && v.type !== 'string') || !r || editing) return;
       const current = shownValue(v);
       const input = el('input', {
         class: 'vr-input', type: 'text', dir: 'auto', enterkeyhint: 'done',
@@ -294,7 +299,7 @@
       const row = el('div', { class: 'vr-row' });
       const r = { row, name: el('span', { class: 'vr-name', dir: 'auto' }, row), control: el('span', { class: 'vr-control' }, row), kind: null };
       // A tap on the row: toggles a yes/no variable, opens the input for a number or text.
-      onTap(row, () => {
+      if (!readOnly) onTap(row, () => {
         const v = vars[index];
         if (!v || v.missing) return;
         if (v.type === 'boolean') toggle(index);
@@ -310,7 +315,14 @@
       r.control.replaceChildren();
       r.value = r.minus = r.plus = undefined;
       r.row.dataset.type = kind;
-      if (kind === 'boolean') {
+      if (kind === 'boolean' && readOnly) {
+        // A dot and Yes/No instead of a switch, so it doesn't look like something to tap.
+        const status = el('span', { class: 'vr-status' }, r.control);
+        el('span', { class: 'vr-dot', 'aria-hidden': 'true' }, status);
+        r.value = el('span', { class: 'vr-value', dir: 'auto' }, status);
+      } else if (kind === 'number' && readOnly) {
+        r.value = el('span', { class: 'vr-value' }, r.control);
+      } else if (kind === 'boolean') {
         r.value = el('span', { class: 'vr-switch', role: 'switch' }, r.control);
         el('span', { class: 'vr-knob' }, r.value);
       } else if (kind === 'number') {
@@ -341,14 +353,18 @@
         r.row.title = v.missing ? '' : v.name;
         if (v.missing) return;
         const value = shownValue(v);
-        if (kind === 'boolean') {
+        if (kind === 'boolean' && readOnly) {
+          r.row.classList.toggle('active', value === true);
+          r.row.classList.toggle('unknown', typeof value !== 'boolean');
+          r.value.textContent = value === true ? t('yes') : value === false ? t('no') : '–';
+        } else if (kind === 'boolean') {
           r.row.classList.toggle('active', value === true);
           r.value.setAttribute('aria-checked', String(value === true));
           r.value.setAttribute('aria-label', v.name);
         } else {
           r.row.classList.remove('active');
           r.value.textContent = kind === 'number' ? formatNumber(value) : String(value ?? '');
-          if (kind === 'number') {
+          if (kind === 'number' && !readOnly) {
             for (const [button, dir] of [[r.minus, -1], [r.plus, 1]]) {
               const stop = atLimit(value, dir);
               button.classList.toggle('at-limit', stop);

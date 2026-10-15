@@ -442,7 +442,7 @@
       "lights": "Des tuiles de lumières avec luminosité et couleur à portée.",
       "sparklines": "Des valeurs avec un petit graphique de leur historique.",
       "charts": "Un ou deux graphiques de n'importe quelle valeur, comme ceux de l'électricité.",
-      "variables": "Les variables de Flow en lignes à basculer ou modifier.",
+      "variables": "Les variables en lignes à basculer ou modifier.",
       "flows": "Lancez des Flows d'un geste, avec vos couleurs et icônes.",
       "price": "Le prix de l'électricité maintenant et dans les prochaines heures.",
       "timers": "Des minuteurs de cuisine qui tournent sur votre Homey.",

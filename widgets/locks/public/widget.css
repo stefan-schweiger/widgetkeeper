@@ -7,7 +7,7 @@
   --lk-tile: var(--homey-background-color, #FFFFFF);
   --lk-text: var(--homey-text-color, #EDEEF0);
   --lk-muted: var(--homey-text-color-light, #9C9DA5);
-  --lk-neutral: color-mix(in srgb, var(--lk-text) 8%, var(--lk-tile)); /* an unlock button: Flow Variables' −/+ */
+  --lk-neutral: color-mix(in srgb, var(--lk-text) 8%, var(--lk-tile)); /* an unlock button: Variables' −/+ */
   --lk-blue: var(--homey-color-blue, #2F8DF6);
   --lk-red: var(--homey-color-red, #F25F5C);
   --lk-red-text: #D93B37; /* Sensor Alarms' red text on a red-tinted light tile */
@@ -87,7 +87,7 @@ html, body { background: transparent !important; }
 .lk-row[data-level="insecure"] .lk-state { color: var(--lk-red-text); }
 .lk-row[data-level="missing"] > * { opacity: .5; }
 
-/* Lock / Close, Unlock / Open and Lock all: Flow Variables' grey pills, 32 px high. */
+/* Lock / Close, Unlock / Open and Lock all: Variables' grey pills, 32 px high. */
 .lk-action, .lk-all {
   flex: 0 0 auto; height: 32px; padding: 0 14px; border-radius: 16px;
   display: flex; align-items: center; justify-content: center;

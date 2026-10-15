@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.thomassidor.widgetkeeper",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "compatibility": ">=12.6.0",
   "sdk": 3,
   "runtime": "nodejs",
@@ -535,19 +535,19 @@
               {
                 "id": "variables",
                 "title": {
-                  "en": "Flow Variables",
-                  "nl": "Flowvariabelen",
-                  "de": "Flow-Variablen",
-                  "fr": "Variables de flow",
-                  "it": "Variabili dei flow",
-                  "sv": "Flödesvariabler",
-                  "no": "Flytvariabler",
-                  "es": "Variables de flujo",
-                  "da": "Flowvariabler",
-                  "ru": "Переменные потоков",
-                  "pl": "Zmienne Flow",
-                  "ko": "플로우 변수",
-                  "ar": "متغيرات التدفقات"
+                  "en": "Variables",
+                  "nl": "Variabelen",
+                  "de": "Variablen",
+                  "fr": "Variables",
+                  "it": "Variabili",
+                  "sv": "Variabler",
+                  "no": "Variabler",
+                  "es": "Variables",
+                  "da": "Variabler",
+                  "ru": "Переменные",
+                  "pl": "Zmienne",
+                  "ko": "변수",
+                  "ar": "المتغيرات"
                 }
               },
               {
@@ -10608,19 +10608,19 @@
     },
     "variables": {
       "name": {
-        "en": "Flow Variables",
-        "nl": "Flowvariabelen",
-        "de": "Flow-Variablen",
-        "fr": "Variables de flow",
-        "it": "Variabili dei flow",
-        "sv": "Flödesvariabler",
-        "no": "Flytvariabler",
-        "es": "Variables de flujo",
-        "da": "Flowvariabler",
-        "ru": "Переменные потоков",
-        "pl": "Zmienne Flow",
-        "ko": "플로우 변수",
-        "ar": "متغيرات التدفقات"
+        "en": "Variables",
+        "nl": "Variabelen",
+        "de": "Variablen",
+        "fr": "Variables",
+        "it": "Variabili",
+        "sv": "Variabler",
+        "no": "Variabler",
+        "es": "Variables",
+        "da": "Variabler",
+        "ru": "Переменные",
+        "pl": "Zmienne",
+        "ko": "변수",
+        "ar": "المتغيرات"
       },
       "height": 112,
       "transparent": true,
@@ -10682,6 +10682,41 @@
               }
             }
           ]
+        },
+        {
+          "id": "readOnly",
+          "type": "checkbox",
+          "value": false,
+          "title": {
+            "en": "Read only",
+            "nl": "Alleen weergeven",
+            "de": "Nur anzeigen",
+            "fr": "Lecture seule",
+            "it": "Sola lettura",
+            "sv": "Endast visning",
+            "no": "Kun visning",
+            "es": "Solo lectura",
+            "da": "Kun visning",
+            "ru": "Только просмотр",
+            "pl": "Tylko odczyt",
+            "ko": "읽기 전용",
+            "ar": "للعرض فقط"
+          },
+          "hint": {
+            "en": "Shows the values without − and +, switches or typing. No API key needed.",
+            "nl": "Toont de waarden zonder − en +, schakelaars of typen. Geen API-sleutel nodig.",
+            "de": "Zeigt die Werte ohne − und +, Schalter oder Eingabe. Kein API-Schlüssel nötig.",
+            "fr": "Affiche les valeurs sans − et +, interrupteurs ni saisie. Aucune clé API nécessaire.",
+            "it": "Mostra i valori senza − e +, interruttori o digitazione. Nessuna chiave API necessaria.",
+            "sv": "Visar värdena utan − och +, reglage eller inmatning. Ingen API-nyckel behövs.",
+            "no": "Viser verdiene uten − og +, brytere eller inntasting. Ingen API-nøkkel trengs.",
+            "es": "Muestra los valores sin − y +, interruptores ni escritura. No hace falta clave API.",
+            "da": "Viser værdierne uden − og +, kontakter eller indtastning. Ingen API-nøgle nødvendig.",
+            "ru": "Показывает значения без − и +, переключателей и ввода. Ключ API не нужен.",
+            "pl": "Pokazuje wartości bez − i +, przełączników ani wpisywania. Klucz API nie jest potrzebny.",
+            "ko": "− 및 +, 스위치, 입력 없이 값만 표시합니다. API 키가 필요 없습니다.",
+            "ar": "يعرض القيم دون − و + أو المفاتيح أو الكتابة. لا حاجة إلى مفتاح API."
+          }
         },
         {
           "id": "step",

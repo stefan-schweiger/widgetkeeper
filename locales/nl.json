@@ -442,7 +442,7 @@
       "lights": "Lichttegels met helderheid en kleur bij de hand.",
       "sparklines": "Waarden met een kleine grafiek van hun recente verloop.",
       "charts": "Eén of twee grafieken van elke waarde, zoals die van stroom.",
-      "variables": "Flow-variabelen als rijen om te schakelen of te wijzigen.",
+      "variables": "Variabelen als rijen om te schakelen of te wijzigen.",
       "flows": "Start flows met een tik, in je eigen kleuren en iconen.",
       "price": "De stroomprijs nu en in de komende uren.",
       "timers": "Keukentimers die doorlopen op je Homey.",

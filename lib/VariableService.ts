@@ -36,7 +36,7 @@ export function checkValue(type: VariableType, value: unknown): boolean | number
 }
 
 /**
- * The Flow Variables widget: Homey's Logic variables, read and set. The service subscribes to the Logic
+ * The Variables widget: Homey's Logic variables, read and set. The service subscribes to the Logic
  * manager while a widget asks (`variable.update`/`create`/`delete`) and lets go after 10 idle minutes.
  */
 export default class VariableService {

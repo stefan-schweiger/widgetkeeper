@@ -442,7 +442,7 @@
       "lights": "Lysfliser med lysstyrke og farve lige ved hånden.",
       "sparklines": "Værdier med en lille graf over deres seneste historik.",
       "charts": "Én eller to grafer over en vilkårlig værdi, som el-graferne.",
-      "variables": "Flow-variabler som rækker, du kan slå til og fra eller ændre.",
+      "variables": "Variabler som rækker, du kan slå til og fra eller ændre.",
       "flows": "Start flows med et tryk, i dine farver og ikoner.",
       "price": "Elprisen nu og de næste timer.",
       "timers": "Køkkentimere, der kører videre på din Homey.",

@@ -442,7 +442,7 @@
       "lights": "Tessere delle luci con luminosità e colore a portata di mano.",
       "sparklines": "Valori con un piccolo grafico del loro andamento recente.",
       "charts": "Uno o due grafici di qualsiasi valore, come quelli dell'elettricità.",
-      "variables": "Variabili dei Flow come righe da attivare o modificare.",
+      "variables": "Variabili come righe da attivare o modificare.",
       "flows": "Avvia i Flow con un tocco, nei tuoi colori e icone.",
       "price": "Il prezzo dell'elettricità ora e nelle prossime ore.",
       "timers": "Timer da cucina che continuano sul tuo Homey.",

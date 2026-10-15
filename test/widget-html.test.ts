@@ -48,7 +48,7 @@ describe('copied widget helpers', () => {
   });
 
   it('onTap() is the same in the widgets that share a version', () => {
-    // Deliberately different: Media's and Flow Variables' have no keydown (their rows hold buttons and inputs
+    // Deliberately different: Media's and Variables' have no keydown (their rows hold buttons and inputs
     // whose keys would bubble to it), and the stack's is its own design.
     expectSame(['lights', 'curtains'].map(id => source(id, 'onTap'))); // in the widget's closure
     expectSame(['flows', 'sensordots'].map(id => source(id, 'onTap')));

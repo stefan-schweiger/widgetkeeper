@@ -327,7 +327,7 @@
     el('div', { class: 'mw-knob' }, bar);
     if (!volumeButtons) volume.append(downBtn, bar, upBtn);
 
-    // The overlay (⋯): the buttons as Flow Variables' grey pills, plus shuffle and repeat with the volume as buttons.
+    // The overlay (⋯): the buttons as Variables' grey pills, plus shuffle and repeat with the volume as buttons.
     const panel = el('div', { class: 'mw-panel', 'aria-hidden': 'true' }, card);
     const chips = el('div', { class: 'mw-chips' }, panel);
     const chipEls = buttons.map((b, i) => {

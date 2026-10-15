@@ -442,7 +442,7 @@
       "lights": "Fichas de luces con brillo y color a mano.",
       "sparklines": "Valores con un pequeño gráfico de su historial reciente.",
       "charts": "Uno o dos gráficos de cualquier valor, como los de electricidad.",
-      "variables": "Variables de Flow como filas para cambiar o activar.",
+      "variables": "Variables como filas para cambiar o activar.",
       "flows": "Inicia flujos con un toque, con tus colores e iconos.",
       "price": "El precio de la luz ahora y en las próximas horas.",
       "timers": "Temporizadores de cocina que siguen en tu Homey.",

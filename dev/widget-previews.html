@@ -429,7 +429,7 @@ function sparklines(t, theme) {
   </div>`;
 }
 
-// Flow Variables is transparent too: a list of full-width rows, each a long name and its control: a switch
+// Variables is transparent too: a list of full-width rows, each a long name and its control: a switch
 // for a yes/no variable (blue when on), − value + for a number.
 function flowVariables(t, theme) {
   const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
@@ -672,8 +672,8 @@ const PREVIEWS = [
   { id: 'spark-light',  label: '1t · Sparklines — preview-light.png',            theme: 'light', render: sparklines },
   { id: 'chart-dark',   label: '2s · Charts — preview-dark.png',                 theme: 'dark',  render: charts },
   { id: 'chart-light',  label: '2t · Charts — preview-light.png',                theme: 'light', render: charts },
-  { id: 'var-dark',     label: '1u · Flow Variables — preview-dark.png',         theme: 'dark',  render: flowVariables },
-  { id: 'var-light',    label: '1v · Flow Variables — preview-light.png',        theme: 'light', render: flowVariables },
+  { id: 'var-dark',     label: '1u · Variables — preview-dark.png',         theme: 'dark',  render: flowVariables },
+  { id: 'var-light',    label: '1v · Variables — preview-light.png',        theme: 'light', render: flowVariables },
   { id: 'fb-dark',      label: '1y · Flow Buttons — preview-dark.png',           theme: 'dark',  render: flowButtons },
   { id: 'fb-light',     label: '1z · Flow Buttons — preview-light.png',          theme: 'light', render: flowButtons },
   { id: 'pb-dark',      label: '2a · Energy Price Strip — preview-dark.png',            theme: 'dark',  render: priceBadge },

@@ -442,7 +442,7 @@
       "lights": "Lichtkacheln mit Helligkeit und Farbe griffbereit.",
       "sparklines": "Werte mit einem kleinen Diagramm ihres Verlaufs.",
       "charts": "Ein oder zwei Diagramme beliebiger Werte, wie die für Strom.",
-      "variables": "Flow-Variablen als Zeilen zum Schalten oder Ändern.",
+      "variables": "Variablen als Zeilen zum Schalten oder Ändern.",
       "flows": "Flows per Tipp starten, in deinen Farben und Symbolen.",
       "price": "Der Strompreis jetzt und in den nächsten Stunden.",
       "timers": "Küchentimer, die auf deinem Homey weiterlaufen.",

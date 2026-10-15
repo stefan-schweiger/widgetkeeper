@@ -442,7 +442,7 @@
       "lights": "Light tiles with brightness and colour at hand.",
       "sparklines": "Values with a small chart of their recent history.",
       "charts": "One or two charts of any value, like the electricity ones.",
-      "variables": "Flow variables as rows you can switch or change.",
+      "variables": "Variables as rows you can switch or change.",
       "flows": "Start flows with a tap, in your colours and icons.",
       "price": "The electricity price now and in the coming hours.",
       "timers": "Kitchen timers that keep running on your Homey.",

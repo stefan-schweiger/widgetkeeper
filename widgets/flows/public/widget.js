@@ -1,5 +1,5 @@
 /*
- * Flow Buttons: flows as compact rows, 1 or 2 per line, the size of Flow Variables' rows. Each one is a round
+ * Flow Buttons: flows as compact rows, 1 or 2 per line, the size of Variables' rows. Each one is a round
  * button in its own colour and icon, then the flow's name; a tap anywhere on the row starts the flow.
  * Plain browser JS (served as-is).
  */

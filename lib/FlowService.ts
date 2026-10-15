@@ -37,7 +37,7 @@ export function parseFlowId(id: string): { kind: FlowKind, flowId: string } | nu
 /**
  * The Flow Buttons widget: Homey's flows by name, and starting one. Reading uses the app's own token
  * (`homey.flow.readonly`); starting needs `homey.flow.start`, which apps don't get, so it goes through the
- * user's personal API key, as Flow Variables' writes do.
+ * user's personal API key, as Variables' writes do.
  */
 export default class FlowService {
 

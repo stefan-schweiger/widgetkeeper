@@ -5,7 +5,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ## 1.0.0
 
 ### New names
-- Three widgets have clearer names: Price Badge is now **Energy Price Strip**, Thermostat Shortcuts is now **Thermostat Presets**, and Sensor Dots is now **Activity Dots**. Widgets already on a dashboard keep working and keep their settings.
+- Four widgets have clearer names: Price Badge is now **Energy Price Strip**, Thermostat Shortcuts is now **Thermostat Presets**, Sensor Dots is now **Activity Dots**, and Flow Variables is now **Variables**. Widgets already on a dashboard keep working and keep their settings.
 
 ### New: Notes
 - A short message on the dashboard: one line of text on a tile, or a Post-it note stuck on the dashboard, tilted with a folded corner, in handwriting (up to three lines). A user asked for a single text line for small messages.
@@ -32,8 +32,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Sparklines and Device Values
 - Every battery tile shows the same battery icon. Some devices brought their own, so tiles side by side looked different.
-### Flow Variables
+### Variables
 - Set a lowest and highest number for the number variables: − and + stop there, and a typed number is kept within them. A user asked for 0 to 1 in steps of 0.05, for a percentage kept in a variable.
+- Read only: the rows show each variable's name and value, with a dot and Yes/No instead of a switch, and nothing to tap. No API key is needed. A user wanted the rows for information only.
 
 ## 0.9.0
 

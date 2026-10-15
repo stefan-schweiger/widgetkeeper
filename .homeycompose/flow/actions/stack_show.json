@@ -284,19 +284,19 @@
         {
           "id": "variables",
           "title": {
-            "en": "Flow Variables",
-            "nl": "Flowvariabelen",
-            "de": "Flow-Variablen",
-            "fr": "Variables de flow",
-            "it": "Variabili dei flow",
-            "sv": "Flödesvariabler",
-            "no": "Flytvariabler",
-            "es": "Variables de flujo",
-            "da": "Flowvariabler",
-            "ru": "Переменные потоков",
-            "pl": "Zmienne Flow",
-            "ko": "플로우 변수",
-            "ar": "متغيرات التدفقات"
+            "en": "Variables",
+            "nl": "Variabelen",
+            "de": "Variablen",
+            "fr": "Variables",
+            "it": "Variabili",
+            "sv": "Variabler",
+            "no": "Variabler",
+            "es": "Variables",
+            "da": "Variabler",
+            "ru": "Переменные",
+            "pl": "Zmienne",
+            "ko": "변수",
+            "ar": "المتغيرات"
           }
         },
         {

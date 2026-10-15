@@ -11,8 +11,8 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    logPerf(app, 'Flow variables', query);
-    return logged(app, 'Flow variables state failed:', () => app.variables.getState(idList(query.ids)));
+    logPerf(app, 'Variables', query);
+    return logged(app, 'Variables state failed:', () => app.variables.getState(idList(query.ids)));
   },
 
   /**
@@ -26,6 +26,6 @@ export default {
     const app = homey.app as WidgetkeeperApp;
     const id = body?.id;
     if (typeof id !== 'string' || !id) throw new Error('Missing id');
-    return keyResult(app, 'Flow variable set failed', () => app.variables.set(id, body.value));
+    return keyResult(app, 'Variable set failed', () => app.variables.set(id, body.value));
   },
 };

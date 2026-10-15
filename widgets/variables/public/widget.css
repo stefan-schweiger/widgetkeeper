@@ -91,6 +91,17 @@ html, body { background: transparent !important; }
 .vr-row.active .vr-switch { background: var(--vr-accent); }
 .vr-row.active .vr-knob { transform: translateX(16px); }
 
+/* Read only: nothing to tap. A yes/no is a dot (Homey's blue for yes, a ring when unknown) and Yes/No. */
+.vr-readonly .vr-row { cursor: default; }
+.vr-readonly .vr-row[data-type] .vr-control { padding-right: 6px; }
+.vr-readonly .vr-row[data-type="string"] .vr-control { max-width: 60%; }
+.vr-readonly .vr-row[data-type="number"] .vr-value { min-width: 0; text-align: right; padding: 0; }
+.vr-status { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.vr-dot { flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--vr-muted); }
+.vr-row.active .vr-dot { background: var(--vr-accent); }
+.vr-row.active .vr-status .vr-value { color: var(--vr-text); }
+.vr-row.unknown .vr-dot { background: transparent; box-shadow: inset 0 0 0 1.5px var(--vr-muted); }
+
 /* −/+: round 32px buttons. */
 .vr-step {
   appearance: none; border: 0; margin: 0; padding: 0; font: inherit; flex-shrink: 0;

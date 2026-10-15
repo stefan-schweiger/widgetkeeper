@@ -38,7 +38,7 @@ export default {
   },
 
   /**
-   * Used by the app settings page: whether the personal API key (Flow Variables and Flow Buttons) is saved, never
+   * Used by the app settings page: whether the personal API key (Variables and Flow Buttons) is saved, never
    * the key itself. The path predates Flow Buttons.
    */
   async getVariablesKey({ homey }: { homey: Homey }) {

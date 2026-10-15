@@ -442,7 +442,7 @@
       "lights": "Lysfliser med lysstyrke og farge for hånden.",
       "sparklines": "Verdier med et lite diagram over den siste historikken.",
       "charts": "Ett eller to diagrammer over en hvilken som helst verdi, som strømmens.",
-      "variables": "Flow-variabler som rader du kan slå av og på eller endre.",
+      "variables": "Variabler som rader du kan slå av og på eller endre.",
       "flows": "Start flows med ett trykk, i dine farger og ikoner.",
       "price": "Strømprisen nå og de neste timene.",
       "timers": "Kjøkkentimere som fortsetter å gå på Homey.",

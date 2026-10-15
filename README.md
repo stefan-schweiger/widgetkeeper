@@ -52,9 +52,9 @@ Tiles with a small chart of a value over the last hour, day or week, with its lo
 <a href="#charts"><b>Charts</b></a><br>
 One or two charts of any value over the last hour, day or week, drawn like Electricity Overview's<br clear="left"></p>
 
-<p><a href="#flow-variables"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/variables-dark.png"><img src="docs/previews/variables-light.png" alt="" width="120" align="left"></picture></a>
-<a href="#flow-variables"><b>Flow Variables</b></a><br>
-Compact rows to switch flow variables on and off or change a number or text, with the full name<br clear="left"></p>
+<p><a href="#variables"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/variables-dark.png"><img src="docs/previews/variables-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#variables"><b>Variables</b></a><br>
+Compact rows to switch variables on and off or change a number or text, with the full name<br clear="left"></p>
 
 <p><a href="#flow-buttons"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/flows-dark.png"><img src="docs/previews/flows-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#flow-buttons"><b>Flow Buttons</b></a><br>
@@ -186,12 +186,14 @@ One chart, two stacked, or two values on one chart (each with its own scale), of
 
 **Settings:** one chart, two stacked or two on one chart; for each, the value, the time span (1 hour to 7 days), line with area, line or bars, the colour, a scale that fits the values or starts at zero, below zero in yellow, a smooth line and a title. The values at the top can be turned off.
 
-## Flow Variables
-<img src="docs/screenshots/variables.png" alt="Flow Variables on a Homey dashboard" width="358">
+<a name="flow-variables"></a>
 
-Logic variables as compact rows with their full name: a switch for yes/no, − and + for a number, and the text for a string. Tap a number or text to type a value. Needs an [API key](#api-key) to change them.
+## Variables
+<img src="docs/screenshots/variables.png" alt="Variables on a Homey dashboard" width="358">
 
-**Settings:** up to ten variables with optional names, 1 or 2 columns, the − and + step, and the lowest and highest number.
+Logic variables as compact rows with their full name: a switch for yes/no, − and + for a number, and the text for a string. Tap a number or text to type a value. Needs an [API key](#api-key) to change them. Read only shows the values without anything to tap (a dot and Yes/No for yes/no), and needs no key.
+
+**Settings:** up to ten variables with optional names, 1 or 2 columns, read only, the − and + step, and the lowest and highest number.
 
 ## Flow Buttons
 <img src="docs/screenshots/flows.png" alt="Flow Buttons on a Homey dashboard" width="358">
@@ -297,7 +299,7 @@ Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an
 <img src="docs/showcase/kitchen.png" alt="A kitchen dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
 ## API key
-Homey doesn't let apps change variables, start flows or read dashboards on their own, so Flow Variables, Flow Buttons, Media's buttons and Smart Stack need a Homey API key. Create one in the Homey web app under **Settings → API Keys** with those permissions, and paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey. The web dashboards ask for a key of their own, which stays in that browser.
+Homey doesn't let apps change variables, start flows or read dashboards on their own, so Variables, Flow Buttons, Media's buttons and Smart Stack need a Homey API key. Create one in the Homey web app under **Settings → API Keys** with those permissions, and paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey. The web dashboards ask for a key of their own, which stays in that browser.
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic, following Homey's language.

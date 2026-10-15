@@ -37,7 +37,9 @@ window.mountVariablesWidget = function (Homey, { root, frame }) {
     min: settings.min,
     max: settings.max,
     names: picked.map(s => s.name),
-    onSet: async (id, value) => {
+    readOnly: settings.readOnly === true,
+    // Read only never sets anything (so it needs no API key).
+    onSet: settings.readOnly === true ? undefined : async (id, value) => {
       const res = await Homey.api('POST', '/set', { id, value });
       // No usable API key: the widget says what to do (see the app settings).
       if (res && res.ok === false) throw Object.assign(new Error(res.reason), { reason: res.reason });

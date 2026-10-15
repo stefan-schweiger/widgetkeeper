@@ -46,7 +46,7 @@ export type SaveResult = { ok: true, variables: boolean, flows: boolean, dashboa
 const shared = new WeakMap<object, PersonalApiKey>();
 
 /**
- * The user's personal API key (Flow Variables, Flow Buttons, Media's buttons and the Smart Stack): checked when saved, kept in the app settings,
+ * The user's personal API key (Variables, Flow Buttons, Media's buttons and the Smart Stack): checked when saved, kept in the app settings,
  * never sent back or logged. The services share one instance (`PersonalApiKey.for(homey)`), so a save resets
  * the API they all use.
  */

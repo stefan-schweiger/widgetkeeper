@@ -7,7 +7,7 @@
   --tm-tile: var(--homey-background-color, #FFFFFF);
   --tm-text: var(--homey-text-color, #EDEEF0);
   --tm-muted: var(--homey-text-color-light, #9C9DA5);
-  --tm-neutral: color-mix(in srgb, var(--tm-text) 8%, var(--tm-tile)); /* the small buttons: Flow Variables' −/+ */
+  --tm-neutral: color-mix(in srgb, var(--tm-text) 8%, var(--tm-tile)); /* the small buttons: Variables' −/+ */
   --tm-blue: var(--homey-color-blue, #2F8DF6);
   --tm-red: var(--homey-color-red, #F25F5C);
   --tm-fill-mix: 22%; /* the time left, as a Device Values tile's tint */
@@ -107,7 +107,7 @@ html, body { background: transparent !important; }
   font-variant-numeric: tabular-nums; }
 .tm-row[data-state="paused"] .tm-time { color: var(--tm-muted); }
 
-/* +1 and ✕: 32 px round buttons like Flow Variables' −/+. A finished timer only has its dismiss tap. */
+/* +1 and ✕: 32 px round buttons like Variables' −/+. A finished timer only has its dismiss tap. */
 .tm-small {
   flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%; background: var(--tm-neutral); color: var(--tm-text);
   display: flex; align-items: center; justify-content: center; outline: none; transition: transform .1s;

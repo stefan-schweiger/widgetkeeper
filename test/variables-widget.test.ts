@@ -209,6 +209,43 @@ describe('lowest and highest number', () => {
   });
 });
 
+describe('read only', () => {
+  it('shows yes/no as a dot and Yes/No, and numbers without − and +', () => {
+    const { row, value } = widget([flag(true), flag(false), { ...flag(), value: null }, num(18), text()], { readOnly: true });
+    expect(row(0).querySelector('.vr-switch')).toBeNull();
+    expect(row(0).querySelector('.vr-dot')).not.toBeNull();
+    expect(value(0)).toBe('Yes');
+    expect(row(0).classList.contains('active')).toBe(true);
+    expect(value(1)).toBe('No');
+    expect(row(1).classList.contains('active')).toBe(false);
+    expect(value(2)).toBe('–');
+    expect(row(2).classList.contains('unknown')).toBe(true);
+    expect(row(3).querySelectorAll('.vr-step')).toHaveLength(0);
+    expect(value(3)).toBe('18');
+    expect(value(4)).toBe('Hello');
+  });
+
+  it('does nothing on a tap: no change sent, no input', () => {
+    const { rows, onSet, root } = widget([flag(false), num(18), text()], { readOnly: true });
+    expect(root.classList.contains('vr-readonly')).toBe(true);
+    for (const r of rows()) {
+      r.click();
+      r.dispatchEvent(new TouchEvent('touchstart', { changedTouches: [{ clientX: 0, clientY: 0 } as Touch] }));
+      r.dispatchEvent(new TouchEvent('touchend', { changedTouches: [{ clientX: 0, clientY: 0 } as Touch] }));
+    }
+    vi.advanceTimersByTime(800);
+    expect(onSet).not.toHaveBeenCalled();
+    expect(root.querySelector('.vr-input')).toBeNull();
+  });
+
+  it('follows realtime changes', () => {
+    const { w, row, value } = widget([flag(false)], { readOnly: true });
+    w.pushChange(flag(true));
+    expect(value(0)).toBe('Yes');
+    expect(row(0).classList.contains('active')).toBe(true);
+  });
+});
+
 describe('name override', () => {
   it("shows a row's own name and keeps it through realtime updates", () => {
     const { w, rows } = widget([flag(), num()], { names: ['Guests', ''] });

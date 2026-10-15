@@ -1,7 +1,7 @@
 /*
  * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
  * The fallbacks are the dark-theme values, used outside Homey (dev/media-preview.html).
- * The dark frame copies the thermostat's .tw-frame; the buttons Flow Variables' grey and Flow Buttons' blue.
+ * The dark frame copies the thermostat's .tw-frame; the buttons Variables' grey and Flow Buttons' blue.
  */
 .mw {
   --mw-card: var(--homey-background-color, #1F2029);
@@ -10,7 +10,7 @@
   --mw-accent: var(--homey-color-blue, #2F8DF6);
   --mw-red: var(--homey-color-red, #F25F5C);
   --mw-white: var(--homey-text-color-white, #FFFFFF);
-  --mw-grey: color-mix(in srgb, var(--mw-text) 10%, var(--mw-card)); /* Flow Variables' −/+ fill */
+  --mw-grey: color-mix(in srgb, var(--mw-text) 10%, var(--mw-card)); /* Variables' −/+ fill */
   --mw-track: color-mix(in srgb, var(--mw-text) 12%, var(--mw-card));
   /* Homey's type scale: only these size/line-height pairs are used natively. */
   --mw-fs-small: var(--homey-font-size-small, 14px); --mw-lh-small: var(--homey-line-height-small, 20px);
@@ -208,7 +208,7 @@ button.mw-who.pressing { opacity: .6; }
 .mw-btn.mw-close { width: 36px; height: 36px; background: transparent; color: var(--mw-muted); margin: -6px -8px 0 0; }
 .mw-close .mw-glyph { width: 20px; height: 20px; }
 
-/* Buttons for the speaker's Flow cards and flows: Flow Variables' grey pills, lit while the speaker plays from one. */
+/* Buttons for the speaker's Flow cards and flows: Variables' grey pills, lit while the speaker plays from one. */
 .mw-chips { flex: 1; min-width: 0; align-self: center; display: flex; flex-wrap: wrap; gap: var(--homey-su-2, 8px); }
 .mw-chip {
   appearance: none; border: 0; margin: 0; font: inherit; color: var(--mw-text); flex: 0 1 auto; min-width: 0; max-width: 100%;

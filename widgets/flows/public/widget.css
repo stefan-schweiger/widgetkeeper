@@ -1,13 +1,13 @@
 /*
  * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
  * The fallbacks are the dark-theme values, used outside Homey (dev/flows-preview.html).
- * The row copies Flow Variables' (widgets/variables/public/widget.css), which copies Device Quick Actions' tile.
+ * The row copies Variables' (widgets/variables/public/widget.css), which copies Device Quick Actions' tile.
  */
 .fb {
   --fb-tile: var(--homey-background-color, #FFFFFF);
   --fb-text: var(--homey-text-color, #EDEEF0);
   --fb-muted: var(--homey-text-color-light, #9C9DA5);
-  --fb-neutral: color-mix(in srgb, var(--fb-text) 8%, var(--fb-tile)); /* the grey button: Flow Variables' −/+ */
+  --fb-neutral: color-mix(in srgb, var(--fb-text) 8%, var(--fb-tile)); /* the grey button: Variables' −/+ */
   /* The colour setting (data-color on .fb-row): Device Values' Flow colours plus grey. */
   --fb-c-blue: var(--homey-color-blue, #2F8DF6);
   --fb-c-red: var(--homey-color-red, #F25F5C);
@@ -44,7 +44,7 @@ html, body { background: transparent !important; }
   .fb[data-columns="2"] .fb-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* A compact row (48px, like Flow Variables): the round button, then the name. */
+/* A compact row (48px, like Variables): the round button, then the name. */
 .fb-row {
   position: relative; color: var(--fb-text); outline: none;
   background: var(--fb-tile); border-radius: var(--fb-radius); padding: 8px 12px 8px 8px; min-width: 0; min-height: 48px;
@@ -62,7 +62,7 @@ html, body { background: transparent !important; }
 .fb-row.missing { cursor: default; }
 .fb-row.missing > *, .fb-row.unavailable > * { opacity: .5; }
 
-/* The round button: 32 px, like Flow Variables' −/+, in the row's colour with a 18 px icon. */
+/* The round button: 32 px, like Variables' −/+, in the row's colour with a 18 px icon. */
 .fb-button {
   --fb-color: var(--fb-c-blue);
   position: relative; flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%;
@@ -94,7 +94,7 @@ html, body { background: transparent !important; }
 @keyframes fb-pop { from { transform: scale(.4); opacity: 0; } }
 
 .fb-name {
-  /* 14 bold like Flow Variables' names. Two lines before it's cut. */
+  /* 14 bold like Variables' names. Two lines before it's cut. */
   flex: 1 1 auto; min-width: 0;
   font-size: var(--fb-fs-small); line-height: var(--fb-lh-small); font-weight: var(--fb-bold);
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;

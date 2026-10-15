@@ -442,7 +442,7 @@
       "lights": "Ljusrutor med ljusstyrka och färg nära till hands.",
       "sparklines": "Värden med ett litet diagram över deras senaste historik.",
       "charts": "Ett eller två diagram över valfritt värde, som elens.",
-      "variables": "Flow-variabler som rader att slå om eller ändra.",
+      "variables": "Variabler som rader att slå om eller ändra.",
       "flows": "Starta flöden med ett tryck, i dina färger och ikoner.",
       "price": "Elpriset nu och de kommande timmarna.",
       "timers": "Köksklockor som fortsätter gå på din Homey.",
