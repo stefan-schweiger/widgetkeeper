@@ -32,6 +32,8 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Sparklines and Device Values
 - Every battery tile shows the same battery icon. Some devices brought their own, so tiles side by side looked different.
+### Flow Variables
+- Set a lowest and highest number for the number variables: − and + stop there, and a typed number is kept within them. A user asked for 0 to 1 in steps of 0.05, for a percentage kept in a variable.
 
 ## 0.9.0
 

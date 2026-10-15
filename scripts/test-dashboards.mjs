@@ -314,6 +314,7 @@ const BUILD = {
     return { cols: 2, widgets: [
       w('variables', 'Every variable · 1 column', slots('slot', items)),
       w('variables', '2 columns · step 0.5 · renamed', { columns: '2', step: 0.5, ...slots('slot', items), name1: 'Renamed first', name2: 'A long name that has to wrap onto a second line here' }),
+      w('variables', 'Step 0.05 · lowest 0 · highest 1', { step: 0.05, min: 0, max: 1, ...slots('slot', items) }),
       w('variables', 'Step 10 · gaps · deleted', { step: 10, ...slots('slot', [items[0], null, missing, items[1]]) }),
       w('variables', 'Nothing picked'),
     ] };

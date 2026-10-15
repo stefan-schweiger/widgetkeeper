@@ -100,6 +100,9 @@ html, body { background: transparent !important; }
   cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform .1s;
 }
 .vr-step:active, .vr-step.pressing { transform: scale(.9); }
+/* At the lowest or highest number: it can't go further that way. */
+.vr-step.at-limit { opacity: .4; cursor: default; }
+.vr-step.at-limit:active, .vr-step.at-limit.pressing { transform: none; }
 
 /* The input that replaces a number or text while it's edited. */
 .vr-row.editing { cursor: default; }

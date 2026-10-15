@@ -140,6 +140,75 @@ describe('editing', () => {
   });
 });
 
+describe('lowest and highest number', () => {
+  const steps = (row: HTMLElement) => [...row.querySelectorAll<HTMLElement>('.vr-step')];
+  const limited = (row: HTMLElement) => steps(row).map(b => b.classList.contains('at-limit'));
+  function type(row: HTMLElement, text: string) {
+    row.click();
+    const input = row.querySelector<HTMLInputElement>('.vr-input')!;
+    input.value = text;
+    input.dispatchEvent(new Event('blur'));
+  }
+
+  it('stops a burst of + at the highest number and sends it once', () => {
+    const { row, value, onSet } = widget([num(0.95)], { step: 0.05, min: 0, max: 1 });
+    const [, plus] = steps(row(0));
+    plus.click(); plus.click(); plus.click();
+    expect(value(0)).toBe('1');
+    expect(limited(row(0))).toEqual([false, true]);
+    expect(plus.getAttribute('aria-disabled')).toBe('true');
+    vi.advanceTimersByTime(800);
+    expect(onSet).toHaveBeenCalledTimes(1);
+    expect(onSet).toHaveBeenCalledWith('n', 1);
+  });
+
+  it('stops − at the lowest number and does nothing there', () => {
+    const { row, value, onSet } = widget([num(0)], { step: 0.05, min: 0, max: 1 });
+    expect(limited(row(0))).toEqual([true, false]);
+    steps(row(0))[0].click();
+    vi.advanceTimersByTime(800);
+    expect(value(0)).toBe('0');
+    expect(onSet).not.toHaveBeenCalled();
+  });
+
+  it('clamps typed numbers, a decimal comma too', () => {
+    const { row, onSet } = widget([num(0.5)], { min: 0, max: 1 });
+    type(row(0), '1,5');
+    expect(onSet).toHaveBeenLastCalledWith('n', 1);
+    type(row(0), '-2');
+    expect(onSet).toHaveBeenLastCalledWith('n', 0);
+    type(row(0), '0,25');
+    expect(onSet).toHaveBeenLastCalledWith('n', 0.25);
+  });
+
+  it('has no limit when a setting is empty (null is not 0)', () => {
+    for (const limits of [{}, { min: null, max: null }, { min: '', max: '' }]) {
+      const { row, onSet } = widget([num(0)], limits);
+      expect(limited(row(0))).toEqual([false, false]);
+      steps(row(0))[0].click();
+      vi.advanceTimersByTime(800);
+      expect(onSet).toHaveBeenCalledWith('n', -1);
+    }
+  });
+
+  it('shows a value outside the limits as it is, and − moves it to the highest', () => {
+    const { row, value, onSet } = widget([num(5)], { min: 0, max: 1 });
+    expect(value(0)).toBe('5');
+    expect(limited(row(0))).toEqual([false, true]);
+    steps(row(0))[1].click();
+    steps(row(0))[0].click();
+    vi.advanceTimersByTime(800);
+    expect(onSet).toHaveBeenCalledTimes(1);
+    expect(onSet).toHaveBeenCalledWith('n', 1);
+  });
+
+  it('swaps a lowest number above the highest', () => {
+    const { row, onSet } = widget([num(0.5)], { min: 1, max: 0 });
+    type(row(0), '3');
+    expect(onSet).toHaveBeenLastCalledWith('n', 1);
+  });
+});
+
 describe('name override', () => {
   it("shows a row's own name and keeps it through realtime updates", () => {
     const { w, rows } = widget([flag(), num()], { names: ['Guests', ''] });

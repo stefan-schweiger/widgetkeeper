@@ -21,6 +21,7 @@
   <div class="col"><span>358 px · dark · 2 columns</span><div class="dash homey-dark-mode" style="width:358px"><div id="w3"></div></div></div>
   <div class="col"><span>520 px (tablet) · dark · 2 columns</span><div class="dash homey-dark-mode" style="width:520px"><div id="w4"></div></div></div>
   <div class="col"><span>300 px · dark · 2 columns (falls back to 1)</span><div class="dash homey-dark-mode" style="width:300px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · dark · step 0.05, lowest 0, highest 1</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
   <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
 
   <script>
@@ -35,22 +36,29 @@
       { id: 'v7', missing: true },
     ];
     const widgets = [];
-    function mount(id, opts = {}) {
+    // Shares of 0–1, as Homey keeps percentages in variables (a user's 0–1 in steps of 0.05), and one a Flow set too high.
+    const shares = () => [
+      { id: 'p1', name: 'Morning blinds level', type: 'number', value: 0.95 },
+      { id: 'p2', name: 'Night light level', type: 'number', value: 0 },
+      { id: 'p3', name: 'Set above the highest by a Flow', type: 'number', value: 1.4 },
+    ];
+    function mount(id, opts = {}, list = vars) {
       const w = createVariablesWidget(document.getElementById(id), {
         t: devT, step: 0.5, ...opts,
         onSet: (vid, value) => new Promise((resolve, reject) => setTimeout(() => {
           if (vid === 'v6') return reject(new Error('Simulated failure'));
           resolve();
-          const v = vars().find(x => x.id === vid);
+          const v = list().find(x => x.id === vid);
           for (const other of widgets) other.pushChange({ ...v, value });
         }, 300)),
       });
-      w.setState(vars());
+      w.setState(list());
       widgets.push(w);
       return w;
     }
     mount('w1'); mount('w2');
     mount('w3', { columns: '2' }); mount('w4', { columns: '2' }); mount('w5', { columns: '2' });
+    mount('w7', { step: 0.05, min: 0, max: 1 }, shares);
     const empty = createVariablesWidget(document.getElementById('w6'), { t: devT });
     empty.setMessage(empty.t('selectSlots'));
   </script>

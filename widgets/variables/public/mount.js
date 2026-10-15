@@ -34,6 +34,8 @@ window.mountVariablesWidget = function (Homey, { root, frame }) {
     t: (key, tokens) => Homey.__(key, tokens),
     columns: settings.columns,
     step: settings.step,
+    min: settings.min,
+    max: settings.max,
     names: picked.map(s => s.name),
     onSet: async (id, value) => {
       const res = await Homey.api('POST', '/set', { id, value });

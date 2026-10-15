@@ -10706,6 +10706,74 @@
           "max": 1000
         },
         {
+          "id": "min",
+          "type": "number",
+          "title": {
+            "en": "Lowest number",
+            "nl": "Laagste getal",
+            "de": "Kleinste Zahl",
+            "fr": "Nombre minimum",
+            "it": "Numero minimo",
+            "sv": "Lägsta tal",
+            "no": "Laveste tall",
+            "es": "Número mínimo",
+            "da": "Laveste tal",
+            "ru": "Наименьшее число",
+            "pl": "Najmniejsza liczba",
+            "ko": "최소 숫자",
+            "ar": "أصغر رقم"
+          },
+          "hint": {
+            "en": "Optional. − stops here, and a lower typed number is raised to it.",
+            "nl": "Optioneel. − stopt hier, en een lager getypt getal wordt erop gezet.",
+            "de": "Optional. − hält hier an, eine kleinere eingegebene Zahl wird darauf angehoben.",
+            "fr": "Facultatif. − s’arrête ici, et un nombre saisi plus petit y est ramené.",
+            "it": "Facoltativo. − si ferma qui, e un numero digitato più basso viene portato a questo.",
+            "sv": "Valfritt. − stannar här, och ett lägre inskrivet tal höjs till det.",
+            "no": "Valgfritt. − stopper her, og et lavere inntastet tall heves til det.",
+            "es": "Opcional. − se detiene aquí, y un número escrito menor se sube a este.",
+            "da": "Valgfrit. − stopper her, og et lavere indtastet tal hæves til det.",
+            "ru": "Необязательно. − останавливается здесь, а меньшее введённое число поднимается до него.",
+            "pl": "Opcjonalnie. − zatrzymuje się tutaj, a mniejsza wpisana liczba jest do niej podnoszona.",
+            "ko": "선택 사항. −는 여기서 멈추고, 더 작은 입력 값은 이 값으로 올라갑니다.",
+            "ar": "اختياري. يتوقف − هنا، ويُرفع الرقم المكتوب الأصغر إليه."
+          }
+        },
+        {
+          "id": "max",
+          "type": "number",
+          "title": {
+            "en": "Highest number",
+            "nl": "Hoogste getal",
+            "de": "Größte Zahl",
+            "fr": "Nombre maximum",
+            "it": "Numero massimo",
+            "sv": "Högsta tal",
+            "no": "Høyeste tall",
+            "es": "Número máximo",
+            "da": "Højeste tal",
+            "ru": "Наибольшее число",
+            "pl": "Największa liczba",
+            "ko": "최대 숫자",
+            "ar": "أكبر رقم"
+          },
+          "hint": {
+            "en": "Optional. + stops here, and a higher typed number is lowered to it.",
+            "nl": "Optioneel. + stopt hier, en een hoger getypt getal wordt erop gezet.",
+            "de": "Optional. + hält hier an, eine größere eingegebene Zahl wird darauf gesenkt.",
+            "fr": "Facultatif. + s’arrête ici, et un nombre saisi plus grand y est ramené.",
+            "it": "Facoltativo. + si ferma qui, e un numero digitato più alto viene portato a questo.",
+            "sv": "Valfritt. + stannar här, och ett högre inskrivet tal sänks till det.",
+            "no": "Valgfritt. + stopper her, og et høyere inntastet tall senkes til det.",
+            "es": "Opcional. + se detiene aquí, y un número escrito mayor se baja a este.",
+            "da": "Valgfrit. + stopper her, og et højere indtastet tal sænkes til det.",
+            "ru": "Необязательно. + останавливается здесь, а большее введённое число опускается до него.",
+            "pl": "Opcjonalnie. + zatrzymuje się tutaj, a większa wpisana liczba jest do niej obniżana.",
+            "ko": "선택 사항. +는 여기서 멈추고, 더 큰 입력 값은 이 값으로 내려갑니다.",
+            "ar": "اختياري. يتوقف + هنا، ويُخفض الرقم المكتوب الأكبر إليه."
+          }
+        },
+        {
           "id": "slot1",
           "type": "autocomplete",
           "title": {

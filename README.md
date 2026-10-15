@@ -191,7 +191,7 @@ One chart, two stacked, or two values on one chart (each with its own scale), of
 
 Logic variables as compact rows with their full name: a switch for yes/no, − and + for a number, and the text for a string. Tap a number or text to type a value. Needs an [API key](#api-key) to change them.
 
-**Settings:** up to ten variables with optional names, 1 or 2 columns, the − and + step.
+**Settings:** up to ten variables with optional names, 1 or 2 columns, the − and + step, and the lowest and highest number.
 
 ## Flow Buttons
 <img src="docs/screenshots/flows.png" alt="Flow Buttons on a Homey dashboard" width="358">

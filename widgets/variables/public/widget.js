@@ -59,6 +59,13 @@
     return isFinite(n) ? n : null;
   }
 
+  /** A lowest or highest number from the settings, or null when it's empty (`Number(null)` would be 0). */
+  function limitOf(v) {
+    if (v == null || v === '') return null;
+    const n = typeof v === 'number' ? v : parseNumber(v);
+    return n != null && isFinite(n) ? n : null;
+  }
+
   function formatNumber(n) {
     return typeof n === 'number' && isFinite(n) ? n.toLocaleString(undefined, { maximumFractionDigits: 3 }) : '–';
   }
@@ -107,7 +114,7 @@
   /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, columns?: number|string, step?: number|string,
-   *   names?: string[],
+   *   min?: number|string|null, max?: number|string|null, names?: string[],
    *   onSet?: (id: string, value: boolean|number|string) => Promise<any>,
    *   onHeight?: (h: number) => void }} opts
    */
@@ -118,6 +125,13 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
     const step = Number(opts.step) > 0 ? Number(opts.step) : 1;
+    // The lowest and highest number − / + and typing may set (either may be unset; swapped when given the wrong way round).
+    let min = limitOf(opts.min);
+    let max = limitOf(opts.max);
+    if (min != null && max != null && min > max) [min, max] = [max, min];
+    const clamp = n => Math.min(max ?? Infinity, Math.max(min ?? -Infinity, n));
+    /** Whether −/+ can't move the value further that way. */
+    const atLimit = (value, dir) => typeof value === 'number' && (dir > 0 ? max != null && value >= max : min != null && value <= min);
 
     const names = Array.isArray(opts.names) ? opts.names : []; // per row, lined up with the entries
     let vars = []; // [{ id, name, type, value } | { id, missing }], one per slot
@@ -132,7 +146,8 @@
     root.dataset.columns = String(opts.columns) === '2' ? '2' : '1';
     const grid = el('div', { class: 'vr-grid' }, root);
     const messageEl = el('div', { class: 'vr-message', dir: 'auto' }, root);
-    /** @type {{row: HTMLElement, name: HTMLElement, control: HTMLElement, kind: string|null, value?: HTMLElement}[]} */
+    /** @type {{row: HTMLElement, name: HTMLElement, control: HTMLElement, kind: string|null, value?: HTMLElement,
+     *   minus?: HTMLElement, plus?: HTMLElement}[]} */
     const rows = [];
 
     function setState(list) {
@@ -213,7 +228,10 @@
     function stepBy(index, dir) {
       const v = vars[index];
       if (!v || v.missing || v.type !== 'number') return;
-      const value = stepValue(shownValue(v), step, dir);
+      const current = shownValue(v);
+      if (atLimit(current, dir)) return;
+      // A value outside the limits (set by a Flow) goes to the nearer one.
+      const value = clamp(stepValue(current, step, dir));
       setOptimistic(v.id, value, STEP_DELAY);
       render();
       clearTimeout(stepTimers.get(v.id));
@@ -259,7 +277,8 @@
       const v = vars[index];
       if (!cancelled && v && v.id === id && !v.missing) {
         if (v.type === 'number') {
-          const n = parseNumber(input.value);
+          const typed = parseNumber(input.value);
+          const n = typed == null ? null : clamp(typed);
           if (n == null) { if (input.value.trim() !== '') shake(id); }
           else if (n !== shownValue(v)) { setOptimistic(id, n); send(v, n); }
         } else if (input.value !== shownValue(v)) {
@@ -289,17 +308,17 @@
     function buildControl(r, index, kind) {
       r.kind = kind;
       r.control.replaceChildren();
-      r.value = undefined;
+      r.value = r.minus = r.plus = undefined;
       r.row.dataset.type = kind;
       if (kind === 'boolean') {
         r.value = el('span', { class: 'vr-switch', role: 'switch' }, r.control);
         el('span', { class: 'vr-knob' }, r.value);
       } else if (kind === 'number') {
-        const minus = el('button', { type: 'button', class: 'vr-step', 'data-dir': '-1', 'aria-label': '−', text: '−' }, r.control);
+        r.minus = el('button', { type: 'button', class: 'vr-step', 'data-dir': '-1', 'aria-label': '−', text: '−' }, r.control);
         r.value = el('span', { class: 'vr-value' }, r.control);
-        const plus = el('button', { type: 'button', class: 'vr-step', 'data-dir': '1', 'aria-label': '+', text: '+' }, r.control);
-        onTap(minus, () => stepBy(index, -1));
-        onTap(plus, () => stepBy(index, 1));
+        r.plus = el('button', { type: 'button', class: 'vr-step', 'data-dir': '1', 'aria-label': '+', text: '+' }, r.control);
+        onTap(r.minus, () => stepBy(index, -1));
+        onTap(r.plus, () => stepBy(index, 1));
       } else {
         r.value = el('span', { class: 'vr-value', dir: 'auto' }, r.control);
       }
@@ -329,6 +348,14 @@
         } else {
           r.row.classList.remove('active');
           r.value.textContent = kind === 'number' ? formatNumber(value) : String(value ?? '');
+          if (kind === 'number') {
+            for (const [button, dir] of [[r.minus, -1], [r.plus, 1]]) {
+              const stop = atLimit(value, dir);
+              button.classList.toggle('at-limit', stop);
+              if (stop) button.setAttribute('aria-disabled', 'true');
+              else button.removeAttribute('aria-disabled');
+            }
+          }
         }
       });
       grid.style.display = vars.length ? '' : 'none';
