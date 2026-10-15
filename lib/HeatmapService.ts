@@ -4,7 +4,7 @@ import { listDevicesWhere, matches, type AutocompleteItem } from './autocomplete
 import { describeCapability } from './capabilities.js';
 import { fetchDeviceIcon } from './deviceIcon.js';
 import { hourlyAverages, hourlyShareTrue, spanFor, type HeatmapDay, type Span } from './heatmap.js';
-import { readCapabilityLog } from './insightsLog.js';
+import { limitInsights, readCapabilityLog } from './insightsLog.js';
 import { HOUR, MINUTE, parseInsightsEntries } from './series.js';
 import Timings from './Timings.js';
 
@@ -146,19 +146,27 @@ export default class HeatmapService {
 
   // ---------------------------------------------------------------- history
 
+  /** Each capability's type as last read (`number` or `boolean`), per `deviceId:capabilityId`. */
+  private types = new Map<string, string>();
+
   /** `days`: how many the widget shows (3, 7, 10 or 14). The result has 7 or 14 (`spanFor`), ending today. */
   async getHistory(deviceId: string, capabilityId: string, days: number = 7): Promise<HeatmapHistory> {
     const span = spanFor(days);
     const tm = new Timings();
     const api = await tm.time('api', () => getAppApi(this.homey));
+    // A number's history doesn't need the device: once it's known to be one, it's read alongside.
+    const k = key(deviceId, capabilityId);
+    const early = this.types.get(k) === 'number' ? tm.time('insights', () => this.numericHistory(api, deviceId, capabilityId, span)) : null;
+    early?.catch(() => {}); // awaited below, unless the device fails first
     const device: any = await tm.time('getDevice', () => api.devices.getDevice({ id: deviceId }));
     const capability = heatmapCaps(device).find(c => c.id === capabilityId);
     if (!capability) throw new Error(`${device.name} has no logged capability ${capabilityId}`);
+    this.types.set(k, capability.type);
     const [icon, history] = await Promise.all([
       tm.time('icon', () => fetchDeviceIcon(api, device, this.log)),
       capability.type === 'boolean'
         ? tm.time('booleanHistory', () => this.booleanHistory(api, deviceId, capabilityId, device, span))
-        : tm.time('insights', () => this.numericHistory(api, deviceId, capabilityId, span)),
+        : early ?? tm.time('insights', () => this.numericHistory(api, deviceId, capabilityId, span)),
     ]);
     const raw = device.capabilitiesObj?.[capabilityId]?.value;
     this.debug(`Heatmap ${device.name} ${capabilityId}: ${tm.summary()}`);
@@ -202,9 +210,9 @@ export default class HeatmapService {
     r.lastRequested = Date.now();
     if (Date.now() - (this.backfilledAt.get(k) ?? 0) > BACKFILL_TTL) {
       try {
-        const res = await api.insights.getLogEntries({
+        const res: any = await limitInsights(() => api.insights.getLogEntries({
           uri: `homey:device:${deviceId}`, id: `homey:device:${deviceId}:${capabilityId}`, resolution: 'last7Days',
-        });
+        }));
         const values: any[] = Array.isArray(res) ? res : (res?.values ?? []);
         const incoming = values
           .map((e): [number, 0 | 1] => [new Date(e.t).getTime(), e.v ? 1 : 0])

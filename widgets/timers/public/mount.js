@@ -75,7 +75,9 @@ window.mountTimersWidget = function (Homey, { root, frame }) {
   // A tablet waking up: its timers may have moved on while it slept.
   document.addEventListener('visibilitychange', () => { if (!document.hidden && loaded) load(); });
 
-  Promise.resolve(typeof Homey.getWidgetInstanceId === 'function' ? Homey.getWidgetInstanceId() : '')
+  let asked = '';
+  try { asked = typeof Homey.getWidgetInstanceId === 'function' ? Homey.getWidgetInstanceId() : ''; } catch (e) { /* stays 'default' */ }
+  Promise.resolve(asked)
     .then((id) => { instance = typeof id === 'string' && id ? id : 'default'; })
     .catch(() => { instance = 'default'; })
     .then(() => {

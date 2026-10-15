@@ -593,13 +593,17 @@
     });
     ro.observe(root);
 
-    // Scroll the live chart with time: about one pixel per tick, at most once a second.
+    // Scroll the live chart with time: about one pixel per tick, at most once a second. Not while nobody sees it (a
+    // hidden page, or a Smart Stack page that isn't on screen); drawn at once when it's back.
     let scrollTimer = null;
+    let offScreen = false;
+    const scrolling = () => state.data && !state.message && !offScreen && !document.hidden;
     function restartScroll() {
       if (scrollTimer) clearInterval(scrollTimer);
-      scrollTimer = setInterval(() => { if (state.data && !state.message) render(); }, Math.max(1000, liveWindowMs() / 300));
+      scrollTimer = setInterval(() => { if (scrolling()) render(); }, Math.max(1000, liveWindowMs() / 300));
     }
     restartScroll();
+    document.addEventListener('visibilitychange', () => { if (scrolling()) render(); });
     render();
 
     // ------------------------------------------------------------------ public API
@@ -608,6 +612,8 @@
       setData(snapshot) { state.data = snapshot; state.message = null; render(); },
       setSettings(settings) { state.settings = { ...state.settings, ...settings }; restartScroll(); render(); },
       setMessage(message) { state.message = message; render(); },
+      /** The Smart Stack: whether this page is the one on screen (the live chart only scrolls while it is). */
+      setVisible(visible) { offScreen = !visible; if (scrolling()) render(); },
       render,
       /** Apply a realtime meter reading. */
       pushLive({ t: ts, w }) {

@@ -89,6 +89,11 @@ window.mountElectricityWidget = function (Homey, { root, frame }) {
     .then((ids) => { deviceId = (ids && ids[0]) || null; })
     .catch(() => { deviceId = null; })
     .then(() => { perf = loadMarks(sdkAt); load(); });
+
+  return {
+    /** The Smart Stack: whether this page is the one on screen. */
+    setVisible: (v) => widget.setVisible(v),
+  };
 };
 /** The classes index.html puts on its body; the Smart Stack puts them on the slide. */
 window.mountElectricityWidget.frameClass = 'homey-widget';

@@ -1,7 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
 import { idList, logged, logPerf } from '../../lib/widgetApi.js';
-import { tileNameRoutes } from '../../lib/TileNameService.js';
+import { tileNameRoutes, withTileNames } from '../../lib/TileNameService.js';
 
 type Homey = App['homey'];
 
@@ -15,9 +15,9 @@ export default {
   }) {
     const app = homey.app as WidgetkeeperApp;
     logPerf(app, 'Locks', query);
-    return logged(app, 'Locks state failed:', async () => (
+    return withTileNames(homey, query, logged(app, 'Locks state failed:', async () => (
       { devices: await app.locks.getState(idList(query.deviceIds)), language: homey.i18n.getLanguage() }
-    ));
+    )));
   },
 
   /** `{deviceId, capabilityId: 'locked' | 'garagedoor_closed', value}`. */

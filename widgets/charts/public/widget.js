@@ -504,10 +504,14 @@
       }).observe(root);
     }
 
-    // The line scrolls with time: about a pixel per redraw, at most once a second.
+    // The line scrolls with time: about a pixel per redraw, at most once a second. Not while nobody sees it (a hidden
+    // page, or a Smart Stack page that isn't on screen); drawn at once when it's back.
     const shortest = Math.min(...charts.map((c) => SPAN_MS[c.span]));
-    const scrollTimer = setInterval(() => { if (state.entries.length && !state.message) render(); },
+    let offScreen = false;
+    const scrolling = () => state.entries.length && !state.message && !offScreen && !document.hidden;
+    const scrollTimer = setInterval(() => { if (scrolling()) render(); },
       Math.max(1000, Math.min(60e3, shortest / 300)));
+    document.addEventListener('visibilitychange', () => { if (scrolling()) render(); });
 
     // ------------------------------------------------------------------ public API
 
@@ -557,6 +561,8 @@
       },
       render,
       t,
+      /** The Smart Stack: whether this page is the one on screen (the lines only scroll while it is). */
+      setVisible(visible) { offScreen = !visible; if (scrolling()) render(); },
       destroy() { clearInterval(scrollTimer); },
     };
   }

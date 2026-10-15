@@ -12,7 +12,7 @@ interface Window {
   /** The chart module shared by the Electricity Overview and Charts (widgets/electricity/public/chart.js). */
   WidgetkeeperChart: any;
   createChartsWidget: (root: HTMLElement, opts?: object) => any;
-  chartBuckets: (points: [number, number][], from: number, to: number, bucketMs: number) => { t: number, v: number | null }[];
+  chartBuckets: (points: [number, number][], from: number, to: number, bucketMs: number, current?: number | null) => { t: number, end: number, v: number | null }[];
   createThermostatWidget: (root: HTMLElement, opts?: object) => any;
   createQuickActionsWidget: (root: HTMLElement, opts?: object) => any;
   createSensorAlarmsWidget: (root: HTMLElement, opts?: object) => any;

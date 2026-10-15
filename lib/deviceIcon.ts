@@ -40,7 +40,7 @@ export async function fetchSvgIcon(
   try {
     return await cachedSvg(await homeyUrl(api, path));
   } catch (err) {
-    log(`Could not load icon for ${label} (${JSON.stringify(iconObj)})`, err);
+    if (!isRepeat(err)) log(`Could not load icon for ${label} (${JSON.stringify(iconObj)})`, err);
     return null;
   }
 }
@@ -56,31 +56,51 @@ export async function fetchDeviceIcon(api: any, device: any, log: (...args: any[
     try {
       return await cachedSvg(`https://my.homey.app/img/devices/${override}.svg`);
     } catch (err) {
-      log(`Could not load icon ${override} for ${device.name}, using the driver's`, err);
+      if (!isRepeat(err)) log(`Could not load icon ${override} for ${device.name}, using the driver's`, err);
     }
   }
   return fetchSvgIcon(api, device?.iconObj, device?.name, log);
 }
 
+/** An icon fetch that takes longer gives up (my.homey.app unreachable, slow DNS): every device widget waits for it. */
+const FETCH_TIMEOUT = 5000;
+/** A failed URL isn't fetched again for this long; meanwhile it fails at once, without a log line. */
+const RETRY_AFTER = 10 * 60e3;
+
 /**
  * Icons are shared by many devices and hardly ever change, so each URL is fetched once per app run
- * (a failed fetch is retried next time). Fetching them took ~150-450 ms per widget load.
+ * (a failed fetch is retried after 10 minutes). Fetching them took ~150-450 ms per widget load.
  */
 const icons = new Map<string, Promise<string>>();
+const failed = new Map<string, number>();
 
 function cachedSvg(url: string): Promise<string> {
   let p = icons.get(url);
   if (!p) {
+    const at = failed.get(url);
+    if (at !== undefined && Date.now() - at < RETRY_AFTER) return Promise.reject(repeat(url));
     p = fetchSvg(url);
     icons.set(url, p);
-    p.catch(() => icons.delete(url));
+    p.then(() => failed.delete(url), () => {
+      icons.delete(url);
+      failed.set(url, Date.now());
+    });
   }
   return p;
 }
 
+/** The error of a URL that failed a moment ago (`isRepeat()`): its first failure was logged. */
+function repeat(url: string) {
+  return Object.assign(new Error(`Icon ${url} failed recently`), { repeat: true });
+}
+
+function isRepeat(err: unknown) {
+  return (err as { repeat?: unknown } | null)?.repeat === true;
+}
+
 async function fetchSvg(url: string): Promise<string> {
   if (typeof fetch !== 'function') throw new Error('No fetch');
-  const res = await fetch(url);
+  const res = await fetch(url, typeof AbortSignal?.timeout === 'function' ? { signal: AbortSignal.timeout(FETCH_TIMEOUT) } : undefined);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const svg = await res.text();
   if (!svg.includes('<svg')) throw new Error('Not an SVG');

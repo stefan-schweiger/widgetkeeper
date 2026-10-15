@@ -7,6 +7,9 @@
  */
 window.mountStackWidget = function (Homey, { root, frame }) {
   const REFRESH_MS = 5 * 60e3; // re-reads the pages (a widget added to the dashboard) and the smart-rotate state
+  const OTHERS_AFTER_MS = 2000; // the pages not on screen are mounted once it has drawn, or this long after
+  const ATTENTION_AFTER_MS = 3000; // the first smart-rotate read, after the pages' own requests
+  const SEEN_FRESH_MS = 60e3; // a page whose own state came this recently isn't read again for smart rotate
 
   // Load marks for the app's diagnostics log, sent with the first request only.
   let perf = '';
@@ -25,6 +28,7 @@ window.mountStackWidget = function (Homey, { root, frame }) {
   let loaded = null; // what the pages were built from: a change rebuilds the stack
   let built = false; // pages are mounted: from then on, any other set of pages reloads the frame
   const mounted = new Map(); // page id → what its mount returned
+  let slides = []; // the pages' slides, once built
   let watcher = null;
 
   const widget = window.createStackWidget(root, {
@@ -39,6 +43,9 @@ window.mountStackWidget = function (Homey, { root, frame }) {
       try { if (Homey.hapticFeedback) Homey.hapticFeedback(); } catch (e) { /* not on every platform */ }
     },
     onVisible: (page, visible) => {
+      // A page brought on screen before the others were mounted (a Flow request) is mounted now.
+      const s = visible ? slides.find(x => x.page.id === page.id) : null;
+      if (s) mountSlide(s);
       const m = mounted.get(page.id);
       if (m && typeof m.setVisible === 'function') m.setVisible(visible);
       if (visible) checkFirstPage();
@@ -88,7 +95,10 @@ window.mountStackWidget = function (Homey, { root, frame }) {
         const query = {};
         // perf= is the frame's load marks (loadMarks()): the stack frame's, not the page's, so it's left out.
         new URLSearchParams(qs || '').forEach((v, k) => { if (k !== 'perf') query[k] = v; });
-        return call(page.type, method, p, query, body);
+        const res = call(page.type, method, p, query, body);
+        // A page's own state also says whether it wants attention (smart rotate), so the watcher needn't read it too.
+        if (method === 'GET' && p === '/state') res.then((r) => { if (watcher) watcher.seen(page, query, r); }, () => {});
+        return res;
       },
       on: (event, fn) => Homey.on(event, fn),
       __: (key, tokens) => Homey.__(key, tokens),
@@ -125,48 +135,54 @@ window.mountStackWidget = function (Homey, { root, frame }) {
       el.onerror = () => resolve(false);
       document.head.appendChild(el);
     });
-    return Promise.all(types.map(async (type) => {
-      if (window[window.STACK_TYPES[type]]) return; // already there (the previews load them up front)
-      await Promise.all((DEPS[type] || []).map((dep) => {
+    // All at once: scripts added with `async: false` still run in the order they were added (deps, widget.js,
+    // mount.js), so no file waits for another to arrive before it's asked for.
+    const loads = [];
+    for (const type of types) {
+      if (window[window.STACK_TYPES[type]]) continue; // already there (the previews load them up front)
+      for (const dep of DEPS[type] || []) {
         if (!depsLoaded.has(dep)) {
           depsLoaded.set(dep, Promise.all([
             load('link', { rel: 'stylesheet', href: `../${dep}.css` }),
             load('script', { src: `../${dep}.js`, async: false }),
           ]));
         }
-        return depsLoaded.get(dep);
-      }));
-      await Promise.all([
+        loads.push(depsLoaded.get(dep));
+      }
+      loads.push(
         load('link', { rel: 'stylesheet', href: `../${type}/widget.css` }),
         load('script', { src: `../${type}/widget.js`, async: false }),
-      ]);
-      await load('script', { src: `../${type}/mount.js`, async: false });
-    }));
+        load('script', { src: `../${type}/mount.js`, async: false }),
+      );
+    }
+    return Promise.all(loads);
   }
 
   /** What the pages are built from; when it changes (a widget added, a setting changed) the stack is rebuilt. */
   const signature = (pages) => JSON.stringify(pages.map(p => [p.id, p.type, p.settings, p.deviceIds]));
 
+  /** Mounts a page's widget into its slide, once; a page that fails says so there. */
+  function mountSlide(s) {
+    if (mounted.has(s.page.id)) return;
+    const mount = window[window.STACK_TYPES[s.page.type]];
+    try {
+      if (typeof mount !== 'function') throw new Error(`No widget for ${s.page.type}`);
+      mounted.set(s.page.id, mount(pageHomey(s.page), { root: s.root, frame: s.frame }) || {});
+    } catch (err) {
+      console.error(err);
+      mounted.set(s.page.id, {});
+      s.root.className = 'sk-message error';
+      s.root.textContent = widget.t('pageFailed');
+      readyPages.add(s.page.id);
+    }
+    // A page that isn't on screen: a camera page stops its snapshots.
+    const m = mounted.get(s.page.id);
+    const current = widget.current();
+    if (typeof m.setVisible === 'function') m.setVisible(!!current && current.id === s.page.id);
+  }
+
   async function build(pages) {
     await loadAssets([...new Set(pages.map(p => p.type))]);
-    const slides = widget.setPages(pages);
-    for (const s of slides) {
-      const mount = window[window.STACK_TYPES[s.page.type]];
-      try {
-        if (typeof mount !== 'function') throw new Error(`No widget for ${s.page.type}`);
-        mounted.set(s.page.id, mount(pageHomey(s.page), { root: s.root, frame: s.frame }) || {});
-      } catch (err) {
-        console.error(err);
-        s.root.className = 'sk-message error';
-        s.root.textContent = widget.t('pageFailed');
-        readyPages.add(s.page.id);
-      }
-    }
-    // The pages that aren't on screen: a camera page stops its snapshots.
-    for (const s of slides) {
-      const m = mounted.get(s.page.id);
-      if (m && typeof m.setVisible === 'function') m.setVisible(widget.current() === s.page);
-    }
     watcher = window.createStackAttentionWatcher(pages, {
       call: (type, method, path, query) => call(type, method, path, query),
       on: (event, fn) => Homey.on(event, fn),
@@ -176,9 +192,20 @@ window.mountStackWidget = function (Homey, { root, frame }) {
         try { return page.settings.switchSpeakers !== false ? localStorage.getItem(`widgetkeeper.media.speaker.${page.id}`) : null; } catch (e) { return null; }
       },
     });
-    watcher.refresh();
+    slides = widget.setPages(pages);
+    // The page on screen first, the others once it has drawn itself (or OTHERS_AFTER_MS on), so its requests don't
+    // wait behind theirs.
+    const current = widget.current();
+    const first = slides.find(s => current && s.page.id === current.id) || slides[0];
+    if (first) mountSlide(first);
     built = true;
     checkFirstPage();
+    Promise.race([firstPage, new Promise(r => setTimeout(r, OTHERS_AFTER_MS))]).then(() => {
+      for (const s of slides) mountSlide(s);
+      // Most watched pages' attention comes with their own state (`seen`); this reads the rest (a camera page's
+      // alarms) once the pages' own requests have gone out.
+      setTimeout(() => watcher.refresh(SEEN_FRESH_MS), ATTENTION_AFTER_MS);
+    });
   }
 
   /**
@@ -225,7 +252,7 @@ window.mountStackWidget = function (Homey, { root, frame }) {
         location.reload();
       } else {
         widget.setRequests(localRequests(res.requests, res.now));
-        if (watcher) watcher.refresh();
+        if (watcher) watcher.refresh(SEEN_FRESH_MS);
       }
     } catch (err) {
       console.error(err);

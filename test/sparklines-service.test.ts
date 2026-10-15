@@ -130,6 +130,30 @@ describe('getState', () => {
     expect(s).toMatchObject({ value: 21.5, points: [] });
   });
 
+  it('asks again after 30 s for a history Homey was too busy to give', async () => {
+    let busy = true;
+    const { service, api } = setup((args) => {
+      if (busy) throw Object.assign(new Error('Too many requests.'), { statusCode: 429 });
+      return entries(args);
+    });
+    expect((await service.getState(['sensor:measure_temperature'], '24h'))[0]).toMatchObject({ points: [] });
+    busy = false;
+    await service.getState(['sensor:measure_temperature'], '24h');
+    expect(api.insights.getLogEntries).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(30e3 + 1);
+    const [s] = await service.getState(['sensor:measure_temperature'], '24h');
+    expect(api.insights.getLogEntries).toHaveBeenCalledTimes(2);
+    expect((s as any).points.length).toBeGreaterThan(0);
+  });
+
+  it('keeps a missing log for 5 minutes', async () => {
+    const { service, api } = setup(() => { throw new Error('Not Found: LogLocal'); });
+    await service.getState(['sensor:measure_temperature'], '24h');
+    vi.advanceTimersByTime(60e3);
+    await service.getState(['sensor:measure_temperature'], '24h');
+    expect(api.insights.getLogEntries).toHaveBeenCalledTimes(1);
+  });
+
   it('reads power from its energy_power log, as Homey logs it, and remembers that', async () => {
     const meter = fakeDevice({
       id: 'meter', name: 'Meter',

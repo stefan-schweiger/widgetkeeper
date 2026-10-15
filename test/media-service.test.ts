@@ -131,7 +131,7 @@ describe('tracking', () => {
       expect(((await service.getState('tv')) as any).icon).toBeNull();
       devices[0].iconOverride = 'media-test-speaker'; // the user picks an icon in the Homey app
       expect(((await service.getState('tv')) as any).icon).toBe(`data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`);
-      expect(fetch).toHaveBeenCalledWith('https://my.homey.app/img/devices/media-test-speaker.svg');
+      expect(fetch).toHaveBeenCalledWith('https://my.homey.app/img/devices/media-test-speaker.svg', expect.anything());
     } finally {
       vi.unstubAllGlobals();
     }

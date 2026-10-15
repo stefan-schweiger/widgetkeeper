@@ -149,6 +149,28 @@ describe('HeatmapService', () => {
     expect(api.insights.getLogEntries).toHaveBeenCalledTimes(2);
   });
 
+  it('reads a number it knows from before alongside the device, not after it', async () => {
+    const { api, service } = setup({ logEntries: () => ({ step: 3600000, values: [] }) });
+    await service.getHistory('hue', 'measure_luminance');
+    vi.setSystemTime(NOW + 6 * 60e3); // the cached days are due again
+    let releaseDevice: () => void = () => {};
+    const held = new Promise<void>((resolve) => { releaseDevice = resolve; });
+    const read = api.devices.getDevice.getMockImplementation()!;
+    api.devices.getDevice.mockImplementationOnce(async (args: any) => { await held; return read(args); });
+    const h = service.getHistory('hue', 'measure_luminance');
+    await vi.advanceTimersByTimeAsync(0);
+    expect(api.insights.getLogEntries).toHaveBeenCalledTimes(2); // before the device answered
+    releaseDevice();
+    expect((await h).name).toBe('Hue motion sensor');
+    // A boolean's history needs the device (it subscribes to it): no early read.
+    await service.getHistory('hue', 'alarm_motion');
+    vi.setSystemTime(NOW + 7 * 60e3);
+    api.insights.getLogEntries.mockClear();
+    api.devices.getDevice.mockImplementationOnce(async () => { throw new Error('No device hue'); });
+    await expect(service.getHistory('hue', 'alarm_motion')).rejects.toThrow('No device hue');
+    expect(api.insights.getLogEntries).not.toHaveBeenCalled();
+  });
+
   it('reads power from its energy_power log', async () => {
     const plug = fakeDevice({ id: 'plug', name: 'Plug', caps: { measure_power: { type: 'number', value: 26, title: 'Power', units: 'W', insights: true } } });
     const api = fakeApi({

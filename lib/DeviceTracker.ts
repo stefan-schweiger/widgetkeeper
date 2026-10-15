@@ -1,11 +1,14 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import { sharedCache } from './sharedCache.js';
 import type Timings from './Timings.js';
 
 const MINUTE = 60e3;
 const TICK = MINUTE;
 /** A tracked entry is dropped this long after the last request (open widgets re-fetch every 5 min). */
 const IDLE_TIMEOUT = 10 * MINUTE;
+/** How long a zones read is shared (a renamed room shows after this). */
+const ZONES_MAX_AGE = MINUTE;
 
 /** What the tracker keeps on every entry. */
 export type TrackedEntry = {
@@ -42,9 +45,41 @@ export type DeviceTrackerOptions<T extends TrackedEntry> = {
 };
 
 /**
+ * Fresh reads of a device on their way, per devices manager: every tracker re-reading one device at the same time
+ * (Device Values and Sparklines on one meter, a light in Light Controls and Quick Actions) shares one `getDevice`.
+ * homey-api only shares calls with `$cache: true`, which would also serve its cache once the manager is connected.
+ */
+const freshReads = new WeakMap<object, Map<string, Promise<any>>>();
+
+export function readFresh(devices: any, id: string): Promise<any> {
+  let reads = freshReads.get(devices);
+  if (!reads) freshReads.set(devices, reads = new Map());
+  let p = reads.get(id);
+  if (!p) {
+    const read: Promise<any> = devices.getDevice({ id, $cache: false }).finally(() => reads!.delete(id));
+    reads.set(id, read);
+    p = read;
+  }
+  return p;
+}
+
+/**
+ * A read that failed because Homey was busy or slow (a timeout, `Too many requests`, a server error), not because the
+ * device is gone: the entry is kept, so a crowded dashboard's load burst doesn't show devices as missing.
+ */
+export function isTransientError(err: unknown): boolean {
+  const e = err as { statusCode?: unknown, code?: unknown, message?: unknown } | null;
+  const status = Number(e?.statusCode);
+  if (status === 408 || status === 429 || status >= 500) return true;
+  if (typeof e?.code === 'string' && /^(ETIMEDOUT|ECONNRESET|ECONNREFUSED|EAI_AGAIN|UND_ERR_)/.test(e.code)) return true;
+  return /timeout|timed out|too many requests/i.test(String(e?.message ?? ''));
+}
+
+/**
  * Devices tracked lazily for a widget: the first request reads the device and subscribes to its capabilities, later
- * requests re-read it (`$cache: false`), so a rename, changed capabilities or a deleted device shows. An entry no
- * request has asked for in 10 minutes is dropped.
+ * requests re-read it (`$cache: false`, shared by concurrent re-reads), so a rename, changed capabilities or a deleted
+ * device shows. A re-read that fails for a passing reason keeps the entry as it was. An entry no request has asked
+ * for in 10 minutes is dropped.
  */
 export default class DeviceTracker<T extends TrackedEntry> {
 
@@ -84,7 +119,7 @@ export default class DeviceTracker<T extends TrackedEntry> {
 
   /**
    * The entry for `key`, marked as requested: tracked on the first request, else re-read from the device. A tracked
-   * device that can't be read any more is disposed and throws.
+   * device that can't be read any more is disposed and throws; one that only failed to answer in time stays as it was.
    */
   async current(key: string, tm: Timings): Promise<T> {
     const t = await this.read(key, tm);
@@ -113,8 +148,12 @@ export default class DeviceTracker<T extends TrackedEntry> {
     const api = await getAppApi(this.opts.homey);
     let device: any;
     try {
-      device = await tm.time('getDevice', () => api.devices.getDevice({ id: this.deviceId(key), $cache: false }));
+      device = await tm.time('getDevice', () => readFresh(api.devices, this.deviceId(key)));
     } catch (err) {
+      if (isTransientError(err) && this.isCurrent(t)) {
+        this.opts.debug(`Kept ${this.opts.label(t)} after a failed re-read:`, (err as Error)?.message ?? err);
+        return t;
+      }
       this.dispose(t);
       throw this.opts.readError ? this.opts.readError(err) : err;
     }
@@ -181,9 +220,16 @@ export default class DeviceTracker<T extends TrackedEntry> {
 
 }
 
-/** The zones, for naming a device's room; a failed read is logged as `<what> zones unavailable:` and gives none. */
+const zoneReads = new WeakMap<object, ReturnType<typeof sharedCache<Record<string, any>>>>();
+
+/**
+ * The zones, for naming a device's room, shared for a minute by every widget asking; a failed read is logged as
+ * `<what> zones unavailable:` and gives none.
+ */
 export function readZones(homey: Homey.App['homey'], tm: Timings, log: (...args: any[]) => void, what: string): Promise<Record<string, any>> {
-  return tm.time('zones', async () => (await getAppApi(homey)).zones.getZones())
+  let cache = zoneReads.get(homey);
+  if (!cache) zoneReads.set(homey, cache = sharedCache(async () => (await getAppApi(homey)).zones.getZones()));
+  return tm.time('zones', () => cache!.get(ZONES_MAX_AGE))
     .catch((err: unknown) => { log(`${what} zones unavailable:`, err); return {}; });
 }
 

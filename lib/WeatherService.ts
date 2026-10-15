@@ -11,6 +11,8 @@ const TICK = MINUTE;
 const IDLE_TIMEOUT = 10 * MINUTE;
 const DEFAULT_TTL = 30 * MINUTE; // when MET sends no usable Expires
 const RETRY_AFTER_ERROR = 5 * MINUTE;
+/** A MET request that takes longer gives up (the Weather Forecast and the Clock's weather wait for it). */
+const FETCH_TIMEOUT = 15e3;
 const HOURS = 48; // the widget shows 36 from the current hour; the rest covers hours passing between fetches
 
 export const FORECAST_URL = 'https://api.met.no/weatherapi/locationforecast/2.0/compact';
@@ -80,9 +82,14 @@ export default class WeatherService {
     this.cached = null;
   }
 
+  /**
+   * Drops the forecast once no widget has asked for 10 min and it has expired. One that's still valid is kept, so a
+   * dashboard opened again soon (a tablet waking up) is answered at once, with no request to MET.
+   */
   private tick() {
-    if (this.cached && Date.now() - this.lastRequested > IDLE_TIMEOUT) {
-      this.debug('Weather: no widget asked for 10 min, dropping the cached forecast');
+    const now = Date.now();
+    if (this.cached && now - this.lastRequested > IDLE_TIMEOUT && now >= this.cached.expires) {
+      this.debug('Weather: no widget asked for 10 min, dropping the expired forecast');
       this.cached = null;
     }
   }
@@ -146,7 +153,8 @@ export default class WeatherService {
     };
     if (stale?.lastModified) headers['If-Modified-Since'] = stale.lastModified;
     try {
-      const res = await fetch(`${FORECAST_URL}?lat=${loc.lat}&lon=${loc.lon}`, { headers });
+      const signal = typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(FETCH_TIMEOUT) : undefined;
+      const res = await fetch(`${FORECAST_URL}?lat=${loc.lat}&lon=${loc.lon}`, { headers, signal });
       this.lastStatus = `${res.status} at ${new Date().toISOString()}`;
       const expires = expiry(res.headers.get('expires'));
       if (res.status === 304 && stale) {

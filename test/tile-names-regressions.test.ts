@@ -88,6 +88,22 @@ describe.each(IDS)('tile names fixes: %s', (id) => {
     expect(names()[0]).toBe('Theirs');
   });
 
+  it('a failed save keeps its name when the app sent that name meanwhile (only the answer was lost)', async () => {
+    let fail: (err: Error) => void = () => {};
+    const onRename = vi.fn(() => new Promise((_, reject) => { fail = reject; }));
+    const { w, fields, names, c } = mount(id, { renameTiles: true, onRename });
+    w.setNames({ [c.keys[0]]: 'Old' });
+    fields()[0].value = 'Mine';
+    fields()[0].dispatchEvent(new Event('change'));
+    // The app saved it (its realtime event came), but the answer to this save never arrived.
+    w.setNames({ [c.keys[0]]: 'Mine' });
+    fail(new Error('timeout'));
+    await vi.runAllTicks();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(names()[0]).toBe('Mine');
+  });
+
   it('a failed save puts the old name back while nothing newer came', async () => {
     let fail: (err: Error) => void = () => {};
     const onRename = vi.fn(() => new Promise((_, reject) => { fail = reject; }));
@@ -113,13 +129,37 @@ describe.each(IDS)('tile names fixes: %s', (id) => {
     expect(shown.map(f => f.placeholder)).toEqual([fields()[1].placeholder]);
   });
 
-  it('mounts when getWidgetInstanceId throws, and keeps the names under `default`', async () => {
+  it('reads the names with /state, in one request', async () => {
+    const c = CASES[id];
     const frame = document.createElement('div');
     const root = document.createElement('div');
     frame.append(root);
     document.body.append(frame);
     const api = vi.fn(async (method: string, path: string) => {
-      if (method === 'GET' && path.startsWith('/names')) return { names: {} };
+      if (method === 'GET' && path.startsWith('/state?')) return { state: c.state, tileNames: { [c.keys[1]]: 'Typed' } };
+      return new Promise(() => {}); // snapshots and the like: never answered here
+    });
+    const Homey = {
+      api, on: vi.fn(), ready: vi.fn(), setHeight: vi.fn(), hapticFeedback: vi.fn(),
+      getSettings: () => ({ view: 'list', slot1: { id: c.keys[0] }, slot2: { id: c.keys[1] } }),
+      getDeviceIds: () => ['a', 'b'],
+      getWidgetInstanceId: () => 'w1',
+      __: (key: string) => key,
+    };
+    const mountName = readFileSync(`widgets/${id}/public/mount.js`, 'utf8').match(/window\.(mount\w+Widget) =/)![1];
+    (window as any)[mountName](Homey, { root, frame });
+    await vi.advanceTimersByTimeAsync(10);
+    expect(api.mock.calls.filter(([method, path]) => method === 'GET' && /^\/(state|names)\?/.test(path)).map(([, path]) => path.replace(/\?.*&instance=/, '?…&instance=')))
+      .toEqual(['/state?…&instance=w1']);
+    expect([...root.querySelectorAll(c.name)].map(n => n.textContent)).toContain('Typed');
+  });
+
+  it('mounts when getWidgetInstanceId throws, and keeps the names under `default`', async () => {
+    const frame = document.createElement('div');
+    const root = document.createElement('div');
+    frame.append(root);
+    document.body.append(frame);
+    const api = vi.fn(async (_method: string, _path: string) => {
       throw new Error('offline');
     });
     const Homey = {
@@ -133,7 +173,7 @@ describe.each(IDS)('tile names fixes: %s', (id) => {
     expect(() => (window as any)[mountName](Homey, { root, frame })).not.toThrow();
     await vi.advanceTimersByTimeAsync(2000);
     expect(Homey.ready).toHaveBeenCalledTimes(1);
-    expect(api).toHaveBeenCalledWith('GET', '/names?instance=default');
+    expect(api.mock.calls.some(([method, path]) => method === 'GET' && path.startsWith('/state?') && path.endsWith('&instance=default'))).toBe(true);
   });
 });
 

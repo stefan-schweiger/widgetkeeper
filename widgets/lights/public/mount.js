@@ -20,8 +20,8 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
   }
 
   /**
-   * The names typed on the tiles (`renameTiles`), which the app keeps per widget instance: `load()` reads them (a
-   * failure keeps the last ones; it never fails), realtime keeps them current, and `rename(key, name)` saves one.
+   * The names typed on the tiles (`renameTiles`), which the app keeps per widget instance: `state(path)` reads
+   * `/state` with them (a failure keeps the last ones), realtime keeps them current, and `rename(key, name)` saves one.
    * `setNames` is the widget's.
    */
   function wireTileNames(setNames) {
@@ -35,9 +35,14 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
       if (data && data.instance === instance) setNames(data.names);
     });
     return {
-      load: () => known
-        .then(() => Homey.api('GET', `/names?instance=${encodeURIComponent(instance)}`))
-        .then(res => setNames(res && res.names), err => console.error(err)),
+      // `/state` with the instance answers `{state, tileNames}`: the names come with every read, in one request.
+      state: path => known
+        .then(() => Homey.api('GET', `${path}&instance=${encodeURIComponent(instance)}`))
+        .then((res) => {
+          if (!res || typeof res !== 'object' || !('tileNames' in res)) return res;
+          setNames(res.tileNames);
+          return res.state;
+        }),
       rename: (key, name) => known.then(() => Homey.api('POST', '/names', { instance, key, name })),
     };
   }
@@ -92,10 +97,8 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
       ready();
       return;
     }
-    const namesRead = tileNames.load();
     try {
-      const state = await Homey.api('GET', `/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${perfParam()}`);
-      await namesRead;
+      const state = await tileNames.state(`/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${perfParam()}`);
       widget.setState(state);
       watched = new Set(deviceIds);
       for (const d of Array.isArray(state) ? state : []) for (const m of (d && d.groupLights) || []) watched.add(m.id);

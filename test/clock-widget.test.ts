@@ -1,10 +1,10 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clockWeather } from '../widgets/clock/api.js';
-import { loadWidget } from './helpers/loadWidget.js';
+import { loadMount, loadWidget } from './helpers/loadWidget.js';
 
 let win: any;
-beforeAll(() => { win = loadWidget('clock'); });
+beforeAll(() => { win = loadWidget('clock'); loadMount('clock'); });
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-06T18:40:20+02:00')); });
 afterEach(() => { vi.useRealTimers(); document.body.innerHTML = ''; });
 
@@ -118,5 +118,39 @@ describe('clockWeather()', () => {
   it('passes on a missing location, and has nothing without hours', () => {
     expect(clockWeather({ ...forecast([]), noLocation: true }, 'Europe/Copenhagen')).toEqual({ noLocation: true });
     expect(clockWeather(forecast([]), 'Europe/Copenhagen')).toBeNull();
+  });
+});
+
+describe('mount', () => {
+  function mount(api: (method: string, path: string) => Promise<any>) {
+    const frame = document.createElement('div');
+    const root = document.createElement('div');
+    frame.append(root);
+    document.body.append(frame);
+    const Homey = { api: vi.fn(api), ready: vi.fn(), setHeight: vi.fn(), getSettings: () => ({}), on: vi.fn(), __: (k: string) => k };
+    win.mountClockWidget(Homey, { root, frame });
+    return { Homey, root };
+  }
+
+  it("shows the time without waiting long for the weather, which follows", async () => {
+    let answer: (v: any) => void = () => {};
+    const { Homey, root } = mount(() => new Promise((resolve) => { answer = resolve; })); // MET is slow
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(Homey.ready).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(600);
+    expect(Homey.ready).toHaveBeenCalledTimes(1);
+    expect(root.querySelector('.ck-time')!.textContent).toMatch(/18.40/);
+    answer({ language: 'en', weather: WEATHER });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(root.querySelector<HTMLElement>('.ck-weather')!.style.display).not.toBe('none');
+    expect(Homey.ready).toHaveBeenCalledTimes(1);
+  });
+
+  it('is shown with the weather when it comes in time', async () => {
+    const { Homey } = mount(async () => ({ language: 'en', weather: WEATHER }));
+    await vi.advanceTimersByTimeAsync(100);
+    expect(Homey.ready).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(Homey.ready).toHaveBeenCalledTimes(1);
   });
 });

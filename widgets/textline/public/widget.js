@@ -229,7 +229,8 @@
         const px = Math.round(base * step);
         s.fontSize = `${px}px`;
         const lineHeight = px * 1.1;
-        const h = textEl.getBoundingClientRect().height;
+        // The layout height: getBoundingClientRect() is of the tilted note's box, a few px taller than the text.
+        const h = textEl.offsetHeight;
         if (!h || h <= lineHeight * NOTE_LINES + 1) break;
       }
       for (const p of ['display', '-webkit-line-clamp', 'overflow']) s.removeProperty(p);

@@ -1,7 +1,7 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import { localHour } from './heatmap.js';
-import { readFirstLog } from './insightsLog.js';
+import { limitInsights, readFirstLog } from './insightsLog.js';
 import Timings from './Timings.js';
 import {
   HOUR, MINUTE, QUARTER, SECOND, Sample,
@@ -75,6 +75,8 @@ export default class ElectricityService {
   private logIds = new Map<string, string>(); // the power log that worked, per device; kept when a meter is dropped
   private priceDays = new Map<string, PriceDay>();
   private pricePending = new Map<string, Promise<PriceDay>>();
+  /** A day whose fetch failed, with its error: a coming day isn't fetched again for 15 minutes, today for 1. */
+  private priceFailures = new Map<string, { at: number, err: unknown }>();
   private currency: string | null = null;
   private currencyPending: Promise<void> | null = null;
   private priceType: PriceSettings & { at: number } | null = null;
@@ -122,8 +124,13 @@ export default class ElectricityService {
     let priceError: string | null = null;
     let fixedPrice: number | null = null;
     const message = (err: unknown) => (err instanceof Error ? err.message : String(err));
-    const [meter, { prices, quarters }] = await Promise.all([
-      deviceId ? tm.time('meter', () => this.ensureMeter(deviceId, tm)).catch(err => {
+    // The usage history only needs the meter, so it's read while the prices are still on their way.
+    const [metered, { prices, quarters }] = await Promise.all([
+      deviceId ? tm.time('meter', () => this.ensureMeter(deviceId, tm)).then(async (meter) => {
+        meter.lastRequested = now;
+        const usage = await tm.time('usage', () => this.getUsage(meter, firstSlot, now)).catch((err): Sample[] => { this.log('Usage error', err); return []; });
+        return { meter, usage };
+      }, (err) => {
         this.log('Meter error', err);
         meterError = message(err);
         return null;
@@ -138,11 +145,8 @@ export default class ElectricityService {
       }).catch(err => { this.log('Price error', err); priceError = message(err); return { prices: [], quarters: null }; }),
     ]);
 
-    let usage: Sample[] = [];
-    if (meter) {
-      meter.lastRequested = now;
-      usage = await tm.time('usage', () => this.getUsage(meter, firstSlot, now)).catch(err => { this.log('Usage error', err); return []; });
-    }
+    const meter = metered?.meter ?? null;
+    const usage = metered?.usage ?? [];
 
     this.debug(`Snapshot ${meter?.name ?? deviceId ?? '-'}: ${tm.summary()}`);
     return {
@@ -244,9 +248,9 @@ export default class ElectricityService {
   }
 
   private async readLog(api: any, deviceId: string, logId: string, resolution: string): Promise<Sample[]> {
-    return parseInsightsEntries(await api.insights.getLogEntries({
+    return parseInsightsEntries(await limitInsights(() => api.insights.getLogEntries({
       uri: `homey:device:${deviceId}`, id: logId, resolution,
-    }));
+    })));
   }
 
   /** Trims old readings and drops meters no open widget has asked for in IDLE_TIMEOUT. */
@@ -362,11 +366,12 @@ export default class ElectricityService {
   /** Price type, fixed price and costs, for the diagnostics report. */
   async describe() {
     const { fixed, costsExpression } = await this.getPriceSettings();
-    // The interval of today's spot prices in minutes, once read (15 in quarter-hour markets, 60 in hourly ones).
+    // The interval of today's spot prices in minutes, once read (15 in quarter-hour markets, 60 in hourly ones). It's
+    // only unknown with a single price and no `interval` from Homey (never a quarter-hour day), so that counts as 60.
     const today = this.priceDays.get(this.localDate(Date.now()));
-    const priceInterval = !today?.hours.size ? null : today.interval ?? (today.quarters ? 15 : 60);
+    const interval = !today?.hours.size ? null : today.interval ?? 60;
     return {
-      priceType: fixed == null ? 'dynamic' : 'fixed', fixedPrice: fixed, priceCosts: costsExpression, priceInterval, currency: this.currency,
+      priceType: fixed == null ? 'dynamic' : 'fixed', fixedPrice: fixed, priceCosts: costsExpression, priceInterval: interval, currency: this.currency,
     };
   }
 
@@ -429,15 +434,23 @@ export default class ElectricityService {
     return this.currencyPending;
   }
 
-  /** One day's prices. Concurrent requests for a day (warm-up, several widgets) share one fetch. */
+  /**
+   * One day's prices. Concurrent requests for a day (warm-up, several widgets) share one fetch. A day that failed fails
+   * again at once for a while (the day after tomorrow is rarely out, and every `/price` asked for it again).
+   */
   private getPriceDay(day: string): Promise<PriceDay> {
+    const now = Date.now();
     const cached = this.priceDays.get(day);
     // Complete days are cached for good; empty/partial days (tomorrow before publication) are
     // retried every 15 minutes.
-    if (cached && (cached.hours.size >= 23 || Date.now() - cached.at < 15 * MINUTE)) return Promise.resolve(cached);
+    if (cached && (cached.hours.size >= 23 || now - cached.at < 15 * MINUTE)) return Promise.resolve(cached);
+    const failed = this.priceFailures.get(day);
+    if (failed && now - failed.at < (day > this.localDate(now) ? 15 * MINUTE : MINUTE)) return Promise.reject(failed.err);
     let p = this.pricePending.get(day);
     if (!p) {
-      p = this.fetchPriceDay(day).finally(() => this.pricePending.delete(day));
+      p = this.fetchPriceDay(day)
+        .catch((err: unknown) => { this.priceFailures.set(day, { at: Date.now(), err }); throw err; })
+        .finally(() => this.pricePending.delete(day));
       this.pricePending.set(day, p);
     }
     return p;
@@ -454,8 +467,13 @@ export default class ElectricityService {
     const samples = parsePriceResponse(res);
     const entry: PriceDay = { at: now, hours: hourlyPrices(samples), quarters: quarterPrices(samples), interval: priceInterval(res, samples) };
     this.priceDays.set(day, entry);
+    this.priceFailures.delete(day);
+    const oldest = this.localDate(now - 3 * 24 * HOUR);
     for (const key of this.priceDays.keys()) {
-      if (key < this.localDate(now - 3 * 24 * HOUR)) this.priceDays.delete(key);
+      if (key < oldest) this.priceDays.delete(key);
+    }
+    for (const key of this.priceFailures.keys()) {
+      if (key < oldest) this.priceFailures.delete(key);
     }
     return entry;
   }

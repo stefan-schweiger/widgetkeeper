@@ -16,13 +16,18 @@ function note(message: string, lines: (px: number) => number) {
   const w = win.createTextLineWidget(root, { reducedMotion: true, source: 'flow', style: 'postit' });
   const textEl = root.querySelector<HTMLElement>('.tl-text')!;
   const seen: string[] = [];
-  textEl.getBoundingClientRect = () => {
-    const px = parseFloat(textEl.style.fontSize);
-    const lifted = textEl.style.display === 'block';
-    seen.push(lifted ? 'lifted' : 'clamped');
-    const n = lifted ? lines(px) : Math.min(3, lines(px));
-    return { height: n * px * 1.1, width: 200 } as DOMRect;
-  };
+  Object.defineProperty(textEl, 'offsetHeight', {
+    configurable: true,
+    get() {
+      const px = parseFloat(textEl.style.fontSize);
+      const lifted = textEl.style.display === 'block';
+      seen.push(lifted ? 'lifted' : 'clamped');
+      const n = lifted ? lines(px) : Math.min(3, lines(px));
+      return Math.round(n * px * 1.1);
+    },
+  });
+  // The tilted note's bounding box is taller than the text (a 3° tilt adds ~12 px at 228 px wide): never measured.
+  textEl.getBoundingClientRect = () => { throw new Error('measured the tilted box'); };
   w.setState({ board: { key: 'note', name: 'Note', text: message, color: null, updatedAt: 1 } });
   return { textEl, seen };
 }

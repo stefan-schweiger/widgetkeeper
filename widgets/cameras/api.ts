@@ -1,7 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
 import { idList, logged, logPerf } from '../../lib/widgetApi.js';
-import { tileNameRoutes } from '../../lib/TileNameService.js';
+import { tileNameRoutes, withTileNames } from '../../lib/TileNameService.js';
 
 type Homey = App['homey'];
 
@@ -14,7 +14,7 @@ export default {
   }) {
     const app = homey.app as WidgetkeeperApp;
     logPerf(app, 'Cameras', query);
-    return logged(app, 'Cameras state failed:', () => app.cameras.getState(idList(query.deviceIds)));
+    return withTileNames(homey, query, logged(app, 'Cameras state failed:', () => app.cameras.getState(idList(query.deviceIds))));
   },
 
   /** A snapshot as base64, for a widget that can't load `/api/image/<id>` itself. */

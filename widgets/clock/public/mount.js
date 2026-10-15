@@ -6,6 +6,8 @@
 window.mountClockWidget = function (Homey, { root, frame }) {
   // The app only refetches from MET when its forecast expires (~30 min); this picks that up.
   const REFRESH_MS = 5 * 60e3;
+  // The time needn't wait for the weather: shown with it, or without it this long in (the weather follows).
+  const WEATHER_WAIT_MS = 1500;
 
   // Load marks for the app's diagnostics log, sent with the first request only.
   let perf = '';
@@ -51,6 +53,7 @@ window.mountClockWidget = function (Homey, { root, frame }) {
 
   let loadedAt = 0;
   async function load() {
+    if (!loadedAt) setTimeout(ready, WEATHER_WAIT_MS);
     loadedAt = Date.now();
     try {
       widget.setState(await Homey.api('GET', `/clock?weather=${showWeather ? 1 : 0}${perfParam()}`));

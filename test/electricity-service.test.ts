@@ -108,6 +108,44 @@ describe('price slots', () => {
     expect((await notSetUp.service.getSnapshot(null)).priceError).toBeNull();
   });
 
+  it('remembers a day that failed: a coming one for 15 minutes, today for 1', async () => {
+    let todayFails = true;
+    const { service, api } = setup({
+      prices: ({ date }) => {
+        if (date === '2026-01-16') throw new Error('Not published yet');
+        if (date === '2026-01-15' && todayFails) throw new Error('Too many requests.');
+        return dayPrices(date);
+      },
+    });
+    expect((await service.getSnapshot(null)).priceError).toBe('Too many requests.');
+    expect((await service.getSnapshot(null)).priceError).toBe('Too many requests.'); // from the failure kept
+    expect(fetchesFor(api, '2026-01-15')).toBe(1);
+    expect(fetchesFor(api, '2026-01-16')).toBe(1);
+    todayFails = false;
+    vi.setSystemTime(NOW + MINUTE + 1);
+    expect((await service.getSnapshot(null)).priceError).toBeNull();
+    expect(fetchesFor(api, '2026-01-15')).toBe(2);
+    expect(fetchesFor(api, '2026-01-16')).toBe(1);
+    vi.setSystemTime(NOW + 15 * MINUTE + 1);
+    await service.getSnapshot(null);
+    expect(fetchesFor(api, '2026-01-16')).toBe(2);
+  });
+
+  it('reads the usage history while the prices are still on their way', async () => {
+    let releasePrices: () => void = () => {};
+    const pricesHeld = new Promise<void>((resolve) => { releasePrices = resolve; });
+    const { service, api } = setup();
+    await service.getSnapshot('m1'); // tracks the meter
+    vi.setSystemTime(NOW + 6 * MINUTE); // the usage is due again
+    api.energy.getElectricityPriceType.mockImplementationOnce(async () => { await pricesHeld; return 'dynamic'; });
+    (service as any).priceType = null; // re-read the price settings: held until released
+    const snap = service.getSnapshot('m1');
+    await vi.advanceTimersByTimeAsync(0);
+    expect(api.insights.getLogEntries.mock.calls.filter(([a]) => a.resolution === 'last24Hours')).toHaveLength(2);
+    releasePrices();
+    expect((await snap).priceError).toBeNull();
+  });
+
   it('keeps complete days cached and retries partial ones after 15 minutes', async () => {
     const { service, api } = setup({ prices: ({ date }) => (date === '2026-01-16' ? {} : dayPrices(date)) });
     await service.getSnapshot(null);

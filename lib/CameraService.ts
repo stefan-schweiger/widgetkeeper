@@ -1,5 +1,6 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import { readFresh } from './DeviceTracker.js';
 import { deviceImage, fetchDeviceIcon, fetchImageBase64, type DeviceImage } from './deviceIcon.js';
 import Timings from './Timings.js';
 
@@ -92,7 +93,7 @@ export default class CameraService {
     const api = await tm.time('api', () => getAppApi(this.homey));
     const out = await Promise.all(deviceIds.map(async (id): Promise<CameraDevice> => {
       try {
-        const device: any = await tm.time('getDevice', () => api.devices.getDevice({ id, $cache: false }));
+        const device: any = await tm.time('getDevice', () => readFresh(api.devices, id));
         const image = cameraImage(device);
         const videos = cameraVideos(device);
         if (image) this.imageUrls.set(id, image.url);

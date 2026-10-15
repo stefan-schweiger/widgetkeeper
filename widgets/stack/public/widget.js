@@ -104,9 +104,41 @@
       return out;
     }
 
-    /** Reads every watched page's state (at load, and every few minutes in case an event was missed). */
-    function refresh() {
+    const seenAt = new Map(); // page id → when its own `/state` answer came (`seen()`)
+
+    /**
+     * A page's own `/state` answer (its widget's request, through the stack), so `refresh()` needn't read it again: a
+     * locks, sensor alarms or timers page's, and a media page's when it's the speaker watched. A camera page's state
+     * has no alarms, so `refresh()` reads those.
+     */
+    function seen(page, query, res) {
+      const p = watched.find(w => w.id === page.id);
+      if (!p || !res || typeof res !== 'object') return;
+      const state = 'tileNames' in res ? res.state : res; // the tile widgets' `{state, tileNames}`
+      if (p.type === 'media') {
+        if (!query || query.deviceId !== speaker(p)) return;
+        const playing = state && state.caps && state.caps.speaker_playing;
+        update(p, { playing: !!(playing && playing.value === true) });
+      } else if (p.type === 'timers') {
+        update(p, { timers: (state && state.timers) || [] });
+      } else if (p.type === 'sensoralarms') {
+        update(p, { alarms: alarmsOf(state) });
+      } else if (p.type === 'locks') {
+        update(p, { locks: locksOf(state) });
+      } else {
+        return;
+      }
+      seenAt.set(p.id, Date.now());
+    }
+
+    /**
+     * Reads every watched page's state (at load, and every few minutes in case an event was missed), except a page
+     * whose own state came less than `freshMs` ago.
+     */
+    function refresh(freshMs = 0) {
+      const now = Date.now();
       return Promise.all(watched.map(async (page) => {
+        if (freshMs > 0 && now - (seenAt.has(page.id) ? seenAt.get(page.id) : -Infinity) < freshMs) return;
         try {
           if (page.type === 'media') {
             const deviceId = speaker(page);
@@ -161,7 +193,7 @@
       }
     });
 
-    return { refresh, attention: (id) => flags.get(id) === true };
+    return { refresh, seen, attention: (id) => flags.get(id) === true };
   }
 
   /**

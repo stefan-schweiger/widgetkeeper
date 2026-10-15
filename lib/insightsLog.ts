@@ -8,6 +8,27 @@ const LOG_ALIASES: Record<string, string[]> = {
   measure_power: ['energy_power', 'measure_power'],
 };
 
+/**
+ * At most this many Insights reads at once, app-wide. A crowded dashboard's load (Sparklines, Charts, a heatmap, the
+ * Electricity Overview) sent ~20 at once, and Homey answers a burst of log reads with `Too many requests`.
+ */
+const MAX_CONCURRENT_READS = 6;
+let running = 0;
+const waiting: (() => void)[] = [];
+
+/** `read()` once fewer than `MAX_CONCURRENT_READS` Insights reads are running (in the order asked). */
+export async function limitInsights<T>(read: () => Promise<T>): Promise<T> {
+  if (running < MAX_CONCURRENT_READS) running++;
+  else await new Promise<void>(resolve => waiting.push(resolve)); // a finishing read hands its place over
+  try {
+    return await read();
+  } finally {
+    const next = waiting.shift();
+    if (next) next();
+    else running--;
+  }
+}
+
 /** The Insights log ids that may hold a capability's history, in the order to try them. */
 export function logIdsFor(deviceId: string, capabilityId: string): string[] {
   return (LOG_ALIASES[capabilityId] ?? [capabilityId]).map(c => `homey:device:${deviceId}:${c}`);
@@ -45,6 +66,6 @@ export async function readCapabilityLog(
   api: any, deviceId: string, capabilityId: string, resolution: string, known: Map<string, string>,
 ): Promise<any> {
   const { result } = await readFirstLog(`${deviceId}:${capabilityId}`, logIdsFor(deviceId, capabilityId), known,
-    id => api.insights.getLogEntries({ uri: `homey:device:${deviceId}`, id, resolution }));
+    id => limitInsights(() => api.insights.getLogEntries({ uri: `homey:device:${deviceId}`, id, resolution })));
   return result;
 }

@@ -283,6 +283,25 @@ describe('rotation', () => {
   });
 });
 
+describe("attention watcher: the pages' own state", () => {
+  it("takes a page's own /state for smart rotate, and doesn't read it again while it's fresh", async () => {
+    const call = vi.fn(async () => ({ devices: [] }));
+    const onChange = vi.fn();
+    const w = win.createStackAttentionWatcher([page('pl', 'locks', { deviceIds: ['l1'] }), page('pc', 'cameras', { deviceIds: ['c1'] })],
+      { call, on: () => {}, onChange });
+    // The Locks page's own answer, with its tile names.
+    w.seen({ id: 'pl' }, { deviceIds: 'l1' }, { state: { devices: [{ id: 'l1', caps: { locked: { value: false } } }], language: 'en' }, tileNames: {} });
+    expect(onChange).toHaveBeenCalledWith('pl', true);
+    // A camera page's own state has no alarms: that one is still read.
+    w.seen({ id: 'pc' }, { deviceIds: 'c1' }, [{ id: 'c1', name: 'Cam' }]);
+    await w.refresh(60e3);
+    expect(call.mock.calls.map(c => c[0])).toEqual(['sensoralarms']);
+    vi.advanceTimersByTime(61e3);
+    await w.refresh(60e3);
+    expect(call.mock.calls.map(c => c[0])).toEqual(['sensoralarms', 'locks', 'sensoralarms']);
+  });
+});
+
 describe('mount', () => {
   beforeAll(() => {
     loadWidget('timers'); loadMount('timers');
@@ -380,6 +399,51 @@ describe('mount', () => {
     expect(root.querySelector('.sk-dot.on')).toBe(root.querySelectorAll('.sk-dot')[1]);
     Homey.emit('timers:state', { instance: 'w-timers', timers: [{ id: 't', label: '', duration: 60e3, endsAt: Date.now() + 60e3, remaining: null, doneAt: null }], now: Date.now() });
     expect(root.querySelector('.sk-dot.on')).toBe(root.querySelectorAll('.sk-dot')[0]);
+  });
+
+  it("mounts the page on screen first, and reads a page's state once (smart rotate takes the page's own)", async () => {
+    let answerValues: (v: any) => void = () => {};
+    const valuesState = [{ deviceId: 'dev', capabilityId: 'measure_temperature', name: 'Fridge', capability: { title: 'Temperature', type: 'number', units: '°C', decimals: 1 }, value: 4.2 }];
+    const Homey = fakeHomey({ dashboard: { id: 'd' } }, {
+      ok: true,
+      pages: [
+        page('w-values', 'values', { settings: { slot1: { id: 'dev:measure_temperature' } } }),
+        page('w-timers', 'timers', { settings: { minutes1: 3 } }),
+      ],
+      requests: [],
+    }, {
+      'values GET /state': () => new Promise((resolve) => { answerValues = resolve; }),
+      'timers GET /state': { instance: 'w-timers', timers: [], now: Date.now() },
+    });
+    const root = mount(Homey);
+    await vi.advanceTimersByTimeAsync(500);
+    const types = () => Homey.api.mock.calls.filter(c => c[1] === '/call').map(c => c[2].type);
+    expect(types()).toEqual(['values']); // the Timers page waits for the page on screen
+    answerValues({ state: valuesState, tileNames: {} });
+    await vi.advanceTimersByTimeAsync(10e3);
+    expect(root.querySelectorAll('.sk-slide')[0].textContent).toContain('Fridge');
+    expect(root.querySelectorAll('.sk-slide')[1].querySelector('.tm-preset')).not.toBeNull();
+    expect(types().filter(t => t === 'timers')).toHaveLength(1);
+  });
+
+  it('mounts the others 2 s in when the page on screen is slow to draw', async () => {
+    const Homey = fakeHomey({ dashboard: { id: 'd' } }, {
+      ok: true,
+      pages: [
+        page('w-values', 'values', { settings: { slot1: { id: 'dev:measure_temperature' } } }),
+        page('w-timers', 'timers', { settings: { minutes1: 3 } }),
+      ],
+      requests: [],
+    }, {
+      'values GET /state': () => new Promise(() => {}),
+      'timers GET /state': { instance: 'w-timers', timers: [], now: Date.now() },
+    });
+    mount(Homey);
+    const types = () => Homey.api.mock.calls.filter(c => c[1] === '/call').map(c => c[2].type);
+    await vi.advanceTimersByTimeAsync(1900);
+    expect(types()).toEqual(['values']);
+    await vi.advanceTimersByTimeAsync(200);
+    expect(types()).toContain('timers');
   });
 
   it("is ready as soon as the page on screen has drawn, even when a request moved it there", async () => {

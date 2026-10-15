@@ -2,6 +2,7 @@ import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import { listCapabilitySlots, type AutocompleteItem } from './autocomplete.js';
 import { heatmapCaps } from './HeatmapService.js';
+import { isTransientError } from './DeviceTracker.js';
 import { readCapabilityLog } from './insightsLog.js';
 import { bucketAverage, HOUR, MINUTE, parseInsightsEntries } from './series.js';
 import Timings from './Timings.js';
@@ -11,6 +12,8 @@ import { parseSlot, type ValueSlot } from './ValueService.js';
 const TICK = MINUTE;
 /** A history is re-read from Insights at most this often (widgets refresh every 5 min). */
 const HISTORY_TTL = 5 * MINUTE;
+/** A history that failed because Homey was busy (a timeout, `Too many requests`) is asked for again after this. */
+const RETRY_BUSY = 30e3;
 /** A cached history is dropped this long after the last request. */
 const IDLE_TIMEOUT = 10 * MINUTE;
 /** The most points a sparkline gets: about one per 3 px of a phone's 2-column tile. */
@@ -41,7 +44,7 @@ export type SparklineSlot =
   | (Extract<ValueSlot, { name: string }> & { points: [number, number][] })
   | Extract<ValueSlot, { missing: true }>;
 
-type HistoryCache = { at: number, lastRequested: number, points: [number, number][] };
+type HistoryCache = { at: number, lastRequested: number, points: [number, number][], ttl: number };
 
 /** The device's capabilities a sparkline can show: numbers that Homey logs in Insights. */
 export function sparkCaps(device: any): string[] {
@@ -120,20 +123,26 @@ export default class SparklineService {
     const now = Date.now();
     const cached = this.cache.get(k);
     if (cached) cached.lastRequested = now;
-    if (cached && now - cached.at < HISTORY_TTL) return Promise.resolve(cached.points);
+    if (cached && now - cached.at < cached.ttl) return Promise.resolve(cached.points);
     let p = this.promises.get(k);
     if (!p) {
       p = (async () => {
         const { deviceId, capabilityId } = parseSlot(slot)!;
         let points: [number, number][] = [];
+        let ttl = HISTORY_TTL;
         try {
           const res = await this.readLog(slot, deviceId, capabilityId, SPANS[span].resolution);
           points = downsample(res, Date.now(), SPANS[span].ms, SPANS[span].step);
         } catch (err) {
-          // Cached all the same, so a capability without a log isn't asked for again on every request.
+          // Cached all the same, so a capability without a log isn't asked for again on every request; a busy Homey
+          // only for a moment, so a dashboard's load burst doesn't leave its charts empty for 5 minutes.
           this.log(`Sparkline history of ${slot} unavailable:`, err);
+          if (isTransientError(err)) {
+            ttl = RETRY_BUSY;
+            this.logs.delete(`${slot}:${SPANS[span].resolution}`);
+          }
         }
-        this.cache.set(k, { at: Date.now(), lastRequested: Date.now(), points });
+        this.cache.set(k, { at: Date.now(), lastRequested: Date.now(), points, ttl });
         return points;
       })().finally(() => this.promises.delete(k));
       this.promises.set(k, p);

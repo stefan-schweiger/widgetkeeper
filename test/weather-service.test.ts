@@ -165,10 +165,25 @@ describe('getForecast', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
-  it('drops the cache after 10 min without a request', async () => {
+  it('keeps a forecast that is still valid after 10 min without a request, and drops it once it has expired', async () => {
     const { service } = setup();
     await service.getForecast();
     await vi.advanceTimersByTimeAsync(11 * 60e3);
+    expect(service.describe().fetchedAt).not.toBeNull();
+    await service.getForecast(); // a dashboard opened again: answered from the cache
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(15 * 60e3); // idle, but valid for 4 more minutes
+    expect(service.describe().fetchedAt).not.toBeNull();
+    await vi.advanceTimersByTimeAsync(5 * 60e3);
     expect(service.describe().fetchedAt).toBeNull();
+  });
+
+  it('gives up on MET after 15 s', async () => {
+    const { service } = setup();
+    fetchMock.mockImplementationOnce(async (_url: string, init: any) => {
+      expect(init.signal).toBeInstanceOf(AbortSignal);
+      throw Object.assign(new Error('The operation was aborted due to timeout'), { name: 'TimeoutError' });
+    });
+    await expect(service.getForecast()).rejects.toThrow(/timeout/);
   });
 });

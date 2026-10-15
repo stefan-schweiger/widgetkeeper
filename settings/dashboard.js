@@ -179,10 +179,16 @@
     return b;
   }
 
+  // Every frame's `getInitialData` carries the app's strings (~25 KB, ~100 KB encoded): a table, not toString(16) per
+  // character.
+  const HEX = Array.from({ length: 256 }, (_, i) => (i < 16 ? '0' : '') + i.toString(16));
   function hexEncode(input) {
-    let out = '';
-    for (let i = 0; i < input.length; i++) out += ('000' + input.charCodeAt(i).toString(16)).slice(-4);
-    return out;
+    const out = new Array(input.length);
+    for (let i = 0; i < input.length; i++) {
+      const c = input.charCodeAt(i);
+      out[i] = HEX[c >> 8] + HEX[c & 255];
+    }
+    return out.join('');
   }
   function hexDecode(input) {
     let out = '';
@@ -999,6 +1005,8 @@
       iframe.title = w.title || def.name;
       iframe.style.height = `${def.height || 120}px`;
       iframe.setAttribute('allow', 'autoplay; fullscreen');
+      // A frame far below the window loads when it's scrolled near, so the ones on screen get the Homey to themselves.
+      iframe.loading = 'lazy';
       // The dashboard and widget ids: a Timers widget keeps its own timer, a Media widget its speaker choice.
       const instance = `web-${current.dashboard.id}-${w.id}`;
       iframe.src = `../widgets/${encodeURIComponent(w.type)}/index.html?widgetInstanceId=${encodeURIComponent(instance)}`;

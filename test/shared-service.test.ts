@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeDevice, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
 import { listCapabilitySlots, listDevicesWhere, matches, withNone } from '../lib/autocomplete.js';
 import { describeCapability, presentCaps, readCaps } from '../lib/capabilities.js';
-import DeviceTracker, { zoneRef, type TrackedEntry } from '../lib/DeviceTracker.js';
-import { deviceImage, fetchImageBase64, homeyUrl } from '../lib/deviceIcon.js';
-import { readFirstLog } from '../lib/insightsLog.js';
+import DeviceTracker, { isTransientError, readZones, zoneRef, type TrackedEntry } from '../lib/DeviceTracker.js';
+import { deviceImage, fetchDeviceIcon, fetchImageBase64, homeyUrl } from '../lib/deviceIcon.js';
+import { limitInsights, readFirstLog } from '../lib/insightsLog.js';
 import { KeyError } from '../lib/PersonalApiKey.js';
 import { sharedCache } from '../lib/sharedCache.js';
 import Timings from '../lib/Timings.js';
@@ -41,7 +41,7 @@ describe('DeviceTracker', () => {
       onDispose,
       ...opts,
     });
-    return { device, api, tracker, debug, refresh, onDispose };
+    return { device, api, homey, tracker, debug, refresh, onDispose };
   }
 
   it('tracks a device once, then re-reads it on each request', async () => {
@@ -87,6 +87,42 @@ describe('DeviceTracker', () => {
     expect(onDispose).toHaveBeenCalledTimes(2);
   });
 
+  it('shares one re-read of a device between requests at the same time, in every tracker', async () => {
+    const { api, homey, tracker } = setup();
+    const other = new DeviceTracker<Entry>({
+      homey, debug: () => {}, what: 'Plug', signature: d => Object.keys(d.capabilitiesObj).join(),
+      create: async d => ({ name: d.name, value: null }), listen: () => [], refresh: () => {}, label: t => t.name,
+    });
+    await Promise.all([tracker.current('d1', new Timings()), other.current('d1', new Timings())]);
+    api.devices.getDevice.mockClear();
+    await Promise.all([tracker.current('d1', new Timings()), tracker.current('d1', new Timings()), other.current('d1', new Timings())]);
+    expect(api.devices.getDevice).toHaveBeenCalledTimes(1);
+    expect(api.devices.getDevice).toHaveBeenCalledWith({ id: 'd1', $cache: false });
+    await tracker.current('d1', new Timings()); // a later request reads again
+    expect(api.devices.getDevice).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps the entry when a re-read fails because Homey is busy or slow', async () => {
+    const { device, api, tracker, onDispose, debug } = setup();
+    const t = await tracker.current('d1', new Timings());
+    api.devices.getDevice.mockRejectedValueOnce(Object.assign(new Error('Too many requests.'), { statusCode: 429 }));
+    expect(await tracker.current('d1', new Timings())).toBe(t);
+    api.devices.getDevice.mockRejectedValueOnce(Object.assign(new Error('Timeout after 10000ms'), { statusCode: 408 }));
+    expect(await tracker.current('d1', new Timings())).toBe(t);
+    expect(onDispose).not.toHaveBeenCalled();
+    expect(device.listenerCount('onoff')).toBe(1);
+    expect(debug).toHaveBeenCalledWith('Kept plug Plug after a failed re-read:', 'Too many requests.');
+  });
+
+  it('tells a passing failure from a device that is gone', () => {
+    expect(isTransientError(Object.assign(new Error('Bad Gateway'), { statusCode: 502 }))).toBe(true);
+    expect(isTransientError(Object.assign(new Error('socket hang up'), { code: 'ECONNRESET' }))).toBe(true);
+    expect(isTransientError(new Error('The operation was aborted due to timeout'))).toBe(true);
+    expect(isTransientError(Object.assign(new Error('Not Found: Device'), { statusCode: 404 }))).toBe(false);
+    expect(isTransientError(new Error('No device d1'))).toBe(false);
+    expect(isTransientError(null)).toBe(false);
+  });
+
   it('disposes an entry once when two re-reads see the change at the same time', async () => {
     const { device, tracker, onDispose, debug } = setup();
     const first = await tracker.current('d1', new Timings());
@@ -129,6 +165,24 @@ describe('DeviceTracker', () => {
     expect(device.listenerCount('onoff')).toBe(0);
     expect(debug).toHaveBeenCalledWith('Stopped tracking plug Plug');
     tracker.stop();
+  });
+
+  it('shares the zones for a minute', async () => {
+    const api = fakeApi({ zones: { z1: { id: 'z1', name: 'Hall' } } });
+    const homey = fakeHomey(api);
+    const log = vi.fn();
+    await Promise.all([readZones(homey, new Timings(), log, 'Light'), readZones(homey, new Timings(), log, 'Curtain')]);
+    vi.advanceTimersByTime(30e3);
+    expect(await readZones(homey, new Timings(), log, 'Light')).toEqual({ z1: { id: 'z1', name: 'Hall' } });
+    expect(api.zones.getZones).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(31e3);
+    await readZones(homey, new Timings(), log, 'Light');
+    expect(api.zones.getZones).toHaveBeenCalledTimes(2);
+    api.zones.getZones.mockRejectedValueOnce(new Error('busy'));
+    vi.advanceTimersByTime(61e3);
+    expect(await readZones(homey, new Timings(), log, 'Light')).toEqual({});
+    expect(log).toHaveBeenCalledWith('Light zones unavailable:', expect.any(Error));
+    expect(await readZones(homey, new Timings(), log, 'Light')).toEqual({ z1: { id: 'z1', name: 'Hall' } }); // a failure isn't kept
   });
 
   it('names a zone', () => {
@@ -221,6 +275,29 @@ describe('readFirstLog', () => {
   });
 });
 
+describe('limitInsights', () => {
+  it('runs at most 6 reads at once, in the order asked, and a failed one makes way too', async () => {
+    let running = 0;
+    let most = 0;
+    const started: number[] = [];
+    const reads = Array.from({ length: 10 }, (_, i) => limitInsights(async () => {
+      running++;
+      most = Math.max(most, running);
+      started.push(i);
+      await new Promise(r => setTimeout(r, 100 + i));
+      running--;
+      if (i === 2) throw new Error('Too many requests.');
+      return i;
+    }).catch(() => -1));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(started).toEqual([0, 1, 2, 3, 4, 5]);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(await Promise.all(reads)).toEqual([0, 1, -1, 3, 4, 5, 6, 7, 8, 9]);
+    expect(most).toBe(6);
+    expect(started).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  });
+});
+
 describe('images', () => {
   const images = [
     { type: 'other', imageObj: { id: 'o', url: '/api/image/o', lastUpdated: 'x' } },
@@ -231,6 +308,23 @@ describe('images', () => {
     expect(deviceImage({ images }, 'media')).toEqual({ id: 'm', url: '/api/image/m', lastUpdated: 5 });
     expect(deviceImage({ images }, 'camera')).toBeNull();
     expect(deviceImage({ images }, 'camera', { anyType: true })).toEqual({ id: 'o', url: '/api/image/o', lastUpdated: null });
+  });
+
+  it('remembers an icon that failed for 10 minutes, logging it once, and gives up on a slow one', async () => {
+    const fetch = vi.fn(async (_url: string, _init?: any): Promise<any> => ({ ok: false, status: 503 }));
+    vi.stubGlobal('fetch', fetch);
+    const log = vi.fn();
+    const api = { baseUrl: 'http://homey' };
+    const device = { name: 'Lamp', iconObj: { url: '/api/icon/flaky' } };
+    expect(await fetchDeviceIcon(api, device, log)).toBeNull();
+    expect(await fetchDeviceIcon(api, device, log)).toBeNull();
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0][1].signal).toBeInstanceOf(AbortSignal);
+    expect(log).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(10 * 60e3 + 1);
+    fetch.mockResolvedValueOnce({ ok: true, text: async () => '<svg/>' });
+    expect(await fetchDeviceIcon(api, device, log)).toBe(`data:image/svg+xml;base64,${Buffer.from('<svg/>').toString('base64')}`);
+    expect(fetch).toHaveBeenCalledTimes(2);
   });
 
   it('fetches an image from Homey as base64', async () => {

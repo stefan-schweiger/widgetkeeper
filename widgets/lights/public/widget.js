@@ -112,23 +112,26 @@
    * is the typed name, else `own`. In rename mode `field(key, own)` is the tile's text field (made once per key, with
    * `own` as the placeholder): it saves on change (Enter or leaving it), Escape puts it back, and a realtime update
    * doesn't overwrite it while it has the focus. Its touches, clicks and keys never reach the tile's own taps.
-   * `failed(key)` shakes the tile and says so; the name goes back, unless a newer one came meanwhile.
+   * `failed(key)` shakes the tile and says so; the name goes back, unless the app's names came meanwhile.
    */
   function tileNames(opts, render, failed) {
     let names = {};
+    let reads = 0; // set() calls: the app's names, by realtime or a read
     const fields = new Map();
     async function save(key, value) {
       const before = names[key];
       if ((before || '') === value) return;
       const put = v => { names = { ...names }; if (v) names[key] = v; else delete names[key]; };
       put(value);
+      const seen = reads;
       render();
       try {
         if (opts.onRename) await opts.onRename(key, value);
       } catch (err) {
         console.error(err);
-        // Only while it still shows this save's name: a realtime update or a read may have brought a newer one.
-        if ((names[key] || '') === value) put(before);
+        // Only while it still shows this save's name and nothing came from the app since: what came says what the
+        // app kept (a newer name, or this one when only the answer was lost).
+        if (reads === seen && (names[key] || '') === value) put(before);
         failed(key);
       }
     }
@@ -136,6 +139,7 @@
       renaming: opts.renameTiles === true,
       name: (key, own) => names[key] || own,
       set(map) {
+        reads++;
         names = {};
         if (map && typeof map === 'object') for (const [k, v] of Object.entries(map)) if (typeof v === 'string' && v) names[k] = v;
         render();

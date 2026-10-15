@@ -109,6 +109,17 @@ export default class TileNameService {
 type RouteArgs = { homey: Homey.App['homey'], query?: Record<string, string>, body?: any };
 const service = (homey: RouteArgs['homey']) => (homey.app as any).tileNames as TileNameService;
 
+/**
+ * A device-tile widget's `/state` answer, with its tile names when it asks with `instance=`: `{state, tileNames}`, so a
+ * widget's load is one request, not two (`/names` too). Without `instance` (the Smart Stack's attention reads), the
+ * state as it was.
+ */
+export async function withTileNames<T>(homey: RouteArgs['homey'], query: RouteArgs['query'], state: Promise<T>): Promise<T | { state: T, tileNames: Record<string, string> }> {
+  const s = await state;
+  if (typeof query?.instance !== 'string') return s;
+  return { state: s, tileNames: service(homey).get(query.instance).names };
+}
+
 /** `GET /names?instance=` and `POST /names {instance, key, name}`: spread into each device-tile widget's api.ts. */
 export const tileNameRoutes = {
   async getNames({ homey, query }: RouteArgs) {

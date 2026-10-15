@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey } from './helpers/fakeHomey.js';
-import TileNameService, { TILE_NAMES_EVENT, TILE_NAMES_SETTING, tileNameRoutes } from '../lib/TileNameService.js';
+import TileNameService, { TILE_NAMES_EVENT, TILE_NAMES_SETTING, tileNameRoutes, withTileNames } from '../lib/TileNameService.js';
 
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-15T12:00:00Z')); });
 afterEach(() => { vi.useRealTimers(); });
@@ -89,6 +89,13 @@ describe('TileNameService', () => {
     const { homey } = setup();
     await tileNameRoutes.setName({ homey: homey as any, body: { instance: 'w1', key: 'd1', name: 'Hall' } });
     expect(await tileNameRoutes.getNames({ homey: homey as any, query: { instance: 'w1' } })).toEqual({ instance: 'w1', names: { d1: 'Hall' } });
+  });
+
+  it('adds the names to a /state answer that asks with its instance', async () => {
+    const { homey, service } = setup();
+    service.set('w1', 'd1', 'Hall');
+    expect(await withTileNames(homey as any, { instance: 'w1' }, Promise.resolve([{ id: 'd1' }]))).toEqual({ state: [{ id: 'd1' }], tileNames: { d1: 'Hall' } });
+    expect(await withTileNames(homey as any, { deviceIds: 'd1' }, Promise.resolve([{ id: 'd1' }]))).toEqual([{ id: 'd1' }]);
   });
 
   it('is in the api of every widget with device tiles', () => {

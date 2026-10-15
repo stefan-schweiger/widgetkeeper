@@ -2,7 +2,7 @@ import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
 import type { LightChange } from '../../lib/LightService.js';
 import { idList, keyResult, logged, logPerf } from '../../lib/widgetApi.js';
-import { tileNameRoutes } from '../../lib/TileNameService.js';
+import { tileNameRoutes, withTileNames } from '../../lib/TileNameService.js';
 
 type Homey = App['homey'];
 
@@ -15,7 +15,7 @@ export default {
   }) {
     const app = homey.app as WidgetkeeperApp;
     logPerf(app, 'Lights', query);
-    return logged(app, 'Lights state failed:', () => app.lights.getState(idList(query.deviceIds)));
+    return withTileNames(homey, query, logged(app, 'Lights state failed:', () => app.lights.getState(idList(query.deviceIds))));
   },
 
   async set({ homey, body }: {

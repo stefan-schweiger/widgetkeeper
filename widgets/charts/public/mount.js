@@ -88,6 +88,11 @@ window.mountChartsWidget = function (Homey, { root, frame }) {
   perf = loadMarks(sdkAt);
   setInterval(load, REFRESH_MS);
   load();
+
+  return {
+    /** The Smart Stack: whether this page is the one on screen. */
+    setVisible: (v) => widget.setVisible(v),
+  };
 };
 /** The classes index.html puts on its body; the Smart Stack puts them on the slide. */
 window.mountChartsWidget.frameClass = 'homey-widget';
