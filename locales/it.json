@@ -124,7 +124,8 @@
     "noImage": "Nessuna immagine",
     "unavailable": "Non disponibile",
     "live": "Live",
-    "liveFailed": "Live non riuscito"
+    "liveFailed": "Live non riuscito",
+    "liveH265": "H.265 non va in diretta. Prova H.264."
   },
   "values": {
     "selectSlots": "Scegli i valori nelle impostazioni del widget.",

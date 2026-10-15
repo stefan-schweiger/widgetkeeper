@@ -124,7 +124,8 @@
     "noImage": "Ikke noe bilde",
     "unavailable": "Utilgjengelig",
     "live": "Direkte",
-    "liveFailed": "Direktebilde feilet"
+    "liveFailed": "Direktebilde feilet",
+    "liveH265": "H.265 kan ikke vises live. Prøv H.264."
   },
   "values": {
     "selectSlots": "Velg enhetsverdier i widgetinnstillingene.",

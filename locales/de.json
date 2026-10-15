@@ -124,7 +124,8 @@
     "noImage": "Kein Bild",
     "unavailable": "Nicht verfügbar",
     "live": "Live",
-    "liveFailed": "Livebild fehlgeschlagen"
+    "liveFailed": "Livebild fehlgeschlagen",
+    "liveH265": "H.265 geht nicht live. H.264 probieren."
   },
   "values": {
     "selectSlots": "Wähle Gerätewerte in den Widget-Einstellungen.",

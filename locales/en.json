@@ -124,7 +124,8 @@
     "noImage": "No snapshot",
     "unavailable": "Unavailable",
     "live": "Live",
-    "liveFailed": "Live view failed"
+    "liveFailed": "Live view failed",
+    "liveH265": "H.265 can't play live. Try H.264."
   },
   "values": {
     "selectSlots": "Pick device values in the widget settings.",

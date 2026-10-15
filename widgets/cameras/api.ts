@@ -44,13 +44,19 @@ export default {
     return { ok: true };
   },
 
-  /** What the widget found out about loading snapshots and live view, for the diagnostics log. */
+  /**
+   * What the widget found out about loading snapshots and live view, for the diagnostics log. A failure
+   * (`warn`: a stream that wouldn't play) is always logged; the rest only with debug logging on.
+   */
   async postReport({ homey, body }: {
     homey: Homey,
-    body: { text?: string },
+    body: { text?: string, warn?: boolean },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    if (typeof body?.text === 'string') app.debug(`Cameras widget: ${body.text.slice(0, 300)}`);
+    if (typeof body?.text !== 'string') return { ok: true };
+    const line = `Cameras widget: ${body.text.slice(0, 300)}`;
+    if (body.warn === true) app.log(line);
+    else app.debug(line);
     return { ok: true };
   },
 };

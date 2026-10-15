@@ -124,7 +124,8 @@
     "noImage": "Ingen bild",
     "unavailable": "Inte tillgänglig",
     "live": "Live",
-    "liveFailed": "Livebild misslyckades"
+    "liveFailed": "Livebild misslyckades",
+    "liveH265": "H.265 kan inte visas live. Prova H.264."
   },
   "values": {
     "selectSlots": "Välj enhetsvärden i widgetinställningarna.",

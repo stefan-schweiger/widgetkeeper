@@ -124,7 +124,8 @@
     "noImage": "Geen snapshot",
     "unavailable": "Niet beschikbaar",
     "live": "Live",
-    "liveFailed": "Live beeld mislukt"
+    "liveFailed": "Live beeld mislukt",
+    "liveH265": "H.265 kan niet live. Probeer H.264."
   },
   "values": {
     "selectSlots": "Kies apparaatwaarden in de widgetinstellingen.",

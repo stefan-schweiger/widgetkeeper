@@ -32,6 +32,11 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Sparklines and Device Values
 - Every battery tile shows the same battery icon. Some devices brought their own, so tiles side by side looked different.
+
+### Cameras
+- Live view tries the camera's other streams when one won't play, such as a 4K H.265 stream, which Homey can't stream to a dashboard: a Reolink camera's sub stream then plays instead. A user's camera showed only *Live view failed*.
+- When every stream of a camera is H.265, the tile says so, and suggests setting the camera to H.264. A Reolink camera on a Home Hub or an NVR has only one stream.
+
 ### Media
 - A large layout: the album art across the whole widget, with the track, the artist and the buttons below it in bigger text and sizes. A user asked for it to read the widget more easily. Pick it with the new *Layout* setting; the compact card stays the default.
 

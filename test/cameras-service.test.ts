@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeDevice, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
-import CameraService, { cameraImage, cameraVideo } from '../lib/CameraService.js';
+import CameraService, { cameraImage, cameraVideo, cameraVideos, h265Videos } from '../lib/CameraService.js';
 
 vi.mock('homey-api', () => homeyApiMock);
 
@@ -9,13 +9,13 @@ const image = (id: string, type = 'camera') => ({
   type, id: 'snapshot', title: 'Snapshot',
   imageObj: { id, ownerUri: 'homey:app:com.reolink', url: `/api/image/${id}`, lastUpdated: 1790672723645 },
 });
-const video = (id: string, videoId: string, codec = 'h264') => ({
-  type: 'camera', id, title: `Camera (${id} - ${codec})`,
+const video = (id: string, videoId: string, codec = 'h264', title = `Camera (${id} - ${codec})`) => ({
+  type: 'camera', id, title,
   videoObj: { id: videoId, ownerUri: 'homey:app:com.reolink', type: 'rtsp', options: {} },
 });
 const camera = (id: string, name: string, extra: object) => Object.assign(fakeDevice({ id, name, caps: {} }), extra);
 
-const kitchen = () => camera('kitchen', 'E1 Kitchen', { images: [image('img-k')], videos: [video('main', 'vid-km'), video('sub', 'vid-ks')] });
+const kitchen = () => camera('kitchen', 'E1 Kitchen', { images: [image('img-k')], videos: [video('main', 'vid-km', 'h265'), video('sub', 'vid-ks')] });
 const terrace = () => camera('terrace', 'C4 Terrace', { images: [], videos: [] });
 
 function setup(devices = [kitchen(), terrace()]) {
@@ -53,15 +53,32 @@ describe('cameraImage / cameraVideo', () => {
     expect(cameraVideo({ videos: [video('main', 'm', 'h265')] })).toBe('m');
     expect(cameraVideo({ videos: [] })).toBeNull();
   });
+
+  it('lists every stream, best first, so live view can fall back', () => {
+    expect(cameraVideos({ videos: [video('main', 'm', 'h265'), video('sub', 's')] })).toEqual(['s', 'm']);
+    // A stream that says H.264 before one that says nothing, H.265 last; otherwise the app's order.
+    expect(cameraVideos({ videos: [
+      video('a', 'a', 'h265'), video('b', 'b', '', 'Lens 2'), video('c', 'c', 'h264'), video('d', 'd', '', 'Lens 1'),
+    ] })).toEqual(['c', 'b', 'd', 'a']);
+    // A single stream (a camera on a Reolink Home Hub or NVR) is still tried.
+    expect(cameraVideos({ videos: [video('main', 'm', 'h265')] })).toEqual(['m']);
+    expect(cameraVideos({ videos: [{ id: 'x', title: 'No object' }] })).toEqual([]);
+    expect(cameraVideos({})).toEqual([]);
+  });
+
+  it('names the H.265 streams', () => {
+    expect(h265Videos({ videos: [video('main', 'm', 'h265'), video('sub', 's'), video('x', 'x', 'HEVC')] })).toEqual(['m', 'x']);
+    expect(h265Videos({})).toEqual([]);
+  });
 });
 
 describe('getState', () => {
   it('returns the cameras in the order asked, with missing ones marked', async () => {
     const { service } = setup();
     expect(await service.getState(['terrace', 'nope', 'kitchen'])).toEqual([
-      { id: 'terrace', name: 'C4 Terrace', icon: null, image: null, video: null },
+      { id: 'terrace', name: 'C4 Terrace', icon: null, image: null, video: null, videos: [], h265: [] },
       { id: 'nope', missing: true },
-      { id: 'kitchen', name: 'E1 Kitchen', icon: null, image: { id: 'img-k', url: '/api/image/img-k', lastUpdated: 1790672723645 }, video: 'vid-ks' },
+      { id: 'kitchen', name: 'E1 Kitchen', icon: null, image: { id: 'img-k', url: '/api/image/img-k', lastUpdated: 1790672723645 }, video: 'vid-ks', videos: ['vid-ks', 'vid-km'], h265: ['vid-km'] },
     ]);
   });
 });

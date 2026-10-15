@@ -22,10 +22,11 @@ beforeEach(() => {
   });
 });
 
-const cam = (id: string, opts: { image?: string | null, video?: string | null } = {}) => ({
+const cam = (id: string, opts: { image?: string | null, video?: string | null, videos?: string[], h265?: string[] } = {}) => ({
   id, name: `Cam ${id}`, icon: null,
   image: opts.image === null ? null : { id: `img-${id}`, url: opts.image ?? `/api/image/img-${id}`, lastUpdated: 1 },
-  video: opts.video === undefined ? `vid-${id}` : opts.video,
+  video: opts.video === undefined ? (opts.videos ? opts.videos[0] : `vid-${id}`) : opts.video,
+  ...(opts.videos ? { videos: opts.videos, h265: opts.h265 ?? [] } : {}),
 });
 
 function widget(devices: any[], api = vi.fn(async (): Promise<any> => ({ type: 'image/jpeg', data: 'AQID' })), now = () => 1000) {
@@ -242,10 +243,102 @@ describe('live view', () => {
       }
       expect(pcs[0].closed).toBe(true);
       expect(tile('a').classList.contains('live')).toBe(false);
-      expect(report).toHaveBeenCalledWith(expect.stringContaining('no new frame'));
+      expect(report).toHaveBeenCalledWith(expect.stringContaining('no new frame'), true);
     } finally {
       vi.useRealTimers();
     }
+  });
+});
+
+describe('live view: falling back to the next stream', () => {
+  const offers = (api: any) => api.mock.calls.filter((c: any[]) => c[1] === '/video/offer').map((c: any[]) => c[2].videoId);
+  /** An API whose offer for the given streams is refused, as go2rtc refuses an H.265 one. */
+  const refusing = (...bad: string[]) => vi.fn(async (_m: string, path: string, body?: any): Promise<any> => {
+    if (path !== '/video/offer') return {};
+    if (bad.includes(body.videoId)) throw new Error('codecs not matched');
+    return { answer: `answer ${body.videoId}`, streamId: `s-${body.videoId}` };
+  });
+
+  it('tries the next stream when the first offer is refused, and starts with the one that played next time', async () => {
+    const pcs = stubPeerConnection();
+    const api = refusing('main');
+    const { tile, report } = widget([cam('a', { videos: ['main', 'sub'] })], api);
+    tile('a').click();
+    await vi.waitFor(() => expect(pcs[1]?.remote).toEqual({ type: 'answer', sdp: 'answer sub' }));
+    expect(offers(api)).toEqual(['main', 'sub']);
+    expect(pcs[0].closed).toBe(true);
+    expect(tile('a').classList.contains('connecting')).toBe(true);
+    expect(tile('a').classList.contains('expanded')).toBe(true);
+    expect(report).toHaveBeenCalledWith('live view of Cam a: stream 1 of 2 failed: codecs not matched', true);
+    playing(tile('a'));
+    expect(tile('a').classList.contains('live')).toBe(true);
+    expect(tile('a').querySelector<HTMLElement>('.cw-note')!.style.display).toBe('none');
+    // Again: the stream that played goes first.
+    tile('a').click();
+    tile('a').click();
+    await vi.waitFor(() => expect(offers(api)).toEqual(['main', 'sub', 'sub']));
+  });
+
+  it('moves on after 10 s without a frame, and keeps the playing stream alive', async () => {
+    vi.useFakeTimers();
+    try {
+      const pcs = stubPeerConnection();
+      const api = refusing();
+      const { tile, report } = widget([cam('a', { videos: ['main', 'sub'] })], api);
+      tile('a').click();
+      await vi.advanceTimersByTimeAsync(9000);
+      expect(offers(api)).toEqual(['main']);
+      await vi.advanceTimersByTimeAsync(1500);
+      expect(offers(api)).toEqual(['main', 'sub']);
+      expect(pcs[0].closed).toBe(true);
+      expect(report).toHaveBeenCalledWith('live view of Cam a: stream 1 of 2 failed: no video after 10 s', true);
+      playing(tile('a'));
+      await vi.advanceTimersByTimeAsync(10000);
+      const keepAlives = api.mock.calls.filter((c: any[]) => c[1] === '/video/keepalive').map((c: any[]) => c[2]);
+      // Only the playing stream's: the first one's keep-alive stopped with it.
+      expect(keepAlives.length).toBeGreaterThan(0);
+      expect(keepAlives.every((b: any) => b.videoId === 'sub' && b.streamId === 's-sub')).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('says so when no stream plays', async () => {
+    const pcs = stubPeerConnection();
+    const { tile, report } = widget([cam('a', { videos: ['main', 'sub'], h265: ['main'] })], refusing('main', 'sub'));
+    tile('a').click();
+    await vi.waitFor(() => expect(report).toHaveBeenCalledWith('live view of Cam a: none of its 2 streams played', true));
+    expect(pcs.every(pc => pc.closed)).toBe(true);
+    expect(tile('a').classList.contains('expanded')).toBe(false);
+    expect(tile('a').querySelector('.cw-note')!.textContent).toBe('Live view failed');
+  });
+
+  it('names H.265 when every stream is H.265', async () => {
+    stubPeerConnection();
+    const { tile } = widget([cam('a', { videos: ['main'], h265: ['main'] })], refusing('main'));
+    tile('a').click();
+    await vi.waitFor(() => expect(tile('a').querySelector('.cw-note')!.textContent).toBe('H.265 can\'t play live. Try H.264.'));
+  });
+
+  it('names H.265 on a video-only camera that has nothing else', async () => {
+    stubPeerConnection();
+    const { w, tile } = widget([cam('a', { image: null, videos: ['main'], h265: ['main'] })], refusing('main'));
+    await w.refresh();
+    expect(tile('a').classList.contains('no-image')).toBe(true);
+    expect(tile('a').getAttribute('data-empty')).toBe('H.265 can\'t play live. Try H.264.');
+  });
+
+  it('grabs a video-only camera\'s frame from the next stream when the first is refused', async () => {
+    const pcs = stubPeerConnection();
+    stubCanvas();
+    const api = refusing('main');
+    const { w, tile } = widget([cam('a', { image: null, videos: ['main', 'sub'] })], api);
+    const done = w.refresh();
+    await vi.waitFor(() => expect(pcs[1]?.remote).toBeTruthy());
+    playing(tile('a'));
+    await done;
+    expect(offers(api)).toEqual(['main', 'sub']);
+    expect(tile('a').querySelector('img')!.getAttribute('src')).toBe('data:image/jpeg;base64,FRAME');
   });
 });
 
@@ -313,7 +406,7 @@ describe('frame grabs (video, no snapshot)', () => {
     const api = vi.fn(async (): Promise<any> => { throw new Error('H.265 not supported'); });
     const { w, tile, report } = widget([cam('a', { image: null })], api, () => clock);
     await w.refresh();
-    expect(report).toHaveBeenCalledWith('frame grab of Cam a failed: H.265 not supported');
+    expect(report).toHaveBeenCalledWith('frame grab of Cam a failed: H.265 not supported', true);
     expect(tile('a').classList.contains('no-image')).toBe(true);
     expect(tile('a').getAttribute('data-empty')).toBe('No snapshot');
     // Retried after 5 minutes, without a second report.

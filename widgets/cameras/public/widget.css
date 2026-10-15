@@ -89,7 +89,11 @@ html, body { background: transparent !important; }
   position: absolute; top: 6px; right: 6px; padding: 0 6px; border-radius: 4px;
   font-size: 12px; line-height: 16px; color: #FFFFFF; background: rgba(0, 0, 0, .55);
 }
-.cw-note { left: 6px; right: auto; max-width: calc(100% - 12px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Up to two lines: the H.265 hint doesn't fit a half-width tile on one. */
+.cw-note {
+  left: 6px; right: auto; max-width: calc(100% - 12px); overflow: hidden;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+}
 
 .cw-message { font-size: var(--cw-fs-small); line-height: var(--cw-lh-small); color: var(--cw-muted); }
 .cw-message.error { color: var(--cw-red); }

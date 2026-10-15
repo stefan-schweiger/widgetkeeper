@@ -9,7 +9,15 @@ const IMAGE_REUSE = 2000;
 export type CameraImage = DeviceImage;
 
 export type CameraDevice =
-  | { id: string, name: string, icon: string | null, image: CameraImage | null, video: string | null }
+  | {
+    id: string, name: string, icon: string | null, image: CameraImage | null,
+    /** The best stream (`videos[0]`), kept for callers that only want one. */
+    video: string | null,
+    /** Every stream, best first: live view tries the next when one won't play. */
+    videos: string[],
+    /** The streams whose title says H.265, which Homey's WebRTC can't play. */
+    h265: string[],
+  }
   | { id: string, missing: true };
 
 export type Snapshot = { type: string, data: string };
@@ -22,17 +30,38 @@ export function cameraImage(device: any): CameraImage | null {
   return deviceImage(device, 'camera', { anyType: true });
 }
 
+const H265 = /h\.?265|hevc/i;
+
 /**
- * The video for live view: `device.videos` entries are `{type, id, title, videoObj: {id, type: 'rtsp'}}`.
- * Homey's go2rtc only offers H.264 over WebRTC, and the Reolink app's `main` stream can be H.265, so the
- * `sub` stream comes first, then any stream whose title doesn't say H.265.
+ * The videos for live view, best first: `device.videos` entries are `{type, id, title, videoObj: {id, type:
+ * 'rtsp'}}`. Homey's go2rtc only offers H.264 over WebRTC, and the Reolink app's `main` stream can be H.265
+ * (`Camera (main - h265)`), so the `sub` stream comes first, then streams that say H.264, then any that don't
+ * say H.265, and H.265 last (a title can be wrong). The widget tries them in this order until one plays.
  */
-export function cameraVideo(device: any): string | null {
+export function cameraVideos(device: any): string[] {
   const videos: any[] = (Array.isArray(device?.videos) ? device.videos : []).filter((v: any) => v?.videoObj?.id);
-  const v = videos.find(x => x.id === 'sub')
-    || videos.find(x => !/h\.?265|hevc/i.test(String(x.title)))
-    || videos[0];
-  return v ? v.videoObj.id : null;
+  const rank = (v: any) => {
+    const title = String(v.title ?? '');
+    if (v.id === 'sub' || /sub/i.test(title)) return H265.test(title) ? 3 : 0;
+    if (/h\.?264|avc/i.test(title)) return 1;
+    return H265.test(title) ? 4 : 2;
+  };
+  return videos
+    .map((v, i) => ({ v, i, r: rank(v) }))
+    .sort((a, b) => a.r - b.r || a.i - b.i)
+    .map(x => String(x.v.videoObj.id));
+}
+
+/** The best video for live view (see `cameraVideos`). */
+export function cameraVideo(device: any): string | null {
+  return cameraVideos(device)[0] ?? null;
+}
+
+/** The videos whose title says H.265. */
+export function h265Videos(device: any): string[] {
+  return (Array.isArray(device?.videos) ? device.videos : [])
+    .filter((v: any) => v?.videoObj?.id && H265.test(String(v.title ?? '')))
+    .map((v: any) => String(v.videoObj.id));
 }
 
 /**
@@ -65,6 +94,7 @@ export default class CameraService {
       try {
         const device: any = await tm.time('getDevice', () => api.devices.getDevice({ id, $cache: false }));
         const image = cameraImage(device);
+        const videos = cameraVideos(device);
         if (image) this.imageUrls.set(id, image.url);
         else this.imageUrls.delete(id);
         return {
@@ -72,7 +102,9 @@ export default class CameraService {
           name: device.name,
           icon: await tm.time('icons', () => fetchDeviceIcon(api, device, this.log)),
           image,
-          video: cameraVideo(device),
+          video: videos[0] ?? null,
+          videos,
+          h265: h265Videos(device),
         };
       } catch (err) {
         this.log(`Camera ${id} unavailable:`, err);

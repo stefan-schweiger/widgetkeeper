@@ -124,7 +124,8 @@
     "noImage": "Sin imagen",
     "unavailable": "No disponible",
     "live": "En vivo",
-    "liveFailed": "Falló el vídeo en vivo"
+    "liveFailed": "Falló el vídeo en vivo",
+    "liveH265": "H.265 no se ve en directo. Prueba H.264."
   },
   "values": {
     "selectSlots": "Elige valores en los ajustes del widget.",

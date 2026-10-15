@@ -32,7 +32,7 @@ window.mountCamerasWidget = function (Homey, { root, frame }) {
     t: (key, tokens) => Homey.__(key, tokens),
     refreshMs: snapshotMs,
     api: (method, path, body) => Homey.api(method, path, body),
-    report: (text) => { Homey.api('POST', '/report', { text }).catch(() => {}); },
+    report: (text, warn) => { Homey.api('POST', '/report', { text, warn: !!warn }).catch(() => {}); },
     onHeight: () => {
       if (!readySent) return;
       Homey.setHeight(bodyHeight());

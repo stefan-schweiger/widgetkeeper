@@ -124,7 +124,8 @@
     "noImage": "Brak zdjęcia",
     "unavailable": "Niedostępne",
     "live": "Na żywo",
-    "liveFailed": "Błąd podglądu na żywo"
+    "liveFailed": "Błąd podglądu na żywo",
+    "liveH265": "H.265 nie działa na żywo. Użyj H.264."
   },
   "values": {
     "selectSlots": "Wybierz wartości w ustawieniach widżetu.",
