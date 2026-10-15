@@ -19,7 +19,7 @@
     yes: 'Yes',
     no: 'No',
     noKey: 'To change variables, add an API key in the app settings.',
-    keyScope: 'The API key may not change variables.',
+    keyScope: 'The API key may not change variables: it needs Variables.',
     keyInvalid: 'The API key was not accepted.',
   };
   /** Why a change was refused, from the app (`{ok: false, reason}`): each has its own message. */

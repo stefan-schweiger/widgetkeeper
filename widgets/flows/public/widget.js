@@ -18,7 +18,7 @@
     disabled: '__name__ is turned off.',
     notTriggerable: "__name__ can't be started by hand.",
     noKey: 'To start flows, add an API key in the app settings.',
-    keyScope: 'The API key may not start flows.',
+    keyScope: 'The API key may not start flows: it needs Start Flows.',
     keyInvalid: 'The API key was not accepted.',
   };
   /** Why a start was refused, from the app (`{ok: false, reason}`): each has its own message. */

@@ -36,19 +36,19 @@
         "ar": "لوحة المعلومات"
       },
       "hint": {
-        "en": "The dashboard whose widgets the stack shows, one at a time. Only Widgetkeeper widgets can be shown. Needs the API key in the app's settings, with permission to read dashboards.",
-        "nl": "Het dashboard waarvan de stapel de widgets één voor één toont. Alleen Widgetkeeper-widgets kunnen worden getoond. Vereist de API-sleutel in de app-instellingen, met toestemming om dashboards te lezen.",
-        "de": "Das Dashboard, dessen Widgets der Stapel nacheinander zeigt. Nur Widgetkeeper-Widgets werden gezeigt. Braucht den API-Schlüssel in den App-Einstellungen, mit Leserecht für Dashboards.",
-        "fr": "Le tableau de bord dont la pile affiche les widgets un par un. Seuls les widgets Widgetkeeper s'affichent. Nécessite la clé API dans les réglages de l'app, avec le droit de lire les tableaux de bord.",
-        "it": "La dashboard di cui la pila mostra i widget uno alla volta. Si possono mostrare solo i widget di Widgetkeeper. Serve la chiave API nelle impostazioni dell'app, con il permesso di leggere le dashboard.",
-        "sv": "Instrumentpanelen vars widgetar stapeln visar en i taget. Bara Widgetkeeper-widgetar kan visas. Kräver API-nyckeln i appens inställningar, med behörighet att läsa instrumentpaneler.",
-        "no": "Dashbordet der stabelen viser widgetene én om gangen. Bare Widgetkeeper-widgeter kan vises. Krever API-nøkkelen i appinnstillingene, med tillatelse til å lese dashbord.",
-        "es": "El panel cuyos widgets muestra la pila, de uno en uno. Solo se pueden mostrar widgets de Widgetkeeper. Necesita la clave API en los ajustes de la app, con permiso para leer paneles.",
-        "da": "Det dashboard, hvis widgets stakken viser én ad gangen. Kun Widgetkeeper-widgets kan vises. Kræver API-nøglen i appens indstillinger, med tilladelse til at læse dashboards.",
-        "ru": "Панель, виджеты которой стопка показывает по одному. Показываются только виджеты Widgetkeeper. Нужен API-ключ в настройках приложения с правом читать панели.",
-        "pl": "Pulpit, którego widżety stos pokazuje po kolei. Można pokazać tylko widżety Widgetkeeper. Wymaga klucza API w ustawieniach aplikacji, z prawem odczytu pulpitów.",
-        "ko": "스택이 하나씩 보여줄 위젯이 있는 대시보드입니다. Widgetkeeper 위젯만 표시됩니다. 앱 설정에 대시보드 읽기 권한이 있는 API 키가 필요합니다.",
-        "ar": "اللوحة التي يعرض المكدس عناصرها واحدًا تلو الآخر. تُعرض عناصر Widgetkeeper فقط. يتطلب مفتاح API في إعدادات التطبيق مع إذن قراءة اللوحات."
+        "en": "The dashboard whose widgets the stack shows, one at a time. Only Widgetkeeper widgets can be shown. Needs the API key in the app's settings, with the Homey permission: Homey's API Keys page has no permission for dashboards alone.",
+        "nl": "Het dashboard waarvan de stapel de widgets één voor één toont. Alleen Widgetkeeper-widgets kunnen worden getoond. Vereist de API-sleutel in de app-instellingen, met het recht Homey: de pagina API-sleutels van Homey heeft geen recht voor alleen dashboards.",
+        "de": "Das Dashboard, dessen Widgets der Stapel nacheinander zeigt. Nur Widgetkeeper-Widgets werden gezeigt. Braucht den API-Schlüssel in den App-Einstellungen, mit dem Recht Homey: Auf der Seite API-Schlüssel von Homey gibt es kein Recht nur für Dashboards.",
+        "fr": "Le tableau de bord dont la pile affiche les widgets un par un. Seuls les widgets Widgetkeeper s'affichent. Nécessite la clé API dans les réglages de l'app, avec le droit Homey : la page Clés API de Homey n'a pas de droit pour les tableaux de bord seuls.",
+        "it": "La dashboard di cui la pila mostra i widget uno alla volta. Si possono mostrare solo i widget di Widgetkeeper. Serve la chiave API nelle impostazioni dell'app, con il permesso Homey: la pagina Chiavi API di Homey non ha un permesso solo per le dashboard.",
+        "sv": "Instrumentpanelen vars widgetar stapeln visar en i taget. Bara Widgetkeeper-widgetar kan visas. Kräver API-nyckeln i appens inställningar, med behörigheten Homey: sidan API-nycklar i Homey har ingen behörighet för enbart instrumentpaneler.",
+        "no": "Dashbordet der stabelen viser widgetene én om gangen. Bare Widgetkeeper-widgeter kan vises. Krever API-nøkkelen i appinnstillingene, med tillatelsen Homey: siden API-nøkler i Homey har ingen tillatelse kun for dashbord.",
+        "es": "El panel cuyos widgets muestra la pila, de uno en uno. Solo se pueden mostrar widgets de Widgetkeeper. Necesita la clave API en los ajustes de la app, con el permiso Homey: la página Claves API de Homey no tiene un permiso solo para paneles.",
+        "da": "Det dashboard, hvis widgets stakken viser én ad gangen. Kun Widgetkeeper-widgets kan vises. Kræver API-nøglen i appens indstillinger, med tilladelsen Homey: siden API-nøgler i Homey har ingen tilladelse kun til dashboards.",
+        "ru": "Панель, виджеты которой стопка показывает по одному. Показываются только виджеты Widgetkeeper. Нужен API-ключ в настройках приложения с правом Homey: у ключей API в Homey нет отдельного права для панелей.",
+        "pl": "Pulpit, którego widżety stos pokazuje po kolei. Można pokazać tylko widżety Widgetkeeper. Wymaga klucza API w ustawieniach aplikacji, z uprawnieniem Homey: na stronie Klucze API w Homey nie ma uprawnienia do samych pulpitów.",
+        "ko": "스택이 하나씩 보여줄 위젯이 있는 대시보드입니다. Widgetkeeper 위젯만 표시됩니다. 앱 설정에 Homey 권한이 있는 API 키가 필요합니다. Homey의 API 키 페이지에는 대시보드만을 위한 권한이 없습니다.",
+        "ar": "اللوحة التي يعرض المكدس عناصرها واحدًا تلو الآخر. تُعرض عناصر Widgetkeeper فقط. يتطلب مفتاح API في إعدادات التطبيق مع إذن Homey: لا تحتوي صفحة مفاتيح API في Homey على إذن للوحات وحدها."
       }
     },
     {

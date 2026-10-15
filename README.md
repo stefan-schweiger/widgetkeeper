@@ -168,7 +168,7 @@ Half-height tiles that each show one live device value. Percentages can fill the
 ## Light Controls
 <img src="docs/clips/lights.webp" alt="Light Controls on a Homey dashboard: a light turned on, dimmed with the bar, and given a colour and a white" width="358">
 
-Six lights in the space of three of Homey's light cards. Tap a tile to switch it, drag or tap the bar to dim, and tap the colour button for colours and whites. Lights in a room can share one tile. The Room's Moods palette puts the room's Homey Moods on the colour button instead of the colours and whites; starting one needs an [API key](#api-key).
+Six lights in the space of three of Homey's light cards. Tap a tile to switch it, drag or tap the bar to dim, and tap the colour button for colours and whites. Lights in a room can share one tile. The Room's Moods palette puts the room's Homey Moods on the colour button instead of the colours and whites; starting one needs an [API key](#api-key) with **Set Moods**.
 
 **Settings:** lights, group by room, what the bar's far left does, colour palette, [rename tiles](#tile-names).
 
@@ -191,14 +191,14 @@ One chart, two stacked, or two values on one chart (each with its own scale), of
 ## Variables
 <img src="docs/screenshots/variables.png" alt="Variables on a Homey dashboard" width="358">
 
-Logic variables as compact rows with their full name: a switch for yes/no, − and + for a number, and the text for a string. Tap a number or text to type a value. Needs an [API key](#api-key) to change them. Read only shows the values without anything to tap (a dot and Yes/No for yes/no), and needs no key.
+Logic variables as compact rows with their full name: a switch for yes/no, − and + for a number, and the text for a string. Tap a number or text to type a value. Needs an [API key](#api-key) with **Variables** to change them. Read only shows the values without anything to tap (a dot and Yes/No for yes/no), and needs no key.
 
 **Settings:** up to ten variables with optional names, 1 or 2 columns, read only, the − and + step, and the lowest and highest number.
 
 ## Flow Buttons
 <img src="docs/screenshots/flows.png" alt="Flow Buttons on a Homey dashboard" width="358">
 
-Flows and Advanced Flows as rows with a round button in your colour and icon. Tap a row to start the flow. Needs an [API key](#api-key).
+Flows and Advanced Flows as rows with a round button in your colour and icon. Tap a row to start the flow. Needs an [API key](#api-key) with **Start Flows**.
 
 **Settings:** up to eight flows, each with a colour, an icon and an optional name; 1 or 2 columns.
 
@@ -235,14 +235,14 @@ Curtains and blinds as tiles: tap to open or close (the corner label says which)
 ## Media
 <img src="docs/clips/media.webp" alt="Media on a Homey dashboard: the volume turned up, the next track, mute, the TV as the source from behind ⋯, and a switch to another speaker" width="358">
 
-One speaker as a card: album art, the track, play controls, mute, and a volume that moves on every tap but never overshoots or passes your maximum. Shows TV and line-in instead of old album art. Tap the name to switch speaker. Up to four buttons behind ⋯ run the speaker's own actions (such as *Set source to TV*) or flows; they need an [API key](#api-key). A large layout puts the album art across the whole widget, with bigger text and buttons below it.
+One speaker as a card: album art, the track, play controls, mute, and a volume that moves on every tap but never overshoots or passes your maximum. Shows TV and line-in instead of old album art. Tap the name to switch speaker. Up to four buttons behind ⋯ run the speaker's own actions (such as *Set source to TV*) or flows; they need an [API key](#api-key), with **Flows** for the speaker's actions and **Start Flows** for flows. A large layout puts the album art across the whole widget, with bigger text and buttons below it.
 
 **Settings:** layout (compact or large), speaker, speaker switching, volume as a bar or buttons, volume step and maximum, progress, shuffle and repeat, four buttons with an icon and a name.
 
 ## Smart Stack
 <img src="docs/clips/stack.webp" width="382" alt="A Smart Stack on a Homey dashboard: it turns through four widgets, is swiped by hand, and brings the cameras forward when someone is at the door">
 
-Widgetkeeper widgets from another dashboard, one at a time in the space of one. It turns every 30 seconds, and swipes or the dots move it by hand. Smart rotate brings a widget forward while something happens on it: music plays, a timer runs, a camera sees someone, a door is open. A Flow card can bring one forward too. Needs an [API key](#api-key) to read the dashboard.
+Widgetkeeper widgets from another dashboard, one at a time in the space of one. It turns every 30 seconds, and swipes or the dots move it by hand. Smart rotate brings a widget forward while something happens on it: music plays, a timer runs, a camera sees someone, a door is open. A Flow card can bring one forward too. Needs an [API key](#api-key) with the **Homey** permission to read the dashboard.
 
 **Settings:** dashboard, interval, smart rotate, pause after a swipe, dots.
 
@@ -266,7 +266,7 @@ An empty widget of the height you set, in pixels, to line up widgets of differen
 **Settings:** height.
 
 ## Web dashboards
-Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an old iPad, a computer or a TV. Turn them on under **Apps → Widgetkeeper → Configure**, open the address shown there (`http://<your Homey's address>/app/com.thomassidor.widgetkeeper/settings/dashboard.html`), paste a Homey [API key](#api-key) (and, if you set one there, the web dashboards password), and build the dashboards on the page itself: columns of widgets, each with the same settings as on a Homey dashboard, in light, dark or automatic. They're the same widgets with the same live updates, and the dashboards are kept on your Homey, so every browser shows them. Home network only for now.
+Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an old iPad, a computer or a TV. Turn them on under **Apps → Widgetkeeper → Configure**, open the address shown there (`http://<your Homey's address>/app/com.thomassidor.widgetkeeper/settings/dashboard.html`), paste a Homey API key ([which permissions](#web-dashboards-key)) (and, if you set one there, the web dashboards password), and build the dashboards on the page itself: columns of widgets, each with the same settings as on a Homey dashboard, in light, dark or automatic. They're the same widgets with the same live updates, and the dashboards are kept on your Homey, so every browser shows them. Home network only for now.
 
 <img src="docs/web/dashboard.png" alt="A web dashboard with Widgetkeeper widgets in a browser window" width="100%">
 
@@ -310,7 +310,25 @@ Give any tile a name of your own, such as *Sofa corner* for a room's lights grou
 The names belong to that widget: they stay with the right tiles when you rename or reorder devices, every screen showing the dashboard gets them, and a Smart Stack showing the widget does too. Sensor Alarms' tile names and Device Values' names still work; a name typed on the tile wins.
 
 ## API key
-Homey doesn't let apps change variables, start flows, read dashboards or start Moods on their own, so Variables, Flow Buttons, Media's buttons, Smart Stack and Light Controls' Moods need a Homey API key. Create one in the Homey web app under **Settings → API Keys** with those permissions, and paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey. The web dashboards ask for a key of their own, which stays in that browser.
+Homey doesn't let apps change variables, start flows, read dashboards or start Moods on their own. For those, create a key in the Homey web app under **Settings → API Keys**, tick the permissions below for the widgets you use, and paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey, and that page says what it may do once it's saved.
+
+| What | Permission to tick | Scope |
+|---|---|---|
+| Variables: changing a value | **Variables** (View Variables isn't enough) | `homey.logic` |
+| Flow Buttons | **Start Flows** | `homey.flow.start` |
+| Media's buttons: a flow | **Start Flows** | `homey.flow.start` |
+| Media's buttons: the speaker's own actions, such as *Set source to TV* | **Flows** (Start Flows isn't enough) | `homey.flow` |
+| Light Controls' Room's Moods: starting a Mood | **Set Moods** | `homey.mood.set` |
+| Smart Stack: reading the dashboard | **Homey**: the API Keys page has no permission for dashboards alone, so it takes the top one, which allows everything | `homey` |
+
+Ticking a group's first box (**Flows**, **Moods**, **Homey**) includes the boxes under it. Everything else needs no key: the widgets read devices, Insights, variables, flows and Moods with Widgetkeeper's own permissions, and Variables' Read only shows values without one. The scopes are the ones Homey's Web API asks for (`updateVariable`, `triggerFlow`/`triggerAdvancedFlow`, `runFlowCardAction`, `setMood`, `getDashboards`); the API Keys page shows each one beside its box.
+
+### Web dashboards' key
+Each browser connects with a key of its own, which stays in that browser:
+
+- The page itself only talks to Widgetkeeper: its own API and its live updates. A key with the **Homey** permission works; whether a narrower key does hasn't been tried yet, as Homey doesn't document which permission an app's own API takes.
+- A widget that changes something also needs that permission in the browser's key, as in the table above, even though the change is made with the key in the app's settings. So a browser whose key may not start flows can't start them through the app's key either.
+- The Smart Stack on a web dashboard reads its dashboard with the app's key, so the browser's key needs **Homey** too.
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic, following Homey's language.

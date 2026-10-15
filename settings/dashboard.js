@@ -20,7 +20,7 @@
   const DEFAULT_STRINGS = {
     title: 'Web Dashboards',
     keyTitle: 'Connect to your Homey',
-    keyText: 'Paste a personal API key. Make one in the Homey web app under Settings → API Keys. It stays in this browser.',
+    keyText: 'Paste a personal API key. Make one in the Homey web app under Settings → API Keys, with the permissions Widgetkeeper\'s app settings list for the widgets that change things. It stays in this browser.',
     keyPlaceholder: 'API key',
     connect: 'Connect',
     keyRejected: 'Homey didn\'t accept this key.',

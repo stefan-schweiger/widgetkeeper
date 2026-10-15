@@ -219,19 +219,19 @@
         "ar": "المتغير 1"
       },
       "hint": {
-        "en": "To change variables from the widget, add an API key in Widgetkeeper’s app settings.",
-        "nl": "Voeg in de app-instellingen van Widgetkeeper een API-sleutel toe om variabelen vanuit de widget te wijzigen.",
-        "de": "Um Variablen im Widget zu ändern, füge in den App-Einstellungen von Widgetkeeper einen API-Schlüssel hinzu.",
-        "fr": "Pour modifier les variables depuis le widget, ajoutez une clé API dans les réglages de l'app Widgetkeeper.",
-        "it": "Per modificare le variabili dal widget, aggiungi una chiave API nelle impostazioni dell'app Widgetkeeper.",
-        "sv": "Lägg till en API-nyckel i Widgetkeepers appinställningar för att ändra variabler från widgeten.",
-        "no": "Legg til en API-nøkkel i Widgetkeepers appinnstillinger for å endre variabler fra widgeten.",
-        "es": "Para cambiar variables desde el widget, añade una clave API en los ajustes de la app Widgetkeeper.",
-        "da": "Tilføj en API-nøgle i Widgetkeepers app-indstillinger for at ændre variabler fra widgetten.",
-        "ru": "Чтобы менять переменные из виджета, добавьте ключ API в настройках приложения Widgetkeeper.",
-        "pl": "Aby zmieniać zmienne z widżetu, dodaj klucz API w ustawieniach aplikacji Widgetkeeper.",
-        "ko": "위젯에서 변수를 변경하려면 Widgetkeeper 앱 설정에서 API 키를 추가하세요.",
-        "ar": "لتغيير المتغيرات من الأداة، أضف مفتاح API في إعدادات تطبيق Widgetkeeper."
+        "en": "To change variables from the widget, add an API key with the Variables permission in Widgetkeeper’s app settings.",
+        "nl": "Om variabelen vanuit de widget te wijzigen, voeg je in de app-instellingen van Widgetkeeper een API-sleutel toe met het recht Variabelen.",
+        "de": "Um Variablen im Widget zu ändern, füge in den App-Einstellungen von Widgetkeeper einen API-Schlüssel mit dem Recht Variablen hinzu.",
+        "fr": "Pour modifier les variables depuis le widget, ajoutez une clé API avec le droit Variables dans les réglages de l'app Widgetkeeper.",
+        "it": "Per modificare le variabili dal widget, aggiungi una chiave API con il permesso Variabili nelle impostazioni dell'app Widgetkeeper.",
+        "sv": "Lägg till en API-nyckel med behörigheten Variabler i Widgetkeepers appinställningar för att ändra variabler från widgeten.",
+        "no": "Legg til en API-nøkkel med tillatelsen Variabler i Widgetkeepers appinnstillinger for å endre variabler fra widgeten.",
+        "es": "Para cambiar variables desde el widget, añade una clave API con el permiso Variables en los ajustes de la app Widgetkeeper.",
+        "da": "Tilføj en API-nøgle med tilladelsen Variabler i Widgetkeepers app-indstillinger for at ændre variabler fra widgetten.",
+        "ru": "Чтобы менять переменные из виджета, добавьте ключ API с правом Переменные в настройках приложения Widgetkeeper.",
+        "pl": "Aby zmieniać zmienne z widżetu, dodaj klucz API z uprawnieniem Zmienne w ustawieniach aplikacji Widgetkeeper.",
+        "ko": "위젯에서 변수를 변경하려면 Widgetkeeper 앱 설정에서 변수 권한이 있는 API 키를 추가하세요.",
+        "ar": "لتغيير المتغيرات من الأداة، أضف مفتاح API بإذن المتغيرات في إعدادات تطبيق Widgetkeeper."
       }
     },
     {

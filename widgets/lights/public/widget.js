@@ -21,7 +21,7 @@
     color: 'Colour',
     close: 'Close',
     noKey: 'To start Moods, add an API key in the app settings.',
-    keyScope: 'The API key may not start Moods.',
+    keyScope: 'The API key may not start Moods: it needs Set Moods.',
     keyInvalid: 'The API key was not accepted.',
     moodFailed: 'Could not start __name__.',
     moods: 'Moods',

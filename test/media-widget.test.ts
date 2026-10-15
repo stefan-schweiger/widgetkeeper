@@ -299,7 +299,7 @@ describe('buttons', () => {
     const { root, q } = widget(speaker(), { buttons, onButton });
     root.querySelector<HTMLElement>('.mw-chip')!.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
     await vi.advanceTimersByTimeAsync(500);
-    expect(q('.mw-message').textContent).toMatch(/permission to manage flows/);
+    expect(q('.mw-message').textContent).toMatch(/a speaker action Flows/);
   });
 });
 

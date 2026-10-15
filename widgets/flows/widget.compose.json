@@ -94,19 +94,19 @@
         "ar": "الزر 1: التدفق"
       },
       "hint": {
-        "en": "Only flows you can start by hand are listed. To start them from the widget, add an API key in Widgetkeeper’s app settings.",
-        "nl": "Alleen flows die je handmatig kunt starten staan in de lijst. Voeg in de app-instellingen van Widgetkeeper een API-sleutel toe om ze vanuit de widget te starten.",
-        "de": "Nur Flows, die man von Hand starten kann, werden aufgeführt. Um sie im Widget zu starten, füge in den App-Einstellungen von Widgetkeeper einen API-Schlüssel hinzu.",
-        "fr": "Seuls les flows lançables à la main sont listés. Pour les lancer depuis le widget, ajoutez une clé API dans les réglages de l'app Widgetkeeper.",
-        "it": "Sono elencati solo i flow avviabili a mano. Per avviarli dal widget, aggiungi una chiave API nelle impostazioni dell'app Widgetkeeper.",
-        "sv": "Bara flöden som kan startas manuellt visas. Lägg till en API-nyckel i Widgetkeepers appinställningar för att starta dem från widgeten.",
-        "no": "Bare flyter som kan startes manuelt, vises. Legg til en API-nøkkel i Widgetkeepers appinnstillinger for å starte dem fra widgeten.",
-        "es": "Solo aparecen los flujos que se pueden iniciar a mano. Para iniciarlos desde el widget, añade una clave API en los ajustes de la app Widgetkeeper.",
-        "da": "Kun flows, der kan startes manuelt, vises. Tilføj en API-nøgle i Widgetkeepers app-indstillinger for at starte dem fra widgetten.",
-        "ru": "В списке только потоки, которые можно запустить вручную. Чтобы запускать их из виджета, добавьте ключ API в настройках приложения Widgetkeeper.",
-        "pl": "Na liście są tylko Flow, które można uruchomić ręcznie. Aby uruchamiać je z widżetu, dodaj klucz API w ustawieniach aplikacji Widgetkeeper.",
-        "ko": "직접 시작할 수 있는 플로우만 표시됩니다. 위젯에서 시작하려면 Widgetkeeper 앱 설정에서 API 키를 추가하세요.",
-        "ar": "تظهر فقط التدفقات التي يمكن تشغيلها يدويًا. لتشغيلها من الأداة، أضف مفتاح API في إعدادات تطبيق Widgetkeeper."
+        "en": "Only flows you can start by hand are listed. To start them from the widget, add an API key with the Start Flows permission in Widgetkeeper’s app settings.",
+        "nl": "Alleen flows die je handmatig kunt starten staan in de lijst. Om ze vanuit de widget te starten, voeg je in de app-instellingen van Widgetkeeper een API-sleutel toe met het recht Flows starten.",
+        "de": "Nur Flows, die man von Hand starten kann, werden aufgeführt. Um sie im Widget zu starten, füge in den App-Einstellungen von Widgetkeeper einen API-Schlüssel hinzu, mit dem Recht Flows starten.",
+        "fr": "Seuls les flows lançables à la main sont listés. Pour les lancer depuis le widget, ajoutez une clé API avec le droit Lancer les Flows dans les réglages de l'app Widgetkeeper.",
+        "it": "Sono elencati solo i flow avviabili a mano. Per avviarli dal widget, aggiungi una chiave API con il permesso Avvia i Flow nelle impostazioni dell'app Widgetkeeper.",
+        "sv": "Bara flöden som kan startas manuellt visas. Lägg till en API-nyckel med behörigheten Starta Flows i Widgetkeepers appinställningar för att starta dem från widgeten.",
+        "no": "Bare flyter som kan startes manuelt, vises. Legg til en API-nøkkel med tillatelsen Start Flows i Widgetkeepers appinnstillinger for å starte dem fra widgeten.",
+        "es": "Solo aparecen los flujos que se pueden iniciar a mano. Para iniciarlos desde el widget, añade una clave API con el permiso Iniciar Flows en los ajustes de la app Widgetkeeper.",
+        "da": "Kun flows, der kan startes manuelt, vises. Tilføj en API-nøgle med tilladelsen Start Flows i Widgetkeepers app-indstillinger for at starte dem fra widgetten.",
+        "ru": "В списке только потоки, которые можно запустить вручную. Чтобы запускать их из виджета, добавьте ключ API с правом Запустить Flow в настройках приложения Widgetkeeper.",
+        "pl": "Na liście są tylko Flow, które można uruchomić ręcznie. Aby uruchamiać je z widżetu, dodaj klucz API z uprawnieniem Rozpoczynanie Flow w ustawieniach aplikacji Widgetkeeper.",
+        "ko": "직접 시작할 수 있는 플로우만 표시됩니다. 위젯에서 시작하려면 Widgetkeeper 앱 설정에서 Flow 시작 권한이 있는 API 키를 추가하세요.",
+        "ar": "تظهر فقط التدفقات التي يمكن تشغيلها يدويًا. لتشغيلها من الأداة، أضف مفتاح API بإذن بدء Flows في إعدادات تطبيق Widgetkeeper."
       }
     },
     {

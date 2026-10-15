@@ -187,19 +187,19 @@
         "ar": "لوحة الألوان"
       },
       "hint": {
-        "en": "The colours offered by a light’s colour button. Room’s Moods shows the Homey Moods of the light’s room instead of the colours; starting one needs the API key on the app’s settings page.",
-        "nl": "De kleuren die de kleurknop van een lamp aanbiedt. Moods van de kamer toont de Homey Moods van de kamer van de lamp in plaats van de kleuren; om er een te starten is de API-sleutel op de instellingenpagina van de app nodig.",
-        "de": "Die Farben, die die Farbtaste einer Lampe anbietet. Moods des Raums zeigt statt der Farben die Homey Moods des Raums der Lampe; zum Starten wird der API-Schlüssel auf der Einstellungsseite der App benötigt.",
-        "fr": "Les couleurs proposées par le bouton couleur d'une lampe. Moods de la pièce affiche les Moods Homey de la pièce de la lampe à la place des couleurs ; en lancer un nécessite la clé API dans les réglages de l'app.",
-        "it": "I colori offerti dal pulsante colore di una luce. Mood della stanza mostra i Mood di Homey della stanza della luce al posto dei colori; per avviarne uno serve la chiave API nelle impostazioni dell'app.",
-        "sv": "Färgerna som en lampas färgknapp erbjuder. Rummets Moods visar Homey Moods för lampans rum i stället för färgerna; för att starta en behövs API-nyckeln på appens inställningssida.",
-        "no": "Fargene som en lampes fargeknapp tilbyr. Rommets Moods viser Homey Moods for lampens rom i stedet for fargene; for å starte en trengs API-nøkkelen på appens innstillingsside.",
-        "es": "Los colores que ofrece el botón de color de una luz. Moods de la habitación muestra los Moods de Homey de la habitación de la luz en lugar de los colores; para iniciar uno se necesita la clave API en los ajustes de la app.",
-        "da": "Farverne, som en lampes farveknap tilbyder. Rummets Moods viser Homey Moods for lampens rum i stedet for farverne; for at starte en skal API-nøglen på appens indstillingsside bruges.",
-        "ru": "Цвета, которые предлагает кнопка цвета светильника. «Настроения комнаты» показывают вместо цветов Moods Homey комнаты светильника; для запуска нужен API-ключ на странице настроек приложения.",
-        "pl": "Kolory dostępne pod przyciskiem koloru lampy. Nastroje pokoju pokazują zamiast kolorów Moods Homey pokoju lampy; do uruchomienia potrzebny jest klucz API na stronie ustawień aplikacji.",
-        "ko": "조명의 색상 버튼에 표시되는 색상입니다. 방의 무드는 색상 대신 조명이 있는 방의 Homey 무드를 표시합니다. 무드를 시작하려면 앱 설정 페이지의 API 키가 필요합니다.",
-        "ar": "الألوان التي يعرضها زر لون المصباح. «أجواء الغرفة» تعرض أجواء Homey لغرفة المصباح بدلًا من الألوان؛ ويتطلب تشغيلها مفتاح API في صفحة إعدادات التطبيق."
+        "en": "The colours offered by a light’s colour button. Room’s Moods shows the Homey Moods of the light’s room instead of the colours; starting one needs the API key on the app’s settings page, with the Set Moods permission.",
+        "nl": "De kleuren die de kleurknop van een lamp aanbiedt. Moods van de kamer toont de Homey Moods van de kamer van de lamp in plaats van de kleuren; om er een te starten is de API-sleutel op de instellingenpagina van de app nodig, met het recht Moods zetten.",
+        "de": "Die Farben, die die Farbtaste einer Lampe anbietet. Moods des Raums zeigt statt der Farben die Homey Moods des Raums der Lampe; zum Starten wird der API-Schlüssel auf der Einstellungsseite der App benötigt, mit dem Recht Moods festlegen.",
+        "fr": "Les couleurs proposées par le bouton couleur d'une lampe. Moods de la pièce affiche les Moods Homey de la pièce de la lampe à la place des couleurs ; en lancer un nécessite la clé API dans les réglages de l'app, avec le droit Définir les Moods.",
+        "it": "I colori offerti dal pulsante colore di una luce. Mood della stanza mostra i Mood di Homey della stanza della luce al posto dei colori; per avviarne uno serve la chiave API nelle impostazioni dell'app, con il permesso Imposta Mood.",
+        "sv": "Färgerna som en lampas färgknapp erbjuder. Rummets Moods visar Homey Moods för lampans rum i stället för färgerna; för att starta en behövs API-nyckeln på appens inställningssida, med behörigheten Ställ in Moods.",
+        "no": "Fargene som en lampes fargeknapp tilbyr. Rommets Moods viser Homey Moods for lampens rom i stedet for fargene; for å starte en trengs API-nøkkelen på appens innstillingsside, med tillatelsen Innstill Moods.",
+        "es": "Los colores que ofrece el botón de color de una luz. Moods de la habitación muestra los Moods de Homey de la habitación de la luz en lugar de los colores; para iniciar uno se necesita la clave API en los ajustes de la app, con el permiso Establecer Moods.",
+        "da": "Farverne, som en lampes farveknap tilbyder. Rummets Moods viser Homey Moods for lampens rum i stedet for farverne; for at starte en skal API-nøglen på appens indstillingsside bruges, med tilladelsen Indstil Moods.",
+        "ru": "Цвета, которые предлагает кнопка цвета светильника. «Настроения комнаты» показывают вместо цветов Moods Homey комнаты светильника; для запуска нужен API-ключ на странице настроек приложения с правом Настроить Moods.",
+        "pl": "Kolory dostępne pod przyciskiem koloru lampy. Nastroje pokoju pokazują zamiast kolorów Moods Homey pokoju lampy; do uruchomienia potrzebny jest klucz API na stronie ustawień aplikacji, z uprawnieniem Ustaw Mood.",
+        "ko": "조명의 색상 버튼에 표시되는 색상입니다. 방의 무드는 색상 대신 조명이 있는 방의 Homey 무드를 표시합니다. 무드를 시작하려면 앱 설정 페이지에 Mood 설정 권한이 있는 API 키가 필요합니다.",
+        "ar": "الألوان التي يعرضها زر لون المصباح. «أجواء الغرفة» تعرض أجواء Homey لغرفة المصباح بدلًا من الألوان؛ ويتطلب تشغيلها مفتاح API في صفحة إعدادات التطبيق مع إذن ضبط Moods."
       },
       "value": "default",
       "values": [

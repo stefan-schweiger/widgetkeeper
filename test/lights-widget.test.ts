@@ -473,7 +473,7 @@ describe('room moods', () => {
     const { open, pills, root, tile } = moodWidget([withZone(hueGo(), stue)], onMood);
     open('hue');
     pills()[0].click();
-    await vi.waitFor(() => expect(root.querySelector('.lc-message')!.textContent).toBe('The API key may not start Moods.'));
+    await vi.waitFor(() => expect(root.querySelector('.lc-message')!.textContent).toBe('The API key may not start Moods: it needs Set Moods.'));
     expect(tile('hue').classList.contains('shake')).toBe(true);
     onMood.mockRejectedValueOnce(new Error('boom'));
     open('hue');

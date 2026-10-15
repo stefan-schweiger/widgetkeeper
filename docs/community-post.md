@@ -81,7 +81,7 @@ The web dashboards in a browser: a dashboard, the front page and the editor. Swi
 
 [/grid]
 
-Flow Buttons, Variables (unless read only), Smart Stack, Media's buttons and Light Controls' Moods need a Homey API key, which you add in the app's settings (**Apps → Widgetkeeper → Configure**).
+Flow Buttons, Variables (unless read only), Smart Stack, Media's buttons and Light Controls' Moods need a Homey API key, which you add in the app's settings (**Apps → Widgetkeeper → Configure**). Tick these permissions when you create it under **Settings → API Keys**: **Variables** to change variables, **Start Flows** for Flow Buttons and flows on Media's buttons, **Flows** for a speaker's own actions on Media's buttons, **Set Moods** for Light Controls' Room's Moods, and **Homey** for the Smart Stack (there's no permission for dashboards alone). The [README](https://github.com/thomassidor/widgetkeeper#api-key) has the details, also for the web dashboards' key.
 
 ## Dashboard examples
 

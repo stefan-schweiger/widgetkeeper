@@ -25,6 +25,8 @@
       font-weight: 700; color: #FFFFFF; background: var(--ks);
     }
     .key-state.set { --ks: var(--homey-color-green, #2DA94F); }
+    .perms { margin: 0 0 var(--homey-su-3, 12px); padding-inline-start: 20px; }
+    .perms li { margin: 2px 0; }
     .key-state.set::before { content: '✓'; }
   </style>
 </head>
@@ -33,6 +35,14 @@
   <fieldset class="homey-form-fieldset">
     <legend class="homey-form-legend" data-i18n="varTitle">API key</legend>
     <p class="homey-form-help" data-i18n="varHelp"></p>
+    <!-- Each feature and the permission it needs, as the Homey web app's API Keys page names it (README: API key). -->
+    <ul class="homey-form-help perms">
+      <li><span data-i18n="varForVariables"></span> <strong data-i18n="varTickVariables"></strong></li>
+      <li><span data-i18n="varForFlows"></span> <strong data-i18n="varTickFlows"></strong></li>
+      <li><span data-i18n="varForCards"></span> <strong data-i18n="varTickCards"></strong></li>
+      <li><span data-i18n="varForMoods"></span> <strong data-i18n="varTickMoods"></strong></li>
+      <li><span data-i18n="varForStack"></span> <strong data-i18n="varTickStack"></strong></li>
+    </ul>
     <div class="key-state" id="varState" role="status" hidden><span></span></div>
     <div class="homey-form-group">
       <input class="homey-form-input" id="varKey" type="password" autocomplete="off" spellcheck="false" data-i18n-label="varKey">
