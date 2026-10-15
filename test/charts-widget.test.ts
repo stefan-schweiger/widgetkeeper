@@ -23,6 +23,9 @@ const entry = (points: [number, number][], extra: Record<string, unknown> = {}) 
   deviceId: 'd1', capabilityId: 'measure_temperature', name: 'Living room', capability: cap(), value: points.at(-1)![1], points, ...extra,
 });
 
+/** A header number as the widget writes it: in the system locale (its `formatNumber()` doesn't take `opts.locale`). */
+const num = (v: number) => v.toLocaleString(undefined, { maximumFractionDigits: 1 });
+
 function widget(charts: Record<string, unknown>[], state: any[], opts: Record<string, unknown> = {}) {
   const root = document.createElement('div');
   document.body.append(root);
@@ -52,7 +55,7 @@ describe('charts', () => {
     const { all, header } = widget([{ span: '24h' }, { span: '6h', color: 'green', style: 'bars' }],
       [entry(series(24 * HOUR, x => 20 + x)), entry(series(6 * HOUR, x => 500 + x * 1000), { deviceId: 'd2', capabilityId: 'measure_power', capability: cap({ title: 'Power', units: 'W', decimals: 0 }) })]);
     expect(all('.ch-chart').map(c => c.dataset.color)).toEqual(['blue', 'green']);
-    expect(header()).toEqual(['21°C | Now', '1.500W | Now']);
+    expect(header()).toEqual(['21°C | Now', `${num(1500)}W | Now`]);
     expect(all('.ch-chart')[1].querySelectorAll('rect.bar').length).toBeGreaterThan(20);
   });
 
@@ -179,7 +182,7 @@ describe('live and states', () => {
     const r = widget([{ span: '1h' }], [entry(series(HOUR, () => 20))]);
     vi.setSystemTime(NOW + 30e3);
     r.w.pushChange({ deviceId: 'd1', capabilityId: 'measure_temperature', value: 23.4 });
-    expect(r.header()).toEqual(['23,4°C | Now']);
+    expect(r.header()).toEqual([`${num(23.4)}°C | Now`]);
     r.w.setState([entry(series(HOUR, () => 20))]); // a cached history from before the push
     const d = r.q('.series-line')!.getAttribute('d')!;
     expect(d.endsWith(r.q('.dot-core')!.getAttribute('cx') + ' ' + r.q('.dot-core')!.getAttribute('cy'))).toBe(true);
@@ -227,7 +230,7 @@ describe('two series on one chart', () => {
     expect(r.all('g[data-color] .series-line').map(p => p.closest('g')!.getAttribute('data-color'))).toEqual(['blue', 'green']);
     expect(r.all('g[data-color] .dot-core').length).toBe(2);
     expect(rightLabels(r)).toContain('1,5k');
-    expect(r.header()).toEqual(['22°C | Now', '1.500W | Now']);
+    expect(r.header()).toEqual(['22°C | Now', `${num(1500)}W | Now`]);
   });
 
   it('gives both the same number of grid steps, from zero sharing the zero line', () => {

@@ -139,7 +139,7 @@ describe('mount', () => {
     expect(Homey.ready).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(600);
     expect(Homey.ready).toHaveBeenCalledTimes(1);
-    expect(root.querySelector('.ck-time')!.textContent).toMatch(/18.40/);
+    expect(root.querySelector('.ck-time')!.textContent).toMatch(/40/); // 18.40 or 6:40 PM: the system's locale
     answer({ language: 'en', weather: WEATHER });
     await vi.advanceTimersByTimeAsync(0);
     expect(root.querySelector<HTMLElement>('.ck-weather')!.style.display).not.toBe('none');
