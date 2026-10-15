@@ -59,6 +59,13 @@ describe('copied widget helpers', () => {
     for (const fn of ['scaled', 'formatNumber']) expectSame(['sparklines', 'charts'].map(id => source(id, fn)));
   });
 
+  it('tileNames(), wireTileNames() and nameKeys() are the same in every widget with tile names', () => {
+    const named = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras'];
+    expectSame(named.map(id => source(id, 'tileNames')));
+    expectSame(named.map(id => source(id, 'wireTileNames', 'mount.js')));
+    expectSame(['values', 'sparklines'].map(id => source(id, 'nameKeys')));
+  });
+
   it('wireBar() is the same in Light Controls and Curtains', () => {
     expectSame(['lights', 'curtains'].map(id => source(id, 'wireBar')));
   });

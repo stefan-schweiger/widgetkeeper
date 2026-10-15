@@ -31,7 +31,8 @@
     "selectDevices": "Wybierz urządzenia w ustawieniach widżetu.",
     "error": "Nie udało się wczytać urządzeń.",
     "failed": "Nie udało się zmienić __name__.",
-    "unavailable": "Niedostępne"
+    "unavailable": "Niedostępne",
+    "renameFailed": "Nie udało się zapisać nazwy."
   },
   "sensoralarms": {
     "selectDevices": "Wybierz czujniki w ustawieniach widżetu.",
@@ -41,7 +42,8 @@
     "noSensors": "Brak czujników alarmu",
     "unavailable": "Niedostępne",
     "active": "Aktywne",
-    "inactive": "Nieaktywne"
+    "inactive": "Nieaktywne",
+    "renameFailed": "Nie udało się zapisać nazwy."
   },
   "sensordots": {
     "selectDevices": "Wybierz czujniki w ustawieniach widżetu.",
@@ -128,19 +130,22 @@
     "unavailable": "Niedostępne",
     "live": "Na żywo",
     "liveFailed": "Błąd podglądu na żywo",
-    "liveH265": "H.265 nie działa na żywo. Użyj H.264."
+    "liveH265": "H.265 nie działa na żywo. Użyj H.264.",
+    "renameFailed": "Nie udało się zapisać nazwy."
   },
   "values": {
     "selectSlots": "Wybierz wartości w ustawieniach widżetu.",
     "error": "Nie udało się wczytać wartości.",
     "unavailable": "Niedostępne",
     "on": "Wł.",
-    "off": "Wył."
+    "off": "Wył.",
+    "renameFailed": "Nie udało się zapisać nazwy."
   },
   "sparklines": {
     "selectSlots": "Wybierz wartości w ustawieniach widżetu.",
     "error": "Nie udało się wczytać wartości.",
-    "unavailable": "Niedostępne"
+    "unavailable": "Niedostępne",
+    "renameFailed": "Nie udało się zapisać nazwy."
   },
   "charts": {
     "now": "Teraz",
@@ -161,7 +166,8 @@
     "keyScope": "Klucz API nie może uruchamiać Moods.",
     "keyInvalid": "Klucz API nie został zaakceptowany.",
     "moodFailed": "Nie udało się uruchomić __name__.",
-    "moods": "Nastroje"
+    "moods": "Nastroje",
+    "renameFailed": "Nie udało się zapisać nazwy."
   },
   "variables": {
     "selectSlots": "Wybierz zmienne w ustawieniach widżetu.",
@@ -287,7 +293,8 @@
     "unlock": "Otwórz",
     "close": "Zamknij",
     "openAction": "Otwórz",
-    "lockAll": "Zamknij wszystkie"
+    "lockAll": "Zamknij wszystkie",
+    "renameFailed": "Nie udało się zapisać nazwy."
   },
   "curtains": {
     "selectDevices": "Wybierz zasłony w ustawieniach widżetu.",
@@ -301,7 +308,8 @@
     "closing": "Zamyka się…",
     "stopped": "Zatrzymana",
     "open": "Otwórz",
-    "close": "Zamknij"
+    "close": "Zamknij",
+    "renameFailed": "Nie udało się zapisać nazwy."
   },
   "media": {
     "selectDevice": "Wybierz głośnik w ustawieniach widżetu.",

@@ -12,6 +12,7 @@
     unavailable: 'Unavailable',
     on: 'On',
     off: 'Off',
+    renameFailed: 'Could not save the name.',
   };
 
   // Homey's standard capabilities carry no icon of their own (the Homey app draws them), so these stand
@@ -124,6 +125,17 @@
 
   const keyOf = s => `${s.deviceId}:${s.capabilityId}`;
 
+  /** Each tile's key for its typed name: the value's own key, then `#2`, `#3` … for repeats, so reordering keeps the names. */
+  function nameKeys(slots) {
+    const seen = new Map();
+    return slots.map((s) => {
+      const k = keyOf(s);
+      const n = (seen.get(k) || 0) + 1;
+      seen.set(k, n);
+      return n > 1 ? `${k}#${n}` : k;
+    });
+  }
+
   /** An entry with the tile's own name from the settings, when one is set (a missing entry keeps none). */
   function withName(entry, name) {
     const n = typeof name === 'string' ? name.trim() : '';
@@ -131,9 +143,70 @@
   }
 
   /**
+   * The names typed on the tiles (`renameTiles`; the app keeps them per widget instance, by tile key): `name(key, own)`
+   * is the typed name, else `own`. In rename mode `field(key, own)` is the tile's text field (made once per key, with
+   * `own` as the placeholder): it saves on change (Enter or leaving it), Escape puts it back, and a realtime update
+   * doesn't overwrite it while it has the focus. Its touches, clicks and keys never reach the tile's own taps.
+   * `failed(key)` shakes the tile and says so; the name goes back.
+   */
+  function tileNames(opts, render, failed) {
+    let names = {};
+    const fields = new Map();
+    async function save(key, value) {
+      const before = names[key];
+      if ((before || '') === value) return;
+      const put = v => { names = { ...names }; if (v) names[key] = v; else delete names[key]; };
+      put(value);
+      render();
+      try {
+        if (opts.onRename) await opts.onRename(key, value);
+      } catch (err) {
+        console.error(err);
+        put(before);
+        failed(key);
+      }
+    }
+    return {
+      renaming: opts.renameTiles === true,
+      name: (key, own) => names[key] || own,
+      set(map) {
+        names = {};
+        if (map && typeof map === 'object') for (const [k, v] of Object.entries(map)) if (typeof v === 'string' && v) names[k] = v;
+        render();
+      },
+      field(key, own) {
+        let input = fields.get(key);
+        if (!input) {
+          input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'wk-rename';
+          input.dir = 'auto';
+          input.maxLength = 60;
+          input.autocomplete = 'off';
+          input.setAttribute('enterkeyhint', 'done');
+          const field = input;
+          for (const type of ['touchstart', 'touchend', 'pointerdown', 'click']) field.addEventListener(type, e => e.stopPropagation(), { passive: true });
+          field.addEventListener('keydown', (e) => {
+            e.stopPropagation();
+            if (e.key === 'Enter') field.blur();
+            else if (e.key === 'Escape') { field.value = names[key] || ''; field.blur(); }
+          });
+          field.addEventListener('change', () => { field.value = field.value.trim(); save(key, field.value); });
+          fields.set(key, input);
+        }
+        input.placeholder = own || '';
+        input.setAttribute('aria-label', own || '');
+        if (document.activeElement !== input) input.value = names[key] || '';
+        return input;
+      },
+    };
+  }
+
+  /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, columns?: number|string,
    *   percentFill?: boolean, redBelow?: number|string, yellowBelow?: number|string, names?: string[],
+   *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   onHeight?: (h: number) => void }} opts
    */
   function createValuesWidget(root, opts = {}) {
@@ -149,6 +222,18 @@
     let messageTimer = null;
 
     root.classList.add('vt');
+    // The typed names win over the `nameN` settings (which give the field its placeholder).
+    const typed = tileNames(opts, () => render(), (key) => {
+      const i = nameKeys(slots).indexOf(key);
+      const tile = i >= 0 ? tiles.get(`${keyOf(slots[i])}#${i}`) : null;
+      if (tile) {
+        tile.tile.classList.remove('shake');
+        void tile.tile.offsetWidth; // restart the animation
+        tile.tile.classList.add('shake');
+      }
+      setMessage(t('renameFailed'), true);
+    });
+    root.classList.toggle('renaming', typed.renaming);
     root.dataset.columns = String(opts.columns) === '2' ? '2' : '3';
     const num = (v, fallback) => (v !== '' && v != null && isFinite(Number(v)) ? Number(v) : fallback);
     const thresholds = { red: num(opts.redBelow, 10), yellow: num(opts.yellowBelow, 20) };
@@ -221,6 +306,7 @@
     let lastHeight = 0;
     function render() {
       const keys = slots.map((s, i) => `${keyOf(s)}#${i}`);
+      const named = nameKeys(slots);
       const wanted = new Set(keys);
       for (const [key, tile] of tiles) {
         if (!wanted.has(key)) { tile.tile.remove(); tiles.delete(key); }
@@ -229,7 +315,11 @@
         const tile = tileFor(keys[i]);
         grid.appendChild(tile.tile); // keeps the settings' order; a no-op when already in place
         const missing = 'missing' in s;
-        tile.name.textContent = missing ? t('unavailable') : s.name;
+        tile.name.textContent = missing ? t('unavailable') : typed.name(named[i], s.name);
+        if (typed.renaming && !missing) {
+          const field = typed.field(named[i], s.name);
+          if (field.previousSibling !== tile.name) tile.name.after(field);
+        }
         tile.value.textContent = missing ? '' : formatValue(s.capability, s.value, t);
         setMask(tile.icon, iconFor(s));
         tile.tile.classList.toggle('active', !missing && s.capability.type === 'boolean' && s.value === true);
@@ -260,7 +350,7 @@
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    return { setState, pushChange, pushColor, setMessage, render, t };
+    return { setState, setNames: typed.set, pushChange, pushColor, setMessage, render, t };
   }
 
   window.createValuesWidget = createValuesWidget;

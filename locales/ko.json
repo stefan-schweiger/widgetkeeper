@@ -31,7 +31,8 @@
     "selectDevices": "위젯 설정에서 기기를 선택하세요.",
     "error": "기기를 불러올 수 없습니다.",
     "failed": "__name__을(를) 변경할 수 없습니다.",
-    "unavailable": "사용할 수 없음"
+    "unavailable": "사용할 수 없음",
+    "renameFailed": "이름을 저장하지 못했습니다."
   },
   "sensoralarms": {
     "selectDevices": "위젯 설정에서 센서를 선택하세요.",
@@ -41,7 +42,8 @@
     "noSensors": "알람 센서 없음",
     "unavailable": "사용할 수 없음",
     "active": "활성",
-    "inactive": "비활성"
+    "inactive": "비활성",
+    "renameFailed": "이름을 저장하지 못했습니다."
   },
   "sensordots": {
     "selectDevices": "위젯 설정에서 센서를 선택하세요.",
@@ -128,19 +130,22 @@
     "unavailable": "사용할 수 없음",
     "live": "라이브",
     "liveFailed": "라이브 보기 실패",
-    "liveH265": "H.265는 실시간 재생 불가. H.264를 사용하세요."
+    "liveH265": "H.265는 실시간 재생 불가. H.264를 사용하세요.",
+    "renameFailed": "이름을 저장하지 못했습니다."
   },
   "values": {
     "selectSlots": "위젯 설정에서 기기 값을 선택하세요.",
     "error": "값을 불러올 수 없습니다.",
     "unavailable": "사용할 수 없음",
     "on": "켜짐",
-    "off": "꺼짐"
+    "off": "꺼짐",
+    "renameFailed": "이름을 저장하지 못했습니다."
   },
   "sparklines": {
     "selectSlots": "위젯 설정에서 기기 값을 선택하세요.",
     "error": "값을 불러올 수 없습니다.",
-    "unavailable": "사용할 수 없음"
+    "unavailable": "사용할 수 없음",
+    "renameFailed": "이름을 저장하지 못했습니다."
   },
   "charts": {
     "now": "지금",
@@ -161,7 +166,8 @@
     "keyScope": "API 키로 무드를 시작할 수 없습니다.",
     "keyInvalid": "API 키가 승인되지 않았습니다.",
     "moodFailed": "__name__을(를) 시작할 수 없습니다.",
-    "moods": "무드"
+    "moods": "무드",
+    "renameFailed": "이름을 저장하지 못했습니다."
   },
   "variables": {
     "selectSlots": "위젯 설정에서 변수를 선택하세요.",
@@ -287,7 +293,8 @@
     "unlock": "잠금 해제",
     "close": "닫기",
     "openAction": "열기",
-    "lockAll": "모두 잠그기"
+    "lockAll": "모두 잠그기",
+    "renameFailed": "이름을 저장하지 못했습니다."
   },
   "curtains": {
     "selectDevices": "위젯 설정에서 커튼을 선택하세요.",
@@ -301,7 +308,8 @@
     "closing": "닫는 중…",
     "stopped": "멈춤",
     "open": "열기",
-    "close": "닫기"
+    "close": "닫기",
+    "renameFailed": "이름을 저장하지 못했습니다."
   },
   "media": {
     "selectDevice": "위젯 설정에서 스피커를 선택하세요.",

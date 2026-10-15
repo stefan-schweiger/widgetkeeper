@@ -31,7 +31,8 @@
     "selectDevices": "Select devices in the widget settings.",
     "error": "Could not load the devices.",
     "failed": "Could not change __name__.",
-    "unavailable": "Unavailable"
+    "unavailable": "Unavailable",
+    "renameFailed": "Could not save the name."
   },
   "sensoralarms": {
     "selectDevices": "Select sensors in the widget settings.",
@@ -41,7 +42,8 @@
     "noSensors": "No alarm sensors",
     "unavailable": "Unavailable",
     "active": "Active",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "renameFailed": "Could not save the name."
   },
   "sensordots": {
     "selectDevices": "Select sensors in the widget settings.",
@@ -128,19 +130,22 @@
     "unavailable": "Unavailable",
     "live": "Live",
     "liveFailed": "Live view failed",
-    "liveH265": "H.265 can't play live. Try H.264."
+    "liveH265": "H.265 can't play live. Try H.264.",
+    "renameFailed": "Could not save the name."
   },
   "values": {
     "selectSlots": "Pick device values in the widget settings.",
     "error": "Could not load the values.",
     "unavailable": "Unavailable",
     "on": "On",
-    "off": "Off"
+    "off": "Off",
+    "renameFailed": "Could not save the name."
   },
   "sparklines": {
     "selectSlots": "Pick device values in the widget settings.",
     "error": "Could not load the values.",
-    "unavailable": "Unavailable"
+    "unavailable": "Unavailable",
+    "renameFailed": "Could not save the name."
   },
   "charts": {
     "now": "Now",
@@ -161,7 +166,8 @@
     "keyScope": "The API key may not start Moods.",
     "keyInvalid": "The API key was not accepted.",
     "moodFailed": "Could not start __name__.",
-    "moods": "Moods"
+    "moods": "Moods",
+    "renameFailed": "Could not save the name."
   },
   "variables": {
     "selectSlots": "Pick variables in the widget settings.",
@@ -287,7 +293,8 @@
     "unlock": "Unlock",
     "close": "Close",
     "openAction": "Open",
-    "lockAll": "Lock all"
+    "lockAll": "Lock all",
+    "renameFailed": "Could not save the name."
   },
   "curtains": {
     "selectDevices": "Select curtains in the widget settings.",
@@ -301,7 +308,8 @@
     "closing": "Closing…",
     "stopped": "Stopped",
     "open": "Open",
-    "close": "Close"
+    "close": "Close",
+    "renameFailed": "Could not save the name."
   },
   "media": {
     "selectDevice": "Select a speaker in the widget settings.",

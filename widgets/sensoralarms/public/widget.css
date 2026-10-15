@@ -103,3 +103,24 @@ html, body { background: transparent !important; }
 
 .sa-message { font-size: var(--sa-fs-small); line-height: var(--sa-lh-small); color: var(--sa-muted); }
 .sa-message.error { color: var(--sa-red); }
+
+/* Rename tiles: the name becomes a text field (as Variables' input); the panel stays shut. */
+.sa.renaming .sa-tile { cursor: default; }
+.sa.renaming .sa-tile:not(.missing) .sa-name { display: none; }
+.sa-tile.missing .wk-rename { display: none; }
+.sa .wk-rename {
+  width: 100%; min-width: 0; height: 24px; margin: -3px 0; padding: 0 8px;
+  font: inherit; font-size: var(--sa-fs-small); font-weight: var(--sa-bold); color: var(--sa-text);
+  background: color-mix(in srgb, var(--sa-text) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--sa-text) 24%, transparent); border-radius: 8px; outline: none;
+  user-select: text; -webkit-user-select: text;
+}
+.sa .wk-rename::placeholder { color: var(--sa-muted); opacity: 1; }
+.sa .wk-rename:focus { border-color: var(--sa-accent); }
+.sa { --sa-accent: var(--homey-color-blue, #2F8DF6); }
+.sa.renaming .sa-tile:active, .sa.renaming .sa-tile.pressing { transform: none; }
+.sa-tile.shake { animation: sa-shake .35s; }
+@keyframes sa-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}

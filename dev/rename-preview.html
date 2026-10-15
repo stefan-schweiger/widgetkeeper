@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rename tiles preview</title>
+  <link rel="stylesheet" href="../widgets/lights/public/widget.css">
+  <link rel="stylesheet" href="../widgets/curtains/public/widget.css">
+  <link rel="stylesheet" href="../widgets/quickactions/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sensoralarms/public/widget.css">
+  <link rel="stylesheet" href="../widgets/values/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sparklines/public/widget.css">
+  <link rel="stylesheet" href="../widgets/locks/public/widget.css">
+  <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
+  <script src="../widgets/lights/public/widget.js"></script>
+  <script src="../widgets/curtains/public/widget.js"></script>
+  <script src="../widgets/quickactions/public/widget.js"></script>
+  <script src="../widgets/sensoralarms/public/widget.js"></script>
+  <script src="../widgets/values/public/widget.js"></script>
+  <script src="../widgets/sparklines/public/widget.js"></script>
+  <script src="../widgets/locks/public/widget.js"></script>
+  <script src="../widgets/cameras/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <link rel="stylesheet" href="preview.css">
+  <style>
+    /* The widgets are transparent: they sit straight on the dashboard background. */
+    body { background: #111217 !important; }
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5 !important; padding: 12px; border-radius: 12px; }
+    .row { display: flex; flex-wrap: wrap; gap: 24px; width: 100%; }
+  </style>
+</head>
+<body>
+  <!-- Every widget with device tiles in rename mode (the `renameTiles` setting): a field per tile, the own name as
+       its placeholder. Typed names save after 300 ms (a name with "fail" in it fails, to show the shake). -->
+  <script>
+    const WIDGETS = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras'];
+    const cap = (value) => ({ value, setable: true, lastUpdated: Date.now() - 3600e3 });
+    const living = { id: 'z1', name: 'Living room' };
+    const kitchen = { id: 'z2', name: 'Kitchen' };
+    const vcap = (title, units, decimals = 1) => ({ title, type: 'number', units, decimals, min: null, max: null, values: null, icon: null });
+    const points = (base) => Array.from({ length: 48 }, (_, i) => [Date.now() - (48 - i) * 1800e3, base + Math.sin(i / 5) * 1.5]);
+    const SETUP = {
+      lights: {
+        create: 'createLightsWidget', opts: { groupByZone: true }, names: { 'zone:z1': 'Sofa lights' },
+        state: [
+          { id: 'l1', name: 'Ceiling lamp', icon: null, zone: living, caps: { onoff: cap(true), dim: cap(0.6), light_temperature: cap(0.6) } },
+          { id: 'l2', name: 'Floor lamp', icon: null, zone: living, caps: { onoff: cap(true), dim: cap(0.4) } },
+          { id: 'l3', name: 'Cabinet lights', icon: null, zone: null, caps: { onoff: cap(false), dim: cap(0.8) } },
+          { id: 'l4', missing: true },
+        ],
+      },
+      curtains: {
+        create: 'createCurtainsWidget', names: {},
+        state: [
+          { id: 'c1', name: 'Living room curtain', kind: 'curtain', zone: living, caps: { windowcoverings_set: cap(1) } },
+          { id: 'c2', name: 'Bedroom blinds', kind: 'blinds', zone: null, caps: { windowcoverings_set: cap(0.3) } },
+        ],
+      },
+      quickactions: {
+        create: 'createQuickActionsWidget', names: { q2: 'Coffee' },
+        state: ['Hall lamp', 'Kitchen plug', 'Front door'].map((name, i) => ({ id: `q${i + 1}`, name, icon: null, quickAction: { capabilityId: 'onoff', value: i === 0, actionable: true, momentary: false, icon: null } })),
+      },
+      sensoralarms: {
+        create: 'createSensorAlarmsWidget', names: { s1: 'Basement' },
+        state: [
+          { id: 's1', name: 'Water sensor', icon: null, alarms: [{ capabilityId: 'alarm_water', title: 'Water alarm', value: false, state: false }] },
+          { id: 's2', name: 'Smoke detector', icon: null, alarms: [{ capabilityId: 'alarm_smoke', title: 'Smoke alarm', value: true, state: false }] },
+        ],
+      },
+      values: {
+        create: 'createValuesWidget', names: { 'f:measure_temperature': 'Fridge' },
+        state: [
+          { deviceId: 'f', capabilityId: 'measure_temperature', name: 'Kitchen sensor 2', capability: vcap('Temperature', '°C'), value: 4.2 },
+          { deviceId: 'g', capabilityId: 'measure_humidity', name: 'Bathroom', capability: vcap('Humidity', '%', 0), value: 61 },
+          { deviceId: 'h', capabilityId: 'measure_power', name: 'Electricity Meter', capability: vcap('Power', 'W', 0), value: 1234 },
+        ],
+      },
+      sparklines: {
+        create: 'createSparklinesWidget', names: {},
+        state: [
+          { deviceId: 'o', capabilityId: 'measure_temperature', name: 'Outdoor', capability: vcap('Temperature', '°C'), value: 11.2, points: points(11) },
+          { deviceId: 'p', capabilityId: 'measure_temperature', name: 'Living room', capability: vcap('Temperature', '°C'), value: 21.6, points: points(21) },
+        ],
+      },
+      locks: {
+        create: 'createLocksWidget', names: { k2: 'Shed' },
+        state: { language: 'en', devices: [
+          { id: 'k1', name: 'Front door', icon: null, caps: { locked: cap(true), alarm_contact: cap(false) } },
+          { id: 'k2', name: 'Nuki 3 garden', icon: null, caps: { locked: cap(false) } },
+        ] },
+      },
+      cameras: {
+        create: 'createCamerasWidget', names: {}, opts: { api: () => new Promise(() => {}) },
+        state: ['Driveway', 'Back garden'].map((name, i) => ({ id: `cam${i}`, name, icon: null, image: null, video: null, videos: [], h265: [] })),
+      },
+    };
+    const row = document.createElement('div');
+    row.className = 'row';
+    document.body.append(row);
+    for (const id of WIDGETS) {
+      for (const [mode, cls] of [['dark', 'dash homey-dark-mode'], ['light', 'dash light']]) {
+        const col = document.createElement('div');
+        col.className = 'col';
+        col.innerHTML = `<span>${id} · 358 px · ${mode}</span><div class="${cls}" style="width:358px"><div></div></div>`;
+        row.append(col);
+        const s = SETUP[id];
+        const w = window[s.create](col.querySelector('.dash > div'), {
+          t: devT, ...s.opts, renameTiles: true,
+          onRename: (key, name) => new Promise((ok, fail) => setTimeout(() => (/fail/i.test(name) ? fail(new Error('fail')) : ok()), 300)),
+        });
+        w.setState(JSON.parse(JSON.stringify(s.state)));
+        w.setNames(s.names);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -20,6 +20,11 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - The value now sits at the top in the chart's colour (this can be turned off). Tap a chart to see the value at that moment.
 - The scale fits the values (so a room's 19–23 °C doesn't look flat) or starts at zero. Below zero can be drawn in yellow, as Electricity Overview draws solar export.
 
+### Name the tiles
+- Every widget with device tiles has a new setting, *Rename tiles*: turn it on, and each tile shows a text field. Type the name you want, or leave it empty to keep the device's (or room's) own name, then turn the setting off again. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Device Values, Sparklines, Locks and Doors, and Cameras have it.
+- Light Controls and Curtains grouped by room get a name per room tile, so two widgets with a "Living room" group can be called "Sofa lights" and "Living room". Users with several groups in one room asked for it.
+- The names belong to the widget: they stay with the right tiles when devices are renamed or reordered, and every screen showing the dashboard (and a Smart Stack page of it) gets them. Sensor Alarms' *Tile names* and Device Values' names still work; a name typed on the tile wins.
+
 ### Curtains
 - Blinds that are fully open at 50%, with 0% and 100% both closed: vertical slatted blinds, and blinds that only tilt, such as SwitchBot Blind Tilt (these can now be picked too). A tap opens them to 50% or closes them to the nearer end, and the slider sets how far they're open. The new setting *Blinds are fully open at* chooses: 100%, 50% only for blinds that only tilt (the default), or 50% for all.
 - The tiles are as tall as Light Controls' again (they were 2 pixels taller), so the two line up side by side.

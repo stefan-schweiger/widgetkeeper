@@ -31,7 +31,8 @@
     "selectDevices": "Välj enheter i widgetinställningarna.",
     "error": "Kunde inte läsa in enheterna.",
     "failed": "Kunde inte ändra __name__.",
-    "unavailable": "Inte tillgänglig"
+    "unavailable": "Inte tillgänglig",
+    "renameFailed": "Kunde inte spara namnet."
   },
   "sensoralarms": {
     "selectDevices": "Välj sensorer i widgetinställningarna.",
@@ -41,7 +42,8 @@
     "noSensors": "Inga larmsensorer",
     "unavailable": "Inte tillgänglig",
     "active": "Aktiv",
-    "inactive": "Inaktiv"
+    "inactive": "Inaktiv",
+    "renameFailed": "Kunde inte spara namnet."
   },
   "sensordots": {
     "selectDevices": "Välj sensorer i widgetinställningarna.",
@@ -128,19 +130,22 @@
     "unavailable": "Inte tillgänglig",
     "live": "Live",
     "liveFailed": "Livebild misslyckades",
-    "liveH265": "H.265 kan inte visas live. Prova H.264."
+    "liveH265": "H.265 kan inte visas live. Prova H.264.",
+    "renameFailed": "Kunde inte spara namnet."
   },
   "values": {
     "selectSlots": "Välj enhetsvärden i widgetinställningarna.",
     "error": "Kunde inte läsa in värdena.",
     "unavailable": "Inte tillgänglig",
     "on": "På",
-    "off": "Av"
+    "off": "Av",
+    "renameFailed": "Kunde inte spara namnet."
   },
   "sparklines": {
     "selectSlots": "Välj enhetsvärden i widgetinställningarna.",
     "error": "Kunde inte läsa in värdena.",
-    "unavailable": "Inte tillgänglig"
+    "unavailable": "Inte tillgänglig",
+    "renameFailed": "Kunde inte spara namnet."
   },
   "charts": {
     "now": "Nu",
@@ -161,7 +166,8 @@
     "keyScope": "API-nyckeln får inte starta Moods.",
     "keyInvalid": "API-nyckeln godkändes inte.",
     "moodFailed": "Kunde inte starta __name__.",
-    "moods": "Moods"
+    "moods": "Moods",
+    "renameFailed": "Kunde inte spara namnet."
   },
   "variables": {
     "selectSlots": "Välj variabler i widgetinställningarna.",
@@ -287,7 +293,8 @@
     "unlock": "Lås upp",
     "close": "Stäng",
     "openAction": "Öppna",
-    "lockAll": "Lås alla"
+    "lockAll": "Lås alla",
+    "renameFailed": "Kunde inte spara namnet."
   },
   "curtains": {
     "selectDevices": "Välj gardiner i widgetinställningarna.",
@@ -301,7 +308,8 @@
     "closing": "Stängs…",
     "stopped": "Stoppad",
     "open": "Öppna",
-    "close": "Stäng"
+    "close": "Stäng",
+    "renameFailed": "Kunde inte spara namnet."
   },
   "media": {
     "selectDevice": "Välj en högtalare i widgetinställningarna.",

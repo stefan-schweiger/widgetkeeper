@@ -31,7 +31,8 @@
     "selectDevices": "Scegli i dispositivi nelle impostazioni.",
     "error": "Impossibile caricare i dispositivi.",
     "failed": "Impossibile modificare __name__.",
-    "unavailable": "Non disponibile"
+    "unavailable": "Non disponibile",
+    "renameFailed": "Impossibile salvare il nome."
   },
   "sensoralarms": {
     "selectDevices": "Scegli i sensori nelle impostazioni del widget.",
@@ -41,7 +42,8 @@
     "noSensors": "Nessun sensore d'allarme",
     "unavailable": "Non disponibile",
     "active": "Attivo",
-    "inactive": "Inattivo"
+    "inactive": "Inattivo",
+    "renameFailed": "Impossibile salvare il nome."
   },
   "sensordots": {
     "selectDevices": "Scegli i sensori nelle impostazioni del widget.",
@@ -128,19 +130,22 @@
     "unavailable": "Non disponibile",
     "live": "Live",
     "liveFailed": "Live non riuscito",
-    "liveH265": "H.265 non va in diretta. Prova H.264."
+    "liveH265": "H.265 non va in diretta. Prova H.264.",
+    "renameFailed": "Impossibile salvare il nome."
   },
   "values": {
     "selectSlots": "Scegli i valori nelle impostazioni del widget.",
     "error": "Impossibile caricare i valori.",
     "unavailable": "Non disponibile",
     "on": "Acceso",
-    "off": "Spento"
+    "off": "Spento",
+    "renameFailed": "Impossibile salvare il nome."
   },
   "sparklines": {
     "selectSlots": "Scegli i valori nelle impostazioni del widget.",
     "error": "Impossibile caricare i valori.",
-    "unavailable": "Non disponibile"
+    "unavailable": "Non disponibile",
+    "renameFailed": "Impossibile salvare il nome."
   },
   "charts": {
     "now": "Ora",
@@ -161,7 +166,8 @@
     "keyScope": "La chiave API non può avviare i Mood.",
     "keyInvalid": "La chiave API non è stata accettata.",
     "moodFailed": "Impossibile avviare __name__.",
-    "moods": "Mood"
+    "moods": "Mood",
+    "renameFailed": "Impossibile salvare il nome."
   },
   "variables": {
     "selectSlots": "Scegli le variabili nelle impostazioni.",
@@ -287,7 +293,8 @@
     "unlock": "Sblocca",
     "close": "Chiudi",
     "openAction": "Apri",
-    "lockAll": "Blocca tutto"
+    "lockAll": "Blocca tutto",
+    "renameFailed": "Impossibile salvare il nome."
   },
   "curtains": {
     "selectDevices": "Scegli le tende nelle impostazioni del widget.",
@@ -301,7 +308,8 @@
     "closing": "In chiusura…",
     "stopped": "Ferma",
     "open": "Apri",
-    "close": "Chiudi"
+    "close": "Chiudi",
+    "renameFailed": "Impossibile salvare il nome."
   },
   "media": {
     "selectDevice": "Scegli un altoparlante nelle impostazioni del widget.",

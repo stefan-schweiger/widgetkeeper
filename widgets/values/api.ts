@@ -1,10 +1,13 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
 import { idList, logged, logPerf } from '../../lib/widgetApi.js';
+import { tileNameRoutes } from '../../lib/TileNameService.js';
 
 type Homey = App['homey'];
 
 export default {
+  ...tileNameRoutes,
+
   /** `slots`: comma-separated `<deviceId>:<capabilityId>`. */
   async getState({ homey, query }: {
     homey: Homey,

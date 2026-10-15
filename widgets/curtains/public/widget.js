@@ -25,6 +25,7 @@
     stopped: 'Stopped',
     open: 'Open',
     close: 'Close',
+    renameFailed: 'Could not save the name.',
   };
 
   /**
@@ -90,9 +91,70 @@
   }
 
   /**
+   * The names typed on the tiles (`renameTiles`; the app keeps them per widget instance, by tile key): `name(key, own)`
+   * is the typed name, else `own`. In rename mode `field(key, own)` is the tile's text field (made once per key, with
+   * `own` as the placeholder): it saves on change (Enter or leaving it), Escape puts it back, and a realtime update
+   * doesn't overwrite it while it has the focus. Its touches, clicks and keys never reach the tile's own taps.
+   * `failed(key)` shakes the tile and says so; the name goes back.
+   */
+  function tileNames(opts, render, failed) {
+    let names = {};
+    const fields = new Map();
+    async function save(key, value) {
+      const before = names[key];
+      if ((before || '') === value) return;
+      const put = v => { names = { ...names }; if (v) names[key] = v; else delete names[key]; };
+      put(value);
+      render();
+      try {
+        if (opts.onRename) await opts.onRename(key, value);
+      } catch (err) {
+        console.error(err);
+        put(before);
+        failed(key);
+      }
+    }
+    return {
+      renaming: opts.renameTiles === true,
+      name: (key, own) => names[key] || own,
+      set(map) {
+        names = {};
+        if (map && typeof map === 'object') for (const [k, v] of Object.entries(map)) if (typeof v === 'string' && v) names[k] = v;
+        render();
+      },
+      field(key, own) {
+        let input = fields.get(key);
+        if (!input) {
+          input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'wk-rename';
+          input.dir = 'auto';
+          input.maxLength = 60;
+          input.autocomplete = 'off';
+          input.setAttribute('enterkeyhint', 'done');
+          const field = input;
+          for (const type of ['touchstart', 'touchend', 'pointerdown', 'click']) field.addEventListener(type, e => e.stopPropagation(), { passive: true });
+          field.addEventListener('keydown', (e) => {
+            e.stopPropagation();
+            if (e.key === 'Enter') field.blur();
+            else if (e.key === 'Escape') { field.value = names[key] || ''; field.blur(); }
+          });
+          field.addEventListener('change', () => { field.value = field.value.trim(); save(key, field.value); });
+          fields.set(key, input);
+        }
+        input.placeholder = own || '';
+        input.setAttribute('aria-label', own || '');
+        if (document.activeElement !== input) input.value = names[key] || '';
+        return input;
+      },
+    };
+  }
+
+  /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string,
    *   onSet?: (deviceId: string, change: {action?: string, position?: number}) => Promise<any>,
+   *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   onHeight?: (h: number) => void, groupByZone?: boolean, between?: string, invert?: boolean, openAt?: string, showState?: boolean }} opts
    */
   function createCurtainsWidget(root, opts = {}) {
@@ -166,6 +228,11 @@
     let lastTouchTap = 0;
 
     root.classList.add('ct');
+    const names = tileNames(opts, () => render(), (key) => {
+      shake(key);
+      setMessage(t('renameFailed'), true);
+    });
+    root.classList.toggle('renaming', names.renaming);
     // The state under the name (Open, 42% open, Opening…): on unless `showState` is false.
     root.classList.toggle('ct-no-state', opts.showState === false);
     const grid = el('div', { class: 'ct-grid' }, root);
@@ -288,14 +355,17 @@
         console.error(err);
         pending.delete(d.id);
         for (const id of ALL_CAPS) optimistic.delete(`${d.id}:${id}`);
-        const tile = tiles.get(item.id);
-        if (tile) {
-          tile.tile.classList.remove('shake');
-          void tile.tile.offsetWidth; // restart the animation
-          tile.tile.classList.add('shake');
-        }
-        setMessage(t('failed', { name: d.name }), true);
+        shake(item.id);
+        setMessage(t('failed', { name: item.id === d.id ? names.name(d.id, d.name) : d.name }), true);
       }
+    }
+
+    function shake(id) {
+      const tile = tiles.get(id);
+      if (!tile) return;
+      tile.tile.classList.remove('shake');
+      void tile.tile.offsetWidth; // restart the animation
+      tile.tile.classList.add('shake');
     }
 
     /** The tile with this id, if it shows curtains. */
@@ -313,7 +383,7 @@
     /** A tap on a tile: what its corner says, for every curtain on it. */
     function tap(id) {
       const item = itemOf(id);
-      if (!item) return;
+      if (!item || names.renaming) return;
       const action = curtainAction(itemView(item), rule);
       if (!action) return;
       const changes = [];
@@ -571,7 +641,12 @@
         tile.tile.classList.toggle('open', v.closed === false || (v.position != null && v.position > END));
         tile.tile.classList.toggle('moving', !!v.moving);
         tile.tile.classList.toggle('no-position', !hasPosition);
-        tile.name.textContent = item.name;
+        const name = names.name(item.id, item.name);
+        tile.name.textContent = name;
+        if (names.renaming) {
+          const field = names.field(item.id, item.name);
+          if (field.previousSibling !== tile.name) tile.name.after(field);
+        }
         tile.state.textContent = drag != null ? t('percentOpen', { percent: Math.round(drag * 100) }) : stateText(v);
         if (tile.act.getAttribute('data-action') !== action || tile.act.getAttribute('data-kind') !== item.kind) {
           if (action) {
@@ -586,8 +661,8 @@
         }
         tile.act.style.display = action ? '' : 'none';
         // A group, not a button: it holds the slider, which has its own role.
-        tile.tile.setAttribute('aria-label', `${item.name}: ${action ? t(action) : stateText(v)}`);
-        tile.bar.setAttribute('aria-label', item.name);
+        tile.tile.setAttribute('aria-label', `${name}: ${action ? t(action) : stateText(v)}`);
+        tile.bar.setAttribute('aria-label', name);
         drawIcon(tile.icon, item.kind, openness);
         tile.tile.style.setProperty('--ct-x', String(x));
         tile.tile.style.setProperty('--ct-target', String(v.target != null ? v.target : x));
@@ -603,7 +678,7 @@
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    return { setState, pushChange, setMessage, render, t };
+    return { setState, setNames: names.set, pushChange, setMessage, render, t };
   }
 
   window.createCurtainsWidget = createCurtainsWidget;

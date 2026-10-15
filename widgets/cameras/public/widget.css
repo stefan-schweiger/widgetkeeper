@@ -106,3 +106,21 @@ html, body { background: transparent !important; }
 .cw-tile.expanded { position: absolute; inset: 0; z-index: 2; aspect-ratio: auto; background: #000000; }
 .cw-tile.expanded .cw-img, .cw-tile.expanded .cw-video { object-fit: contain; }
 .cw-grid.has-expanded > .cw-tile:not(.expanded) { visibility: hidden; }
+
+/* Rename tiles: the name becomes a text field on the caption; a tap doesn't start live view meanwhile. */
+.cw.renaming .cw-tile { cursor: default; }
+.cw.renaming .cw-tile:not(.missing) .cw-name { display: none; }
+.cw-tile.missing .wk-rename { display: none; }
+.cw .wk-rename {
+  flex: 1; width: 100%; min-width: 0; height: 24px; margin: -2px 0; padding: 0 8px;
+  font: inherit; font-size: var(--cw-fs-small); font-weight: var(--cw-bold); color: #FFFFFF;
+  background: rgb(0 0 0 / .45); border: 1px solid rgb(255 255 255 / .35); border-radius: 8px; outline: none;
+  user-select: text; -webkit-user-select: text;
+}
+.cw .wk-rename::placeholder { color: rgb(255 255 255 / .7); opacity: 1; }
+.cw .wk-rename:focus { border-color: var(--homey-color-blue, #2F8DF6); }
+.cw-tile.shake { animation: cw-shake .35s; }
+@keyframes cw-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}

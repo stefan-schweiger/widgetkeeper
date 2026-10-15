@@ -196,3 +196,18 @@ html, body { background: transparent !important; }
   20%, 60% { transform: translateX(-4px); }
   40%, 80% { transform: translateX(4px); }
 }
+
+/* Rename tiles: the name becomes a text field (as Variables' input); the chip and the bar step aside. */
+.lc.renaming .lc-tile { cursor: default; }
+.lc.renaming .lc-tile:not(.missing) .lc-name { display: none; }
+.lc.renaming .lc-chip, .lc.renaming .lc-bar { visibility: hidden; }
+.lc-tile.missing .wk-rename { display: none; }
+.lc .wk-rename {
+  width: 100%; min-width: 0; height: 24px; margin: 2px 0 -2px; padding: 0 8px;
+  font: inherit; font-size: var(--lc-fs-small); font-weight: var(--lc-bold); color: var(--lc-text);
+  background: color-mix(in srgb, var(--lc-text) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lc-text) 24%, transparent); border-radius: 8px; outline: none;
+  user-select: text; -webkit-user-select: text;
+}
+.lc .wk-rename::placeholder { color: var(--lc-muted); opacity: 1; }
+.lc .wk-rename:focus { border-color: var(--lc-accent); }

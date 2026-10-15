@@ -93,3 +93,22 @@ html, body { background: transparent !important; }
 
 .vt-message { font-size: var(--vt-fs-small); line-height: var(--vt-lh-small); color: var(--vt-muted); }
 .vt-message.error { color: var(--homey-color-red, #F25F5C); }
+
+/* Rename tiles: the name becomes a text field (as Variables' input). */
+.vt.renaming .vt-tile { cursor: default; }
+.vt.renaming .vt-tile:not(.missing) .vt-name { display: none; }
+.vt-tile.missing .wk-rename { display: none; }
+.vt .wk-rename {
+  width: 100%; min-width: 0; height: 24px; margin: -2px 0; padding: 0 8px;
+  font: inherit; font-size: var(--vt-fs-small); font-weight: var(--vt-bold); color: var(--vt-text);
+  background: color-mix(in srgb, var(--vt-text) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--vt-text) 24%, transparent); border-radius: 8px; outline: none;
+  user-select: text; -webkit-user-select: text;
+}
+.vt .wk-rename::placeholder { color: var(--vt-muted); opacity: 1; }
+.vt .wk-rename:focus { border-color: var(--vt-accent); }
+.vt-tile.shake { animation: vt-shake .35s; }
+@keyframes vt-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}

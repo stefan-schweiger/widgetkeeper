@@ -1,0 +1,73 @@
+import { readFileSync } from 'node:fs';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { fakeApi, fakeHomey } from './helpers/fakeHomey.js';
+import TileNameService, { TILE_NAMES_EVENT, TILE_NAMES_SETTING, tileNameRoutes } from '../lib/TileNameService.js';
+
+beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-15T12:00:00Z')); });
+afterEach(() => { vi.useRealTimers(); });
+
+function setup() {
+  const homey = fakeHomey(fakeApi());
+  const service = new TileNameService(homey as any, () => {});
+  (homey as any).app = { tileNames: service, log: () => {}, debug: () => {} };
+  return { homey, service };
+}
+
+describe('TileNameService', () => {
+  it('names a tile per widget instance, sends it over realtime and survives a restart', () => {
+    const { service, homey } = setup();
+    service.set('w1', 'zone:living', '  Sofa lights ');
+    expect(homey.api.realtime).toHaveBeenCalledWith(TILE_NAMES_EVENT, { instance: 'w1', names: { 'zone:living': 'Sofa lights' } });
+    expect(service.get('w1')).toEqual({ instance: 'w1', names: { 'zone:living': 'Sofa lights' } });
+    expect(service.get('w2').names).toEqual({});
+    expect(new TileNameService(homey as any, () => {}).get('w1').names).toEqual({ 'zone:living': 'Sofa lights' });
+  });
+
+  it('gives a tile its own name back with an empty name, and forgets an instance with none', () => {
+    const { service, homey } = setup();
+    service.set('w1', 'a', 'Lamp');
+    service.set('w1', 'b', 'Spot');
+    service.set('w1', 'a', ' ');
+    expect(service.get('w1').names).toEqual({ b: 'Spot' });
+    service.set('w1', 'b', '');
+    expect(homey.settings.get(TILE_NAMES_SETTING)).toEqual({});
+    expect(homey.api.realtime).toHaveBeenLastCalledWith(TILE_NAMES_EVENT, { instance: 'w1', names: {} });
+  });
+
+  it('cuts long names and refuses a missing instance or key', () => {
+    const { service } = setup();
+    service.set('w1', 'a', 'x'.repeat(80));
+    expect(service.get('w1').names.a).toHaveLength(60);
+    expect(() => service.set('', 'a', 'x')).toThrow();
+    expect(() => service.set('w1', '', 'x')).toThrow();
+    expect(() => service.get(undefined)).toThrow();
+  });
+
+  it('keeps at most 300 instances, dropping the ones renamed longest ago', () => {
+    const { service, homey } = setup();
+    for (let i = 0; i < 305; i++) {
+      vi.setSystemTime(new Date(Date.UTC(2026, 9, 15, 12, 0, i)));
+      service.set(`w${i}`, 'a', 'Lamp');
+    }
+    const all = homey.settings.get(TILE_NAMES_SETTING);
+    expect(Object.keys(all)).toHaveLength(300);
+    expect(all.w4).toBeUndefined();
+    expect(all.w5).toBeDefined();
+    expect(service.describe()).toEqual({ widgets: 300, names: 300 });
+  });
+
+  it('serves the widget routes', async () => {
+    const { homey } = setup();
+    await tileNameRoutes.setName({ homey: homey as any, body: { instance: 'w1', key: 'd1', name: 'Hall' } });
+    expect(await tileNameRoutes.getNames({ homey: homey as any, query: { instance: 'w1' } })).toEqual({ instance: 'w1', names: { d1: 'Hall' } });
+  });
+
+  it('is in the api of every widget with device tiles', () => {
+    const manifest = JSON.parse(readFileSync('app.json', 'utf8'));
+    for (const id of ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras']) {
+      expect(manifest.widgets[id].api.getNames).toEqual({ method: 'GET', path: '/names' });
+      expect(manifest.widgets[id].api.setName).toEqual({ method: 'POST', path: '/names' });
+      expect(manifest.widgets[id].settings.find((s: any) => s.id === 'renameTiles')).toMatchObject({ type: 'checkbox', value: false });
+    }
+  });
+});

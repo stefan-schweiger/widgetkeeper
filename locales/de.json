@@ -31,7 +31,8 @@
     "selectDevices": "Wähle Geräte in den Widget-Einstellungen.",
     "error": "Geräte konnten nicht geladen werden.",
     "failed": "__name__ konnte nicht geändert werden.",
-    "unavailable": "Nicht verfügbar"
+    "unavailable": "Nicht verfügbar",
+    "renameFailed": "Der Name konnte nicht gespeichert werden."
   },
   "sensoralarms": {
     "selectDevices": "Wähle Sensoren in den Widget-Einstellungen.",
@@ -41,7 +42,8 @@
     "noSensors": "Keine Alarmsensoren",
     "unavailable": "Nicht verfügbar",
     "active": "Aktiv",
-    "inactive": "Inaktiv"
+    "inactive": "Inaktiv",
+    "renameFailed": "Der Name konnte nicht gespeichert werden."
   },
   "sensordots": {
     "selectDevices": "Wähle Sensoren in den Widget-Einstellungen.",
@@ -128,19 +130,22 @@
     "unavailable": "Nicht verfügbar",
     "live": "Live",
     "liveFailed": "Livebild fehlgeschlagen",
-    "liveH265": "H.265 geht nicht live. H.264 probieren."
+    "liveH265": "H.265 geht nicht live. H.264 probieren.",
+    "renameFailed": "Der Name konnte nicht gespeichert werden."
   },
   "values": {
     "selectSlots": "Wähle Gerätewerte in den Widget-Einstellungen.",
     "error": "Werte konnten nicht geladen werden.",
     "unavailable": "Nicht verfügbar",
     "on": "Ein",
-    "off": "Aus"
+    "off": "Aus",
+    "renameFailed": "Der Name konnte nicht gespeichert werden."
   },
   "sparklines": {
     "selectSlots": "Wähle Gerätewerte in den Widget-Einstellungen.",
     "error": "Werte konnten nicht geladen werden.",
-    "unavailable": "Nicht verfügbar"
+    "unavailable": "Nicht verfügbar",
+    "renameFailed": "Der Name konnte nicht gespeichert werden."
   },
   "charts": {
     "now": "Jetzt",
@@ -161,7 +166,8 @@
     "keyScope": "Der API-Schlüssel darf keine Moods starten.",
     "keyInvalid": "Der API-Schlüssel wurde nicht akzeptiert.",
     "moodFailed": "__name__ konnte nicht gestartet werden.",
-    "moods": "Moods"
+    "moods": "Moods",
+    "renameFailed": "Der Name konnte nicht gespeichert werden."
   },
   "variables": {
     "selectSlots": "Wähle Variablen in den Widget-Einstellungen.",
@@ -287,7 +293,8 @@
     "unlock": "Entriegeln",
     "close": "Schließen",
     "openAction": "Öffnen",
-    "lockAll": "Alle verriegeln"
+    "lockAll": "Alle verriegeln",
+    "renameFailed": "Der Name konnte nicht gespeichert werden."
   },
   "curtains": {
     "selectDevices": "Wähle Vorhänge in den Widget-Einstellungen.",
@@ -301,7 +308,8 @@
     "closing": "Schließt…",
     "stopped": "Gestoppt",
     "open": "Öffnen",
-    "close": "Schließen"
+    "close": "Schließen",
+    "renameFailed": "Der Name konnte nicht gespeichert werden."
   },
   "media": {
     "selectDevice": "Wähle einen Lautsprecher in den Widget-Einstellungen.",

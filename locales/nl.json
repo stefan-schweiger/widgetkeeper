@@ -31,7 +31,8 @@
     "selectDevices": "Kies apparaten in de widgetinstellingen.",
     "error": "Kon de apparaten niet laden.",
     "failed": "Kon __name__ niet wijzigen.",
-    "unavailable": "Niet beschikbaar"
+    "unavailable": "Niet beschikbaar",
+    "renameFailed": "Kon de naam niet opslaan."
   },
   "sensoralarms": {
     "selectDevices": "Kies sensoren in de widgetinstellingen.",
@@ -41,7 +42,8 @@
     "noSensors": "Geen alarmsensoren",
     "unavailable": "Niet beschikbaar",
     "active": "Actief",
-    "inactive": "Inactief"
+    "inactive": "Inactief",
+    "renameFailed": "Kon de naam niet opslaan."
   },
   "sensordots": {
     "selectDevices": "Kies sensoren in de widgetinstellingen.",
@@ -128,19 +130,22 @@
     "unavailable": "Niet beschikbaar",
     "live": "Live",
     "liveFailed": "Live beeld mislukt",
-    "liveH265": "H.265 kan niet live. Probeer H.264."
+    "liveH265": "H.265 kan niet live. Probeer H.264.",
+    "renameFailed": "Kon de naam niet opslaan."
   },
   "values": {
     "selectSlots": "Kies apparaatwaarden in de widgetinstellingen.",
     "error": "Kan de waarden niet laden.",
     "unavailable": "Niet beschikbaar",
     "on": "Aan",
-    "off": "Uit"
+    "off": "Uit",
+    "renameFailed": "Kon de naam niet opslaan."
   },
   "sparklines": {
     "selectSlots": "Kies apparaatwaarden in de widgetinstellingen.",
     "error": "Kan de waarden niet laden.",
-    "unavailable": "Niet beschikbaar"
+    "unavailable": "Niet beschikbaar",
+    "renameFailed": "Kon de naam niet opslaan."
   },
   "charts": {
     "now": "Nu",
@@ -161,7 +166,8 @@
     "keyScope": "De API-sleutel mag geen Moods starten.",
     "keyInvalid": "De API-sleutel werd niet geaccepteerd.",
     "moodFailed": "Kon __name__ niet starten.",
-    "moods": "Moods"
+    "moods": "Moods",
+    "renameFailed": "Kon de naam niet opslaan."
   },
   "variables": {
     "selectSlots": "Kies variabelen in de widgetinstellingen.",
@@ -287,7 +293,8 @@
     "unlock": "Ontgrendel",
     "close": "Sluit",
     "openAction": "Open",
-    "lockAll": "Alles vergrendelen"
+    "lockAll": "Alles vergrendelen",
+    "renameFailed": "Kon de naam niet opslaan."
   },
   "curtains": {
     "selectDevices": "Kies gordijnen in de widgetinstellingen.",
@@ -301,7 +308,8 @@
     "closing": "Gaat dicht…",
     "stopped": "Gestopt",
     "open": "Openen",
-    "close": "Sluiten"
+    "close": "Sluiten",
+    "renameFailed": "Kon de naam niet opslaan."
   },
   "media": {
     "selectDevice": "Kies een speaker in de widgetinstellingen.",

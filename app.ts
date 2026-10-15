@@ -16,6 +16,7 @@ import SparklineService from './lib/SparklineService.js';
 import StackService, { STACK_RESUME_CARD, STACK_SHOW_CARD } from './lib/StackService.js';
 import TextLineService, { TEXTLINE_CLEAR_CARD, TEXTLINE_SET_CARD, TEXTLINE_SET_COLOR_CARD } from './lib/TextLineService.js';
 import ThermostatService from './lib/ThermostatService.js';
+import TileNameService from './lib/TileNameService.js';
 import TimerService, { TIMER_FINISHED_CARD, timerDurationText, type Timer } from './lib/TimerService.js';
 import ValueService from './lib/ValueService.js';
 import VariableService from './lib/VariableService.js';
@@ -45,6 +46,8 @@ export default class WidgetkeeperApp extends Homey.App {
   media!: MediaService;
   stack!: StackService;
   textLines!: TextLineService;
+  /** The names typed on the device widgets' tiles (`renameTiles`). */
+  tileNames!: TileNameService;
   web!: WebDashboardService;
   /** The web dashboards' optional password and the browsers signed in with it. */
   webPassword!: WebPassword;
@@ -94,6 +97,7 @@ export default class WidgetkeeperApp extends Homey.App {
     this.registerStackFlows();
     this.textLines = new TextLineService(this.homey, log, debug);
     this.registerTextLineFlows();
+    this.tileNames = new TileNameService(this.homey, log, debug);
     this.web = new WebDashboardService(this.homey, log, widgetAutocompletes(this));
     this.webPassword = new WebPassword(this.homey, log);
     this.registerAutocompletes();

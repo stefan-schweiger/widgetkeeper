@@ -73,3 +73,22 @@ html, body { background: transparent !important; }
 
 .sl-message { font-size: var(--sl-fs-small); line-height: var(--sl-lh-small); color: var(--sl-muted); }
 .sl-message.error { color: var(--homey-color-red, #F25F5C); }
+
+/* Rename tiles: the name becomes a text field (as Variables' input). */
+.sl.renaming .sl-tile { cursor: default; }
+.sl.renaming .sl-tile:not(.missing) .sl-name { display: none; }
+.sl-tile.missing .wk-rename { display: none; }
+.sl .wk-rename {
+  width: 100%; min-width: 0; height: 24px; margin: -2px 0; padding: 0 8px;
+  font: inherit; font-size: var(--sl-fs-small); font-weight: var(--sl-bold); color: var(--sl-text);
+  background: color-mix(in srgb, var(--sl-text) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--sl-text) 24%, transparent); border-radius: 8px; outline: none;
+  user-select: text; -webkit-user-select: text;
+}
+.sl .wk-rename::placeholder { color: var(--sl-muted); opacity: 1; }
+.sl .wk-rename:focus { border-color: var(--sl-accent); }
+.sl-tile.shake { animation: sl-shake .35s; }
+@keyframes sl-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}

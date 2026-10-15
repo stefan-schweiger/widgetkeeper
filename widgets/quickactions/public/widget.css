@@ -88,3 +88,19 @@ html, body { background: transparent !important; }
   20%, 60% { transform: translateX(-4px); }
   40%, 80% { transform: translateX(4px); }
 }
+
+/* Rename tiles: the name becomes a text field (as Variables' input); the tile is a plain one meanwhile. */
+.qa.renaming .qa-tile { cursor: default; }
+.qa.renaming .qa-tile:not(.missing) .qa-name { display: none; }
+.qa-tile.missing .wk-rename { display: none; }
+.qa .wk-rename {
+  width: 100%; min-width: 0; height: 24px; margin: -2px 0; padding: 0 8px;
+  font: inherit; font-size: var(--qa-fs-small); font-weight: var(--qa-bold); color: var(--qa-text);
+  background: color-mix(in srgb, var(--qa-text) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--qa-text) 24%, transparent); border-radius: 8px; outline: none;
+  user-select: text; -webkit-user-select: text;
+}
+.qa .wk-rename::placeholder { color: var(--qa-muted); opacity: 1; }
+.qa .wk-rename:focus { border-color: var(--qa-accent); }
+.qa.renaming .qa-tile:active, .qa.renaming .qa-tile.pressing { transform: none; }
+.qa.renaming .qa-tile.missing > * { opacity: .5; }

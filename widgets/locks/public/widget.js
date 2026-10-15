@@ -37,6 +37,7 @@
     close: 'Close',
     openAction: 'Open',
     lockAll: 'Lock all',
+    renameFailed: 'Could not save the name.',
   };
 
   /** The capabilities read, and the value of each that's secure (as lib/LockService.ts). */
@@ -147,10 +148,71 @@
   }
 
   /**
+   * The names typed on the tiles (`renameTiles`; the app keeps them per widget instance, by tile key): `name(key, own)`
+   * is the typed name, else `own`. In rename mode `field(key, own)` is the tile's text field (made once per key, with
+   * `own` as the placeholder): it saves on change (Enter or leaving it), Escape puts it back, and a realtime update
+   * doesn't overwrite it while it has the focus. Its touches, clicks and keys never reach the tile's own taps.
+   * `failed(key)` shakes the tile and says so; the name goes back.
+   */
+  function tileNames(opts, render, failed) {
+    let names = {};
+    const fields = new Map();
+    async function save(key, value) {
+      const before = names[key];
+      if ((before || '') === value) return;
+      const put = v => { names = { ...names }; if (v) names[key] = v; else delete names[key]; };
+      put(value);
+      render();
+      try {
+        if (opts.onRename) await opts.onRename(key, value);
+      } catch (err) {
+        console.error(err);
+        put(before);
+        failed(key);
+      }
+    }
+    return {
+      renaming: opts.renameTiles === true,
+      name: (key, own) => names[key] || own,
+      set(map) {
+        names = {};
+        if (map && typeof map === 'object') for (const [k, v] of Object.entries(map)) if (typeof v === 'string' && v) names[k] = v;
+        render();
+      },
+      field(key, own) {
+        let input = fields.get(key);
+        if (!input) {
+          input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'wk-rename';
+          input.dir = 'auto';
+          input.maxLength = 60;
+          input.autocomplete = 'off';
+          input.setAttribute('enterkeyhint', 'done');
+          const field = input;
+          for (const type of ['touchstart', 'touchend', 'pointerdown', 'click']) field.addEventListener(type, e => e.stopPropagation(), { passive: true });
+          field.addEventListener('keydown', (e) => {
+            e.stopPropagation();
+            if (e.key === 'Enter') field.blur();
+            else if (e.key === 'Escape') { field.value = names[key] || ''; field.blur(); }
+          });
+          field.addEventListener('change', () => { field.value = field.value.trim(); save(key, field.value); });
+          fields.set(key, input);
+        }
+        input.placeholder = own || '';
+        input.setAttribute('aria-label', own || '');
+        if (document.activeElement !== input) input.value = names[key] || '';
+        return input;
+      },
+    };
+  }
+
+  /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, locale?: string, view?: string,
    *   allowUnlock?: boolean, onSet?: (deviceId: string, capabilityId: string, value: boolean) => Promise<any>,
-   *   onHaptic?: () => void, onHeight?: (h: number) => void }} opts
+   *   onHaptic?: () => void, onHeight?: (h: number) => void,
+   *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any> }} opts
    */
   function createLocksWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -158,7 +220,14 @@
       if (s && s !== `locks.${key}`) return s;
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
-    const alwaysOpen = opts.view === 'list';
+    const names = tileNames(opts, () => render(), (key) => {
+      shake(key);
+      setMessage(t('renameFailed'), true);
+    });
+    // Renaming: the list shows (its rows are the tiles), without the buttons.
+    const alwaysOpen = opts.view === 'list' || names.renaming;
+    /** A device's name: the one typed on its row, else its own. */
+    const nameOf = d => names.name(d.id, d.name);
     const allowUnlock = opts.allowUnlock === true;
 
     let devices = []; // [{ id, name, icon, caps: { locked?, alarm_contact?, garagedoor_closed? } } | { id, missing }]
@@ -169,6 +238,7 @@
     const busy = new Map(); // deviceId → timeout, while a lock or close is on its way
 
     root.classList.add('lk');
+    root.classList.toggle('renaming', names.renaming);
     const tile = el('div', { class: 'lk-tile' }, root);
     const summary = el('div', { class: 'lk-summary' }, tile);
     const icon = el('div', { class: 'lk-icon' }, summary);
@@ -254,7 +324,7 @@
     }
 
     async function send(d, action) {
-      if (busy.has(d.id)) return;
+      if (busy.has(d.id) || names.renaming) return;
       if (opts.onHaptic) opts.onHaptic();
       busy.set(d.id, setTimeout(() => { busy.delete(d.id); render(); }, BUSY_MS));
       render();
@@ -263,14 +333,17 @@
       } catch (err) {
         console.error(err);
         clearBusy(d.id);
-        const r = rows.get(d.id);
-        if (r) {
-          r.row.classList.remove('shake');
-          void r.row.offsetWidth;
-          r.row.classList.add('shake');
-        }
-        setMessage(t('failed', { name: d.name }), true);
+        shake(d.id);
+        setMessage(t('failed', { name: nameOf(d) }), true);
       }
+    }
+
+    function shake(id) {
+      const r = rows.get(id);
+      if (!r) return;
+      r.row.classList.remove('shake');
+      void r.row.offsetWidth;
+      r.row.classList.add('shake');
     }
 
     /**
@@ -304,19 +377,19 @@
       if (insecure.length === 1) {
         const d = insecure[0];
         const caps = capsOf(d).filter(([id, c]) => isInsecure(id, c.value)).map(([, c]) => c);
-        return { level: 'insecure', title: d.name, sub: join(`${stateText(d)} ${sinceText(newest(caps), 'since')}`.trim(), unavailable) };
+        return { level: 'insecure', title: nameOf(d), sub: join(`${stateText(d)} ${sinceText(newest(caps), 'since')}`.trim(), unavailable) };
       }
       if (insecure.length > 1) {
         const kinds = new Set(insecure.flatMap(d => capsOf(d).filter(([id, c]) => isInsecure(id, c.value)).map(([id]) => (id === 'locked' ? 'lock' : 'door'))));
         const key = kinds.size > 1 ? 'countInsecure' : kinds.has('lock') ? 'countUnlocked' : 'countOpen';
-        return { level: 'insecure', title: t(key, { count: insecure.length }), sub: join(insecure.map(d => d.name).join(', '), unavailable) };
+        return { level: 'insecure', title: t(key, { count: insecure.length }), sub: join(insecure.map(nameOf).join(', '), unavailable) };
       }
       const known = present.filter(d => lockLevel(d) === 'secure');
       if (!known.length) return { level: present.length ? 'unknown' : 'missing', title: present.length ? t('noStatus') : t('unavailable'), sub: unavailable };
       // "All locked" only when every device says so: one that hasn't reported yet may well be open.
       const unknown = present.filter(d => lockLevel(d) === 'unknown');
-      if (unknown.length === 1) return { level: 'unknown', title: unknown[0].name, sub: join(t('noStatus'), unavailable) };
-      if (unknown.length > 1) return { level: 'unknown', title: t('countNoStatus', { count: unknown.length }), sub: join(unknown.map(d => d.name).join(', '), unavailable) };
+      if (unknown.length === 1) return { level: 'unknown', title: nameOf(unknown[0]), sub: join(t('noStatus'), unavailable) };
+      if (unknown.length > 1) return { level: 'unknown', title: t('countNoStatus', { count: unknown.length }), sub: join(unknown.map(nameOf).join(', '), unavailable) };
       const caps = known.flatMap(d => capsOf(d).map(([id, c]) => [id, c]));
       const hasLock = caps.some(([id]) => id === 'locked');
       const hasDoor = caps.some(([id]) => id !== 'locked');
@@ -370,7 +443,11 @@
         list.appendChild(r.row); // keeps the settings' order
         const level = lockLevel(d);
         r.row.dataset.level = level;
-        r.name.textContent = 'missing' in d ? t('unavailable') : d.name;
+        r.name.textContent = 'missing' in d ? t('unavailable') : nameOf(d);
+        if (names.renaming && !('missing' in d)) {
+          const field = names.field(d.id, d.name);
+          if (field.previousSibling !== r.name) r.name.after(field);
+        }
         r.state.textContent = 'missing' in d ? '' : stateText(d);
         r.state.style.display = 'missing' in d ? 'none' : '';
         setMask(r.icon, 'missing' in d ? null : d.icon);
@@ -393,7 +470,7 @@
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    return { setState, pushChange, setMessage, render, t, expand: (v) => { expanded = v !== false || alwaysOpen; render(); } };
+    return { setState, setNames: names.set, pushChange, setMessage, render, t, expand: (v) => { expanded = v !== false || alwaysOpen; render(); } };
   }
 
   window.createLocksWidget = createLocksWidget;

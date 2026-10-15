@@ -19,6 +19,27 @@ window.mountValuesWidget = function (Homey, { root, frame }) {
     return p;
   }
 
+  /**
+   * The names typed on the tiles (`renameTiles`), which the app keeps per widget instance: `load()` reads them (a
+   * failure keeps the last ones; it never fails), realtime keeps them current, and `rename(key, name)` saves one.
+   * `setNames` is the widget's.
+   */
+  function wireTileNames(setNames) {
+    let instance = 'default';
+    const known = Promise.resolve(typeof Homey.getWidgetInstanceId === 'function' ? Homey.getWidgetInstanceId() : '')
+      .then((id) => { if (typeof id === 'string' && id) instance = id; })
+      .catch(() => {});
+    Homey.on('tilenames:state', (data) => {
+      if (data && data.instance === instance) setNames(data.names);
+    });
+    return {
+      load: () => known
+        .then(() => Homey.api('GET', `/names?instance=${encodeURIComponent(instance)}`))
+        .then(res => setNames(res && res.names), err => console.error(err)),
+      rename: (key, name) => known.then(() => Homey.api('POST', '/names', { instance, key, name })),
+    };
+  }
+
   const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
   // Each slot setting is an autocomplete item whose id is `<deviceId>:<capabilityId>`.
@@ -30,8 +51,11 @@ window.mountValuesWidget = function (Homey, { root, frame }) {
   let readySent = false;
   let loaded = false;
 
+  const tileNames = wireTileNames(names => widget.setNames(names));
   const widget = window.createValuesWidget(root, {
     t: (key, tokens) => Homey.__(key, tokens),
+    renameTiles: settings.renameTiles === true,
+    onRename: (key, name) => tileNames.rename(key, name),
     columns: settings.columns,
     percentFill: settings.percentFill === true,
     redBelow: settings.redBelow,
@@ -65,8 +89,11 @@ window.mountValuesWidget = function (Homey, { root, frame }) {
       ready();
       return;
     }
+    const namesRead = tileNames.load();
     try {
-      widget.setState(await Homey.api('GET', `/state?slots=${slots.map(encodeURIComponent).join(',')}${perfParam()}`));
+      const state = await Homey.api('GET', `/state?slots=${slots.map(encodeURIComponent).join(',')}${perfParam()}`);
+      await namesRead;
+      widget.setState(state);
       loaded = true;
     } catch (err) {
       console.error(err);

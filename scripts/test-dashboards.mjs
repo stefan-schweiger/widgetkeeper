@@ -9,6 +9,7 @@
 //
 // It writes the app setting `webDashboards` through the Homey CLI's login (the web dashboards' own API wants the
 // password's session too), so the app's `normalize()` checks it on the next read, as for any saved dashboard.
+// The "Rename tiles" widgets get a name already typed on a tile, in the app setting `tileNames`.
 
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -19,6 +20,8 @@ const require = createRequire(import.meta.url);
 const APP_ID = JSON.parse(readFileSync(new URL('../.homeycompose/app.json', import.meta.url), 'utf8')).id;
 const EN = JSON.parse(readFileSync(new URL('../locales/en.json', import.meta.url), 'utf8'));
 const SETTING = `/api/manager/apps/app/${APP_ID}/setting/webDashboards`;
+/** The typed tile names (lib/TileNameService.ts), by widget instance: a web dashboard widget's is `web-<dashboard>-<widget>`. */
+const TILE_NAMES = `/api/manager/apps/app/${APP_ID}/setting/tileNames`;
 const PREFIX = 'test-';
 const MISSING = 'missing-device-0000'; // a device id that doesn't exist: the widgets' missing state
 
@@ -80,6 +83,8 @@ function columns(widgets, n = 3) {
 
 /** A widget: its title says what's being tested. */
 const w = (type, title, settings = {}, deviceIds = []) => ({ type, title, settings, deviceIds });
+/** A widget in rename mode (`renameTiles`) with names already typed on its tiles (tile key → name; see TILE_NAMES). */
+const renaming = (type, title, settings, deviceIds, tileNames) => ({ ...w(type, title, { ...settings, renameTiles: true }, deviceIds), tileNames });
 
 /** The first n autocomplete items that pass, `None` and the like left out. */
 const pick = (items, fn = () => true, n = 1) => items.filter(i => i.id !== 'none' && fn(i)).slice(0, n);
@@ -147,6 +152,7 @@ const BUILD = {
       w('quickactions', 'Lighter · locks and others', { activeStyle: 'lighter' }, [...locks, ...others]),
       w('quickactions', 'One device', {}, lights.slice(0, 1)),
       w('quickactions', 'Two + a deleted device', {}, [...lights.slice(1, 3), MISSING]),
+      renaming('quickactions', 'Rename tiles', {}, [...lights.slice(0, 3), MISSING], lights[0] ? { [lights[0]]: 'Typed name' } : {}),
       w('quickactions', 'No devices picked'),
     ] };
   },
@@ -165,6 +171,7 @@ const BUILD = {
       w('sensoralarms', 'Renamed: Device = Tile', { names: named.map((id, i) => `${nameOf(id)} = Sensor ${i + 1}`).join('\n') }, named),
       w('sensoralarms', 'Renamed by position, one kept', { names: 'First tile\n\nThird tile' }, named.slice(0, 3)),
       w('sensoralarms', 'No alarms · deleted device', {}, [...none, MISSING]),
+      renaming('sensoralarms', 'Rename tiles · over the names setting', { names: 'First tile' }, named.slice(0, 2), { [named[0]]: 'Typed name' }),
     ] };
   },
 
@@ -228,6 +235,7 @@ const BUILD = {
       w('cameras', 'Three (odd last) · 30 s', { refresh: '30' }, cams.slice(0, 3)),
       w('cameras', 'All · 60 s', { refresh: '60' }, cams),
       w('cameras', 'With a deleted camera', {}, [cams[0], MISSING].filter(Boolean)),
+      renaming('cameras', 'Rename tiles', {}, cams.slice(0, 2), cams[0] ? { [cams[0]]: 'Typed name' } : {}),
     ] };
   },
 
@@ -254,6 +262,8 @@ const BUILD = {
       w('values', 'Brightness (0–1 %) · fill', { percentFill: true, ...slots('slot', dims) }),
       w('values', 'Gaps and a deleted device', { ...slots('slot', [temps[0], null, missing, null, batteries[0]]) }),
       w('values', 'Nothing picked'),
+      // The same value twice: the second tile's key is `#2`.
+      renaming('values', 'Rename tiles · a value twice', slots('slot', [temps[0], temps[0], temps[1]]), [], temps[0] ? { [`${temps[0].id}#2`]: 'Typed name' } : {}),
     ] };
   },
 
@@ -275,6 +285,9 @@ const BUILD = {
       w('lights', 'Dimmable, no colour', {}, dimOnly.slice(0, 6)),
       w('lights', 'On/off only · deleted device', {}, [...onoffOnly, MISSING]),
       w('lights', 'One light', {}, colour.slice(0, 1)),
+      renaming('lights', 'Rename tiles · grouped by room', { groupByZone: true }, all.slice(0, 20), {
+        [all[0]]: 'Typed name', [`zone:${devices.find(d => d.id === all[0])?.zone}`]: 'Typed group name',
+      }),
     ] };
   },
 
@@ -288,6 +301,7 @@ const BUILD = {
       w('sparklines', '1 column · 7 days · six', { span: '7d', columns: '1', ...slots('slot', set) }),
       w('sparklines', '1 h · 1 column · power', { span: '1h', columns: '1', ...slots('slot', set.slice(1, 2)) }),
       w('sparklines', 'Deleted device', { slot1: { id: `${MISSING}:measure_temperature`, name: 'Deleted device · Temperature' } }),
+      renaming('sparklines', 'Rename tiles', slots('slot', set.slice(0, 2)), [], set[0] ? { [set[0].id]: 'Typed name' } : {}),
     );
     return { cols: 2, widgets: out };
   },
@@ -371,6 +385,7 @@ const BUILD = {
       w('locks', 'Everything · list', { view: 'list' }, [...locks, ...garages, ...contacts]),
       w('locks', 'One lock · list', { view: 'list' }, locks.slice(0, 1)),
       w('locks', 'With a deleted device', {}, [...locks, MISSING]),
+      renaming('locks', 'Rename tiles (the list shows)', {}, locks, locks[0] ? { [locks[0]]: 'Typed name' } : {}),
     ] };
   },
 
@@ -386,6 +401,7 @@ const BUILD = {
       w('curtains', `Open at 50% (vertical blinds)${note}`, { openAt: 'middle' }, set),
       w('curtains', `Grouped by room${note}`, { groupByZone: true }, set),
       w('curtains', 'A deleted device', {}, [MISSING]),
+      renaming('curtains', `Rename tiles${note}`, {}, set, { [set[0]]: 'Typed name' }),
     ] };
   },
 
@@ -488,11 +504,14 @@ const saved = await homeyApi('GET', SETTING);
 const current = Array.isArray(saved) ? saved : [];
 const replace = new Set(opts.remove && !positionals.length ? current.filter(d => d.id.startsWith(PREFIX)).map(d => d.id) : types.map(t => PREFIX + t));
 const built = [];
+const typedNames = {}; // widget instance → tile key → name
 if (!opts.remove) {
   for (const type of types) {
     const { cols, widgets } = await BUILD[type]();
     const name = `Test · ${widgetDefs[type].name?.en ?? type}`;
-    const columnsOut = columns(widgets.map((x, i) => ({ id: `${type.slice(0, 20)}-${i + 1}`, ...x })), cols);
+    const placed = widgets.map((x, i) => ({ id: `${type.slice(0, 20)}-${i + 1}`, ...x }));
+    for (const { id, tileNames } of placed) if (tileNames) typedNames[`web-${PREFIX}${type}-${id}`] = tileNames;
+    const columnsOut = columns(placed.map(({ tileNames, ...x }) => x), cols);
     built.push({ id: PREFIX + type, name, theme: 'auto', columns: columnsOut });
     console.log(`${name}: ${widgets.length} widgets`);
   }
@@ -504,5 +523,13 @@ const tests = [...current.filter(d => d.id.startsWith(PREFIX) && !replace.has(d.
 const next = [...current.filter(d => !d.id.startsWith(PREFIX)), ...tests];
 if (next.length > 30) throw new Error(`That would make ${next.length} web dashboards; at most 30`);
 await homeyApi('PUT', SETTING, { value: next });
+// The rebuilt (or removed) test dashboards' typed names are replaced; the user's own are kept.
+const savedNames = await homeyApi('GET', TILE_NAMES);
+const names = Object.fromEntries(Object.entries(savedNames && typeof savedNames === 'object' ? savedNames : {})
+  .filter(([instance]) => ![...replace].some(id => instance.startsWith(`web-${id}-`))));
+for (const [instance, map] of Object.entries(typedNames)) {
+  if (Object.keys(map).length) names[instance] = { names: map, updatedAt: Date.now() };
+}
+await homeyApi('PUT', TILE_NAMES, { value: names });
 await disposeHomeyApiClient(client);
 console.log(`${opts.remove ? 'Removed' : 'Saved'}; ${next.length} web dashboards on the Homey now.`);

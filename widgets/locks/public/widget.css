@@ -115,3 +115,17 @@ html, body { background: transparent !important; }
 @media (prefers-reduced-motion: reduce) {
   .lk-action.busy, .lk-all.busy, .lk-row.shake { animation: none; }
 }
+
+/* Rename tiles: the list shows, each row's name a text field (as Variables' input), without the buttons. */
+.lk { --lk-accent: var(--homey-color-blue, #2F8DF6); }
+.lk.renaming .lk-row:not([data-level="missing"]) .lk-name { display: none; }
+.lk.renaming .lk-action, .lk.renaming .lk-all { display: none !important; }
+.lk .wk-rename {
+  width: 100%; min-width: 0; height: 24px; margin: -2px 0; padding: 0 8px;
+  font: inherit; font-size: var(--lk-fs-small); font-weight: var(--lk-bold); color: var(--lk-text);
+  background: color-mix(in srgb, var(--lk-text) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lk-text) 24%, transparent); border-radius: 8px; outline: none;
+  user-select: text; -webkit-user-select: text;
+}
+.lk .wk-rename::placeholder { color: var(--lk-muted); opacity: 1; }
+.lk .wk-rename:focus { border-color: var(--lk-accent); }

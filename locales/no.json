@@ -31,7 +31,8 @@
     "selectDevices": "Velg enheter i widgetinnstillingene.",
     "error": "Kunne ikke laste inn enhetene.",
     "failed": "Kunne ikke endre __name__.",
-    "unavailable": "Utilgjengelig"
+    "unavailable": "Utilgjengelig",
+    "renameFailed": "Kunne ikke lagre navnet."
   },
   "sensoralarms": {
     "selectDevices": "Velg sensorer i widgetinnstillingene.",
@@ -41,7 +42,8 @@
     "noSensors": "Ingen alarmsensorer",
     "unavailable": "Utilgjengelig",
     "active": "Aktiv",
-    "inactive": "Inaktiv"
+    "inactive": "Inaktiv",
+    "renameFailed": "Kunne ikke lagre navnet."
   },
   "sensordots": {
     "selectDevices": "Velg sensorer i widgetinnstillingene.",
@@ -128,19 +130,22 @@
     "unavailable": "Utilgjengelig",
     "live": "Direkte",
     "liveFailed": "Direktebilde feilet",
-    "liveH265": "H.265 kan ikke vises live. Prøv H.264."
+    "liveH265": "H.265 kan ikke vises live. Prøv H.264.",
+    "renameFailed": "Kunne ikke lagre navnet."
   },
   "values": {
     "selectSlots": "Velg enhetsverdier i widgetinnstillingene.",
     "error": "Kunne ikke laste inn verdiene.",
     "unavailable": "Utilgjengelig",
     "on": "På",
-    "off": "Av"
+    "off": "Av",
+    "renameFailed": "Kunne ikke lagre navnet."
   },
   "sparklines": {
     "selectSlots": "Velg enhetsverdier i widgetinnstillingene.",
     "error": "Kunne ikke laste inn verdiene.",
-    "unavailable": "Utilgjengelig"
+    "unavailable": "Utilgjengelig",
+    "renameFailed": "Kunne ikke lagre navnet."
   },
   "charts": {
     "now": "Nå",
@@ -161,7 +166,8 @@
     "keyScope": "API-nøkkelen kan ikke starte Moods.",
     "keyInvalid": "API-nøkkelen ble ikke godtatt.",
     "moodFailed": "Kunne ikke starte __name__.",
-    "moods": "Moods"
+    "moods": "Moods",
+    "renameFailed": "Kunne ikke lagre navnet."
   },
   "variables": {
     "selectSlots": "Velg variabler i widgetinnstillingene.",
@@ -287,7 +293,8 @@
     "unlock": "Lås opp",
     "close": "Lukk",
     "openAction": "Åpne",
-    "lockAll": "Lås alle"
+    "lockAll": "Lås alle",
+    "renameFailed": "Kunne ikke lagre navnet."
   },
   "curtains": {
     "selectDevices": "Velg gardiner i widgetinnstillingene.",
@@ -301,7 +308,8 @@
     "closing": "Lukker…",
     "stopped": "Stoppet",
     "open": "Åpne",
-    "close": "Lukk"
+    "close": "Lukk",
+    "renameFailed": "Kunne ikke lagre navnet."
   },
   "media": {
     "selectDevice": "Velg en høyttaler i widgetinnstillingene.",

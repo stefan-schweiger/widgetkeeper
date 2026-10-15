@@ -19,6 +19,27 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
     return p;
   }
 
+  /**
+   * The names typed on the tiles (`renameTiles`), which the app keeps per widget instance: `load()` reads them (a
+   * failure keeps the last ones; it never fails), realtime keeps them current, and `rename(key, name)` saves one.
+   * `setNames` is the widget's.
+   */
+  function wireTileNames(setNames) {
+    let instance = 'default';
+    const known = Promise.resolve(typeof Homey.getWidgetInstanceId === 'function' ? Homey.getWidgetInstanceId() : '')
+      .then((id) => { if (typeof id === 'string' && id) instance = id; })
+      .catch(() => {});
+    Homey.on('tilenames:state', (data) => {
+      if (data && data.instance === instance) setNames(data.names);
+    });
+    return {
+      load: () => known
+        .then(() => Homey.api('GET', `/names?instance=${encodeURIComponent(instance)}`))
+        .then(res => setNames(res && res.names), err => console.error(err)),
+      rename: (key, name) => known.then(() => Homey.api('POST', '/names', { instance, key, name })),
+    };
+  }
+
   const sdkAt = performance.now();
   let deviceIds = [];
   /** The lights whose realtime events count: the picked ones, and the lights in Homey group devices among them. */
@@ -27,8 +48,11 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
   let loaded = false;
 
   const settings = Homey.getSettings() || {};
+  const tileNames = wireTileNames(names => widget.setNames(names));
   const widget = window.createLightsWidget(root, {
     t: (key, tokens) => Homey.__(key, tokens),
+    renameTiles: settings.renameTiles === true,
+    onRename: (key, name) => tileNames.rename(key, name),
     groupByZone: settings.groupByZone === true,
     palette: settings.palette,
     barMin: settings.barMin,
@@ -66,8 +90,10 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
       ready();
       return;
     }
+    const namesRead = tileNames.load();
     try {
       const state = await Homey.api('GET', `/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${perfParam()}`);
+      await namesRead;
       widget.setState(state);
       watched = new Set(deviceIds);
       for (const d of Array.isArray(state) ? state : []) for (const m of (d && d.groupLights) || []) watched.add(m.id);

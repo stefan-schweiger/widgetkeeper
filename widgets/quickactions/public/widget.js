@@ -15,6 +15,7 @@
     error: 'Could not load the devices.',
     failed: 'Could not change __name__.',
     unavailable: 'Unavailable',
+    renameFailed: 'Could not save the name.',
   };
 
   // Homey's standard capabilities carry no icon of their own (the Homey app draws them), so these
@@ -55,9 +56,70 @@
   }
 
   /**
+   * The names typed on the tiles (`renameTiles`; the app keeps them per widget instance, by tile key): `name(key, own)`
+   * is the typed name, else `own`. In rename mode `field(key, own)` is the tile's text field (made once per key, with
+   * `own` as the placeholder): it saves on change (Enter or leaving it), Escape puts it back, and a realtime update
+   * doesn't overwrite it while it has the focus. Its touches, clicks and keys never reach the tile's own taps.
+   * `failed(key)` shakes the tile and says so; the name goes back.
+   */
+  function tileNames(opts, render, failed) {
+    let names = {};
+    const fields = new Map();
+    async function save(key, value) {
+      const before = names[key];
+      if ((before || '') === value) return;
+      const put = v => { names = { ...names }; if (v) names[key] = v; else delete names[key]; };
+      put(value);
+      render();
+      try {
+        if (opts.onRename) await opts.onRename(key, value);
+      } catch (err) {
+        console.error(err);
+        put(before);
+        failed(key);
+      }
+    }
+    return {
+      renaming: opts.renameTiles === true,
+      name: (key, own) => names[key] || own,
+      set(map) {
+        names = {};
+        if (map && typeof map === 'object') for (const [k, v] of Object.entries(map)) if (typeof v === 'string' && v) names[k] = v;
+        render();
+      },
+      field(key, own) {
+        let input = fields.get(key);
+        if (!input) {
+          input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'wk-rename';
+          input.dir = 'auto';
+          input.maxLength = 60;
+          input.autocomplete = 'off';
+          input.setAttribute('enterkeyhint', 'done');
+          const field = input;
+          for (const type of ['touchstart', 'touchend', 'pointerdown', 'click']) field.addEventListener(type, e => e.stopPropagation(), { passive: true });
+          field.addEventListener('keydown', (e) => {
+            e.stopPropagation();
+            if (e.key === 'Enter') field.blur();
+            else if (e.key === 'Escape') { field.value = names[key] || ''; field.blur(); }
+          });
+          field.addEventListener('change', () => { field.value = field.value.trim(); save(key, field.value); });
+          fields.set(key, input);
+        }
+        input.placeholder = own || '';
+        input.setAttribute('aria-label', own || '');
+        if (document.activeElement !== input) input.value = names[key] || '';
+        return input;
+      },
+    };
+  }
+
+  /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, activeStyle?: 'tint' | 'lighter',
    *   onTrigger?: (deviceId: string, value: boolean) => Promise<any>,
+   *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   onHeight?: (h: number) => void }} opts
    */
   function createQuickActionsWidget(root, opts = {}) {
@@ -74,6 +136,11 @@
     let messageTimer = null;
 
     root.classList.add('qa');
+    const names = tileNames(opts, () => render(), (key) => {
+      shake(key);
+      setMessage(t('renameFailed'), true);
+    });
+    root.classList.toggle('renaming', names.renaming);
     root.dataset.activeStyle = opts.activeStyle === 'lighter' ? 'lighter' : 'tint';
     const grid = el('div', { class: 'qa-grid' }, root);
     const messageEl = el('div', { class: 'qa-message', dir: 'auto' }, root);
@@ -115,7 +182,7 @@
 
     async function press(id) {
       const d = devices.find(x => x.id === id);
-      if (!d || !d.quickAction || !d.quickAction.actionable || !opts.onTrigger) return;
+      if (!d || !d.quickAction || !d.quickAction.actionable || !opts.onTrigger || names.renaming) return;
       const value = d.quickAction.momentary ? true : !shownValue(d);
       if (d.quickAction.momentary) {
         pressed.set(id, Date.now() + PRESS_MS);
@@ -131,20 +198,25 @@
         console.error(err);
         optimistic.delete(id);
         pressed.delete(id);
-        const tile = tiles.get(id);
-        if (tile) {
-          tile.button.classList.remove('shake');
-          void tile.button.offsetWidth; // restart the animation
-          tile.button.classList.add('shake');
-        }
-        setMessage(t('failed', { name: d.name }), true);
+        shake(id);
+        setMessage(t('failed', { name: names.name(d.id, d.name) }), true);
       }
+    }
+
+    function shake(id) {
+      const tile = tiles.get(id);
+      if (!tile) return;
+      tile.button.classList.remove('shake');
+      void tile.button.offsetWidth; // restart the animation
+      tile.button.classList.add('shake');
     }
 
     function tileFor(id) {
       let tile = tiles.get(id);
       if (!tile) {
-        const button = el('button', { type: 'button', class: 'qa-tile', 'data-device': id });
+        // Renaming: a plain tile, as a text field can't sit in a button.
+        const button = names.renaming ? el('div', { class: 'qa-tile', 'data-device': id })
+          : el('button', { type: 'button', class: 'qa-tile', 'data-device': id });
         const top = el('div', { class: 'qa-top' }, button);
         tile = {
           button,
@@ -207,7 +279,12 @@
         if (!isPressed) pressed.delete(d.id);
         const value = qa ? shownValue(d) : null;
 
-        tile.name.textContent = 'missing' in d ? t('unavailable') : d.name;
+        tile.name.textContent = 'missing' in d ? t('unavailable') : names.name(d.id, d.name);
+        if (names.renaming && !('missing' in d)) {
+          const field = names.field(d.id, d.name);
+          if (field.previousSibling !== tile.name) tile.name.after(field);
+        }
+        tile.button.classList.toggle('missing', 'missing' in d);
         setMask(tile.icon, 'missing' in d ? null : d.icon);
         tile.icon.classList.toggle('fallback', 'missing' in d || !d.icon);
         setMask(tile.action, qa ? (qa.icon || glyph(qa.capabilityId, value)) : null);
@@ -225,7 +302,7 @@
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    return { setState, pushChange, setMessage, render, t };
+    return { setState, setNames: names.set, pushChange, setMessage, render, t };
   }
 
   window.createQuickActionsWidget = createQuickActionsWidget;

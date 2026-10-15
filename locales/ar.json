@@ -31,7 +31,8 @@
     "selectDevices": "اختر الأجهزة في إعدادات الأداة.",
     "error": "تعذر تحميل الأجهزة.",
     "failed": "تعذر تغيير __name__.",
-    "unavailable": "غير متاح"
+    "unavailable": "غير متاح",
+    "renameFailed": "تعذّر حفظ الاسم."
   },
   "sensoralarms": {
     "selectDevices": "اختر المستشعرات في إعدادات الأداة.",
@@ -41,7 +42,8 @@
     "noSensors": "لا مستشعرات إنذار",
     "unavailable": "غير متاح",
     "active": "نشط",
-    "inactive": "غير نشط"
+    "inactive": "غير نشط",
+    "renameFailed": "تعذّر حفظ الاسم."
   },
   "sensordots": {
     "selectDevices": "اختر المستشعرات في إعدادات الأداة.",
@@ -128,19 +130,22 @@
     "unavailable": "غير متاح",
     "live": "مباشر",
     "liveFailed": "فشل البث المباشر",
-    "liveH265": "لا يمكن بث H.265 مباشرة. جرّب H.264."
+    "liveH265": "لا يمكن بث H.265 مباشرة. جرّب H.264.",
+    "renameFailed": "تعذّر حفظ الاسم."
   },
   "values": {
     "selectSlots": "اختر قيم الأجهزة في إعدادات الأداة.",
     "error": "تعذر تحميل القيم.",
     "unavailable": "غير متاح",
     "on": "تشغيل",
-    "off": "إيقاف"
+    "off": "إيقاف",
+    "renameFailed": "تعذّر حفظ الاسم."
   },
   "sparklines": {
     "selectSlots": "اختر قيم الأجهزة في إعدادات الأداة.",
     "error": "تعذر تحميل القيم.",
-    "unavailable": "غير متاح"
+    "unavailable": "غير متاح",
+    "renameFailed": "تعذّر حفظ الاسم."
   },
   "charts": {
     "now": "الآن",
@@ -161,7 +166,8 @@
     "keyScope": "لا يمكن لمفتاح API تشغيل الأجواء.",
     "keyInvalid": "لم يُقبل مفتاح API.",
     "moodFailed": "تعذّر تشغيل __name__.",
-    "moods": "الأجواء"
+    "moods": "الأجواء",
+    "renameFailed": "تعذّر حفظ الاسم."
   },
   "variables": {
     "selectSlots": "اختر المتغيرات في إعدادات الأداة.",
@@ -287,7 +293,8 @@
     "unlock": "فتح القفل",
     "close": "إغلاق",
     "openAction": "فتح",
-    "lockAll": "قفل الكل"
+    "lockAll": "قفل الكل",
+    "renameFailed": "تعذّر حفظ الاسم."
   },
   "curtains": {
     "selectDevices": "اختر الستائر في إعدادات الأداة.",
@@ -301,7 +308,8 @@
     "closing": "تُغلق…",
     "stopped": "متوقفة",
     "open": "فتح",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "renameFailed": "تعذّر حفظ الاسم."
   },
   "media": {
     "selectDevice": "اختر مكبر صوت في إعدادات الأداة.",

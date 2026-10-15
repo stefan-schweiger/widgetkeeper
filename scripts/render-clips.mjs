@@ -22,7 +22,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 /**
  * Each clip: what the finger does, step by step. `tap`/`drag` take a CSS selector and the match's index (`i`), and
  * points as fractions of its box (`x`, `y`, default the middle). `say` sets the callout under the widget (with an
- * `icon`: rotate, swipe, tap, drag, colour, bell, volume, next, mute, more, plus, pause, dots or speaker); `run` calls a page control.
+ * `icon`: rotate, swipe, tap, drag, colour, bell, volume, next, mute, more, plus, pause, dots, speaker, pen, text or check); `run`
+ * calls a page control. `type` types text into the focused field a key at a time, then presses Enter.
  */
 const CLIPS = {
   lights: [
@@ -119,6 +120,39 @@ const CLIPS = {
     { tap: '.sd-panel' },
     { wait: 1200 },
   ],
+  rename: [
+    { wait: 500 },
+    { say: 'Edit the widget: turn on Rename tiles', icon: 'pen' },
+    { wait: 900 },
+    { run: 'openSettings' },
+    { wait: 900 },
+    { tap: '#rename-switch' },
+    { wait: 700 },
+    { tap: '#sheet-save' },
+    { wait: 600 },
+    { say: 'Save, then leave edit mode', icon: 'check' },
+    { wait: 1600 },
+    { say: 'Type a name on a tile', icon: 'text' },
+    { wait: 900 },
+    { tap: '.wk-rename', i: 0 },
+    { wait: 300 },
+    { type: 'Sofa corner' },
+    { wait: 700 },
+    { tap: '.wk-rename', i: 3 },
+    { wait: 300 },
+    { type: 'Desk lamp' },
+    { wait: 900 },
+    { say: 'Edit the widget again: turn it off', icon: 'pen' },
+    { wait: 900 },
+    { run: 'openSettings' },
+    { wait: 900 },
+    { tap: '#rename-switch' },
+    { wait: 700 },
+    { tap: '#sheet-save' },
+    { wait: 600 },
+    { say: 'The names stay, on every screen', icon: 'check' },
+    { wait: 2600 },
+  ],
   curtains: [
     { say: 'Tap to open or close: the corner says which', icon: 'tap' },
     { wait: 1100 },
@@ -203,6 +237,14 @@ async function step(send, s) {
   if (s.wait) return sleep(s.wait);
   if (s.say) return evaluate(send, `window.clip.say(${JSON.stringify(s.say)}, ${JSON.stringify(s.icon || null)})`);
   if (s.run) return evaluate(send, `window.clip[${JSON.stringify(s.run)}]()`);
+  if (s.type) {
+    for (const ch of s.type) {
+      await send('Input.insertText', { text: ch });
+      await sleep(s.ms ?? 90);
+    }
+    await sleep(300);
+    return send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
+  }
   // A value from the page, printed (for working out a clip's steps): `{ probe: 'expression' }`.
   if (s.probe) return console.log('probe', s.probe, '→', JSON.stringify(await evaluate(send, s.probe)));
   if (s.tap) {

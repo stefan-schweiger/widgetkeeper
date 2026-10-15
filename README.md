@@ -117,14 +117,14 @@ Three one-tap presets for a thermostat, heat pump or air conditioner, such as *O
 
 Half-height tiles that run a device's quick action with one tap (on/off, lock, play/pause, a button), highlighted while it's on.
 
-**Settings:** devices, active style.
+**Settings:** devices, active style, [rename tiles](#tile-names).
 
 ## Sensor Alarms
 <img src="docs/screenshots/sensoralarms.png" alt="Sensor Alarms on a Homey dashboard" width="358">
 
 Tiles that show *No alarm*, the alarm that's on or how many, and turn red while one is. Every alarm counts, including apps' own such as radon. Tap a tile for all of its alarms.
 
-**Settings:** sensors, count motion and contact, tile names.
+**Settings:** sensors, count motion and contact, tile names, [rename tiles](#tile-names).
 
 <a name="sensor-dots"></a>
 
@@ -156,28 +156,28 @@ A week of one Insights value as a grid of days and hours: numbers such as light 
 
 Your cameras as a grid of snapshots that refresh every few seconds (cameras with only a video stream show a still from it). Tap one to watch it live.
 
-**Settings:** cameras, refresh interval.
+**Settings:** cameras, refresh interval, [rename tiles](#tile-names).
 
 ## Device Values
 <img src="docs/screenshots/values.png" alt="Device Values on a Homey dashboard" width="358">
 
 Half-height tiles that each show one live device value. Percentages can fill their tile by level, and the Flow card **Set the tile colour of … to …** colours a tile, such as a fridge going red when it's too warm.
 
-**Settings:** up to six values with optional names, 3 or 2 per row, percentage fill and its limits.
+**Settings:** up to six values with optional names, 3 or 2 per row, percentage fill and its limits, [rename tiles](#tile-names).
 
 ## Light Controls
 <img src="docs/clips/lights.webp" alt="Light Controls on a Homey dashboard: a light turned on, dimmed with the bar, and given a colour and a white" width="358">
 
 Six lights in the space of three of Homey's light cards. Tap a tile to switch it, drag or tap the bar to dim, and tap the colour button for colours and whites. Lights in a room can share one tile. The Room's Moods palette puts the room's Homey Moods on the colour button instead of the colours and whites; starting one needs an [API key](#api-key).
 
-**Settings:** lights, group by room, what the bar's far left does, colour palette.
+**Settings:** lights, group by room, what the bar's far left does, colour palette, [rename tiles](#tile-names).
 
 ## Sparklines
 <img src="docs/screenshots/sparklines.png" alt="Sparklines on a Homey dashboard" width="358">
 
 Device Values' tiles with a small live chart of each value and its highest and lowest.
 
-**Settings:** up to six values, time span (1 hour to 7 days), 2 or 1 per row.
+**Settings:** up to six values, time span (1 hour to 7 days), 2 or 1 per row, [rename tiles](#tile-names).
 
 ## Charts
 <img src="docs/screenshots/charts.png" alt="Charts on a Homey dashboard: the outdoor temperature as a line, and the power use as bars" width="358">
@@ -223,14 +223,14 @@ Up to four preset buttons, such as *Eggs · 7 min*. A started timer takes their 
 
 Locks, doors, windows and garage doors in one line: *All locked and closed*, or what isn't, on a red tile. Tap it for the list, with **Lock** and **Close** buttons.
 
-**Settings:** devices, one line or the full list, allow unlocking.
+**Settings:** devices, one line or the full list, allow unlocking, [rename tiles](#tile-names).
 
 ## Curtains
 <img src="docs/clips/curtains.webp" alt="Curtains on a Homey dashboard: an open curtain tapped closed, a closed one tapped open and sent back with a second tap, and a blind dragged most of the way up" width="358">
 
 Curtains and blinds as tiles: tap to open or close (the corner label says which), or use the slider for anything between. A tap while it moves sends it back.
 
-**Settings:** devices, what a tap does halfway, inverted position, state line, group by room.
+**Settings:** devices, what a tap does halfway, inverted position, state line, group by room, [rename tiles](#tile-names).
 
 ## Media
 <img src="docs/clips/media.webp" alt="Media on a Homey dashboard: the volume turned up, the next track, mute, the TV as the source from behind ⋯, and a switch to another speaker" width="358">
@@ -297,6 +297,17 @@ Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an
 
 **Kitchen**
 <img src="docs/showcase/kitchen.png" alt="A kitchen dashboard with Widgetkeeper widgets on a tablet" width="100%">
+
+## Tile names
+<img src="docs/clips/rename.webp" alt="Rename tiles: the setting turned on, names typed on two Light Controls tiles, and the setting turned off again with the names kept" width="358">
+
+Give any tile a name of your own, such as *Sofa corner* for a room's lights grouped by room, instead of the device's or room's name. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Device Values, Sparklines, Locks and Doors, and Cameras can do this.
+
+1. Edit the dashboard, edit the widget, turn on **Rename tiles** (the first setting) and save the widget.
+2. Leave the dashboard's edit mode. Each tile now shows a text field: type its name, or leave it empty to keep the device's (or room's) own name.
+3. Edit the widget again and turn **Rename tiles** off.
+
+The names belong to that widget: they stay with the right tiles when you rename or reorder devices, every screen showing the dashboard gets them, and a Smart Stack showing the widget does too. Sensor Alarms' tile names and Device Values' names still work; a name typed on the tile wins.
 
 ## API key
 Homey doesn't let apps change variables, start flows, read dashboards or start Moods on their own, so Variables, Flow Buttons, Media's buttons, Smart Stack and Light Controls' Moods need a Homey API key. Create one in the Homey web app under **Settings → API Keys** with those permissions, and paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey. The web dashboards ask for a key of their own, which stays in that browser.

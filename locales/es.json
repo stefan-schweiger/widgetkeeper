@@ -31,7 +31,8 @@
     "selectDevices": "Elige dispositivos en los ajustes del widget.",
     "error": "No se pudieron cargar los dispositivos.",
     "failed": "No se pudo cambiar __name__.",
-    "unavailable": "No disponible"
+    "unavailable": "No disponible",
+    "renameFailed": "No se pudo guardar el nombre."
   },
   "sensoralarms": {
     "selectDevices": "Elige sensores en los ajustes del widget.",
@@ -41,7 +42,8 @@
     "noSensors": "Sin sensores de alarma",
     "unavailable": "No disponible",
     "active": "Activo",
-    "inactive": "Inactivo"
+    "inactive": "Inactivo",
+    "renameFailed": "No se pudo guardar el nombre."
   },
   "sensordots": {
     "selectDevices": "Elige sensores en los ajustes del widget.",
@@ -128,19 +130,22 @@
     "unavailable": "No disponible",
     "live": "En vivo",
     "liveFailed": "Falló el vídeo en vivo",
-    "liveH265": "H.265 no se ve en directo. Prueba H.264."
+    "liveH265": "H.265 no se ve en directo. Prueba H.264.",
+    "renameFailed": "No se pudo guardar el nombre."
   },
   "values": {
     "selectSlots": "Elige valores en los ajustes del widget.",
     "error": "No se pudieron cargar los valores.",
     "unavailable": "No disponible",
     "on": "Encendido",
-    "off": "Apagado"
+    "off": "Apagado",
+    "renameFailed": "No se pudo guardar el nombre."
   },
   "sparklines": {
     "selectSlots": "Elige valores en los ajustes del widget.",
     "error": "No se pudieron cargar los valores.",
-    "unavailable": "No disponible"
+    "unavailable": "No disponible",
+    "renameFailed": "No se pudo guardar el nombre."
   },
   "charts": {
     "now": "Ahora",
@@ -161,7 +166,8 @@
     "keyScope": "La clave API no puede iniciar Moods.",
     "keyInvalid": "La clave API no fue aceptada.",
     "moodFailed": "No se pudo iniciar __name__.",
-    "moods": "Moods"
+    "moods": "Moods",
+    "renameFailed": "No se pudo guardar el nombre."
   },
   "variables": {
     "selectSlots": "Elige variables en los ajustes.",
@@ -287,7 +293,8 @@
     "unlock": "Abrir",
     "close": "Cerrar",
     "openAction": "Abrir",
-    "lockAll": "Cerrar todas"
+    "lockAll": "Cerrar todas",
+    "renameFailed": "No se pudo guardar el nombre."
   },
   "curtains": {
     "selectDevices": "Elige cortinas en los ajustes del widget.",
@@ -301,7 +308,8 @@
     "closing": "Cerrando…",
     "stopped": "Detenida",
     "open": "Abrir",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "renameFailed": "No se pudo guardar el nombre."
   },
   "media": {
     "selectDevice": "Elige un altavoz en los ajustes del widget.",

@@ -129,3 +129,18 @@ html, body { background: transparent !important; }
 @media (prefers-reduced-motion: reduce) {
   .ct-icon rect, .ct-knob, .ct-fill { transition: none; }
 }
+
+/* Rename tiles: the name becomes a text field (as Variables' input); the action pill and the bar step aside. */
+.ct.renaming .ct-tile { cursor: default; }
+.ct.renaming .ct-tile:not(.missing) .ct-name { display: none; }
+.ct.renaming .ct-act, .ct.renaming .ct-bar { visibility: hidden; }
+.ct-tile.missing .wk-rename { display: none; }
+.ct .wk-rename {
+  width: 100%; min-width: 0; height: 24px; margin: 2px 0 -2px; padding: 0 8px;
+  font: inherit; font-size: var(--ct-fs-small); font-weight: var(--ct-bold); color: var(--ct-text);
+  background: color-mix(in srgb, var(--ct-text) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ct-text) 24%, transparent); border-radius: 8px; outline: none;
+  user-select: text; -webkit-user-select: text;
+}
+.ct .wk-rename::placeholder { color: var(--ct-muted); opacity: 1; }
+.ct .wk-rename:focus { border-color: var(--ct-accent); }

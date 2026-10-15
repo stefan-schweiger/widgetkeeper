@@ -10,6 +10,7 @@
     selectSlots: 'Pick device values in the widget settings.',
     error: 'Could not load the values.',
     unavailable: 'Unavailable',
+    renameFailed: 'Could not save the name.',
   };
 
   const SPAN_MS = { '1h': 3600e3, '6h': 6 * 3600e3, '24h': 24 * 3600e3, '2d': 2 * 24 * 3600e3, '3d': 3 * 24 * 3600e3, '5d': 5 * 24 * 3600e3, '7d': 7 * 24 * 3600e3 };
@@ -109,11 +110,83 @@
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
   const keyOf = s => `${s.deviceId}:${s.capabilityId}`;
+
+  /** Each tile's key for its typed name: the value's own key, then `#2`, `#3` … for repeats, so reordering keeps the names. */
+  function nameKeys(slots) {
+    const seen = new Map();
+    return slots.map((s) => {
+      const k = keyOf(s);
+      const n = (seen.get(k) || 0) + 1;
+      seen.set(k, n);
+      return n > 1 ? `${k}#${n}` : k;
+    });
+  }
   const lastT = points => (points.length ? points[points.length - 1][0] : -Infinity);
+
+  /**
+   * The names typed on the tiles (`renameTiles`; the app keeps them per widget instance, by tile key): `name(key, own)`
+   * is the typed name, else `own`. In rename mode `field(key, own)` is the tile's text field (made once per key, with
+   * `own` as the placeholder): it saves on change (Enter or leaving it), Escape puts it back, and a realtime update
+   * doesn't overwrite it while it has the focus. Its touches, clicks and keys never reach the tile's own taps.
+   * `failed(key)` shakes the tile and says so; the name goes back.
+   */
+  function tileNames(opts, render, failed) {
+    let names = {};
+    const fields = new Map();
+    async function save(key, value) {
+      const before = names[key];
+      if ((before || '') === value) return;
+      const put = v => { names = { ...names }; if (v) names[key] = v; else delete names[key]; };
+      put(value);
+      render();
+      try {
+        if (opts.onRename) await opts.onRename(key, value);
+      } catch (err) {
+        console.error(err);
+        put(before);
+        failed(key);
+      }
+    }
+    return {
+      renaming: opts.renameTiles === true,
+      name: (key, own) => names[key] || own,
+      set(map) {
+        names = {};
+        if (map && typeof map === 'object') for (const [k, v] of Object.entries(map)) if (typeof v === 'string' && v) names[k] = v;
+        render();
+      },
+      field(key, own) {
+        let input = fields.get(key);
+        if (!input) {
+          input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'wk-rename';
+          input.dir = 'auto';
+          input.maxLength = 60;
+          input.autocomplete = 'off';
+          input.setAttribute('enterkeyhint', 'done');
+          const field = input;
+          for (const type of ['touchstart', 'touchend', 'pointerdown', 'click']) field.addEventListener(type, e => e.stopPropagation(), { passive: true });
+          field.addEventListener('keydown', (e) => {
+            e.stopPropagation();
+            if (e.key === 'Enter') field.blur();
+            else if (e.key === 'Escape') { field.value = names[key] || ''; field.blur(); }
+          });
+          field.addEventListener('change', () => { field.value = field.value.trim(); save(key, field.value); });
+          fields.set(key, input);
+        }
+        input.placeholder = own || '';
+        input.setAttribute('aria-label', own || '');
+        if (document.activeElement !== input) input.value = names[key] || '';
+        return input;
+      },
+    };
+  }
 
   /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, span?: string, columns?: number|string,
+   *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   now?: () => number, onHeight?: (h: number) => void }} opts
    */
   function createSparklinesWidget(root, opts = {}) {
@@ -130,6 +203,17 @@
     let messageTimer = null;
 
     root.classList.add('sl');
+    const names = tileNames(opts, () => render(), (key) => {
+      const i = nameKeys(slots).indexOf(key);
+      const tile = i >= 0 ? tiles.get(`${keyOf(slots[i])}#${i}`) : null;
+      if (tile) {
+        tile.tile.classList.remove('shake');
+        void tile.tile.offsetWidth; // restart the animation
+        tile.tile.classList.add('shake');
+      }
+      setMessage(t('renameFailed'), true);
+    });
+    root.classList.toggle('renaming', names.renaming);
     root.dataset.columns = String(opts.columns) === '1' ? '1' : '2';
     const grid = el('div', { class: 'sl-grid' }, root);
     const messageEl = el('div', { class: 'sl-message', dir: 'auto' }, root);
@@ -222,6 +306,7 @@
     let lastHeight = 0;
     function render() {
       const keys = slots.map((s, i) => `${keyOf(s)}#${i}`);
+      const named = nameKeys(slots);
       const wanted = new Set(keys);
       for (const [key, tile] of tiles) {
         if (!wanted.has(key)) { tile.tile.remove(); tiles.delete(key); }
@@ -230,7 +315,11 @@
         const tile = tileFor(keys[i]);
         grid.appendChild(tile.tile);
         const missing = 'missing' in s;
-        tile.name.textContent = missing ? t('unavailable') : s.name;
+        tile.name.textContent = missing ? t('unavailable') : names.name(named[i], s.name);
+        if (names.renaming && !missing) {
+          const field = names.field(named[i], s.name);
+          if (field.previousSibling !== tile.name) tile.name.after(field);
+        }
         tile.value.textContent = missing ? '' : formatValue(s.capability, s.value);
         setMask(tile.icon, iconFor(s));
         drawChart(tile, s);
@@ -251,7 +340,7 @@
     setInterval(render, Math.max(10e3, Math.min(60e3, spanMs / 120)));
     if (typeof ResizeObserver === 'function') new ResizeObserver(() => render()).observe(grid);
 
-    return { setState, pushChange, setMessage, render, t };
+    return { setState, setNames: names.set, pushChange, setMessage, render, t };
   }
 
   window.createSparklinesWidget = createSparklinesWidget;

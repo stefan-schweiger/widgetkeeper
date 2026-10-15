@@ -74,6 +74,26 @@
       opacity: 0; transform: scale(1.25); transition: opacity .18s, transform .18s; z-index: 100;
     }
     .finger.down { opacity: 1; transform: scale(1); }
+    /*
+     * The rename clip's stand-in for the Homey app's widget settings (the real ones are the app's, not ours): a sheet
+     * over the widget with the Rename tiles row and Save, in Homey's dark tile colours.
+     */
+    #rename { position: relative; min-height: 240px; } /* the sheet's height: the widget is shorter */
+    .sheet {
+      position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; gap: 12px; padding: 16px;
+      background: #2B2C36; border-radius: 14px; box-shadow: inset 0 1px 0 rgb(255 255 255 / .06), 0 8px 24px rgb(0 0 0 / .4);
+      color: #EDEEF0; font-size: 14px; line-height: 20px; transition: opacity .25s, transform .25s;
+    }
+    .sheet[hidden] { display: flex; opacity: 0; transform: translateY(12px); pointer-events: none; }
+    .sheet-title { font-size: 17px; line-height: 24px; font-weight: 700; }
+    .sheet-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: #181920; }
+    .sheet-row > span { flex: 1; font-weight: 500; }
+    .sheet-row.dim { opacity: .45; }
+    .switch { width: 44px; height: 26px; border-radius: 13px; background: #4A4B55; position: relative; transition: background .2s; flex: none; }
+    .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF; transition: transform .2s; }
+    .switch.on { background: #2F8DF6; }
+    .switch.on::after { transform: translateX(18px); }
+    .sheet-save { margin-top: auto; align-self: stretch; height: 44px; border-radius: 22px; background: #2F8DF6; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; }
   </style>
 </head>
 <body>
@@ -83,6 +103,15 @@
   <section class="clip" id="timers"><div id="w-timers"></div></section>
   <section class="clip" id="sensordots"><div id="w-sensordots"></div></section>
   <section class="clip" id="curtains"><div id="w-curtains"></div></section>
+  <section class="clip" id="rename">
+    <div id="w-rename"></div>
+    <div class="sheet" id="sheet" hidden>
+      <div class="sheet-title">Light Controls</div>
+      <div class="sheet-row"><span>Rename tiles</span><div class="switch" id="rename-switch"></div></div>
+      <div class="sheet-row dim"><span>Group lights by room</span><div class="switch on"></div></div>
+      <div class="sheet-save" id="sheet-save">Save</div>
+    </div>
+  </section>
   <section class="clip" id="media"><div class="card mw-frame"><div id="w-media"></div></div></section>
   <div class="finger" id="finger"></div>
 
@@ -115,6 +144,9 @@
         pause: '<path d="M9 6v12M15 6v12"/>',
         dots: '<circle cx="7" cy="7" r="2"/><circle cx="17" cy="7" r="2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2" fill="#FFFFFF"/>',
         speaker: '<rect x="6" y="3" width="12" height="18" rx="2"/><circle cx="12" cy="14" r="3"/><path d="M12 7h0"/>',
+        pen: '<path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/>',
+        text: '<path d="M5 6h14M12 6v13M9 19h6"/>',
+        check: '<path d="M5 12l5 5 9-10"/>',
       };
       // The callout: the old one fades up, the new one slides down into place.
       const callout = el('callout');
@@ -237,6 +269,36 @@
           w = createCurtainsWidget(el('w-curtains'), { onSet });
           w.setState(devices);
           return {};
+        },
+
+        // Rename tiles: Solbakken's lights grouped by room (the living room's two share a tile), and the steps a phone
+        // takes: the widget's settings (a stand-in sheet) turn rename mode on, the tiles are typed on outside edit
+        // mode, and the settings turn it off again. The names stay.
+        rename() {
+          const devices = JSON.parse(JSON.stringify(findWidget('lights').devices)).slice(0, 5);
+          const names = {};
+          let renaming = false;
+          let w;
+          function make() {
+            const root = el('w-rename');
+            root.replaceChildren();
+            root.className = '';
+            w = createLightsWidget(root, {
+              groupByZone: true, renameTiles: renaming,
+              onRename: (key, name) => { if (name) names[key] = name; else delete names[key]; return Promise.resolve(); },
+            });
+            w.setState(JSON.parse(JSON.stringify(devices)));
+            w.setNames(names);
+          }
+          make();
+          const sheet = el('sheet');
+          el('rename-switch').addEventListener('touchend', () => el('rename-switch').classList.toggle('on'));
+          el('sheet-save').addEventListener('touchend', () => {
+            renaming = el('rename-switch').classList.contains('on');
+            sheet.hidden = true;
+            setTimeout(make, 150);
+          });
+          return { minHeight: 240, openSettings: () => { sheet.hidden = false; } };
         },
 
         // Smart Stack: four of Solbakken's widgets, turning every 3 s here (30 s by default); then a swipe, and someone

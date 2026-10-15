@@ -48,6 +48,7 @@ export default class Diagnostics {
       moods: await (this.homey.app as any)?.lights?.describeMoods?.().catch((err: unknown) => String(err)) ?? null,
       timers: (this.homey.app as any)?.timers?.describe?.() ?? null,
       textLines: (this.homey.app as any)?.textLines?.describe?.() ?? null,
+      tileNames: (this.homey.app as any)?.tileNames?.describe?.() ?? null,
       media: (this.homey.app as any)?.media?.describe?.() ?? null,
       stack: await (this.homey.app as any)?.stack?.describe?.().catch((err: unknown) => String(err)) ?? null,
       web: (this.homey.app as any)?.web?.describe?.() ?? null,

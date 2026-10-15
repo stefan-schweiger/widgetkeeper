@@ -31,7 +31,8 @@
     "selectDevices": "Choisissez des appareils dans les réglages.",
     "error": "Impossible de charger les appareils.",
     "failed": "Impossible de modifier __name__.",
-    "unavailable": "Indisponible"
+    "unavailable": "Indisponible",
+    "renameFailed": "Impossible d'enregistrer le nom."
   },
   "sensoralarms": {
     "selectDevices": "Choisissez des capteurs dans les réglages.",
@@ -41,7 +42,8 @@
     "noSensors": "Aucun capteur d'alarme",
     "unavailable": "Indisponible",
     "active": "Actif",
-    "inactive": "Inactif"
+    "inactive": "Inactif",
+    "renameFailed": "Impossible d'enregistrer le nom."
   },
   "sensordots": {
     "selectDevices": "Choisissez des capteurs dans les réglages.",
@@ -128,19 +130,22 @@
     "unavailable": "Indisponible",
     "live": "Direct",
     "liveFailed": "Échec du direct",
-    "liveH265": "H.265 non lisible en direct. Essayez H.264."
+    "liveH265": "H.265 non lisible en direct. Essayez H.264.",
+    "renameFailed": "Impossible d'enregistrer le nom."
   },
   "values": {
     "selectSlots": "Choisissez des valeurs dans les réglages du widget.",
     "error": "Impossible de charger les valeurs.",
     "unavailable": "Indisponible",
     "on": "Allumé",
-    "off": "Éteint"
+    "off": "Éteint",
+    "renameFailed": "Impossible d'enregistrer le nom."
   },
   "sparklines": {
     "selectSlots": "Choisissez des valeurs dans les réglages du widget.",
     "error": "Impossible de charger les valeurs.",
-    "unavailable": "Indisponible"
+    "unavailable": "Indisponible",
+    "renameFailed": "Impossible d'enregistrer le nom."
   },
   "charts": {
     "now": "Maint.",
@@ -161,7 +166,8 @@
     "keyScope": "La clé API ne peut pas lancer de Moods.",
     "keyInvalid": "La clé API n'a pas été acceptée.",
     "moodFailed": "Impossible de lancer __name__.",
-    "moods": "Moods"
+    "moods": "Moods",
+    "renameFailed": "Impossible d'enregistrer le nom."
   },
   "variables": {
     "selectSlots": "Choisissez des variables dans les réglages.",
@@ -287,7 +293,8 @@
     "unlock": "Déverrouiller",
     "close": "Fermer",
     "openAction": "Ouvrir",
-    "lockAll": "Tout verrouiller"
+    "lockAll": "Tout verrouiller",
+    "renameFailed": "Impossible d'enregistrer le nom."
   },
   "curtains": {
     "selectDevices": "Choisissez des rideaux dans les réglages du widget.",
@@ -301,7 +308,8 @@
     "closing": "Fermeture…",
     "stopped": "Arrêté",
     "open": "Ouvrir",
-    "close": "Fermer"
+    "close": "Fermer",
+    "renameFailed": "Impossible d'enregistrer le nom."
   },
   "media": {
     "selectDevice": "Choisissez une enceinte dans les réglages du widget.",
