@@ -73,7 +73,7 @@
    * is the typed name, else `own`. In rename mode `field(key, own)` is the tile's text field (made once per key, with
    * `own` as the placeholder): it saves on change (Enter or leaving it), Escape puts it back, and a realtime update
    * doesn't overwrite it while it has the focus. Its touches, clicks and keys never reach the tile's own taps.
-   * `failed(key)` shakes the tile and says so; the name goes back.
+   * `failed(key)` shakes the tile and says so; the name goes back, unless a newer one came meanwhile.
    */
   function tileNames(opts, render, failed) {
     let names = {};
@@ -88,7 +88,8 @@
         if (opts.onRename) await opts.onRename(key, value);
       } catch (err) {
         console.error(err);
-        put(before);
+        // Only while it still shows this save's name: a realtime update or a read may have brought a newer one.
+        if ((names[key] || '') === value) put(before);
         failed(key);
       }
     }

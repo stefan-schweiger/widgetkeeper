@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, FakeApiOptions, fakeDevice, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
-import ElectricityService, { LIVE_EVENT } from '../lib/ElectricityService.js';
+import ElectricityService, { LIVE_EVENT, priceInterval } from '../lib/ElectricityService.js';
 import { HOUR, MINUTE } from '../lib/series.js';
 
 vi.mock('homey-api', () => homeyApiMock);
@@ -409,6 +409,32 @@ describe('15-minute prices', () => {
     const { quarters } = await service.getSnapshot(null);
     const tomorrow = quarters!.filter(q => q.start >= new Date('2026-01-16T03:00:00').getTime() && q.start < new Date('2026-01-16T04:00:00').getTime());
     expect(tomorrow.map(q => q.price)).toEqual([0.3, 0.3, 0.3, 0.3]);
+  });
+
+  it('reports the real interval in the diagnostics: 30 minutes is not 15', async () => {
+    /** A 30-minute market's day, with or without Homey's `interval` field. */
+    const halfHourDay = (date: string, withInterval: boolean) => {
+      const res: any = quarterDayPrices(date);
+      res.pricesPerInterval = res.pricesPerInterval.filter((_: any, i: number) => i % 2 === 0);
+      if (withInterval) res.interval = 30;
+      else delete res.interval;
+      return res;
+    };
+    for (const withInterval of [true, false]) {
+      const { service } = setup({ prices: ({ date }) => halfHourDay(date, withInterval) });
+      const { quarters } = await service.getSnapshot(null);
+      expect(quarters![97]).toEqual({ start: HOUR_START + QUARTER, price: 1 }); // the 10:00–10:30 price
+      expect(await service.describe()).toMatchObject({ priceInterval: 30 });
+    }
+  });
+
+  it("takes Homey's interval, else the shortest gap between prices", () => {
+    const at = (minutes: number) => ({ t: HOUR_START + minutes * MINUTE, w: 1 });
+    expect(priceInterval({ interval: 15 }, [at(0), at(60)])).toBe(15);
+    expect(priceInterval({}, [at(0), at(30), at(60)])).toBe(30);
+    expect(priceInterval({ interval: 'x' }, [at(0), at(15), at(60)])).toBe(15);
+    expect(priceInterval(null, [at(0)])).toBeNull();
+    expect(priceInterval({ interval: 0 }, [])).toBeNull();
   });
 
   it('has no quarters in an hourly market or with a fixed price', async () => {

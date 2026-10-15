@@ -37,6 +37,12 @@ export type MoodColor = { hue: number, saturation: number } | { temperature: num
 /** A Homey Mood of a room, for the Light Controls palette (`palette: moods`). */
 export type LightMood = { id: string, name: string, zone: string, colors: MoodColor[] };
 
+/**
+ * How long a group member that isn't a light (no `dim` or `onoff`) or is a group itself is left out before it's read
+ * again: it would otherwise be read (and throw, or be tracked for nothing) on every `/state`.
+ */
+const MEMBER_SKIP_MS = 10 * 60e3;
+
 /** How long the Moods read is shared: the widgets ask after every `/state`. */
 const MOODS_CACHE_MS = 60e3;
 /** At most this many colours per Mood (the pill's dot). */
@@ -81,6 +87,12 @@ export function lightCaps(device: any): string[] {
   return presentCaps(device, LIGHT_CAPS);
 }
 
+/** A device without `dim` or `onoff`: thrown by the tracker's `create()`, so a group member can be told from a failed read. */
+class NotALight extends Error {}
+
+/** A copy of an entry's capabilities, for one `/state` answer. */
+const copyCaps = (t: Tracked) => Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, { ...c }]));
+
 function fraction(v: unknown, what: string): number {
   if (typeof v !== 'number' || !Number.isFinite(v) || v < 0 || v > 1) throw new Error(`Invalid ${what} ${JSON.stringify(v)}`);
   return v;
@@ -97,6 +109,10 @@ export default class LightService {
   });
   private moodsStarted = 0;
   private lastMoodError: string | null = null;
+  /** Group members left out until this time (`MEMBER_SKIP_MS`): not lights, or groups themselves. */
+  private memberSkips = new Map<string, number>();
+  /** Group members whose last read failed, so a deleted one is logged once, not on every `/state`. */
+  private memberErrors = new Set<string>();
 
   constructor(
     private homey: Homey.App['homey'],
@@ -110,7 +126,7 @@ export default class LightService {
       what: 'Light capabilities',
       signature: device => `${lightCaps(device).join()}|${(groupMembers(device) ?? []).join()}`,
       create: async (device, api, tm) => {
-        if (!device.capabilitiesObj?.dim && !device.capabilitiesObj?.onoff) throw new Error(`${device.name} has no dim or onoff capability`);
+        if (!device.capabilitiesObj?.dim && !device.capabilitiesObj?.onoff) throw new NotALight(`${device.name} has no dim or onoff capability`);
         const icon = await tm.time('icons', () => fetchDeviceIcon(api, device, this.log));
         return { name: device.name, icon, zone: device.zone ?? null, members: groupMembers(device), caps: readCaps(device, LIGHT_CAPS), lastDim: 1 };
       },
@@ -152,18 +168,60 @@ export default class LightService {
   async getState(deviceIds: string[]): Promise<LightDevice[]> {
     const tm = new Timings();
     const zonesP = readZones(this.homey, tm, this.log, 'Light');
-    const caps = (t: Tracked) => Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, { ...c }]));
-    const out = await this.tracker.each(deviceIds, tm, this.log, 'Light', async (t, id): Promise<LightDevice> => {
-      const entry: LightDevice = { id, name: t.name, icon: t.icon, zone: zoneRef(await zonesP, t.zone), caps: caps(t) };
-      if (t.members) {
-        // One level: a group in a group (or a member gone missing) is left out.
-        const members = await this.tracker.each(t.members, tm, this.log, 'Light group member', m => (m.members ? null : { id: m.key, caps: caps(m) }));
-        entry.groupLights = members.filter((m): m is LightMember => !!m && !('missing' in m));
+    // Each device is read once per request, also when it's both a tile and in a group (or in two groups).
+    const reads = new Map<string, Promise<Tracked>>();
+    const read = (id: string) => {
+      let p = reads.get(id);
+      if (!p) reads.set(id, p = this.tracker.current(id, tm));
+      return p;
+    };
+    const out = await Promise.all(deviceIds.map(async (id): Promise<LightDevice> => {
+      let t: Tracked;
+      try {
+        t = await read(id);
+      } catch (err) {
+        this.log(`Light ${id} unavailable:`, err);
+        return { id, missing: true };
       }
+      const entry: LightDevice = { id, name: t.name, icon: t.icon, zone: zoneRef(await zonesP, t.zone), caps: copyCaps(t) };
+      if (t.members) entry.groupLights = await this.groupLights(t.members, read);
       return entry;
-    });
+    }));
     this.debug(`Lights state for ${deviceIds.length} devices: ${tm.summary()}`);
     return out;
+  }
+
+  /**
+   * A group's lights, one level: a group in a group, a device that isn't a light and a member gone missing are left
+   * out. The first two aren't read again for `MEMBER_SKIP_MS`, and a failed read is logged once until it reads again.
+   */
+  private async groupLights(ids: string[], read: (id: string) => Promise<Tracked>): Promise<LightMember[]> {
+    const skip = (id: string, why: string) => {
+      if (!this.memberSkips.has(id)) this.debug(`Light group member ${id} left out: ${why}`);
+      this.memberSkips.set(id, Date.now() + MEMBER_SKIP_MS);
+    };
+    const lights = await Promise.all(ids.map(async (id): Promise<LightMember | null> => {
+      if ((this.memberSkips.get(id) ?? 0) > Date.now()) return null;
+      try {
+        const m = await read(id);
+        this.memberErrors.delete(id);
+        if (m.members) {
+          skip(id, 'a group');
+          return null;
+        }
+        this.memberSkips.delete(id);
+        return { id: m.key, caps: copyCaps(m) };
+      } catch (err) {
+        if (err instanceof NotALight) skip(id, err.message);
+        else if (this.memberErrors.has(id)) this.debug(`Light group member ${id} still unavailable:`, err);
+        else {
+          this.memberErrors.add(id);
+          this.log(`Light group member ${id} unavailable:`, err);
+        }
+        return null;
+      }
+    }));
+    return lights.filter((m): m is LightMember => !!m);
   }
 
   /**

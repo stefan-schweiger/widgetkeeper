@@ -12,10 +12,34 @@ const MAX_INSTANCES = 300;
 
 type TileNames = { names: Record<string, string>, updatedAt: number };
 
+/** Ids that would reach (or read) `Object.prototype` as keys of a plain object: never an instance or a tile key. */
+const RESERVED = new Set(['__proto__', 'constructor', 'prototype']);
+
 function instanceId(instance: unknown): string {
   const id = typeof instance === 'string' ? instance.trim() : '';
   if (!id || id.length > MAX_KEY) throw new Error('Missing instance');
+  if (RESERVED.has(id)) throw new Error('Invalid instance');
   return id;
+}
+
+function tileKey(key: unknown): string {
+  const k = typeof key === 'string' ? key : '';
+  if (!k || k.length > MAX_KEY) throw new Error('Missing key');
+  if (RESERVED.has(k)) throw new Error('Invalid key');
+  return k;
+}
+
+const has = (o: object, k: string) => Object.prototype.hasOwnProperty.call(o, k);
+const isObject = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+
+/** A stored names object, copied by its own string entries only (the setting comes back from JSON as it was saved). */
+function readNames(v: unknown): Record<string, string> {
+  const names: Record<string, string> = {};
+  if (!isObject(v)) return names;
+  for (const k of Object.keys(v)) {
+    if (!RESERVED.has(k) && typeof v[k] === 'string') names[k] = v[k] as string;
+  }
+  return names;
 }
 
 /**
@@ -32,24 +56,32 @@ export default class TileNameService {
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
   ) {}
 
+  /** A fresh copy of the setting: own keys only, so an odd stored key can't reach `Object.prototype`. */
   private all(): Record<string, TileNames> {
     const v = this.homey.settings.get(TILE_NAMES_SETTING);
-    return v && typeof v === 'object' ? v : {};
+    const all: Record<string, TileNames> = {};
+    if (!isObject(v)) return all;
+    for (const id of Object.keys(v)) {
+      const entry = v[id];
+      if (RESERVED.has(id) || !isObject(entry)) continue;
+      all[id] = { names: readNames(entry.names), updatedAt: Number(entry.updatedAt) || 0 };
+    }
+    return all;
   }
 
   get(instance: unknown): { instance: string, names: Record<string, string> } {
     const id = instanceId(instance);
-    return { instance: id, names: { ...this.all()[id]?.names } };
+    const all = this.all();
+    return { instance: id, names: has(all, id) ? { ...all[id].names } : {} };
   }
 
   /** Names a tile; an empty name gives the tile its own name back. A name past 60 characters is cut. */
   set(instance: unknown, key: unknown, name: unknown) {
     const id = instanceId(instance);
-    const k = typeof key === 'string' ? key : '';
-    if (!k || k.length > MAX_KEY) throw new Error('Missing key');
+    const k = tileKey(key);
     const value = String(name ?? '').trim().slice(0, MAX_NAME);
-    const all = { ...this.all() };
-    const names = { ...all[id]?.names };
+    const all = this.all();
+    const names = has(all, id) ? { ...all[id].names } : {};
     if (value) names[k] = value;
     else delete names[k];
     if (Object.keys(names).length > MAX_KEYS) throw new Error('Too many names');
@@ -69,7 +101,7 @@ export default class TileNameService {
   /** For the diagnostics report: counts only, never the names. */
   describe() {
     const all = Object.values(this.all());
-    return { widgets: all.length, names: all.reduce((n, w) => n + Object.keys(w.names || {}).length, 0) };
+    return { widgets: all.length, names: all.reduce((n, w) => n + Object.keys(w.names).length, 0) };
   }
 
 }

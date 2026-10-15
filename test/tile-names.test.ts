@@ -43,6 +43,35 @@ describe('TileNameService', () => {
     expect(() => service.get(undefined)).toThrow();
   });
 
+  it('refuses prototype ids as an instance or key, without saving or sending anything', () => {
+    const { service, homey } = setup();
+    for (const bad of ['__proto__', 'constructor', 'prototype']) {
+      expect(() => service.set(bad, 'a', 'x')).toThrow('Invalid instance');
+      expect(() => service.set('w1', bad, 'x')).toThrow('Invalid key');
+      expect(() => service.get(bad)).toThrow('Invalid instance');
+    }
+    expect(homey.api.realtime).not.toHaveBeenCalled();
+    expect(homey.settings.get(TILE_NAMES_SETTING)).toBeNull();
+    expect(service.get('toString').names).toEqual({});
+    service.set('hasOwnProperty', 'toString', 'Lamp');
+    expect(service.get('hasOwnProperty').names).toEqual({ toString: 'Lamp' });
+    expect(Object.getPrototypeOf(homey.settings.get(TILE_NAMES_SETTING))).toBe(Object.prototype);
+  });
+
+  it('reads a stored setting with odd keys or entries safely', () => {
+    const { service, homey } = setup();
+    homey.settings.set(TILE_NAMES_SETTING, JSON.parse(
+      '{"__proto__": {"names": {"a": "x"}, "updatedAt": 1}, "w1": {"names": {"__proto__": "x", "a": "Lamp", "b": 3}, "updatedAt": 1}, "w2": null, "w3": "x"}',
+    ));
+    expect(service.get('w1').names).toEqual({ a: 'Lamp' });
+    expect(Object.getPrototypeOf(service.get('w1').names)).toBe(Object.prototype);
+    expect(service.describe()).toEqual({ widgets: 1, names: 1 });
+    service.set('w1', 'c', 'Spot');
+    const all = homey.settings.get(TILE_NAMES_SETTING);
+    expect(Object.keys(all)).toEqual(['w1']);
+    expect(all.w1.names).toEqual({ a: 'Lamp', c: 'Spot' });
+  });
+
   it('keeps at most 300 instances, dropping the ones renamed longest ago', () => {
     const { service, homey } = setup();
     for (let i = 0; i < 305; i++) {

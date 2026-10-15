@@ -257,6 +257,43 @@ describe('Homey group devices', () => {
     expect(homey.api.realtime).toHaveBeenCalledWith(LIGHTS_STATE_EVENT, { deviceId: 's1', capabilityId: 'light_hue', value: 0.3 });
   });
 
+  const reads = (homey: any, id: string) => homey.fakeApi.devices.getDevice.mock.calls.filter(([a]: any[]) => a.id === id).length;
+
+  it('reads a light once per /state when it is both a tile and in the group', async () => {
+    const { service, homey } = groupSetup();
+    await service.getState(['group', 's1']);
+    expect(reads(homey, 's1')).toBe(1);
+    const [, s1] = await service.getState(['group', 's1']);
+    expect(reads(homey, 's1')).toBe(2);
+    expect(s1).toMatchObject({ id: 's1', caps: { light_hue: { value: 0.1 } } });
+  });
+
+  it("doesn't read or log a member that isn't a light on every /state, and logs a missing one once", async () => {
+    const homey = fakeHomey(fakeApi({ devices: groupSetup().devices }));
+    const log = vi.fn();
+    const service = new LightService(homey, log);
+    for (let i = 0; i < 3; i++) await service.getState(['group']);
+    expect(reads(homey, 'sensor')).toBe(1);
+    expect(log.mock.calls.map(c => c[0])).toEqual(['Light group member gone unavailable:']);
+    vi.advanceTimersByTime(11 * 60e3); // read again after a while, in case it became a light
+    await service.getState(['group']);
+    expect(reads(homey, 'sensor')).toBe(2);
+    expect(log).toHaveBeenCalledTimes(1);
+  });
+
+  it('leaves out a group in the group without tracking it on every /state', async () => {
+    const { service, homey, devices } = groupSetup();
+    const inner: any = fakeDevice({ id: 'inner', caps: { onoff: { type: 'boolean', value: true } } });
+    inner.driverId = GROUP_DRIVER;
+    inner.settings = { deviceIds: ['s2'] };
+    devices.push(inner);
+    (devices[0] as any).settings.deviceIds.push('inner');
+    await service.getState(['group']);
+    const [entry] = await service.getState(['group']);
+    expect((entry as any).groupLights.map((m: any) => m.id)).toEqual(['s1', 's2']);
+    expect(reads(homey, 'inner')).toBe(1);
+  });
+
   it('sends no groupLights for other devices', async () => {
     const { service } = setup();
     expect(await service.getState(['bulb'])).not.toHaveProperty('0.groupLights');

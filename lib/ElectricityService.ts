@@ -5,7 +5,7 @@ import { readFirstLog } from './insightsLog.js';
 import Timings from './Timings.js';
 import {
   HOUR, MINUTE, QUARTER, SECOND, Sample,
-  bucketAverage, floorTo, hourlyPrices, parseInsightsEntries, parsePriceResponse, quarterPrices,
+  bucketAverage, floorTo, hourlyPrices, parseInsightsEntries, parsePriceResponse, priceStep, quarterPrices,
 } from './series.js';
 import { parsePriceCosts } from './priceCosts.js';
 
@@ -49,6 +49,7 @@ type PriceDay = {
   at: number,
   hours: Map<number, number>, // hourly prices (averages of shorter intervals) by hour start
   quarters: Map<number, number> | null, // 15-minute prices by quarter start; null when the day's prices are hourly
+  interval: number | null, // the length of Homey's price intervals in minutes (15, 30, 60), when known
 };
 
 type Slots = { prices: Snapshot['prices'], quarters: Snapshot['quarters'] };
@@ -361,9 +362,9 @@ export default class ElectricityService {
   /** Price type, fixed price and costs, for the diagnostics report. */
   async describe() {
     const { fixed, costsExpression } = await this.getPriceSettings();
-    // The interval of today's spot prices, once read (15 in quarter-hour markets, 60 in hourly ones).
+    // The interval of today's spot prices in minutes, once read (15 in quarter-hour markets, 60 in hourly ones).
     const today = this.priceDays.get(this.localDate(Date.now()));
-    const priceInterval = !today?.hours.size ? null : today.quarters ? 15 : 60;
+    const priceInterval = !today?.hours.size ? null : today.interval ?? (today.quarters ? 15 : 60);
     return {
       priceType: fixed == null ? 'dynamic' : 'fixed', fixedPrice: fixed, priceCosts: costsExpression, priceInterval, currency: this.currency,
     };
@@ -451,7 +452,7 @@ export default class ElectricityService {
       this.debug(`Price response sample for ${day}:`, JSON.stringify(res)?.slice(0, 600));
     }
     const samples = parsePriceResponse(res);
-    const entry: PriceDay = { at: now, hours: hourlyPrices(samples), quarters: quarterPrices(samples) };
+    const entry: PriceDay = { at: now, hours: hourlyPrices(samples), quarters: quarterPrices(samples), interval: priceInterval(res, samples) };
     this.priceDays.set(day, entry);
     for (const key of this.priceDays.keys()) {
       if (key < this.localDate(now - 3 * 24 * HOUR)) this.priceDays.delete(key);
@@ -470,6 +471,16 @@ export default class ElectricityService {
 /** Float noise off (0.1 + 0.2), at the 4 decimals Homey's spot prices have. */
 function round4(x: number): number {
   return Math.round(x * 1e4) / 1e4;
+}
+
+/**
+ * A price day's interval in minutes: Homey's own `interval` (60 in DK2, verified), else the shortest gap between
+ * its prices, or null with neither (a day with one price, or none).
+ */
+export function priceInterval(res: any, samples: Sample[]): number | null {
+  if (typeof res?.interval === 'number' && res.interval > 0 && Number.isFinite(res.interval)) return res.interval;
+  const step = priceStep(samples);
+  return Number.isFinite(step) ? Math.round(step / MINUTE) : null;
 }
 
 /** `{value: {costs: {user_fixed_base: {value: 2}}}}` (verified 2026-10-07) → 2. */

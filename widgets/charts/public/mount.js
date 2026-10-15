@@ -27,7 +27,7 @@ window.mountChartsWidget = function (Homey, { root, frame }) {
   // Each chart setting is an autocomplete item whose id is `<deviceId>:<capabilityId>`; empty ones are left out.
   const charts = [1, 2].slice(0, count).map(n => ({
     slot: settings[`chart${n}`] && settings[`chart${n}`].id,
-    span: settings[`span${overlay ? 1 : n}`],
+    span: settings[`span${n}`],
     style: settings[`style${n}`],
     color: settings[`color${n}`] || (n === 2 ? 'green' : 'blue'),
     range: settings[`range${n}`],
@@ -35,6 +35,8 @@ window.mountChartsWidget = function (Homey, { root, frame }) {
     smooth: settings[`smooth${n}`] === true,
     title: settings[`title${n}`],
   })).filter(c => typeof c.slot === 'string' && c.slot.indexOf(':') > 0 && !c.slot.endsWith(':')); // as parseSlot()
+  // On one chart, series 2 takes chart 1's span (its scale too, in the widget); a lone chart keeps its own.
+  if (overlay && charts.length === 2) charts[1].span = charts[0].span;
   let readySent = false;
   let loaded = false;
 

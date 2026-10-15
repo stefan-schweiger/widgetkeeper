@@ -26,7 +26,9 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
    */
   function wireTileNames(setNames) {
     let instance = 'default';
-    const known = Promise.resolve(typeof Homey.getWidgetInstanceId === 'function' ? Homey.getWidgetInstanceId() : '')
+    let asked = '';
+    try { asked = typeof Homey.getWidgetInstanceId === 'function' ? Homey.getWidgetInstanceId() : ''; } catch (e) { /* stays 'default' */ }
+    const known = Promise.resolve(asked)
       .then((id) => { if (typeof id === 'string' && id) instance = id; })
       .catch(() => {});
     Homey.on('tilenames:state', (data) => {

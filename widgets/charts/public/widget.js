@@ -47,10 +47,12 @@
   /**
    * Bars of `bucketMs` on the local clock over `[from, to]`: each the average of the points in it, or the last
    * value before it (Homey doesn't log unchanged values); null before the first value. The first and last
-   * bars are cut to the span. `{t, end, v}`, oldest first.
+   * bars are cut to the span. `current` (the value now) only stands in for a last bar without points of its
+   * own, so it doesn't count as a sample and the bar doesn't jump with each live value. `{t, end, v}`, oldest first.
    * @param {[number, number][]} points
+   * @param {number | null} [current]
    */
-  function chartBuckets(points, from, to, bucketMs) {
+  function chartBuckets(points, from, to, bucketMs, current = null) {
     const offset = new Date(from).getTimezoneOffset() * MIN;
     const align = t => Math.floor((t - offset) / bucketMs) * bucketMs + offset;
     const out = [];
@@ -62,7 +64,8 @@
         if (points[j][0] <= to) { sum += points[j][1]; n++; }
         last = points[j++][1];
       }
-      out.push({ t: Math.max(b, from), end: Math.min(b + bucketMs, to), v: n ? sum / n : last });
+      const end = Math.min(b + bucketMs, to);
+      out.push({ t: Math.max(b, from), end, v: n ? sum / n : end === to && current != null ? current : last });
     }
     return out;
   }
@@ -122,7 +125,9 @@
       transient: null,
       width: root.clientWidth || 368,
       lastHeight: 0,
-      sel: charts.map(() => null), // the tapped point or bar, per chart
+      // The tapped point's time, or a time inside the tapped bar (its end), per chart: not an index, since the
+      // points move along with the window and the live values.
+      sel: charts.map(() => null),
     };
     let messageTimer = null;
 
@@ -144,15 +149,26 @@
 
     function spanMs(i) { return SPAN_MS[charts[i].span]; }
 
-    /** The chart's points over its span, with the current value carried on to now. */
-    function pointsOf(i, to) {
+    /** The chart's logged (and live) points over its span. */
+    function loggedPoints(i, to) {
       const s = state.entries[i];
       if (!s || 'missing' in s) return [];
       const from = to - spanMs(i);
-      let pts = (s.points || []).filter(p => p[0] >= from && p[0] <= to && typeof p[1] === 'number' && isFinite(p[1]));
+      return (s.points || []).filter(p => p[0] >= from && p[0] <= to && typeof p[1] === 'number' && isFinite(p[1]));
+    }
+
+    /** The chart's current value, or null. */
+    function currentOf(i) {
+      const s = state.entries[i];
+      return s && !('missing' in s) && typeof s.value === 'number' && isFinite(s.value) ? s.value : null;
+    }
+
+    /** The chart's points over its span, with the current value carried on to now. */
+    function pointsOf(i, to) {
+      const pts = loggedPoints(i, to);
       const last = pts.length ? pts[pts.length - 1][0] : -Infinity;
-      if (typeof s.value === 'number' && isFinite(s.value) && last < to) pts = pts.concat([[to, s.value]]);
-      return pts;
+      const v = currentOf(i);
+      return v != null && last < to ? pts.concat([[to, v]]) : pts;
     }
 
     function titleOf(i) {
@@ -202,9 +218,8 @@
     function shown(i) {
       const s = state.entries[i];
       const g = geom[i];
-      const sel = state.sel[i];
-      if (g && sel != null && g.items[sel]) {
-        const item = g.items[sel];
+      if (g && g.sel != null && g.items[g.sel]) {
+        const item = g.items[g.sel];
         const long = spanMs(i) > 24 * HOUR;
         const at = ms => (long ? `${weekday(ms)} ${hhmm(ms)}` : hhmm(ms));
         return { value: item.v, sub: item.end != null ? `${at(item.t)}–${hhmm(item.end)}` : at(item.t) };
@@ -259,7 +274,7 @@
       xLabels(svg, from, to, pw, top, base);
       kit.axis(svg, top, base, pw);
 
-      const drawn = drawSeries(i, svg, { data, x, scale, top, base, sel: state.sel[i] });
+      const drawn = drawSeries(i, svg, { data, x, scale, top, base });
       geom[i] = drawn.geom;
       if (drawn.cursorX != null) el('svg:path', { class: 'cursor', d: `M${f1(drawn.cursorX)} ${top}V${base}` }, svg);
       if (drawn.dot) drawn.dot(svg);
@@ -303,7 +318,7 @@
       const drawn = data.map((d, i) => {
         if (!d.drawable) return null;
         const g = el('svg:g', { 'data-color': charts[i].color }, svg);
-        const r = drawSeries(i, g, { data: d, x, scale: scales[i ? 'b' : 'a'], top, base, sel: state.sel[i], half: bothBars ? i : null });
+        const r = drawSeries(i, g, { data: d, x, scale: scales[i ? 'b' : 'a'], top, base, half: bothBars ? i : null });
         geom[i] = r.geom;
         return r;
       });
@@ -325,13 +340,34 @@
     function seriesData(i, from, to) {
       const s = state.entries[i];
       if (!s || 'missing' in s) return { drawable: false };
-      const pts = pointsOf(i, to);
-      const bars = charts[i].style === 'bars' ? chartBuckets(pts, from, to, BAR_MS[charts[i].span]) : null;
+      const bars = charts[i].style === 'bars' ? chartBuckets(loggedPoints(i, to), from, to, BAR_MS[charts[i].span], currentOf(i)) : null;
+      const pts = bars ? null : pointsOf(i, to);
       const drawable = bars ? bars.some(b => b.v != null) : pts.length >= 2;
       if (!drawable) return { drawable };
       const disp = v => scaled(s.capability, v);
       const values = bars ? bars.filter(b => b.v != null).map(b => disp(b.v)) : pts.map(p => disp(p[1]));
-      return { drawable, pts, bars, disp, max: Math.max(...values), min: Math.min(...values) };
+      return { drawable, pts, bars, disp, from, max: Math.max(...values), min: Math.min(...values) };
+    }
+
+    /**
+     * Series i's tapped item (an index into its bars or points) for this render, from the time kept in
+     * `state.sel`: the bar holding it, or the point nearest it. A time that has left the window drops the selection.
+     */
+    function selectedIndex(i, data) {
+      const at = state.sel[i];
+      if (at == null) return null;
+      let k = null;
+      if (at >= data.from) {
+        if (data.bars) {
+          k = data.bars.findIndex(b => b.v != null && b.t < at && at <= b.end);
+          if (k < 0) k = null;
+        } else {
+          k = 0;
+          for (let j = 1; j < data.pts.length; j++) if (Math.abs(data.pts[j][0] - at) < Math.abs(data.pts[k][0] - at)) k = j;
+        }
+      }
+      if (k == null) state.sel[i] = null;
+      return k;
     }
 
     /**
@@ -339,9 +375,10 @@
      * two series of bars on one chart. Returns the pointer geometry, the cursor's x (a tapped line point) and
      * `dot(parent)`, which draws the line's dot where the caller wants it.
      */
-    function drawSeries(i, parent, { data, x, scale, top, base, sel, half = null }) {
+    function drawSeries(i, parent, { data, x, scale, top, base, half = null }) {
       const c = charts[i];
       const { pts, bars, disp } = data;
+      const sel = selectedIndex(i, data);
       const y = v => Math.min(base + 2, Math.max(top - 2, scale.y(v)));
       if (bars) {
         const list = bars.map((b) => {
@@ -356,7 +393,7 @@
           return { x: lx, w: lw, v: b.v == null ? null : disp(b.v) };
         });
         kit.bars(parent, { list, y, baseY: scale.baseY, zeroY: scale.zeroY, base, cls: 'series-bars', split: c.negative, selected: sel });
-        return { geom: { kind: 'bars', items: bars.map((b, k) => ({ t: b.t, end: b.end, v: b.v, x0: list[k].x, x1: list[k].x + list[k].w })) } };
+        return { geom: { kind: 'bars', sel, items: bars.map((b, k) => ({ t: b.t, end: b.end, v: b.v, x0: list[k].x, x1: list[k].x + list[k].w })) } };
       }
 
       const xs = pts.map(p => x(p[0]));
@@ -370,7 +407,7 @@
       kit.trace(parent, { line, area, kind: 'series', lineClass: 'series-line', stops: [0.45, 0], zeroY: scale.zeroY, top, base, split: c.negative });
       const idx = sel == null ? xy.length - 1 : Math.min(sel, xy.length - 1);
       return {
-        geom: { kind: 'line', xs, items: pts.map(p => ({ t: p[0], v: p[1] })) },
+        geom: { kind: 'line', xs, sel, items: pts.map(p => ({ t: p[0], v: p[1] })) },
         cursorX: sel != null ? xs[idx] : null,
         dot: g => kit.dot(g, xy[idx][0], xy[idx][1], c.negative && ws[idx] < 0 ? 'series export' : 'series'),
       };
@@ -446,7 +483,9 @@
           const o = other && other.kind === 'bars' ? pick(other, px) : null;
           if (o != null && g.items[o] && g.items[o].v != null) k = o;
         }
-        if (k !== state.sel[j]) { state.sel[j] = k; changed = true; }
+        // Kept as a time (a bar's end lies inside it, also as the window moves on), not as an index.
+        const at = k == null ? null : g.kind === 'bars' ? g.items[k].end : g.items[k].t;
+        if (at !== state.sel[j]) { state.sel[j] = at; changed = true; }
       }
       if (changed) render();
     }

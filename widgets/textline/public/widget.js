@@ -220,13 +220,19 @@
 
     function fitNote() {
       const base = NOTE_FONT[size];
+      // Measured with the clamp lifted: under -webkit-line-clamp the height is already cut to three lines.
+      const s = textEl.style;
+      s.setProperty('display', 'block');
+      s.setProperty('-webkit-line-clamp', 'none');
+      s.setProperty('overflow', 'visible');
       for (const step of NOTE_STEPS) {
         const px = Math.round(base * step);
-        textEl.style.fontSize = `${px}px`;
+        s.fontSize = `${px}px`;
         const lineHeight = px * 1.1;
         const h = textEl.getBoundingClientRect().height;
         if (!h || h <= lineHeight * NOTE_LINES + 1) break;
       }
+      for (const p of ['display', '-webkit-line-clamp', 'overflow']) s.removeProperty(p);
     }
 
     function setScroll() {
