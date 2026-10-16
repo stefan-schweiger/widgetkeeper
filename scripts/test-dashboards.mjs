@@ -332,7 +332,8 @@ const BUILD = {
     const missing = { id: 'missing-variable-0000', name: 'Deleted variable' };
     return { cols: 2, widgets: [
       w('variables', 'Every variable · 1 column', slots('slot', items)),
-      w('variables', '2 columns · step 0.5 · renamed', { columns: '2', step: 0.5, ...slots('slot', items), name1: 'Renamed first', name2: 'A long name that has to wrap onto a second line here' }),
+      w('variables', '2 columns · step 0.5', { columns: '2', step: 0.5, ...slots('slot', items) }),
+      renaming('variables', 'Rename tiles', slots('slot', items.slice(0, 3)), [], items[0] ? { [items[0].id]: 'Typed name' } : {}),
       w('variables', 'Step 0.05 · lowest 0 · highest 1', { step: 0.05, min: 0, max: 1, ...slots('slot', items) }),
       w('variables', 'Read only · 2 columns', { readOnly: true, columns: '2', ...slots('slot', items) }),
       w('variables', 'Step 10 · gaps · deleted', { step: 10, ...slots('slot', [items[0], null, missing, items[1]]) }),

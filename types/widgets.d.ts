@@ -24,6 +24,7 @@ interface Window {
   createLightsWidget: (root: HTMLElement, opts?: object) => any;
   createSparklinesWidget: (root: HTMLElement, opts?: object) => any;
   createVariablesWidget: (root: HTMLElement, opts?: object) => any;
+  variableNameKeys: (slots: { id: string }[]) => string[];
   variableStepValue: (value: unknown, step: number, dir: number) => number;
   parseVariableNumber: (text: string) => number | null;
   createFlowsWidget: (root: HTMLElement, opts?: object) => any;

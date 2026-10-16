@@ -108,6 +108,28 @@ describe('web dashboards: storage', () => {
   });
 });
 
+describe('web dashboards: the old Variables names', () => {
+  it("reads each Variables widget's row names from the saved dashboards, by tile key", () => {
+    const { web, homey } = setup();
+    homey.settings.set(WEB_DASHBOARDS_SETTING, [
+      { id: 'd1', name: 'Home', columns: [[
+        { id: 'w1', type: 'variables', settings: {
+          slot1: { id: 'a' }, name1: ' Guests ', slot2: { id: 'b' }, name2: '', slot3: { id: 'a' }, name3: 'Again',
+          slot4: { id: 'none' }, name4: 'Nothing', name5: 'No slot',
+        } },
+        { id: 'w2', type: 'variables', settings: { slot1: { id: 'a' } } }, // no names: nothing to take over
+        { id: 'w3', type: 'values', settings: { slot1: { id: 'x:y' }, name1: 'Power' } },
+      ], [
+        { id: 'bad id', type: 'variables', settings: { slot1: { id: 'a' }, name1: 'x' } },
+      ]] },
+      null,
+    ]);
+    expect(web.oldVariableNames()).toEqual([{ instance: 'web-d1-w1', names: { a: 'Guests', 'a#2': 'Again' } }]);
+    // The dashboards as read no longer have them.
+    expect(web.list()[0].columns[0][0].settings.name1).toBeUndefined();
+  });
+});
+
 describe('web dashboards: what the editor needs', () => {
   it("lists the widget types with their settings in Homey's language", () => {
     const { web } = setup();

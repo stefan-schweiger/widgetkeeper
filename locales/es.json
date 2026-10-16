@@ -192,7 +192,8 @@
     "typeString": "Texto",
     "noKey": "Para cambiar variables, añade una clave API en los ajustes de la app.",
     "keyScope": "La clave API no puede cambiar variables: necesita Variables.",
-    "keyInvalid": "La clave API no fue aceptada."
+    "keyInvalid": "La clave API no fue aceptada.",
+    "renameFailed": "No se pudo guardar el nombre."
   },
   "flows": {
     "selectSlots": "Elige flujos en los ajustes del widget.",

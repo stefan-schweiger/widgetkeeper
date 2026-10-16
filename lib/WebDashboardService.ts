@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import { repeatKeys } from './TileNameService.js';
 import { describeCapability } from './capabilities.js';
 import { sparkCaps } from './SparklineService.js';
 import { valueCaps } from './ValueService.js';
@@ -176,6 +177,30 @@ export default class WebDashboardService {
         out.push(this.normalize(d));
       } catch (err) {
         this.log('Web dashboards: dropped a saved dashboard:', String((err as any)?.message ?? err));
+      }
+    }
+    return out;
+  }
+
+  /**
+   * The row names Variables widgets had in their own settings (`nameN`, before Rename tiles), read from the saved
+   * dashboards as they are: `list()` keeps only the manifest's settings, so a widget never sees them again. Per widget
+   * instance (`web-<dashboard>-<widget>`, as the page names its frames), by tile key, for `TileNameService.adopt()`.
+   */
+  oldVariableNames(): { instance: string, names: Record<string, string> }[] {
+    const saved = this.homey.settings.get(WEB_DASHBOARDS_SETTING);
+    const out: { instance: string, names: Record<string, string> }[] = [];
+    for (const d of Array.isArray(saved) ? saved : []) {
+      if (!d || typeof d.id !== 'string' || !ID.test(d.id) || !Array.isArray(d.columns)) continue;
+      for (const w of d.columns.flat()) {
+        if (!w || w.type !== 'variables' || typeof w.id !== 'string' || !ID.test(w.id) || !w.settings || typeof w.settings !== 'object') continue;
+        const picked = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+          .map(n => ({ id: w.settings[`slot${n}`]?.id, name: w.settings[`name${n}`] }))
+          .filter(s => typeof s.id === 'string' && s.id && s.id !== 'none');
+        const keys = repeatKeys(picked.map(s => s.id as string));
+        const names: Record<string, string> = {};
+        picked.forEach((s, i) => { if (typeof s.name === 'string' && s.name.trim()) names[keys[i]] = s.name.trim(); });
+        if (Object.keys(names).length) out.push({ instance: `web-${d.id}-${w.id}`, names });
       }
     }
     return out;

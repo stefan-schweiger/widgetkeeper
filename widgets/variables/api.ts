@@ -1,18 +1,24 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
 import { idList, keyResult, logged, logPerf } from '../../lib/widgetApi.js';
+import { tileNameRoutes, withTileNames } from '../../lib/TileNameService.js';
 
 type Homey = App['homey'];
 
 export default {
-  /** `ids`: comma-separated Logic variable ids. */
+  ...tileNameRoutes,
+
+  /**
+   * `ids`: comma-separated Logic variable ids. With `instance` it answers `{state, tileNames}`, and takes over the
+   * row names of the widget's old settings (`oldNames`) first.
+   */
   async getState({ homey, query }: {
     homey: Homey,
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
     logPerf(app, 'Variables', query);
-    return logged(app, 'Variables state failed:', () => app.variables.getState(idList(query.ids)));
+    return withTileNames(homey, query, logged(app, 'Variables state failed:', () => app.variables.getState(idList(query.ids))));
   },
 
   /**

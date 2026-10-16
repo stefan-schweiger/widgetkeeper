@@ -192,7 +192,8 @@
     "typeString": "Tekst",
     "noKey": "Legg til en API-nøkkel i appinnstillingene for å endre variabler.",
     "keyScope": "API-nøkkelen kan ikke endre variabler: den trenger Variabler.",
-    "keyInvalid": "API-nøkkelen ble ikke godtatt."
+    "keyInvalid": "API-nøkkelen ble ikke godtatt.",
+    "renameFailed": "Kunne ikke lagre navnet."
   },
   "flows": {
     "selectSlots": "Velg flyter i widgetinnstillingene.",

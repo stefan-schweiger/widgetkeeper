@@ -4,7 +4,7 @@ import { loadWidget } from './helpers/loadWidget.js';
 
 let win: any;
 beforeAll(() => {
-  for (const id of ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras'] as const) win = loadWidget(id);
+  for (const id of ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables'] as const) win = loadWidget(id);
 });
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-15T12:00:00Z')); });
 afterEach(() => { vi.useRealTimers(); document.body.innerHTML = ''; });
@@ -58,6 +58,12 @@ const CASES: Record<string, { create: string, state: any, keys: string[], own: s
     create: 'createCamerasWidget', act: '', tile: '.cw-tile', name: '.cw-name', opts: { api: vi.fn(() => new Promise(() => {})) },
     state: ['a', 'b'].map(id => ({ id, name: `Cam ${id}`, icon: null, image: null, video: null, videos: [], h265: [] })),
     keys: ['a', 'b'], own: ['Cam a', 'Cam b'],
+  },
+  variables: {
+    create: 'createVariablesWidget', act: 'onSet', tile: '.vr-row', name: '.vr-name',
+    // The same variable twice, as Device Values: the second row's key is `#2`.
+    state: [{ id: 'a', name: 'Guests', type: 'boolean', value: false }, { id: 'a', name: 'Guests', type: 'boolean', value: false }],
+    keys: ['a', 'a#2'], own: ['Guests', 'Guests'],
   },
 };
 

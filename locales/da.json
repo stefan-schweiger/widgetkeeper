@@ -192,7 +192,8 @@
     "typeString": "Tekst",
     "noKey": "Tilføj en API-nøgle i appindstillingerne for at ændre variabler.",
     "keyScope": "API-nøglen må ikke ændre variabler: den skal have Variabler.",
-    "keyInvalid": "API-nøglen blev ikke godkendt."
+    "keyInvalid": "API-nøglen blev ikke godkendt.",
+    "renameFailed": "Kunne ikke gemme navnet."
   },
   "flows": {
     "selectSlots": "Vælg flows i widgetindstillingerne.",

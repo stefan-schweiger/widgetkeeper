@@ -21,6 +21,7 @@
     noKey: 'To change variables, add an API key in the app settings.',
     keyScope: 'The API key may not change variables: it needs Variables.',
     keyInvalid: 'The API key was not accepted.',
+    renameFailed: 'Could not save the name.',
   };
   /** Why a change was refused, from the app (`{ok: false, reason}`): each has its own message. */
   const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
@@ -107,16 +108,89 @@
     });
   }
 
-  /** An entry with the tile's own name from the settings, when one is set (a missing entry keeps none). */
-  function withName(entry, name) {
-    const n = typeof name === 'string' ? name.trim() : '';
-    return n && entry && !('missing' in entry) ? { ...entry, name: n } : entry;
+  const keyOf = v => v.id;
+
+  /** Each tile's key for its typed name: the value's own key, then `#2`, `#3` … for repeats, so reordering keeps the names. */
+  function nameKeys(slots) {
+    const seen = new Map();
+    return slots.map((s) => {
+      const k = keyOf(s);
+      const n = (seen.get(k) || 0) + 1;
+      seen.set(k, n);
+      return n > 1 ? `${k}#${n}` : k;
+    });
+  }
+
+  /**
+   * The names typed on the tiles (`renameTiles`; the app keeps them per widget instance, by tile key): `name(key, own)`
+   * is the typed name, else `own`. In rename mode `field(key, own)` is the tile's text field (made once per key, with
+   * `own` as the placeholder): it saves on change (Enter or leaving it), Escape puts it back, and a realtime update
+   * doesn't overwrite it while it has the focus. Its touches, clicks and keys never reach the tile's own taps.
+   * `failed(key)` shakes the tile and says so; the name goes back, unless the app's names came meanwhile.
+   */
+  function tileNames(opts, render, failed) {
+    let names = {};
+    let reads = 0; // set() calls: the app's names, by realtime or a read
+    const fields = new Map();
+    async function save(key, value) {
+      const before = names[key];
+      if ((before || '') === value) return;
+      const put = v => { names = { ...names }; if (v) names[key] = v; else delete names[key]; };
+      put(value);
+      const seen = reads;
+      render();
+      try {
+        if (opts.onRename) await opts.onRename(key, value);
+      } catch (err) {
+        console.error(err);
+        // Only while it still shows this save's name and nothing came from the app since: what came says what the
+        // app kept (a newer name, or this one when only the answer was lost).
+        if (reads === seen && (names[key] || '') === value) put(before);
+        failed(key);
+      }
+    }
+    return {
+      renaming: opts.renameTiles === true,
+      name: (key, own) => names[key] || own,
+      set(map) {
+        reads++;
+        names = {};
+        if (map && typeof map === 'object') for (const [k, v] of Object.entries(map)) if (typeof v === 'string' && v) names[k] = v;
+        render();
+      },
+      field(key, own) {
+        let input = fields.get(key);
+        if (!input) {
+          input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'wk-rename';
+          input.dir = 'auto';
+          input.maxLength = 60;
+          input.autocomplete = 'off';
+          input.setAttribute('enterkeyhint', 'done');
+          const field = input;
+          for (const type of ['touchstart', 'touchend', 'pointerdown', 'click']) field.addEventListener(type, e => e.stopPropagation(), { passive: true });
+          field.addEventListener('keydown', (e) => {
+            e.stopPropagation();
+            if (e.key === 'Enter') field.blur();
+            else if (e.key === 'Escape') { field.value = names[key] || ''; field.blur(); }
+          });
+          field.addEventListener('change', () => { field.value = field.value.trim(); save(key, field.value); });
+          fields.set(key, input);
+        }
+        input.placeholder = own || '';
+        input.setAttribute('aria-label', own || '');
+        if (document.activeElement !== input) input.value = names[key] || '';
+        return input;
+      },
+    };
   }
 
   /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, columns?: number|string, step?: number|string,
-   *   min?: number|string|null, max?: number|string|null, names?: string[], readOnly?: boolean,
+   *   min?: number|string|null, max?: number|string|null, readOnly?: boolean,
+   *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   onSet?: (id: string, value: boolean|number|string) => Promise<any>,
    *   onHeight?: (h: number) => void }} opts
    */
@@ -137,7 +211,6 @@
     /** Whether −/+ can't move the value further that way. */
     const atLimit = (value, dir) => typeof value === 'number' && (dir > 0 ? max != null && value >= max : min != null && value <= min);
 
-    const names = Array.isArray(opts.names) ? opts.names : []; // per row, lined up with the entries
     let vars = []; // [{ id, name, type, value } | { id, missing }], one per slot
     const optimistic = new Map(); // variable id → { value, until }
     const stepTimers = new Map(); // variable id → timer of a pending −/+ send
@@ -147,6 +220,13 @@
     let messageTimer = null;
 
     root.classList.add('vr');
+    // The names typed on the rows (`renameTiles`): in rename mode a row's own taps do nothing.
+    const typed = tileNames(opts, () => render(), (key) => {
+      const i = nameKeys(vars).indexOf(key);
+      if (i >= 0) shakeRow(i);
+      setMessage(t('renameFailed'), true);
+    });
+    root.classList.toggle('renaming', typed.renaming);
     root.dataset.columns = String(opts.columns) === '2' ? '2' : '1';
     root.classList.toggle('vr-readonly', readOnly);
     const grid = el('div', { class: 'vr-grid' }, root);
@@ -156,7 +236,7 @@
     const rows = [];
 
     function setState(list) {
-      vars = (Array.isArray(list) ? list : []).map((v, i) => withName(v, names[i]));
+      vars = Array.isArray(list) ? list : [];
       messageText = null;
       render();
     }
@@ -165,10 +245,10 @@
     function pushChange(data) {
       if (!data || typeof data.id !== 'string') return;
       let hit = false;
-      vars = vars.map((v, i) => {
+      vars = vars.map((v) => {
         if (v.id !== data.id) return v;
         hit = true;
-        return data.missing ? { id: v.id, missing: true } : withName({ ...v, ...data }, names[i]);
+        return data.missing ? { id: v.id, missing: true } : { ...v, ...data };
       });
       if (!hit) return;
       const o = optimistic.get(data.id);
@@ -193,15 +273,20 @@
       return v.value;
     }
 
-    function shake(id) {
-      vars.forEach((v, i) => {
-        if (v.id !== id || !rows[i]) return;
-        const row = rows[i].row;
-        row.classList.remove('shake');
-        void row.offsetWidth; // restart the animation
-        row.classList.add('shake');
-      });
+    function shakeRow(i) {
+      if (!rows[i]) return;
+      const row = rows[i].row;
+      row.classList.remove('shake');
+      void row.offsetWidth; // restart the animation
+      row.classList.add('shake');
     }
+
+    function shake(id) {
+      vars.forEach((v, i) => { if (v.id === id) shakeRow(i); });
+    }
+
+    /** A variable's name as shown: its first row's typed name, else its own. */
+    const nameOf = v => typed.name(v.id, v.name);
 
     async function send(v, value) {
       if (!opts.onSet) return;
@@ -211,7 +296,7 @@
         console.error(err);
         optimistic.delete(v.id);
         shake(v.id);
-        setMessage(err && KEY_PROBLEMS.includes(err.reason) ? t(err.reason) : t('failed', { name: v.name }), true);
+        setMessage(err && KEY_PROBLEMS.includes(err.reason) ? t(err.reason) : t('failed', { name: nameOf(v) }), true);
       }
     }
 
@@ -223,7 +308,7 @@
 
     function toggle(index) {
       const v = vars[index];
-      if (readOnly || !v || v.missing || v.type !== 'boolean') return;
+      if (readOnly || typed.renaming || !v || v.missing || v.type !== 'boolean') return;
       const value = !shownValue(v);
       setOptimistic(v.id, value);
       render();
@@ -232,7 +317,7 @@
 
     function stepBy(index, dir) {
       const v = vars[index];
-      if (readOnly || !v || v.missing || v.type !== 'number') return;
+      if (readOnly || typed.renaming || !v || v.missing || v.type !== 'number') return;
       const current = shownValue(v);
       if (atLimit(current, dir)) return;
       // A value outside the limits (set by a Flow) goes to the nearer one.
@@ -250,12 +335,12 @@
     function edit(index) {
       const v = vars[index];
       const r = rows[index];
-      if (readOnly || !v || v.missing || (v.type !== 'number' && v.type !== 'string') || !r || editing) return;
+      if (readOnly || typed.renaming || !v || v.missing || (v.type !== 'number' && v.type !== 'string') || !r || editing) return;
       const current = shownValue(v);
       const input = el('input', {
         class: 'vr-input', type: 'text', dir: 'auto', enterkeyhint: 'done',
         inputmode: v.type === 'number' ? 'decimal' : 'text',
-        'aria-label': v.name,
+        'aria-label': nameOf(v),
       });
       input.value = v.type === 'number' ? (typeof current === 'number' ? String(current) : '') : String(current ?? '');
       editing = { index, id: v.id, input, cancelled: false };
@@ -301,7 +386,7 @@
       // A tap on the row: toggles a yes/no variable, opens the input for a number or text.
       if (!readOnly) onTap(row, () => {
         const v = vars[index];
-        if (!v || v.missing) return;
+        if (!v || v.missing || typed.renaming) return;
         if (v.type === 'boolean') toggle(index);
         else edit(index);
       });
@@ -339,18 +424,24 @@
     let lastHeight = 0;
     function render() {
       for (let i = rows.length - 1; i >= vars.length; i--) { rows[i].row.remove(); rows.pop(); }
+      const named = nameKeys(vars);
       vars.forEach((v, i) => {
         const r = rowAt(i);
         grid.appendChild(r.row); // keeps the order; a no-op when already in place
+        const name = v.missing ? t('missing') : typed.name(named[i], v.name);
         if (editing && editing.index === i) {
-          r.name.textContent = v.missing ? t('missing') : v.name;
+          r.name.textContent = name;
           return; // the input stays as typed
         }
         const kind = v.missing ? 'missing' : v.type;
         if (r.kind !== kind) buildControl(r, i, kind);
         r.row.classList.toggle('missing', !!v.missing);
-        r.name.textContent = v.missing ? t('missing') : v.name;
-        r.row.title = v.missing ? '' : v.name;
+        r.name.textContent = name;
+        r.row.title = v.missing ? '' : name;
+        if (typed.renaming && !v.missing) {
+          const field = typed.field(named[i], v.name);
+          if (field.previousSibling !== r.name) r.name.after(field);
+        }
         if (v.missing) return;
         const value = shownValue(v);
         if (kind === 'boolean' && readOnly) {
@@ -360,7 +451,7 @@
         } else if (kind === 'boolean') {
           r.row.classList.toggle('active', value === true);
           r.value.setAttribute('aria-checked', String(value === true));
-          r.value.setAttribute('aria-label', v.name);
+          r.value.setAttribute('aria-label', name);
         } else {
           r.row.classList.remove('active');
           r.value.textContent = kind === 'number' ? formatNumber(value) : String(value ?? '');
@@ -383,10 +474,11 @@
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    return { setState, pushChange, setMessage, render, t };
+    return { setState, setNames: typed.set, pushChange, setMessage, render, t };
   }
 
   window.createVariablesWidget = createVariablesWidget;
+  window.variableNameKeys = nameKeys;
   window.variableStepValue = stepValue;
   window.parseVariableNumber = parseNumber;
 })();

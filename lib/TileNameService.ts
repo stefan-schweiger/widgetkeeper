@@ -10,7 +10,8 @@ const MAX_KEY = 200;
 const MAX_KEYS = 60;
 const MAX_INSTANCES = 300;
 
-type TileNames = { names: Record<string, string>, updatedAt: number };
+/** `adopted`: the names the widget had in its own settings were taken over (`adopt()`), so it never happens again. */
+type TileNames = { names: Record<string, string>, updatedAt: number, adopted?: true };
 
 /** Ids that would reach (or read) `Object.prototype` as keys of a plain object: never an instance or a tile key. */
 const RESERVED = new Set(['__proto__', 'constructor', 'prototype']);
@@ -31,6 +32,16 @@ function tileKey(key: unknown): string {
 
 const has = (o: object, k: string) => Object.prototype.hasOwnProperty.call(o, k);
 const isObject = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+
+/** Each id's tile key: the id, then `#2`, `#3` … for repeats (the widgets' `nameKeys()`), so reordering keeps the names. */
+export function repeatKeys(ids: string[]): string[] {
+  const seen = new Map<string, number>();
+  return ids.map((id) => {
+    const n = (seen.get(id) || 0) + 1;
+    seen.set(id, n);
+    return n > 1 ? `${id}#${n}` : id;
+  });
+}
 
 /** A stored names object, copied by its own string entries only (the setting comes back from JSON as it was saved). */
 function readNames(v: unknown): Record<string, string> {
@@ -65,6 +76,7 @@ export default class TileNameService {
       const entry = v[id];
       if (RESERVED.has(id) || !isObject(entry)) continue;
       all[id] = { names: readNames(entry.names), updatedAt: Number(entry.updatedAt) || 0 };
+      if (entry.adopted === true) all[id].adopted = true;
     }
     return all;
   }
@@ -85,22 +97,54 @@ export default class TileNameService {
     if (value) names[k] = value;
     else delete names[k];
     if (Object.keys(names).length > MAX_KEYS) throw new Error('Too many names');
-    if (Object.keys(names).length) {
+    this.store(all, id, names, has(all, id) && all[id].adopted === true);
+    this.debug(`Tile names of ${id}: ${Object.keys(names).length}`);
+    return { instance: id, names };
+  }
+
+  /**
+   * Takes over the names a widget had in its own settings before it had tile names (Variables' `nameN`), by tile key,
+   * once per instance: a tile with a typed name keeps it. A removed setting's value stays, so wherever it still turns
+   * up (a Smart Stack page's settings on every load, the saved web dashboards at every start) it comes again; once
+   * taken over it's never read again, and a name cleared on the tile stays cleared.
+   */
+  adopt(instance: unknown, given: unknown) {
+    const id = instanceId(instance);
+    const all = this.all();
+    if (has(all, id) && all[id].adopted) return { instance: id, names: { ...all[id].names } };
+    const names = has(all, id) ? { ...all[id].names } : {};
+    let added = 0;
+    for (const [k, v] of Object.entries(readNames(given))) {
+      const value = v.trim().slice(0, MAX_NAME);
+      if (!value || !k || k.length > MAX_KEY || has(names, k) || Object.keys(names).length >= MAX_KEYS) continue;
+      names[k] = value;
+      added++;
+    }
+    this.store(all, id, names, true, added > 0);
+    this.debug(`Tile names of ${id}: ${added} taken over from its settings`);
+    return { instance: id, names };
+  }
+
+  /**
+   * Saves an instance's names (an instance without any is forgotten, unless it took over its settings' names: that
+   * stays known), keeping the 300 renamed most recently, and sends them over realtime unless `send` is false.
+   */
+  private store(all: Record<string, TileNames>, id: string, names: Record<string, string>, adopted: boolean, send = true) {
+    if (Object.keys(names).length || adopted) {
       all[id] = { names, updatedAt: Date.now() };
+      if (adopted) all[id].adopted = true;
       const ids = Object.keys(all).sort((a, b) => all[a].updatedAt - all[b].updatedAt);
       for (const old of ids.slice(0, Math.max(0, ids.length - MAX_INSTANCES))) delete all[old];
     } else {
       delete all[id];
     }
     this.homey.settings.set(TILE_NAMES_SETTING, all);
-    this.homey.api.realtime(TILE_NAMES_EVENT, { instance: id, names });
-    this.debug(`Tile names of ${id}: ${Object.keys(names).length}`);
-    return { instance: id, names };
+    if (send) this.homey.api.realtime(TILE_NAMES_EVENT, { instance: id, names });
   }
 
   /** For the diagnostics report: counts only, never the names. */
   describe() {
-    const all = Object.values(this.all());
+    const all = Object.values(this.all()).filter(w => Object.keys(w.names).length);
     return { widgets: all.length, names: all.reduce((n, w) => n + Object.keys(w.names).length, 0) };
   }
 
@@ -112,9 +156,17 @@ const service = (homey: RouteArgs['homey']) => (homey.app as any).tileNames as T
 /**
  * A device-tile widget's `/state` answer, with its tile names when it asks with `instance=`: `{state, tileNames}`, so a
  * widget's load is one request, not two (`/names` too). Without `instance` (the Smart Stack's attention reads), the
- * state as it was.
+ * state as it was. `oldNames` (JSON `{key: name}`, the names in the widget's old settings) are taken over first
+ * (`adopt()`), so this answer has them; that going wrong never fails the state.
  */
 export async function withTileNames<T>(homey: RouteArgs['homey'], query: RouteArgs['query'], state: Promise<T>): Promise<T | { state: T, tileNames: Record<string, string> }> {
+  if (typeof query?.instance === 'string' && typeof query.oldNames === 'string') {
+    try {
+      service(homey).adopt(query.instance, JSON.parse(query.oldNames));
+    } catch (err) {
+      (homey.app as any).log('Old tile names not taken over:', err);
+    }
+  }
   const s = await state;
   if (typeof query?.instance !== 'string') return s;
   return { state: s, tileNames: service(homey).get(query.instance).names };

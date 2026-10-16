@@ -192,7 +192,8 @@
     "typeString": "Text",
     "noKey": "Füge in den App-Einstellungen einen API-Schlüssel hinzu, um Variablen zu ändern.",
     "keyScope": "Der API-Schlüssel darf keine Variablen ändern: Er braucht das Recht Variablen.",
-    "keyInvalid": "Der API-Schlüssel wurde nicht akzeptiert."
+    "keyInvalid": "Der API-Schlüssel wurde nicht akzeptiert.",
+    "renameFailed": "Der Name konnte nicht gespeichert werden."
   },
   "flows": {
     "selectSlots": "Wähle Flows in den Widget-Einstellungen.",

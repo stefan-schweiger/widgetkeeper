@@ -193,7 +193,7 @@ One chart, two stacked, or two values on one chart (each with its own scale), of
 
 Logic variables as compact rows with their full name: a switch for yes/no, − and + for a number, and the text for a string. Tap a number or text to type a value. Needs an [API key](#api-key) with **Variables** to change them. Read only shows the values without anything to tap (a dot and Yes/No for yes/no), and needs no key.
 
-**Settings:** up to ten variables with optional names, 1 or 2 columns, read only, the − and + step, and the lowest and highest number.
+**Settings:** up to ten variables, 1 or 2 columns, read only, the − and + step, the lowest and highest number, [rename tiles](#tile-names).
 
 ## Flow Buttons
 <img src="docs/screenshots/flows.png" alt="Flow Buttons on a Homey dashboard" width="358">
@@ -301,13 +301,13 @@ Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an
 ## Tile names
 <img src="docs/clips/rename.webp" alt="Rename tiles: the setting turned on, names typed on two Light Controls tiles, and the setting turned off again with the names kept" width="358">
 
-Give any tile a name of your own, such as *Sofa corner* for a room's lights grouped by room, instead of the device's or room's name. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Device Values, Sparklines, Locks and Doors, and Cameras can do this.
+Give any tile a name of your own, such as *Sofa corner* for a room's lights grouped by room, instead of the device's or room's name. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Device Values, Sparklines, Locks and Doors, Cameras and Variables can do this.
 
 1. Edit the dashboard, edit the widget, turn on **Rename tiles** (the first setting) and save the widget.
 2. Leave the dashboard's edit mode. Each tile now shows a text field: type its name, or leave it empty to keep the device's (or room's) own name.
 3. Edit the widget again and turn **Rename tiles** off.
 
-The names belong to that widget: they stay with the right tiles when you rename or reorder devices, every screen showing the dashboard gets them, and a Smart Stack showing the widget does too. Sensor Alarms' tile names and Device Values' names still work; a name typed on the tile wins.
+The names belong to that widget: they stay with the right tiles when you rename or reorder devices, every screen showing the dashboard gets them, and a Smart Stack showing the widget does too. Sensor Alarms' tile names and Device Values' names still work; a name typed on the tile wins. Variables' rows used to be named in its settings: on Homey's dashboards, type those names on the rows again (web dashboards and Smart Stacks keep them).
 
 ## API key
 Homey doesn't let apps change variables, start flows, read dashboards or start Moods on their own. For those, create a key in the Homey web app under **Settings → API Keys**, tick the permissions below for the widgets you use, and paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey, and that page says what it may do once it's saved.

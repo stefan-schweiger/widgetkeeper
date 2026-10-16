@@ -192,7 +192,8 @@
     "typeString": "Text",
     "noKey": "Lägg till en API-nyckel i appinställningarna för att ändra variabler.",
     "keyScope": "API-nyckeln får inte ändra variabler: den behöver Variabler.",
-    "keyInvalid": "API-nyckeln godkändes inte."
+    "keyInvalid": "API-nyckeln godkändes inte.",
+    "renameFailed": "Kunde inte spara namnet."
   },
   "flows": {
     "selectSlots": "Välj flöden i widgetinställningarna.",

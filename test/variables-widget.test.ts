@@ -1,9 +1,9 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { loadWidget } from './helpers/loadWidget.js';
+import { loadMount, loadWidget } from './helpers/loadWidget.js';
 
 let win: any;
-beforeAll(() => { win = loadWidget('variables'); });
+beforeAll(() => { win = loadWidget('variables'); loadMount('variables'); });
 beforeEach(() => { vi.useFakeTimers(); });
 afterEach(() => { vi.useRealTimers(); document.body.innerHTML = ''; });
 
@@ -246,12 +246,81 @@ describe('read only', () => {
   });
 });
 
-describe('name override', () => {
-  it("shows a row's own name and keeps it through realtime updates", () => {
-    const { w, rows } = widget([flag(), num()], { names: ['Guests', ''] });
+describe('tile names', () => {
+  it('shows a typed name and keeps it through realtime updates', () => {
+    const { w, rows } = widget([flag(), num()]);
     const names = () => rows().map(r => r.querySelector('.vr-name')!.textContent);
+    w.setNames({ f: 'Guests' });
     expect(names()).toEqual(['Guests', 'Night setpoint']);
     w.pushChange({ ...flag(true), name: 'Guest mode (renamed)' });
     expect(names()).toEqual(['Guests', 'Night setpoint']);
+    w.setNames({});
+    expect(names()).toEqual(['Guest mode (renamed)', 'Night setpoint']);
+  });
+
+  it('says the typed name when a change fails', async () => {
+    const { w, row, message } = widget([flag()], { onSet: vi.fn(async () => { throw new Error('offline'); }) });
+    w.setNames({ f: 'Guests' });
+    row(0).click();
+    await vi.runAllTicks();
+    await Promise.resolve();
+    expect(message().textContent).toBe('Could not change Guests.');
+  });
+
+  it('in rename mode, − and + and the value do nothing, read only too', () => {
+    for (const readOnly of [false, true]) {
+      const { root, row, onSet } = widget([num(), text()], { renameTiles: true, onRename: vi.fn(async () => {}), readOnly });
+      row(0).querySelector<HTMLElement>('.vr-step')?.click();
+      row(1).click();
+      vi.advanceTimersByTime(1000);
+      expect(onSet).not.toHaveBeenCalled();
+      expect(root.querySelector('.vr-input')).toBeNull();
+      expect(root.querySelectorAll('.wk-rename')).toHaveLength(2);
+    }
+  });
+});
+
+describe('the old name settings', () => {
+  /** Mounts with `settings`; `answer(path)` answers each `/state` read (a throw fails it). */
+  function mount(settings: object, answer: (path: string) => unknown) {
+    const frame = document.createElement('div');
+    const root = document.createElement('div');
+    frame.append(root);
+    document.body.append(frame);
+    const api = vi.fn(async (method: string, path: string) => {
+      if (method === 'GET' && path.startsWith('/state?')) return answer(path);
+      return new Promise(() => {});
+    });
+    const Homey = {
+      api, on: vi.fn(), ready: vi.fn(), setHeight: vi.fn(), hapticFeedback: vi.fn(),
+      getSettings: () => settings, getDeviceIds: () => [], getWidgetInstanceId: () => 'w1', __: (key: string) => key,
+    };
+    win.mountVariablesWidget(Homey, { root, frame });
+    const sent = () => api.mock.calls.filter(([m, p]) => m === 'GET' && p.startsWith('/state?'))
+      .map(([, p]) => new URLSearchParams(p.split('?')[1]).get('oldNames'));
+    return { root, sent };
+  }
+
+  it('sends them by tile key with /state until a read goes through, then never again', async () => {
+    let fail = true;
+    const { root, sent } = mount({
+      slot1: { id: 'a' }, name1: ' Guests ', slot2: { id: 'b' }, name2: '', slot3: { id: 'a' }, name3: 'Again', slot4: { id: 'none' }, name4: 'x',
+    }, () => {
+      if (fail) throw new Error('offline');
+      return { state: [{ ...flag(), id: 'a' }, { ...num(), id: 'b' }, { ...flag(), id: 'a' }], tileNames: { a: 'Guests', 'a#2': 'Again' } };
+    });
+    await vi.advanceTimersByTimeAsync(10);
+    fail = false;
+    await vi.advanceTimersByTimeAsync(5 * 60e3);
+    await vi.advanceTimersByTimeAsync(5 * 60e3);
+    const old = JSON.stringify({ a: 'Guests', 'a#2': 'Again' });
+    expect(sent()).toEqual([old, old, null]);
+    expect([...root.querySelectorAll('.vr-name')].map(n => n.textContent)).toEqual(['Guests', 'Night setpoint', 'Again']);
+  });
+
+  it('sends nothing when no row had a name', async () => {
+    const { sent } = mount({ slot1: { id: 'a' }, name1: '' }, () => ({ state: [{ ...flag(), id: 'a' }], tileNames: {} }));
+    await vi.advanceTimersByTimeAsync(10);
+    expect(sent()).toEqual([null]);
   });
 });

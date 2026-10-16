@@ -31,7 +31,7 @@ describe('copied widget helpers', () => {
   };
 
   it('withName() is the same in every widget that has one', () => {
-    expectSame(['values', 'variables', 'flows', 'sensoralarms'].map(id => source(id, 'withName')));
+    expectSame(['values', 'flows', 'sensoralarms'].map(id => source(id, 'withName')));
   });
 
   it('undoTextZoom() is the same in every index.html', () => {
@@ -60,10 +60,10 @@ describe('copied widget helpers', () => {
   });
 
   it('tileNames(), wireTileNames() and nameKeys() are the same in every widget with tile names', () => {
-    const named = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras'];
+    const named = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables'];
     expectSame(named.map(id => source(id, 'tileNames')));
     expectSame(named.map(id => source(id, 'wireTileNames', 'mount.js')));
-    expectSame(['values', 'sparklines'].map(id => source(id, 'nameKeys')));
+    expectSame(['values', 'sparklines', 'variables'].map(id => source(id, 'nameKeys')));
   });
 
   it('wireBar() is the same in Light Controls and Curtains', () => {

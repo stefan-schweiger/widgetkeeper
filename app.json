@@ -11069,6 +11069,41 @@
       "transparent": true,
       "settings": [
         {
+          "id": "renameTiles",
+          "type": "checkbox",
+          "title": {
+            "en": "Rename tiles",
+            "nl": "Tegels hernoemen",
+            "de": "Kacheln umbenennen",
+            "fr": "Renommer les tuiles",
+            "it": "Rinomina riquadri",
+            "sv": "Byt namn på rutor",
+            "no": "Gi nytt navn til fliser",
+            "es": "Renombrar mosaicos",
+            "da": "Omdøb felter",
+            "ru": "Переименовать плитки",
+            "pl": "Zmień nazwy kafelków",
+            "ko": "타일 이름 바꾸기",
+            "ar": "إعادة تسمية المربعات"
+          },
+          "hint": {
+            "en": "To name the tiles: turn this on and save the widget, then leave the dashboard's edit mode. Each tile shows a text field: type its name, or leave it empty to keep the variable's name. Then edit the widget again and turn this off.",
+            "nl": "Tegels een naam geven: zet dit aan en sla de widget op, en verlaat dan de bewerkmodus van het dashboard. Elke tegel toont een tekstveld: typ de naam, of laat het leeg om de naam van de variabele te houden. Bewerk daarna de widget opnieuw en zet dit uit.",
+            "de": "Kacheln benennen: Schalte dies ein, speichere das Widget und verlasse den Bearbeitungsmodus des Dashboards. Jede Kachel zeigt ein Textfeld: Gib den Namen ein oder lass es leer, um den Namen der Variable zu behalten. Bearbeite danach das Widget erneut und schalte dies aus.",
+            "fr": "Pour nommer les tuiles : activez ceci, enregistrez le widget, puis quittez le mode édition du tableau de bord. Chaque tuile affiche un champ de texte : tapez son nom, ou laissez-le vide pour garder le nom de la variable. Modifiez ensuite le widget à nouveau et désactivez ceci.",
+            "it": "Per dare un nome ai riquadri: attiva questa opzione e salva il widget, poi esci dalla modalità di modifica della dashboard. Ogni riquadro mostra un campo di testo: scrivi il nome, o lascialo vuoto per mantenere il nome della variabile. Poi modifica di nuovo il widget e disattiva questa opzione.",
+            "sv": "Så namnger du rutorna: slå på detta och spara widgeten, och lämna sedan instrumentpanelens redigeringsläge. Varje ruta visar ett textfält: skriv namnet, eller lämna det tomt för att behålla variabelns namn. Redigera sedan widgeten igen och slå av detta.",
+            "no": "Slik gir du flisene navn: slå på dette og lagre widgeten, og gå så ut av dashbordets redigeringsmodus. Hver flis viser et tekstfelt: skriv navnet, eller la det stå tomt for å beholde variabelens navn. Rediger så widgeten igjen og slå av dette.",
+            "es": "Para poner nombre a los mosaicos: activa esto y guarda el widget, luego sal del modo de edición del panel. Cada mosaico muestra un campo de texto: escribe su nombre, o déjalo vacío para mantener el nombre de la variable. Después edita el widget de nuevo y desactiva esto.",
+            "da": "Sådan navngiver du felterne: slå dette til og gem widgetten, og forlad så dashboardets redigeringstilstand. Hvert felt viser et tekstfelt: skriv navnet, eller lad det stå tomt for at beholde variablens navn. Redigér derefter widgetten igen, og slå dette fra.",
+            "ru": "Чтобы назвать плитки: включите это и сохраните виджет, затем выйдите из режима редактирования панели. На каждой плитке появится текстовое поле: введите название или оставьте его пустым, чтобы оставить имя переменной. Затем снова откройте настройки виджета и выключите это.",
+            "pl": "Aby nazwać kafelki: włącz to i zapisz widżet, a potem wyjdź z trybu edycji pulpitu. Każdy kafelek pokaże pole tekstowe: wpisz nazwę albo zostaw je puste, aby zachować nazwę zmiennej. Potem ponownie edytuj widżet i wyłącz to.",
+            "ko": "타일 이름을 정하려면: 이 옵션을 켜고 위젯을 저장한 뒤 대시보드 편집 모드를 나가세요. 각 타일에 입력란이 나타납니다. 이름을 입력하거나 비워 두면 변수 이름이 그대로 쓰입니다. 그런 다음 위젯을 다시 편집해 이 옵션을 끄세요.",
+            "ar": "لتسمية المربعات: شغّل هذا الخيار واحفظ الأداة، ثم اخرج من وضع تحرير لوحة التحكم. يعرض كل مربع حقلًا نصيًا: اكتب اسمه، أو اتركه فارغًا لإبقاء اسم المتغير. بعد ذلك حرّر الأداة مجددًا وأوقف هذا الخيار."
+          },
+          "value": false
+        },
+        {
           "id": "columns",
           "type": "dropdown",
           "title": {
@@ -11286,41 +11321,6 @@
           }
         },
         {
-          "id": "name1",
-          "type": "text",
-          "title": {
-            "en": "  – Name",
-            "nl": "  – Naam",
-            "de": "  – Name",
-            "fr": "  – Nom",
-            "it": "  – Nome",
-            "sv": "  – Namn",
-            "no": "  – Navn",
-            "es": "  – Nombre",
-            "da": "  – Navn",
-            "ru": "  – Название",
-            "pl": "  – Nazwa",
-            "ko": "  – 이름",
-            "ar": "  – الاسم"
-          },
-          "hint": {
-            "en": "Optional. Leave empty to keep the original name.",
-            "nl": "Optioneel. Laat leeg om de oorspronkelijke naam te houden.",
-            "de": "Optional. Leer lassen, um den ursprünglichen Namen zu behalten.",
-            "fr": "Facultatif. Laissez vide pour garder le nom d'origine.",
-            "it": "Facoltativo. Lascia vuoto per mantenere il nome originale.",
-            "sv": "Valfritt. Lämna tomt för att behålla det ursprungliga namnet.",
-            "no": "Valgfritt. La stå tomt for å beholde det opprinnelige navnet.",
-            "es": "Opcional. Déjalo vacío para mantener el nombre original.",
-            "da": "Valgfrit. Lad feltet stå tomt for at beholde det oprindelige navn.",
-            "ru": "Необязательно. Оставьте пустым, чтобы сохранить исходное название.",
-            "pl": "Opcjonalnie. Zostaw puste, aby zachować oryginalną nazwę.",
-            "ko": "선택 사항입니다. 비워 두면 원래 이름을 사용합니다.",
-            "ar": "اختياري. اتركه فارغًا للإبقاء على الاسم الأصلي."
-          },
-          "value": ""
-        },
-        {
           "id": "slot2",
           "type": "autocomplete",
           "title": {
@@ -11338,26 +11338,6 @@
             "ko": "변수 2",
             "ar": "المتغير 2"
           }
-        },
-        {
-          "id": "name2",
-          "type": "text",
-          "title": {
-            "en": "  – Name",
-            "nl": "  – Naam",
-            "de": "  – Name",
-            "fr": "  – Nom",
-            "it": "  – Nome",
-            "sv": "  – Namn",
-            "no": "  – Navn",
-            "es": "  – Nombre",
-            "da": "  – Navn",
-            "ru": "  – Название",
-            "pl": "  – Nazwa",
-            "ko": "  – 이름",
-            "ar": "  – الاسم"
-          },
-          "value": ""
         },
         {
           "id": "slot3",
@@ -11379,26 +11359,6 @@
           }
         },
         {
-          "id": "name3",
-          "type": "text",
-          "title": {
-            "en": "  – Name",
-            "nl": "  – Naam",
-            "de": "  – Name",
-            "fr": "  – Nom",
-            "it": "  – Nome",
-            "sv": "  – Namn",
-            "no": "  – Navn",
-            "es": "  – Nombre",
-            "da": "  – Navn",
-            "ru": "  – Название",
-            "pl": "  – Nazwa",
-            "ko": "  – 이름",
-            "ar": "  – الاسم"
-          },
-          "value": ""
-        },
-        {
           "id": "slot4",
           "type": "autocomplete",
           "title": {
@@ -11416,26 +11376,6 @@
             "ko": "변수 4",
             "ar": "المتغير 4"
           }
-        },
-        {
-          "id": "name4",
-          "type": "text",
-          "title": {
-            "en": "  – Name",
-            "nl": "  – Naam",
-            "de": "  – Name",
-            "fr": "  – Nom",
-            "it": "  – Nome",
-            "sv": "  – Namn",
-            "no": "  – Navn",
-            "es": "  – Nombre",
-            "da": "  – Navn",
-            "ru": "  – Название",
-            "pl": "  – Nazwa",
-            "ko": "  – 이름",
-            "ar": "  – الاسم"
-          },
-          "value": ""
         },
         {
           "id": "slot5",
@@ -11457,26 +11397,6 @@
           }
         },
         {
-          "id": "name5",
-          "type": "text",
-          "title": {
-            "en": "  – Name",
-            "nl": "  – Naam",
-            "de": "  – Name",
-            "fr": "  – Nom",
-            "it": "  – Nome",
-            "sv": "  – Namn",
-            "no": "  – Navn",
-            "es": "  – Nombre",
-            "da": "  – Navn",
-            "ru": "  – Название",
-            "pl": "  – Nazwa",
-            "ko": "  – 이름",
-            "ar": "  – الاسم"
-          },
-          "value": ""
-        },
-        {
           "id": "slot6",
           "type": "autocomplete",
           "title": {
@@ -11494,26 +11414,6 @@
             "ko": "변수 6",
             "ar": "المتغير 6"
           }
-        },
-        {
-          "id": "name6",
-          "type": "text",
-          "title": {
-            "en": "  – Name",
-            "nl": "  – Naam",
-            "de": "  – Name",
-            "fr": "  – Nom",
-            "it": "  – Nome",
-            "sv": "  – Namn",
-            "no": "  – Navn",
-            "es": "  – Nombre",
-            "da": "  – Navn",
-            "ru": "  – Название",
-            "pl": "  – Nazwa",
-            "ko": "  – 이름",
-            "ar": "  – الاسم"
-          },
-          "value": ""
         },
         {
           "id": "slot7",
@@ -11535,26 +11435,6 @@
           }
         },
         {
-          "id": "name7",
-          "type": "text",
-          "title": {
-            "en": "  – Name",
-            "nl": "  – Naam",
-            "de": "  – Name",
-            "fr": "  – Nom",
-            "it": "  – Nome",
-            "sv": "  – Namn",
-            "no": "  – Navn",
-            "es": "  – Nombre",
-            "da": "  – Navn",
-            "ru": "  – Название",
-            "pl": "  – Nazwa",
-            "ko": "  – 이름",
-            "ar": "  – الاسم"
-          },
-          "value": ""
-        },
-        {
           "id": "slot8",
           "type": "autocomplete",
           "title": {
@@ -11572,26 +11452,6 @@
             "ko": "변수 8",
             "ar": "المتغير 8"
           }
-        },
-        {
-          "id": "name8",
-          "type": "text",
-          "title": {
-            "en": "  – Name",
-            "nl": "  – Naam",
-            "de": "  – Name",
-            "fr": "  – Nom",
-            "it": "  – Nome",
-            "sv": "  – Namn",
-            "no": "  – Navn",
-            "es": "  – Nombre",
-            "da": "  – Navn",
-            "ru": "  – Название",
-            "pl": "  – Nazwa",
-            "ko": "  – 이름",
-            "ar": "  – الاسم"
-          },
-          "value": ""
         },
         {
           "id": "slot9",
@@ -11613,26 +11473,6 @@
           }
         },
         {
-          "id": "name9",
-          "type": "text",
-          "title": {
-            "en": "  – Name",
-            "nl": "  – Naam",
-            "de": "  – Name",
-            "fr": "  – Nom",
-            "it": "  – Nome",
-            "sv": "  – Namn",
-            "no": "  – Navn",
-            "es": "  – Nombre",
-            "da": "  – Navn",
-            "ru": "  – Название",
-            "pl": "  – Nazwa",
-            "ko": "  – 이름",
-            "ar": "  – الاسم"
-          },
-          "value": ""
-        },
-        {
           "id": "slot10",
           "type": "autocomplete",
           "title": {
@@ -11650,26 +11490,6 @@
             "ko": "변수 10",
             "ar": "المتغير 10"
           }
-        },
-        {
-          "id": "name10",
-          "type": "text",
-          "title": {
-            "en": "  – Name",
-            "nl": "  – Naam",
-            "de": "  – Name",
-            "fr": "  – Nom",
-            "it": "  – Nome",
-            "sv": "  – Namn",
-            "no": "  – Navn",
-            "es": "  – Nombre",
-            "da": "  – Navn",
-            "ru": "  – Название",
-            "pl": "  – Nazwa",
-            "ko": "  – 이름",
-            "ar": "  – الاسم"
-          },
-          "value": ""
         }
       ],
       "api": {
@@ -11680,6 +11500,14 @@
         "set": {
           "method": "POST",
           "path": "/set"
+        },
+        "getNames": {
+          "method": "GET",
+          "path": "/names"
+        },
+        "setName": {
+          "method": "POST",
+          "path": "/names"
         }
       },
       "id": "variables"

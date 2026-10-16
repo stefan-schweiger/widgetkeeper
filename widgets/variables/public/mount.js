@@ -19,10 +19,37 @@ window.mountVariablesWidget = function (Homey, { root, frame }) {
     return p;
   }
 
+  /**
+   * The names typed on the tiles (`renameTiles`), which the app keeps per widget instance: `state(path)` reads
+   * `/state` with them (a failure keeps the last ones), realtime keeps them current, and `rename(key, name)` saves one.
+   * `setNames` is the widget's.
+   */
+  function wireTileNames(setNames) {
+    let instance = 'default';
+    let asked = '';
+    try { asked = typeof Homey.getWidgetInstanceId === 'function' ? Homey.getWidgetInstanceId() : ''; } catch (e) { /* stays 'default' */ }
+    const known = Promise.resolve(asked)
+      .then((id) => { if (typeof id === 'string' && id) instance = id; })
+      .catch(() => {});
+    Homey.on('tilenames:state', (data) => {
+      if (data && data.instance === instance) setNames(data.names);
+    });
+    return {
+      // `/state` with the instance answers `{state, tileNames}`: the names come with every read, in one request.
+      state: path => known
+        .then(() => Homey.api('GET', `${path}&instance=${encodeURIComponent(instance)}`))
+        .then((res) => {
+          if (!res || typeof res !== 'object' || !('tileNames' in res)) return res;
+          setNames(res.tileNames);
+          return res.state;
+        }),
+      rename: (key, name) => known.then(() => Homey.api('POST', '/names', { instance, key, name })),
+    };
+  }
+
   const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
   // Each slot setting is an autocomplete item whose id is the Logic variable's id (`none` empties it).
-  // An optional name per row (`nameN`, text) replaces the variable's.
   const picked = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     .map(n => ({ id: settings[`slot${n}`] && settings[`slot${n}`].id, name: settings[`name${n}`] }))
     .filter(s => typeof s.id === 'string' && s.id && s.id !== 'none');
@@ -30,13 +57,23 @@ window.mountVariablesWidget = function (Homey, { root, frame }) {
   let readySent = false;
   let loaded = false;
 
+  // The rows' names from the old settings (`nameN`, text, before Rename tiles), by tile key: sent with `/state` until a
+  // read goes through, and the app takes them over as typed names, once. The phone app leaves a removed setting out, so
+  // only a Smart Stack page (the dashboard's own settings) still has them.
+  const keys = window.variableNameKeys(picked);
+  const old = {};
+  picked.forEach((s, i) => { if (typeof s.name === 'string' && s.name.trim()) old[keys[i]] = s.name.trim(); });
+  let oldNames = Object.keys(old).length ? `&oldNames=${encodeURIComponent(JSON.stringify(old))}` : '';
+
+  const tileNames = wireTileNames(names => widget.setNames(names));
   const widget = window.createVariablesWidget(root, {
     t: (key, tokens) => Homey.__(key, tokens),
+    renameTiles: settings.renameTiles === true,
+    onRename: (key, name) => tileNames.rename(key, name),
     columns: settings.columns,
     step: settings.step,
     min: settings.min,
     max: settings.max,
-    names: picked.map(s => s.name),
     readOnly: settings.readOnly === true,
     // Read only never sets anything (so it needs no API key).
     onSet: settings.readOnly === true ? undefined : async (id, value) => {
@@ -73,7 +110,9 @@ window.mountVariablesWidget = function (Homey, { root, frame }) {
       return;
     }
     try {
-      widget.setState(await Homey.api('GET', `/state?ids=${ids.map(encodeURIComponent).join(',')}${perfParam()}`));
+      const state = await tileNames.state(`/state?ids=${ids.map(encodeURIComponent).join(',')}${oldNames}${perfParam()}`);
+      oldNames = '';
+      widget.setState(state);
       loaded = true;
     } catch (err) {
       console.error(err);

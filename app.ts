@@ -99,9 +99,22 @@ export default class WidgetkeeperApp extends Homey.App {
     this.registerTextLineFlows();
     this.tileNames = new TileNameService(this.homey, log, debug);
     this.web = new WebDashboardService(this.homey, log, widgetAutocompletes(this));
+    this.adoptOldTileNames();
     this.webPassword = new WebPassword(this.homey, log);
     this.registerAutocompletes();
     this.debug('Widgetkeeper has been initialized');
+  }
+
+  /**
+   * Web dashboards' Variables widgets lose their old row names (`nameN`) when the saved dashboards are read, so they're
+   * taken over here; once per widget (`TileNameService.adopt()`), so this is harmless on every start.
+   */
+  private adoptOldTileNames() {
+    try {
+      for (const { instance, names } of this.web.oldVariableNames()) this.tileNames.adopt(instance, names);
+    } catch (err) {
+      this.log('Old tile names not taken over:', err);
+    }
   }
 
   /** Everything logged also goes to the in-memory diagnostics log (app settings page). */

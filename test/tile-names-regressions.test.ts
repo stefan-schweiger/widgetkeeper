@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadMount, loadWidget } from './helpers/loadWidget.js';
 
-const IDS = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras'] as const;
+const IDS = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables'] as const;
 
 let win: any;
 beforeAll(() => {
@@ -57,6 +57,11 @@ const CASES: Record<typeof IDS[number], { create: string, state: any, gone: any,
     create: 'createCamerasWidget', name: '.cw-name', keys: ['a', 'b'], opts: { api: vi.fn(() => new Promise(() => {})) },
     state: ['a', 'b'].map(id => ({ id, name: `Cam ${id}`, icon: null, image: null, video: null, videos: [], h265: [] })),
     gone: [{ id: 'a', missing: true }, { id: 'b', name: 'Cam b', icon: null, image: null, video: null, videos: [], h265: [] }],
+  },
+  variables: {
+    create: 'createVariablesWidget', name: '.vr-name', keys: ['a', 'b'],
+    state: ['a', 'b'].map(id => ({ id, name: `Flag ${id}`, type: 'boolean', value: false })),
+    gone: [{ id: 'a', missing: true }, { id: 'b', name: 'Flag b', type: 'boolean', value: false }],
   },
 };
 
