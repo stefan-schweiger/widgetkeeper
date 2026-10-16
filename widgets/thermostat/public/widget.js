@@ -1,12 +1,13 @@
 /*
  * Thermostat Presets: a header with the device and three preset buttons. A button is
  * highlighted while the device's state matches its preset; when none matches, the header says
- * what the device is currently doing. Plain browser JS (served as-is).
+ * what the device is currently doing. The header, buttons and highlighting are the shared presets
+ * module (presets.js, which Variable Presets loads too); this is the device model and its text.
+ * Plain browser JS (served as-is).
  */
 (function () {
   'use strict';
 
-  const OPTIMISTIC_MS = 10e3; // how long a tapped button stays lit while waiting for the device
   const TEMP_TOLERANCE = 0.25;
 
   const DEFAULT_STRINGS = {
@@ -22,19 +23,6 @@
   // Mode value ids → colour class. Anything else uses the accent colour.
   /** @type {[RegExp, string][]} */
   const MODE_KINDS = [[/heat/i, 'heat'], [/cool/i, 'cool'], [/auto/i, 'auto'], [/dry|dehum/i, 'dry'], [/fan|vent/i, 'fan']];
-
-  function el(tag, attrs, parent) {
-    const node = document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
-  }
 
   function sameValue(capabilityId, a, b) {
     if (typeof a === 'number' && typeof b === 'number') {
@@ -70,88 +58,29 @@
     };
     const numberFmt = new Intl.NumberFormat(opts.locale, { maximumFractionDigits: 1 });
 
-    let presets = [];
-    let state = null; // { name, icon, values, caps }
-    let optimistic = null; // { index, until }
-    let messageTimer = null;
-    let errorText = null;
-
-    root.classList.add('tw');
-    // Compact: a one-line header and one-line buttons; the markup is the same, only the CSS differs.
-    root.classList.toggle('tw-compact', opts.layout === 'compact');
-    const header = el('div', { class: 'tw-header' }, root);
-    const iconBox = el('div', { class: 'tw-device-icon' }, header);
-    const titles = el('div', { class: 'tw-titles' }, header);
-    const nameEl = el('div', { class: 'tw-name', dir: 'auto' }, titles);
-    const subEl = el('div', { class: 'tw-sub', dir: 'auto' }, titles);
-    const row = el('div', { class: 'tw-row' }, root);
-    let tiles = [];
-
-    function setButtons(list) {
-      presets = list;
-      while (row.firstChild) row.removeChild(row.firstChild);
-      tiles = presets.map((p, i) => {
-        const b = el('button', { type: 'button', class: 'tw-btn' }, row);
-        b.addEventListener('click', () => press(i));
-        return b;
-      });
-      render();
-    }
-
-    function setState(s) {
-      state = s;
-      errorText = null;
-      render();
-    }
+    // The header, the buttons and which is lit; the device model below reads its state ({ name, icon, values, caps }).
+    const core = window.WidgetkeeperPresets.create(root, {
+      layout: opts.layout,
+      onHeight: opts.onHeight,
+      text: p => presetText(p),
+      matches: (p, state) => presetMatches(state.values, deviceValues(p)),
+      usable: p => deviceValues(p).length > 0,
+      apply: opts.onApply ? p => opts.onApply(deviceValues(p)) : null,
+      failed: err => `${t('applyFailed')} ${(err && err.message) || ''}`.trim(),
+      current: () => currentText(),
+    });
 
     function pushChange({ capabilityId, value }) {
+      const state = core.getState();
       if (!state) return;
       state.values[capabilityId] = value;
-      render();
-    }
-
-    /** A message in place of the subtitle. Persistent messages also clear the state. */
-    function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      errorText = text;
-      if (transient) messageTimer = setTimeout(() => { errorText = null; render(); }, 8000);
-      else state = null;
-      render();
-    }
-
-    async function press(index) {
-      const values = state ? deviceValues(presets[index]) : [];
-      if (!values.length || !opts.onApply) return;
-      optimistic = { index, until: Date.now() + OPTIMISTIC_MS };
-      render();
-      setTimeout(render, OPTIMISTIC_MS + 50);
-      try {
-        await opts.onApply(values);
-      } catch (err) {
-        console.error(err);
-        optimistic = null;
-        tiles[index].classList.remove('shake');
-        void tiles[index].offsetWidth; // restart the animation
-        tiles[index].classList.add('shake');
-        setMessage(`${t('applyFailed')} ${(err && err.message) || ''}`.trim(), true);
-      }
-    }
-
-    function activeSet() {
-      const values = state ? state.values : {};
-      if (optimistic) {
-        if (Date.now() > optimistic.until || presetMatches(values, deviceValues(presets[optimistic.index]))) optimistic = null;
-        else return new Set([optimistic.index]);
-      }
-      const on = new Set();
-      if (state) presets.forEach((p, i) => { if (presetMatches(values, deviceValues(p))) on.add(i); });
-      return on;
+      core.render();
     }
 
     // ---------------------------------------------------------------- device model
 
     function offValue(id) {
+      const state = core.getState();
       const info = state && state.caps[id];
       return info && info.values && info.values.find(x => /^off$/i.test(x.id) || /^off$/i.test(x.title));
     }
@@ -161,7 +90,8 @@
      * When no button sets a mode: `thermostat_mode`, else the first enum with an `off` value.
      */
     function modeCap() {
-      for (const p of presets) {
+      const state = core.getState();
+      for (const p of core.presets()) {
         const m = p.values.find(v => v.slot === 'mode');
         if (m) return m.capabilityId;
       }
@@ -190,6 +120,7 @@
      * off through their mode instead; turning them on is then implied by the other values.
      */
     function deviceValues(preset) {
+      const state = core.getState();
       if (!state || state.caps.onoff) return preset.values;
       if (preset.values.some(v => v.capabilityId === 'onoff' && v.value === false)) {
         const off = offMode();
@@ -215,6 +146,7 @@
     // ---------------------------------------------------------------- text
 
     function enumTitle(capabilityId, value, fallbackName) {
+      const state = core.getState();
       const info = state && state.caps[capabilityId];
       const match = info && info.values && info.values.find(x => String(x.id) === String(value));
       if (match) return match.title;
@@ -224,6 +156,7 @@
     }
 
     function capTitle(capabilityId, fallbackName) {
+      const state = core.getState();
       const info = state && state.caps[capabilityId];
       if (info && info.title) return info.title;
       return fallbackName && fallbackName.includes(': ') ? fallbackName.split(': ')[0] : capabilityId;
@@ -251,7 +184,7 @@
 
     /** "Cool 23° · Fan auto", covering the mode, target temperature and settings the buttons use. */
     function currentText() {
-      const values = state.values;
+      const values = core.getState().values;
       if (isOff(values)) return t('currentlyOff');
       const mc = modeCap();
       const head = [];
@@ -259,7 +192,7 @@
       if (typeof values.target_temperature === 'number') head.push(temp(values.target_temperature));
       const parts = head.length ? [head.join(' ')] : [];
       const extra = new Set();
-      for (const p of presets) {
+      for (const p of core.presets()) {
         for (const v of p.values) {
           if (v.slot === 'extra' && v.capabilityId !== mc && v.capabilityId in values) extra.add(v.capabilityId);
         }
@@ -271,46 +204,7 @@
       return parts.length ? t('currently', { state: parts.join(' · ') }) : '';
     }
 
-    // ---------------------------------------------------------------- render
-
-    let lastIcon;
-    let lastHeight = 0;
-    function render() {
-      const active = activeSet();
-
-      const icon = state && state.icon;
-      if (icon !== lastIcon) {
-        lastIcon = icon;
-        iconBox.style.setProperty('--tw-icon', icon ? `url("${icon}")` : '');
-        iconBox.classList.toggle('fallback', !icon);
-      }
-      iconBox.style.display = state ? '' : 'none';
-      nameEl.textContent = state ? state.name : '';
-      nameEl.style.display = state ? '' : 'none';
-      const sub = errorText || (state && !active.size ? currentText() : '');
-      subEl.textContent = sub;
-      subEl.style.display = sub ? '' : 'none';
-      subEl.classList.toggle('error', !!errorText && !!state);
-      header.classList.toggle('has-sub', !!sub && !errorText);
-      header.classList.toggle('message-only', !state);
-
-      row.style.display = state || !errorText ? '' : 'none';
-      tiles.forEach((b, i) => {
-        const text = presetText(presets[i]);
-        while (b.firstChild) b.removeChild(b.firstChild);
-        el('span', { class: 'tw-big', text: text.big }, b);
-        if (text.mode) el('span', { class: 'tw-modetext', text: text.mode }, b);
-        for (const x of text.extras) el('span', { class: 'tw-extra', text: x }, b);
-        b.dataset.kind = text.kind;
-        b.classList.toggle('active', active.has(i));
-        b.disabled = !state || !deviceValues(presets[i]).length;
-      });
-
-      const h = Math.ceil(root.getBoundingClientRect().height);
-      if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
-    }
-
-    return { setButtons, setState, pushChange, setMessage, render, t };
+    return { setButtons: core.setButtons, setState: core.setState, pushChange, setMessage: core.setMessage, render: core.render, t };
   }
 
   /** Turns the flat widget settings into three presets of capability values. */

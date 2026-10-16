@@ -35,7 +35,7 @@ export default {
   },
 
   /**
-   * `{deviceId, id}`: a button, the speaker's own Flow card or a flow. Without a usable API key it answers
+   * `{deviceId, id}`: a button, the speaker's own Flow card, its app's or a flow. Without a usable API key it answers
    * `{ok: false, reason}` (`noKey`, `keyScope`, `keyInvalid`), so the widget can say what to do.
    */
   async button({ homey, body }: {

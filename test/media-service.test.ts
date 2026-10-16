@@ -24,6 +24,7 @@ function sonos() {
     },
   });
   d.images = art(1000);
+  d.ownerUri = 'homey:app:nl.xiut.sonoslocal';
   return d;
 }
 const lamp = () => fakeDevice({ id: 'lamp', name: 'Lamp', class: 'light', caps: { onoff: { type: 'boolean', value: true } } });
@@ -31,12 +32,18 @@ const lamp = () => fakeDevice({ id: 'lamp', name: 'Lamp', class: 'light', caps: 
 const card = (device: string, id: string, title: string, args: object[] = []) => ({
   id: `homey:device:${device}:${id}`, ownerUri: `homey:device:${device}`, title, args,
 });
+const appCard = (app: string, id: string, title: string, ownerName: string, args: object[] = []) => ({
+  id: `homey:app:${app}:${id}`, ownerUri: `homey:app:${app}`, ownerName, title, args,
+});
 const CARDS = {
   a: card('tv', 'cloud_play_home_theater', 'Set source to TV'),
   b: card('tv', 'cloud_leave_current_group', 'Leave current group'),
   c: card('tv', 'volume_mute', 'Mute the volume'), // the card has a control for it
   d: card('tv', 'cloud_play_url', 'Play an URL', [{ name: 'url', type: 'text' }]), // needs an argument
   e: card('kitchen', 'cloud_play_line_in', 'Set source to Line-In'), // another speaker's
+  f: appCard('nl.xiut.sonoslocal', 'scan_library', 'Scan the music library', 'Sonos (LocalAPI)'), // the speaker's app's
+  g: appCard('nl.xiut.sonoslocal', 'set_alarm', 'Set alarm enabled', 'Sonos (LocalAPI)', [{ name: 'alarm', type: 'autocomplete' }]),
+  h: appCard('com.uc.heimdall', 'deactivate', 'Deactivate surveillance mode', 'Heimdall'), // an app without a speaker
 };
 
 function setup(devices: any[] = [sonos(), lamp()]) {
@@ -177,17 +184,60 @@ describe('set', () => {
 });
 
 describe('buttons', () => {
-  it('lists the speaker’s own argument-free cards, then the flows', async () => {
+  it('lists the speaker’s own argument-free cards, then its app’s, then the flows', async () => {
     const { service } = setup();
     expect(await service.listButtons('tv', '')).toEqual([
       { name: 'None', id: 'none' },
       { name: 'Set source to TV', description: 'Speaker action', id: 'card:homey:device:tv:cloud_play_home_theater' },
       { name: 'Leave current group', description: 'Speaker action', id: 'card:homey:device:tv:cloud_leave_current_group' },
+      { name: 'Scan the music library', description: 'App action · Sonos (LocalAPI)', id: 'card:homey:app:nl.xiut.sonoslocal:scan_library' },
       { name: 'Movie time', description: 'Flow', id: 'flow:f1' },
     ]);
     expect((await service.listButtons('tv', 'source')).map(i => i.id)).toEqual(['card:homey:device:tv:cloud_play_home_theater']);
+    expect((await service.listButtons('tv', 'library')).map(i => i.id)).toEqual(['card:homey:app:nl.xiut.sonoslocal:scan_library']);
     // Without a speaker picked yet, only flows.
     expect((await service.listButtons(undefined, '')).map(i => i.id)).toEqual(['none', 'flow:f1']);
+  });
+
+  it('lists no app cards for a speaker whose app has none, or that isn’t an app’s', async () => {
+    const other = sonos();
+    other.ownerUri = 'homey:app:com.sonos';
+    const group = fakeDevice({ id: 'group', name: 'All speakers', class: 'speaker', caps: { volume_set: { type: 'number', value: 0.2 } } });
+    (group as any).ownerUri = 'homey:virtualdrivergroup';
+    const { service } = setup([other, group]);
+    expect((await service.listButtons('tv', '')).map(i => i.id)).not.toContain('card:homey:app:nl.xiut.sonoslocal:scan_library');
+    expect((await service.listButtons('group', '')).map(i => i.id)).toEqual(['none', 'flow:f1']);
+  });
+
+  it('runs an app card of the speaker’s app through the API key, on any speaker', async () => {
+    const kitchen = fakeDevice({ id: 'kitchen', name: 'Kitchen', class: 'speaker', caps: { volume_set: { type: 'number', value: 0.2 } } });
+    const { service, homey } = setup([sonos(), kitchen]);
+    const key = keyApi();
+    keyApis.set('k', key);
+    homey.settings.set(API_KEY_SETTING, 'k');
+    const scan = { uri: 'homey:app:nl.xiut.sonoslocal', id: 'homey:app:nl.xiut.sonoslocal:scan_library', args: {} };
+    await service.runButton('tv', 'card:homey:app:nl.xiut.sonoslocal:scan_library');
+    expect(key.flow.runFlowCardAction).toHaveBeenLastCalledWith(scan);
+    // Switched to a speaker of another app: an app's action still runs.
+    await service.runButton('kitchen', 'card:homey:app:nl.xiut.sonoslocal:scan_library');
+    expect(key.flow.runFlowCardAction).toHaveBeenCalledTimes(2);
+    expect(key.flow.runFlowCardAction).toHaveBeenLastCalledWith(scan);
+  });
+
+  it('only runs an argument-free card of an app that has a speaker', async () => {
+    const { service, homey } = setup();
+    const key = keyApi();
+    keyApis.set('k', key);
+    homey.settings.set(API_KEY_SETTING, 'k');
+    await expect(service.runButton('tv', 'card:homey:app:nl.xiut.sonoslocal:set_alarm')).rejects.toThrow(/not an action/);
+    await expect(service.runButton('tv', 'card:homey:app:com.uc.heimdall:deactivate')).rejects.toThrow(/not an action/);
+    await expect(service.runButton('tv', 'card:homey:app:nl.xiut.sonoslocal:nope')).rejects.toThrow(/not an action/);
+    expect(key.flow.runFlowCardAction).not.toHaveBeenCalled();
+  });
+
+  it('says an app card needs a key', async () => {
+    const { service } = setup();
+    await expect(service.runButton('tv', 'card:homey:app:nl.xiut.sonoslocal:scan_library')).rejects.toMatchObject({ reason: 'noKey' });
   });
 
   it('runs a card through the API key', async () => {

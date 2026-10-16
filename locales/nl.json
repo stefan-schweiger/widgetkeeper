@@ -55,8 +55,42 @@
     "noMotion": "Geen beweging",
     "presence": "Aanwezigheid",
     "noPresence": "Geen aanwezigheid",
+    "vibration": "Trilling",
+    "noVibration": "Geen trilling",
     "nothingDetected": "Niets gedetecteerd",
     "since": "sinds __time__"
+  },
+  "roomhealth": {
+    "selectDevices": "Kies sensoren in de widgetinstellingen.",
+    "error": "Kon de sensoren niet laden.",
+    "unavailable": "Niet beschikbaar",
+    "renameFailed": "Kon de naam niet opslaan.",
+    "good": "Goed",
+    "noReadings": "Geen metingen",
+    "allGood": "Alle ruimtes zijn comfortabel.",
+    "hint": "__room__: __problem__, __value__. __action__",
+    "cold": "Koud",
+    "warm": "Warm",
+    "dry": "Droog",
+    "humid": "Vochtig",
+    "stuffy": "Bedompt",
+    "radon": "Radon",
+    "particles": "Fijnstof",
+    "voc": "VOS",
+    "problemCold": "koud",
+    "problemWarm": "warm",
+    "problemDry": "droog",
+    "problemHumid": "vochtig",
+    "problemStuffy": "bedompt",
+    "problemRadon": "veel radon",
+    "problemParticles": "fijnstof",
+    "problemVoc": "VOS",
+    "actionHeat": "Zet de verwarming hoger.",
+    "actionCool": "Koel de ruimte af.",
+    "actionHumidify": "Bevochtig de lucht.",
+    "actionAirOut": "Lucht de ruimte.",
+    "actionVentilate": "Ventileer meer.",
+    "actionPurify": "Zet een luchtreiniger aan."
   },
   "weather": {
     "now": "Nu",
@@ -80,7 +114,7 @@
     "shareTitle": "Widgetkeeper-diagnose",
     "varTitle": "API-sleutel",
     "varHelp": "Homey laat apps zelf geen variabelen wijzigen, flows starten, dashboards lezen of Moods starten. Maak in de Homey-webapp onder Instellingen → API-sleutels een API-sleutel, vink de rechten aan die je widgets nodig hebben, en plak hem hier. Hij blijft op je Homey. Al het andere heeft geen sleutel nodig.",
-    "varForVariables": "Variabelen, om een waarde te wijzigen:",
+    "varForVariables": "Variabelen en Variabele-presets, om een waarde te wijzigen:",
     "varTickVariables": "Variabelen",
     "varForFlows": "Flowknoppen en flows op de knoppen van de Media-widget:",
     "varTickFlows": "Flows starten",
@@ -194,6 +228,21 @@
     "keyScope": "De API-sleutel mag geen variabelen wijzigen: hij heeft het recht Variabelen nodig.",
     "keyInvalid": "De API-sleutel werd niet geaccepteerd.",
     "renameFailed": "Kon de naam niet opslaan."
+  },
+  "varpresets": {
+    "selectVariable": "Kies een variabele in de widgetinstellingen.",
+    "selectVariableFirst": "Kies eerst een variabele en open deze instelling daarna opnieuw.",
+    "noPresets": "Kies de waarden van de knoppen in de widgetinstellingen.",
+    "missing": "Variabele niet gevonden",
+    "error": "Kon de variabele niet laden.",
+    "failed": "Kon __name__ niet wijzigen.",
+    "currently": "Nu __value__",
+    "currentValue": "Huidige waarde",
+    "yes": "Ja",
+    "no": "Nee",
+    "noKey": "Voeg een API-sleutel toe in de app-instellingen om variabelen te wijzigen.",
+    "keyScope": "De API-sleutel mag geen variabelen wijzigen: hij heeft het recht Variabelen nodig.",
+    "keyInvalid": "De API-sleutel werd niet geaccepteerd."
   },
   "flows": {
     "selectSlots": "Kies flows in de widgetinstellingen.",
@@ -352,7 +401,8 @@
     "noKey": "Voeg een API-sleutel toe in de app-instellingen om deze knop te gebruiken.",
     "keyScope": "De API-sleutel mag dit niet uitvoeren: een flow heeft het recht Flows starten nodig, een speakeractie het recht Flows.",
     "keyInvalid": "De API-sleutel is niet geaccepteerd.",
-    "speakerAction": "Speakeractie"
+    "speakerAction": "Speakeractie",
+    "appAction": "App-actie"
   },
   "textline": {
     "noMessage": "Geen bericht",
@@ -362,6 +412,18 @@
     "error": "Kon de tekst niet laden.",
     "boardInUse": "Heeft een tekst",
     "boardNew": "Nieuwe notitie"
+  },
+  "dayssince": {
+    "setup": "Geef je tellers een naam in de widgetinstellingen.",
+    "error": "Kan de tellers niet laden.",
+    "failed": "Kan __name__ niet resetten.",
+    "undoFailed": "Kan de reset van __name__ niet ongedaan maken.",
+    "today": "Vandaag",
+    "notStarted": "Niet gestart",
+    "undo": "Ongedaan maken",
+    "resetLabel": "__name__: __time__. Tik om te resetten.",
+    "newCounter": "Nieuwe teller",
+    "anyCounter": "Elke teller"
   },
   "stack": {
     "selectDashboard": "Kies een dashboard in de widgetinstellingen.",
@@ -463,6 +525,7 @@
       "quickactions": "Kleine tegels die een apparaat met één tik schakelen.",
       "sensoralarms": "Tegels die rood worden als een sensor alarm slaat.",
       "sensordots": "Beweging, deuren en camera's als een raster van stippen.",
+      "roomhealth": "Temperatuur, vochtigheid en lucht per ruimte als één ring, en wat te doen als iets niet goed is.",
       "weather": "De komende 36 uur, uur voor uur.",
       "heatmap": "Een week van een waarde als heatmap van dag × uur.",
       "cameras": "Camerabeelden, met live video na een tik.",
@@ -471,6 +534,7 @@
       "sparklines": "Waarden met een kleine grafiek van hun recente verloop.",
       "charts": "Eén of twee grafieken van elke waarde, zoals die van stroom.",
       "variables": "Variabelen als rijen om te schakelen of te wijzigen.",
+      "varpresets": "Knoppen die een variabele op vaste waarden zetten.",
       "flows": "Start flows met een tik, in je eigen kleuren en iconen.",
       "price": "De stroomprijs nu en in de komende uren.",
       "timers": "Keukentimers die doorlopen op je Homey.",
@@ -480,6 +544,7 @@
       "clock": "De tijd en datum, desgewenst met het weer van nu.",
       "textline": "Een notitie op een tegel of een Post-it, zelf getypt of door je Flows geschreven.",
       "spacer": "Lege ruimte om widgets in kolommen gelijk te zetten.",
+      "dayssince": "Dagen sinds een klusje, rood als het weer tijd is.",
       "stack": "Widgets van een ander dashboard, om de beurt."
     }
   }

@@ -1,0 +1,121 @@
+{
+  "id": "dayssince_set",
+  "title": {
+    "en": "Set a counter's days",
+    "nl": "De dagen van een teller instellen",
+    "de": "Die Tage eines Zählers setzen",
+    "fr": "Régler les jours d'un compteur",
+    "it": "Imposta i giorni di un contatore",
+    "sv": "Ställ in en räknares dagar",
+    "no": "Still inn dagene til en teller",
+    "es": "Ajustar los días de un contador",
+    "da": "Indstil en tællers dage",
+    "ru": "Задать дни счётчика",
+    "pl": "Ustaw dni licznika",
+    "ko": "카운터 일수 설정",
+    "ar": "ضبط أيام عداد"
+  },
+  "titleFormatted": {
+    "en": "Set [[counter]] to [[days]] days ago",
+    "nl": "Zet [[counter]] op [[days]] dagen geleden",
+    "de": "[[counter]] auf vor [[days]] Tagen setzen",
+    "fr": "Régler [[counter]] à il y a [[days]] jours",
+    "it": "Imposta [[counter]] a [[days]] giorni fa",
+    "sv": "Sätt [[counter]] till [[days]] dagar sedan",
+    "no": "Sett [[counter]] til [[days]] dager siden",
+    "es": "Poner [[counter]] a hace [[days]] días",
+    "da": "Sæt [[counter]] til [[days]] dage siden",
+    "ru": "Установить [[counter]] на [[days]] дн. назад",
+    "pl": "Ustaw [[counter]] na [[days]] dni temu",
+    "ko": "[[counter]]을(를) [[days]]일 전으로 설정",
+    "ar": "اضبط [[counter]] على قبل [[days]] أيام"
+  },
+  "hint": {
+    "en": "As if it was reset that many days ago: for something done before the widget was set up.",
+    "nl": "Alsof de teller zoveel dagen geleden is gereset: voor iets dat al gedaan was voordat de widget er was.",
+    "de": "Als wäre er vor so vielen Tagen zurückgesetzt worden: für etwas, das schon vor dem Widget erledigt war.",
+    "fr": "Comme s'il avait été remis à zéro il y a autant de jours : pour une tâche faite avant la mise en place du widget.",
+    "it": "Come se fosse stato azzerato tanti giorni fa: per qualcosa fatto prima di avere il widget.",
+    "sv": "Som om den nollställdes för så många dagar sedan: för något som gjordes innan widgeten fanns.",
+    "no": "Som om den ble nullstilt for så mange dager siden: for noe som ble gjort før widgeten fantes.",
+    "es": "Como si se hubiera reiniciado hace tantos días: para algo hecho antes de tener el widget.",
+    "da": "Som om den blev nulstillet for så mange dage siden: til noget, der blev gjort, før widgetten var sat op.",
+    "ru": "Как будто счётчик сбросили столько дней назад: для того, что сделали до появления виджета.",
+    "pl": "Jakby licznik wyzerowano tyle dni temu: dla czegoś zrobionego przed dodaniem widżetu.",
+    "ko": "그만큼 전에 초기화한 것처럼 설정합니다. 위젯을 만들기 전에 한 일에 쓰세요.",
+    "ar": "كأنه أُعيد ضبطه قبل هذا العدد من الأيام: لشيء أُنجز قبل إعداد الأداة."
+  },
+  "args": [
+    {
+      "type": "autocomplete",
+      "name": "counter",
+      "title": {
+        "en": "Counter",
+        "nl": "Teller",
+        "de": "Zähler",
+        "fr": "Compteur",
+        "it": "Contatore",
+        "sv": "Räknare",
+        "no": "Teller",
+        "es": "Contador",
+        "da": "Tæller",
+        "ru": "Счётчик",
+        "pl": "Licznik",
+        "ko": "카운터",
+        "ar": "العداد"
+      },
+      "placeholder": {
+        "en": "Plants",
+        "nl": "Planten",
+        "de": "Pflanzen",
+        "fr": "Plantes",
+        "it": "Piante",
+        "sv": "Växter",
+        "no": "Planter",
+        "es": "Plantas",
+        "da": "Planter",
+        "ru": "Растения",
+        "pl": "Rośliny",
+        "ko": "화분",
+        "ar": "النباتات"
+      }
+    },
+    {
+      "type": "number",
+      "name": "days",
+      "title": {
+        "en": "Days",
+        "nl": "Dagen",
+        "de": "Tage",
+        "fr": "Jours",
+        "it": "Giorni",
+        "sv": "Dagar",
+        "no": "Dager",
+        "es": "Días",
+        "da": "Dage",
+        "ru": "Дни",
+        "pl": "Dni",
+        "ko": "일수",
+        "ar": "الأيام"
+      },
+      "placeholder": {
+        "en": "14",
+        "nl": "14",
+        "de": "14",
+        "fr": "14",
+        "it": "14",
+        "sv": "14",
+        "no": "14",
+        "es": "14",
+        "da": "14",
+        "ru": "14",
+        "pl": "14",
+        "ko": "14",
+        "ar": "14"
+      },
+      "min": 0,
+      "max": 3650,
+      "step": 1
+    }
+  ]
+}

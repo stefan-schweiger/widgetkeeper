@@ -156,6 +156,24 @@
           }
         },
         {
+          "id": "roomhealth",
+          "title": {
+            "en": "Room Health",
+            "nl": "Binnenklimaat",
+            "de": "Raumklima",
+            "fr": "Climat des pièces",
+            "it": "Clima delle stanze",
+            "sv": "Rumsklimat",
+            "no": "Romklima",
+            "es": "Clima interior",
+            "da": "Indeklima",
+            "ru": "Климат в комнатах",
+            "pl": "Klimat w pomieszczeniach",
+            "ko": "실내 환경",
+            "ar": "مناخ الغرف"
+          }
+        },
+        {
           "id": "weather",
           "title": {
             "en": "Weather Forecast",
@@ -297,6 +315,24 @@
             "pl": "Zmienne",
             "ko": "변수",
             "ar": "المتغيرات"
+          }
+        },
+        {
+          "id": "varpresets",
+          "title": {
+            "en": "Variable Presets",
+            "nl": "Variabele-presets",
+            "de": "Variablen-Presets",
+            "fr": "Préréglages de variable",
+            "it": "Preimpostazioni variabile",
+            "sv": "Variabellägen",
+            "no": "Forhåndsvalg for variabel",
+            "es": "Preajustes de variable",
+            "da": "Variabelforvalg",
+            "ru": "Пресеты переменной",
+            "pl": "Presety zmiennej",
+            "ko": "변수 프리셋",
+            "ar": "إعدادات مسبقة للمتغير"
           }
         },
         {

@@ -7,6 +7,7 @@ import thermostat from '../thermostat/api.js';
 import quickactions from '../quickactions/api.js';
 import sensoralarms from '../sensoralarms/api.js';
 import sensordots from '../sensordots/api.js';
+import roomhealth from '../roomhealth/api.js';
 import weather from '../weather/api.js';
 import heatmap from '../heatmap/api.js';
 import cameras from '../cameras/api.js';
@@ -15,6 +16,7 @@ import lights from '../lights/api.js';
 import sparklines from '../sparklines/api.js';
 import charts from '../charts/api.js';
 import variables from '../variables/api.js';
+import varpresets from '../varpresets/api.js';
 import flows from '../flows/api.js';
 import price from '../price/api.js';
 import timers from '../timers/api.js';
@@ -28,8 +30,8 @@ type Homey = App['homey'];
 
 /** Each page widget's own API (its `api.ts`), by widget id. */
 export const PAGE_APIS: WidgetApis = {
-  electricity, thermostat, quickactions, sensoralarms, sensordots, weather, heatmap, cameras, values,
-  lights, sparklines, charts, variables, flows, price, timers, locks, curtains, media, clock, textline,
+  electricity, thermostat, quickactions, sensoralarms, sensordots, roomhealth, weather, heatmap, cameras, values,
+  lights, sparklines, charts, variables, varpresets, flows, price, timers, locks, curtains, media, clock, textline,
 };
 
 export default {

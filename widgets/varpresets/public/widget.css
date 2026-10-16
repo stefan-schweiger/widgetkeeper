@@ -1,0 +1,30 @@
+/*
+ * Variable Presets' own styles: the lit button's colour and the labels. The header, the buttons, the highlight and
+ * the dark frame are Thermostat Presets' presets.css, which index.html loads first (../thermostat/presets.css).
+ * The colours are Device Values' Flow colours; the fallbacks are the dark-theme values, used outside Homey.
+ */
+.vp {
+  --vp-red: var(--homey-color-red, #F25F5C);
+  --vp-orange: var(--homey-color-orange, #F07A1F);
+  --vp-yellow: #F5C518; /* no Homey token */
+  --vp-green: var(--homey-color-green, #71D51B);
+  --vp-blue: var(--homey-color-blue, #2F8DF6);
+  --vp-purple: #9033FC; /* Homey's --theme-color-purple (dark) */
+  /* The lit button's text on yellow and green, where white doesn't read (Flow Buttons' dark ink). */
+  --vp-on-light: #1A1B21;
+}
+
+/* The colour a lit button takes (`--c`, presets.css's gradient). */
+.vp[data-color="blue"] .tw-btn { --c: var(--vp-blue); }
+.vp[data-color="red"] .tw-btn { --c: var(--vp-red); }
+.vp[data-color="orange"] .tw-btn { --c: var(--vp-orange); }
+.vp[data-color="yellow"] .tw-btn { --c: var(--vp-yellow); }
+.vp[data-color="green"] .tw-btn { --c: var(--vp-green); }
+.vp[data-color="purple"] .tw-btn { --c: var(--vp-purple); }
+.vp[data-color="yellow"] .tw-btn.active, .vp[data-color="green"] .tw-btn.active { color: var(--vp-on-light); }
+
+/* A label may take two lines in the standard layout's 68 px buttons; compact keeps one. */
+.vp:not(.tw-compact) .tw-big {
+  white-space: normal; overflow-wrap: break-word; text-align: center;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+}

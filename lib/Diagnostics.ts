@@ -1,6 +1,7 @@
 import { inspect } from 'node:util';
 import type Homey from 'homey';
 import { heatmapCaps } from './HeatmapService.js';
+import { healthCaps } from './RoomHealthService.js';
 import { alarmCaps } from './SensorAlarmService.js';
 import { isThermostat } from './ThermostatService.js';
 import { getAppApi } from './appApi.js';
@@ -48,6 +49,7 @@ export default class Diagnostics {
       moods: await (this.homey.app as any)?.lights?.describeMoods?.().catch((err: unknown) => String(err)) ?? null,
       timers: (this.homey.app as any)?.timers?.describe?.() ?? null,
       textLines: (this.homey.app as any)?.textLines?.describe?.() ?? null,
+      daysSince: (this.homey.app as any)?.daysSince?.describe?.() ?? null,
       tileNames: (this.homey.app as any)?.tileNames?.describe?.() ?? null,
       media: (this.homey.app as any)?.media?.describe?.() ?? null,
       stack: await (this.homey.app as any)?.stack?.describe?.().catch((err: unknown) => String(err)) ?? null,
@@ -73,6 +75,7 @@ export default class Diagnostics {
             booleanCaps: (d.capabilities as string[] || []).filter(id => d.capabilitiesObj?.[id]?.type === 'boolean'),
             alarms: alarmCaps(d).map(a => `${a.capabilityId}=${a.value}`),
             logged: heatmapCaps(d).map(c => c.id),
+            health: healthCaps(d).map(c => c.capabilityId),
           };
         })
         .sort((a, b) => a.name.localeCompare(b.name));

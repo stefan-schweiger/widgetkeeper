@@ -4,7 +4,7 @@ import { loadWidget } from './helpers/loadWidget.js';
 
 let win: any;
 beforeAll(() => {
-  for (const id of ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables'] as const) win = loadWidget(id);
+  for (const id of ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables', 'roomhealth'] as const) win = loadWidget(id);
 });
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-15T12:00:00Z')); });
 afterEach(() => { vi.useRealTimers(); document.body.innerHTML = ''; });
@@ -14,6 +14,8 @@ const living = { id: 'z1', name: 'Living room' };
 const light = (id: string, name: string) => ({ id, name, icon: null, zone: living, caps: { onoff: cap(false), dim: cap(0.5) } });
 const valueCap = { title: 'Temperature', type: 'number', units: '°C', decimals: 1, min: null, max: null, values: null, icon: null };
 const value = (deviceId: string, name: string) => ({ deviceId, capabilityId: 'measure_temperature', name, capability: valueCap, value: 21 });
+const roomSensor = (id: string, zone: string, room: string, measures: object = { temperature: { capabilityId: 'measure_temperature', value: 21 } }) =>
+  ({ id, name: `Sensor ${id}`, zone: { id: zone, name: room }, measures });
 
 /**
  * Per widget: how it's made, the state it gets (two tiles: `a` and `b`, or a grouped room), the tile keys, the
@@ -64,6 +66,11 @@ const CASES: Record<string, { create: string, state: any, keys: string[], own: s
     // The same variable twice, as Device Values: the second row's key is `#2`.
     state: [{ id: 'a', name: 'Guests', type: 'boolean', value: false }, { id: 'a', name: 'Guests', type: 'boolean', value: false }],
     keys: ['a', 'a#2'], own: ['Guests', 'Guests'],
+  },
+  roomhealth: {
+    create: 'createRoomHealthWidget', act: '', tile: '.rh-room', name: '.rh-name',
+    // A ring per room: the key is the zone's.
+    state: [roomSensor('a', 'z1', 'Living room'), roomSensor('b', 'z2', 'Kitchen')], keys: ['zone:z1', 'zone:z2'], own: ['Living room', 'Kitchen'],
   },
 };
 
@@ -164,6 +171,13 @@ describe('tile names in context', () => {
     expect(names()).toEqual(['Fridge', 'Ice']);
     w.setState([value('b', 'Freezer'), value('a', 'Fridge')]);
     expect(names()).toEqual(['Ice', 'Fridge']);
+  });
+
+  it('Room Health: the hint uses the typed name', () => {
+    const { w, root } = mount('roomhealth');
+    w.setState([roomSensor('a', 'z1', 'Living room', { co2: { capabilityId: 'measure_co2', value: 1400 } })]);
+    w.setNames({ 'zone:z1': 'Lounge' });
+    expect(root.querySelector('.rh-hint-text')!.textContent).toMatch(/^Lounge: stuffy, /);
   });
 
   it('Light Controls: two widgets grouping the same room each keep their own name', () => {

@@ -55,8 +55,42 @@
     "noMotion": "Brak ruchu",
     "presence": "Obecność",
     "noPresence": "Brak obecności",
+    "vibration": "Wibracje",
+    "noVibration": "Brak wibracji",
     "nothingDetected": "Nic nie wykryto",
     "since": "od __time__"
+  },
+  "roomhealth": {
+    "selectDevices": "Wybierz czujniki w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać czujników.",
+    "unavailable": "Niedostępne",
+    "renameFailed": "Nie udało się zapisać nazwy.",
+    "good": "Dobrze",
+    "noReadings": "Brak odczytów",
+    "allGood": "We wszystkich pokojach jest komfortowo.",
+    "hint": "__room__: __problem__, __value__. __action__",
+    "cold": "Zimno",
+    "warm": "Ciepło",
+    "dry": "Sucho",
+    "humid": "Wilgotno",
+    "stuffy": "Duszno",
+    "radon": "Radon",
+    "particles": "Pyły",
+    "voc": "LZO",
+    "problemCold": "zimno",
+    "problemWarm": "ciepło",
+    "problemDry": "sucho",
+    "problemHumid": "wilgotno",
+    "problemStuffy": "duszno",
+    "problemRadon": "dużo radonu",
+    "problemParticles": "pyły",
+    "problemVoc": "LZO",
+    "actionHeat": "Podkręć ogrzewanie.",
+    "actionCool": "Schłodź pokój.",
+    "actionHumidify": "Nawilż powietrze.",
+    "actionAirOut": "Przewietrz.",
+    "actionVentilate": "Wietrz częściej.",
+    "actionPurify": "Włącz oczyszczacz powietrza."
   },
   "weather": {
     "now": "Teraz",
@@ -80,7 +114,7 @@
     "shareTitle": "Diagnostyka Widgetkeeper",
     "varTitle": "Klucz API",
     "varHelp": "Homey nie pozwala aplikacjom samodzielnie zmieniać zmiennych, uruchamiać Flow, odczytywać pulpitów ani uruchamiać Moods. W aplikacji webowej Homey utwórz w Ustawienia → Klucze API klucz, zaznacz uprawnienia potrzebne używanym widżetom i wklej go tutaj. Zostaje na Twoim Homey. Wszystko inne działa bez klucza.",
-    "varForVariables": "Zmienne, aby zmieniać wartości:",
+    "varForVariables": "Zmienne i Presety zmiennej, aby zmieniać wartości:",
     "varTickVariables": "Zmienne",
     "varForFlows": "Przyciski Flow oraz Flow na przyciskach widżetu Multimedia:",
     "varTickFlows": "Rozpoczynanie Flow",
@@ -194,6 +228,21 @@
     "keyScope": "Klucz API nie może zmieniać zmiennych: potrzebuje uprawnienia Zmienne.",
     "keyInvalid": "Klucz API nie został zaakceptowany.",
     "renameFailed": "Nie udało się zapisać nazwy."
+  },
+  "varpresets": {
+    "selectVariable": "Wybierz zmienną w ustawieniach widżetu.",
+    "selectVariableFirst": "Najpierw wybierz zmienną, a potem ponownie otwórz to ustawienie.",
+    "noPresets": "Wybierz wartości przycisków w ustawieniach widżetu.",
+    "missing": "Nie znaleziono zmiennej",
+    "error": "Nie udało się wczytać zmiennej.",
+    "failed": "Nie udało się zmienić __name__.",
+    "currently": "Teraz: __value__",
+    "currentValue": "Bieżąca wartość",
+    "yes": "Tak",
+    "no": "Nie",
+    "noKey": "Aby zmieniać zmienne, dodaj klucz API w ustawieniach aplikacji.",
+    "keyScope": "Klucz API nie może zmieniać zmiennych: potrzebuje uprawnienia Zmienne.",
+    "keyInvalid": "Klucz API nie został zaakceptowany."
   },
   "flows": {
     "selectSlots": "Wybierz Flow w ustawieniach widżetu.",
@@ -352,7 +401,8 @@
     "noKey": "Aby użyć przycisku, dodaj klucz API w ustawieniach aplikacji.",
     "keyScope": "Klucz API nie może tego uruchomić: Flow wymaga uprawnienia Rozpoczynanie Flow, akcja głośnika – Flow.",
     "keyInvalid": "Klucz API nie został zaakceptowany.",
-    "speakerAction": "Akcja głośnika"
+    "speakerAction": "Akcja głośnika",
+    "appAction": "Akcja aplikacji"
   },
   "textline": {
     "noMessage": "Brak wiadomości",
@@ -362,6 +412,18 @@
     "error": "Nie udało się wczytać tekstu.",
     "boardInUse": "Ma tekst",
     "boardNew": "Nowa notatka"
+  },
+  "dayssince": {
+    "setup": "Nazwij liczniki w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać liczników.",
+    "failed": "Nie udało się wyzerować: __name__.",
+    "undoFailed": "Nie udało się cofnąć wyzerowania: __name__.",
+    "today": "Dziś",
+    "notStarted": "Nie rozpoczęto",
+    "undo": "Cofnij",
+    "resetLabel": "__name__: __time__. Dotknij, aby wyzerować.",
+    "newCounter": "Nowy licznik",
+    "anyCounter": "Dowolny licznik"
   },
   "stack": {
     "selectDashboard": "Wybierz pulpit w ustawieniach widżetu.",
@@ -463,6 +525,7 @@
       "quickactions": "Małe kafelki, które przełączają urządzenie jednym dotknięciem.",
       "sensoralarms": "Kafelki, które robią się czerwone, gdy czujnik zgłasza alarm.",
       "sensordots": "Ruch, drzwi i kamery jako siatka kropek.",
+      "roomhealth": "Temperatura, wilgotność i powietrze każdego pokoju jako jeden pierścień, i co zrobić, gdy coś jest nie tak.",
       "weather": "Najbliższe 36 godzin, godzina po godzinie.",
       "heatmap": "Tydzień dowolnej wartości jako mapa cieplna dzień × godzina.",
       "cameras": "Zdjęcia z kamer, z obrazem na żywo po dotknięciu.",
@@ -471,6 +534,7 @@
       "sparklines": "Wartości z małym wykresem ich niedawnej historii.",
       "charts": "Jeden lub dwa wykresy dowolnej wartości, jak te dla prądu.",
       "variables": "Zmienne jako wiersze do przełączania lub zmiany.",
+      "varpresets": "Przyciski ustawiające zmienną na wybrane wartości.",
       "flows": "Uruchamiaj Flow jednym dotknięciem, w Twoich kolorach i ikonach.",
       "price": "Cena prądu teraz i w najbliższych godzinach.",
       "timers": "Minutniki kuchenne, które działają na Twoim Homey.",
@@ -480,6 +544,7 @@
       "clock": "Godzina i data, a jeśli chcesz, aktualna pogoda.",
       "textline": "Notatka na kafelku albo karteczce, wpisana przez Ciebie lub przez Twoje Flow.",
       "spacer": "Pusta przestrzeń do wyrównania widżetów w kolumnach.",
+      "dayssince": "Dni od ostatniego zadania, czerwone, gdy znów czas.",
       "stack": "Widżety z innego pulpitu, na zmianę."
     }
   }

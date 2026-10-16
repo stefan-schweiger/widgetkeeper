@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Days Since widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/dayssince/public/widget.css">
+  <script src="../widgets/dayssince/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <link rel="stylesheet" href="preview.css">
+  <style>
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <!-- `?lang=de` for a language. Every widget shares the simulated app's counters: a tap on one shows on the others. -->
+  <div class="col"><span>358 px (phone) · dark</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · light</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>300 px · dark · days only · Undo open</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>220 px · dark · one column</span><div class="dash homey-dark-mode" style="width:220px"><div id="w4"></div></div></div>
+  <div class="col"><span>358 px · dark · Broken fails</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · no counters</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+
+  <script>
+    // A simulated app: the counters by key, as lib/DaysSinceService.ts keeps them; "Broken" can't be reset.
+    const DAY = 864e5;
+    const now = Date.now();
+    const app = {
+      plants: now - 6 * DAY - 3 * 3600e3,
+      'vacuum filter': now - 82 * DAY,
+      bedsheets: now - 15 * DAY,
+      fish: now - 3600e3,
+      'descale coffee machine': now - 40 * DAY,
+      towels: now - 2 * DAY,
+      'smoke alarm test': null,
+      broken: now - 3 * DAY,
+    };
+    const undos = {};
+    const widgets = [];
+    const later = () => new Promise(r => setTimeout(r, 300));
+    const entry = key => ({ key, resetAt: app[key] ?? null });
+    const changed = key => widgets.forEach(w => w.update(entry(key)));
+    const sim = {
+      onReset: async (name) => {
+        await later();
+        const key = daysSinceKey(name);
+        if (key === 'broken') throw new Error('Could not reach the app');
+        undos[key] = app[key] ?? null;
+        app[key] = Date.now();
+        changed(key);
+        return { now: Date.now(), counter: entry(key) };
+      },
+      onUndo: async (name, at) => {
+        await later();
+        const key = daysSinceKey(name);
+        if (!(key in undos) || app[key] !== at) return { now: Date.now(), undone: false, counter: entry(key) };
+        app[key] = undos[key];
+        delete undos[key];
+        changed(key);
+        return { now: Date.now(), undone: true, counter: entry(key) };
+      },
+    };
+
+    const HOUSE = [
+      { name: 'Plants', icon: 'leaf', amber: 5, red: 7 },
+      { name: 'Vacuum filter', icon: 'vacuum', amber: 75, red: 90 },
+      { name: 'Bedsheets', icon: 'bed', amber: 12, red: 14 },
+      { name: 'Fish', icon: 'paw', amber: 2, red: 3 },
+      { name: 'Descale coffee machine', icon: 'coffee', amber: 50, red: 60 },
+      { name: 'Towels', icon: 'washer', amber: 5, red: 7 },
+      { name: 'Smoke alarm test', icon: 'bell', amber: 25, red: 30 },
+    ];
+    function mount(id, counters, opts = {}) {
+      const list = counters.map(c => ({ key: daysSinceKey(c.name), ...c }));
+      const w = createDaysSinceWidget(document.getElementById(id), { t: devT, counters: list, ...sim, ...opts });
+      widgets.push(w);
+      w.setState({ now: Date.now(), language: new URLSearchParams(location.search).get('lang') || 'en', counters: list.map(c => entry(c.key)) });
+      return w;
+    }
+    mount('w1', HOUSE);
+    mount('w2', HOUSE);
+    const w3 = mount('w3', HOUSE.slice(0, 4), { units: 'days' });
+    mount('w4', HOUSE.slice(0, 3));
+    mount('w5', [{ name: 'Broken', icon: 'bolt', amber: 1, red: 2 }, { name: 'Plants', icon: 'leaf', amber: 5, red: 7 }]);
+    mount('w6', []);
+    // Opens Undo on the 300 px widget's Fish, as a tap would.
+    const fish = document.querySelectorAll('#w3 .ds-tile')[3];
+    fish.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  </script>
+</body>
+</html>

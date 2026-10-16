@@ -55,8 +55,42 @@
     "noMotion": "동작 없음",
     "presence": "재실",
     "noPresence": "재실 없음",
+    "vibration": "진동",
+    "noVibration": "진동 없음",
     "nothingDetected": "감지 없음",
     "since": "__time__부터"
+  },
+  "roomhealth": {
+    "selectDevices": "위젯 설정에서 센서를 선택하세요.",
+    "error": "센서를 불러올 수 없습니다.",
+    "unavailable": "사용할 수 없음",
+    "renameFailed": "이름을 저장하지 못했습니다.",
+    "good": "좋음",
+    "noReadings": "측정값 없음",
+    "allGood": "모든 방이 쾌적합니다.",
+    "hint": "__room__: __problem__, __value__. __action__",
+    "cold": "추움",
+    "warm": "더움",
+    "dry": "건조",
+    "humid": "습함",
+    "stuffy": "답답함",
+    "radon": "라돈",
+    "particles": "미세먼지",
+    "voc": "VOC",
+    "problemCold": "추움",
+    "problemWarm": "더움",
+    "problemDry": "건조함",
+    "problemHumid": "습함",
+    "problemStuffy": "답답함",
+    "problemRadon": "라돈 높음",
+    "problemParticles": "미세먼지",
+    "problemVoc": "VOC",
+    "actionHeat": "난방을 올리세요.",
+    "actionCool": "실내를 식히세요.",
+    "actionHumidify": "가습하세요.",
+    "actionAirOut": "환기하세요.",
+    "actionVentilate": "더 자주 환기하세요.",
+    "actionPurify": "공기청정기를 켜세요."
   },
   "weather": {
     "now": "지금",
@@ -80,7 +114,7 @@
     "shareTitle": "Widgetkeeper 진단",
     "varTitle": "API 키",
     "varHelp": "Homey는 앱이 직접 변수를 바꾸거나 플로우를 시작하거나 대시보드를 읽거나 무드를 시작하도록 허용하지 않습니다. Homey 웹 앱의 설정 → API 키에서 API 키를 만들고, 사용하는 위젯에 필요한 권한을 선택한 다음 여기에 붙여 넣으세요. 키는 Homey에만 저장됩니다. 그 밖의 기능에는 키가 필요 없습니다.",
-    "varForVariables": "변수 위젯의 값 변경:",
+    "varForVariables": "변수와 변수 프리셋 위젯의 값 변경:",
     "varTickVariables": "변수",
     "varForFlows": "플로우 버튼, 미디어 버튼의 플로우:",
     "varTickFlows": "Flow 시작",
@@ -194,6 +228,21 @@
     "keyScope": "이 API 키로는 변수를 바꿀 수 없습니다. 변수 권한이 필요합니다.",
     "keyInvalid": "API 키가 승인되지 않았습니다.",
     "renameFailed": "이름을 저장하지 못했습니다."
+  },
+  "varpresets": {
+    "selectVariable": "위젯 설정에서 변수를 선택하세요.",
+    "selectVariableFirst": "먼저 변수를 선택한 다음 이 설정을 다시 여세요.",
+    "noPresets": "위젯 설정에서 버튼 값을 선택하세요.",
+    "missing": "변수를 찾을 수 없음",
+    "error": "변수를 불러올 수 없습니다.",
+    "failed": "__name__을(를) 변경할 수 없습니다.",
+    "currently": "현재 __value__",
+    "currentValue": "현재 값",
+    "yes": "예",
+    "no": "아니요",
+    "noKey": "변수를 바꾸려면 앱 설정에서 API 키를 추가하세요.",
+    "keyScope": "이 API 키로는 변수를 바꿀 수 없습니다. 변수 권한이 필요합니다.",
+    "keyInvalid": "API 키가 승인되지 않았습니다."
   },
   "flows": {
     "selectSlots": "위젯 설정에서 플로우를 선택하세요.",
@@ -352,7 +401,8 @@
     "noKey": "이 버튼을 사용하려면 앱 설정에서 API 키를 추가하세요.",
     "keyScope": "API 키로 실행할 수 없습니다. 플로우에는 Flow 시작, 스피커 동작에는 Flow 권한이 필요합니다.",
     "keyInvalid": "API 키가 승인되지 않았습니다.",
-    "speakerAction": "스피커 동작"
+    "speakerAction": "스피커 동작",
+    "appAction": "앱 동작"
   },
   "textline": {
     "noMessage": "메시지 없음",
@@ -362,6 +412,18 @@
     "error": "텍스트를 불러올 수 없습니다.",
     "boardInUse": "텍스트 있음",
     "boardNew": "새 메모"
+  },
+  "dayssince": {
+    "setup": "위젯 설정에서 카운터 이름을 정하세요.",
+    "error": "카운터를 불러올 수 없습니다.",
+    "failed": "__name__을(를) 초기화할 수 없습니다.",
+    "undoFailed": "__name__ 초기화를 취소할 수 없습니다.",
+    "today": "오늘",
+    "notStarted": "시작 안 함",
+    "undo": "실행 취소",
+    "resetLabel": "__name__: __time__. 탭하면 초기화됩니다.",
+    "newCounter": "새 카운터",
+    "anyCounter": "아무 카운터"
   },
   "stack": {
     "selectDashboard": "위젯 설정에서 대시보드를 선택하세요.",
@@ -463,6 +525,7 @@
       "quickactions": "한 번 탭으로 기기를 켜고 끄는 작은 타일.",
       "sensoralarms": "센서가 경보를 울리면 빨갛게 변하는 타일.",
       "sensordots": "동작, 문, 카메라를 점 격자로.",
+      "roomhealth": "방마다 온도, 습도, 공기를 하나의 링으로 보여 주고, 문제가 있으면 할 일을 알려 줍니다.",
       "weather": "앞으로 36시간을 시간별로.",
       "heatmap": "어떤 값이든 일주일을 요일 × 시간 히트맵으로.",
       "cameras": "카메라 스냅샷, 탭하면 실시간 영상.",
@@ -471,6 +534,7 @@
       "sparklines": "최근 기록을 작은 차트로 보여 주는 값.",
       "charts": "전기 차트처럼 어떤 값이든 차트 1~2개로 표시합니다.",
       "variables": "켜고 끄거나 바꿀 수 있는 변수 행.",
+      "varpresets": "변수를 미리 정한 값으로 설정하는 버튼.",
       "flows": "내 색상과 아이콘으로 탭 한 번에 플로우 시작.",
       "price": "지금과 앞으로 몇 시간의 전기 요금.",
       "timers": "Homey에서 계속 돌아가는 주방 타이머.",
@@ -480,6 +544,7 @@
       "clock": "시간과 날짜, 원하면 현재 날씨도 함께.",
       "textline": "타일이나 포스트잇에 직접 입력하거나 Flow가 쓰는 메모입니다.",
       "spacer": "열마다 위젯을 맞추는 빈 공간.",
+      "dayssince": "집안일 후 지난 일수, 다시 할 때가 되면 빨간색으로.",
       "stack": "다른 대시보드의 위젯을 번갈아."
     }
   }

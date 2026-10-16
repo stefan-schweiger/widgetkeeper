@@ -18,6 +18,8 @@ export function loadWidget(name: WidgetName): any {
 export const DEPS: Partial<Record<WidgetName, string[]>> = {
   electricity: ['electricity/chart.js'],
   charts: ['electricity/chart.js'],
+  thermostat: ['thermostat/presets.js'],
+  varpresets: ['thermostat/presets.js'],
 };
 
 /** Runs a widget's `public/mount.js` (which wires it to a Homey) the same way; load its widget.js first. */
@@ -25,9 +27,9 @@ export function loadMount(name: WidgetName): any {
   return loadScript(name, 'mount.js');
 }
 
-export type WidgetName = 'electricity' | 'thermostat' | 'quickactions' | 'sensoralarms' | 'sensordots' | 'weather' | 'heatmap'
-  | 'cameras' | 'values' | 'lights' | 'sparklines' | 'charts' | 'variables' | 'flows' | 'price' | 'timers' | 'locks' | 'curtains' | 'media' | 'clock'
-  | 'spacer' | 'textline' | 'stack';
+export type WidgetName = 'electricity' | 'thermostat' | 'quickactions' | 'sensoralarms' | 'sensordots' | 'roomhealth' | 'weather' | 'heatmap'
+  | 'cameras' | 'values' | 'lights' | 'sparklines' | 'charts' | 'variables' | 'varpresets' | 'flows' | 'price' | 'timers' | 'locks' | 'curtains' | 'media' | 'clock'
+  | 'spacer' | 'textline' | 'dayssince' | 'stack';
 
 function loadScript(name: WidgetName, file: string): any {
   loadFile(`${name}/${file}`);

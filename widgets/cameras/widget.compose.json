@@ -60,6 +60,46 @@
       "value": false
     },
     {
+      "id": "layout",
+      "type": "dropdown",
+      "title": {
+        "en": "Layout",
+        "nl": "Indeling",
+        "de": "Layout",
+        "fr": "Disposition",
+        "it": "Layout",
+        "sv": "Layout",
+        "no": "Oppsett",
+        "es": "Diseño",
+        "da": "Layout",
+        "ru": "Макет",
+        "pl": "Układ",
+        "ko": "레이아웃",
+        "ar": "التخطيط"
+      },
+      "hint": {
+        "en": "With an odd number of cameras, one fills the whole width.",
+        "nl": "Bij een oneven aantal camera's vult één camera de hele breedte.",
+        "de": "Bei einer ungeraden Anzahl Kameras füllt eine die ganze Breite.",
+        "fr": "Avec un nombre impair de caméras, l'une d'elles occupe toute la largeur.",
+        "it": "Con un numero dispari di telecamere, una occupa tutta la larghezza.",
+        "sv": "Med ett udda antal kameror fyller en kamera hela bredden.",
+        "no": "Med et oddetall kameraer fyller ett kamera hele bredden.",
+        "es": "Con un número impar de cámaras, una ocupa todo el ancho.",
+        "da": "Med et ulige antal kameraer fylder ét kamera hele bredden.",
+        "ru": "При нечётном числе камер одна занимает всю ширину.",
+        "pl": "Przy nieparzystej liczbie kamer jedna zajmuje całą szerokość.",
+        "ko": "카메라 수가 홀수이면 한 대가 전체 너비를 채웁니다.",
+        "ar": "عند وجود عدد فردي من الكاميرات، تملأ إحداها العرض بالكامل."
+      },
+      "value": "bottom",
+      "values": [
+        { "id": "bottom", "title": { "en": "Large camera at the bottom", "nl": "Grote camera onderaan", "de": "Große Kamera unten", "fr": "Grande caméra en bas", "it": "Telecamera grande in basso", "sv": "Stor kamera längst ner", "no": "Stort kamera nederst", "es": "Cámara grande abajo", "da": "Stort kamera nederst", "ru": "Большая камера внизу", "pl": "Duża kamera na dole", "ko": "큰 카메라를 아래에", "ar": "الكاميرا الكبيرة في الأسفل" } },
+        { "id": "top", "title": { "en": "Large camera on top", "nl": "Grote camera bovenaan", "de": "Große Kamera oben", "fr": "Grande caméra en haut", "it": "Telecamera grande in alto", "sv": "Stor kamera överst", "no": "Stort kamera øverst", "es": "Cámara grande arriba", "da": "Stort kamera øverst", "ru": "Большая камера вверху", "pl": "Duża kamera na górze", "ko": "큰 카메라를 위에", "ar": "الكاميرا الكبيرة في الأعلى" } },
+        { "id": "single", "title": { "en": "One camera per row", "nl": "Eén camera per rij", "de": "Eine Kamera pro Zeile", "fr": "Une caméra par ligne", "it": "Una telecamera per riga", "sv": "En kamera per rad", "no": "Ett kamera per rad", "es": "Una cámara por fila", "da": "Ét kamera pr. række", "ru": "Одна камера в ряду", "pl": "Jedna kamera w wierszu", "ko": "한 줄에 카메라 하나", "ar": "كاميرا واحدة في كل صف" } }
+      ]
+    },
+    {
       "id": "refresh",
       "type": "dropdown",
       "title": {
@@ -77,27 +117,53 @@
         "ko": "스냅샷 새로 고침 간격",
         "ar": "تحديث اللقطات كل"
       },
-      "hint": {
-        "en": "Tap a camera for live video.",
-        "nl": "Tik op een camera voor live beeld.",
-        "de": "Tippe auf eine Kamera für Live-Video.",
-        "fr": "Touchez une caméra pour la vidéo en direct.",
-        "it": "Tocca una telecamera per il video in diretta.",
-        "sv": "Tryck på en kamera för livevideo.",
-        "no": "Trykk på et kamera for direktevideo.",
-        "es": "Toca una cámara para ver vídeo en directo.",
-        "da": "Tryk på et kamera for live-video.",
-        "ru": "Нажмите на камеру, чтобы смотреть видео в реальном времени.",
-        "pl": "Dotknij kamery, aby zobaczyć obraz na żywo.",
-        "ko": "카메라를 탭하면 실시간 영상을 볼 수 있습니다.",
-        "ar": "انقر على كاميرا لعرض الفيديو المباشر."
-      },
       "value": "10",
       "values": [
         { "id": "5", "title": { "en": "5 s", "nl": "5 s", "de": "5 s", "fr": "5 s", "it": "5 s", "sv": "5 s", "no": "5 s", "es": "5 s", "da": "5 s", "ru": "5 с", "pl": "5 s", "ko": "5초", "ar": "5 ث" } },
         { "id": "10", "title": { "en": "10 s", "nl": "10 s", "de": "10 s", "fr": "10 s", "it": "10 s", "sv": "10 s", "no": "10 s", "es": "10 s", "da": "10 s", "ru": "10 с", "pl": "10 s", "ko": "10초", "ar": "10 ث" } },
         { "id": "30", "title": { "en": "30 s", "nl": "30 s", "de": "30 s", "fr": "30 s", "it": "30 s", "sv": "30 s", "no": "30 s", "es": "30 s", "da": "30 s", "ru": "30 с", "pl": "30 s", "ko": "30초", "ar": "30 ث" } },
         { "id": "60", "title": { "en": "1 min", "nl": "1 min", "de": "1 Min.", "fr": "1 min", "it": "1 min", "sv": "1 min", "no": "1 min", "es": "1 min", "da": "1 min", "ru": "1 мин", "pl": "1 min", "ko": "1분", "ar": "1 د" } }
+      ]
+    },
+    {
+      "id": "liveFor",
+      "type": "dropdown",
+      "title": {
+        "en": "Live view stays on",
+        "nl": "Live beeld blijft aan",
+        "de": "Live-Ansicht bleibt an",
+        "fr": "Durée du direct",
+        "it": "Durata della diretta",
+        "sv": "Livevisning pågår",
+        "no": "Direktevisning varer",
+        "es": "Duración del directo",
+        "da": "Live-visning varer",
+        "ru": "Прямой эфир длится",
+        "pl": "Podgląd na żywo trwa",
+        "ko": "실시간 보기 유지",
+        "ar": "مدة العرض المباشر"
+      },
+      "hint": {
+        "en": "Tap a camera for live video, and tap it again to end it. With Until tapped, live view comes back when the screen wakes or the dashboard opens again.",
+        "nl": "Tik op een camera voor live beeld, en tik nogmaals om te stoppen. Met Tot je weer tikt komt het live beeld terug als het scherm weer aangaat of het dashboard weer opent.",
+        "de": "Tippe auf eine Kamera für Live-Video und tippe erneut, um es zu beenden. Mit Bis zum Tippen kommt die Live-Ansicht zurück, wenn der Bildschirm aufwacht oder das Dashboard wieder geöffnet wird.",
+        "fr": "Touchez une caméra pour la vidéo en direct, et touchez-la à nouveau pour l'arrêter. Avec Jusqu'au prochain toucher, le direct revient quand l'écran se réveille ou que le tableau de bord est rouvert.",
+        "it": "Tocca una telecamera per il video in diretta e toccala di nuovo per chiuderlo. Con Fino al tocco successivo, la diretta riprende quando lo schermo si riattiva o la dashboard viene riaperta.",
+        "sv": "Tryck på en kamera för livevideo och tryck igen för att avsluta. Med Tills du trycker kommer livevisningen tillbaka när skärmen vaknar eller instrumentpanelen öppnas igen.",
+        "no": "Trykk på et kamera for direktevideo, og trykk igjen for å avslutte. Med Til du trykker kommer direktevisningen tilbake når skjermen våkner eller dashbordet åpnes igjen.",
+        "es": "Toca una cámara para ver vídeo en directo y vuelve a tocarla para cerrarlo. Con Hasta volver a tocar, el directo vuelve cuando la pantalla se activa o el panel se abre de nuevo.",
+        "da": "Tryk på et kamera for live-video, og tryk igen for at stoppe. Med Til du trykker kommer live-visningen tilbage, når skærmen vågner, eller dashboardet åbnes igen.",
+        "ru": "Нажмите на камеру, чтобы смотреть видео в реальном времени, и нажмите снова, чтобы закрыть его. С вариантом «До нажатия» прямой эфир возвращается, когда экран просыпается или панель открывается снова.",
+        "pl": "Dotknij kamery, aby zobaczyć obraz na żywo, i dotknij ponownie, aby go zamknąć. Z opcją Do dotknięcia podgląd wraca, gdy ekran się wybudzi lub pulpit zostanie ponownie otwarty.",
+        "ko": "카메라를 탭하면 실시간 영상을 볼 수 있고, 다시 탭하면 닫힙니다. 탭할 때까지를 선택하면 화면이 켜지거나 대시보드를 다시 열 때 실시간 보기가 다시 시작됩니다.",
+        "ar": "انقر على كاميرا لعرض الفيديو المباشر، وانقر عليها مجددًا لإنهائه. مع حتى النقر مجددًا، يعود العرض المباشر عند تنشيط الشاشة أو إعادة فتح لوحة التحكم."
+      },
+      "value": "300",
+      "values": [
+        { "id": "30", "title": { "en": "30 s", "nl": "30 s", "de": "30 s", "fr": "30 s", "it": "30 s", "sv": "30 s", "no": "30 s", "es": "30 s", "da": "30 s", "ru": "30 с", "pl": "30 s", "ko": "30초", "ar": "30 ث" } },
+        { "id": "60", "title": { "en": "1 min", "nl": "1 min", "de": "1 Min.", "fr": "1 min", "it": "1 min", "sv": "1 min", "no": "1 min", "es": "1 min", "da": "1 min", "ru": "1 мин", "pl": "1 min", "ko": "1분", "ar": "1 د" } },
+        { "id": "300", "title": { "en": "5 min", "nl": "5 min", "de": "5 Min.", "fr": "5 min", "it": "5 min", "sv": "5 min", "no": "5 min", "es": "5 min", "da": "5 min", "ru": "5 мин", "pl": "5 min", "ko": "5분", "ar": "5 د" } },
+        { "id": "tap", "title": { "en": "Until tapped", "nl": "Tot je weer tikt", "de": "Bis zum Tippen", "fr": "Jusqu'au prochain toucher", "it": "Fino al tocco successivo", "sv": "Tills du trycker", "no": "Til du trykker", "es": "Hasta volver a tocar", "da": "Til du trykker", "ru": "До нажатия", "pl": "Do dotknięcia", "ko": "탭할 때까지", "ar": "حتى النقر مجددًا" } }
       ]
     }
   ],

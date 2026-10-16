@@ -51,8 +51,8 @@ describe('copied widget helpers', () => {
     // Deliberately different: Media's and Variables' have no keydown (their rows hold buttons and inputs
     // whose keys would bubble to it), and the stack's is its own design.
     expectSame(['lights', 'curtains'].map(id => source(id, 'onTap'))); // in the widget's closure
-    expectSame(['flows', 'sensordots'].map(id => source(id, 'onTap')));
-    expectSame(['timers', 'locks'].map(id => source(id, 'onTap'))); // stops the tap at a button inside a row
+    expectSame(['flows', 'sensordots', 'roomhealth'].map(id => source(id, 'onTap')));
+    expectSame(['timers', 'locks', 'dayssince'].map(id => source(id, 'onTap'))); // stops the tap at a button inside a row
   });
 
   it('scaled() and formatNumber() are the same in Sparklines and Charts', () => {
@@ -60,7 +60,7 @@ describe('copied widget helpers', () => {
   });
 
   it('tileNames(), wireTileNames() and nameKeys() are the same in every widget with tile names', () => {
-    const named = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables'];
+    const named = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables', 'roomhealth'];
     expectSame(named.map(id => source(id, 'tileNames')));
     expectSame(named.map(id => source(id, 'wireTileNames', 'mount.js')));
     expectSame(['values', 'sparklines', 'variables'].map(id => source(id, 'nameKeys')));
@@ -80,18 +80,21 @@ describe('copied widget helpers', () => {
   });
 
   /** The CSS without comments, with each widget's class prefix (`tw-`, `hm-` …) made `x-`. */
-  const css = (id: string, prefix: string) => read(id, 'widget.css').replace(/\/\*[\s\S]*?\*\//g, '').replace(new RegExp(String.raw`\b${prefix}-`, 'g'), 'x-');
+  const css = (id: string, prefix: string, file = 'widget.css') => read(id, file).replace(/\/\*[\s\S]*?\*\//g, '').replace(new RegExp(String.raw`\b${prefix}-`, 'g'), 'x-');
 
   it("the non-transparent widgets' dark frame is the same", () => {
-    const frame = (id: string, prefix: string) => {
-      const m = css(id, prefix).match(/\.homey-dark-mode \.x-frame, \.x-frame\.homey-dark-mode \{[\s\S]*?body\.x-frame\.homey-dark-mode::after \{ position: fixed; \}\n/);
+    const frame = (id: string, prefix: string, file?: string) => {
+      const m = css(id, prefix, file).match(/\.homey-dark-mode \.x-frame, \.x-frame\.homey-dark-mode \{[\s\S]*?body\.x-frame\.homey-dark-mode::after \{ position: fixed; \}\n/);
       return m ? m[0].replace(/\n+/g, '\n') : null;
     };
-    expectSame([['thermostat', 'tw'], ['heatmap', 'hm'], ['media', 'mw'], ['weather', 'wf']].map(([id, p]) => frame(id, p)));
+    // Thermostat Presets' is in the presets module, which Variable Presets loads too.
+    expectSame([['thermostat', 'tw', 'presets.css'], ['heatmap', 'hm'], ['media', 'mw'], ['weather', 'wf']].map(([id, p, file]) => frame(id, p, file)));
   });
 
   it("the native tiles' rim is the same everywhere", () => {
-    const rims = WIDGETS.flatMap(id => [...read(id, 'widget.css').matchAll(/\{([^{}]*inset 0 1px 0 rgb\(255 255 255[^{}]*)\}/g)].map(m => m[1].trim()));
+    // Every stylesheet of a widget: the shared presets.css has Thermostat Presets' frame.
+    const sheets = (id: string) => readdirSync(`widgets/${id}/public`).filter(f => f.endsWith('.css'));
+    const rims = WIDGETS.flatMap(id => sheets(id).flatMap(f => [...read(id, f).matchAll(/\{([^{}]*inset 0 1px 0 rgb\(255 255 255[^{}]*)\}/g)].map(m => m[1].trim())));
     expect(rims.length).toBeGreaterThanOrEqual(16);
     // A tile's rim follows its own radius; a frame's (thermostat, heatmap, media, weather) the frame's 10 px.
     const tile = "content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;\n  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);";
@@ -118,8 +121,8 @@ describe('shared files', () => {
     for (const f of [...js, ...css]) expect(existsSync(`widgets/${f.replace('/', '/public/')}`)).toBe(true);
   });
 
-  it('the chart module is loaded by the Electricity Overview and Charts', () => {
-    expect(Object.keys(stackDeps).sort()).toEqual(['charts', 'electricity']);
+  it('the chart module is loaded by the Electricity Overview and Charts, the presets module by both preset widgets', () => {
+    expect(Object.keys(stackDeps).sort()).toEqual(['charts', 'electricity', 'thermostat', 'varpresets']);
   });
 });
 

@@ -3,6 +3,9 @@ import Diagnostics, { DEBUG_LOG_SETTING } from './lib/Diagnostics.js';
 import { getAppApi } from './lib/appApi.js';
 import CameraService from './lib/CameraService.js';
 import CurtainService from './lib/CurtainService.js';
+import DaysSinceService, {
+  DAYS_SINCE_IS_OVERDUE_CARD, DAYS_SINCE_OVERDUE_CARD, DAYS_SINCE_RESET_CARD, DAYS_SINCE_SET_CARD, type CounterArg, type OverdueCounter,
+} from './lib/DaysSinceService.js';
 import ElectricityService from './lib/ElectricityService.js';
 import FlowService from './lib/FlowService.js';
 import HeatmapService from './lib/HeatmapService.js';
@@ -11,6 +14,7 @@ import LockService from './lib/LockService.js';
 import MediaService from './lib/MediaService.js';
 import PersonalApiKey from './lib/PersonalApiKey.js';
 import QuickActionService from './lib/QuickActionService.js';
+import RoomHealthService from './lib/RoomHealthService.js';
 import SensorAlarmService from './lib/SensorAlarmService.js';
 import SparklineService from './lib/SparklineService.js';
 import StackService, { STACK_RESUME_CARD, STACK_SHOW_CARD } from './lib/StackService.js';
@@ -32,6 +36,7 @@ export default class WidgetkeeperApp extends Homey.App {
   thermostat!: ThermostatService;
   quickActions!: QuickActionService;
   sensorAlarms!: SensorAlarmService;
+  roomHealth!: RoomHealthService;
   weather!: WeatherService;
   heatmap!: HeatmapService;
   cameras!: CameraService;
@@ -46,6 +51,8 @@ export default class WidgetkeeperApp extends Homey.App {
   media!: MediaService;
   stack!: StackService;
   textLines!: TextLineService;
+  /** The Days Since widget's counters, shared by name. */
+  daysSince!: DaysSinceService;
   /** The names typed on the device widgets' tiles (`renameTiles`). */
   tileNames!: TileNameService;
   web!: WebDashboardService;
@@ -69,6 +76,8 @@ export default class WidgetkeeperApp extends Homey.App {
     this.quickActions.start();
     this.sensorAlarms = new SensorAlarmService(this.homey, log, debug);
     this.sensorAlarms.start();
+    this.roomHealth = new RoomHealthService(this.homey, log, debug);
+    this.roomHealth.start();
     this.weather = new WeatherService(this.homey, log, debug);
     this.weather.start();
     this.heatmap = new HeatmapService(this.homey, log, debug);
@@ -97,6 +106,9 @@ export default class WidgetkeeperApp extends Homey.App {
     this.registerStackFlows();
     this.textLines = new TextLineService(this.homey, log, debug);
     this.registerTextLineFlows();
+    this.daysSince = new DaysSinceService(this.homey, log, debug, counter => this.daysSinceOverdue(counter));
+    this.registerDaysSinceFlows();
+    this.daysSince.start();
     this.tileNames = new TileNameService(this.homey, log, debug);
     this.web = new WebDashboardService(this.homey, log, widgetAutocompletes(this));
     this.adoptOldTileNames();
@@ -141,6 +153,7 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.thermostat?.stop();
     await this.quickActions?.stop();
     await this.sensorAlarms?.stop();
+    await this.roomHealth?.stop();
     await this.weather?.stop();
     await this.heatmap?.stop();
     await this.cameras?.stop();
@@ -149,6 +162,7 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.sparklines?.stop();
     await this.variables?.stop();
     await this.timers?.stop();
+    await this.daysSince?.stop();
     await this.locks?.stop();
     await this.curtains?.stop();
     await this.media?.stop();
@@ -194,6 +208,32 @@ export default class WidgetkeeperApp extends Homey.App {
       .registerRunListener(async (args: BoardArg & { text: string, color: string }) => this.textLines.set(board(args), args.text, args.color));
     this.homey.flow.getActionCard(TEXTLINE_CLEAR_CARD)
       .registerRunListener(async (args: BoardArg) => this.textLines.clear(board(args)));
+  }
+
+  /**
+   * The Days Since Flow cards: *Reset …*, *Set … to … days ago*, the trigger *… became overdue* (filtered to its
+   * counter, or any) and the condition *… is overdue*. Each counter argument lists the counters by name.
+   */
+  private registerDaysSinceFlows() {
+    type Args = { counter?: CounterArg };
+    const list = (any: boolean) => async (query: string) => this.daysSince.listCounters(query, { create: true, any });
+    const reset = this.homey.flow.getActionCard(DAYS_SINCE_RESET_CARD);
+    reset.registerArgumentAutocompleteListener('counter', list(false));
+    reset.registerRunListener(async (args: Args) => { this.daysSince.reset(this.daysSince.argName(args.counter)); });
+    const set = this.homey.flow.getActionCard(DAYS_SINCE_SET_CARD);
+    set.registerArgumentAutocompleteListener('counter', list(false));
+    set.registerRunListener(async (args: Args & { days: number }) => { this.daysSince.setDaysAgo(this.daysSince.argName(args.counter), args.days); });
+    const overdue = this.homey.flow.getTriggerCard(DAYS_SINCE_OVERDUE_CARD);
+    overdue.registerArgumentAutocompleteListener('counter', list(true));
+    overdue.registerRunListener(async (args: Args, state: { key?: string }) => this.daysSince.matches(args.counter, state?.key));
+    const isOverdue = this.homey.flow.getConditionCard(DAYS_SINCE_IS_OVERDUE_CARD);
+    isOverdue.registerArgumentAutocompleteListener('counter', list(true));
+    isOverdue.registerRunListener(async (args: Args) => this.daysSince.isOverdue(args.counter));
+  }
+
+  /** The trigger *… became overdue*: the counter's name and its days since the reset; `state` picks the Flows of that counter. */
+  private daysSinceOverdue(counter: OverdueCounter) {
+    return this.homey.flow.getTriggerCard(DAYS_SINCE_OVERDUE_CARD).trigger({ counter: counter.name, days: counter.days }, { key: counter.key });
   }
 
   /** The Flow card *A timer finished*: the timer's name (or its duration, as the widget shows it) and its minutes. */

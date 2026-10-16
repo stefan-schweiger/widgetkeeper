@@ -38,6 +38,7 @@ export function routeKeyUse(type: string, method: string, path: string, body: un
   const b = (body && typeof body === 'object' ? body : {}) as Record<string, unknown>;
   switch (`${type} ${method} ${path}`) {
     case 'variables POST /set': return 'variables';
+    case 'varpresets POST /set': return 'variables';
     case 'flows POST /trigger': return 'flows';
     case 'media POST /button': return String(b.id ?? '').startsWith('card:') ? 'cards' : 'flows';
     case 'stack GET /pages': return 'dashboards';

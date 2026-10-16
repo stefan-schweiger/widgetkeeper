@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Variable Presets widget preview</title>
+  <link rel="stylesheet" href="../widgets/thermostat/public/presets.css">
+  <link rel="stylesheet" href="../widgets/varpresets/public/widget.css">
+  <script src="../widgets/thermostat/public/presets.js"></script>
+  <script src="../widgets/varpresets/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <link rel="stylesheet" href="preview.css">
+  <style>
+    .card { background: var(--homey-background-color, #1F2029); border-radius: 20px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.3); box-sizing: border-box; }
+    .light { color: var(--tw-text); }
+  </style>
+</head>
+<body>
+  <script>
+    // Made-up variables; a tap sets the value after a moment, as Homey's event would. `Broken` fails with noKey.
+    const item = (value, name = String(value)) => ({ id: `${typeof value}:${JSON.stringify(value)}`, name, value, type: typeof value });
+    const MODE = { id: 'mode', name: 'House mode', type: 'string', value: 'Away' };
+    const SETPOINT = { id: 'setpoint', name: 'Night setpoint', type: 'number', value: 18.5 };
+    const GUESTS = { id: 'guests', name: 'Guests staying', type: 'boolean', value: false };
+    const modes = { value1: item('Home'), value2: item('Away'), value3: item('Night'), value4: item('Holiday') };
+    const temps = { value1: item(17), label1: 'Cold', value2: item(18.5), value3: item(20), label3: 'Warm' };
+    const CASES = [
+      ['400 px · text · Away lit · icon', 400, '', MODE, modes, { icon: 'home' }],
+      ['400 px · light · text · Away lit · icon', 400, 'light', MODE, modes, { icon: 'home' }],
+      ['400 px · number · 3 buttons · labels · orange', 400, '', SETPOINT, temps, { color: 'orange', icon: 'moon' }],
+      ['400 px · number · none matches', 400, '', { ...SETPOINT, value: 19.25 }, temps, { icon: 'moon' }],
+      ['400 px · yes/no · no presets (Yes and No) · green', 400, '', GUESTS, {}, { color: 'green', title: 'Guests' }],
+      ['400 px · light · yes/no · labels · yellow', 400, 'light', { ...GUESTS, value: true }, { value1: item(true, 'Yes'), label1: 'Staying', value2: item(false, 'No'), label2: 'Gone home' }, { color: 'yellow' }],
+      ['300 px · text · long labels · purple', 300, '', MODE, { value1: item('Home'), label1: 'Everyone home', value2: item('Away'), label2: 'Out for the day', value3: item('Night') }, { color: 'purple' }],
+      ['400 px · red · a tap fails (noKey)', 400, '', { ...MODE, name: 'Broken' }, modes, { color: 'red' }],
+      ['400 px · deleted variable', 400, '', 'missing', modes, {}],
+      ['400 px · no variable picked', 400, '', null, modes, {}],
+      ['400 px · presets of another type', 400, '', SETPOINT, modes, {}],
+      ['Compact · 400 px · text · Away lit · icon', 400, '', MODE, modes, { icon: 'home', layout: 'compact' }],
+      ['Compact · 400 px · light · number · none matches', 400, 'light', { ...SETPOINT, value: 19.25 }, temps, { layout: 'compact', color: 'orange' }],
+      ['Compact · 300 px · yes/no · green', 300, '', GUESTS, {}, { layout: 'compact', color: 'green', icon: 'bell' }],
+    ];
+    for (const [label, width, theme, variable, settings, opts] of CASES) {
+      const col = document.createElement('div');
+      col.className = 'col';
+      col.innerHTML = `<span></span><div class="card ${theme === 'light' ? 'light' : 'tw-frame homey-dark-mode'}" style="width:${width}px"><div></div></div>`;
+      col.firstChild.textContent = label;
+      document.body.appendChild(col);
+      let w;
+      w = createVarPresetsWidget(col.querySelector('.card > div'), {
+        locale: 'da-DK',
+        t: devT,
+        ...opts,
+        onSet: value => new Promise((resolve, reject) => setTimeout(() => {
+          if (variable && variable.name === 'Broken') return reject(Object.assign(new Error('noKey'), { reason: 'noKey' }));
+          w.pushChange({ ...variable, value });
+          resolve({ ok: true });
+        }, 600)),
+      });
+      w.setPresets(varPresetsFromSettings(settings));
+      if (variable === 'missing') w.setMessage(w.t('missing'));
+      else if (!variable) w.setMessage(w.t('selectVariable'));
+      else w.setState({ ...variable });
+    }
+  </script>
+</body>
+</html>

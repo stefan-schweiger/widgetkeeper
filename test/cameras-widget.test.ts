@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { loadWidget } from './helpers/loadWidget.js';
+import { loadMount, loadWidget } from './helpers/loadWidget.js';
 
 let win: any;
 beforeAll(() => { win = loadWidget('cameras'); });
@@ -29,11 +29,11 @@ const cam = (id: string, opts: { image?: string | null, video?: string | null, v
   ...(opts.videos ? { videos: opts.videos, h265: opts.h265 ?? [] } : {}),
 });
 
-function widget(devices: any[], api = vi.fn(async (): Promise<any> => ({ type: 'image/jpeg', data: 'AQID' })), now = () => 1000) {
+function widget(devices: any[], api = vi.fn(async (): Promise<any> => ({ type: 'image/jpeg', data: 'AQID' })), now = () => 1000, extra: object = {}) {
   const root = document.createElement('div');
   document.body.append(root);
   const report = vi.fn();
-  const w = win.createCamerasWidget(root, { api, report, now });
+  const w = win.createCamerasWidget(root, { api, report, now, ...extra });
   w.setState(devices);
   const tile = (id: string) => root.querySelector<HTMLElement>(`.cw-tile[data-device="${id}"]`)!;
   const tiles = () => [...root.querySelectorAll<HTMLElement>('.cw-tile')];
@@ -62,6 +62,49 @@ describe('grid', () => {
     expect(tile('v').classList.contains('no-image')).toBe(false);
     expect(tile('gone').classList.contains('missing')).toBe(true);
     expect(tile('gone').querySelector('.cw-name')!.textContent).toBe('Unavailable');
+  });
+});
+
+describe('layout', () => {
+  /** Which of n tiles span the row with the `layout` setting. */
+  const wide = (n: number, layout?: string) => widget(Array.from({ length: n }, (_, i) => cam(`c${i}`)), undefined, undefined, { layout })
+    .tiles().map(t => t.classList.contains('wide'));
+
+  it('puts an odd number\'s wide tile first with the large camera on top', () => {
+    expect(wide(1, 'top')).toEqual([true]);
+    expect(wide(2, 'top')).toEqual([false, false]);
+    expect(wide(3, 'top')).toEqual([true, false, false]);
+    expect(wide(5, 'top')).toEqual([true, false, false, false, false]);
+  });
+
+  it('gives every camera a row of its own with one per row', () => {
+    expect(wide(2, 'single')).toEqual([true, true]);
+    expect(wide(3, 'single')).toEqual([true, true, true]);
+  });
+
+  it.each([[undefined], ['bottom'], ['sideways']])('keeps the wide tile last for layout %s', (layout) => {
+    expect(wide(3, layout)).toEqual([false, false, true]);
+    expect(wide(4, layout)).toEqual([false, false, false, false]);
+  });
+
+  it('takes it from the widget settings', async () => {
+    vi.useFakeTimers();
+    try {
+      loadMount('cameras');
+      const root = document.createElement('div');
+      document.body.append(root);
+      const api = vi.fn(async (_m: string, path: string): Promise<any> => (path.startsWith('/state')
+        ? { state: [cam('a'), cam('b'), cam('c')], tileNames: {} } : new Promise(() => {})));
+      const Homey = {
+        api, on: vi.fn(), ready: vi.fn(), setHeight: vi.fn(), getSettings: () => ({ layout: 'top' }),
+        getDeviceIds: () => ['a', 'b', 'c'], getWidgetInstanceId: () => 'w1', __: (key: string) => key,
+      };
+      win.mountCamerasWidget(Homey, { root, frame: root });
+      await vi.advanceTimersByTimeAsync(100);
+      expect([...root.querySelectorAll('.cw-tile')].map(t => t.classList.contains('wide'))).toEqual([true, false, false]);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 
@@ -194,6 +237,16 @@ describe('live view', () => {
     // At 320 px: the half-width row (90 px), the gap and the wide tile's own row (180 px).
     grid.getBoundingClientRect = () => ({ width: 320, height: 278 } as DOMRect);
     tile('c').click();
+    expect(grid.style.minHeight).toBe('278px');
+  });
+
+  it('keeps the widget\'s height when a wide first tile goes live', () => {
+    stubPeerConnection();
+    const { tile, root } = widget([cam('a'), cam('b'), cam('c')], offerApi(), undefined, { layout: 'top' });
+    const grid = root.querySelector<HTMLElement>('.cw-grid')!;
+    grid.getBoundingClientRect = () => ({ width: 320, height: 278 } as DOMRect);
+    tile('a').click();
+    expect(tile('a').classList.contains('expanded')).toBe(true);
     expect(grid.style.minHeight).toBe('278px');
   });
 
@@ -339,6 +392,152 @@ describe('live view: falling back to the next stream', () => {
     await done;
     expect(offers(api)).toEqual(['main', 'sub']);
     expect(tile('a').querySelector('img')!.getAttribute('src')).toBe('data:image/jpeg;base64,FRAME');
+  });
+});
+
+describe('live view: how long it stays on (liveFor)', () => {
+  beforeEach(() => { vi.useFakeTimers(); });
+  afterEach(() => { vi.useRealTimers(); });
+  const offers = (api: any) => api.mock.calls.filter((c: any[]) => c[1] === '/video/offer').map((c: any[]) => c[2].videoId);
+
+  /** Taps the camera and lets its stream play; returns its peer connection. */
+  async function goLive(tile: HTMLElement, pcs: any[]) {
+    tile.click();
+    await vi.advanceTimersByTimeAsync(0);
+    playing(tile);
+    return pcs[pcs.length - 1];
+  }
+
+  /** Lets `ms` pass in 5 s steps while the stream keeps decoding frames, so the frame check doesn't end it. */
+  async function streamFor(pc: any, ms: number) {
+    for (let left = ms; left > 0; left -= 5000) {
+      pc.frames += 100;
+      await vi.advanceTimersByTimeAsync(Math.min(5000, left));
+    }
+  }
+
+  it.each([[undefined], ['soon']])('ends after 5 minutes by default (liveFor %s)', async (liveFor) => {
+    const pcs = stubPeerConnection();
+    const { tile } = widget([cam('a')], offerApi(), () => Date.now(), { liveFor });
+    const pc = await goLive(tile('a'), pcs);
+    await streamFor(pc, 5 * 60e3 - 5000);
+    expect(pc.closed).toBe(false);
+    expect(tile('a').classList.contains('live')).toBe(true);
+    await streamFor(pc, 5000);
+    expect(pc.closed).toBe(true);
+    expect(tile('a').classList.contains('expanded')).toBe(false);
+  });
+
+  it.each([['30', 30e3], ['60', 60e3]])('liveFor %s ends after %d ms', async (liveFor, ms) => {
+    const pcs = stubPeerConnection();
+    const { tile } = widget([cam('a')], offerApi(), () => Date.now(), { liveFor });
+    const pc = await goLive(tile('a'), pcs);
+    await streamFor(pc, ms - 5000);
+    expect(pc.closed).toBe(false);
+    await streamFor(pc, 5000);
+    expect(pc.closed).toBe(true);
+    expect(tile('a').classList.contains('live')).toBe(false);
+  });
+
+  it('until tapped: still live after an hour, with the stream kept alive, and a tap ends it', async () => {
+    const pcs = stubPeerConnection();
+    const api = offerApi();
+    const { tile } = widget([cam('a')], api, () => Date.now(), { liveFor: 'tap' });
+    const pc = await goLive(tile('a'), pcs);
+    await streamFor(pc, 60 * 60e3);
+    expect(pc.closed).toBe(false);
+    expect(tile('a').classList.contains('live')).toBe(true);
+    expect(api.mock.calls.filter((c: any[]) => c[1] === '/video/keepalive').length).toBeGreaterThan(300);
+    tile('a').click();
+    expect(pc.closed).toBe(true);
+    expect(tile('a').classList.contains('expanded')).toBe(false);
+  });
+
+  it('until tapped: goes live again when the page shows again', async () => {
+    const pcs = stubPeerConnection();
+    const api = offerApi();
+    const { w, tile } = widget([cam('a'), cam('b')], api, () => Date.now(), { liveFor: 'tap' });
+    const pc = await goLive(tile('a'), pcs);
+    w.pause();
+    expect(pc.closed).toBe(true);
+    expect(tile('a').classList.contains('expanded')).toBe(false);
+    w.pause(); // hidden, then off screen in a Smart Stack: still remembered
+    w.resume();
+    expect(pcs).toHaveLength(2);
+    expect(tile('a').classList.contains('expanded')).toBe(true);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(offers(api)).toEqual(['vid-a', 'vid-a']);
+    // Once: the next resume() has nothing to bring back until the next pause().
+    tile('a').click();
+    w.resume();
+    expect(pcs).toHaveLength(2);
+  });
+
+  it('does not go live again with a time limit, or after a tap ended it', async () => {
+    const pcs = stubPeerConnection();
+    const limited = widget([cam('a')], offerApi(), () => Date.now());
+    await goLive(limited.tile('a'), pcs);
+    limited.w.pause();
+    limited.w.resume();
+    expect(pcs).toHaveLength(1);
+
+    const tapped = widget([cam('b')], offerApi(), () => Date.now(), { liveFor: 'tap' });
+    await goLive(tapped.tile('b'), pcs);
+    tapped.tile('b').click();
+    tapped.w.pause();
+    tapped.w.resume();
+    expect(pcs).toHaveLength(2);
+  });
+
+  it('does not go live again for a camera that went', async () => {
+    const pcs = stubPeerConnection();
+    const { w, tile } = widget([cam('a'), cam('b')], offerApi(), () => Date.now(), { liveFor: 'tap' });
+    await goLive(tile('a'), pcs);
+    w.pause();
+    w.setState([{ id: 'a', missing: true }, cam('b')]);
+    w.resume();
+    await goLive(tile('b'), pcs);
+    w.pause();
+    w.setState([cam('a')]);
+    w.resume();
+    expect(pcs).toHaveLength(2);
+  });
+
+  it('a Smart Stack page goes live again when it is back on screen', async () => {
+    const pcs = stubPeerConnection();
+    loadMount('cameras');
+    const root = document.createElement('div');
+    document.body.append(root);
+    const api = vi.fn(async (_m: string, path: string): Promise<any> => {
+      if (path.startsWith('/state')) return { state: [cam('a')], tileNames: {} };
+      if (path === '/video/offer') return { answer: 'v=0 answer', streamId: 's1' };
+      return {};
+    });
+    const Homey = {
+      api, on: vi.fn(), ready: vi.fn(), setHeight: vi.fn(), getSettings: () => ({ liveFor: 'tap' }),
+      getDeviceIds: () => ['a'], getWidgetInstanceId: () => 'w1', __: (key: string) => key,
+    };
+    const page = win.mountCamerasWidget(Homey, { root, frame: root });
+    await vi.advanceTimersByTimeAsync(100);
+    const tile = root.querySelector<HTMLElement>('.cw-tile[data-device="a"]')!;
+    await goLive(tile, pcs);
+    page.setVisible(false);
+    expect(pcs[0].closed).toBe(true);
+    page.setVisible(true);
+    expect(pcs).toHaveLength(2);
+    expect(tile.classList.contains('expanded')).toBe(true);
+  });
+});
+
+describe('snapshots behind live view', () => {
+  it('loads none while a camera is live, and refreshes them when it ends', async () => {
+    stubPeerConnection();
+    const { w, tile } = widget([cam('a'), cam('b')], offerApi());
+    tile('a').click();
+    await w.refresh();
+    expect(loaded).toEqual([]);
+    tile('a').click();
+    await vi.waitFor(() => expect(loaded).toEqual(['/api/image/img-a?t=1000', '/api/image/img-b?t=1000']));
   });
 });
 

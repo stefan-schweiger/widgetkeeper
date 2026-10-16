@@ -11,9 +11,11 @@
   /** The widgets a page can be, and their mount function (`window[...]`, from the widget's mount.js). */
   const TYPES = {
     electricity: 'mountElectricityWidget', thermostat: 'mountThermostatWidget', quickactions: 'mountQuickActionsWidget',
-    sensoralarms: 'mountSensorAlarmsWidget', sensordots: 'mountSensorDotsWidget', weather: 'mountWeatherWidget',
+    sensoralarms: 'mountSensorAlarmsWidget', sensordots: 'mountSensorDotsWidget', roomhealth: 'mountRoomHealthWidget',
+    weather: 'mountWeatherWidget',
     heatmap: 'mountHeatmapWidget', cameras: 'mountCamerasWidget', values: 'mountValuesWidget', lights: 'mountLightsWidget',
-    sparklines: 'mountSparklinesWidget', charts: 'mountChartsWidget', variables: 'mountVariablesWidget', flows: 'mountFlowsWidget', price: 'mountPriceWidget',
+    sparklines: 'mountSparklinesWidget', charts: 'mountChartsWidget', variables: 'mountVariablesWidget',
+    varpresets: 'mountVarPresetsWidget', flows: 'mountFlowsWidget', price: 'mountPriceWidget',
     timers: 'mountTimersWidget', locks: 'mountLocksWidget', curtains: 'mountCurtainsWidget', media: 'mountMediaWidget',
     clock: 'mountClockWidget', textline: 'mountTextLineWidget',
   };

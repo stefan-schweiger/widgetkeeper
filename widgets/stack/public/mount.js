@@ -114,12 +114,14 @@ window.mountStackWidget = function (Homey, { root, frame }) {
 
   /**
    * The files a widget's index.html loads before its own, as `<widget>/<name>` (both a .css and a .js): the chart
-   * module, which Charts loads from the Electricity Overview's folder. test/widget-html.test.ts checks this
-   * against the index.html files.
+   * module, which Charts loads from the Electricity Overview's folder, and the presets module, which Variable
+   * Presets loads from Thermostat Presets'. test/widget-html.test.ts checks this against the index.html files.
    */
   const DEPS = {
     electricity: ['electricity/chart'],
     charts: ['electricity/chart'],
+    thermostat: ['thermostat/presets'],
+    varpresets: ['thermostat/presets'],
   };
 
   /**

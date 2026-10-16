@@ -10,6 +10,8 @@ const IDLE_TIMEOUT = 10 * MINUTE;
 /** The events keep the cache current; a full re-read this often is the safety net for a missed one. */
 const REREAD = 4 * MINUTE;
 const MAX_STRING = 1000;
+/** A Variable Presets text value: the web dashboards keep at most 200 characters of an autocomplete choice's text. */
+export const MAX_PRESET_TEXT = 200;
 
 export const VARIABLES_STATE_EVENT = 'variables:state';
 
@@ -33,6 +35,14 @@ export function checkValue(type: VariableType, value: unknown): boolean | number
   if (type === 'number' && typeof value === 'number' && Number.isFinite(value)) return value;
   if (type === 'string' && typeof value === 'string' && value.length <= MAX_STRING) return value;
   throw new Error(`Not a valid ${type}: ${JSON.stringify(value)}`);
+}
+
+/** A number as typed (a decimal comma too), or null when it isn't one. The Variables widget's `parseNumber()` reads the same. */
+export function parseNumber(text: string): number | null {
+  const s = String(text ?? '').trim().replace(/\s/g, '').replace(',', '.');
+  if (!/^[-+]?(\d+\.?\d*|\.\d+)(e[-+]?\d+)?$/i.test(s)) return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
 }
 
 /**
@@ -83,7 +93,10 @@ export default class VariableService {
 
   // ---------------------------------------------------------------- settings autocomplete
 
-  /** Every variable (or only those of `types`), sorted by name, described by its type and current value. */
+  /**
+   * Every variable (or only those of `types`), sorted by name, described by its type and current value. The item
+   * carries the `type` too (kept with the choice), so a script can pick by type without reading the description.
+   */
   async listVariables(query: string, { types }: { types?: VariableType[] } = {}): Promise<AutocompleteItem[]> {
     const api = await getAppApi(this.homey);
     const all = Object.values(await api.logic.getVariables({ $cache: false }) as Record<string, any>)
@@ -91,7 +104,48 @@ export default class VariableService {
     const items = all
       .filter(v => matches(query, v.name))
       .sort((a, b) => a.name.localeCompare(b.name))
-      .map(v => ({ name: v.name, description: `${this.typeTitle(v.type)} · ${this.valueText(v)}`, id: v.id }));
+      .map(v => ({ name: v.name, description: `${this.typeTitle(v.type)} · ${this.valueText(v)}`, id: v.id, type: v.type }));
+    return withNone(this.homey.__('variables.none') || 'None', query, items);
+  }
+
+  /**
+   * Variable Presets' button values, read from the variable picked in the same widget: Yes and No for a yes/no
+   * variable; for a number or text, what's typed (a number with a decimal comma too, a text cut at
+   * `MAX_PRESET_TEXT`), then the current value. Each item carries its `value` and `type` (Homey keeps them with
+   * the choice); `None` first empties the button.
+   */
+  async listPresetValues(variableId: string | undefined, query: string): Promise<AutocompleteItem[]> {
+    if (!variableId || variableId === 'none') {
+      throw new Error(this.homey.__('varpresets.selectVariableFirst') || 'Select a variable first, then reopen this setting.');
+    }
+    const api = await getAppApi(this.homey);
+    const v = toVariable(await api.logic.getVariable({ id: variableId }).catch(() => null));
+    if (!v) throw new Error(this.homey.__('varpresets.missing') || 'Variable not found');
+    const typeTitle = this.typeTitle(v.type);
+    const currentText = this.homey.__('varpresets.currentValue') || 'Current value';
+    const item = (value: boolean | number | string, name: string) => ({
+      id: `${v.type}:${JSON.stringify(value)}`,
+      name,
+      description: value === v.value ? `${typeTitle} · ${currentText}` : typeTitle,
+      value,
+      type: v.type,
+    });
+    const items: AutocompleteItem[] = [];
+    if (v.type === 'boolean') {
+      for (const value of [true, false]) {
+        const name = this.valueText({ ...v, value });
+        if (matches(query, name)) items.push(item(value, name));
+      }
+    } else {
+      const q = (query || '').trim();
+      const typed = v.type === 'number' ? parseNumber(q) : q.slice(0, MAX_PRESET_TEXT) || null;
+      if (typed !== null) items.push(item(typed, v.type === 'number' ? q : String(typed)));
+      const current = v.value;
+      const usable = v.type === 'number'
+        ? typeof current === 'number' && Number.isFinite(current)
+        : typeof current === 'string' && current !== '' && current.length <= MAX_PRESET_TEXT;
+      if (usable && current !== typed && matches(query, String(current))) items.push(item(current, String(current)));
+    }
     return withNone(this.homey.__('variables.none') || 'None', query, items);
   }
 

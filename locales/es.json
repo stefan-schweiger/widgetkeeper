@@ -55,8 +55,42 @@
     "noMotion": "Sin movimiento",
     "presence": "Presencia",
     "noPresence": "Sin presencia",
+    "vibration": "Vibración",
+    "noVibration": "Sin vibración",
     "nothingDetected": "Nada detectado",
     "since": "desde __time__"
+  },
+  "roomhealth": {
+    "selectDevices": "Elige sensores en los ajustes del widget.",
+    "error": "No se pudieron cargar los sensores.",
+    "unavailable": "No disponible",
+    "renameFailed": "No se pudo guardar el nombre.",
+    "good": "Bien",
+    "noReadings": "Sin lecturas",
+    "allGood": "Todas las habitaciones están cómodas.",
+    "hint": "__room__: __problem__, __value__. __action__",
+    "cold": "Frío",
+    "warm": "Calor",
+    "dry": "Seco",
+    "humid": "Húmedo",
+    "stuffy": "Cargado",
+    "radon": "Radón",
+    "particles": "Partículas",
+    "voc": "COV",
+    "problemCold": "frío",
+    "problemWarm": "calor",
+    "problemDry": "aire seco",
+    "problemHumid": "mucha humedad",
+    "problemStuffy": "aire cargado",
+    "problemRadon": "radón alto",
+    "problemParticles": "partículas",
+    "problemVoc": "COV",
+    "actionHeat": "Sube la calefacción.",
+    "actionCool": "Refresca la habitación.",
+    "actionHumidify": "Humidifica el aire.",
+    "actionAirOut": "Ventila.",
+    "actionVentilate": "Ventila más.",
+    "actionPurify": "Enciende un purificador de aire."
   },
   "weather": {
     "now": "Ahora",
@@ -80,7 +114,7 @@
     "shareTitle": "Diagnóstico de Widgetkeeper",
     "varTitle": "Clave API",
     "varHelp": "Homey no permite que las apps cambien variables, inicien flujos, lean paneles ni inicien Moods por sí mismas. En la app web de Homey, crea una clave API en Ajustes → Claves API, marca los permisos que necesitan los widgets que usas y pégala aquí. Se queda en tu Homey. Todo lo demás no necesita clave.",
-    "varForVariables": "Variables, para cambiar un valor:",
+    "varForVariables": "Variables y Preajustes de variable, para cambiar un valor:",
     "varTickVariables": "Variables",
     "varForFlows": "Botones de flujo y flujos en los botones de Multimedia:",
     "varTickFlows": "Iniciar Flows",
@@ -194,6 +228,21 @@
     "keyScope": "La clave API no puede cambiar variables: necesita Variables.",
     "keyInvalid": "La clave API no fue aceptada.",
     "renameFailed": "No se pudo guardar el nombre."
+  },
+  "varpresets": {
+    "selectVariable": "Elige una variable en los ajustes.",
+    "selectVariableFirst": "Selecciona primero una variable y luego vuelve a abrir este ajuste.",
+    "noPresets": "Elige los valores de los botones en los ajustes.",
+    "missing": "Variable no encontrada",
+    "error": "No se pudo cargar la variable.",
+    "failed": "No se pudo cambiar __name__.",
+    "currently": "Ahora __value__",
+    "currentValue": "Valor actual",
+    "yes": "Sí",
+    "no": "No",
+    "noKey": "Para cambiar variables, añade una clave API en los ajustes de la app.",
+    "keyScope": "La clave API no puede cambiar variables: necesita Variables.",
+    "keyInvalid": "La clave API no fue aceptada."
   },
   "flows": {
     "selectSlots": "Elige flujos en los ajustes del widget.",
@@ -352,7 +401,8 @@
     "noKey": "Para usar este botón, añade una clave API en los ajustes de la app.",
     "keyScope": "La clave API no puede ejecutarlo: un flujo necesita Iniciar Flows y una acción del altavoz, Flows.",
     "keyInvalid": "La clave API no se ha aceptado.",
-    "speakerAction": "Acción del altavoz"
+    "speakerAction": "Acción del altavoz",
+    "appAction": "Acción de la app"
   },
   "textline": {
     "noMessage": "Sin mensaje",
@@ -362,6 +412,18 @@
     "error": "No se pudo cargar el texto.",
     "boardInUse": "Tiene un texto",
     "boardNew": "Nota nueva"
+  },
+  "dayssince": {
+    "setup": "Pon nombre a tus contadores en los ajustes del widget.",
+    "error": "No se pudieron cargar los contadores.",
+    "failed": "No se pudo reiniciar __name__.",
+    "undoFailed": "No se pudo deshacer el reinicio de __name__.",
+    "today": "Hoy",
+    "notStarted": "Sin empezar",
+    "undo": "Deshacer",
+    "resetLabel": "__name__: __time__. Toca para reiniciar.",
+    "newCounter": "Contador nuevo",
+    "anyCounter": "Cualquier contador"
   },
   "stack": {
     "selectDashboard": "Elige un panel en los ajustes del widget.",
@@ -463,6 +525,7 @@
       "quickactions": "Pequeñas fichas que encienden o apagan un dispositivo con un toque.",
       "sensoralarms": "Fichas que se ponen rojas cuando un sensor da la alarma.",
       "sensordots": "Movimiento, puertas y cámaras como una cuadrícula de puntos.",
+      "roomhealth": "La temperatura, la humedad y el aire de cada habitación en un anillo, y qué hacer cuando algo falla.",
       "weather": "Las próximas 36 horas, hora a hora.",
       "heatmap": "Una semana de cualquier valor como mapa de calor día × hora.",
       "cameras": "Imágenes de las cámaras, con vídeo en directo con un toque.",
@@ -471,6 +534,7 @@
       "sparklines": "Valores con un pequeño gráfico de su historial reciente.",
       "charts": "Uno o dos gráficos de cualquier valor, como los de electricidad.",
       "variables": "Variables como filas para cambiar o activar.",
+      "varpresets": "Botones que ponen una variable en valores predefinidos.",
       "flows": "Inicia flujos con un toque, con tus colores e iconos.",
       "price": "El precio de la luz ahora y en las próximas horas.",
       "timers": "Temporizadores de cocina que siguen en tu Homey.",
@@ -480,6 +544,7 @@
       "clock": "La hora y la fecha, con el tiempo actual si quieres.",
       "textline": "Una nota en un mosaico o un Post-it, escrita por ti o por tus Flows.",
       "spacer": "Espacio vacío para alinear widgets en columnas.",
+      "dayssince": "Los días desde una tarea, en rojo cuando vuelve a tocar.",
       "stack": "Widgets de otro panel, por turnos."
     }
   }

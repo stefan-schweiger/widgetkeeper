@@ -55,8 +55,42 @@
     "noMotion": "Ingen rörelse",
     "presence": "Närvaro",
     "noPresence": "Ingen närvaro",
+    "vibration": "Vibration",
+    "noVibration": "Ingen vibration",
     "nothingDetected": "Inget upptäckt",
     "since": "sedan __time__"
+  },
+  "roomhealth": {
+    "selectDevices": "Välj sensorer i widgetinställningarna.",
+    "error": "Kunde inte läsa in sensorerna.",
+    "unavailable": "Inte tillgänglig",
+    "renameFailed": "Kunde inte spara namnet.",
+    "good": "Bra",
+    "noReadings": "Inga mätvärden",
+    "allGood": "Alla rum är behagliga.",
+    "hint": "__room__: __problem__, __value__. __action__",
+    "cold": "Kallt",
+    "warm": "Varmt",
+    "dry": "Torrt",
+    "humid": "Fuktigt",
+    "stuffy": "Instängt",
+    "radon": "Radon",
+    "particles": "Partiklar",
+    "voc": "VOC",
+    "problemCold": "kallt",
+    "problemWarm": "varmt",
+    "problemDry": "torrt",
+    "problemHumid": "fuktigt",
+    "problemStuffy": "instängt",
+    "problemRadon": "hög radon",
+    "problemParticles": "partiklar",
+    "problemVoc": "VOC",
+    "actionHeat": "Höj värmen.",
+    "actionCool": "Svalka rummet.",
+    "actionHumidify": "Fukta luften.",
+    "actionAirOut": "Vädra.",
+    "actionVentilate": "Ventilera mer.",
+    "actionPurify": "Starta en luftrenare."
   },
   "weather": {
     "now": "Nu",
@@ -80,7 +114,7 @@
     "shareTitle": "Widgetkeeper-diagnostik",
     "varTitle": "API-nyckel",
     "varHelp": "Homey låter inte appar ändra variabler, starta flöden, läsa instrumentpaneler eller starta Moods själva. Skapa en API-nyckel under Inställningar → API-nycklar i Homeys webbapp, kryssa i behörigheterna som widgetarna du använder behöver, och klistra in den här. Den stannar på din Homey. Allt annat behöver ingen nyckel.",
-    "varForVariables": "Variabler, för att ändra ett värde:",
+    "varForVariables": "Variabler och Variabellägen, för att ändra ett värde:",
     "varTickVariables": "Variabler",
     "varForFlows": "Flödesknappar och flöden på knapparna i Media:",
     "varTickFlows": "Starta Flows",
@@ -194,6 +228,21 @@
     "keyScope": "API-nyckeln får inte ändra variabler: den behöver Variabler.",
     "keyInvalid": "API-nyckeln godkändes inte.",
     "renameFailed": "Kunde inte spara namnet."
+  },
+  "varpresets": {
+    "selectVariable": "Välj en variabel i widgetinställningarna.",
+    "selectVariableFirst": "Välj en variabel först och öppna sedan den här inställningen igen.",
+    "noPresets": "Välj knapparnas värden i widgetinställningarna.",
+    "missing": "Variabeln hittades inte",
+    "error": "Kunde inte läsa in variabeln.",
+    "failed": "Kunde inte ändra __name__.",
+    "currently": "Just nu __value__",
+    "currentValue": "Nuvarande värde",
+    "yes": "Ja",
+    "no": "Nej",
+    "noKey": "Lägg till en API-nyckel i appinställningarna för att ändra variabler.",
+    "keyScope": "API-nyckeln får inte ändra variabler: den behöver Variabler.",
+    "keyInvalid": "API-nyckeln godkändes inte."
   },
   "flows": {
     "selectSlots": "Välj flöden i widgetinställningarna.",
@@ -352,7 +401,8 @@
     "noKey": "Lägg till en API-nyckel i appinställningarna för att använda knappen.",
     "keyScope": "API-nyckeln får inte köra detta: ett flöde behöver Starta Flows, en högtalaråtgärd Flows.",
     "keyInvalid": "API-nyckeln godkändes inte.",
-    "speakerAction": "Högtalaråtgärd"
+    "speakerAction": "Högtalaråtgärd",
+    "appAction": "Appåtgärd"
   },
   "textline": {
     "noMessage": "Inget meddelande",
@@ -362,6 +412,18 @@
     "error": "Kunde inte läsa in texten.",
     "boardInUse": "Har en text",
     "boardNew": "Ny anteckning"
+  },
+  "dayssince": {
+    "setup": "Namnge dina räknare i widgetinställningarna.",
+    "error": "Kunde inte läsa in räknarna.",
+    "failed": "Kunde inte nollställa __name__.",
+    "undoFailed": "Kunde inte ångra nollställningen av __name__.",
+    "today": "I dag",
+    "notStarted": "Inte startad",
+    "undo": "Ångra",
+    "resetLabel": "__name__: __time__. Tryck för att nollställa.",
+    "newCounter": "Ny räknare",
+    "anyCounter": "Valfri räknare"
   },
   "stack": {
     "selectDashboard": "Välj en instrumentpanel i widgetens inställningar.",
@@ -463,6 +525,7 @@
       "quickactions": "Små rutor som slår om en enhet med ett tryck.",
       "sensoralarms": "Rutor som blir röda när en sensor larmar.",
       "sensordots": "Rörelse, dörrar och kameror som ett rutnät av prickar.",
+      "roomhealth": "Varje rums temperatur, luftfuktighet och luft som en ring, och vad du kan göra när något är fel.",
       "weather": "De kommande 36 timmarna, timme för timme.",
       "heatmap": "En vecka av ett värde som värmekarta veckodag × timme.",
       "cameras": "Kamerabilder, med livevideo vid ett tryck.",
@@ -471,6 +534,7 @@
       "sparklines": "Värden med ett litet diagram över deras senaste historik.",
       "charts": "Ett eller två diagram över valfritt värde, som elens.",
       "variables": "Variabler som rader att slå om eller ändra.",
+      "varpresets": "Knappar som sätter en variabel till förinställda värden.",
       "flows": "Starta flöden med ett tryck, i dina färger och ikoner.",
       "price": "Elpriset nu och de kommande timmarna.",
       "timers": "Köksklockor som fortsätter gå på din Homey.",
@@ -480,6 +544,7 @@
       "clock": "Tid och datum, med vädret just nu om du vill.",
       "textline": "En anteckning på en ruta eller en Post-it-lapp, inskriven eller skriven av dina Flows.",
       "spacer": "Tomt utrymme för att linjera widgetar i kolumner.",
+      "dayssince": "Dagar sedan en syssla, röd när det är dags igen.",
       "stack": "Widgets från en annan instrumentpanel, turvis."
     }
   }

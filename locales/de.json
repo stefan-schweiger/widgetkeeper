@@ -55,8 +55,42 @@
     "noMotion": "Keine Bewegung",
     "presence": "Anwesenheit",
     "noPresence": "Keine Anwesenheit",
+    "vibration": "Vibration",
+    "noVibration": "Keine Vibration",
     "nothingDetected": "Nichts erkannt",
     "since": "seit __time__"
+  },
+  "roomhealth": {
+    "selectDevices": "Wähle Sensoren in den Widget-Einstellungen.",
+    "error": "Sensoren konnten nicht geladen werden.",
+    "unavailable": "Nicht verfügbar",
+    "renameFailed": "Der Name konnte nicht gespeichert werden.",
+    "good": "Gut",
+    "noReadings": "Keine Messwerte",
+    "allGood": "Alle Räume sind angenehm.",
+    "hint": "__room__: __problem__, __value__. __action__",
+    "cold": "Kalt",
+    "warm": "Warm",
+    "dry": "Trocken",
+    "humid": "Feucht",
+    "stuffy": "Stickig",
+    "radon": "Radon",
+    "particles": "Feinstaub",
+    "voc": "VOC",
+    "problemCold": "kalt",
+    "problemWarm": "warm",
+    "problemDry": "trocken",
+    "problemHumid": "feucht",
+    "problemStuffy": "stickig",
+    "problemRadon": "viel Radon",
+    "problemParticles": "Feinstaub",
+    "problemVoc": "VOC",
+    "actionHeat": "Heizung höher drehen.",
+    "actionCool": "Abkühlen.",
+    "actionHumidify": "Luft befeuchten.",
+    "actionAirOut": "Lüften.",
+    "actionVentilate": "Mehr lüften.",
+    "actionPurify": "Luftreiniger einschalten."
   },
   "weather": {
     "now": "Jetzt",
@@ -80,7 +114,7 @@
     "shareTitle": "Widgetkeeper-Diagnose",
     "varTitle": "API-Schlüssel",
     "varHelp": "Homey lässt Apps nicht selbst Variablen ändern, Flows starten, Dashboards lesen oder Moods starten. Erstelle in der Homey-Web-App unter Einstellungen → API-Schlüssel einen API-Schlüssel, hake die Rechte an, die deine Widgets brauchen, und füge ihn hier ein. Er bleibt auf deinem Homey. Alles andere braucht keinen Schlüssel.",
-    "varForVariables": "Variablen, um einen Wert zu ändern:",
+    "varForVariables": "Variablen und Variablen-Presets, um einen Wert zu ändern:",
     "varTickVariables": "Variablen",
     "varForFlows": "Flow-Tasten und Flows auf den Buttons des Medien-Widgets:",
     "varTickFlows": "Flows starten",
@@ -194,6 +228,21 @@
     "keyScope": "Der API-Schlüssel darf keine Variablen ändern: Er braucht das Recht Variablen.",
     "keyInvalid": "Der API-Schlüssel wurde nicht akzeptiert.",
     "renameFailed": "Der Name konnte nicht gespeichert werden."
+  },
+  "varpresets": {
+    "selectVariable": "Wähle eine Variable in den Widget-Einstellungen.",
+    "selectVariableFirst": "Wähle zuerst eine Variable aus und öffne diese Einstellung dann erneut.",
+    "noPresets": "Wähle die Werte der Tasten in den Widget-Einstellungen.",
+    "missing": "Variable nicht gefunden",
+    "error": "Die Variable konnte nicht geladen werden.",
+    "failed": "__name__ konnte nicht geändert werden.",
+    "currently": "Aktuell __value__",
+    "currentValue": "Aktueller Wert",
+    "yes": "Ja",
+    "no": "Nein",
+    "noKey": "Füge in den App-Einstellungen einen API-Schlüssel hinzu, um Variablen zu ändern.",
+    "keyScope": "Der API-Schlüssel darf keine Variablen ändern: Er braucht das Recht Variablen.",
+    "keyInvalid": "Der API-Schlüssel wurde nicht akzeptiert."
   },
   "flows": {
     "selectSlots": "Wähle Flows in den Widget-Einstellungen.",
@@ -352,7 +401,8 @@
     "noKey": "Um diesen Button zu nutzen, füge in den App-Einstellungen einen API-Schlüssel hinzu.",
     "keyScope": "Der API-Schlüssel darf das nicht ausführen: Ein Flow braucht das Recht Flows starten, eine Lautsprecheraktion das Recht Flows.",
     "keyInvalid": "Der API-Schlüssel wurde nicht akzeptiert.",
-    "speakerAction": "Lautsprecheraktion"
+    "speakerAction": "Lautsprecheraktion",
+    "appAction": "App-Aktion"
   },
   "textline": {
     "noMessage": "Keine Nachricht",
@@ -362,6 +412,18 @@
     "error": "Der Text konnte nicht geladen werden.",
     "boardInUse": "Hat einen Text",
     "boardNew": "Neue Notiz"
+  },
+  "dayssince": {
+    "setup": "Benenne deine Zähler in den Widget-Einstellungen.",
+    "error": "Die Zähler konnten nicht geladen werden.",
+    "failed": "__name__ konnte nicht zurückgesetzt werden.",
+    "undoFailed": "Das Zurücksetzen von __name__ konnte nicht rückgängig gemacht werden.",
+    "today": "Heute",
+    "notStarted": "Nicht gestartet",
+    "undo": "Rückgängig",
+    "resetLabel": "__name__: __time__. Tippen zum Zurücksetzen.",
+    "newCounter": "Neuer Zähler",
+    "anyCounter": "Beliebiger Zähler"
   },
   "stack": {
     "selectDashboard": "Wähle ein Dashboard in den Widget-Einstellungen.",
@@ -463,6 +525,7 @@
       "quickactions": "Kleine Kacheln, die ein Gerät mit einem Tipp schalten.",
       "sensoralarms": "Kacheln, die rot werden, wenn ein Sensor Alarm meldet.",
       "sensordots": "Bewegung, Türen und Kameras als Punkteraster.",
+      "roomhealth": "Temperatur, Feuchte und Luft jedes Raums als ein Ring, und was zu tun ist, wenn etwas nicht passt.",
       "weather": "Die nächsten 36 Stunden, Stunde für Stunde.",
       "heatmap": "Eine Woche eines Werts als Heatmap aus Wochentag × Stunde.",
       "cameras": "Kamerabilder, mit Live-Video auf Tipp.",
@@ -471,6 +534,7 @@
       "sparklines": "Werte mit einem kleinen Diagramm ihres Verlaufs.",
       "charts": "Ein oder zwei Diagramme beliebiger Werte, wie die für Strom.",
       "variables": "Variablen als Zeilen zum Schalten oder Ändern.",
+      "varpresets": "Tasten, die eine Variable auf feste Werte setzen.",
       "flows": "Flows per Tipp starten, in deinen Farben und Symbolen.",
       "price": "Der Strompreis jetzt und in den nächsten Stunden.",
       "timers": "Küchentimer, die auf deinem Homey weiterlaufen.",
@@ -480,6 +544,7 @@
       "clock": "Uhrzeit und Datum, auf Wunsch mit dem aktuellen Wetter.",
       "textline": "Eine Notiz als Kachel oder Haftnotiz, selbst eingegeben oder von deinen Flows geschrieben.",
       "spacer": "Leerer Platz, um Widgets in Spalten auszurichten.",
+      "dayssince": "Tage seit einer Aufgabe, rot, sobald sie wieder fällig ist.",
       "stack": "Widgets von einem anderen Dashboard, abwechselnd."
     }
   }

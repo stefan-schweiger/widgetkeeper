@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadMount, loadWidget } from './helpers/loadWidget.js';
 
-const IDS = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables'] as const;
+const IDS = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables', 'roomhealth'] as const;
 
 let win: any;
 beforeAll(() => {
@@ -62,6 +62,12 @@ const CASES: Record<typeof IDS[number], { create: string, state: any, gone: any,
     create: 'createVariablesWidget', name: '.vr-name', keys: ['a', 'b'],
     state: ['a', 'b'].map(id => ({ id, name: `Flag ${id}`, type: 'boolean', value: false })),
     gone: [{ id: 'a', missing: true }, { id: 'b', name: 'Flag b', type: 'boolean', value: false }],
+  },
+  roomhealth: {
+    // Sensors without a zone are rooms of their own, keyed by the device, so a missing one keeps its ring.
+    create: 'createRoomHealthWidget', name: '.rh-name', keys: ['a', 'b'],
+    state: ['a', 'b'].map(id => ({ id, name: `Sensor ${id}`, zone: null, measures: { temperature: { capabilityId: 'measure_temperature', value: 21 } } })),
+    gone: [{ id: 'a', missing: true }, { id: 'b', name: 'Sensor b', zone: null, measures: { temperature: { capabilityId: 'measure_temperature', value: 21 } } }],
   },
 };
 

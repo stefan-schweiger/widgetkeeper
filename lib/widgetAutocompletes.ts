@@ -11,8 +11,10 @@ export type AutocompleteListener = (query: string, settings: Record<string, any>
 
 const VALUE_SLOTS = [1, 2, 3, 4, 5, 6];
 const VARIABLE_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const PRESET_SLOTS = [1, 2, 3, 4];
 const FLOW_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8];
 const MEDIA_BUTTONS = [1, 2, 3, 4];
+const DAYS_SINCE_COUNTERS = [1, 2, 3, 4, 5, 6, 7, 8];
 
 /**
  * Every autocomplete setting's listener, by widget and setting id. `app.ts` registers them with Homey (the widget
@@ -48,6 +50,13 @@ export function widgetAutocompletes(app: WidgetkeeperApp): Record<string, Record
   // Variables: every slot lists all Logic variables.
   for (const n of VARIABLE_SLOTS) add('variables', `slot${n}`, query => app.variables.listVariables(query));
 
+  // Variable presets: the variable, the header's icon, then each button's value, read from the variable.
+  add('varpresets', 'variable', query => app.variables.listVariables(query));
+  add('varpresets', 'icon', async query => app.flows.listIcons(query, { none: true }));
+  for (const n of PRESET_SLOTS) {
+    add('varpresets', `value${n}`, (query, settings) => app.variables.listPresetValues(settings?.variable?.id, query));
+  }
+
   // Flow buttons: each button's flow and icon.
   for (const n of FLOW_SLOTS) {
     add('flows', `flow${n}`, query => app.flows.listFlows(query));
@@ -63,6 +72,12 @@ export function widgetAutocompletes(app: WidgetkeeperApp): Record<string, Record
   for (const n of MEDIA_BUTTONS) {
     add('media', `button${n}`, (query, settings) => app.media.listButtons(settings?.device?.id, query));
     add('media', `button${n}Icon`, async query => app.flows.listIcons(query, { none: true }));
+  }
+
+  // Days Since: each counter (a known one, or a new name) and its icon.
+  for (const n of DAYS_SINCE_COUNTERS) {
+    add('dayssince', `counter${n}`, async query => app.daysSince.listCounters(query, { none: true, create: true }));
+    add('dayssince', `icon${n}`, async query => app.flows.listIcons(query, { none: true }));
   }
 
   // Smart Stack: the dashboard whose widgets it shows.

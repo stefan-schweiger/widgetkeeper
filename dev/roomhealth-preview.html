@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Room Health widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/roomhealth/public/widget.css">
+  <script src="../widgets/roomhealth/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <link rel="stylesheet" href="preview.css">
+  <style>
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · light</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>300 px · dark</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>420 px (a tablet column) · dark</span><div class="dash homey-dark-mode" style="width:420px"><div id="w4"></div></div></div>
+  <div class="col"><span>358 px · all fine, temperature only, an unavailable sensor</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · no readings yet</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px · no devices</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
+
+  <script>
+    // Made-up rooms. `?lang=de` for a language, `?open=zone:bed` shows that ring's readings (for screenshots).
+    const CAP = { temperature: 'measure_temperature', humidity: 'measure_humidity', co2: 'measure_co2', radon: 'measure_radon', pm25: 'measure_pm25', pm10: 'measure_pm10', voc: 'measure_voc' };
+    const sensor = (id, zone, name, values) => ({
+      id, name, zone,
+      measures: Object.fromEntries(Object.entries(values).map(([m, v]) => [m, { capabilityId: CAP[m], value: v }])),
+    });
+    const Z = {
+      living: { id: 'living', name: 'Living room' }, kitchen: { id: 'kitchen', name: 'Kitchen' }, bed: { id: 'bed', name: 'Bedroom' },
+      bath: { id: 'bath', name: 'Bathroom' }, emma: { id: 'emma', name: "Emma's room" }, office: { id: 'office', name: 'Office' },
+    };
+    const house = () => [
+      sensor('l1', Z.living, 'Airthings View', { temperature: 21.4, humidity: 45, co2: 720, radon: 54, pm25: 4, voc: 214 }),
+      sensor('k1', Z.kitchen, 'Air monitor', { temperature: 22.8, humidity: 64, voc: 169 }),
+      sensor('b1', Z.bed, 'Bedroom sensor', { temperature: 18.6, humidity: 51 }),
+      sensor('b2', Z.bed, 'Airthings Wave', { co2: 1400, radon: 62 }),
+      sensor('ba', Z.bath, 'Bathroom sensor', { temperature: 23.1, humidity: 66 }),
+      sensor('e1', Z.emma, 'Radon sensor', { temperature: 20.6, humidity: 47, radon: 118 }),
+      sensor('o1', Z.office, 'Office thermometer', { temperature: 19.2 }),
+    ];
+    const make = (id, devices, opts = {}) => {
+      const w = createRoomHealthWidget(document.getElementById(id), { t: devT, ...opts });
+      if (devices) w.setState(devices);
+      return w;
+    };
+    const widgets = ['w1', 'w2', 'w3', 'w4'].map(id => make(id, house()));
+    make('w5', [
+      sensor('l1', Z.living, 'Living room', { temperature: 21.4, humidity: 45, co2: 720 }),
+      sensor('o1', Z.office, 'Office', { temperature: 19.2 }),
+      { id: 'gone', missing: true },
+    ]);
+    make('w6', [sensor('n1', Z.living, 'New sensor', { temperature: null, co2: null })]);
+    const empty = make('w7', null);
+    empty.setMessage(empty.t('selectDevices'));
+    const open = new URLSearchParams(location.search).get('open');
+    if (open) for (const w of widgets) w.open(open);
+    // Simulate the bedroom getting stuffier, then aired out: the hint follows the worst room.
+    let co2 = 1400;
+    setInterval(() => {
+      co2 = co2 >= 1700 ? 700 : co2 + 100;
+      for (const w of widgets) w.pushChange({ deviceId: 'b2', capabilityId: 'measure_co2', measure: 'co2', value: co2 });
+    }, 2000);
+  </script>
+</body>
+</html>

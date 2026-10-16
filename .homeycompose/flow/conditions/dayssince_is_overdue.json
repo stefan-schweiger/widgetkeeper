@@ -1,0 +1,84 @@
+{
+  "id": "dayssince_is_overdue",
+  "title": {
+    "en": "A counter is overdue",
+    "nl": "Een teller is te laat",
+    "de": "Ein Zähler ist überfällig",
+    "fr": "Un compteur est en retard",
+    "it": "Un contatore è scaduto",
+    "sv": "En räknare är försenad",
+    "no": "En teller er forsinket",
+    "es": "Un contador está retrasado",
+    "da": "En tæller er forsinket",
+    "ru": "Счётчик просрочен",
+    "pl": "Licznik jest po terminie",
+    "ko": "카운터 기한이 지났음",
+    "ar": "عداد متأخر"
+  },
+  "titleFormatted": {
+    "en": "[[counter]] !{{is|isn't}} overdue",
+    "nl": "[[counter]] !{{is|is niet}} te laat",
+    "de": "[[counter]] !{{ist|ist nicht}} überfällig",
+    "fr": "[[counter]] !{{est|n'est pas}} en retard",
+    "it": "[[counter]] !{{è|non è}} scaduto",
+    "sv": "[[counter]] !{{är|är inte}} försenad",
+    "no": "[[counter]] !{{er|er ikke}} forsinket",
+    "es": "[[counter]] !{{está|no está}} retrasado",
+    "da": "[[counter]] !{{er|er ikke}} forsinket",
+    "ru": "[[counter]] !{{просрочен|не просрочен}}",
+    "pl": "[[counter]] !{{jest|nie jest}} po terminie",
+    "ko": "[[counter]] 기한이 !{{지났음|지나지 않았음}}",
+    "ar": "[[counter]] !{{متأخر|غير متأخر}}"
+  },
+  "hint": {
+    "en": "Whether a Days Since counter is red now. With Any counter: whether any is.",
+    "nl": "Of een Dagen geleden-teller nu rood is. Met Elke teller: of er een is.",
+    "de": "Ob ein Tage-seit-Zähler jetzt rot ist. Mit Beliebiger Zähler: ob einer es ist.",
+    "fr": "Si un compteur Jours depuis est rouge maintenant. Avec N'importe quel compteur : si l'un d'eux l'est.",
+    "it": "Se un contatore Giorni da è rosso adesso. Con Qualsiasi contatore: se almeno uno lo è.",
+    "sv": "Om en Dagar sedan-räknare är röd nu. Med Valfri räknare: om någon är det.",
+    "no": "Om en Dager siden-teller er rød nå. Med Hvilken som helst teller: om noen er det.",
+    "es": "Si un contador de Días desde está en rojo ahora. Con Cualquier contador: si alguno lo está.",
+    "da": "Om en Dage siden-tæller er rød nu. Med Enhver tæller: om nogen er det.",
+    "ru": "Красный ли сейчас счётчик «Дней прошло». С вариантом «Любой счётчик»: красный ли хотя бы один.",
+    "pl": "Czy licznik Dni od jest teraz czerwony. Z opcją Dowolny licznik: czy któryś jest.",
+    "ko": "경과 일수 카운터가 지금 빨간색인지 확인합니다. 아무 카운터를 고르면 하나라도 빨간색인지 확인합니다.",
+    "ar": "هل عداد أيام منذ أحمر الآن. مع أي عداد: هل أي منها كذلك."
+  },
+  "args": [
+    {
+      "type": "autocomplete",
+      "name": "counter",
+      "title": {
+        "en": "Counter",
+        "nl": "Teller",
+        "de": "Zähler",
+        "fr": "Compteur",
+        "it": "Contatore",
+        "sv": "Räknare",
+        "no": "Teller",
+        "es": "Contador",
+        "da": "Tæller",
+        "ru": "Счётчик",
+        "pl": "Licznik",
+        "ko": "카운터",
+        "ar": "العداد"
+      },
+      "placeholder": {
+        "en": "Plants",
+        "nl": "Planten",
+        "de": "Pflanzen",
+        "fr": "Plantes",
+        "it": "Piante",
+        "sv": "Växter",
+        "no": "Planter",
+        "es": "Plantas",
+        "da": "Planter",
+        "ru": "Растения",
+        "pl": "Rośliny",
+        "ko": "화분",
+        "ar": "النباتات"
+      }
+    }
+  ]
+}

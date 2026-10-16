@@ -103,7 +103,10 @@ function readCaps(device: any): Record<string, MediaCap> {
   return out;
 }
 
-/** `card:<flow card id>` → the card id (`homey:device:<deviceId>:<card>`), or null. */
+/**
+ * `card:<flow card id>` → the card id (`homey:device:<deviceId>:<card>`, or `homey:app:<appId>:<card>` for an
+ * action of the speaker's app), or null.
+ */
 export function parseCardId(id: string): string | null {
   const m = /^card:(.+)$/.exec(id || '');
   return m ? m[1] : null;
@@ -115,13 +118,22 @@ export function cardSuffix(cardId: string): string {
   return m ? m[1] : cardId;
 }
 
+/** The app a device belongs to (`homey:app:<appId>`, its app cards' `ownerUri`), or null (a Homey group …). */
+export function deviceApp(device: any): string | null {
+  const uri = device?.ownerUri ?? device?.driverUri;
+  return typeof uri === 'string' && uri.startsWith('homey:app:') ? uri : null;
+}
+
+/** A Flow action card a button can run: one that takes no arguments and isn't deprecated. */
+const runnable = (c: any) => typeof c?.id === 'string' && !(Array.isArray(c.args) && c.args.length) && !c.deprecated;
 
 const sameArt = (a: MediaArt | null, b: MediaArt | null) => a?.url === b?.url && a?.lastUpdated === b?.lastUpdated;
 
 /**
  * The Media widget: one speaker's track, album art, transport, volume and mute, plus buttons that run the
- * speaker's own Flow cards (Set source to TV …) or flows. Running a card needs `homey.flow`, which the app's
- * token lacks, so it goes through the personal API key, as Flow Buttons' starts do.
+ * speaker's own Flow cards (Set source to TV …), its app's (Scan the music library …) or flows. Running a card
+ * needs `homey.flow`, which the app's token lacks, so it goes through the personal API key, as Flow Buttons'
+ * starts do.
  */
 export default class MediaService {
 
@@ -191,14 +203,24 @@ export default class MediaService {
 
   /**
    * A button: `None`, then the speaker's own Flow cards that need nothing more than the device (Set source to TV,
-   * Leave current group …) but not the ones the card already has a control for, then every flow that can be
-   * started by hand.
+   * Leave current group …) but not the ones the card already has a control for, then its app's argument-free
+   * cards (Scan the music library …), then every flow that can be started by hand.
    */
   async listButtons(deviceId: string | undefined, query: string): Promise<AutocompleteItem[]> {
-    const action = this.homey.__('media.speakerAction') || 'Speaker action';
-    const cards = deviceId ? (await this.deviceCards(deviceId).catch(() => []))
-      .filter(c => matches(query, c.title))
-      .map(c => ({ name: c.title as string, description: action, id: `card:${c.id}` })) : [];
+    const speakerAction = this.homey.__('media.speakerAction') || 'Speaker action';
+    const appAction = this.homey.__('media.appAction') || 'App action';
+    const [own, app] = deviceId ? await Promise.all([
+      this.deviceCards(deviceId).catch(() => []),
+      this.speakerAppCards(deviceId).catch(() => []),
+    ]) : [[], []];
+    const cards = [
+      ...own.map(c => ({ name: c.title as string, description: speakerAction, id: `card:${c.id}` })),
+      ...app.map(c => ({
+        name: c.title as string,
+        description: c.ownerName ? `${appAction} · ${c.ownerName}` : appAction,
+        id: `card:${c.id}`,
+      })),
+    ].filter(c => matches(query, c.name));
     const flows = (await this.flows.listFlows(query).catch(() => [])).filter(f => f.id !== 'none');
     return withNone(this.homey.__('flows.none') || 'None', query, [...cards, ...flows]);
   }
@@ -207,7 +229,8 @@ export default class MediaService {
 
   /**
    * One speaker's state. With `cards` it also lists the speaker's own argument-free Flow cards (their `<card>`
-   * part), so a widget switched to another speaker knows which of its buttons that speaker has.
+   * part), so a widget switched to another speaker knows which of its buttons that speaker has. Its app's cards
+   * aren't listed: they run on any speaker, as flows do.
    */
   async getState(deviceId: string, opts: { cards?: boolean } = {}): Promise<MediaDevice> {
     const tm = new Timings();
@@ -279,9 +302,10 @@ export default class MediaService {
   }
 
   /**
-   * A button: a flow (`flow:`/`advanced:`, through Flow Buttons' start) or one of this speaker's own argument-free
-   * Flow cards (`card:`), run with the user's API key. A KeyError says why it can't. A card picked for another
-   * speaker (the widget switched speaker) runs this speaker's card of the same kind, if it has one.
+   * A button: a flow (`flow:`/`advanced:`, through Flow Buttons' start) or an argument-free Flow card (`card:`) of
+   * this speaker or of an app that has a speaker, run with the user's API key. A KeyError says why it can't. A
+   * device card picked for another speaker (the widget switched speaker) runs this speaker's card of the same
+   * kind, if it has one; an app's card runs whichever speaker the widget is on.
    */
   async runButton(deviceId: string, id: string) {
     const cardId = parseCardId(id);
@@ -289,9 +313,15 @@ export default class MediaService {
       await this.flows.trigger(id);
       return;
     }
-    const suffix = cardSuffix(cardId);
-    const card = (await this.deviceCards(deviceId)).find(c => cardSuffix(c.id) === suffix);
-    if (!card) throw new Error(`${cardId} is not an action of speaker ${deviceId}`);
+    let card: any;
+    if (cardId.startsWith('homey:app:')) {
+      card = await this.speakerAppCard(cardId);
+      if (!card) throw new Error(`${cardId} is not an action of a speaker app`);
+    } else {
+      const suffix = cardSuffix(cardId);
+      card = (await this.deviceCards(deviceId)).find(c => cardSuffix(c.id) === suffix);
+      if (!card) throw new Error(`${cardId} is not an action of speaker ${deviceId}`);
+    }
     try {
       await this.key.run(api => api.flow.runFlowCardAction({ uri: card.ownerUri, id: card.id, args: {} }));
     } catch (err) {
@@ -322,11 +352,28 @@ export default class MediaService {
   /** The speaker's own Flow action cards that take no arguments, except those the card already covers. */
   private async deviceCards(deviceId: string): Promise<any[]> {
     const owner = `homey:device:${deviceId}`;
-    return (await this.readCards()).filter(c => c?.ownerUri === owner
-      && typeof c.id === 'string'
-      && !(Array.isArray(c.args) && c.args.length)
-      && !BUILT_IN_CARDS.test(c.id)
-      && !c.deprecated);
+    return (await this.readCards()).filter(c => runnable(c) && c.ownerUri === owner && !BUILT_IN_CARDS.test(c.id));
+  }
+
+  /** An app's own Flow action cards (`homey:app:<appId>`) that take no arguments. */
+  private async appCards(appUri: string): Promise<any[]> {
+    return (await this.readCards()).filter(c => runnable(c) && c.ownerUri === appUri);
+  }
+
+  /** The argument-free action cards of the app the speaker belongs to (Sonos (LocalAPI)'s Scan the music library …). */
+  private async speakerAppCards(deviceId: string): Promise<any[]> {
+    const api = await getAppApi(this.homey);
+    const app = deviceApp(await api.devices.getDevice({ id: deviceId }));
+    return app ? this.appCards(app) : [];
+  }
+
+  /** An app's argument-free card, when that app has a speaker: what a button may run, on any speaker. */
+  private async speakerAppCard(cardId: string): Promise<any | null> {
+    const card = (await this.readCards()).find(c => runnable(c) && c.id === cardId && String(c.ownerUri).startsWith('homey:app:'));
+    if (!card) return null;
+    const api = await getAppApi(this.homey);
+    const devices = Object.values(await api.devices.getDevices()) as any[];
+    return devices.some(d => isSpeaker(d) && deviceApp(d) === card.ownerUri) ? card : null;
   }
 
   private readCards(): Promise<any[]> {

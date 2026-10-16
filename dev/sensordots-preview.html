@@ -38,6 +38,7 @@
       motion('kitchen', 'Kitchen', false, 40),
       motion('office', 'Office', false, 180),
       { id: 'study', name: 'Study (presence)', icon: null, alarms: [a('alarm_motion', false, 'Motion alarm', 12), a('alarm_presence', true, 'Presence detected', 30)] },
+      { id: 'vib', name: 'Patio door (vibration)', icon: null, alarms: [a('alarm_vibration', false, 'Vibration alarm', 25)] },
       { id: 'cam', name: 'Driveway camera', icon: null, alarms: [a('alarm_motion', false, 'Motion alarm', 3), a('alarm_person', true, 'Person Detected', 3)] },
       contact('shed', 'Shed', null, null),
       { id: 'gone', missing: true },

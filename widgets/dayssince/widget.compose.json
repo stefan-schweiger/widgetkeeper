@@ -1,0 +1,809 @@
+{
+  "name": {
+    "en": "Days Since",
+    "nl": "Dagen geleden",
+    "de": "Tage seit",
+    "fr": "Jours depuis",
+    "it": "Giorni da",
+    "sv": "Dagar sedan",
+    "no": "Dager siden",
+    "es": "Días desde",
+    "da": "Dage siden",
+    "ru": "Дней прошло",
+    "pl": "Dni od",
+    "ko": "경과 일수",
+    "ar": "أيام منذ"
+  },
+  "height": 136,
+  "transparent": true,
+  "settings": [
+    {
+      "id": "units",
+      "type": "dropdown",
+      "title": {
+        "en": "Show time as",
+        "nl": "Tijd tonen als",
+        "de": "Zeit anzeigen als",
+        "fr": "Afficher le temps en",
+        "it": "Mostra il tempo in",
+        "sv": "Visa tiden som",
+        "no": "Vis tiden som",
+        "es": "Mostrar el tiempo en",
+        "da": "Vis tiden som",
+        "ru": "Показывать время",
+        "pl": "Pokazuj czas jako",
+        "ko": "시간 표시",
+        "ar": "عرض الوقت بـ"
+      },
+      "hint": {
+        "en": "Days, weeks and months: 6 days, 2 weeks, 3 months. Days only: 82 days.",
+        "nl": "Dagen, weken en maanden: 6 dagen, 2 weken, 3 maanden. Alleen dagen: 82 dagen.",
+        "de": "Tage, Wochen und Monate: 6 Tage, 2 Wochen, 3 Monate. Nur Tage: 82 Tage.",
+        "fr": "Jours, semaines et mois : 6 jours, 2 semaines, 3 mois. Jours uniquement : 82 jours.",
+        "it": "Giorni, settimane e mesi: 6 giorni, 2 settimane, 3 mesi. Solo giorni: 82 giorni.",
+        "sv": "Dagar, veckor och månader: 6 dagar, 2 veckor, 3 månader. Bara dagar: 82 dagar.",
+        "no": "Dager, uker og måneder: 6 dager, 2 uker, 3 måneder. Bare dager: 82 dager.",
+        "es": "Días, semanas y meses: 6 días, 2 semanas, 3 meses. Solo días: 82 días.",
+        "da": "Dage, uger og måneder: 6 dage, 2 uger, 3 måneder. Kun dage: 82 dage.",
+        "ru": "Дни, недели и месяцы: 6 дней, 2 недели, 3 месяца. Только дни: 82 дня.",
+        "pl": "Dni, tygodnie i miesiące: 6 dni, 2 tygodnie, 3 miesiące. Tylko dni: 82 dni.",
+        "ko": "일, 주, 개월: 6일, 2주, 3개월. 일만: 82일.",
+        "ar": "أيام وأسابيع وأشهر: 6 أيام، أسبوعان، 3 أشهر. أيام فقط: 82 يومًا."
+      },
+      "value": "friendly",
+      "values": [
+        {
+          "id": "friendly",
+          "title": {
+            "en": "Days, weeks and months",
+            "nl": "Dagen, weken en maanden",
+            "de": "Tage, Wochen und Monate",
+            "fr": "Jours, semaines et mois",
+            "it": "Giorni, settimane e mesi",
+            "sv": "Dagar, veckor och månader",
+            "no": "Dager, uker og måneder",
+            "es": "Días, semanas y meses",
+            "da": "Dage, uger og måneder",
+            "ru": "Дни, недели и месяцы",
+            "pl": "Dni, tygodnie i miesiące",
+            "ko": "일, 주, 개월",
+            "ar": "أيام وأسابيع وأشهر"
+          }
+        },
+        {
+          "id": "days",
+          "title": {
+            "en": "Days only",
+            "nl": "Alleen dagen",
+            "de": "Nur Tage",
+            "fr": "Jours uniquement",
+            "it": "Solo giorni",
+            "sv": "Bara dagar",
+            "no": "Bare dager",
+            "es": "Solo días",
+            "da": "Kun dage",
+            "ru": "Только дни",
+            "pl": "Tylko dni",
+            "ko": "일만",
+            "ar": "أيام فقط"
+          }
+        }
+      ]
+    },
+    {
+      "id": "counter1",
+      "type": "autocomplete",
+      "title": {
+        "en": "Counter 1: name",
+        "nl": "Teller 1: naam",
+        "de": "Zähler 1: Name",
+        "fr": "Compteur 1 : nom",
+        "it": "Contatore 1: nome",
+        "sv": "Räknare 1: namn",
+        "no": "Teller 1: navn",
+        "es": "Contador 1: nombre",
+        "da": "Tæller 1: navn",
+        "ru": "Счётчик 1: название",
+        "pl": "Licznik 1: nazwa",
+        "ko": "카운터 1: 이름",
+        "ar": "العداد 1: الاسم"
+      },
+      "hint": {
+        "en": "Pick a counter or type a new name. Every Days Since widget and Flow card with the same name shares the counter.",
+        "nl": "Kies een teller of typ een nieuwe naam. Elke Dagen geleden-widget en Flow-kaart met dezelfde naam deelt de teller.",
+        "de": "Wähle einen Zähler oder gib einen neuen Namen ein. Alle Tage-seit-Widgets und Flow-Karten mit demselben Namen teilen sich den Zähler.",
+        "fr": "Choisissez un compteur ou saisissez un nouveau nom. Les widgets Jours depuis et les cartes Flow portant le même nom partagent le compteur.",
+        "it": "Scegli un contatore o digita un nuovo nome. I widget Giorni da e le schede Flow con lo stesso nome condividono il contatore.",
+        "sv": "Välj en räknare eller skriv ett nytt namn. Alla Dagar sedan-widgetar och Flow-kort med samma namn delar räknaren.",
+        "no": "Velg en teller eller skriv et nytt navn. Alle Dager siden-widgeter og Flow-kort med samme navn deler telleren.",
+        "es": "Elige un contador o escribe un nombre nuevo. Todos los widgets Días desde y tarjetas Flow con el mismo nombre comparten el contador.",
+        "da": "Vælg en tæller, eller skriv et nyt navn. Alle Dage siden-widgets og Flow-kort med samme navn deler tælleren.",
+        "ru": "Выберите счётчик или введите новое название. Все виджеты «Дней прошло» и карточки Flow с этим названием используют один счётчик.",
+        "pl": "Wybierz licznik lub wpisz nową nazwę. Wszystkie widżety Dni od i karty Flow o tej samej nazwie dzielą licznik.",
+        "ko": "카운터를 선택하거나 새 이름을 입력하세요. 같은 이름의 모든 경과 일수 위젯과 Flow 카드가 카운터를 공유합니다.",
+        "ar": "اختر عدادًا أو اكتب اسمًا جديدًا. تتشارك كل أدوات أيام منذ وبطاقات Flow التي تحمل الاسم نفسه العداد."
+      }
+    },
+    {
+      "id": "icon1",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "amber1",
+      "type": "number",
+      "title": {
+        "en": "  – Amber after (days)",
+        "nl": "  – Geel na (dagen)",
+        "de": "  – Gelb nach (Tagen)",
+        "fr": "  – Jaune après (jours)",
+        "it": "  – Giallo dopo (giorni)",
+        "sv": "  – Gul efter (dagar)",
+        "no": "  – Gul etter (dager)",
+        "es": "  – Ámbar tras (días)",
+        "da": "  – Gul efter (dage)",
+        "ru": "  – Жёлтый через (дней)",
+        "pl": "  – Żółty po (dniach)",
+        "ko": "  – 노랑 표시 (일 후)",
+        "ar": "  – كهرماني بعد (أيام)"
+      },
+      "hint": {
+        "en": "Days after the last reset. 0 turns the colour off.",
+        "nl": "Dagen na de laatste reset. 0 zet de kleur uit.",
+        "de": "Tage nach dem letzten Zurücksetzen. 0 schaltet die Farbe aus.",
+        "fr": "Jours après la dernière remise à zéro. 0 désactive la couleur.",
+        "it": "Giorni dopo l'ultimo azzeramento. 0 disattiva il colore.",
+        "sv": "Dagar efter senaste nollställning. 0 stänger av färgen.",
+        "no": "Dager etter siste nullstilling. 0 slår av fargen.",
+        "es": "Días después del último reinicio. 0 desactiva el color.",
+        "da": "Dage efter seneste nulstilling. 0 slår farven fra.",
+        "ru": "Дней после последнего сброса. 0 отключает цвет.",
+        "pl": "Dni od ostatniego wyzerowania. 0 wyłącza kolor.",
+        "ko": "마지막 초기화 후 일수입니다. 0이면 색을 표시하지 않습니다.",
+        "ar": "الأيام بعد آخر إعادة ضبط. 0 يوقف اللون."
+      },
+      "value": 5,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "red1",
+      "type": "number",
+      "title": {
+        "en": "  – Red after (days)",
+        "nl": "  – Rood na (dagen)",
+        "de": "  – Rot nach (Tagen)",
+        "fr": "  – Rouge après (jours)",
+        "it": "  – Rosso dopo (giorni)",
+        "sv": "  – Röd efter (dagar)",
+        "no": "  – Rød etter (dager)",
+        "es": "  – Rojo tras (días)",
+        "da": "  – Rød efter (dage)",
+        "ru": "  – Красный через (дней)",
+        "pl": "  – Czerwony po (dniach)",
+        "ko": "  – 빨강 표시 (일 후)",
+        "ar": "  – أحمر بعد (أيام)"
+      },
+      "hint": {
+        "en": "Red means overdue: the Flow card “… became overdue” fires then. When several widgets show one counter, the Flow cards use the days of the one that loaded last.",
+        "nl": "Rood betekent te laat: dan start de Flow-kaart „… is te laat geworden”. Tonen meerdere widgets één teller, dan gebruiken de Flow-kaarten de dagen van de widget die het laatst laadde.",
+        "de": "Rot heißt überfällig: Dann löst die Flow-Karte „… ist überfällig geworden“ aus. Zeigen mehrere Widgets einen Zähler, nehmen die Flow-Karten die Tage des zuletzt geladenen.",
+        "fr": "Rouge signifie en retard : la carte Flow « … passe en retard » se déclenche alors. Si plusieurs widgets affichent un compteur, les cartes Flow prennent les jours du dernier chargé.",
+        "it": "Rosso significa scaduto: allora parte la scheda Flow “… è appena scaduto”. Se più widget mostrano un contatore, le schede Flow usano i giorni dell'ultimo caricato.",
+        "sv": "Röd betyder försenad: då startar Flow-kortet ”… blev försenad”. Visar flera widgetar en räknare används dagarna från den som laddades sist.",
+        "no": "Rød betyr forsinket: da starter Flow-kortet «… ble forsinket». Viser flere widgeter én teller, bruker Flow-kortene dagene fra den som ble lastet sist.",
+        "es": "Rojo significa retrasado: entonces se activa la tarjeta Flow «… se ha retrasado». Si varios widgets muestran un contador, las tarjetas Flow usan los días del último que se cargó.",
+        "da": "Rød betyder forsinket: så starter Flow-kortet “… er blevet forsinket”. Viser flere widgets én tæller, bruger Flow-kortene dagene fra den, der blev indlæst sidst.",
+        "ru": "Красный — значит просрочен: тогда срабатывает карточка Flow «… стал просроченным». Если счётчик показан в нескольких виджетах, карточки Flow берут дни из последнего загруженного.",
+        "pl": "Czerwony oznacza po terminie: wtedy uruchamia się karta Flow „… przekroczył termin”. Gdy kilka widżetów pokazuje jeden licznik, karty Flow biorą dni z ostatnio wczytanego.",
+        "ko": "빨강은 기한이 지났다는 뜻이며, 이때 Flow 카드 “… 기한이 지났을 때”가 실행됩니다. 여러 위젯이 한 카운터를 표시하면 Flow 카드는 마지막으로 불러온 위젯의 일수를 씁니다.",
+        "ar": "الأحمر يعني متأخرًا: عندها تعمل بطاقة Flow «تأخر …». إذا عرضت عدة أدوات عدادًا واحدًا، تستخدم بطاقات Flow أيام آخر أداة حُمّلت."
+      },
+      "value": 7,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "counter2",
+      "type": "autocomplete",
+      "title": {
+        "en": "Counter 2: name",
+        "nl": "Teller 2: naam",
+        "de": "Zähler 2: Name",
+        "fr": "Compteur 2 : nom",
+        "it": "Contatore 2: nome",
+        "sv": "Räknare 2: namn",
+        "no": "Teller 2: navn",
+        "es": "Contador 2: nombre",
+        "da": "Tæller 2: navn",
+        "ru": "Счётчик 2: название",
+        "pl": "Licznik 2: nazwa",
+        "ko": "카운터 2: 이름",
+        "ar": "العداد 2: الاسم"
+      }
+    },
+    {
+      "id": "icon2",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "amber2",
+      "type": "number",
+      "title": {
+        "en": "  – Amber after (days)",
+        "nl": "  – Geel na (dagen)",
+        "de": "  – Gelb nach (Tagen)",
+        "fr": "  – Jaune après (jours)",
+        "it": "  – Giallo dopo (giorni)",
+        "sv": "  – Gul efter (dagar)",
+        "no": "  – Gul etter (dager)",
+        "es": "  – Ámbar tras (días)",
+        "da": "  – Gul efter (dage)",
+        "ru": "  – Жёлтый через (дней)",
+        "pl": "  – Żółty po (dniach)",
+        "ko": "  – 노랑 표시 (일 후)",
+        "ar": "  – كهرماني بعد (أيام)"
+      },
+      "value": 5,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "red2",
+      "type": "number",
+      "title": {
+        "en": "  – Red after (days)",
+        "nl": "  – Rood na (dagen)",
+        "de": "  – Rot nach (Tagen)",
+        "fr": "  – Rouge après (jours)",
+        "it": "  – Rosso dopo (giorni)",
+        "sv": "  – Röd efter (dagar)",
+        "no": "  – Rød etter (dager)",
+        "es": "  – Rojo tras (días)",
+        "da": "  – Rød efter (dage)",
+        "ru": "  – Красный через (дней)",
+        "pl": "  – Czerwony po (dniach)",
+        "ko": "  – 빨강 표시 (일 후)",
+        "ar": "  – أحمر بعد (أيام)"
+      },
+      "value": 7,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "counter3",
+      "type": "autocomplete",
+      "title": {
+        "en": "Counter 3: name",
+        "nl": "Teller 3: naam",
+        "de": "Zähler 3: Name",
+        "fr": "Compteur 3 : nom",
+        "it": "Contatore 3: nome",
+        "sv": "Räknare 3: namn",
+        "no": "Teller 3: navn",
+        "es": "Contador 3: nombre",
+        "da": "Tæller 3: navn",
+        "ru": "Счётчик 3: название",
+        "pl": "Licznik 3: nazwa",
+        "ko": "카운터 3: 이름",
+        "ar": "العداد 3: الاسم"
+      }
+    },
+    {
+      "id": "icon3",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "amber3",
+      "type": "number",
+      "title": {
+        "en": "  – Amber after (days)",
+        "nl": "  – Geel na (dagen)",
+        "de": "  – Gelb nach (Tagen)",
+        "fr": "  – Jaune après (jours)",
+        "it": "  – Giallo dopo (giorni)",
+        "sv": "  – Gul efter (dagar)",
+        "no": "  – Gul etter (dager)",
+        "es": "  – Ámbar tras (días)",
+        "da": "  – Gul efter (dage)",
+        "ru": "  – Жёлтый через (дней)",
+        "pl": "  – Żółty po (dniach)",
+        "ko": "  – 노랑 표시 (일 후)",
+        "ar": "  – كهرماني بعد (أيام)"
+      },
+      "value": 5,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "red3",
+      "type": "number",
+      "title": {
+        "en": "  – Red after (days)",
+        "nl": "  – Rood na (dagen)",
+        "de": "  – Rot nach (Tagen)",
+        "fr": "  – Rouge après (jours)",
+        "it": "  – Rosso dopo (giorni)",
+        "sv": "  – Röd efter (dagar)",
+        "no": "  – Rød etter (dager)",
+        "es": "  – Rojo tras (días)",
+        "da": "  – Rød efter (dage)",
+        "ru": "  – Красный через (дней)",
+        "pl": "  – Czerwony po (dniach)",
+        "ko": "  – 빨강 표시 (일 후)",
+        "ar": "  – أحمر بعد (أيام)"
+      },
+      "value": 7,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "counter4",
+      "type": "autocomplete",
+      "title": {
+        "en": "Counter 4: name",
+        "nl": "Teller 4: naam",
+        "de": "Zähler 4: Name",
+        "fr": "Compteur 4 : nom",
+        "it": "Contatore 4: nome",
+        "sv": "Räknare 4: namn",
+        "no": "Teller 4: navn",
+        "es": "Contador 4: nombre",
+        "da": "Tæller 4: navn",
+        "ru": "Счётчик 4: название",
+        "pl": "Licznik 4: nazwa",
+        "ko": "카운터 4: 이름",
+        "ar": "العداد 4: الاسم"
+      }
+    },
+    {
+      "id": "icon4",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "amber4",
+      "type": "number",
+      "title": {
+        "en": "  – Amber after (days)",
+        "nl": "  – Geel na (dagen)",
+        "de": "  – Gelb nach (Tagen)",
+        "fr": "  – Jaune après (jours)",
+        "it": "  – Giallo dopo (giorni)",
+        "sv": "  – Gul efter (dagar)",
+        "no": "  – Gul etter (dager)",
+        "es": "  – Ámbar tras (días)",
+        "da": "  – Gul efter (dage)",
+        "ru": "  – Жёлтый через (дней)",
+        "pl": "  – Żółty po (dniach)",
+        "ko": "  – 노랑 표시 (일 후)",
+        "ar": "  – كهرماني بعد (أيام)"
+      },
+      "value": 5,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "red4",
+      "type": "number",
+      "title": {
+        "en": "  – Red after (days)",
+        "nl": "  – Rood na (dagen)",
+        "de": "  – Rot nach (Tagen)",
+        "fr": "  – Rouge après (jours)",
+        "it": "  – Rosso dopo (giorni)",
+        "sv": "  – Röd efter (dagar)",
+        "no": "  – Rød etter (dager)",
+        "es": "  – Rojo tras (días)",
+        "da": "  – Rød efter (dage)",
+        "ru": "  – Красный через (дней)",
+        "pl": "  – Czerwony po (dniach)",
+        "ko": "  – 빨강 표시 (일 후)",
+        "ar": "  – أحمر بعد (أيام)"
+      },
+      "value": 7,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "counter5",
+      "type": "autocomplete",
+      "title": {
+        "en": "Counter 5: name",
+        "nl": "Teller 5: naam",
+        "de": "Zähler 5: Name",
+        "fr": "Compteur 5 : nom",
+        "it": "Contatore 5: nome",
+        "sv": "Räknare 5: namn",
+        "no": "Teller 5: navn",
+        "es": "Contador 5: nombre",
+        "da": "Tæller 5: navn",
+        "ru": "Счётчик 5: название",
+        "pl": "Licznik 5: nazwa",
+        "ko": "카운터 5: 이름",
+        "ar": "العداد 5: الاسم"
+      }
+    },
+    {
+      "id": "icon5",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "amber5",
+      "type": "number",
+      "title": {
+        "en": "  – Amber after (days)",
+        "nl": "  – Geel na (dagen)",
+        "de": "  – Gelb nach (Tagen)",
+        "fr": "  – Jaune après (jours)",
+        "it": "  – Giallo dopo (giorni)",
+        "sv": "  – Gul efter (dagar)",
+        "no": "  – Gul etter (dager)",
+        "es": "  – Ámbar tras (días)",
+        "da": "  – Gul efter (dage)",
+        "ru": "  – Жёлтый через (дней)",
+        "pl": "  – Żółty po (dniach)",
+        "ko": "  – 노랑 표시 (일 후)",
+        "ar": "  – كهرماني بعد (أيام)"
+      },
+      "value": 5,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "red5",
+      "type": "number",
+      "title": {
+        "en": "  – Red after (days)",
+        "nl": "  – Rood na (dagen)",
+        "de": "  – Rot nach (Tagen)",
+        "fr": "  – Rouge après (jours)",
+        "it": "  – Rosso dopo (giorni)",
+        "sv": "  – Röd efter (dagar)",
+        "no": "  – Rød etter (dager)",
+        "es": "  – Rojo tras (días)",
+        "da": "  – Rød efter (dage)",
+        "ru": "  – Красный через (дней)",
+        "pl": "  – Czerwony po (dniach)",
+        "ko": "  – 빨강 표시 (일 후)",
+        "ar": "  – أحمر بعد (أيام)"
+      },
+      "value": 7,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "counter6",
+      "type": "autocomplete",
+      "title": {
+        "en": "Counter 6: name",
+        "nl": "Teller 6: naam",
+        "de": "Zähler 6: Name",
+        "fr": "Compteur 6 : nom",
+        "it": "Contatore 6: nome",
+        "sv": "Räknare 6: namn",
+        "no": "Teller 6: navn",
+        "es": "Contador 6: nombre",
+        "da": "Tæller 6: navn",
+        "ru": "Счётчик 6: название",
+        "pl": "Licznik 6: nazwa",
+        "ko": "카운터 6: 이름",
+        "ar": "العداد 6: الاسم"
+      }
+    },
+    {
+      "id": "icon6",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "amber6",
+      "type": "number",
+      "title": {
+        "en": "  – Amber after (days)",
+        "nl": "  – Geel na (dagen)",
+        "de": "  – Gelb nach (Tagen)",
+        "fr": "  – Jaune après (jours)",
+        "it": "  – Giallo dopo (giorni)",
+        "sv": "  – Gul efter (dagar)",
+        "no": "  – Gul etter (dager)",
+        "es": "  – Ámbar tras (días)",
+        "da": "  – Gul efter (dage)",
+        "ru": "  – Жёлтый через (дней)",
+        "pl": "  – Żółty po (dniach)",
+        "ko": "  – 노랑 표시 (일 후)",
+        "ar": "  – كهرماني بعد (أيام)"
+      },
+      "value": 5,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "red6",
+      "type": "number",
+      "title": {
+        "en": "  – Red after (days)",
+        "nl": "  – Rood na (dagen)",
+        "de": "  – Rot nach (Tagen)",
+        "fr": "  – Rouge après (jours)",
+        "it": "  – Rosso dopo (giorni)",
+        "sv": "  – Röd efter (dagar)",
+        "no": "  – Rød etter (dager)",
+        "es": "  – Rojo tras (días)",
+        "da": "  – Rød efter (dage)",
+        "ru": "  – Красный через (дней)",
+        "pl": "  – Czerwony po (dniach)",
+        "ko": "  – 빨강 표시 (일 후)",
+        "ar": "  – أحمر بعد (أيام)"
+      },
+      "value": 7,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "counter7",
+      "type": "autocomplete",
+      "title": {
+        "en": "Counter 7: name",
+        "nl": "Teller 7: naam",
+        "de": "Zähler 7: Name",
+        "fr": "Compteur 7 : nom",
+        "it": "Contatore 7: nome",
+        "sv": "Räknare 7: namn",
+        "no": "Teller 7: navn",
+        "es": "Contador 7: nombre",
+        "da": "Tæller 7: navn",
+        "ru": "Счётчик 7: название",
+        "pl": "Licznik 7: nazwa",
+        "ko": "카운터 7: 이름",
+        "ar": "العداد 7: الاسم"
+      }
+    },
+    {
+      "id": "icon7",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "amber7",
+      "type": "number",
+      "title": {
+        "en": "  – Amber after (days)",
+        "nl": "  – Geel na (dagen)",
+        "de": "  – Gelb nach (Tagen)",
+        "fr": "  – Jaune après (jours)",
+        "it": "  – Giallo dopo (giorni)",
+        "sv": "  – Gul efter (dagar)",
+        "no": "  – Gul etter (dager)",
+        "es": "  – Ámbar tras (días)",
+        "da": "  – Gul efter (dage)",
+        "ru": "  – Жёлтый через (дней)",
+        "pl": "  – Żółty po (dniach)",
+        "ko": "  – 노랑 표시 (일 후)",
+        "ar": "  – كهرماني بعد (أيام)"
+      },
+      "value": 5,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "red7",
+      "type": "number",
+      "title": {
+        "en": "  – Red after (days)",
+        "nl": "  – Rood na (dagen)",
+        "de": "  – Rot nach (Tagen)",
+        "fr": "  – Rouge après (jours)",
+        "it": "  – Rosso dopo (giorni)",
+        "sv": "  – Röd efter (dagar)",
+        "no": "  – Rød etter (dager)",
+        "es": "  – Rojo tras (días)",
+        "da": "  – Rød efter (dage)",
+        "ru": "  – Красный через (дней)",
+        "pl": "  – Czerwony po (dniach)",
+        "ko": "  – 빨강 표시 (일 후)",
+        "ar": "  – أحمر بعد (أيام)"
+      },
+      "value": 7,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "counter8",
+      "type": "autocomplete",
+      "title": {
+        "en": "Counter 8: name",
+        "nl": "Teller 8: naam",
+        "de": "Zähler 8: Name",
+        "fr": "Compteur 8 : nom",
+        "it": "Contatore 8: nome",
+        "sv": "Räknare 8: namn",
+        "no": "Teller 8: navn",
+        "es": "Contador 8: nombre",
+        "da": "Tæller 8: navn",
+        "ru": "Счётчик 8: название",
+        "pl": "Licznik 8: nazwa",
+        "ko": "카운터 8: 이름",
+        "ar": "العداد 8: الاسم"
+      }
+    },
+    {
+      "id": "icon8",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "amber8",
+      "type": "number",
+      "title": {
+        "en": "  – Amber after (days)",
+        "nl": "  – Geel na (dagen)",
+        "de": "  – Gelb nach (Tagen)",
+        "fr": "  – Jaune après (jours)",
+        "it": "  – Giallo dopo (giorni)",
+        "sv": "  – Gul efter (dagar)",
+        "no": "  – Gul etter (dager)",
+        "es": "  – Ámbar tras (días)",
+        "da": "  – Gul efter (dage)",
+        "ru": "  – Жёлтый через (дней)",
+        "pl": "  – Żółty po (dniach)",
+        "ko": "  – 노랑 표시 (일 후)",
+        "ar": "  – كهرماني بعد (أيام)"
+      },
+      "value": 5,
+      "min": 0,
+      "max": 3650
+    },
+    {
+      "id": "red8",
+      "type": "number",
+      "title": {
+        "en": "  – Red after (days)",
+        "nl": "  – Rood na (dagen)",
+        "de": "  – Rot nach (Tagen)",
+        "fr": "  – Rouge après (jours)",
+        "it": "  – Rosso dopo (giorni)",
+        "sv": "  – Röd efter (dagar)",
+        "no": "  – Rød etter (dager)",
+        "es": "  – Rojo tras (días)",
+        "da": "  – Rød efter (dage)",
+        "ru": "  – Красный через (дней)",
+        "pl": "  – Czerwony po (dniach)",
+        "ko": "  – 빨강 표시 (일 후)",
+        "ar": "  – أحمر بعد (أيام)"
+      },
+      "value": 7,
+      "min": 0,
+      "max": 3650
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    },
+    "reset": {
+      "method": "POST",
+      "path": "/reset"
+    },
+    "undo": {
+      "method": "POST",
+      "path": "/undo"
+    }
+  }
+}

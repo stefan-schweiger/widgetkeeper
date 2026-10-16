@@ -1,0 +1,106 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/dayssince-preview.html).
+ * The tile copies Device Values' (widgets/values/public/widget.css), which copies Device Quick Actions'.
+ */
+.ds {
+  --ds-tile: var(--homey-background-color, #FFFFFF);
+  --ds-text: var(--homey-text-color, #EDEEF0);
+  --ds-muted: var(--homey-text-color-light, #9C9DA5);
+  --ds-neutral: color-mix(in srgb, var(--ds-text) 8%, var(--ds-tile)); /* the Undo pill: Variables' grey */
+  --ds-blue: var(--homey-color-blue, #2F8DF6);
+  /* Amber is Device Values' yellow (Homey has no token; its orange reads as red at 22 %), red Homey's. */
+  --ds-amber: #F5C518;
+  --ds-red: var(--homey-color-red, #F25F5C);
+  /* The count and icon on a tinted light tile: darker, so each passes 4.5:1 there. */
+  --ds-amber-text: #8A5F00;
+  --ds-red-text: #B42318;
+  --ds-tint-mix: 22%; /* a Device Values tile's tint */
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --ds-fs-small: var(--homey-font-size-small, 14px); --ds-lh-small: var(--homey-line-height-small, 20px);
+  --ds-fs-label: 12px; --ds-lh-label: 16px; /* the Electricity Overview's labels: a step below Homey's scale */
+  --ds-bold: var(--homey-font-weight-bold, 700);
+  --ds-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+}
+/* Dark mode: each tile looks like a native device tile, darker than the default widget background. */
+.homey-dark-mode .ds, .ds.homey-dark-mode {
+  --ds-tile: #181920; --ds-neutral: #2E3039; --ds-amber-text: var(--ds-amber); --ds-red-text: #FF7B78;
+}
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
+html, body { background: transparent !important; }
+
+.ds { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--ds-text);
+  container: ds / inline-size; }
+.ds * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.ds [dir="auto"] { text-align: left; }
+
+.ds-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--homey-su-3, 12px); }
+@container ds (max-width: 239px) { .ds-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* A compact tile (62px): the icon and the days, then the name (and Undo after a tap). */
+.ds-tile {
+  position: relative; color: var(--ds-text); outline: none;
+  background: var(--ds-tile); border-radius: var(--ds-radius); padding: 8px 10px; min-width: 0;
+  display: flex; flex-direction: column; align-items: stretch; gap: 6px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+  transition: background-color .15s, color .15s, transform .1s;
+}
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .ds-tile::after, .ds.homey-dark-mode .ds-tile::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.ds-tile:focus-visible { box-shadow: 0 0 0 2px var(--ds-blue); }
+.ds-tile.pressing { transform: scale(.98); }
+
+.ds-top, .ds-bottom { display: flex; align-items: center; justify-content: space-between; gap: 6px; height: 20px; }
+.ds-icon {
+  flex: 0 0 auto; width: var(--homey-icon-size-medium, 20px); height: var(--homey-icon-size-medium, 20px);
+  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.ds-icon .filled { fill: currentColor; stroke: none; }
+.ds-value, .ds-name {
+  /* 14 bold like the native temperature tiles' name (and Device Values). */
+  font-size: var(--ds-fs-small); line-height: var(--ds-lh-small); font-weight: var(--ds-bold);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+.ds .ds-value { flex: 1 1 auto; text-align: right; font-variant-numeric: tabular-nums; }
+.ds-name { flex: 1 1 auto; }
+.ds-tile.not-started .ds-value { color: var(--ds-muted); font-weight: normal; }
+
+/* Amber, then red: the tile tinted as a Device Values colour, the icon and the days in the colour. */
+.ds-tile[data-level="amber"] { --ds-level: var(--ds-amber); --ds-level-text: var(--ds-amber-text); }
+.ds-tile[data-level="red"] { --ds-level: var(--ds-red); --ds-level-text: var(--ds-red-text); }
+.ds-tile[data-level] { background: color-mix(in srgb, var(--ds-level) var(--ds-tint-mix), var(--ds-tile)); }
+.ds-tile[data-level] .ds-icon, .ds-tile[data-level] .ds-value { color: var(--ds-level-text); }
+
+/* Undo, for a few seconds after a tap: a grey pill at the end of the name row, its tap area reaching into the padding. */
+.ds-undo {
+  display: none; flex: 0 0 auto; position: relative; height: 24px; margin: -2px -4px -2px 0; padding: 0 10px; border-radius: 12px;
+  align-items: center; justify-content: center;
+  font-size: var(--ds-fs-label); line-height: var(--ds-lh-label); font-weight: var(--ds-bold);
+  background: var(--ds-neutral); color: var(--ds-text);
+  outline: none; transition: transform .1s;
+}
+.ds-undo::before { content: ''; position: absolute; inset: -8px -6px -10px; }
+.ds-tile.undoable .ds-undo { display: flex; }
+.ds-tile.undoable { cursor: default; }
+.ds-undo.pressing { transform: scale(.95); }
+.ds-undo:focus-visible { box-shadow: 0 0 0 2px var(--ds-tile), 0 0 0 4px var(--ds-blue); }
+
+.ds-message { font-size: var(--ds-fs-small); line-height: var(--ds-lh-small); color: var(--ds-muted); }
+.ds-message.error { color: var(--ds-red); }
+
+.ds-tile.shake { animation: ds-shake .35s; }
+@keyframes ds-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-tile.shake { animation: none; }
+}

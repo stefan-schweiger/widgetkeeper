@@ -24,6 +24,9 @@
   <div class="col"><span>358 px · light · percentage fill</span><div class="dash light" style="width:358px"><div id="w7"></div></div></div>
   <div class="col"><span>358 px · dark · colours set by a Flow</span><div class="dash homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
   <div class="col"><span>358 px · light · colours set by a Flow</span><div class="dash light" style="width:358px"><div id="w9"></div></div></div>
+  <div class="col"><span>358 px · dark · bright colours</span><div class="dash homey-dark-mode" style="width:358px"><div id="w10"></div></div></div>
+  <div class="col"><span>358 px · light · bright colours</span><div class="dash light" style="width:358px"><div id="w11"></div></div></div>
+  <div class="col"><span>358 px · dark · bright percentage fill</span><div class="dash homey-dark-mode" style="width:358px"><div id="w12"></div></div></div>
   <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
 
   <script>
@@ -55,11 +58,12 @@
       alarm('dns', 'DNS check', true, 'red'), alarm('vpn', 'VPN', false, 'yellow'), pct('Back door', 'measure_battery', 64),
       { ...pct('Hallway', 'measure_battery', 30), color: 'purple' }, { ...pct('Kitchen', 'measure_battery', 80), color: 'orange' },
     ];
-    const flowWidgets = ['w8', 'w9'].map(id => {
-      const w = createValuesWidget(document.getElementById(id), { t: devT, percentFill: true });
+    const flowWidgets = ['w8', 'w9', 'w10', 'w11'].map(id => {
+      const w = createValuesWidget(document.getElementById(id), { t: devT, percentFill: true, colorStyle: id === 'w10' || id === 'w11' ? 'bright' : undefined });
       w.setState(colored());
       return w;
     });
+    createValuesWidget(document.getElementById('w12'), { t: devT, percentFill: true, colorStyle: 'bright' }).setState(percents());
     const cycle = ['blue', 'red', null, 'green'];
     let step = 0;
     setInterval(() => {

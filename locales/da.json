@@ -55,8 +55,42 @@
     "noMotion": "Ingen bevægelse",
     "presence": "Tilstedeværelse",
     "noPresence": "Ingen tilstedeværelse",
+    "vibration": "Vibration",
+    "noVibration": "Ingen vibration",
     "nothingDetected": "Intet registreret",
     "since": "siden __time__"
+  },
+  "roomhealth": {
+    "selectDevices": "Vælg sensorer i widgetindstillingerne.",
+    "error": "Kunne ikke indlæse sensorerne.",
+    "unavailable": "Utilgængelig",
+    "renameFailed": "Kunne ikke gemme navnet.",
+    "good": "God",
+    "noReadings": "Ingen målinger",
+    "allGood": "Alle rum er behagelige.",
+    "hint": "__room__: __problem__, __value__. __action__",
+    "cold": "Koldt",
+    "warm": "Varmt",
+    "dry": "Tørt",
+    "humid": "Fugtigt",
+    "stuffy": "Indelukket",
+    "radon": "Radon",
+    "particles": "Partikler",
+    "voc": "VOC",
+    "problemCold": "koldt",
+    "problemWarm": "varmt",
+    "problemDry": "tørt",
+    "problemHumid": "fugtigt",
+    "problemStuffy": "indelukket",
+    "problemRadon": "høj radon",
+    "problemParticles": "partikler",
+    "problemVoc": "VOC",
+    "actionHeat": "Skru op for varmen.",
+    "actionCool": "Køl rummet ned.",
+    "actionHumidify": "Fugt luften.",
+    "actionAirOut": "Luft ud.",
+    "actionVentilate": "Ventilér mere.",
+    "actionPurify": "Tænd en luftrenser."
   },
   "weather": {
     "now": "Nu",
@@ -80,7 +114,7 @@
     "shareTitle": "Widgetkeeper-diagnostik",
     "varTitle": "API-nøgle",
     "varHelp": "Homey lader ikke apps ændre variabler, starte flows, læse dashboards eller starte Moods selv. Opret en API-nøgle under Indstillinger → API-nøgler i Homeys webapp, sæt flueben ved de tilladelser, dine widgets skal bruge, og indsæt den her. Den bliver på din Homey. Alt andet kræver ingen nøgle.",
-    "varForVariables": "Variabler, for at ændre en værdi:",
+    "varForVariables": "Variabler og Variabelforvalg, for at ændre en værdi:",
     "varTickVariables": "Variabler",
     "varForFlows": "Flowknapper og flows på knapperne i Medier:",
     "varTickFlows": "Start Flows",
@@ -194,6 +228,21 @@
     "keyScope": "API-nøglen må ikke ændre variabler: den skal have Variabler.",
     "keyInvalid": "API-nøglen blev ikke godkendt.",
     "renameFailed": "Kunne ikke gemme navnet."
+  },
+  "varpresets": {
+    "selectVariable": "Vælg en variabel i widgetindstillingerne.",
+    "selectVariableFirst": "Vælg først en variabel, og åbn så denne indstilling igen.",
+    "noPresets": "Vælg knappernes værdier i widgetindstillingerne.",
+    "missing": "Variablen findes ikke",
+    "error": "Kunne ikke hente variablen.",
+    "failed": "Kunne ikke ændre __name__.",
+    "currently": "Lige nu __value__",
+    "currentValue": "Nuværende værdi",
+    "yes": "Ja",
+    "no": "Nej",
+    "noKey": "Tilføj en API-nøgle i appindstillingerne for at ændre variabler.",
+    "keyScope": "API-nøglen må ikke ændre variabler: den skal have Variabler.",
+    "keyInvalid": "API-nøglen blev ikke godkendt."
   },
   "flows": {
     "selectSlots": "Vælg flows i widgetindstillingerne.",
@@ -352,7 +401,8 @@
     "noKey": "Tilføj en API-nøgle i app-indstillingerne for at bruge knappen.",
     "keyScope": "API-nøglen må ikke køre dette: et flow kræver Start Flows, en højttalerhandling Flows.",
     "keyInvalid": "API-nøglen blev ikke godkendt.",
-    "speakerAction": "Højttalerhandling"
+    "speakerAction": "Højttalerhandling",
+    "appAction": "App-handling"
   },
   "textline": {
     "noMessage": "Ingen besked",
@@ -362,6 +412,18 @@
     "error": "Kunne ikke indlæse teksten.",
     "boardInUse": "Har en tekst",
     "boardNew": "Ny note"
+  },
+  "dayssince": {
+    "setup": "Navngiv dine tællere i widgetindstillingerne.",
+    "error": "Kunne ikke indlæse tællerne.",
+    "failed": "Kunne ikke nulstille __name__.",
+    "undoFailed": "Kunne ikke fortryde nulstillingen af __name__.",
+    "today": "I dag",
+    "notStarted": "Ikke startet",
+    "undo": "Fortryd",
+    "resetLabel": "__name__: __time__. Tryk for at nulstille.",
+    "newCounter": "Ny tæller",
+    "anyCounter": "Enhver tæller"
   },
   "stack": {
     "selectDashboard": "Vælg et dashboard i widgetens indstillinger.",
@@ -463,6 +525,7 @@
       "quickactions": "Små fliser, der tænder og slukker en enhed med ét tryk.",
       "sensoralarms": "Fliser, der bliver røde, når en sensor giver alarm.",
       "sensordots": "Bevægelse, døre og kameraer som et gitter af prikker.",
+      "roomhealth": "Hvert rums temperatur, luftfugtighed og luft som én ring, og hvad du kan gøre, når noget er galt.",
       "weather": "De næste 36 timer, time for time.",
       "heatmap": "En uge af en værdi som heatmap over ugedag × time.",
       "cameras": "Kamerabilleder med live video ved et tryk.",
@@ -471,6 +534,7 @@
       "sparklines": "Værdier med en lille graf over deres seneste historik.",
       "charts": "Én eller to grafer over en vilkårlig værdi, som el-graferne.",
       "variables": "Variabler som rækker, du kan slå til og fra eller ændre.",
+      "varpresets": "Knapper, der sætter en variabel til faste værdier.",
       "flows": "Start flows med et tryk, i dine farver og ikoner.",
       "price": "Elprisen nu og de næste timer.",
       "timers": "Køkkentimere, der kører videre på din Homey.",
@@ -480,6 +544,7 @@
       "clock": "Klokken og datoen, med vejret lige nu, hvis du vil.",
       "textline": "En note på et felt eller en Post-it-seddel, skrevet ind eller skrevet af dine Flows.",
       "spacer": "Tom plads til at flugte widgets i kolonner.",
+      "dayssince": "Dage siden en opgave, rød når det er tid igen.",
       "stack": "Widgets fra et andet dashboard, på skift."
     }
   }

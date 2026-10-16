@@ -383,14 +383,18 @@ describe('switching speaker', () => {
   });
 
   it('hides the card buttons a switched-to speaker doesn’t have', () => {
-    const buttons = [{ id: 'card:homey:device:k:cloud_play_home_theater', name: 'TV' }, { id: 'flow:f1', name: 'Movie time' }];
+    const buttons = [
+      { id: 'card:homey:device:k:cloud_play_home_theater', name: 'TV' },
+      { id: 'flow:f1', name: 'Movie time' },
+      { id: 'card:homey:app:nl.xiut.sonoslocal:scan_library', name: 'Scan library' }, // the app's: on any speaker
+    ];
     const { w, root } = widget(speaker(), { buttons });
     const chips = () => [...root.querySelectorAll<HTMLElement>('.mw-chip')].map(c => c.style.display);
-    expect(chips()).toEqual(['', '']);
+    expect(chips()).toEqual(['', '', '']);
     w.setState({ ...speaker(), id: 'b', cards: ['cloud_leave_current_group'] });
-    expect(chips()).toEqual(['none', '']);
+    expect(chips()).toEqual(['none', '', '']);
     w.setState({ ...speaker(), id: 'a', cards: ['cloud_play_home_theater'] });
-    expect(chips()).toEqual(['', '']);
+    expect(chips()).toEqual(['', '', '']);
   });
 
   it('shows the device icon in place of missing album art', () => {

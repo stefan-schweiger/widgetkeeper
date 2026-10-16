@@ -1,0 +1,14 @@
+{
+  "theme": "dark",
+  "columns": [
+    ["price", "thermostat", "flows"],
+    ["electricity", "timers", "curtains"],
+    ["lights", "media", "clock"],
+    ["weather", "charts", "locks"]
+  ],
+  "columnWidth": 0.3,
+  "gap": 64,
+  "stagger": 160,
+  "tilt": -8,
+  "background": { "image": "dev/hero.webp", "blur": 6, "brightness": 0.6 }
+}

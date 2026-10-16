@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../widgets/curtains/public/widget.css">
   <link rel="stylesheet" href="../widgets/quickactions/public/widget.css">
   <link rel="stylesheet" href="../widgets/sensoralarms/public/widget.css">
+  <link rel="stylesheet" href="../widgets/roomhealth/public/widget.css">
   <link rel="stylesheet" href="../widgets/values/public/widget.css">
   <link rel="stylesheet" href="../widgets/sparklines/public/widget.css">
   <link rel="stylesheet" href="../widgets/locks/public/widget.css">
@@ -17,6 +18,7 @@
   <script src="../widgets/curtains/public/widget.js"></script>
   <script src="../widgets/quickactions/public/widget.js"></script>
   <script src="../widgets/sensoralarms/public/widget.js"></script>
+  <script src="../widgets/roomhealth/public/widget.js"></script>
   <script src="../widgets/values/public/widget.js"></script>
   <script src="../widgets/sparklines/public/widget.js"></script>
   <script src="../widgets/locks/public/widget.js"></script>
@@ -36,7 +38,7 @@
   <!-- Every widget with device tiles in rename mode (the `renameTiles` setting): a field per tile, the own name as
        its placeholder. Typed names save after 300 ms (a name with "fail" in it fails, to show the shake). -->
   <script>
-    const WIDGETS = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables'];
+    const WIDGETS = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'roomhealth', 'values', 'sparklines', 'locks', 'cameras', 'variables'];
     const cap = (value) => ({ value, setable: true, lastUpdated: Date.now() - 3600e3 });
     const living = { id: 'z1', name: 'Living room' };
     const kitchen = { id: 'z2', name: 'Kitchen' };
@@ -68,6 +70,14 @@
         state: [
           { id: 's1', name: 'Water sensor', icon: null, alarms: [{ capabilityId: 'alarm_water', title: 'Water alarm', value: false, state: false }] },
           { id: 's2', name: 'Smoke detector', icon: null, alarms: [{ capabilityId: 'alarm_smoke', title: 'Smoke alarm', value: true, state: false }] },
+        ],
+      },
+      roomhealth: {
+        create: 'createRoomHealthWidget', names: { 'zone:z2': 'Emma' },
+        state: [
+          { id: 'r1', name: 'Airthings', zone: { id: 'z1', name: 'Living room' }, measures: { temperature: { capabilityId: 'measure_temperature', value: 21.4 }, co2: { capabilityId: 'measure_co2', value: 720 } } },
+          { id: 'r2', name: 'Kids sensor', zone: { id: 'z2', name: "Emma's room" }, measures: { temperature: { capabilityId: 'measure_temperature', value: 20.6 }, co2: { capabilityId: 'measure_co2', value: 1300 } } },
+          { id: 'r3', missing: true },
         ],
       },
       values: {

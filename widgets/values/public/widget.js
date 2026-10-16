@@ -209,7 +209,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, columns?: number|string,
+   * @param {{ t?: (key: string, tokens?: object) => string, columns?: number|string, colorStyle?: string,
    *   percentFill?: boolean, redBelow?: number|string, yellowBelow?: number|string, names?: string[],
    *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   onHeight?: (h: number) => void }} opts
@@ -240,11 +240,15 @@
     });
     root.classList.toggle('renaming', typed.renaming);
     root.dataset.columns = String(opts.columns) === '2' ? '2' : '3';
+    // Bright colours: fills and Flow colours at full strength, with text that reads on them (soft, the 22 % tint, otherwise).
+    const bright = opts.colorStyle === 'bright';
+    root.classList.toggle('vt-bright', bright);
     const num = (v, fallback) => (v !== '' && v != null && isFinite(Number(v)) ? Number(v) : fallback);
     const thresholds = { red: num(opts.redBelow, 10), yellow: num(opts.yellowBelow, 20) };
     const grid = el('div', { class: 'vt-grid' }, root);
     const messageEl = el('div', { class: 'vt-message', dir: 'auto' }, root);
-    /** @type {Map<string, {tile: HTMLElement, icon: HTMLElement, value: HTMLElement, name: HTMLElement}>} */
+    /** @type {Map<string, {tile: HTMLElement, icon: HTMLElement, value: HTMLElement, name: HTMLElement,
+     *   ink: {icon: HTMLElement, value: HTMLElement, name: HTMLElement} | null}>} */
     const tiles = new Map();
 
     function setState(list) {
@@ -297,7 +301,18 @@
           icon: el('span', { class: 'vt-icon' }, top),
           value: el('span', { class: 'vt-value', dir: 'auto' }, top),
           name: el('span', { class: 'vt-name', dir: 'auto' }, node),
+          ink: null,
         };
+        // Bright fills: the same icon and text again in the ink colour, which the CSS clips to the fill.
+        if (bright) {
+          const ink = el('div', { class: 'vt-ink', 'aria-hidden': 'true' }, node);
+          const inkTop = el('div', { class: 'vt-top' }, ink);
+          tile.ink = {
+            icon: el('span', { class: 'vt-icon' }, inkTop),
+            value: el('span', { class: 'vt-value', dir: 'auto' }, inkTop),
+            name: el('span', { class: 'vt-name', dir: 'auto' }, ink),
+          };
+        }
         tiles.set(key, tile);
       }
       return tile;
@@ -327,6 +342,11 @@
         }
         tile.value.textContent = missing ? '' : formatValue(s.capability, s.value, t);
         setMask(tile.icon, iconFor(s));
+        if (tile.ink) {
+          tile.ink.name.textContent = tile.name.textContent;
+          tile.ink.value.textContent = tile.value.textContent;
+          setMask(tile.ink.icon, iconFor(s));
+        }
         tile.tile.classList.toggle('active', !missing && s.capability.type === 'boolean' && s.value === true);
         // Percentages can fill the tile from the left, coloured by level.
         const percent = !missing && opts.percentFill ? percentOf(s.capability, s.value) : null;

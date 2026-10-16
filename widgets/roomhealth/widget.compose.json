@@ -1,0 +1,365 @@
+{
+  "name": {
+    "en": "Room Health",
+    "nl": "Binnenklimaat",
+    "de": "Raumklima",
+    "fr": "Climat des pièces",
+    "it": "Clima delle stanze",
+    "sv": "Rumsklimat",
+    "no": "Romklima",
+    "es": "Clima interior",
+    "da": "Indeklima",
+    "ru": "Климат в комнатах",
+    "pl": "Klimat w pomieszczeniach",
+    "ko": "실내 환경",
+    "ar": "مناخ الغرف"
+  },
+  "height": 172,
+  "transparent": true,
+  "devices": {
+    "type": "global",
+    "singular": false,
+    "filter": {
+      "capabilities": "measure_temperature|measure_temperature.room|measure_temperature.indoor|measure_temperature.inside|measure_humidity|measure_humidity.room|measure_humidity.indoor|measure_humidity.inside|measure_co2|measure_radon|measure_pm25|measure_pm10|measure_voc|measure_VOC|measure_tvoc"
+    }
+  },
+  "settings": [
+    {
+      "id": "renameTiles",
+      "type": "checkbox",
+      "title": {
+        "en": "Rename tiles",
+        "nl": "Tegels hernoemen",
+        "de": "Kacheln umbenennen",
+        "fr": "Renommer les tuiles",
+        "it": "Rinomina riquadri",
+        "sv": "Byt namn på rutor",
+        "no": "Gi nytt navn til fliser",
+        "es": "Renombrar mosaicos",
+        "da": "Omdøb felter",
+        "ru": "Переименовать плитки",
+        "pl": "Zmień nazwy kafelków",
+        "ko": "타일 이름 바꾸기",
+        "ar": "إعادة تسمية المربعات"
+      },
+      "hint": {
+        "en": "To name the tiles: turn this on and save the widget, then leave the dashboard's edit mode. Each tile shows a text field: type its name, or leave it empty to keep the room's name. Then edit the widget again and turn this off.",
+        "nl": "Tegels een naam geven: zet dit aan en sla de widget op, en verlaat dan de bewerkmodus van het dashboard. Elke tegel toont een tekstveld: typ de naam, of laat het leeg om de naam van de ruimte te houden. Bewerk daarna de widget opnieuw en zet dit uit.",
+        "de": "Kacheln benennen: Schalte dies ein, speichere das Widget und verlasse den Bearbeitungsmodus des Dashboards. Jede Kachel zeigt ein Textfeld: Gib den Namen ein oder lass es leer, um den Namen des Raums zu behalten. Bearbeite danach das Widget erneut und schalte dies aus.",
+        "fr": "Pour nommer les tuiles : activez ceci, enregistrez le widget, puis quittez le mode édition du tableau de bord. Chaque tuile affiche un champ de texte : tapez son nom, ou laissez-le vide pour garder le nom de la pièce. Modifiez ensuite le widget à nouveau et désactivez ceci.",
+        "it": "Per dare un nome ai riquadri: attiva questa opzione e salva il widget, poi esci dalla modalità di modifica della dashboard. Ogni riquadro mostra un campo di testo: scrivi il nome, o lascialo vuoto per mantenere il nome della stanza. Poi modifica di nuovo il widget e disattiva questa opzione.",
+        "sv": "Så namnger du rutorna: slå på detta och spara widgeten, och lämna sedan instrumentpanelens redigeringsläge. Varje ruta visar ett textfält: skriv namnet, eller lämna det tomt för att behålla rummets namn. Redigera sedan widgeten igen och slå av detta.",
+        "no": "Slik gir du flisene navn: slå på dette og lagre widgeten, og gå så ut av dashbordets redigeringsmodus. Hver flis viser et tekstfelt: skriv navnet, eller la det stå tomt for å beholde rommets navn. Rediger så widgeten igjen og slå av dette.",
+        "es": "Para poner nombre a los mosaicos: activa esto y guarda el widget, luego sal del modo de edición del panel. Cada mosaico muestra un campo de texto: escribe su nombre, o déjalo vacío para mantener el nombre de la habitación. Después edita el widget de nuevo y desactiva esto.",
+        "da": "Sådan navngiver du felterne: slå dette til og gem widgetten, og forlad så dashboardets redigeringstilstand. Hvert felt viser et tekstfelt: skriv navnet, eller lad det stå tomt for at beholde rummets navn. Redigér derefter widgetten igen, og slå dette fra.",
+        "ru": "Чтобы назвать плитки: включите это и сохраните виджет, затем выйдите из режима редактирования панели. На каждой плитке появится текстовое поле: введите название или оставьте его пустым, чтобы оставить название комнаты. Затем снова откройте настройки виджета и выключите это.",
+        "pl": "Aby nazwać kafelki: włącz to i zapisz widżet, a potem wyjdź z trybu edycji pulpitu. Każdy kafelek pokaże pole tekstowe: wpisz nazwę albo zostaw je puste, aby zachować nazwę pokoju. Potem ponownie edytuj widżet i wyłącz to.",
+        "ko": "타일 이름을 정하려면: 이 옵션을 켜고 위젯을 저장한 뒤 대시보드 편집 모드를 나가세요. 각 타일에 입력란이 나타납니다. 이름을 입력하거나 비워 두면 방 이름이 그대로 쓰입니다. 그런 다음 위젯을 다시 편집해 이 옵션을 끄세요.",
+        "ar": "لتسمية المربعات: شغّل هذا الخيار واحفظ الأداة، ثم اخرج من وضع تحرير لوحة التحكم. يعرض كل مربع حقلًا نصيًا: اكتب اسمه، أو اتركه فارغًا لإبقاء اسم الغرفة. بعد ذلك حرّر الأداة مجددًا وأوقف هذا الخيار."
+      },
+      "value": false
+    },
+    {
+      "id": "tempMin",
+      "type": "number",
+      "title": {
+        "en": "Temperature: lowest (°C)",
+        "nl": "Temperatuur: laagste (°C)",
+        "de": "Temperatur: niedrigste (°C)",
+        "fr": "Température : minimale (°C)",
+        "it": "Temperatura: minima (°C)",
+        "sv": "Temperatur: lägsta (°C)",
+        "no": "Temperatur: laveste (°C)",
+        "es": "Temperatura: mínima (°C)",
+        "da": "Temperatur: laveste (°C)",
+        "ru": "Температура: минимум (°C)",
+        "pl": "Temperatura: najniższa (°C)",
+        "ko": "온도: 최저 (°C)",
+        "ar": "درجة الحرارة: الأدنى (°C)"
+      },
+      "hint": {
+        "en": "Comfortable ranges, the same for every room: inside them a ring is green, and it turns yellow, then red, the further a value is outside.",
+        "nl": "Comfortabele bereiken, voor elke ruimte dezelfde: daarbinnen is een ring groen, en hij wordt geel en dan rood naarmate een waarde verder buiten ligt.",
+        "de": "Angenehme Bereiche, für jeden Raum gleich: Darin ist ein Ring grün, und er wird gelb, dann rot, je weiter ein Wert außerhalb liegt.",
+        "fr": "Plages confortables, les mêmes pour chaque pièce : à l'intérieur, l'anneau est vert, et il devient jaune puis rouge à mesure qu'une valeur s'en éloigne.",
+        "it": "Intervalli confortevoli, uguali per ogni stanza: al loro interno l'anello è verde, e diventa giallo, poi rosso, quanto più un valore ne è fuori.",
+        "sv": "Behagliga intervall, samma för varje rum: inom dem är en ring grön, och den blir gul och sedan röd ju längre utanför ett värde ligger.",
+        "no": "Komfortable områder, like for hvert rom: innenfor dem er en ring grønn, og den blir gul og så rød jo lenger utenfor en verdi ligger.",
+        "es": "Rangos cómodos, iguales para cada habitación: dentro de ellos el anillo es verde, y se vuelve amarillo y luego rojo cuanto más se aleja un valor.",
+        "da": "Behagelige intervaller, de samme for alle rum: inden for dem er en ring grøn, og den bliver gul og så rød, jo længere en værdi ligger udenfor.",
+        "ru": "Комфортные диапазоны, одинаковые для всех комнат: внутри них кольцо зелёное, а чем дальше значение за их пределами, тем оно желтее, затем краснее.",
+        "pl": "Komfortowe zakresy, takie same dla każdego pokoju: w ich obrębie pierścień jest zielony, a im dalej wartość jest poza nimi, tym bardziej staje się żółty, potem czerwony.",
+        "ko": "모든 방에 같은 쾌적 범위입니다. 범위 안이면 링이 초록색이고, 값이 범위를 벗어날수록 노란색, 그다음 빨간색이 됩니다.",
+        "ar": "نطاقات مريحة، نفسها لكل غرفة: داخلها تكون الحلقة خضراء، وتصير صفراء ثم حمراء كلما ابتعدت القيمة عنها."
+      },
+      "value": 18,
+      "min": -20,
+      "max": 40
+    },
+    {
+      "id": "tempMax",
+      "type": "number",
+      "title": {
+        "en": "  – Highest (°C)",
+        "nl": "  – Hoogste (°C)",
+        "de": "  – Höchste (°C)",
+        "fr": "  – Maximale (°C)",
+        "it": "  – Massima (°C)",
+        "sv": "  – Högsta (°C)",
+        "no": "  – Høyeste (°C)",
+        "es": "  – Máxima (°C)",
+        "da": "  – Højeste (°C)",
+        "ru": "  – Максимум (°C)",
+        "pl": "  – Najwyższa (°C)",
+        "ko": "  – 최고 (°C)",
+        "ar": "  – الأعلى (°C)"
+      },
+      "value": 24,
+      "min": -20,
+      "max": 40
+    },
+    {
+      "id": "humidityMin",
+      "type": "number",
+      "title": {
+        "en": "Humidity: lowest (%)",
+        "nl": "Luchtvochtigheid: laagste (%)",
+        "de": "Luftfeuchte: niedrigste (%)",
+        "fr": "Humidité : minimale (%)",
+        "it": "Umidità: minima (%)",
+        "sv": "Luftfuktighet: lägsta (%)",
+        "no": "Luftfuktighet: laveste (%)",
+        "es": "Humedad: mínima (%)",
+        "da": "Luftfugtighed: laveste (%)",
+        "ru": "Влажность: минимум (%)",
+        "pl": "Wilgotność: najniższa (%)",
+        "ko": "습도: 최저 (%)",
+        "ar": "الرطوبة: الأدنى (%)"
+      },
+      "value": 30,
+      "min": 0,
+      "max": 100
+    },
+    {
+      "id": "humidityMax",
+      "type": "number",
+      "title": {
+        "en": "  – Highest (%)",
+        "nl": "  – Hoogste (%)",
+        "de": "  – Höchste (%)",
+        "fr": "  – Maximale (%)",
+        "it": "  – Massima (%)",
+        "sv": "  – Högsta (%)",
+        "no": "  – Høyeste (%)",
+        "es": "  – Máxima (%)",
+        "da": "  – Højeste (%)",
+        "ru": "  – Максимум (%)",
+        "pl": "  – Najwyższa (%)",
+        "ko": "  – 최고 (%)",
+        "ar": "  – الأعلى (%)"
+      },
+      "value": 60,
+      "min": 0,
+      "max": 100
+    },
+    {
+      "id": "co2Max",
+      "type": "number",
+      "title": {
+        "en": "Highest CO₂ (ppm)",
+        "nl": "Hoogste CO₂ (ppm)",
+        "de": "Höchstwert CO₂ (ppm)",
+        "fr": "CO₂ maximal (ppm)",
+        "it": "CO₂ massimo (ppm)",
+        "sv": "Högsta CO₂ (ppm)",
+        "no": "Høyeste CO₂ (ppm)",
+        "es": "CO₂ máximo (ppm)",
+        "da": "Højeste CO₂ (ppm)",
+        "ru": "Максимум CO₂ (ppm)",
+        "pl": "Najwyższe CO₂ (ppm)",
+        "ko": "최대 CO₂ (ppm)",
+        "ar": "الحد الأعلى لـ CO₂ (ppm)"
+      },
+      "hint": {
+        "en": "Above about 1000 ppm the air starts to feel stuffy.",
+        "nl": "Boven ongeveer 1000 ppm voelt de lucht bedompt.",
+        "de": "Ab etwa 1000 ppm wirkt die Luft stickig.",
+        "fr": "Au-delà d'environ 1000 ppm, l'air devient confiné.",
+        "it": "Oltre circa 1000 ppm l'aria comincia a sembrare viziata.",
+        "sv": "Över ungefär 1000 ppm börjar luften kännas instängd.",
+        "no": "Over omtrent 1000 ppm begynner lufta å føles tung.",
+        "es": "Por encima de unos 1000 ppm el aire empieza a sentirse cargado.",
+        "da": "Over cirka 1000 ppm begynder luften at føles indelukket.",
+        "ru": "Выше примерно 1000 ppm воздух начинает казаться спёртым.",
+        "pl": "Powyżej około 1000 ppm powietrze zaczyna być duszne.",
+        "ko": "약 1000 ppm을 넘으면 공기가 답답하게 느껴지기 시작합니다.",
+        "ar": "فوق نحو 1000 ppm يبدأ الهواء بالشعور بالكتمة."
+      },
+      "value": 1000,
+      "min": 0,
+      "max": 10000
+    },
+    {
+      "id": "radonMax",
+      "type": "number",
+      "title": {
+        "en": "Highest radon (Bq/m³)",
+        "nl": "Hoogste radon (Bq/m³)",
+        "de": "Höchstwert Radon (Bq/m³)",
+        "fr": "Radon maximal (Bq/m³)",
+        "it": "Radon massimo (Bq/m³)",
+        "sv": "Högsta radon (Bq/m³)",
+        "no": "Høyeste radon (Bq/m³)",
+        "es": "Radón máximo (Bq/m³)",
+        "da": "Højeste radon (Bq/m³)",
+        "ru": "Максимум радона (Bq/m³)",
+        "pl": "Najwyższy radon (Bq/m³)",
+        "ko": "최대 라돈 (Bq/m³)",
+        "ar": "الحد الأعلى للرادون (Bq/m³)"
+      },
+      "hint": {
+        "en": "The WHO's reference level is 100 Bq/m³.",
+        "nl": "Het referentieniveau van de WHO is 100 Bq/m³.",
+        "de": "Der Referenzwert der WHO ist 100 Bq/m³.",
+        "fr": "Le niveau de référence de l'OMS est de 100 Bq/m³.",
+        "it": "Il livello di riferimento dell'OMS è 100 Bq/m³.",
+        "sv": "WHO:s referensnivå är 100 Bq/m³.",
+        "no": "WHOs referansenivå er 100 Bq/m³.",
+        "es": "El nivel de referencia de la OMS es 100 Bq/m³.",
+        "da": "WHO's referenceniveau er 100 Bq/m³.",
+        "ru": "Контрольный уровень ВОЗ — 100 Bq/m³.",
+        "pl": "Poziom referencyjny WHO to 100 Bq/m³.",
+        "ko": "WHO의 참고 수준은 100 Bq/m³입니다.",
+        "ar": "المستوى المرجعي لمنظمة الصحة العالمية هو 100 Bq/m³."
+      },
+      "value": 100,
+      "min": 0,
+      "max": 10000
+    },
+    {
+      "id": "pm25Max",
+      "type": "number",
+      "title": {
+        "en": "Highest PM2.5 (μg/m³)",
+        "nl": "Hoogste PM2.5 (μg/m³)",
+        "de": "Höchstwert PM2.5 (μg/m³)",
+        "fr": "PM2.5 maximal (μg/m³)",
+        "it": "PM2.5 massimo (μg/m³)",
+        "sv": "Högsta PM2.5 (μg/m³)",
+        "no": "Høyeste PM2.5 (μg/m³)",
+        "es": "PM2.5 máximo (μg/m³)",
+        "da": "Højeste PM2.5 (μg/m³)",
+        "ru": "Максимум PM2.5 (μg/m³)",
+        "pl": "Najwyższe PM2.5 (μg/m³)",
+        "ko": "최대 PM2.5 (μg/m³)",
+        "ar": "الحد الأعلى لـ PM2.5 (μg/m³)"
+      },
+      "hint": {
+        "en": "The WHO's 24-hour guideline is 15 μg/m³.",
+        "nl": "De 24-uursrichtlijn van de WHO is 15 μg/m³.",
+        "de": "Der 24-Stunden-Richtwert der WHO ist 15 μg/m³.",
+        "fr": "La valeur guide de l'OMS sur 24 heures est de 15 μg/m³.",
+        "it": "Il valore guida dell'OMS sulle 24 ore è 15 μg/m³.",
+        "sv": "WHO:s riktvärde för 24 timmar är 15 μg/m³.",
+        "no": "WHOs retningslinje for 24 timer er 15 μg/m³.",
+        "es": "La guía de la OMS para 24 horas es 15 μg/m³.",
+        "da": "WHO's retningslinje for 24 timer er 15 μg/m³.",
+        "ru": "Рекомендация ВОЗ для 24 часов — 15 μg/m³.",
+        "pl": "Wytyczna WHO dla 24 godzin to 15 μg/m³.",
+        "ko": "WHO의 24시간 권고 기준은 15 μg/m³입니다.",
+        "ar": "الإرشاد اليومي لمنظمة الصحة العالمية هو 15 μg/m³."
+      },
+      "value": 15,
+      "min": 0,
+      "max": 1000
+    },
+    {
+      "id": "pm10Max",
+      "type": "number",
+      "title": {
+        "en": "Highest PM10 (μg/m³)",
+        "nl": "Hoogste PM10 (μg/m³)",
+        "de": "Höchstwert PM10 (μg/m³)",
+        "fr": "PM10 maximal (μg/m³)",
+        "it": "PM10 massimo (μg/m³)",
+        "sv": "Högsta PM10 (μg/m³)",
+        "no": "Høyeste PM10 (μg/m³)",
+        "es": "PM10 máximo (μg/m³)",
+        "da": "Højeste PM10 (μg/m³)",
+        "ru": "Максимум PM10 (μg/m³)",
+        "pl": "Najwyższe PM10 (μg/m³)",
+        "ko": "최대 PM10 (μg/m³)",
+        "ar": "الحد الأعلى لـ PM10 (μg/m³)"
+      },
+      "hint": {
+        "en": "The WHO's 24-hour guideline is 45 μg/m³.",
+        "nl": "De 24-uursrichtlijn van de WHO is 45 μg/m³.",
+        "de": "Der 24-Stunden-Richtwert der WHO ist 45 μg/m³.",
+        "fr": "La valeur guide de l'OMS sur 24 heures est de 45 μg/m³.",
+        "it": "Il valore guida dell'OMS sulle 24 ore è 45 μg/m³.",
+        "sv": "WHO:s riktvärde för 24 timmar är 45 μg/m³.",
+        "no": "WHOs retningslinje for 24 timer er 45 μg/m³.",
+        "es": "La guía de la OMS para 24 horas es 45 μg/m³.",
+        "da": "WHO's retningslinje for 24 timer er 45 μg/m³.",
+        "ru": "Рекомендация ВОЗ для 24 часов — 45 μg/m³.",
+        "pl": "Wytyczna WHO dla 24 godzin to 45 μg/m³.",
+        "ko": "WHO의 24시간 권고 기준은 45 μg/m³입니다.",
+        "ar": "الإرشاد اليومي لمنظمة الصحة العالمية هو 45 μg/m³."
+      },
+      "value": 45,
+      "min": 0,
+      "max": 1000
+    },
+    {
+      "id": "vocMax",
+      "type": "number",
+      "title": {
+        "en": "Highest VOC (ppb)",
+        "nl": "Hoogste VOS (ppb)",
+        "de": "Höchstwert VOC (ppb)",
+        "fr": "COV maximal (ppb)",
+        "it": "COV massimo (ppb)",
+        "sv": "Högsta VOC (ppb)",
+        "no": "Høyeste VOC (ppb)",
+        "es": "COV máximo (ppb)",
+        "da": "Højeste VOC (ppb)",
+        "ru": "Максимум ЛОС (ppb)",
+        "pl": "Najwyższe LZO (ppb)",
+        "ko": "최대 VOC (ppb)",
+        "ar": "الحد الأعلى لـ VOC (ppb)"
+      },
+      "hint": {
+        "en": "Only sensors that report VOC in ppb (such as Airthings and Aqara) count.",
+        "nl": "Alleen sensoren die VOS in ppb meten (zoals Airthings en Aqara) tellen mee.",
+        "de": "Nur Sensoren, die VOC in ppb melden (etwa Airthings und Aqara), zählen.",
+        "fr": "Seuls les capteurs qui mesurent les COV en ppb (comme Airthings et Aqara) comptent.",
+        "it": "Contano solo i sensori che misurano i COV in ppb (come Airthings e Aqara).",
+        "sv": "Bara sensorer som mäter VOC i ppb (som Airthings och Aqara) räknas.",
+        "no": "Bare sensorer som måler VOC i ppb (som Airthings og Aqara) teller.",
+        "es": "Solo cuentan los sensores que miden los COV en ppb (como Airthings y Aqara).",
+        "da": "Kun sensorer, der måler VOC i ppb (som Airthings og Aqara), tæller med.",
+        "ru": "Учитываются только датчики, которые измеряют ЛОС в ppb (например, Airthings и Aqara).",
+        "pl": "Liczą się tylko czujniki mierzące LZO w ppb (jak Airthings i Aqara).",
+        "ko": "VOC를 ppb로 측정하는 센서(Airthings, Aqara 등)만 반영됩니다.",
+        "ar": "تُحتسب فقط المستشعرات التي تقيس VOC بوحدة ppb (مثل Airthings وAqara)."
+      },
+      "value": 1000,
+      "min": 0,
+      "max": 100000
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    },
+    "getNames": {
+      "method": "GET",
+      "path": "/names"
+    },
+    "setName": {
+      "method": "POST",
+      "path": "/names"
+    }
+  }
+}

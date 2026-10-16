@@ -7,6 +7,11 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### New names
 - Four widgets have clearer names: Price Badge is now **Energy Price Strip**, Thermostat Shortcuts is now **Thermostat Presets**, Sensor Dots is now **Activity Dots**, and Flow Variables is now **Variables**. Widgets already on a dashboard keep working and keep their settings.
 
+### New: Variable Presets
+- One Logic variable with two to four buttons, each setting it to a value you pick: *Home*, *Away* and *Night* for a house mode, two setpoints, or Yes and No. It looks like Thermostat Presets: the button whose value the variable has lights up, and when none does, the header says what it is now.
+- Pick the variable first: each button's value then offers Yes and No, or takes the number or text you type. A label can replace the value on the button. The lit button takes the colour you pick (blue by default), and the header can have a title and an icon of its own.
+- Changing the variable needs an API key with the Variables permission, as Variables does.
+
 ### New: Notes
 - A short message on the dashboard: one line of text on a tile, or a Post-it note stuck on the dashboard, tilted with a folded corner, in handwriting (up to three lines). A user asked for a single text line for small messages.
 - Type the message in the widget's settings, or let a Flow write it: *Write [text] on the note [name]* (also in a colour) and *Clear the note [name]*. Every Notes widget with that name shows it at once, on every screen. It can show a Logic text variable instead.
@@ -20,8 +25,19 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - The value now sits at the top in the chart's colour (this can be turned off). Tap a chart to see the value at that moment.
 - The scale fits the values (so a room's 19–23 °C doesn't look flat) or starts at zero. Below zero can be drawn in yellow, as Electricity Overview draws solar export.
 
+### New: Days Since
+- Counters for the things you do every so often: the plants watered *6 days* ago, the vacuum filter changed *3 months* ago, the sheets *2 weeks*. Up to eight per widget, each with a name and an icon.
+- Each turns amber, then red, the number of days you set after it was last done. Tap a tile when it's done: it starts again from *Today*, with Undo for a few seconds.
+- The counters are kept on Homey by name: every widget and screen with the same counter shows the same one.
+- Flow cards: *Reset [counter]*, *Set [counter] to [days] days ago*, the trigger *[counter] became overdue* (even with no dashboard open) and the condition *[counter] is overdue*, both also for any counter.
+
+### New: Room Health
+- The indoor climate of the whole house on one card: pick your temperature, humidity, CO₂, radon, PM2.5, PM10 and VOC sensors, and each Homey room becomes a ring with an arc per value, green while it's comfortable and yellow to red the further it's outside.
+- One line under the rings names the worst problem in the house and what to do, such as *Bedroom: stuffy, 1,400 ppm. Air it out.* Tap a ring for all of that room's readings.
+- The comfortable ranges are settings, with defaults from the WHO's guidelines where there are any (18–24 °C, 30–60 % humidity, CO₂ up to 1000 ppm, radon up to 100 Bq/m³ …). A room with only some of the sensors uses what it has.
+
 ### Name the tiles
-- Every widget with device tiles has a new setting, *Rename tiles*: turn it on, and each tile shows a text field. Type the name you want, or leave it empty to keep the device's (or room's) own name, then turn the setting off again. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Device Values, Sparklines, Locks and Doors, Cameras and Variables have it.
+- Every widget with device tiles has a new setting, *Rename tiles*: turn it on, and each tile shows a text field. Type the name you want, or leave it empty to keep the device's (or room's) own name, then turn the setting off again. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Room Health, Device Values, Sparklines, Locks and Doors, Cameras and Variables have it.
 - Light Controls and Curtains grouped by room get a name per room tile, so two widgets with a "Living room" group can be called "Sofa lights" and "Living room". Users with several groups in one room asked for it.
 - The names belong to the widget: they stay with the right tiles when devices are renamed or reordered, and every screen showing the dashboard (and a Smart Stack page of it) gets them. Sensor Alarms' *Tile names* and Device Values' names still work; a name typed on the tile wins.
 
@@ -34,9 +50,11 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Activity Dots and Sensor Alarms
 - Presence sensors (such as the Aqara FP300) can be picked in Activity Dots: the dot lights up while someone is there, even sitting still, and the overlay says *Presence* or *No presence*. Sensor Alarms counts presence with motion and contact when *Count motion and contact as alarms* is on.
+- Vibration sensors (such as the Aqara Vibration Sensor) can be picked in Activity Dots: the dot lights up while vibration is detected, and the overlay says *Vibration* or *No vibration*. A user asked for it, to see all the security sensors in one place. Sensor Alarms still counts vibration as an alarm.
 
 ### Sparklines and Device Values
 - Every battery tile shows the same battery icon. Some devices brought their own, so tiles side by side looked different.
+- Device Values has a new setting, *Colours*. *Bright* fills a tile with the full colour, both for a percentage fill and for a colour set by a Flow, with dark text and icons (white on purple) so they stay readable. A user found the soft yellow looked like mustard and the orange looked brown. *Soft* is the default and looks as before.
 
 ### Light Controls
 - A new colour palette, *Room's Moods*: the colour button shows the Homey Moods of the light's room (or of the room's tile, grouped by room) in place of the colours and whites, and a tap starts one. A room without Moods keeps the colours. Starting a Mood needs an API key that may start Moods. A user asked for it.
@@ -45,15 +63,21 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Cameras
 - Live view tries the camera's other streams when one won't play, such as a 4K H.265 stream, which Homey can't stream to a dashboard: a Reolink camera's sub stream then plays instead. A user's camera showed only *Live view failed*.
 - When every stream of a camera is H.265, the tile says so, and suggests setting the camera to H.264. A Reolink camera on a Home Hub or an NVR has only one stream.
+- Live view can stay on longer: the new setting *Live view stays on* picks 30 seconds, 1 minute, 5 minutes (as before) or *Until tapped*. Until tapped, live view also comes back when the screen wakes or the dashboard opens again. A user asked for it.
+- A new *Layout* setting: with an odd number of cameras, the large one can go on top instead of at the bottom, or every camera can fill the width. A user asked for one large camera with two small ones under it.
 
 ### Media
 - A large layout: the album art across the whole widget, with the track, the artist and the buttons below it in bigger text and sizes. A user asked for it to read the widget more easily. Pick it with the new *Layout* setting; the compact card stays the default.
+- The buttons can also run the speaker app's own actions, such as Sonos (LocalAPI)'s *Scan the music library*, besides the speaker's actions and flows. A user asked for it. Only actions without settings of their own can be picked.
 
 ### Variables
 - Set a lowest and highest number for the number variables: − and + stop there, and a typed number is kept within them. A user asked for 0 to 1 in steps of 0.05, for a percentage kept in a variable.
 - Read only: the rows show each variable's name and value, with a dot and Yes/No instead of a switch, and nothing to tap. No API key is needed. A user wanted the rows for information only.
-
 - Rows are named like every other widget's tiles, with *Rename tiles*, in place of a name setting per variable. Names given in those settings have to be typed on the rows again on Homey's dashboards, because the Homey app no longer hands them to the widget. Web dashboards keep them, and so does a Variables widget shown on a Smart Stack.
+
+### Thermostat Presets
+- In the settings, each button's mode, temperature and fan setting are indented under its power setting, so it's clear which button they belong to.
+
 ## 0.9.0
 
 ### New: Clock

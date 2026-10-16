@@ -55,8 +55,42 @@
     "noMotion": "Nessun movimento",
     "presence": "Presenza",
     "noPresence": "Nessuna presenza",
+    "vibration": "Vibrazione",
+    "noVibration": "Nessuna vibrazione",
     "nothingDetected": "Nulla rilevato",
     "since": "da __time__"
+  },
+  "roomhealth": {
+    "selectDevices": "Scegli i sensori nelle impostazioni del widget.",
+    "error": "Impossibile caricare i sensori.",
+    "unavailable": "Non disponibile",
+    "renameFailed": "Impossibile salvare il nome.",
+    "good": "Buono",
+    "noReadings": "Nessuna misura",
+    "allGood": "Tutte le stanze sono confortevoli.",
+    "hint": "__room__: __problem__, __value__. __action__",
+    "cold": "Freddo",
+    "warm": "Caldo",
+    "dry": "Secco",
+    "humid": "Umido",
+    "stuffy": "Aria viziata",
+    "radon": "Radon",
+    "particles": "Polveri",
+    "voc": "COV",
+    "problemCold": "freddo",
+    "problemWarm": "caldo",
+    "problemDry": "secco",
+    "problemHumid": "umido",
+    "problemStuffy": "aria viziata",
+    "problemRadon": "radon alto",
+    "problemParticles": "polveri sottili",
+    "problemVoc": "COV",
+    "actionHeat": "Alza il riscaldamento.",
+    "actionCool": "Rinfresca la stanza.",
+    "actionHumidify": "Umidifica l'aria.",
+    "actionAirOut": "Arieggia.",
+    "actionVentilate": "Ventila di più.",
+    "actionPurify": "Accendi un purificatore d'aria."
   },
   "weather": {
     "now": "Ora",
@@ -80,7 +114,7 @@
     "shareTitle": "Diagnostica Widgetkeeper",
     "varTitle": "Chiave API",
     "varHelp": "Homey non permette alle app di modificare le variabili, avviare i flow, leggere le dashboard né avviare i Mood da sole. Nell'app web di Homey, crea una chiave API in Impostazioni → Chiavi API, spunta i permessi che servono ai widget che usi e incollala qui. Resta sul tuo Homey. Tutto il resto funziona senza chiave.",
-    "varForVariables": "Variabili, per modificare un valore:",
+    "varForVariables": "Variabili e Preimpostazioni variabile, per modificare un valore:",
     "varTickVariables": "Variabili",
     "varForFlows": "Pulsanti dei flow e flow sui pulsanti di Media:",
     "varTickFlows": "Avvia i Flow",
@@ -194,6 +228,21 @@
     "keyScope": "La chiave API non può cambiare le variabili: serve il permesso Variabili.",
     "keyInvalid": "La chiave API non è stata accettata.",
     "renameFailed": "Impossibile salvare il nome."
+  },
+  "varpresets": {
+    "selectVariable": "Scegli una variabile nelle impostazioni.",
+    "selectVariableFirst": "Seleziona prima una variabile, poi riapri questa impostazione.",
+    "noPresets": "Scegli i valori dei pulsanti nelle impostazioni.",
+    "missing": "Variabile non trovata",
+    "error": "Impossibile caricare la variabile.",
+    "failed": "Impossibile modificare __name__.",
+    "currently": "Attualmente __value__",
+    "currentValue": "Valore attuale",
+    "yes": "Sì",
+    "no": "No",
+    "noKey": "Per cambiare le variabili, aggiungi una chiave API nelle impostazioni dell'app.",
+    "keyScope": "La chiave API non può cambiare le variabili: serve il permesso Variabili.",
+    "keyInvalid": "La chiave API non è stata accettata."
   },
   "flows": {
     "selectSlots": "Scegli i flow nelle impostazioni del widget.",
@@ -352,7 +401,8 @@
     "noKey": "Per usare questo pulsante, aggiungi una chiave API nelle impostazioni dell’app.",
     "keyScope": "La chiave API non può eseguirlo: un flow richiede il permesso Avvia i Flow, un’azione dell’altoparlante il permesso Flow.",
     "keyInvalid": "La chiave API non è stata accettata.",
-    "speakerAction": "Azione dell’altoparlante"
+    "speakerAction": "Azione dell’altoparlante",
+    "appAction": "Azione dell’app"
   },
   "textline": {
     "noMessage": "Nessun messaggio",
@@ -362,6 +412,18 @@
     "error": "Impossibile caricare il testo.",
     "boardInUse": "Ha un testo",
     "boardNew": "Nuova nota"
+  },
+  "dayssince": {
+    "setup": "Dai un nome ai contatori nelle impostazioni del widget.",
+    "error": "Impossibile caricare i contatori.",
+    "failed": "Impossibile azzerare __name__.",
+    "undoFailed": "Impossibile annullare l'azzeramento di __name__.",
+    "today": "Oggi",
+    "notStarted": "Non iniziato",
+    "undo": "Annulla",
+    "resetLabel": "__name__: __time__. Tocca per azzerare.",
+    "newCounter": "Nuovo contatore",
+    "anyCounter": "Qualsiasi contatore"
   },
   "stack": {
     "selectDashboard": "Scegli una dashboard nelle impostazioni del widget.",
@@ -463,6 +525,7 @@
       "quickactions": "Piccole tessere che commutano un dispositivo con un tocco.",
       "sensoralarms": "Tessere che diventano rosse quando un sensore dà l'allarme.",
       "sensordots": "Movimento, porte e telecamere come una griglia di punti.",
+      "roomhealth": "Temperatura, umidità e aria di ogni stanza in un anello, e cosa fare quando qualcosa non va.",
       "weather": "Le prossime 36 ore, ora per ora.",
       "heatmap": "Una settimana di un valore come mappa di calore giorno × ora.",
       "cameras": "Istantanee delle telecamere, con video dal vivo con un tocco.",
@@ -471,6 +534,7 @@
       "sparklines": "Valori con un piccolo grafico del loro andamento recente.",
       "charts": "Uno o due grafici di qualsiasi valore, come quelli dell'elettricità.",
       "variables": "Variabili come righe da attivare o modificare.",
+      "varpresets": "Pulsanti che impostano una variabile su valori predefiniti.",
       "flows": "Avvia i Flow con un tocco, nei tuoi colori e icone.",
       "price": "Il prezzo dell'elettricità ora e nelle prossime ore.",
       "timers": "Timer da cucina che continuano sul tuo Homey.",
@@ -480,6 +544,7 @@
       "clock": "L'ora e la data, con il meteo attuale se vuoi.",
       "textline": "Una nota su un riquadro o un Post-it, scritta da te o dai tuoi Flow.",
       "spacer": "Spazio vuoto per allineare i widget nelle colonne.",
+      "dayssince": "I giorni da una faccenda, in rosso quando è di nuovo ora.",
       "stack": "Widget di un'altra dashboard, a turno."
     }
   }

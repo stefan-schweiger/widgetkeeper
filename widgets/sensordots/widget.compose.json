@@ -20,7 +20,7 @@
     "type": "global",
     "singular": false,
     "filter": {
-      "capabilities": "alarm_motion|alarm_presence|alarm_contact|alarm_person|alarm_vehicle|alarm_pet"
+      "capabilities": "alarm_motion|alarm_presence|alarm_contact|alarm_person|alarm_vehicle|alarm_pet|alarm_vibration"
     }
   },
   "settings": [

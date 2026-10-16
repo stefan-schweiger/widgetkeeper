@@ -55,8 +55,42 @@
     "noMotion": "No motion",
     "presence": "Presence",
     "noPresence": "No presence",
+    "vibration": "Vibration",
+    "noVibration": "No vibration",
     "nothingDetected": "Nothing detected",
     "since": "since __time__"
+  },
+  "roomhealth": {
+    "selectDevices": "Select sensors in the widget settings.",
+    "error": "Could not load the sensors.",
+    "unavailable": "Unavailable",
+    "renameFailed": "Could not save the name.",
+    "good": "Good",
+    "noReadings": "No readings",
+    "allGood": "All rooms are comfortable.",
+    "hint": "__room__: __problem__, __value__. __action__",
+    "cold": "Cold",
+    "warm": "Warm",
+    "dry": "Dry",
+    "humid": "Humid",
+    "stuffy": "Stuffy",
+    "radon": "Radon",
+    "particles": "Particles",
+    "voc": "VOCs",
+    "problemCold": "cold",
+    "problemWarm": "warm",
+    "problemDry": "dry",
+    "problemHumid": "humid",
+    "problemStuffy": "stuffy",
+    "problemRadon": "high radon",
+    "problemParticles": "particles",
+    "problemVoc": "VOCs",
+    "actionHeat": "Turn up the heat.",
+    "actionCool": "Cool it down.",
+    "actionHumidify": "Humidify the air.",
+    "actionAirOut": "Air it out.",
+    "actionVentilate": "Ventilate more.",
+    "actionPurify": "Run an air purifier."
   },
   "weather": {
     "now": "Now",
@@ -80,7 +114,7 @@
     "shareTitle": "Widgetkeeper diagnostics",
     "varTitle": "API key",
     "varHelp": "Homey doesn't let apps change variables, start flows, read dashboards or start Moods themselves. In the Homey web app, create an API key under Settings → API Keys, tick the permissions the widgets you use need, and paste it here. It stays on your Homey. Everything else needs no key.",
-    "varForVariables": "Variables, to change a value:",
+    "varForVariables": "Variables and Variable Presets, to change a value:",
     "varTickVariables": "Variables",
     "varForFlows": "Flow Buttons, and flows on Media's buttons:",
     "varTickFlows": "Start Flows",
@@ -194,6 +228,21 @@
     "keyScope": "The API key may not change variables: it needs Variables.",
     "keyInvalid": "The API key was not accepted.",
     "renameFailed": "Could not save the name."
+  },
+  "varpresets": {
+    "selectVariable": "Pick a variable in the widget settings.",
+    "selectVariableFirst": "Select a variable first, then reopen this setting.",
+    "noPresets": "Pick the buttons’ values in the widget settings.",
+    "missing": "Variable not found",
+    "error": "Could not load the variable.",
+    "failed": "Could not change __name__.",
+    "currently": "Currently __value__",
+    "currentValue": "Current value",
+    "yes": "Yes",
+    "no": "No",
+    "noKey": "To change variables, add an API key in the app settings.",
+    "keyScope": "The API key may not change variables: it needs Variables.",
+    "keyInvalid": "The API key was not accepted."
   },
   "flows": {
     "selectSlots": "Pick flows in the widget settings.",
@@ -352,7 +401,8 @@
     "noKey": "To use this button, add an API key in the app settings.",
     "keyScope": "The API key may not run this: a flow needs Start Flows, a speaker action Flows.",
     "keyInvalid": "The API key was not accepted.",
-    "speakerAction": "Speaker action"
+    "speakerAction": "Speaker action",
+    "appAction": "App action"
   },
   "textline": {
     "noMessage": "No message",
@@ -362,6 +412,18 @@
     "error": "Could not load the text.",
     "boardInUse": "Has a text",
     "boardNew": "New note"
+  },
+  "dayssince": {
+    "setup": "Name your counters in the widget settings.",
+    "error": "Could not load the counters.",
+    "failed": "Could not reset __name__.",
+    "undoFailed": "Could not undo the reset of __name__.",
+    "today": "Today",
+    "notStarted": "Not started",
+    "undo": "Undo",
+    "resetLabel": "__name__: __time__. Tap to reset.",
+    "newCounter": "New counter",
+    "anyCounter": "Any counter"
   },
   "stack": {
     "selectDashboard": "Pick a dashboard in the widget settings.",
@@ -463,6 +525,7 @@
       "quickactions": "Small tiles that switch a device with one tap.",
       "sensoralarms": "Tiles that turn red when a sensor raises an alarm.",
       "sensordots": "Motion, doors and cameras as a grid of dots.",
+      "roomhealth": "Each room's temperature, humidity and air as one ring, and what to do when one is off.",
       "weather": "The next 36 hours, hour by hour.",
       "heatmap": "A week of any value as a weekday × hour heatmap.",
       "cameras": "Camera snapshots, with live video on a tap.",
@@ -471,6 +534,7 @@
       "sparklines": "Values with a small chart of their recent history.",
       "charts": "One or two charts of any value, like the electricity ones.",
       "variables": "Variables as rows you can switch or change.",
+      "varpresets": "Buttons that set a variable to preset values.",
       "flows": "Start flows with a tap, in your colours and icons.",
       "price": "The electricity price now and in the coming hours.",
       "timers": "Kitchen timers that keep running on your Homey.",
@@ -480,6 +544,7 @@
       "clock": "The time and date, with the weather now if you like.",
       "textline": "A note on a tile or a Post-it, typed in or written by your Flows.",
       "spacer": "Empty space to line up widgets in columns.",
+      "dayssince": "Days since a chore was done, turning red when it's due.",
       "stack": "Widgets from another dashboard, taking turns."
     }
   }

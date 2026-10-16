@@ -111,6 +111,79 @@
       ]
     },
     {
+      "id": "colorStyle",
+      "type": "dropdown",
+      "title": {
+        "en": "Colours",
+        "nl": "Kleuren",
+        "de": "Farben",
+        "fr": "Couleurs",
+        "it": "Colori",
+        "sv": "Färger",
+        "no": "Farger",
+        "es": "Colores",
+        "da": "Farver",
+        "ru": "Цвета",
+        "pl": "Kolory",
+        "ko": "색상",
+        "ar": "الألوان"
+      },
+      "hint": {
+        "en": "For percentage fills and colours set by a Flow. Bright fills the tile with the full colour, and the text turns dark (white on purple) so it stays readable.",
+        "nl": "Voor gevulde percentages en kleuren die een Flow instelt. Fel vult de tegel met de volle kleur, en de tekst wordt donker (wit op paars) zodat hij leesbaar blijft.",
+        "de": "Für gefüllte Prozentwerte und von einem Flow gesetzte Farben. Kräftig füllt die Kachel mit der vollen Farbe, und der Text wird dunkel (weiß auf Lila), damit er lesbar bleibt.",
+        "fr": "Pour les pourcentages remplis et les couleurs définies par un Flow. Vives remplit la tuile de la couleur pleine, et le texte devient foncé (blanc sur violet) pour rester lisible.",
+        "it": "Per le percentuali riempite e i colori impostati da un Flow. Vivaci riempie il riquadro con il colore pieno, e il testo diventa scuro (bianco sul viola) per restare leggibile.",
+        "sv": "För ifyllda procentvärden och färger som ett Flow ställer in. Starka fyller rutan med hela färgen, och texten blir mörk (vit på lila) så att den går att läsa.",
+        "no": "For utfylte prosentverdier og farger satt av en Flow. Sterke fyller flisen med full farge, og teksten blir mørk (hvit på lilla) så den er lett å lese.",
+        "es": "Para los porcentajes rellenos y los colores que pone un Flow. Vivos rellena el mosaico con el color pleno, y el texto pasa a oscuro (blanco sobre morado) para que se lea bien.",
+        "da": "Til udfyldte procenter og farver sat af et Flow. Stærke fylder feltet med hele farven, og teksten bliver mørk (hvid på lilla), så den er let at læse.",
+        "ru": "Для заливки процентов и цветов, заданных Flow. «Яркие» заливают плитку полным цветом, а текст становится тёмным (белым на фиолетовом), чтобы его было легко читать.",
+        "pl": "Dla wypełnień procentów i kolorów ustawianych przez Flow. Jaskrawe wypełniają kafelek pełnym kolorem, a tekst staje się ciemny (biały na fioletowym), aby był czytelny.",
+        "ko": "백분율 채우기와 Flow가 정한 색상에 적용됩니다. 선명하게는 타일을 원래 색으로 채우고, 글자를 어둡게(보라색 위에서는 흰색) 바꿔 잘 읽히게 합니다.",
+        "ar": "لتعبئة النسب المئوية والألوان التي يضبطها Flow. «زاهية» تملأ البلاطة باللون الكامل، ويصبح النص داكنًا (أبيض على البنفسجي) ليبقى مقروءًا."
+      },
+      "value": "soft",
+      "values": [
+        {
+          "id": "soft",
+          "title": {
+            "en": "Soft",
+            "nl": "Zacht",
+            "de": "Dezent",
+            "fr": "Douces",
+            "it": "Tenui",
+            "sv": "Dämpade",
+            "no": "Dempede",
+            "es": "Suaves",
+            "da": "Dæmpede",
+            "ru": "Мягкие",
+            "pl": "Stonowane",
+            "ko": "은은하게",
+            "ar": "هادئة"
+          }
+        },
+        {
+          "id": "bright",
+          "title": {
+            "en": "Bright",
+            "nl": "Fel",
+            "de": "Kräftig",
+            "fr": "Vives",
+            "it": "Vivaci",
+            "sv": "Starka",
+            "no": "Sterke",
+            "es": "Vivos",
+            "da": "Stærke",
+            "ru": "Яркие",
+            "pl": "Jaskrawe",
+            "ko": "선명하게",
+            "ar": "زاهية"
+          }
+        }
+      ]
+    },
+    {
       "id": "percentFill",
       "type": "checkbox",
       "title": {

@@ -1,0 +1,84 @@
+{
+  "id": "dayssince_reset",
+  "title": {
+    "en": "Reset a counter",
+    "nl": "Een teller resetten",
+    "de": "Einen Zähler zurücksetzen",
+    "fr": "Remettre un compteur à zéro",
+    "it": "Azzera un contatore",
+    "sv": "Nollställ en räknare",
+    "no": "Nullstill en teller",
+    "es": "Reiniciar un contador",
+    "da": "Nulstil en tæller",
+    "ru": "Сбросить счётчик",
+    "pl": "Wyzeruj licznik",
+    "ko": "카운터 초기화",
+    "ar": "إعادة ضبط عداد"
+  },
+  "titleFormatted": {
+    "en": "Reset [[counter]]",
+    "nl": "Reset [[counter]]",
+    "de": "[[counter]] zurücksetzen",
+    "fr": "Remettre [[counter]] à zéro",
+    "it": "Azzera [[counter]]",
+    "sv": "Nollställ [[counter]]",
+    "no": "Nullstill [[counter]]",
+    "es": "Reiniciar [[counter]]",
+    "da": "Nulstil [[counter]]",
+    "ru": "Сбросить [[counter]]",
+    "pl": "Wyzeruj [[counter]]",
+    "ko": "[[counter]] 초기화",
+    "ar": "أعد ضبط [[counter]]"
+  },
+  "hint": {
+    "en": "Starts the counter again from now, on every Days Since widget that shows it.",
+    "nl": "Start de teller opnieuw vanaf nu, op elke Dagen geleden-widget die hem toont.",
+    "de": "Startet den Zähler ab jetzt neu, auf jedem Tage-seit-Widget, das ihn zeigt.",
+    "fr": "Le compteur repart de maintenant, sur chaque widget Jours depuis qui l'affiche.",
+    "it": "Il contatore riparte da adesso, su ogni widget Giorni da che lo mostra.",
+    "sv": "Räknaren börjar om från nu, på alla Dagar sedan-widgetar som visar den.",
+    "no": "Telleren starter på nytt fra nå, på alle Dager siden-widgeter som viser den.",
+    "es": "El contador vuelve a empezar desde ahora, en cada widget Días desde que lo muestra.",
+    "da": "Tælleren starter forfra fra nu, på alle Dage siden-widgets, der viser den.",
+    "ru": "Счётчик начинается заново с этого момента на всех виджетах «Дней прошло», где он показан.",
+    "pl": "Licznik zaczyna od nowa od teraz, na każdym widżecie Dni od, który go pokazuje.",
+    "ko": "이 카운터를 표시하는 모든 경과 일수 위젯에서 지금부터 다시 셉니다.",
+    "ar": "يبدأ العداد من جديد من الآن، في كل أداة أيام منذ تعرضه."
+  },
+  "args": [
+    {
+      "type": "autocomplete",
+      "name": "counter",
+      "title": {
+        "en": "Counter",
+        "nl": "Teller",
+        "de": "Zähler",
+        "fr": "Compteur",
+        "it": "Contatore",
+        "sv": "Räknare",
+        "no": "Teller",
+        "es": "Contador",
+        "da": "Tæller",
+        "ru": "Счётчик",
+        "pl": "Licznik",
+        "ko": "카운터",
+        "ar": "العداد"
+      },
+      "placeholder": {
+        "en": "Plants",
+        "nl": "Planten",
+        "de": "Pflanzen",
+        "fr": "Plantes",
+        "it": "Piante",
+        "sv": "Växter",
+        "no": "Planter",
+        "es": "Plantas",
+        "da": "Planter",
+        "ru": "Растения",
+        "pl": "Rośliny",
+        "ko": "화분",
+        "ar": "النباتات"
+      }
+    }
+  ]
+}

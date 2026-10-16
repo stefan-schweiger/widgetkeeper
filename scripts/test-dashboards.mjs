@@ -178,14 +178,35 @@ const BUILD = {
   async sensordots() {
     const motion = where(d => (has(d, 'alarm_motion') || has(d, 'alarm_presence')) && cls(d) !== 'camera');
     const contact = where(d => has(d, 'alarm_contact'));
+    const vibration = where(d => has(d, 'alarm_vibration'));
     const cams = where(d => cls(d) === 'camera');
     return { cols: 2, widgets: [
-      w('sensordots', 'Defaults · everything', {}, [...contact, ...motion, ...cams]),
+      w('sensordots', 'Defaults · everything', {}, [...contact, ...motion, ...vibration, ...cams]),
       w('sensordots', 'Title · green idle, red active', { title: 'Doors and motion', idleColor: 'green', activeColor: 'red' }, [...contact.slice(0, 5), ...motion.slice(0, 3)]),
       w('sensordots', 'Doors only · blue idle, orange active', { title: 'Doors', idleColor: 'blue', activeColor: 'orange' }, contact),
       w('sensordots', 'Cameras · purple/yellow', { idleColor: 'purple', activeColor: 'yellow' }, cams),
+      w('sensordots', 'Vibration sensors', { title: 'Vibration' }, vibration),
       w('sensordots', 'One dot', {}, motion.slice(0, 1)),
       w('sensordots', 'Grey active · with a deleted device', { title: 'Odd ones', idleColor: 'grey', activeColor: 'grey' }, [...motion.slice(0, 2), MISSING]),
+    ] };
+  },
+
+  async roomhealth() {
+    // As lib/RoomHealthService.ts reads them: CO₂, radon, PM and VOC (any case), temperature and humidity also from a
+    // room sub-capability (a heat pump's `measure_temperature.room`). Sensors only, so no plug's or fridge's thermometer.
+    const air = where(d => (d.capabilities ?? []).some(c => /^measure_(co2|radon|pm25|pm10|voc)$/i.test(c)));
+    const climate = where(d => d.class === 'sensor' && has(d, 'measure_temperature') && !air.includes(d.id));
+    const tempOnly = where(d => d.class === 'sensor' && has(d, 'measure_temperature') && !(d.capabilities ?? []).some(c => /^measure_(humidity|co2)/i.test(c)), 3);
+    const roomSub = where(d => !has(d, 'measure_temperature') && (d.capabilities ?? []).some(c => /^measure_temperature\.(room|indoor|inside)$/.test(c)), 1);
+    const zoneOf = id => devices.find(d => d.id === id)?.zone;
+    return { cols: 3, widgets: [
+      w('roomhealth', 'Defaults · air and climate sensors', {}, [...air, ...climate].slice(0, 16)),
+      w('roomhealth', 'Strict: 21–22 °C, 45–50 %, CO₂ 600, radon 40, VOC 200 (yellow and red)',
+        { tempMin: 21, tempMax: 22, humidityMin: 45, humidityMax: 50, co2Max: 600, radonMax: 40, vocMax: 200 }, [...air, ...climate].slice(0, 9)),
+      w('roomhealth', 'Temperature only', {}, tempOnly),
+      w('roomhealth', "A heat pump's room temperature · deleted device", {}, [...roomSub, MISSING]),
+      w('roomhealth', 'No devices picked'),
+      renaming('roomhealth', 'Rename tiles', {}, air.slice(0, 3), air.length ? { [`zone:${zoneOf(air[0])}`]: 'Typed room name' } : {}),
     ] };
   },
 
@@ -233,8 +254,12 @@ const BUILD = {
       w('cameras', 'One · 5 s', { refresh: '5' }, cams.slice(0, 1)),
       w('cameras', 'Two · defaults (10 s)', {}, cams.slice(1, 3)),
       w('cameras', 'Three (odd last) · 30 s', { refresh: '30' }, cams.slice(0, 3)),
+      w('cameras', 'Three · large on top', { layout: 'top' }, cams.slice(0, 3)),
+      w('cameras', 'Three · one per row', { layout: 'single' }, cams.slice(0, 3)),
       w('cameras', 'All · 60 s', { refresh: '60' }, cams),
       w('cameras', 'With a deleted camera', {}, [cams[0], MISSING].filter(Boolean)),
+      w('cameras', 'Live until tapped', { liveFor: 'tap' }, cams.slice(0, 2)),
+      w('cameras', 'Live 30 s', { liveFor: '30' }, cams.slice(0, 1)),
       renaming('cameras', 'Rename tiles', {}, cams.slice(0, 2), cams[0] ? { [cams[0]]: 'Typed name' } : {}),
     ] };
   },
@@ -260,6 +285,7 @@ const BUILD = {
       w('values', 'Mixed types · 2 columns · renamed', { columns: '2', ...slots('slot', mixed), name1: 'Power', name3: 'Mode' }),
       w('values', 'Batteries · fill (red < 30, yellow < 50)', { percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
       w('values', 'Brightness (0–1 %) · fill', { percentFill: true, ...slots('slot', dims) }),
+      w('values', 'Batteries · bright fill (red < 30, yellow < 50)', { colorStyle: 'bright', percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
       w('values', 'Gaps and a deleted device', { ...slots('slot', [temps[0], null, missing, null, batteries[0]]) }),
       w('values', 'Nothing picked'),
       // The same value twice: the second tile's key is `#2`.
@@ -339,6 +365,51 @@ const BUILD = {
       w('variables', 'Step 10 · gaps · deleted', { step: 10, ...slots('slot', [items[0], null, missing, items[1]]) }),
       w('variables', 'Nothing picked'),
     ] };
+  },
+
+  async varpresets() {
+    // A variable of each type (the items carry it), and the buttons' values from the widget's own value autocomplete,
+    // typed as a user would: the first item is what's typed, or with nothing typed the current value. As on the
+    // Variables dashboard, a tap sets the real variable.
+    const vars = pick(await autocomplete('varpresets', 'variable'), () => true, 1000);
+    const [bool, num, text] = ['boolean', 'number', 'string'].map(type => vars.find(v => v.type === type) ?? null);
+    const value = async (variable, query = '') => pick(await autocomplete('varpresets', 'value1', { variable: variable.id }, query))[0] ?? null;
+    const buttons = list => Object.fromEntries(list.flatMap(([item, label], i) => [[`value${i + 1}`, item], [`label${i + 1}`, label ?? '']]));
+    const home = pick(await autocomplete('varpresets', 'icon', {}, 'home'), i => i.id === 'home')[0] ?? null;
+    const missing = { id: 'missing-variable-0000', name: 'Deleted variable', type: 'string' };
+    const out = [];
+    if (bool) {
+      const [yes, no] = pick(await autocomplete('varpresets', 'value1', { variable: bool.id }), () => true, 2);
+      out.push(
+        w('varpresets', 'Yes/No · no presets: Yes and No', { variable: bool }),
+        w('varpresets', 'Yes/No · labels · green', { variable: bool, color: 'green', ...buttons([[yes, 'On'], [no, 'Off']]) }),
+        w('varpresets', 'Yes/No · yellow (dark text when lit) · compact', { variable: bool, color: 'yellow', layout: 'compact', ...buttons([[yes], [no]]) }),
+      );
+    }
+    if (num) {
+      const current = (await value(num))?.value;
+      const n = typeof current === 'number' ? current : 0;
+      const steps = await Promise.all([n - 1, n, n + 1, n + 2].map(x => value(num, String(x))));
+      out.push(
+        w('varpresets', 'Number · 4 buttons · icon · compact', { variable: num, icon: home, layout: 'compact', ...buttons(steps.map(s => [s])) }),
+        w('varpresets', 'Number · typed title · orange · labels', { variable: num, title: 'Typed title', color: 'orange', ...buttons([[steps[0], 'Lower'], [steps[1], 'Now'], [steps[2], 'Higher']]) }),
+        w('varpresets', 'Number · none matches · red', { variable: num, color: 'red', ...buttons([[steps[2]], [steps[3]]]) }),
+      );
+    }
+    if (text) {
+      const current = await value(text);
+      const [home2, away] = await Promise.all(['Home', 'Away'].map(q => value(text, q)));
+      out.push(
+        w('varpresets', 'Text · current value + 2 · purple · icon', { variable: text, color: 'purple', icon: home, ...buttons([[current], [home2], [away]]) }),
+        w('varpresets', 'Text · long labels', { variable: text, ...buttons([[current, 'A label long enough for two lines'], [away, 'Out for the whole day']]) }),
+      );
+      if (num) out.push(w('varpresets', 'Presets of another type (text on a number)', { variable: num, ...buttons([[home2], [away]]) }));
+    }
+    out.push(
+      w('varpresets', 'Deleted variable', { variable: missing, ...buttons([[{ id: 'string:"Home"', name: 'Home', value: 'Home', type: 'string' }]]) }),
+      w('varpresets', 'Nothing picked'),
+    );
+    return { cols: 3, widgets: out };
   },
 
   async flows() {
@@ -465,6 +536,29 @@ const BUILD = {
       w('textline', vars.length ? `Variable · ${vars[0].name}` : 'Variable (none on this Homey)', { source: 'variable', variable: vars[0] ?? null }),
       w('textline', 'Variable · deleted', { source: 'variable', variable: missing }),
       w('textline', 'Variable · nothing picked', { source: 'variable' }),
+    ] };
+  },
+
+  // Days Since: `Test · …` counters, which the app keeps (shared by name: a tap on one widget shows on the others with
+  // that counter). They start as Not started; tap them, or back-date them with the Flow card *Set … to … days ago*.
+  dayssince: () => {
+    const icon = id => ({ id, name: EN.flows.icons[id] ?? id });
+    const counter = (n, name, iconId, amber, red) => ({
+      [`counter${n}`]: { id: `Test · ${name}`, name: `Test · ${name}` },
+      ...(iconId ? { [`icon${n}`]: icon(iconId) } : {}), [`amber${n}`]: amber, [`red${n}`]: red,
+    });
+    const household = { ...counter(1, 'Plants', 'leaf', 5, 7), ...counter(2, 'Vacuum filter', 'vacuum', 75, 90),
+      ...counter(3, 'Bedsheets', 'bed', 12, 14), ...counter(4, 'Fish', 'paw', 2, 3) };
+    const eight = ['Towels', 'Fridge', 'Gutters', 'Descale', 'Smoke alarm', 'Oven', 'Car wash', 'Haircut']
+      .reduce((s, name, i) => ({ ...s, ...counter(i + 1, name, ['washer', 'snowflake', 'home', 'coffee', 'bell', 'flame', 'car', 'star'][i], 0, 0) }), {});
+    return { cols: 3, widgets: [
+      w('dayssince', 'Defaults · one counter (Plants)', counter(1, 'Plants', 'leaf', 5, 7)),
+      w('dayssince', 'Household · amber and red', household),
+      w('dayssince', 'Days only · the same counters', { units: 'days', ...household }),
+      w('dayssince', 'Eight · no colours (0 and 0)', eight),
+      w('dayssince', 'No icons · Plants red after 2 days (the app takes the last loaded)', {
+        ...counter(1, 'Plants', null, 1, 2), icon1: { id: 'none', name: 'None' }, ...counter(2, 'Fish', null, 2, 3), icon2: { id: 'none', name: 'None' } }),
+      w('dayssince', 'Nothing picked'),
     ] };
   },
 

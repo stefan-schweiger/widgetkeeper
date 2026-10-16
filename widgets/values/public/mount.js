@@ -64,6 +64,7 @@ window.mountValuesWidget = function (Homey, { root, frame }) {
     renameTiles: settings.renameTiles === true,
     onRename: (key, name) => tileNames.rename(key, name),
     columns: settings.columns,
+    colorStyle: settings.colorStyle,
     percentFill: settings.percentFill === true,
     redBelow: settings.redBelow,
     yellowBelow: settings.yellowBelow,

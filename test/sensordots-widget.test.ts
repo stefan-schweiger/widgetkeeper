@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { activityAlarms } from '../widgets/sensordots/api.js';
 import { loadWidget } from './helpers/loadWidget.js';
 import { touch as fireTouch } from './helpers/touch.js';
 
@@ -24,6 +25,10 @@ const cam = (person = false, motion = false) => ({
 const office = (present = false, moving = false) => ({
   id: 'office', name: 'Office', icon: null,
   alarms: [alarm('alarm_motion', moving, 'Motion alarm', at('2026-10-08T18:05:00')), alarm('alarm_presence', present, 'Presence detected', at('2026-10-08T18:20:00'))],
+});
+/** A vibration sensor (wk-049: the Aqara lumi.vibration.aq1). */
+const patio = (shaking: boolean | null = false) => ({
+  id: 'patio', name: 'Patio door', icon: null, alarms: [alarm('alarm_vibration', shaking, 'Vibration alarm', at('2026-10-08T18:25:00'))],
 });
 
 function widget(state: any) {
@@ -136,6 +141,21 @@ describe('overlay', () => {
     expect(empty.panelText()).toBe(`Office|No presence since ${time('2026-10-08T18:20:00')}`);
   });
 
+  it('says vibration for vibration sensors, and no vibration while idle', () => {
+    const shaking = widget([patio(true)]);
+    expect(shaking.cell('patio').dataset.level).toBe('active');
+    shaking.cell('patio').click();
+    expect(shaking.panelText()).toBe(`Patio door|Vibration since ${time('2026-10-08T18:25:00')}`);
+    document.body.innerHTML = '';
+    const still = widget([patio()]);
+    expect(still.cell('patio').dataset.level).toBe('idle');
+    still.cell('patio').click();
+    expect(still.panelText()).toBe(`Patio door|No vibration since ${time('2026-10-08T18:25:00')}`);
+    document.body.innerHTML = '';
+    const unknown = widget([patio(null)]);
+    expect(unknown.cell('patio').dataset.level).toBe('unknown');
+  });
+
   it('says closed, and a dash without a value', () => {
     const closed = widget([door(false)]);
     closed.cell('door').click();
@@ -194,6 +214,12 @@ describe('updates', () => {
     expect(cell('office').dataset.level).toBe('active');
   });
 
+  it('lights a vibration sensor on a realtime vibration change', () => {
+    const { w, cell } = widget([patio()]);
+    w.pushChange({ deviceId: 'patio', capabilityId: 'alarm_vibration', value: true, t: at('2026-10-08T18:39:00') });
+    expect(cell('patio').dataset.level).toBe('active');
+  });
+
   it('a persistent message replaces the dots, a transient one keeps them', () => {
     const { w, root, cells } = widget([door()]);
     w.setMessage('Oops', true);
@@ -210,5 +236,17 @@ describe('updates', () => {
     w.setState([door()]);
     w.open('door');
     expect(root.querySelector('.sd-panel-state')!.textContent).toBe(`Offen seit ${time('2026-10-08T18:32:00')}`);
+  });
+});
+
+describe('activityAlarms', () => {
+  it('keeps motion, presence, contact, camera detections and vibration, sub-capabilities included', () => {
+    const ids = ['alarm_motion', 'alarm_presence.zone2', 'alarm_contact', 'alarm_person', 'alarm_vehicle', 'alarm_pet',
+      'alarm_vibration', 'alarm_vibration.x', 'alarm_smoke', 'alarm_battery', 'alarm_tamper', 'alarm_vibrations'];
+    const alarms = ids.map(id => ({ ...alarm(id, false), state: false }));
+    expect(activityAlarms(alarms).map(a => a.capabilityId)).toEqual([
+      'alarm_motion', 'alarm_presence.zone2', 'alarm_contact', 'alarm_person', 'alarm_vehicle', 'alarm_pet',
+      'alarm_vibration', 'alarm_vibration.x',
+    ]);
   });
 });

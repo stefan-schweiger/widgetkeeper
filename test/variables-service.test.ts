@@ -40,15 +40,58 @@ describe('listVariables', () => {
     const { service } = setup();
     expect(await service.listVariables('')).toEqual([
       { name: 'None', id: 'none' },
-      { name: 'Guest mode', description: 'Yes/No · No', id: 'v1' },
-      { name: 'Last message', description: 'Text · Hello', id: 'v3' },
-      { name: 'Night setpoint', description: 'Number · 18', id: 'v2' },
+      { name: 'Guest mode', description: 'Yes/No · No', id: 'v1', type: 'boolean' },
+      { name: 'Last message', description: 'Text · Hello', id: 'v3', type: 'string' },
+      { name: 'Night setpoint', description: 'Number · 18', id: 'v2', type: 'number' },
     ]);
   });
 
   it('filters on the name', async () => {
     const { service } = setup();
     expect((await service.listVariables('night')).map(i => i.id)).toEqual(['v2']);
+  });
+});
+
+describe('listPresetValues', () => {
+  it('offers Yes and No for a yes/no variable, the current one described', async () => {
+    const { service } = setup();
+    expect(await service.listPresetValues('v1', '')).toEqual([
+      { name: 'None', id: 'none' },
+      { id: 'boolean:true', name: 'Yes', description: 'Yes/No', value: true, type: 'boolean' },
+      { id: 'boolean:false', name: 'No', description: 'Yes/No · Current value', value: false, type: 'boolean' },
+    ]);
+    expect((await service.listPresetValues('v1', 'ye')).map(i => i.name)).toEqual(['Yes']);
+  });
+
+  it('turns a typed number into an item (a decimal comma too), then the current value', async () => {
+    const { service } = setup();
+    expect(await service.listPresetValues('v2', '21,5')).toEqual([
+      { id: 'number:21.5', name: '21,5', description: 'Number', value: 21.5, type: 'number' },
+    ]);
+    expect(await service.listPresetValues('v2', '')).toEqual([
+      { name: 'None', id: 'none' },
+      { id: 'number:18', name: '18', description: 'Number · Current value', value: 18, type: 'number' },
+    ]);
+    // The current value isn't offered twice, and what isn't a number adds nothing.
+    expect((await service.listPresetValues('v2', '18')).map(i => i.id)).toEqual(['number:18']);
+    expect((await service.listPresetValues('v2', '1')).map(i => i.id)).toEqual(['number:1', 'number:18']);
+    expect(await service.listPresetValues('v2', 'warm')).toEqual([]);
+  });
+
+  it('turns typed text into an item, cut to what the web dashboards keep', async () => {
+    const { service } = setup();
+    expect(await service.listPresetValues('v3', ' Away ')).toEqual([
+      { id: 'string:"Away"', name: 'Away', description: 'Text', value: 'Away', type: 'string' },
+    ]);
+    expect((await service.listPresetValues('v3', '')).map(i => i.name)).toEqual(['None', 'Hello']);
+    expect((await service.listPresetValues('v3', 'x'.repeat(300)))[0].value).toHaveLength(200);
+  });
+
+  it('asks for the variable first, and says when it is gone', async () => {
+    const { service } = setup();
+    await expect(service.listPresetValues(undefined, '')).rejects.toThrow(/variable first/);
+    await expect(service.listPresetValues('none', '')).rejects.toThrow(/variable first/);
+    await expect(service.listPresetValues('gone', '')).rejects.toThrow(/not found/);
   });
 });
 

@@ -2,12 +2,13 @@ import type { App } from 'homey';
 import type WidgetkeeperApp from './app.js';
 import { scopesAllow } from './lib/PersonalApiKey.js';
 import { callWidgetRoute, routeKeyUse, type WidgetApis } from './lib/widgetRoutes.js';
+import dayssince from './widgets/dayssince/api.js';
 import stack, { PAGE_APIS } from './widgets/stack/api.js';
 
 type Homey = App['homey'];
 
-/** Every widget's API, by widget id, for the web dashboards' frames (the Smart Stack's included). */
-const WEB_APIS: WidgetApis = { ...PAGE_APIS, stack };
+/** Every widget's API, by widget id, for the web dashboards' frames (the Smart Stack's included, and Days Since, which isn't a stack page). */
+const WEB_APIS: WidgetApis = { ...PAGE_APIS, stack, dayssince };
 
 /**
  * While the web dashboards have a password (`WebPassword`), their routes only answer a browser that also signed in

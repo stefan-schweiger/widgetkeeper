@@ -32,6 +32,7 @@ describe('alarmCaps', () => {
     const d = fakeDevice({
       caps: {
         alarm_smoke: { type: 'boolean', value: false, title: 'Smoke alarm' },
+        alarm_vibration: { type: 'boolean', value: true, title: 'Vibration alarm' },
         'alarm_generic.leak': { type: 'boolean', value: true },
         alarm_motion: { type: 'boolean', value: null },
         alarm_presence: { type: 'boolean', value: true, title: 'Presence detected' },
@@ -42,6 +43,8 @@ describe('alarmCaps', () => {
     });
     expect(alarmCaps(d)).toEqual([
       { capabilityId: 'alarm_smoke', title: 'Smoke alarm', value: false, state: false, lastUpdated: null },
+      // Counted as an alarm here; Activity Dots shows it as activity (ACTIVITY_CAPS).
+      { capabilityId: 'alarm_vibration', title: 'Vibration alarm', value: true, state: false, lastUpdated: null },
       { capabilityId: 'alarm_generic.leak', title: 'alarm_generic.leak', value: true, state: false, lastUpdated: null },
       { capabilityId: 'alarm_motion', title: 'alarm_motion', value: null, state: true, lastUpdated: null },
       { capabilityId: 'alarm_presence', title: 'Presence detected', value: true, state: true, lastUpdated: null },

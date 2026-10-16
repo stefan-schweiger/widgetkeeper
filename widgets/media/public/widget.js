@@ -1,11 +1,11 @@
 /*
  * Media: one speaker as a compact card. The album art, the track and the speaker's name, with a ⋯ button that
- * opens an overlay of buttons for the speaker's own Flow cards (Set source to TV …) or flows; previous, play/pause
- * and next with mute on the right; the volume as − bar + on its own line (`volumeLayout: 'line'`), or only − and +
- * around mute next to the transport (`'buttons'`, the level as a ring on mute). Each −/+ tap moves the volume at
- * once and a burst is sent once, so it never overshoots, and `maxVolume` caps it. On TV or line-in the card says so
- * instead of greying out: mute and the volume are what matter there. With `canSwitch`, a tap on the speaker's name
- * (its device icon, the name and a ⌄) lists every speaker, and picking one switches the card to it.
+ * opens an overlay of buttons for the speaker's own Flow cards (Set source to TV …), its app's or flows; previous,
+ * play/pause and next with mute on the right; the volume as − bar + on its own line (`volumeLayout: 'line'`), or
+ * only − and + around mute next to the transport (`'buttons'`, the level as a ring on mute). Each −/+ tap moves the
+ * volume at once and a burst is sent once, so it never overshoots, and `maxVolume` caps it. On TV or line-in the
+ * card says so instead of greying out: mute and the volume are what matter there. With `canSwitch`, a tap on the
+ * speaker's name (its device icon, the name and a ⌄) lists every speaker, and picking one switches the card to it.
  * `layout: 'large'` puts the album art above everything at the full width, with bigger text and buttons below it
  * (the same parts; only their order and the CSS differ).
  * Plain browser JS (served as-is).
@@ -208,7 +208,7 @@
     return span;
   }
 
-  /** `<card>` of a `card:homey:device:<id>:<card>` button id, or null for a flow. */
+  /** `<card>` of a `card:homey:device:<id>:<card>` button id, or null for a flow or an app's card. */
   function buttonCard(id) {
     const m = /^card:homey:device:[^:]+:(.+)$/.exec(id || '');
     return m ? m[1] : null;
@@ -441,8 +441,9 @@
     }
 
     /**
-     * A card button runs on the widget's speaker: on the one it was picked for, or a switched-to speaker that has a
-     * card of the same kind (`device.cards`, sent only for a switched-to speaker). Flows always run.
+     * A device card button runs on the widget's speaker: on the one it was picked for, or a switched-to speaker that
+     * has a card of the same kind (`device.cards`, sent only for a switched-to speaker). Flows and the speaker app's
+     * cards always run.
      */
     function buttonAvailable(b) {
       const cardPart = buttonCard(b.id);

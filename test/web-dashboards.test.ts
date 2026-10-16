@@ -273,6 +273,7 @@ describe('web dashboards: the app API', () => {
     await expect(call('flows', '/trigger', { id: 'flow:a' })).resolves.toEqual({ ok: false, reason: 'keyInvalid' });
     await expect(call('flows', '/trigger', { id: 'flow:a' }, 'nope')).resolves.toEqual({ ok: false, reason: 'keyInvalid' });
     await expect(call('variables', '/set', { id: 'v', value: true }, 'flows')).resolves.toEqual({ ok: false, reason: 'keyScope' });
+    await expect(call('varpresets', '/set', { id: 'v', value: true }, 'flows')).resolves.toEqual({ ok: false, reason: 'keyScope' });
     // Through a Smart Stack on the page, and a speaker's card (which needs homey.flow, not only flow.start).
     await expect(call('stack', '/call', { type: 'flows', method: 'POST', path: '/trigger', body: { id: 'flow:a' } }, 'weak'))
       .resolves.toEqual({ ok: false, reason: 'keyScope' });

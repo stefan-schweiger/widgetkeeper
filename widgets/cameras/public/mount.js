@@ -62,7 +62,9 @@ window.mountCamerasWidget = function (Homey, { root, frame }) {
     renameTiles: settings.renameTiles === true,
     onRename: (key, name) => tileNames.rename(key, name),
     refreshMs: snapshotMs,
-    api: (method, path, body) => Homey.api(method, path, body),
+    liveFor: settings.liveFor,
+    layout: settings.layout,
+    api:(method, path, body) => Homey.api(method, path, body),
     report: (text, warn) => { Homey.api('POST', '/report', { text, warn: !!warn }).catch(() => {}); },
     onHeight: () => {
       if (!readySent) return;
@@ -86,9 +88,10 @@ window.mountCamerasWidget = function (Homey, { root, frame }) {
   }
 
   // Snapshots refresh on their own timer, and not while the dashboard is in the background (or the stack's
-  // slide is off screen).
+  // slide is off screen). Live view until tapped comes back first, so the refresh skips the tiles it covers.
   function startSnapshots() {
     if (snapshotTimer || document.hidden || !visible || !loaded) return;
+    widget.resume();
     widget.refresh();
     snapshotTimer = setInterval(() => widget.refresh(), snapshotMs);
   }

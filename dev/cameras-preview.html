@@ -20,14 +20,16 @@
   <div class="col"><span>358 px (phone) · dark · 6 cameras</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
   <div class="col"><span>300 px · dark · 3 cameras, one without a snapshot (its frame grab fails: no API)</span><div class="dash homey-dark-mode" style="width:300px"><div id="w2"></div></div></div>
   <div class="col"><span>358 px · light · 2 cameras, one unavailable</span><div class="dash light" style="width:358px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · dark · 3 cameras, large on top (layout top)</span><div class="dash homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
+  <div class="col"><span>358 px · dark · 3 cameras, one per row (layout single)</span><div class="dash homey-dark-mode" style="width:358px"><div id="w9"></div></div></div>
   <div class="col"><span>358 px · dark · live (a looping canvas stands in for the stream)</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
   <div class="col"><span>358 px · dark · live, 6 cameras (the widget keeps its height)</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
   <div class="col"><span>358 px · dark · video but no snapshot (Aqara): a frame grabbed from the stream</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
   <div class="col"><span>358 px · no cameras</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
 
   <script>
-    const make = (id, devices) => {
-      const w = createCamerasWidget(document.getElementById(id), { t: devT });
+    const make = (id, devices, opts) => {
+      const w = createCamerasWidget(document.getElementById(id), { t: devT, ...opts });
       w.setState(devices);
       w.refresh();
       return w;
@@ -36,6 +38,8 @@
     make('w1', all);
     make('w2', [all[0], { ...all[2], image: null }, all[3]]);
     make('w3', [all[1], { id: 'gone', missing: true }]);
+    make('w8', all.slice(0, 3), { layout: 'top' });
+    make('w9', all.slice(0, 3), { layout: 'single' });
 
     // Live: a canvas stream plays over the widget, so the LIVE state can be checked without Homey.
     window.RTCPeerConnection = class {

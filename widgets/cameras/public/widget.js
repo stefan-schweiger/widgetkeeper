@@ -1,16 +1,19 @@
 /*
- * Cameras: a grid of camera snapshots, 2 per row (16:9; a lone or odd last tile spans the row), each
- * refreshed every few seconds. Tapping a camera with video plays it live over the whole widget (WebRTC
- * through Homey's own video server), trying the camera's next stream when one won't play (an H.265 one);
- * tapping again, or 5 minutes, ends it. A camera with video but no
- * snapshot (Aqara's) gets a frame grabbed from a short-lived stream instead, at most once a minute.
+ * Cameras: a grid of camera snapshots, 2 per row at 16:9, each refreshed every few seconds. With an odd
+ * number the last tile spans the row (the `layout` setting: the first, or every tile, one per row).
+ * Tapping a camera with video plays it live over the whole widget (WebRTC through Homey's own video
+ * server), trying the camera's next stream when one won't play (an H.265 one); tapping again, or the
+ * `liveFor` setting's 30 s to 5 minutes, ends it ("Until tapped": only a tap, and it comes back when the
+ * page shows again). A camera with video but no snapshot (Aqara's) gets a frame grabbed from a
+ * short-lived stream instead, at most once a minute.
  * Plain browser JS (served as-is).
  */
 (function () {
   'use strict';
 
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
-  const LIVE_MAX_MS = 5 * 60e3;
+  const LIVE_MAX_MS = 5 * 60e3; // the default, and for a missing or unknown `liveFor`
+  const LIVE_FOR = { 30: 30e3, 60: 60e3, 300: LIVE_MAX_MS, tap: null }; // `liveFor` → ms; null: until tapped
   const LIVE_TIMEOUT_MS = 15e3; // from the tap to the first frame, and between frames after that
   const NEXT_STREAM_MS = 10e3; // to the first frame of a stream with another one left to try
   const FRAME_CHECK_MS = 5000; // how often a live stream's decoded frames are counted
@@ -57,6 +60,22 @@
     if (!ctx) return null;
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     return canvas.toDataURL('image/jpeg', 0.8);
+  }
+
+  /** How long live view lasts for the `liveFor` setting, in ms; null until a tap ends it. */
+  function liveLimit(value) {
+    const key = String(value);
+    return Object.prototype.hasOwnProperty.call(LIVE_FOR, key) ? LIVE_FOR[key] : LIVE_MAX_MS;
+  }
+
+  /**
+   * Whether tile i of n spans the row, for the `layout` setting: every one (`single`), else with an odd number
+   * the first (`top`) or the last (`bottom`, the default, and for a missing or unknown value).
+   */
+  function spansRow(i, n, layout) {
+    if (layout === 'single') return true;
+    if (n % 2 === 0) return false;
+    return i === (layout === 'top' ? 0 : n - 1);
   }
 
   function preload(src) {
@@ -138,7 +157,8 @@
    * @param {{ t?: (key: string, tokens?: object) => string, refreshMs?: number,
    *   api?: (method: string, path: string, body?: object) => Promise<any>,
    *   report?: (text: string, warn?: boolean) => void, onHeight?: (h: number) => void,
-   *   now?: () => number, renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any> }} opts
+   *   now?: () => number, renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
+   *   liveFor?: string, layout?: string }} opts
    */
   function createCamerasWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -149,6 +169,7 @@
     const now = opts.now || (() => Date.now());
     const refreshMs = opts.refreshMs || 10e3;
     const grabMs = Math.max(GRAB_MIN_MS, refreshMs);
+    const liveMs = liveLimit(opts.liveFor);
 
     let devices = []; // [{ id, name, icon, image: { id, url, lastUpdated } | null, video, videos, h265 } | { id, missing }]
     let messageText = null;
@@ -164,6 +185,8 @@
     let refreshing = false;
     /** The tile playing live, with its connection. */
     let live = null;
+    /** Until tapped: the camera that was live when the page was hidden, to go live again when it shows. */
+    let resumeId = null;
     /** The frame grab under way (a video-only camera). */
     let grab = null;
     const grabReported = new Set();
@@ -204,7 +227,7 @@
       messageTimer = null;
       messageText = text;
       if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else { devices = []; stopLive(); }
+      else { devices = []; resumeId = null; stopLive(); }
       render();
     }
 
@@ -242,14 +265,17 @@
       return preload(await appUrl(d));
     }
 
-    /** Refreshes every snapshot, one camera at a time, so a slow camera doesn't hold up the frame. */
+    /**
+     * Refreshes every snapshot, one camera at a time, so a slow camera doesn't hold up the frame. Not while a
+     * camera is live: it covers the other tiles, and stopLive() refreshes them when it ends.
+     */
     async function refresh() {
       if (refreshing) return;
       refreshing = true;
       try {
         for (const d of devices.slice()) {
+          if (live) break;
           if ('missing' in d) continue;
-          if (live && live.id === d.id && live.playing) continue;
           const tile = tiles.get(d.id);
           if (!tile) continue;
           if (!d.image) {
@@ -405,7 +431,7 @@
     /**
      * The live camera covers the whole widget, letterboxed. The widget keeps its height, except that a single
      * row of tiles grows to a full-width 16:9 first, so the video isn't a strip. The height is measured before
-     * the tile leaves the grid: a wide last tile has a row of its own, which would otherwise collapse.
+     * the tile leaves the grid: a wide tile has a row of its own, which would otherwise collapse.
      */
     function expand(tile, on) {
       const box = grid.getBoundingClientRect();
@@ -517,7 +543,7 @@
       };
       tile.tile.classList.add('connecting');
       expand(tile, true);
-      l.maxTimer = setTimeout(() => { if (live === l) stopLive(); }, LIVE_MAX_MS);
+      if (liveMs != null) l.maxTimer = setTimeout(() => { if (live === l) stopLive(); }, liveMs);
 
       const attempt = (i) => {
         if (live !== l) return;
@@ -603,6 +629,7 @@
     function press(id) {
       const d = devices.find(x => x.id === id);
       if (!d || 'missing' in d || !d.video || names.renaming) return;
+      resumeId = null;
       const wasLive = live && live.id === id;
       stopLive();
       if (!wasLive) startLive(d);
@@ -688,8 +715,8 @@
         const empty = !missing && !d.image && (!d.video || (tile.grabFailed && !tile.loadedAt));
         tile.tile.classList.toggle('no-image', empty);
         tile.tile.classList.toggle('has-video', !missing && !!d.video);
-        // A lone tile, or the last of an odd number, spans the row.
-        tile.tile.classList.toggle('wide', i === devices.length - 1 && devices.length % 2 === 1);
+        // A lone tile, and the last (or first) of an odd number, spans the row.
+        tile.tile.classList.toggle('wide', spansRow(i, devices.length, opts.layout));
         if (empty) tile.note.style.display = 'none';
         tile.tile.setAttribute('data-empty', !empty ? '' : d.video && allH265(d) ? t('liveH265') : t('noImage'));
       });
@@ -706,13 +733,26 @@
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    /** Ends live view, e.g. when the dashboard goes to the background. */
+    /**
+     * Ends live view, e.g. when the dashboard goes to the background. Until tapped, the camera goes live again on
+     * resume(); a second pause() (hidden, then off screen in a Smart Stack) keeps that.
+     */
     function pause() {
       if (grab) grab.cancel();
+      if (live && liveMs == null) resumeId = live.id;
       stopLive(false);
     }
 
-    return { setState, setNames: names.set, setMessage, refresh, render, pause, t, routeOf: (id) => (appRoute.has(id) ? 'app' : 'direct') };
+    /** The page shows again: the camera that pause() ended until tapped goes live again. */
+    function resume() {
+      const id = resumeId;
+      resumeId = null;
+      if (!id || live || names.renaming) return;
+      const d = devices.find(x => x.id === id);
+      if (d && !('missing' in d) && d.video) startLive(d);
+    }
+
+    return { setState, setNames: names.set, setMessage, refresh, render, pause, resume, t, routeOf: (id) => (appRoute.has(id) ? 'app' : 'direct') };
   }
 
   window.createCamerasWidget = createCamerasWidget;

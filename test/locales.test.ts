@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 // Every language Homey supports.
 const LANGS = ['en', 'nl', 'de', 'fr', 'it', 'sv', 'no', 'es', 'da', 'ru', 'pl', 'ko', 'ar'];
-const COMPOSE = ['.homeycompose/app.json', 'widgets/electricity/widget.compose.json', 'widgets/thermostat/widget.compose.json', 'widgets/quickactions/widget.compose.json', 'widgets/sensoralarms/widget.compose.json', 'widgets/sensordots/widget.compose.json', 'widgets/weather/widget.compose.json', 'widgets/heatmap/widget.compose.json', 'widgets/cameras/widget.compose.json', 'widgets/values/widget.compose.json', 'widgets/lights/widget.compose.json', 'widgets/sparklines/widget.compose.json', 'widgets/variables/widget.compose.json', 'widgets/flows/widget.compose.json', 'widgets/price/widget.compose.json', 'widgets/timers/widget.compose.json', 'widgets/locks/widget.compose.json', 'widgets/curtains/widget.compose.json', 'widgets/media/widget.compose.json', '.homeycompose/flow/actions/values_set_color.json', '.homeycompose/flow/triggers/timers_finished.json'];
+const COMPOSE = ['.homeycompose/app.json', 'widgets/electricity/widget.compose.json', 'widgets/thermostat/widget.compose.json', 'widgets/quickactions/widget.compose.json', 'widgets/sensoralarms/widget.compose.json', 'widgets/sensordots/widget.compose.json', 'widgets/roomhealth/widget.compose.json', 'widgets/weather/widget.compose.json', 'widgets/heatmap/widget.compose.json', 'widgets/cameras/widget.compose.json', 'widgets/values/widget.compose.json', 'widgets/lights/widget.compose.json', 'widgets/sparklines/widget.compose.json', 'widgets/variables/widget.compose.json', 'widgets/varpresets/widget.compose.json', 'widgets/flows/widget.compose.json', 'widgets/price/widget.compose.json', 'widgets/timers/widget.compose.json', 'widgets/locks/widget.compose.json', 'widgets/curtains/widget.compose.json', 'widgets/media/widget.compose.json', '.homeycompose/flow/actions/values_set_color.json', '.homeycompose/flow/triggers/timers_finished.json', 'widgets/dayssince/widget.compose.json', '.homeycompose/flow/actions/dayssince_reset.json', '.homeycompose/flow/actions/dayssince_set.json', '.homeycompose/flow/triggers/dayssince_overdue.json', '.homeycompose/flow/conditions/dayssince_is_overdue.json'];
 
 const readJson = (path: string) => JSON.parse(readFileSync(path, 'utf8'));
 
@@ -54,4 +54,37 @@ describe('locales', () => {
       }
     });
   }
+
+  // Widget settings have no headings (see CLAUDE.md, Widget settings): a button's first row is flush left, the rest
+  // are indented with two em spaces under it, and the number keeps a non-breaking space so iOS doesn't drop it.
+  it("groups Thermostat Presets' settings per button", () => {
+    const settings: { id: string, title: Record<string, string> }[] = readJson('widgets/thermostat/widget.compose.json').settings;
+    for (const n of [1, 2, 3]) {
+      for (const lang of LANGS) {
+        const title = (part: string) => settings.find(s => s.id === `b${n}${part}`)!.title[lang];
+        expect(title('Power'), `b${n}Power.${lang}`).toMatch(new RegExp(`\\S ${n}: \\S`));
+        for (const part of ['Mode', 'Temp', 'Extra']) expect(title(part), `b${n}${part}.${lang}`).toMatch(/^  – \S/);
+      }
+    }
+  });
+
+  it("groups Room Health's ranges: the units in every title, the highest temperature and humidity under the lowest", () => {
+    const settings: { id: string, title: Record<string, string> }[] = readJson('widgets/roomhealth/widget.compose.json').settings;
+    for (const lang of LANGS) {
+      const title = (id: string) => settings.find(s => s.id === id)!.title[lang];
+      for (const id of ['tempMin', 'humidityMin', 'co2Max', 'radonMax', 'pm25Max', 'pm10Max', 'vocMax']) expect(title(id), `${id}.${lang}`).toMatch(/^\S.*\(.+\)$/);
+      for (const id of ['tempMax', 'humidityMax']) expect(title(id), `${id}.${lang}`).toMatch(/^  – \S.*\(.+\)$/);
+    }
+  });
+
+  it("groups Variable Presets' settings per button", () => {
+    const settings: { id: string, title: Record<string, string> }[] = readJson('widgets/varpresets/widget.compose.json').settings;
+    for (const n of [1, 2, 3, 4]) {
+      for (const lang of LANGS) {
+        const title = (id: string) => settings.find(s => s.id === id)!.title[lang];
+        expect(title(`value${n}`), `value${n}.${lang}`).toMatch(new RegExp(`\\S\\u00a0${n}: \\S`));
+        expect(title(`label${n}`), `label${n}.${lang}`).toMatch(/^  – \S/);
+      }
+    }
+  });
 });

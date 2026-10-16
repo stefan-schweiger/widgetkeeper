@@ -1,0 +1,523 @@
+{
+  "name": {
+    "en": "Variable Presets",
+    "nl": "Variabele-presets",
+    "de": "Variablen-Presets",
+    "fr": "Préréglages de variable",
+    "it": "Preimpostazioni variabile",
+    "sv": "Variabellägen",
+    "no": "Forhåndsvalg for variabel",
+    "es": "Preajustes de variable",
+    "da": "Variabelforvalg",
+    "ru": "Пресеты переменной",
+    "pl": "Presety zmiennej",
+    "ko": "변수 프리셋",
+    "ar": "إعدادات مسبقة للمتغير"
+  },
+  "height": 140,
+  "transparent": false,
+  "settings": [
+    {
+      "id": "variable",
+      "type": "autocomplete",
+      "title": {
+        "en": "Variable",
+        "nl": "Variabele",
+        "de": "Variable",
+        "fr": "Variable",
+        "it": "Variabile",
+        "sv": "Variabel",
+        "no": "Variabel",
+        "es": "Variable",
+        "da": "Variabel",
+        "ru": "Переменная",
+        "pl": "Zmienna",
+        "ko": "변수",
+        "ar": "المتغير"
+      },
+      "hint": {
+        "en": "Pick this first: the buttons’ values below are read from it. To change it from the widget, add an API key with the Variables permission in Widgetkeeper’s app settings.",
+        "nl": "Kies dit eerst: de waarden van de knoppen hieronder komen hieruit. Om hem vanuit de widget te wijzigen, voeg je in de app-instellingen van Widgetkeeper een API-sleutel toe met het recht Variabelen.",
+        "de": "Zuerst auswählen: Die Werte der Tasten darunter richten sich nach ihr. Um sie im Widget zu ändern, füge in den App-Einstellungen von Widgetkeeper einen API-Schlüssel mit dem Recht Variablen hinzu.",
+        "fr": "À choisir d’abord : les valeurs des boutons ci-dessous en dépendent. Pour la modifier depuis le widget, ajoutez une clé API avec le droit Variables dans les réglages de l’app Widgetkeeper.",
+        "it": "Sceglila per prima: i valori dei pulsanti qui sotto dipendono da essa. Per modificarla dal widget, aggiungi una chiave API con il permesso Variabili nelle impostazioni dell’app Widgetkeeper.",
+        "sv": "Välj den först: knapparnas värden nedan hämtas från den. Lägg till en API-nyckel med behörigheten Variabler i Widgetkeepers appinställningar för att ändra den från widgeten.",
+        "no": "Velg denne først: verdiene til knappene under hentes fra den. Legg til en API-nøkkel med tillatelsen Variabler i Widgetkeepers appinnstillinger for å endre den fra widgeten.",
+        "es": "Elígela primero: los valores de los botones de abajo dependen de ella. Para cambiarla desde el widget, añade una clave API con el permiso Variables en los ajustes de la app Widgetkeeper.",
+        "da": "Vælg den først: knappernes værdier nedenfor hentes fra den. Tilføj en API-nøgle med tilladelsen Variabler i Widgetkeepers app-indstillinger for at ændre den fra widgetten.",
+        "ru": "Выберите её первой: значения кнопок ниже берутся из неё. Чтобы менять её из виджета, добавьте ключ API с правом Переменные в настройках приложения Widgetkeeper.",
+        "pl": "Wybierz najpierw: wartości przycisków poniżej zależą od niej. Aby zmieniać ją z widżetu, dodaj klucz API z uprawnieniem Zmienne w ustawieniach aplikacji Widgetkeeper.",
+        "ko": "먼저 선택하세요. 아래 버튼 값은 이 변수에서 가져옵니다. 위젯에서 변경하려면 Widgetkeeper 앱 설정에서 변수 권한이 있는 API 키를 추가하세요.",
+        "ar": "اختره أولًا: تُؤخذ قيم الأزرار أدناه منه. لتغييره من الأداة، أضف مفتاح API بإذن المتغيرات في إعدادات تطبيق Widgetkeeper."
+      }
+    },
+    {
+      "id": "title",
+      "type": "text",
+      "title": {
+        "en": "Title",
+        "nl": "Titel",
+        "de": "Titel",
+        "fr": "Titre",
+        "it": "Titolo",
+        "sv": "Rubrik",
+        "no": "Tittel",
+        "es": "Título",
+        "da": "Titel",
+        "ru": "Заголовок",
+        "pl": "Tytuł",
+        "ko": "제목",
+        "ar": "العنوان"
+      },
+      "hint": {
+        "en": "Shown in place of the variable’s name. Leave empty for the name.",
+        "nl": "Getoond in plaats van de naam van de variabele. Laat leeg voor de naam.",
+        "de": "Wird statt des Namens der Variable angezeigt. Leer lassen für den Namen.",
+        "fr": "Affiché à la place du nom de la variable. Laissez vide pour le nom.",
+        "it": "Mostrato al posto del nome della variabile. Lascia vuoto per il nome.",
+        "sv": "Visas i stället för variabelns namn. Lämna tomt för namnet.",
+        "no": "Vises i stedet for variabelens navn. La stå tomt for navnet.",
+        "es": "Se muestra en lugar del nombre de la variable. Déjalo vacío para el nombre.",
+        "da": "Vises i stedet for variablens navn. Lad den være tom for navnet.",
+        "ru": "Показывается вместо имени переменной. Оставьте пустым для имени.",
+        "pl": "Wyświetlany zamiast nazwy zmiennej. Zostaw puste, aby była nazwa.",
+        "ko": "변수 이름 대신 표시됩니다. 비워 두면 이름이 표시됩니다.",
+        "ar": "يظهر بدل اسم المتغير. اتركه فارغًا لإظهار الاسم."
+      },
+      "value": ""
+    },
+    {
+      "id": "icon",
+      "type": "autocomplete",
+      "title": {
+        "en": "Icon",
+        "nl": "Pictogram",
+        "de": "Symbol",
+        "fr": "Icône",
+        "it": "Icona",
+        "sv": "Ikon",
+        "no": "Ikon",
+        "es": "Icono",
+        "da": "Ikon",
+        "ru": "Значок",
+        "pl": "Ikona",
+        "ko": "아이콘",
+        "ar": "الأيقونة"
+      },
+      "hint": {
+        "en": "Before the name. None for no icon.",
+        "nl": "Voor de naam. Geen voor geen pictogram.",
+        "de": "Vor dem Namen. Keine für kein Symbol.",
+        "fr": "Avant le nom. Aucun pour ne pas en mettre.",
+        "it": "Prima del nome. Nessuno per non mostrarla.",
+        "sv": "Före namnet. Ingen för ingen ikon.",
+        "no": "Foran navnet. Ingen for ingen ikon.",
+        "es": "Antes del nombre. Ninguno para no mostrarlo.",
+        "da": "Før navnet. Ingen for intet ikon.",
+        "ru": "Перед именем. «Нет», чтобы без значка.",
+        "pl": "Przed nazwą. Brak, aby nie było ikony.",
+        "ko": "이름 앞에 표시됩니다. 없음을 고르면 표시하지 않습니다.",
+        "ar": "قبل الاسم. لا شيء لعدم إظهار أيقونة."
+      }
+    },
+    {
+      "id": "layout",
+      "type": "dropdown",
+      "title": {
+        "en": "Layout",
+        "nl": "Indeling",
+        "de": "Layout",
+        "fr": "Disposition",
+        "it": "Layout",
+        "sv": "Layout",
+        "no": "Oppsett",
+        "es": "Diseño",
+        "da": "Layout",
+        "ru": "Макет",
+        "pl": "Układ",
+        "ko": "레이아웃",
+        "ar": "التخطيط"
+      },
+      "value": "standard",
+      "values": [
+        {
+          "id": "standard",
+          "title": {
+            "en": "Standard",
+            "nl": "Standaard",
+            "de": "Standard",
+            "fr": "Standard",
+            "it": "Standard",
+            "sv": "Standard",
+            "no": "Standard",
+            "es": "Estándar",
+            "da": "Standard",
+            "ru": "Стандартный",
+            "pl": "Standardowy",
+            "ko": "기본",
+            "ar": "قياسي"
+          }
+        },
+        {
+          "id": "compact",
+          "title": {
+            "en": "Compact",
+            "nl": "Compact",
+            "de": "Kompakt",
+            "fr": "Compacte",
+            "it": "Compatto",
+            "sv": "Kompakt",
+            "no": "Kompakt",
+            "es": "Compacto",
+            "da": "Kompakt",
+            "ru": "Компактный",
+            "pl": "Kompaktowy",
+            "ko": "컴팩트",
+            "ar": "مضغوط"
+          }
+        }
+      ]
+    },
+    {
+      "id": "color",
+      "type": "dropdown",
+      "title": {
+        "en": "Button colour",
+        "nl": "Knopkleur",
+        "de": "Tastenfarbe",
+        "fr": "Couleur des boutons",
+        "it": "Colore dei pulsanti",
+        "sv": "Knappfärg",
+        "no": "Knappfarge",
+        "es": "Color de los botones",
+        "da": "Knapfarve",
+        "ru": "Цвет кнопок",
+        "pl": "Kolor przycisków",
+        "ko": "버튼 색상",
+        "ar": "لون الأزرار"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        }
+      ],
+      "hint": {
+        "en": "The colour of the button that matches the variable.",
+        "nl": "De kleur van de knop die bij de variabele past.",
+        "de": "Die Farbe der Taste, die zur Variable passt.",
+        "fr": "La couleur du bouton qui correspond à la variable.",
+        "it": "Il colore del pulsante che corrisponde alla variabile.",
+        "sv": "Färgen på knappen som stämmer med variabeln.",
+        "no": "Fargen på knappen som stemmer med variabelen.",
+        "es": "El color del botón que coincide con la variable.",
+        "da": "Farven på den knap, der passer til variablen.",
+        "ru": "Цвет кнопки, совпадающей с переменной.",
+        "pl": "Kolor przycisku, który pasuje do zmiennej.",
+        "ko": "변수와 일치하는 버튼의 색상입니다.",
+        "ar": "لون الزر المطابق للمتغير."
+      }
+    },
+    {
+      "id": "value1",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 1: value",
+        "nl": "Knop 1: waarde",
+        "de": "Taste 1: Wert",
+        "fr": "Bouton 1: valeur",
+        "it": "Pulsante 1: valore",
+        "sv": "Knapp 1: värde",
+        "no": "Knapp 1: verdi",
+        "es": "Botón 1: valor",
+        "da": "Knap 1: værdi",
+        "ru": "Кнопка 1: значение",
+        "pl": "Przycisk 1: wartość",
+        "ko": "버튼 1: 값",
+        "ar": "الزر 1: القيمة"
+      },
+      "hint": {
+        "en": "Pick or type what this button sets the variable to: Yes or No, a number or a text, as the variable is. Buttons left on None are hidden.",
+        "nl": "Kies of typ waarop deze knop de variabele zet: Ja of Nee, een getal of een tekst, zoals de variabele is. Knoppen op Geen worden verborgen.",
+        "de": "Wähle oder tippe, worauf diese Taste die Variable setzt: Ja oder Nein, eine Zahl oder einen Text, je nach Variable. Tasten auf Keine werden ausgeblendet.",
+        "fr": "Choisissez ou tapez la valeur que ce bouton donne à la variable : Oui ou Non, un nombre ou un texte, selon la variable. Les boutons sur Aucun sont masqués.",
+        "it": "Scegli o digita il valore che questo pulsante dà alla variabile: Sì o No, un numero o un testo, secondo la variabile. I pulsanti su Nessuna sono nascosti.",
+        "sv": "Välj eller skriv vad knappen sätter variabeln till: Ja eller Nej, ett tal eller en text, efter variabeln. Knappar på Ingen döljs.",
+        "no": "Velg eller skriv hva knappen setter variabelen til: Ja eller Nei, et tall eller en tekst, etter variabelen. Knapper på Ingen skjules.",
+        "es": "Elige o escribe el valor que este botón da a la variable: Sí o No, un número o un texto, según la variable. Los botones en Ninguna se ocultan.",
+        "da": "Vælg eller skriv, hvad knappen sætter variablen til: Ja eller Nej, et tal eller en tekst, efter variablen. Knapper på Ingen skjules.",
+        "ru": "Выберите или введите значение, которое кнопка задаёт переменной: Да или Нет, число или текст, по типу переменной. Кнопки на «Нет» скрыты.",
+        "pl": "Wybierz lub wpisz, na co ten przycisk ustawia zmienną: Tak lub Nie, liczbę lub tekst, zależnie od zmiennej. Przyciski na Brak są ukryte.",
+        "ko": "이 버튼이 변수에 설정할 값을 고르거나 입력하세요. 변수에 맞게 예/아니요, 숫자 또는 텍스트입니다. 없음으로 둔 버튼은 숨겨집니다.",
+        "ar": "اختر أو اكتب القيمة التي يضبط بها هذا الزر المتغير: نعم أو لا، أو رقمًا أو نصًا، حسب المتغير. تُخفى الأزرار المضبوطة على لا شيء."
+      }
+    },
+    {
+      "id": "label1",
+      "type": "text",
+      "title": {
+        "en": "  – Label",
+        "nl": "  – Label",
+        "de": "  – Beschriftung",
+        "fr": "  – Libellé",
+        "it": "  – Etichetta",
+        "sv": "  – Etikett",
+        "no": "  – Etikett",
+        "es": "  – Etiqueta",
+        "da": "  – Etiket",
+        "ru": "  – Подпись",
+        "pl": "  – Etykieta",
+        "ko": "  – 레이블",
+        "ar": "  – التسمية"
+      },
+      "hint": {
+        "en": "Optional, such as Away. Shown on the button in place of the value.",
+        "nl": "Optioneel, zoals Weg. Getoond op de knop in plaats van de waarde.",
+        "de": "Optional, etwa Abwesend. Steht auf der Taste statt des Werts.",
+        "fr": "Facultatif, par exemple Absent. Affiché sur le bouton à la place de la valeur.",
+        "it": "Facoltativo, ad esempio Fuori casa. Mostrato sul pulsante al posto del valore.",
+        "sv": "Valfritt, till exempel Borta. Visas på knappen i stället för värdet.",
+        "no": "Valgfritt, for eksempel Borte. Vises på knappen i stedet for verdien.",
+        "es": "Opcional, por ejemplo Fuera. Se muestra en el botón en lugar del valor.",
+        "da": "Valgfrit, fx Ude. Vises på knappen i stedet for værdien.",
+        "ru": "Необязательно, например «Нет дома». Показывается на кнопке вместо значения.",
+        "pl": "Opcjonalnie, np. Poza domem. Widoczne na przycisku zamiast wartości.",
+        "ko": "선택 사항입니다(예: 외출). 값 대신 버튼에 표시됩니다.",
+        "ar": "اختياري، مثل خارج المنزل. يظهر على الزر بدل القيمة."
+      },
+      "value": ""
+    },
+    {
+      "id": "value2",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 2: value",
+        "nl": "Knop 2: waarde",
+        "de": "Taste 2: Wert",
+        "fr": "Bouton 2: valeur",
+        "it": "Pulsante 2: valore",
+        "sv": "Knapp 2: värde",
+        "no": "Knapp 2: verdi",
+        "es": "Botón 2: valor",
+        "da": "Knap 2: værdi",
+        "ru": "Кнопка 2: значение",
+        "pl": "Przycisk 2: wartość",
+        "ko": "버튼 2: 값",
+        "ar": "الزر 2: القيمة"
+      }
+    },
+    {
+      "id": "label2",
+      "type": "text",
+      "title": {
+        "en": "  – Label",
+        "nl": "  – Label",
+        "de": "  – Beschriftung",
+        "fr": "  – Libellé",
+        "it": "  – Etichetta",
+        "sv": "  – Etikett",
+        "no": "  – Etikett",
+        "es": "  – Etiqueta",
+        "da": "  – Etiket",
+        "ru": "  – Подпись",
+        "pl": "  – Etykieta",
+        "ko": "  – 레이블",
+        "ar": "  – التسمية"
+      },
+      "value": ""
+    },
+    {
+      "id": "value3",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 3: value",
+        "nl": "Knop 3: waarde",
+        "de": "Taste 3: Wert",
+        "fr": "Bouton 3: valeur",
+        "it": "Pulsante 3: valore",
+        "sv": "Knapp 3: värde",
+        "no": "Knapp 3: verdi",
+        "es": "Botón 3: valor",
+        "da": "Knap 3: værdi",
+        "ru": "Кнопка 3: значение",
+        "pl": "Przycisk 3: wartość",
+        "ko": "버튼 3: 값",
+        "ar": "الزر 3: القيمة"
+      }
+    },
+    {
+      "id": "label3",
+      "type": "text",
+      "title": {
+        "en": "  – Label",
+        "nl": "  – Label",
+        "de": "  – Beschriftung",
+        "fr": "  – Libellé",
+        "it": "  – Etichetta",
+        "sv": "  – Etikett",
+        "no": "  – Etikett",
+        "es": "  – Etiqueta",
+        "da": "  – Etiket",
+        "ru": "  – Подпись",
+        "pl": "  – Etykieta",
+        "ko": "  – 레이블",
+        "ar": "  – التسمية"
+      },
+      "value": ""
+    },
+    {
+      "id": "value4",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 4: value",
+        "nl": "Knop 4: waarde",
+        "de": "Taste 4: Wert",
+        "fr": "Bouton 4: valeur",
+        "it": "Pulsante 4: valore",
+        "sv": "Knapp 4: värde",
+        "no": "Knapp 4: verdi",
+        "es": "Botón 4: valor",
+        "da": "Knap 4: værdi",
+        "ru": "Кнопка 4: значение",
+        "pl": "Przycisk 4: wartość",
+        "ko": "버튼 4: 값",
+        "ar": "الزر 4: القيمة"
+      }
+    },
+    {
+      "id": "label4",
+      "type": "text",
+      "title": {
+        "en": "  – Label",
+        "nl": "  – Label",
+        "de": "  – Beschriftung",
+        "fr": "  – Libellé",
+        "it": "  – Etichetta",
+        "sv": "  – Etikett",
+        "no": "  – Etikett",
+        "es": "  – Etiqueta",
+        "da": "  – Etiket",
+        "ru": "  – Подпись",
+        "pl": "  – Etykieta",
+        "ko": "  – 레이블",
+        "ar": "  – التسمية"
+      },
+      "value": ""
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    },
+    "set": {
+      "method": "POST",
+      "path": "/set"
+    }
+  }
+}

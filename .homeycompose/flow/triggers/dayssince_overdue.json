@@ -1,0 +1,140 @@
+{
+  "id": "dayssince_overdue",
+  "title": {
+    "en": "A counter became overdue",
+    "nl": "Een teller is te laat geworden",
+    "de": "Ein Zähler ist überfällig geworden",
+    "fr": "Un compteur passe en retard",
+    "it": "Un contatore è appena scaduto",
+    "sv": "En räknare blev försenad",
+    "no": "En teller ble forsinket",
+    "es": "Un contador se ha retrasado",
+    "da": "En tæller er blevet forsinket",
+    "ru": "Счётчик стал просроченным",
+    "pl": "Licznik przekroczył termin",
+    "ko": "카운터 기한이 지났을 때",
+    "ar": "تأخر عداد"
+  },
+  "titleFormatted": {
+    "en": "[[counter]] became overdue",
+    "nl": "[[counter]] is te laat geworden",
+    "de": "[[counter]] ist überfällig geworden",
+    "fr": "[[counter]] passe en retard",
+    "it": "[[counter]] è appena scaduto",
+    "sv": "[[counter]] blev försenad",
+    "no": "[[counter]] ble forsinket",
+    "es": "[[counter]] se ha retrasado",
+    "da": "[[counter]] er blevet forsinket",
+    "ru": "[[counter]] стал просроченным",
+    "pl": "[[counter]] przekroczył termin",
+    "ko": "[[counter]] 기한이 지났을 때",
+    "ar": "تأخر [[counter]]"
+  },
+  "hint": {
+    "en": "A Days Since counter turned red (its Red after days have passed since the reset), even with no dashboard open.",
+    "nl": "Een Dagen geleden-teller is rood geworden (de dagen van Rood na zijn voorbij sinds de reset), ook als er geen dashboard open is.",
+    "de": "Ein Tage-seit-Zähler ist rot geworden (seit dem Zurücksetzen sind die Tage von Rot nach vergangen), auch ohne offenes Dashboard.",
+    "fr": "Un compteur Jours depuis est passé au rouge (les jours de Rouge après sont écoulés depuis la remise à zéro), même sans tableau de bord ouvert.",
+    "it": "Un contatore Giorni da è diventato rosso (dall'azzeramento sono passati i giorni di Rosso dopo), anche senza una dashboard aperta.",
+    "sv": "En Dagar sedan-räknare blev röd (dagarna i Röd efter har gått sedan nollställningen), även utan öppen instrumentpanel.",
+    "no": "En Dager siden-teller ble rød (dagene i Rød etter har gått siden nullstillingen), også uten et åpent dashbord.",
+    "es": "Un contador de Días desde se ha puesto en rojo (han pasado los días de Rojo tras desde el reinicio), aunque no haya ningún panel abierto.",
+    "da": "En Dage siden-tæller er blevet rød (dagene i Rød efter er gået siden nulstillingen), også uden et åbent dashboard.",
+    "ru": "Счётчик «Дней прошло» стал красным (с момента сброса прошло дней из «Красный через»), даже если панель не открыта.",
+    "pl": "Licznik Dni od zmienił kolor na czerwony (od wyzerowania minęły dni z Czerwony po), nawet bez otwartego pulpitu.",
+    "ko": "경과 일수 카운터가 빨간색이 되었습니다(초기화 후 빨강 표시 일수가 지남). 대시보드가 열려 있지 않아도 됩니다.",
+    "ar": "أصبح عداد أيام منذ أحمر (مرت أيام أحمر بعد منذ إعادة الضبط)، حتى دون فتح لوحة تحكم."
+  },
+  "args": [
+    {
+      "type": "autocomplete",
+      "name": "counter",
+      "title": {
+        "en": "Counter",
+        "nl": "Teller",
+        "de": "Zähler",
+        "fr": "Compteur",
+        "it": "Contatore",
+        "sv": "Räknare",
+        "no": "Teller",
+        "es": "Contador",
+        "da": "Tæller",
+        "ru": "Счётчик",
+        "pl": "Licznik",
+        "ko": "카운터",
+        "ar": "العداد"
+      },
+      "placeholder": {
+        "en": "Plants",
+        "nl": "Planten",
+        "de": "Pflanzen",
+        "fr": "Plantes",
+        "it": "Piante",
+        "sv": "Växter",
+        "no": "Planter",
+        "es": "Plantas",
+        "da": "Planter",
+        "ru": "Растения",
+        "pl": "Rośliny",
+        "ko": "화분",
+        "ar": "النباتات"
+      }
+    }
+  ],
+  "tokens": [
+    {
+      "name": "counter",
+      "type": "string",
+      "title": {
+        "en": "Counter",
+        "nl": "Teller",
+        "de": "Zähler",
+        "fr": "Compteur",
+        "it": "Contatore",
+        "sv": "Räknare",
+        "no": "Teller",
+        "es": "Contador",
+        "da": "Tæller",
+        "ru": "Счётчик",
+        "pl": "Licznik",
+        "ko": "카운터",
+        "ar": "العداد"
+      },
+      "example": {
+        "en": "Plants",
+        "nl": "Planten",
+        "de": "Pflanzen",
+        "fr": "Plantes",
+        "it": "Piante",
+        "sv": "Växter",
+        "no": "Planter",
+        "es": "Plantas",
+        "da": "Planter",
+        "ru": "Растения",
+        "pl": "Rośliny",
+        "ko": "화분",
+        "ar": "النباتات"
+      }
+    },
+    {
+      "name": "days",
+      "type": "number",
+      "title": {
+        "en": "Days",
+        "nl": "Dagen",
+        "de": "Tage",
+        "fr": "Jours",
+        "it": "Giorni",
+        "sv": "Dagar",
+        "no": "Dager",
+        "es": "Días",
+        "da": "Dage",
+        "ru": "Дни",
+        "pl": "Dni",
+        "ko": "일수",
+        "ar": "الأيام"
+      },
+      "example": 8
+    }
+  ]
+}

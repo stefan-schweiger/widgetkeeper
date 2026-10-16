@@ -22,7 +22,11 @@ Tiles that show a sensor's alarm and turn red when one is on<br clear="left"></p
 
 <p><a href="#activity-dots"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/sensordots-dark.png"><img src="docs/previews/sensordots-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#activity-dots"><b>Activity Dots</b></a><br>
-Many motion and contact sensors at a glance, as dots that change colour when active<br clear="left"></p>
+Many motion, contact and vibration sensors at a glance, as dots that change colour when active<br clear="left"></p>
+
+<p><a href="#room-health"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/roomhealth-dark.png"><img src="docs/previews/roomhealth-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#room-health"><b>Room Health</b></a><br>
+Each room's temperature, humidity, CO₂, radon and particles as one ring, green to red, with what to do<br clear="left"></p>
 
 <p><a href="#weather-forecast"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/weather-dark.png"><img src="docs/previews/weather-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#weather-forecast"><b>Weather Forecast</b></a><br>
@@ -55,6 +59,10 @@ One or two charts of any value over the last hour, day or week, drawn like Elect
 <p><a href="#variables"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/variables-dark.png"><img src="docs/previews/variables-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#variables"><b>Variables</b></a><br>
 Compact rows to switch variables on and off or change a number or text, with the full name<br clear="left"></p>
+
+<p><a href="#variable-presets"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/varpresets-dark.png"><img src="docs/previews/varpresets-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#variable-presets"><b>Variable Presets</b></a><br>
+Two to four one-tap buttons that set a variable to the values you pick, like Thermostat Presets<br clear="left"></p>
 
 <p><a href="#flow-buttons"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/flows-dark.png"><img src="docs/previews/flows-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#flow-buttons"><b>Flow Buttons</b></a><br>
@@ -91,6 +99,10 @@ The time and the date, with the weather now and today's high and low<br clear="l
 <p><a href="#notes"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/textline-dark.png"><img src="docs/previews/textline-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#notes"><b>Notes</b></a><br>
 A note on a tile or a handwritten Post-it, typed in or written by your Flows<br clear="left"></p>
+
+<p><a href="#days-since"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/dayssince-dark.png"><img src="docs/previews/dayssince-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#days-since"><b>Days Since</b></a><br>
+How long since the plants were watered or the filter changed, amber and then red when it's due; tap to reset<br clear="left"></p>
 
 <p><a href="#spacer"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/spacer-dark.png"><img src="docs/previews/spacer-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#spacer"><b>Spacer</b></a><br>
@@ -131,9 +143,28 @@ Tiles that show *No alarm*, the alarm that's on or how many, and turn red while 
 ## Activity Dots
 <img src="docs/clips/sensordots.webp" alt="Activity Dots on a Homey dashboard: dots lighting up as someone comes in through the front door, then tapped for the kitchen's motion and the open garage" width="358">
 
-Motion, contact and camera sensors as a grid of dots that light up while active. Tap a dot for its name and since when, such as *Garage · Open since 18:17*.
+Motion, contact, vibration and camera sensors as a grid of dots that light up while active. Tap a dot for its name and since when, such as *Garage · Open since 18:17*.
 
 **Settings:** sensors, title, idle and active colours.
+
+## Room Health
+<img src="docs/screenshots/roomhealth.png" alt="Room Health on a Homey dashboard: six rooms as rings, the kitchen humid" width="358">
+
+The indoor climate of the whole house on one card. Pick the sensors, and they're grouped by their Homey room: each room is a ring with an arc for every value it has, green while it's comfortable, then yellow and red the further it is outside. The ring shows the worst value (else the temperature), and under the rings one line names the worst problem in the house and what to do, such as *Bedroom: stuffy, 1,400 ppm. Air it out.* Tap a ring for all of that room's readings.
+
+| Value | Comfortable by default | Red at |
+|---|---|---|
+| Temperature | 18–24 °C (18 °C is WHO's minimum) | 3 °C outside |
+| Humidity | 30–60 % | 10 points outside |
+| CO₂ | up to 1000 ppm | 1.5 × the limit |
+| Radon | up to 100 Bq/m³ (WHO's reference level) | 1.5 × |
+| PM2.5 | up to 15 μg/m³ (WHO's 24-hour guideline) | 1.5 × |
+| PM10 | up to 45 μg/m³ (WHO's 24-hour guideline) | 1.5 × |
+| VOC | up to 1000 ppb | 1.5 × |
+
+A room shows whatever its sensors measure; a room with only a thermometer is judged on temperature. A heat pump's room temperature counts, its outdoor and water temperatures don't. Left out on purpose: carbon monoxide (a safety alarm: use [Sensor Alarms](#sensor-alarms)), air quality indexes and VOC in μg/m³ or as an index (their scales differ between devices), and PM1 (no guideline).
+
+**Settings:** sensors, [rename tiles](#tile-names), the comfortable range of each value (one range for every room).
 
 ## Weather Forecast
 <img src="docs/screenshots/weather.png" alt="Weather Forecast on a Homey dashboard" width="358">
@@ -156,14 +187,14 @@ A week of one Insights value as a grid of days and hours: numbers such as light 
 
 Your cameras as a grid of snapshots that refresh every few seconds (cameras with only a video stream show a still from it). Tap one to watch it live.
 
-**Settings:** cameras, refresh interval, [rename tiles](#tile-names).
+**Settings:** cameras, layout (the large camera at the top or the bottom, or one per row), refresh interval, how long live view stays on (30 seconds to 5 minutes, or until you tap it again), [rename tiles](#tile-names).
 
 ## Device Values
 <img src="docs/screenshots/values.png" alt="Device Values on a Homey dashboard" width="358">
 
 Half-height tiles that each show one live device value. Percentages can fill their tile by level, and the Flow card **Set the tile colour of … to …** colours a tile, such as a fridge going red when it's too warm.
 
-**Settings:** up to six values with optional names, 3 or 2 per row, percentage fill and its limits, [rename tiles](#tile-names).
+**Settings:** up to six values with optional names, 3 or 2 per row, soft or bright colours (bright fills the tile with the full colour, with dark text), percentage fill and its limits, [rename tiles](#tile-names).
 
 ## Light Controls
 <img src="docs/clips/lights.webp" alt="Light Controls on a Homey dashboard: a light turned on, dimmed with the bar, and given a colour and a white" width="358">
@@ -194,6 +225,13 @@ One chart, two stacked, or two values on one chart (each with its own scale), of
 Logic variables as compact rows with their full name: a switch for yes/no, − and + for a number, and the text for a string. Tap a number or text to type a value. Needs an [API key](#api-key) with **Variables** to change them. Read only shows the values without anything to tap (a dot and Yes/No for yes/no), and needs no key.
 
 **Settings:** up to ten variables, 1 or 2 columns, read only, the − and + step, the lowest and highest number, [rename tiles](#tile-names).
+
+## Variable Presets
+<img src="docs/screenshots/varpresets.png" alt="Variable Presets on a Homey dashboard" width="358">
+
+One Logic variable with two to four buttons, each setting it to a value you pick, such as *Home*, *Away* and *Night* for a house mode, or two setpoints. It looks like Thermostat Presets: the button whose value the variable has lights up in your colour, and when none does, the name says what it is now. A yes/no variable without buttons set gets Yes and No. Needs an [API key](#api-key) with **Variables** to change the variable.
+
+**Settings:** the variable, a title instead of its name, an icon, compact layout, the button colour, and per button: the value (Yes or No, a number or a text, as the variable is; pick the variable first) and a label.
 
 ## Flow Buttons
 <img src="docs/screenshots/flows.png" alt="Flow Buttons on a Homey dashboard" width="358">
@@ -235,7 +273,7 @@ Curtains and blinds as tiles: tap to open or close (the corner label says which)
 ## Media
 <img src="docs/clips/media.webp" alt="Media on a Homey dashboard: the volume turned up, the next track, mute, the TV as the source from behind ⋯, and a switch to another speaker" width="358">
 
-One speaker as a card: album art, the track, play controls, mute, and a volume that moves on every tap but never overshoots or passes your maximum. Shows TV and line-in instead of old album art. Tap the name to switch speaker. Up to four buttons behind ⋯ run the speaker's own actions (such as *Set source to TV*) or flows; they need an [API key](#api-key), with **Flows** for the speaker's actions and **Start Flows** for flows. A large layout puts the album art across the whole widget, with bigger text and buttons below it.
+One speaker as a card: album art, the track, play controls, mute, and a volume that moves on every tap but never overshoots or passes your maximum. Shows TV and line-in instead of old album art. Tap the name to switch speaker. Up to four buttons behind ⋯ run the speaker's own actions (such as *Set source to TV*), its app's (such as Sonos (LocalAPI)'s *Scan the music library*) or flows; they need an [API key](#api-key), with **Flows** for the actions and **Start Flows** for flows. A large layout puts the album art across the whole widget, with bigger text and buttons below it.
 
 **Settings:** layout (compact or large), speaker, speaker switching, volume as a bar or buttons, volume step and maximum, progress, shuffle and repeat, four buttons with an icon and a name.
 
@@ -259,6 +297,15 @@ The time and the date in one tile, with the weather now and today's high and low
 A short message on the dashboard, as a tile with one line of text or as a Post-it note stuck on it, tilted, with a folded corner and written in handwriting. Type the message in the widget's settings, or let a Flow write it: *Write [text] on the note [name]*, optionally in a colour (red for *Dryer done*), and *Clear the note [name]*. Every Notes widget with that name shows it, on every screen, at once. It can show a Logic text variable instead. On the tile, long text is cut off or scrolls; the Post-it wraps it to three lines.
 
 **Settings:** style (tile or Post-it), text from (the message typed in the settings, a Flow card or a text variable), message, note name, variable, alignment, text size, long text, icon, colour.
+
+## Days Since
+<img src="docs/screenshots/dayssince.png" alt="Days Since on a Homey dashboard: plants watered 6 days ago in amber, the vacuum filter 3 months in red, and the fish just fed with Undo" width="358">
+
+Counters for the things you do every so often: plants watered *6 days* ago, the vacuum filter changed *3 months* ago, the sheets *2 weeks*. Each tile turns amber, then red, the number of days you set after it was last done. Tap a tile when you've done it: it starts again from *Today*, with **Undo** for a few seconds. The counters are kept on Homey by name, so every widget (and every screen) with the same counter shows the same one.
+
+Flow cards: *Reset [counter]* (when the robot vacuum is done, for instance), *Set [counter] to [days] days ago* (for something done before you added the widget), the trigger *[counter] became overdue* (when it turns red, even with no dashboard open) and the condition *[counter] is overdue*; the last two also take *Any counter*.
+
+**Settings:** days only or days, weeks and months; up to eight counters, each with a name, an icon and the days until amber and red.
 
 ## Spacer
 An empty widget of the height you set, in pixels, to line up widgets of different heights at the top or bottom across a dashboard's columns. It's transparent in light and dark mode, and Homey keeps its usual gap above and below it.
@@ -301,7 +348,7 @@ Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an
 ## Tile names
 <img src="docs/clips/rename.webp" alt="Rename tiles: the setting turned on, names typed on two Light Controls tiles, and the setting turned off again with the names kept" width="358">
 
-Give any tile a name of your own, such as *Sofa corner* for a room's lights grouped by room, instead of the device's or room's name. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Device Values, Sparklines, Locks and Doors, Cameras and Variables can do this.
+Give any tile a name of your own, such as *Sofa corner* for a room's lights grouped by room, instead of the device's or room's name. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Room Health, Device Values, Sparklines, Locks and Doors, Cameras and Variables can do this.
 
 1. Edit the dashboard, edit the widget, turn on **Rename tiles** (the first setting) and save the widget.
 2. Leave the dashboard's edit mode. Each tile now shows a text field: type its name, or leave it empty to keep the device's (or room's) own name.
@@ -314,10 +361,10 @@ Homey doesn't let apps change variables, start flows, read dashboards or start M
 
 | What | Permission to tick | Scope |
 |---|---|---|
-| Variables: changing a value | **Variables** (View Variables isn't enough) | `homey.logic` |
+| Variables and Variable Presets: changing a value | **Variables** (View Variables isn't enough) | `homey.logic` |
 | Flow Buttons | **Start Flows** | `homey.flow.start` |
 | Media's buttons: a flow | **Start Flows** | `homey.flow.start` |
-| Media's buttons: the speaker's own actions, such as *Set source to TV* | **Flows** (Start Flows isn't enough) | `homey.flow` |
+| Media's buttons: the speaker's own actions, such as *Set source to TV*, and its app's | **Flows** (Start Flows isn't enough) | `homey.flow` |
 | Light Controls' Room's Moods: starting a Mood | **Set Moods** | `homey.mood.set` |
 | Smart Stack: reading the dashboard | **Homey**: the API Keys page has no permission for dashboards alone, so it takes the top one, which allows everything | `homey` |
 

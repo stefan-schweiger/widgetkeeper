@@ -122,6 +122,35 @@ describe('render', () => {
     });
   });
 
+  describe('bright colours', () => {
+    const battery = (value: number) => ({ deviceId: 'c', capabilityId: 'measure_battery', name: 'Sensor', capability: cap('number', { units: '%' }), value });
+    const ink = (t: HTMLElement) => t.querySelector<HTMLElement>('.vt-ink');
+
+    it('is soft unless the setting says bright', () => {
+      for (const colorStyle of [undefined, 'soft', 'bogus']) {
+        const { root, tiles } = widget([battery(50)], undefined, { colorStyle, percentFill: true });
+        expect(root.classList.contains('vt-bright')).toBe(false);
+        expect(ink(tiles()[0])).toBeNull();
+      }
+      expect(widget([temp()], undefined, { colorStyle: 'bright' }).root.classList.contains('vt-bright')).toBe(true);
+    });
+
+    it("copies each tile's icon, value and name into its ink layer, and follows changes", () => {
+      const { w, tiles } = widget([battery(50), temp()], undefined, { colorStyle: 'bright', percentFill: true, names: ['', 'Living room'] });
+      const copy = (t: HTMLElement) => {
+        const layer = ink(t)!;
+        expect(layer.getAttribute('aria-hidden')).toBe('true');
+        expect((layer.querySelector('.vt-icon') as HTMLElement).style.getPropertyValue('--vt-mask'))
+          .toBe((t.querySelector('.vt-icon') as HTMLElement).style.getPropertyValue('--vt-mask'));
+        return [layer.querySelector('.vt-value')!.textContent, layer.querySelector('.vt-name')!.textContent];
+      };
+      expect(tiles().map(copy)).toEqual([['50%', 'Sensor'], [`${dec(21.5)}°C`, 'Living room']]);
+      w.pushChange({ deviceId: 'c', capabilityId: 'measure_battery', value: 8 });
+      w.setNames({ 'c:measure_battery': 'Back door' });
+      expect(copy(tiles()[0])).toEqual(['8%', 'Back door']);
+    });
+  });
+
   it("uses the capability's own icon, else a built-in glyph", () => {
     const icon = 'data:image/svg+xml;base64,QUJD';
     const { tiles } = widget([{ ...temp(), capability: cap('number', { icon }) }, temp()]);

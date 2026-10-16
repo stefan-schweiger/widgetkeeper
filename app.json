@@ -126,6 +126,146 @@
   "flow": {
     "triggers": [
       {
+        "id": "dayssince_overdue",
+        "title": {
+          "en": "A counter became overdue",
+          "nl": "Een teller is te laat geworden",
+          "de": "Ein Zähler ist überfällig geworden",
+          "fr": "Un compteur passe en retard",
+          "it": "Un contatore è appena scaduto",
+          "sv": "En räknare blev försenad",
+          "no": "En teller ble forsinket",
+          "es": "Un contador se ha retrasado",
+          "da": "En tæller er blevet forsinket",
+          "ru": "Счётчик стал просроченным",
+          "pl": "Licznik przekroczył termin",
+          "ko": "카운터 기한이 지났을 때",
+          "ar": "تأخر عداد"
+        },
+        "titleFormatted": {
+          "en": "[[counter]] became overdue",
+          "nl": "[[counter]] is te laat geworden",
+          "de": "[[counter]] ist überfällig geworden",
+          "fr": "[[counter]] passe en retard",
+          "it": "[[counter]] è appena scaduto",
+          "sv": "[[counter]] blev försenad",
+          "no": "[[counter]] ble forsinket",
+          "es": "[[counter]] se ha retrasado",
+          "da": "[[counter]] er blevet forsinket",
+          "ru": "[[counter]] стал просроченным",
+          "pl": "[[counter]] przekroczył termin",
+          "ko": "[[counter]] 기한이 지났을 때",
+          "ar": "تأخر [[counter]]"
+        },
+        "hint": {
+          "en": "A Days Since counter turned red (its Red after days have passed since the reset), even with no dashboard open.",
+          "nl": "Een Dagen geleden-teller is rood geworden (de dagen van Rood na zijn voorbij sinds de reset), ook als er geen dashboard open is.",
+          "de": "Ein Tage-seit-Zähler ist rot geworden (seit dem Zurücksetzen sind die Tage von Rot nach vergangen), auch ohne offenes Dashboard.",
+          "fr": "Un compteur Jours depuis est passé au rouge (les jours de Rouge après sont écoulés depuis la remise à zéro), même sans tableau de bord ouvert.",
+          "it": "Un contatore Giorni da è diventato rosso (dall'azzeramento sono passati i giorni di Rosso dopo), anche senza una dashboard aperta.",
+          "sv": "En Dagar sedan-räknare blev röd (dagarna i Röd efter har gått sedan nollställningen), även utan öppen instrumentpanel.",
+          "no": "En Dager siden-teller ble rød (dagene i Rød etter har gått siden nullstillingen), også uten et åpent dashbord.",
+          "es": "Un contador de Días desde se ha puesto en rojo (han pasado los días de Rojo tras desde el reinicio), aunque no haya ningún panel abierto.",
+          "da": "En Dage siden-tæller er blevet rød (dagene i Rød efter er gået siden nulstillingen), også uden et åbent dashboard.",
+          "ru": "Счётчик «Дней прошло» стал красным (с момента сброса прошло дней из «Красный через»), даже если панель не открыта.",
+          "pl": "Licznik Dni od zmienił kolor na czerwony (od wyzerowania minęły dni z Czerwony po), nawet bez otwartego pulpitu.",
+          "ko": "경과 일수 카운터가 빨간색이 되었습니다(초기화 후 빨강 표시 일수가 지남). 대시보드가 열려 있지 않아도 됩니다.",
+          "ar": "أصبح عداد أيام منذ أحمر (مرت أيام أحمر بعد منذ إعادة الضبط)، حتى دون فتح لوحة تحكم."
+        },
+        "args": [
+          {
+            "type": "autocomplete",
+            "name": "counter",
+            "title": {
+              "en": "Counter",
+              "nl": "Teller",
+              "de": "Zähler",
+              "fr": "Compteur",
+              "it": "Contatore",
+              "sv": "Räknare",
+              "no": "Teller",
+              "es": "Contador",
+              "da": "Tæller",
+              "ru": "Счётчик",
+              "pl": "Licznik",
+              "ko": "카운터",
+              "ar": "العداد"
+            },
+            "placeholder": {
+              "en": "Plants",
+              "nl": "Planten",
+              "de": "Pflanzen",
+              "fr": "Plantes",
+              "it": "Piante",
+              "sv": "Växter",
+              "no": "Planter",
+              "es": "Plantas",
+              "da": "Planter",
+              "ru": "Растения",
+              "pl": "Rośliny",
+              "ko": "화분",
+              "ar": "النباتات"
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "counter",
+            "type": "string",
+            "title": {
+              "en": "Counter",
+              "nl": "Teller",
+              "de": "Zähler",
+              "fr": "Compteur",
+              "it": "Contatore",
+              "sv": "Räknare",
+              "no": "Teller",
+              "es": "Contador",
+              "da": "Tæller",
+              "ru": "Счётчик",
+              "pl": "Licznik",
+              "ko": "카운터",
+              "ar": "العداد"
+            },
+            "example": {
+              "en": "Plants",
+              "nl": "Planten",
+              "de": "Pflanzen",
+              "fr": "Plantes",
+              "it": "Piante",
+              "sv": "Växter",
+              "no": "Planter",
+              "es": "Plantas",
+              "da": "Planter",
+              "ru": "Растения",
+              "pl": "Rośliny",
+              "ko": "화분",
+              "ar": "النباتات"
+            }
+          },
+          {
+            "name": "days",
+            "type": "number",
+            "title": {
+              "en": "Days",
+              "nl": "Dagen",
+              "de": "Tage",
+              "fr": "Jours",
+              "it": "Giorni",
+              "sv": "Dagar",
+              "no": "Dager",
+              "es": "Días",
+              "da": "Dage",
+              "ru": "Дни",
+              "pl": "Dni",
+              "ko": "일수",
+              "ar": "الأيام"
+            },
+            "example": 8
+          }
+        ]
+      },
+      {
         "id": "timers_finished",
         "title": {
           "en": "A timer finished",
@@ -215,7 +355,298 @@
         ]
       }
     ],
+    "conditions": [
+      {
+        "id": "dayssince_is_overdue",
+        "title": {
+          "en": "A counter is overdue",
+          "nl": "Een teller is te laat",
+          "de": "Ein Zähler ist überfällig",
+          "fr": "Un compteur est en retard",
+          "it": "Un contatore è scaduto",
+          "sv": "En räknare är försenad",
+          "no": "En teller er forsinket",
+          "es": "Un contador está retrasado",
+          "da": "En tæller er forsinket",
+          "ru": "Счётчик просрочен",
+          "pl": "Licznik jest po terminie",
+          "ko": "카운터 기한이 지났음",
+          "ar": "عداد متأخر"
+        },
+        "titleFormatted": {
+          "en": "[[counter]] !{{is|isn't}} overdue",
+          "nl": "[[counter]] !{{is|is niet}} te laat",
+          "de": "[[counter]] !{{ist|ist nicht}} überfällig",
+          "fr": "[[counter]] !{{est|n'est pas}} en retard",
+          "it": "[[counter]] !{{è|non è}} scaduto",
+          "sv": "[[counter]] !{{är|är inte}} försenad",
+          "no": "[[counter]] !{{er|er ikke}} forsinket",
+          "es": "[[counter]] !{{está|no está}} retrasado",
+          "da": "[[counter]] !{{er|er ikke}} forsinket",
+          "ru": "[[counter]] !{{просрочен|не просрочен}}",
+          "pl": "[[counter]] !{{jest|nie jest}} po terminie",
+          "ko": "[[counter]] 기한이 !{{지났음|지나지 않았음}}",
+          "ar": "[[counter]] !{{متأخر|غير متأخر}}"
+        },
+        "hint": {
+          "en": "Whether a Days Since counter is red now. With Any counter: whether any is.",
+          "nl": "Of een Dagen geleden-teller nu rood is. Met Elke teller: of er een is.",
+          "de": "Ob ein Tage-seit-Zähler jetzt rot ist. Mit Beliebiger Zähler: ob einer es ist.",
+          "fr": "Si un compteur Jours depuis est rouge maintenant. Avec N'importe quel compteur : si l'un d'eux l'est.",
+          "it": "Se un contatore Giorni da è rosso adesso. Con Qualsiasi contatore: se almeno uno lo è.",
+          "sv": "Om en Dagar sedan-räknare är röd nu. Med Valfri räknare: om någon är det.",
+          "no": "Om en Dager siden-teller er rød nå. Med Hvilken som helst teller: om noen er det.",
+          "es": "Si un contador de Días desde está en rojo ahora. Con Cualquier contador: si alguno lo está.",
+          "da": "Om en Dage siden-tæller er rød nu. Med Enhver tæller: om nogen er det.",
+          "ru": "Красный ли сейчас счётчик «Дней прошло». С вариантом «Любой счётчик»: красный ли хотя бы один.",
+          "pl": "Czy licznik Dni od jest teraz czerwony. Z opcją Dowolny licznik: czy któryś jest.",
+          "ko": "경과 일수 카운터가 지금 빨간색인지 확인합니다. 아무 카운터를 고르면 하나라도 빨간색인지 확인합니다.",
+          "ar": "هل عداد أيام منذ أحمر الآن. مع أي عداد: هل أي منها كذلك."
+        },
+        "args": [
+          {
+            "type": "autocomplete",
+            "name": "counter",
+            "title": {
+              "en": "Counter",
+              "nl": "Teller",
+              "de": "Zähler",
+              "fr": "Compteur",
+              "it": "Contatore",
+              "sv": "Räknare",
+              "no": "Teller",
+              "es": "Contador",
+              "da": "Tæller",
+              "ru": "Счётчик",
+              "pl": "Licznik",
+              "ko": "카운터",
+              "ar": "العداد"
+            },
+            "placeholder": {
+              "en": "Plants",
+              "nl": "Planten",
+              "de": "Pflanzen",
+              "fr": "Plantes",
+              "it": "Piante",
+              "sv": "Växter",
+              "no": "Planter",
+              "es": "Plantas",
+              "da": "Planter",
+              "ru": "Растения",
+              "pl": "Rośliny",
+              "ko": "화분",
+              "ar": "النباتات"
+            }
+          }
+        ]
+      }
+    ],
     "actions": [
+      {
+        "id": "dayssince_reset",
+        "title": {
+          "en": "Reset a counter",
+          "nl": "Een teller resetten",
+          "de": "Einen Zähler zurücksetzen",
+          "fr": "Remettre un compteur à zéro",
+          "it": "Azzera un contatore",
+          "sv": "Nollställ en räknare",
+          "no": "Nullstill en teller",
+          "es": "Reiniciar un contador",
+          "da": "Nulstil en tæller",
+          "ru": "Сбросить счётчик",
+          "pl": "Wyzeruj licznik",
+          "ko": "카운터 초기화",
+          "ar": "إعادة ضبط عداد"
+        },
+        "titleFormatted": {
+          "en": "Reset [[counter]]",
+          "nl": "Reset [[counter]]",
+          "de": "[[counter]] zurücksetzen",
+          "fr": "Remettre [[counter]] à zéro",
+          "it": "Azzera [[counter]]",
+          "sv": "Nollställ [[counter]]",
+          "no": "Nullstill [[counter]]",
+          "es": "Reiniciar [[counter]]",
+          "da": "Nulstil [[counter]]",
+          "ru": "Сбросить [[counter]]",
+          "pl": "Wyzeruj [[counter]]",
+          "ko": "[[counter]] 초기화",
+          "ar": "أعد ضبط [[counter]]"
+        },
+        "hint": {
+          "en": "Starts the counter again from now, on every Days Since widget that shows it.",
+          "nl": "Start de teller opnieuw vanaf nu, op elke Dagen geleden-widget die hem toont.",
+          "de": "Startet den Zähler ab jetzt neu, auf jedem Tage-seit-Widget, das ihn zeigt.",
+          "fr": "Le compteur repart de maintenant, sur chaque widget Jours depuis qui l'affiche.",
+          "it": "Il contatore riparte da adesso, su ogni widget Giorni da che lo mostra.",
+          "sv": "Räknaren börjar om från nu, på alla Dagar sedan-widgetar som visar den.",
+          "no": "Telleren starter på nytt fra nå, på alle Dager siden-widgeter som viser den.",
+          "es": "El contador vuelve a empezar desde ahora, en cada widget Días desde que lo muestra.",
+          "da": "Tælleren starter forfra fra nu, på alle Dage siden-widgets, der viser den.",
+          "ru": "Счётчик начинается заново с этого момента на всех виджетах «Дней прошло», где он показан.",
+          "pl": "Licznik zaczyna od nowa od teraz, na każdym widżecie Dni od, który go pokazuje.",
+          "ko": "이 카운터를 표시하는 모든 경과 일수 위젯에서 지금부터 다시 셉니다.",
+          "ar": "يبدأ العداد من جديد من الآن، في كل أداة أيام منذ تعرضه."
+        },
+        "args": [
+          {
+            "type": "autocomplete",
+            "name": "counter",
+            "title": {
+              "en": "Counter",
+              "nl": "Teller",
+              "de": "Zähler",
+              "fr": "Compteur",
+              "it": "Contatore",
+              "sv": "Räknare",
+              "no": "Teller",
+              "es": "Contador",
+              "da": "Tæller",
+              "ru": "Счётчик",
+              "pl": "Licznik",
+              "ko": "카운터",
+              "ar": "العداد"
+            },
+            "placeholder": {
+              "en": "Plants",
+              "nl": "Planten",
+              "de": "Pflanzen",
+              "fr": "Plantes",
+              "it": "Piante",
+              "sv": "Växter",
+              "no": "Planter",
+              "es": "Plantas",
+              "da": "Planter",
+              "ru": "Растения",
+              "pl": "Rośliny",
+              "ko": "화분",
+              "ar": "النباتات"
+            }
+          }
+        ]
+      },
+      {
+        "id": "dayssince_set",
+        "title": {
+          "en": "Set a counter's days",
+          "nl": "De dagen van een teller instellen",
+          "de": "Die Tage eines Zählers setzen",
+          "fr": "Régler les jours d'un compteur",
+          "it": "Imposta i giorni di un contatore",
+          "sv": "Ställ in en räknares dagar",
+          "no": "Still inn dagene til en teller",
+          "es": "Ajustar los días de un contador",
+          "da": "Indstil en tællers dage",
+          "ru": "Задать дни счётчика",
+          "pl": "Ustaw dni licznika",
+          "ko": "카운터 일수 설정",
+          "ar": "ضبط أيام عداد"
+        },
+        "titleFormatted": {
+          "en": "Set [[counter]] to [[days]] days ago",
+          "nl": "Zet [[counter]] op [[days]] dagen geleden",
+          "de": "[[counter]] auf vor [[days]] Tagen setzen",
+          "fr": "Régler [[counter]] à il y a [[days]] jours",
+          "it": "Imposta [[counter]] a [[days]] giorni fa",
+          "sv": "Sätt [[counter]] till [[days]] dagar sedan",
+          "no": "Sett [[counter]] til [[days]] dager siden",
+          "es": "Poner [[counter]] a hace [[days]] días",
+          "da": "Sæt [[counter]] til [[days]] dage siden",
+          "ru": "Установить [[counter]] на [[days]] дн. назад",
+          "pl": "Ustaw [[counter]] na [[days]] dni temu",
+          "ko": "[[counter]]을(를) [[days]]일 전으로 설정",
+          "ar": "اضبط [[counter]] على قبل [[days]] أيام"
+        },
+        "hint": {
+          "en": "As if it was reset that many days ago: for something done before the widget was set up.",
+          "nl": "Alsof de teller zoveel dagen geleden is gereset: voor iets dat al gedaan was voordat de widget er was.",
+          "de": "Als wäre er vor so vielen Tagen zurückgesetzt worden: für etwas, das schon vor dem Widget erledigt war.",
+          "fr": "Comme s'il avait été remis à zéro il y a autant de jours : pour une tâche faite avant la mise en place du widget.",
+          "it": "Come se fosse stato azzerato tanti giorni fa: per qualcosa fatto prima di avere il widget.",
+          "sv": "Som om den nollställdes för så många dagar sedan: för något som gjordes innan widgeten fanns.",
+          "no": "Som om den ble nullstilt for så mange dager siden: for noe som ble gjort før widgeten fantes.",
+          "es": "Como si se hubiera reiniciado hace tantos días: para algo hecho antes de tener el widget.",
+          "da": "Som om den blev nulstillet for så mange dage siden: til noget, der blev gjort, før widgetten var sat op.",
+          "ru": "Как будто счётчик сбросили столько дней назад: для того, что сделали до появления виджета.",
+          "pl": "Jakby licznik wyzerowano tyle dni temu: dla czegoś zrobionego przed dodaniem widżetu.",
+          "ko": "그만큼 전에 초기화한 것처럼 설정합니다. 위젯을 만들기 전에 한 일에 쓰세요.",
+          "ar": "كأنه أُعيد ضبطه قبل هذا العدد من الأيام: لشيء أُنجز قبل إعداد الأداة."
+        },
+        "args": [
+          {
+            "type": "autocomplete",
+            "name": "counter",
+            "title": {
+              "en": "Counter",
+              "nl": "Teller",
+              "de": "Zähler",
+              "fr": "Compteur",
+              "it": "Contatore",
+              "sv": "Räknare",
+              "no": "Teller",
+              "es": "Contador",
+              "da": "Tæller",
+              "ru": "Счётчик",
+              "pl": "Licznik",
+              "ko": "카운터",
+              "ar": "العداد"
+            },
+            "placeholder": {
+              "en": "Plants",
+              "nl": "Planten",
+              "de": "Pflanzen",
+              "fr": "Plantes",
+              "it": "Piante",
+              "sv": "Växter",
+              "no": "Planter",
+              "es": "Plantas",
+              "da": "Planter",
+              "ru": "Растения",
+              "pl": "Rośliny",
+              "ko": "화분",
+              "ar": "النباتات"
+            }
+          },
+          {
+            "type": "number",
+            "name": "days",
+            "title": {
+              "en": "Days",
+              "nl": "Dagen",
+              "de": "Tage",
+              "fr": "Jours",
+              "it": "Giorni",
+              "sv": "Dagar",
+              "no": "Dager",
+              "es": "Días",
+              "da": "Dage",
+              "ru": "Дни",
+              "pl": "Dni",
+              "ko": "일수",
+              "ar": "الأيام"
+            },
+            "placeholder": {
+              "en": "14",
+              "nl": "14",
+              "de": "14",
+              "fr": "14",
+              "it": "14",
+              "sv": "14",
+              "no": "14",
+              "es": "14",
+              "da": "14",
+              "ru": "14",
+              "pl": "14",
+              "ko": "14",
+              "ar": "14"
+            },
+            "min": 0,
+            "max": 3650,
+            "step": 1
+          }
+        ]
+      },
       {
         "id": "stack_resume",
         "title": {
@@ -407,6 +838,24 @@
                 }
               },
               {
+                "id": "roomhealth",
+                "title": {
+                  "en": "Room Health",
+                  "nl": "Binnenklimaat",
+                  "de": "Raumklima",
+                  "fr": "Climat des pièces",
+                  "it": "Clima delle stanze",
+                  "sv": "Rumsklimat",
+                  "no": "Romklima",
+                  "es": "Clima interior",
+                  "da": "Indeklima",
+                  "ru": "Климат в комнатах",
+                  "pl": "Klimat w pomieszczeniach",
+                  "ko": "실내 환경",
+                  "ar": "مناخ الغرف"
+                }
+              },
+              {
                 "id": "weather",
                 "title": {
                   "en": "Weather Forecast",
@@ -548,6 +997,24 @@
                   "pl": "Zmienne",
                   "ko": "변수",
                   "ar": "المتغيرات"
+                }
+              },
+              {
+                "id": "varpresets",
+                "title": {
+                  "en": "Variable Presets",
+                  "nl": "Variabele-presets",
+                  "de": "Variablen-Presets",
+                  "fr": "Préréglages de variable",
+                  "it": "Preimpostazioni variabile",
+                  "sv": "Variabellägen",
+                  "no": "Forhåndsvalg for variabel",
+                  "es": "Preajustes de variable",
+                  "da": "Variabelforvalg",
+                  "ru": "Пресеты переменной",
+                  "pl": "Presety zmiennej",
+                  "ko": "변수 프리셋",
+                  "ar": "إعدادات مسبقة للمتغير"
                 }
               },
               {
@@ -1498,6 +1965,97 @@
           "value": false
         },
         {
+          "id": "layout",
+          "type": "dropdown",
+          "title": {
+            "en": "Layout",
+            "nl": "Indeling",
+            "de": "Layout",
+            "fr": "Disposition",
+            "it": "Layout",
+            "sv": "Layout",
+            "no": "Oppsett",
+            "es": "Diseño",
+            "da": "Layout",
+            "ru": "Макет",
+            "pl": "Układ",
+            "ko": "레이아웃",
+            "ar": "التخطيط"
+          },
+          "hint": {
+            "en": "With an odd number of cameras, one fills the whole width.",
+            "nl": "Bij een oneven aantal camera's vult één camera de hele breedte.",
+            "de": "Bei einer ungeraden Anzahl Kameras füllt eine die ganze Breite.",
+            "fr": "Avec un nombre impair de caméras, l'une d'elles occupe toute la largeur.",
+            "it": "Con un numero dispari di telecamere, una occupa tutta la larghezza.",
+            "sv": "Med ett udda antal kameror fyller en kamera hela bredden.",
+            "no": "Med et oddetall kameraer fyller ett kamera hele bredden.",
+            "es": "Con un número impar de cámaras, una ocupa todo el ancho.",
+            "da": "Med et ulige antal kameraer fylder ét kamera hele bredden.",
+            "ru": "При нечётном числе камер одна занимает всю ширину.",
+            "pl": "Przy nieparzystej liczbie kamer jedna zajmuje całą szerokość.",
+            "ko": "카메라 수가 홀수이면 한 대가 전체 너비를 채웁니다.",
+            "ar": "عند وجود عدد فردي من الكاميرات، تملأ إحداها العرض بالكامل."
+          },
+          "value": "bottom",
+          "values": [
+            {
+              "id": "bottom",
+              "title": {
+                "en": "Large camera at the bottom",
+                "nl": "Grote camera onderaan",
+                "de": "Große Kamera unten",
+                "fr": "Grande caméra en bas",
+                "it": "Telecamera grande in basso",
+                "sv": "Stor kamera längst ner",
+                "no": "Stort kamera nederst",
+                "es": "Cámara grande abajo",
+                "da": "Stort kamera nederst",
+                "ru": "Большая камера внизу",
+                "pl": "Duża kamera na dole",
+                "ko": "큰 카메라를 아래에",
+                "ar": "الكاميرا الكبيرة في الأسفل"
+              }
+            },
+            {
+              "id": "top",
+              "title": {
+                "en": "Large camera on top",
+                "nl": "Grote camera bovenaan",
+                "de": "Große Kamera oben",
+                "fr": "Grande caméra en haut",
+                "it": "Telecamera grande in alto",
+                "sv": "Stor kamera överst",
+                "no": "Stort kamera øverst",
+                "es": "Cámara grande arriba",
+                "da": "Stort kamera øverst",
+                "ru": "Большая камера вверху",
+                "pl": "Duża kamera na górze",
+                "ko": "큰 카메라를 위에",
+                "ar": "الكاميرا الكبيرة في الأعلى"
+              }
+            },
+            {
+              "id": "single",
+              "title": {
+                "en": "One camera per row",
+                "nl": "Eén camera per rij",
+                "de": "Eine Kamera pro Zeile",
+                "fr": "Une caméra par ligne",
+                "it": "Una telecamera per riga",
+                "sv": "En kamera per rad",
+                "no": "Ett kamera per rad",
+                "es": "Una cámara por fila",
+                "da": "Ét kamera pr. række",
+                "ru": "Одна камера в ряду",
+                "pl": "Jedna kamera w wierszu",
+                "ko": "한 줄에 카메라 하나",
+                "ar": "كاميرا واحدة في كل صف"
+              }
+            }
+          ]
+        },
+        {
           "id": "refresh",
           "type": "dropdown",
           "title": {
@@ -1514,21 +2072,6 @@
             "pl": "Odświeżaj zdjęcia co",
             "ko": "스냅샷 새로 고침 간격",
             "ar": "تحديث اللقطات كل"
-          },
-          "hint": {
-            "en": "Tap a camera for live video.",
-            "nl": "Tik op een camera voor live beeld.",
-            "de": "Tippe auf eine Kamera für Live-Video.",
-            "fr": "Touchez une caméra pour la vidéo en direct.",
-            "it": "Tocca una telecamera per il video in diretta.",
-            "sv": "Tryck på en kamera för livevideo.",
-            "no": "Trykk på et kamera for direktevideo.",
-            "es": "Toca una cámara para ver vídeo en directo.",
-            "da": "Tryk på et kamera for live-video.",
-            "ru": "Нажмите на камеру, чтобы смотреть видео в реальном времени.",
-            "pl": "Dotknij kamery, aby zobaczyć obraz na żywo.",
-            "ko": "카메라를 탭하면 실시간 영상을 볼 수 있습니다.",
-            "ar": "انقر على كاميرا لعرض الفيديو المباشر."
           },
           "value": "10",
           "values": [
@@ -1602,6 +2145,115 @@
                 "pl": "1 min",
                 "ko": "1분",
                 "ar": "1 د"
+              }
+            }
+          ]
+        },
+        {
+          "id": "liveFor",
+          "type": "dropdown",
+          "title": {
+            "en": "Live view stays on",
+            "nl": "Live beeld blijft aan",
+            "de": "Live-Ansicht bleibt an",
+            "fr": "Durée du direct",
+            "it": "Durata della diretta",
+            "sv": "Livevisning pågår",
+            "no": "Direktevisning varer",
+            "es": "Duración del directo",
+            "da": "Live-visning varer",
+            "ru": "Прямой эфир длится",
+            "pl": "Podgląd na żywo trwa",
+            "ko": "실시간 보기 유지",
+            "ar": "مدة العرض المباشر"
+          },
+          "hint": {
+            "en": "Tap a camera for live video, and tap it again to end it. With Until tapped, live view comes back when the screen wakes or the dashboard opens again.",
+            "nl": "Tik op een camera voor live beeld, en tik nogmaals om te stoppen. Met Tot je weer tikt komt het live beeld terug als het scherm weer aangaat of het dashboard weer opent.",
+            "de": "Tippe auf eine Kamera für Live-Video und tippe erneut, um es zu beenden. Mit Bis zum Tippen kommt die Live-Ansicht zurück, wenn der Bildschirm aufwacht oder das Dashboard wieder geöffnet wird.",
+            "fr": "Touchez une caméra pour la vidéo en direct, et touchez-la à nouveau pour l'arrêter. Avec Jusqu'au prochain toucher, le direct revient quand l'écran se réveille ou que le tableau de bord est rouvert.",
+            "it": "Tocca una telecamera per il video in diretta e toccala di nuovo per chiuderlo. Con Fino al tocco successivo, la diretta riprende quando lo schermo si riattiva o la dashboard viene riaperta.",
+            "sv": "Tryck på en kamera för livevideo och tryck igen för att avsluta. Med Tills du trycker kommer livevisningen tillbaka när skärmen vaknar eller instrumentpanelen öppnas igen.",
+            "no": "Trykk på et kamera for direktevideo, og trykk igjen for å avslutte. Med Til du trykker kommer direktevisningen tilbake når skjermen våkner eller dashbordet åpnes igjen.",
+            "es": "Toca una cámara para ver vídeo en directo y vuelve a tocarla para cerrarlo. Con Hasta volver a tocar, el directo vuelve cuando la pantalla se activa o el panel se abre de nuevo.",
+            "da": "Tryk på et kamera for live-video, og tryk igen for at stoppe. Med Til du trykker kommer live-visningen tilbage, når skærmen vågner, eller dashboardet åbnes igen.",
+            "ru": "Нажмите на камеру, чтобы смотреть видео в реальном времени, и нажмите снова, чтобы закрыть его. С вариантом «До нажатия» прямой эфир возвращается, когда экран просыпается или панель открывается снова.",
+            "pl": "Dotknij kamery, aby zobaczyć obraz na żywo, i dotknij ponownie, aby go zamknąć. Z opcją Do dotknięcia podgląd wraca, gdy ekran się wybudzi lub pulpit zostanie ponownie otwarty.",
+            "ko": "카메라를 탭하면 실시간 영상을 볼 수 있고, 다시 탭하면 닫힙니다. 탭할 때까지를 선택하면 화면이 켜지거나 대시보드를 다시 열 때 실시간 보기가 다시 시작됩니다.",
+            "ar": "انقر على كاميرا لعرض الفيديو المباشر، وانقر عليها مجددًا لإنهائه. مع حتى النقر مجددًا، يعود العرض المباشر عند تنشيط الشاشة أو إعادة فتح لوحة التحكم."
+          },
+          "value": "300",
+          "values": [
+            {
+              "id": "30",
+              "title": {
+                "en": "30 s",
+                "nl": "30 s",
+                "de": "30 s",
+                "fr": "30 s",
+                "it": "30 s",
+                "sv": "30 s",
+                "no": "30 s",
+                "es": "30 s",
+                "da": "30 s",
+                "ru": "30 с",
+                "pl": "30 s",
+                "ko": "30초",
+                "ar": "30 ث"
+              }
+            },
+            {
+              "id": "60",
+              "title": {
+                "en": "1 min",
+                "nl": "1 min",
+                "de": "1 Min.",
+                "fr": "1 min",
+                "it": "1 min",
+                "sv": "1 min",
+                "no": "1 min",
+                "es": "1 min",
+                "da": "1 min",
+                "ru": "1 мин",
+                "pl": "1 min",
+                "ko": "1분",
+                "ar": "1 د"
+              }
+            },
+            {
+              "id": "300",
+              "title": {
+                "en": "5 min",
+                "nl": "5 min",
+                "de": "5 Min.",
+                "fr": "5 min",
+                "it": "5 min",
+                "sv": "5 min",
+                "no": "5 min",
+                "es": "5 min",
+                "da": "5 min",
+                "ru": "5 мин",
+                "pl": "5 min",
+                "ko": "5분",
+                "ar": "5 د"
+              }
+            },
+            {
+              "id": "tap",
+              "title": {
+                "en": "Until tapped",
+                "nl": "Tot je weer tikt",
+                "de": "Bis zum Tippen",
+                "fr": "Jusqu'au prochain toucher",
+                "it": "Fino al tocco successivo",
+                "sv": "Tills du trycker",
+                "no": "Til du trykker",
+                "es": "Hasta volver a tocar",
+                "da": "Til du trykker",
+                "ru": "До нажатия",
+                "pl": "Do dotknięcia",
+                "ko": "탭할 때까지",
+                "ar": "حتى النقر مجددًا"
               }
             }
           ]
@@ -3277,6 +3929,816 @@
         }
       },
       "id": "curtains"
+    },
+    "dayssince": {
+      "name": {
+        "en": "Days Since",
+        "nl": "Dagen geleden",
+        "de": "Tage seit",
+        "fr": "Jours depuis",
+        "it": "Giorni da",
+        "sv": "Dagar sedan",
+        "no": "Dager siden",
+        "es": "Días desde",
+        "da": "Dage siden",
+        "ru": "Дней прошло",
+        "pl": "Dni od",
+        "ko": "경과 일수",
+        "ar": "أيام منذ"
+      },
+      "height": 136,
+      "transparent": true,
+      "settings": [
+        {
+          "id": "units",
+          "type": "dropdown",
+          "title": {
+            "en": "Show time as",
+            "nl": "Tijd tonen als",
+            "de": "Zeit anzeigen als",
+            "fr": "Afficher le temps en",
+            "it": "Mostra il tempo in",
+            "sv": "Visa tiden som",
+            "no": "Vis tiden som",
+            "es": "Mostrar el tiempo en",
+            "da": "Vis tiden som",
+            "ru": "Показывать время",
+            "pl": "Pokazuj czas jako",
+            "ko": "시간 표시",
+            "ar": "عرض الوقت بـ"
+          },
+          "hint": {
+            "en": "Days, weeks and months: 6 days, 2 weeks, 3 months. Days only: 82 days.",
+            "nl": "Dagen, weken en maanden: 6 dagen, 2 weken, 3 maanden. Alleen dagen: 82 dagen.",
+            "de": "Tage, Wochen und Monate: 6 Tage, 2 Wochen, 3 Monate. Nur Tage: 82 Tage.",
+            "fr": "Jours, semaines et mois : 6 jours, 2 semaines, 3 mois. Jours uniquement : 82 jours.",
+            "it": "Giorni, settimane e mesi: 6 giorni, 2 settimane, 3 mesi. Solo giorni: 82 giorni.",
+            "sv": "Dagar, veckor och månader: 6 dagar, 2 veckor, 3 månader. Bara dagar: 82 dagar.",
+            "no": "Dager, uker og måneder: 6 dager, 2 uker, 3 måneder. Bare dager: 82 dager.",
+            "es": "Días, semanas y meses: 6 días, 2 semanas, 3 meses. Solo días: 82 días.",
+            "da": "Dage, uger og måneder: 6 dage, 2 uger, 3 måneder. Kun dage: 82 dage.",
+            "ru": "Дни, недели и месяцы: 6 дней, 2 недели, 3 месяца. Только дни: 82 дня.",
+            "pl": "Dni, tygodnie i miesiące: 6 dni, 2 tygodnie, 3 miesiące. Tylko dni: 82 dni.",
+            "ko": "일, 주, 개월: 6일, 2주, 3개월. 일만: 82일.",
+            "ar": "أيام وأسابيع وأشهر: 6 أيام، أسبوعان، 3 أشهر. أيام فقط: 82 يومًا."
+          },
+          "value": "friendly",
+          "values": [
+            {
+              "id": "friendly",
+              "title": {
+                "en": "Days, weeks and months",
+                "nl": "Dagen, weken en maanden",
+                "de": "Tage, Wochen und Monate",
+                "fr": "Jours, semaines et mois",
+                "it": "Giorni, settimane e mesi",
+                "sv": "Dagar, veckor och månader",
+                "no": "Dager, uker og måneder",
+                "es": "Días, semanas y meses",
+                "da": "Dage, uger og måneder",
+                "ru": "Дни, недели и месяцы",
+                "pl": "Dni, tygodnie i miesiące",
+                "ko": "일, 주, 개월",
+                "ar": "أيام وأسابيع وأشهر"
+              }
+            },
+            {
+              "id": "days",
+              "title": {
+                "en": "Days only",
+                "nl": "Alleen dagen",
+                "de": "Nur Tage",
+                "fr": "Jours uniquement",
+                "it": "Solo giorni",
+                "sv": "Bara dagar",
+                "no": "Bare dager",
+                "es": "Solo días",
+                "da": "Kun dage",
+                "ru": "Только дни",
+                "pl": "Tylko dni",
+                "ko": "일만",
+                "ar": "أيام فقط"
+              }
+            }
+          ]
+        },
+        {
+          "id": "counter1",
+          "type": "autocomplete",
+          "title": {
+            "en": "Counter 1: name",
+            "nl": "Teller 1: naam",
+            "de": "Zähler 1: Name",
+            "fr": "Compteur 1 : nom",
+            "it": "Contatore 1: nome",
+            "sv": "Räknare 1: namn",
+            "no": "Teller 1: navn",
+            "es": "Contador 1: nombre",
+            "da": "Tæller 1: navn",
+            "ru": "Счётчик 1: название",
+            "pl": "Licznik 1: nazwa",
+            "ko": "카운터 1: 이름",
+            "ar": "العداد 1: الاسم"
+          },
+          "hint": {
+            "en": "Pick a counter or type a new name. Every Days Since widget and Flow card with the same name shares the counter.",
+            "nl": "Kies een teller of typ een nieuwe naam. Elke Dagen geleden-widget en Flow-kaart met dezelfde naam deelt de teller.",
+            "de": "Wähle einen Zähler oder gib einen neuen Namen ein. Alle Tage-seit-Widgets und Flow-Karten mit demselben Namen teilen sich den Zähler.",
+            "fr": "Choisissez un compteur ou saisissez un nouveau nom. Les widgets Jours depuis et les cartes Flow portant le même nom partagent le compteur.",
+            "it": "Scegli un contatore o digita un nuovo nome. I widget Giorni da e le schede Flow con lo stesso nome condividono il contatore.",
+            "sv": "Välj en räknare eller skriv ett nytt namn. Alla Dagar sedan-widgetar och Flow-kort med samma namn delar räknaren.",
+            "no": "Velg en teller eller skriv et nytt navn. Alle Dager siden-widgeter og Flow-kort med samme navn deler telleren.",
+            "es": "Elige un contador o escribe un nombre nuevo. Todos los widgets Días desde y tarjetas Flow con el mismo nombre comparten el contador.",
+            "da": "Vælg en tæller, eller skriv et nyt navn. Alle Dage siden-widgets og Flow-kort med samme navn deler tælleren.",
+            "ru": "Выберите счётчик или введите новое название. Все виджеты «Дней прошло» и карточки Flow с этим названием используют один счётчик.",
+            "pl": "Wybierz licznik lub wpisz nową nazwę. Wszystkie widżety Dni od i karty Flow o tej samej nazwie dzielą licznik.",
+            "ko": "카운터를 선택하거나 새 이름을 입력하세요. 같은 이름의 모든 경과 일수 위젯과 Flow 카드가 카운터를 공유합니다.",
+            "ar": "اختر عدادًا أو اكتب اسمًا جديدًا. تتشارك كل أدوات أيام منذ وبطاقات Flow التي تحمل الاسم نفسه العداد."
+          }
+        },
+        {
+          "id": "icon1",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
+          "id": "amber1",
+          "type": "number",
+          "title": {
+            "en": "  – Amber after (days)",
+            "nl": "  – Geel na (dagen)",
+            "de": "  – Gelb nach (Tagen)",
+            "fr": "  – Jaune après (jours)",
+            "it": "  – Giallo dopo (giorni)",
+            "sv": "  – Gul efter (dagar)",
+            "no": "  – Gul etter (dager)",
+            "es": "  – Ámbar tras (días)",
+            "da": "  – Gul efter (dage)",
+            "ru": "  – Жёлтый через (дней)",
+            "pl": "  – Żółty po (dniach)",
+            "ko": "  – 노랑 표시 (일 후)",
+            "ar": "  – كهرماني بعد (أيام)"
+          },
+          "hint": {
+            "en": "Days after the last reset. 0 turns the colour off.",
+            "nl": "Dagen na de laatste reset. 0 zet de kleur uit.",
+            "de": "Tage nach dem letzten Zurücksetzen. 0 schaltet die Farbe aus.",
+            "fr": "Jours après la dernière remise à zéro. 0 désactive la couleur.",
+            "it": "Giorni dopo l'ultimo azzeramento. 0 disattiva il colore.",
+            "sv": "Dagar efter senaste nollställning. 0 stänger av färgen.",
+            "no": "Dager etter siste nullstilling. 0 slår av fargen.",
+            "es": "Días después del último reinicio. 0 desactiva el color.",
+            "da": "Dage efter seneste nulstilling. 0 slår farven fra.",
+            "ru": "Дней после последнего сброса. 0 отключает цвет.",
+            "pl": "Dni od ostatniego wyzerowania. 0 wyłącza kolor.",
+            "ko": "마지막 초기화 후 일수입니다. 0이면 색을 표시하지 않습니다.",
+            "ar": "الأيام بعد آخر إعادة ضبط. 0 يوقف اللون."
+          },
+          "value": 5,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "red1",
+          "type": "number",
+          "title": {
+            "en": "  – Red after (days)",
+            "nl": "  – Rood na (dagen)",
+            "de": "  – Rot nach (Tagen)",
+            "fr": "  – Rouge après (jours)",
+            "it": "  – Rosso dopo (giorni)",
+            "sv": "  – Röd efter (dagar)",
+            "no": "  – Rød etter (dager)",
+            "es": "  – Rojo tras (días)",
+            "da": "  – Rød efter (dage)",
+            "ru": "  – Красный через (дней)",
+            "pl": "  – Czerwony po (dniach)",
+            "ko": "  – 빨강 표시 (일 후)",
+            "ar": "  – أحمر بعد (أيام)"
+          },
+          "hint": {
+            "en": "Red means overdue: the Flow card “… became overdue” fires then. When several widgets show one counter, the Flow cards use the days of the one that loaded last.",
+            "nl": "Rood betekent te laat: dan start de Flow-kaart „… is te laat geworden”. Tonen meerdere widgets één teller, dan gebruiken de Flow-kaarten de dagen van de widget die het laatst laadde.",
+            "de": "Rot heißt überfällig: Dann löst die Flow-Karte „… ist überfällig geworden“ aus. Zeigen mehrere Widgets einen Zähler, nehmen die Flow-Karten die Tage des zuletzt geladenen.",
+            "fr": "Rouge signifie en retard : la carte Flow « … passe en retard » se déclenche alors. Si plusieurs widgets affichent un compteur, les cartes Flow prennent les jours du dernier chargé.",
+            "it": "Rosso significa scaduto: allora parte la scheda Flow “… è appena scaduto”. Se più widget mostrano un contatore, le schede Flow usano i giorni dell'ultimo caricato.",
+            "sv": "Röd betyder försenad: då startar Flow-kortet ”… blev försenad”. Visar flera widgetar en räknare används dagarna från den som laddades sist.",
+            "no": "Rød betyr forsinket: da starter Flow-kortet «… ble forsinket». Viser flere widgeter én teller, bruker Flow-kortene dagene fra den som ble lastet sist.",
+            "es": "Rojo significa retrasado: entonces se activa la tarjeta Flow «… se ha retrasado». Si varios widgets muestran un contador, las tarjetas Flow usan los días del último que se cargó.",
+            "da": "Rød betyder forsinket: så starter Flow-kortet “… er blevet forsinket”. Viser flere widgets én tæller, bruger Flow-kortene dagene fra den, der blev indlæst sidst.",
+            "ru": "Красный — значит просрочен: тогда срабатывает карточка Flow «… стал просроченным». Если счётчик показан в нескольких виджетах, карточки Flow берут дни из последнего загруженного.",
+            "pl": "Czerwony oznacza po terminie: wtedy uruchamia się karta Flow „… przekroczył termin”. Gdy kilka widżetów pokazuje jeden licznik, karty Flow biorą dni z ostatnio wczytanego.",
+            "ko": "빨강은 기한이 지났다는 뜻이며, 이때 Flow 카드 “… 기한이 지났을 때”가 실행됩니다. 여러 위젯이 한 카운터를 표시하면 Flow 카드는 마지막으로 불러온 위젯의 일수를 씁니다.",
+            "ar": "الأحمر يعني متأخرًا: عندها تعمل بطاقة Flow «تأخر …». إذا عرضت عدة أدوات عدادًا واحدًا، تستخدم بطاقات Flow أيام آخر أداة حُمّلت."
+          },
+          "value": 7,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "counter2",
+          "type": "autocomplete",
+          "title": {
+            "en": "Counter 2: name",
+            "nl": "Teller 2: naam",
+            "de": "Zähler 2: Name",
+            "fr": "Compteur 2 : nom",
+            "it": "Contatore 2: nome",
+            "sv": "Räknare 2: namn",
+            "no": "Teller 2: navn",
+            "es": "Contador 2: nombre",
+            "da": "Tæller 2: navn",
+            "ru": "Счётчик 2: название",
+            "pl": "Licznik 2: nazwa",
+            "ko": "카운터 2: 이름",
+            "ar": "العداد 2: الاسم"
+          }
+        },
+        {
+          "id": "icon2",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
+          "id": "amber2",
+          "type": "number",
+          "title": {
+            "en": "  – Amber after (days)",
+            "nl": "  – Geel na (dagen)",
+            "de": "  – Gelb nach (Tagen)",
+            "fr": "  – Jaune après (jours)",
+            "it": "  – Giallo dopo (giorni)",
+            "sv": "  – Gul efter (dagar)",
+            "no": "  – Gul etter (dager)",
+            "es": "  – Ámbar tras (días)",
+            "da": "  – Gul efter (dage)",
+            "ru": "  – Жёлтый через (дней)",
+            "pl": "  – Żółty po (dniach)",
+            "ko": "  – 노랑 표시 (일 후)",
+            "ar": "  – كهرماني بعد (أيام)"
+          },
+          "value": 5,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "red2",
+          "type": "number",
+          "title": {
+            "en": "  – Red after (days)",
+            "nl": "  – Rood na (dagen)",
+            "de": "  – Rot nach (Tagen)",
+            "fr": "  – Rouge après (jours)",
+            "it": "  – Rosso dopo (giorni)",
+            "sv": "  – Röd efter (dagar)",
+            "no": "  – Rød etter (dager)",
+            "es": "  – Rojo tras (días)",
+            "da": "  – Rød efter (dage)",
+            "ru": "  – Красный через (дней)",
+            "pl": "  – Czerwony po (dniach)",
+            "ko": "  – 빨강 표시 (일 후)",
+            "ar": "  – أحمر بعد (أيام)"
+          },
+          "value": 7,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "counter3",
+          "type": "autocomplete",
+          "title": {
+            "en": "Counter 3: name",
+            "nl": "Teller 3: naam",
+            "de": "Zähler 3: Name",
+            "fr": "Compteur 3 : nom",
+            "it": "Contatore 3: nome",
+            "sv": "Räknare 3: namn",
+            "no": "Teller 3: navn",
+            "es": "Contador 3: nombre",
+            "da": "Tæller 3: navn",
+            "ru": "Счётчик 3: название",
+            "pl": "Licznik 3: nazwa",
+            "ko": "카운터 3: 이름",
+            "ar": "العداد 3: الاسم"
+          }
+        },
+        {
+          "id": "icon3",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
+          "id": "amber3",
+          "type": "number",
+          "title": {
+            "en": "  – Amber after (days)",
+            "nl": "  – Geel na (dagen)",
+            "de": "  – Gelb nach (Tagen)",
+            "fr": "  – Jaune après (jours)",
+            "it": "  – Giallo dopo (giorni)",
+            "sv": "  – Gul efter (dagar)",
+            "no": "  – Gul etter (dager)",
+            "es": "  – Ámbar tras (días)",
+            "da": "  – Gul efter (dage)",
+            "ru": "  – Жёлтый через (дней)",
+            "pl": "  – Żółty po (dniach)",
+            "ko": "  – 노랑 표시 (일 후)",
+            "ar": "  – كهرماني بعد (أيام)"
+          },
+          "value": 5,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "red3",
+          "type": "number",
+          "title": {
+            "en": "  – Red after (days)",
+            "nl": "  – Rood na (dagen)",
+            "de": "  – Rot nach (Tagen)",
+            "fr": "  – Rouge après (jours)",
+            "it": "  – Rosso dopo (giorni)",
+            "sv": "  – Röd efter (dagar)",
+            "no": "  – Rød etter (dager)",
+            "es": "  – Rojo tras (días)",
+            "da": "  – Rød efter (dage)",
+            "ru": "  – Красный через (дней)",
+            "pl": "  – Czerwony po (dniach)",
+            "ko": "  – 빨강 표시 (일 후)",
+            "ar": "  – أحمر بعد (أيام)"
+          },
+          "value": 7,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "counter4",
+          "type": "autocomplete",
+          "title": {
+            "en": "Counter 4: name",
+            "nl": "Teller 4: naam",
+            "de": "Zähler 4: Name",
+            "fr": "Compteur 4 : nom",
+            "it": "Contatore 4: nome",
+            "sv": "Räknare 4: namn",
+            "no": "Teller 4: navn",
+            "es": "Contador 4: nombre",
+            "da": "Tæller 4: navn",
+            "ru": "Счётчик 4: название",
+            "pl": "Licznik 4: nazwa",
+            "ko": "카운터 4: 이름",
+            "ar": "العداد 4: الاسم"
+          }
+        },
+        {
+          "id": "icon4",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
+          "id": "amber4",
+          "type": "number",
+          "title": {
+            "en": "  – Amber after (days)",
+            "nl": "  – Geel na (dagen)",
+            "de": "  – Gelb nach (Tagen)",
+            "fr": "  – Jaune après (jours)",
+            "it": "  – Giallo dopo (giorni)",
+            "sv": "  – Gul efter (dagar)",
+            "no": "  – Gul etter (dager)",
+            "es": "  – Ámbar tras (días)",
+            "da": "  – Gul efter (dage)",
+            "ru": "  – Жёлтый через (дней)",
+            "pl": "  – Żółty po (dniach)",
+            "ko": "  – 노랑 표시 (일 후)",
+            "ar": "  – كهرماني بعد (أيام)"
+          },
+          "value": 5,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "red4",
+          "type": "number",
+          "title": {
+            "en": "  – Red after (days)",
+            "nl": "  – Rood na (dagen)",
+            "de": "  – Rot nach (Tagen)",
+            "fr": "  – Rouge après (jours)",
+            "it": "  – Rosso dopo (giorni)",
+            "sv": "  – Röd efter (dagar)",
+            "no": "  – Rød etter (dager)",
+            "es": "  – Rojo tras (días)",
+            "da": "  – Rød efter (dage)",
+            "ru": "  – Красный через (дней)",
+            "pl": "  – Czerwony po (dniach)",
+            "ko": "  – 빨강 표시 (일 후)",
+            "ar": "  – أحمر بعد (أيام)"
+          },
+          "value": 7,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "counter5",
+          "type": "autocomplete",
+          "title": {
+            "en": "Counter 5: name",
+            "nl": "Teller 5: naam",
+            "de": "Zähler 5: Name",
+            "fr": "Compteur 5 : nom",
+            "it": "Contatore 5: nome",
+            "sv": "Räknare 5: namn",
+            "no": "Teller 5: navn",
+            "es": "Contador 5: nombre",
+            "da": "Tæller 5: navn",
+            "ru": "Счётчик 5: название",
+            "pl": "Licznik 5: nazwa",
+            "ko": "카운터 5: 이름",
+            "ar": "العداد 5: الاسم"
+          }
+        },
+        {
+          "id": "icon5",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
+          "id": "amber5",
+          "type": "number",
+          "title": {
+            "en": "  – Amber after (days)",
+            "nl": "  – Geel na (dagen)",
+            "de": "  – Gelb nach (Tagen)",
+            "fr": "  – Jaune après (jours)",
+            "it": "  – Giallo dopo (giorni)",
+            "sv": "  – Gul efter (dagar)",
+            "no": "  – Gul etter (dager)",
+            "es": "  – Ámbar tras (días)",
+            "da": "  – Gul efter (dage)",
+            "ru": "  – Жёлтый через (дней)",
+            "pl": "  – Żółty po (dniach)",
+            "ko": "  – 노랑 표시 (일 후)",
+            "ar": "  – كهرماني بعد (أيام)"
+          },
+          "value": 5,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "red5",
+          "type": "number",
+          "title": {
+            "en": "  – Red after (days)",
+            "nl": "  – Rood na (dagen)",
+            "de": "  – Rot nach (Tagen)",
+            "fr": "  – Rouge après (jours)",
+            "it": "  – Rosso dopo (giorni)",
+            "sv": "  – Röd efter (dagar)",
+            "no": "  – Rød etter (dager)",
+            "es": "  – Rojo tras (días)",
+            "da": "  – Rød efter (dage)",
+            "ru": "  – Красный через (дней)",
+            "pl": "  – Czerwony po (dniach)",
+            "ko": "  – 빨강 표시 (일 후)",
+            "ar": "  – أحمر بعد (أيام)"
+          },
+          "value": 7,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "counter6",
+          "type": "autocomplete",
+          "title": {
+            "en": "Counter 6: name",
+            "nl": "Teller 6: naam",
+            "de": "Zähler 6: Name",
+            "fr": "Compteur 6 : nom",
+            "it": "Contatore 6: nome",
+            "sv": "Räknare 6: namn",
+            "no": "Teller 6: navn",
+            "es": "Contador 6: nombre",
+            "da": "Tæller 6: navn",
+            "ru": "Счётчик 6: название",
+            "pl": "Licznik 6: nazwa",
+            "ko": "카운터 6: 이름",
+            "ar": "العداد 6: الاسم"
+          }
+        },
+        {
+          "id": "icon6",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
+          "id": "amber6",
+          "type": "number",
+          "title": {
+            "en": "  – Amber after (days)",
+            "nl": "  – Geel na (dagen)",
+            "de": "  – Gelb nach (Tagen)",
+            "fr": "  – Jaune après (jours)",
+            "it": "  – Giallo dopo (giorni)",
+            "sv": "  – Gul efter (dagar)",
+            "no": "  – Gul etter (dager)",
+            "es": "  – Ámbar tras (días)",
+            "da": "  – Gul efter (dage)",
+            "ru": "  – Жёлтый через (дней)",
+            "pl": "  – Żółty po (dniach)",
+            "ko": "  – 노랑 표시 (일 후)",
+            "ar": "  – كهرماني بعد (أيام)"
+          },
+          "value": 5,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "red6",
+          "type": "number",
+          "title": {
+            "en": "  – Red after (days)",
+            "nl": "  – Rood na (dagen)",
+            "de": "  – Rot nach (Tagen)",
+            "fr": "  – Rouge après (jours)",
+            "it": "  – Rosso dopo (giorni)",
+            "sv": "  – Röd efter (dagar)",
+            "no": "  – Rød etter (dager)",
+            "es": "  – Rojo tras (días)",
+            "da": "  – Rød efter (dage)",
+            "ru": "  – Красный через (дней)",
+            "pl": "  – Czerwony po (dniach)",
+            "ko": "  – 빨강 표시 (일 후)",
+            "ar": "  – أحمر بعد (أيام)"
+          },
+          "value": 7,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "counter7",
+          "type": "autocomplete",
+          "title": {
+            "en": "Counter 7: name",
+            "nl": "Teller 7: naam",
+            "de": "Zähler 7: Name",
+            "fr": "Compteur 7 : nom",
+            "it": "Contatore 7: nome",
+            "sv": "Räknare 7: namn",
+            "no": "Teller 7: navn",
+            "es": "Contador 7: nombre",
+            "da": "Tæller 7: navn",
+            "ru": "Счётчик 7: название",
+            "pl": "Licznik 7: nazwa",
+            "ko": "카운터 7: 이름",
+            "ar": "العداد 7: الاسم"
+          }
+        },
+        {
+          "id": "icon7",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
+          "id": "amber7",
+          "type": "number",
+          "title": {
+            "en": "  – Amber after (days)",
+            "nl": "  – Geel na (dagen)",
+            "de": "  – Gelb nach (Tagen)",
+            "fr": "  – Jaune après (jours)",
+            "it": "  – Giallo dopo (giorni)",
+            "sv": "  – Gul efter (dagar)",
+            "no": "  – Gul etter (dager)",
+            "es": "  – Ámbar tras (días)",
+            "da": "  – Gul efter (dage)",
+            "ru": "  – Жёлтый через (дней)",
+            "pl": "  – Żółty po (dniach)",
+            "ko": "  – 노랑 표시 (일 후)",
+            "ar": "  – كهرماني بعد (أيام)"
+          },
+          "value": 5,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "red7",
+          "type": "number",
+          "title": {
+            "en": "  – Red after (days)",
+            "nl": "  – Rood na (dagen)",
+            "de": "  – Rot nach (Tagen)",
+            "fr": "  – Rouge après (jours)",
+            "it": "  – Rosso dopo (giorni)",
+            "sv": "  – Röd efter (dagar)",
+            "no": "  – Rød etter (dager)",
+            "es": "  – Rojo tras (días)",
+            "da": "  – Rød efter (dage)",
+            "ru": "  – Красный через (дней)",
+            "pl": "  – Czerwony po (dniach)",
+            "ko": "  – 빨강 표시 (일 후)",
+            "ar": "  – أحمر بعد (أيام)"
+          },
+          "value": 7,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "counter8",
+          "type": "autocomplete",
+          "title": {
+            "en": "Counter 8: name",
+            "nl": "Teller 8: naam",
+            "de": "Zähler 8: Name",
+            "fr": "Compteur 8 : nom",
+            "it": "Contatore 8: nome",
+            "sv": "Räknare 8: namn",
+            "no": "Teller 8: navn",
+            "es": "Contador 8: nombre",
+            "da": "Tæller 8: navn",
+            "ru": "Счётчик 8: название",
+            "pl": "Licznik 8: nazwa",
+            "ko": "카운터 8: 이름",
+            "ar": "العداد 8: الاسم"
+          }
+        },
+        {
+          "id": "icon8",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
+          "id": "amber8",
+          "type": "number",
+          "title": {
+            "en": "  – Amber after (days)",
+            "nl": "  – Geel na (dagen)",
+            "de": "  – Gelb nach (Tagen)",
+            "fr": "  – Jaune après (jours)",
+            "it": "  – Giallo dopo (giorni)",
+            "sv": "  – Gul efter (dagar)",
+            "no": "  – Gul etter (dager)",
+            "es": "  – Ámbar tras (días)",
+            "da": "  – Gul efter (dage)",
+            "ru": "  – Жёлтый через (дней)",
+            "pl": "  – Żółty po (dniach)",
+            "ko": "  – 노랑 표시 (일 후)",
+            "ar": "  – كهرماني بعد (أيام)"
+          },
+          "value": 5,
+          "min": 0,
+          "max": 3650
+        },
+        {
+          "id": "red8",
+          "type": "number",
+          "title": {
+            "en": "  – Red after (days)",
+            "nl": "  – Rood na (dagen)",
+            "de": "  – Rot nach (Tagen)",
+            "fr": "  – Rouge après (jours)",
+            "it": "  – Rosso dopo (giorni)",
+            "sv": "  – Röd efter (dagar)",
+            "no": "  – Rød etter (dager)",
+            "es": "  – Rojo tras (días)",
+            "da": "  – Rød efter (dage)",
+            "ru": "  – Красный через (дней)",
+            "pl": "  – Czerwony po (dniach)",
+            "ko": "  – 빨강 표시 (일 후)",
+            "ar": "  – أحمر بعد (أيام)"
+          },
+          "value": 7,
+          "min": 0,
+          "max": 3650
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        },
+        "reset": {
+          "method": "POST",
+          "path": "/reset"
+        },
+        "undo": {
+          "method": "POST",
+          "path": "/undo"
+        }
+      },
+      "id": "dayssince"
     },
     "electricity": {
       "name": {
@@ -6984,19 +8446,19 @@
             "ar": "الزر 1"
           },
           "hint": {
-            "en": "A source such as Set source to TV, another action of the speaker, or a flow. They run with the API key in Widgetkeeper’s app settings: a flow needs its Start Flows permission, a speaker action its Flows permission.",
-            "nl": "Een bron zoals Bron instellen op tv, een andere actie van de speaker of een flow. Ze lopen via de API-sleutel in de app-instellingen van Widgetkeeper: een flow heeft het recht Flows starten nodig, een speakeractie het recht Flows.",
-            "de": "Eine Quelle wie Quelle auf TV setzen, eine andere Aktion des Lautsprechers oder ein Flow. Sie laufen über den API-Schlüssel in den App-Einstellungen von Widgetkeeper: Ein Flow braucht das Recht Flows starten, eine Lautsprecheraktion das Recht Flows.",
-            "fr": "Une source comme Source sur TV, une autre action de l’enceinte ou un flow. Ils passent par la clé API des réglages de l’app Widgetkeeper : un flow demande le droit Lancer les Flows, une action de l’enceinte le droit Flows.",
-            "it": "Una sorgente come Sorgente su TV, un’altra azione dell’altoparlante o un flow. Usano la chiave API nelle impostazioni dell’app Widgetkeeper: un flow richiede il permesso Avvia i Flow, un’azione dell’altoparlante il permesso Flow.",
-            "sv": "En källa som Ställ in källa till TV, en annan åtgärd för högtalaren eller ett flöde. De körs med API-nyckeln i Widgetkeepers appinställningar: ett flöde kräver behörigheten Starta Flows, en högtalaråtgärd behörigheten Flows.",
-            "no": "En kilde som Sett kilde til TV, en annen handling for høyttaleren eller en flyt. De kjøres med API-nøkkelen i Widgetkeepers appinnstillinger: en flyt krever tillatelsen Start Flows, en høyttalerhandling tillatelsen Flows.",
-            "es": "Una fuente como Fuente a TV, otra acción del altavoz o un flujo. Usan la clave API de los ajustes de la app Widgetkeeper: un flujo necesita el permiso Iniciar Flows y una acción del altavoz, el permiso Flows.",
-            "da": "En kilde som Sæt kilde til TV, en anden handling for højttaleren eller et flow. De kører med API-nøglen i Widgetkeepers app-indstillinger: et flow kræver tilladelsen Start Flows, en højttalerhandling tilladelsen Flows.",
-            "ru": "Источник, например «Источник: ТВ», другое действие колонки или поток. Они выполняются с ключом API из настроек приложения Widgetkeeper: потоку нужно право Запустить Flow, действию колонки — право Flow.",
-            "pl": "Źródło, np. Ustaw źródło na TV, inna akcja głośnika lub Flow. Działają z kluczem API z ustawień aplikacji Widgetkeeper: Flow wymaga uprawnienia Rozpoczynanie Flow, akcja głośnika – uprawnienia Flow.",
-            "ko": "TV로 소스 설정 같은 소스, 스피커의 다른 동작 또는 플로우입니다. Widgetkeeper 앱 설정의 API 키로 실행되며, 플로우에는 Flow 시작 권한, 스피커 동작에는 Flow 권한이 필요합니다.",
-            "ar": "مصدر مثل ضبط المصدر على التلفاز، أو إجراء آخر لمكبر الصوت، أو تدفق. تعمل بمفتاح API في إعدادات تطبيق Widgetkeeper: يحتاج التدفق إلى صلاحية بدء Flows، وإجراء مكبر الصوت إلى صلاحية Flows."
+            "en": "A source such as Set source to TV, another action of the speaker or its app, or a flow. They run with the API key in Widgetkeeper’s app settings: a flow needs its Start Flows permission, an action its Flows permission.",
+            "nl": "Een bron zoals Bron instellen op tv, een andere actie van de speaker of zijn app, of een flow. Ze lopen via de API-sleutel in de app-instellingen van Widgetkeeper: een flow heeft het recht Flows starten nodig, een actie het recht Flows.",
+            "de": "Eine Quelle wie Quelle auf TV setzen, eine andere Aktion des Lautsprechers oder seiner App oder ein Flow. Sie laufen über den API-Schlüssel in den App-Einstellungen von Widgetkeeper: Ein Flow braucht das Recht Flows starten, eine Aktion das Recht Flows.",
+            "fr": "Une source comme Source sur TV, une autre action de l’enceinte ou de son app, ou un flow. Ils passent par la clé API des réglages de l’app Widgetkeeper : un flow demande le droit Lancer les Flows, une action le droit Flows.",
+            "it": "Una sorgente come Sorgente su TV, un’altra azione dell’altoparlante o della sua app, o un flow. Usano la chiave API nelle impostazioni dell’app Widgetkeeper: un flow richiede il permesso Avvia i Flow, un’azione il permesso Flow.",
+            "sv": "En källa som Ställ in källa till TV, en annan åtgärd för högtalaren eller dess app, eller ett flöde. De körs med API-nyckeln i Widgetkeepers appinställningar: ett flöde kräver behörigheten Starta Flows, en åtgärd behörigheten Flows.",
+            "no": "En kilde som Sett kilde til TV, en annen handling for høyttaleren eller appen dens, eller en flyt. De kjøres med API-nøkkelen i Widgetkeepers appinnstillinger: en flyt krever tillatelsen Start Flows, en handling tillatelsen Flows.",
+            "es": "Una fuente como Fuente a TV, otra acción del altavoz o de su app, o un flujo. Usan la clave API de los ajustes de la app Widgetkeeper: un flujo necesita el permiso Iniciar Flows y una acción, el permiso Flows.",
+            "da": "En kilde som Sæt kilde til TV, en anden handling for højttaleren eller dens app, eller et flow. De kører med API-nøglen i Widgetkeepers app-indstillinger: et flow kræver tilladelsen Start Flows, en handling tilladelsen Flows.",
+            "ru": "Источник, например «Источник: ТВ», другое действие колонки или её приложения либо поток. Они выполняются с ключом API из настроек приложения Widgetkeeper: потоку нужно право Запустить Flow, действию — право Flow.",
+            "pl": "Źródło, np. Ustaw źródło na TV, inna akcja głośnika lub jego aplikacji albo Flow. Działają z kluczem API z ustawień aplikacji Widgetkeeper: Flow wymaga uprawnienia Rozpoczynanie Flow, akcja – uprawnienia Flow.",
+            "ko": "TV로 소스 설정 같은 소스, 스피커나 해당 앱의 다른 동작 또는 플로우입니다. Widgetkeeper 앱 설정의 API 키로 실행되며, 플로우에는 Flow 시작 권한, 동작에는 Flow 권한이 필요합니다.",
+            "ar": "مصدر مثل ضبط المصدر على التلفاز، أو إجراء آخر لمكبر الصوت أو لتطبيقه، أو تدفق. تعمل بمفتاح API في إعدادات تطبيق Widgetkeeper: يحتاج التدفق إلى صلاحية بدء Flows، والإجراء إلى صلاحية Flows."
           }
         },
         {
@@ -7597,6 +9059,372 @@
       },
       "id": "quickactions"
     },
+    "roomhealth": {
+      "name": {
+        "en": "Room Health",
+        "nl": "Binnenklimaat",
+        "de": "Raumklima",
+        "fr": "Climat des pièces",
+        "it": "Clima delle stanze",
+        "sv": "Rumsklimat",
+        "no": "Romklima",
+        "es": "Clima interior",
+        "da": "Indeklima",
+        "ru": "Климат в комнатах",
+        "pl": "Klimat w pomieszczeniach",
+        "ko": "실내 환경",
+        "ar": "مناخ الغرف"
+      },
+      "height": 172,
+      "transparent": true,
+      "devices": {
+        "type": "global",
+        "singular": false,
+        "filter": {
+          "capabilities": "measure_temperature|measure_temperature.room|measure_temperature.indoor|measure_temperature.inside|measure_humidity|measure_humidity.room|measure_humidity.indoor|measure_humidity.inside|measure_co2|measure_radon|measure_pm25|measure_pm10|measure_voc|measure_VOC|measure_tvoc"
+        }
+      },
+      "settings": [
+        {
+          "id": "renameTiles",
+          "type": "checkbox",
+          "title": {
+            "en": "Rename tiles",
+            "nl": "Tegels hernoemen",
+            "de": "Kacheln umbenennen",
+            "fr": "Renommer les tuiles",
+            "it": "Rinomina riquadri",
+            "sv": "Byt namn på rutor",
+            "no": "Gi nytt navn til fliser",
+            "es": "Renombrar mosaicos",
+            "da": "Omdøb felter",
+            "ru": "Переименовать плитки",
+            "pl": "Zmień nazwy kafelków",
+            "ko": "타일 이름 바꾸기",
+            "ar": "إعادة تسمية المربعات"
+          },
+          "hint": {
+            "en": "To name the tiles: turn this on and save the widget, then leave the dashboard's edit mode. Each tile shows a text field: type its name, or leave it empty to keep the room's name. Then edit the widget again and turn this off.",
+            "nl": "Tegels een naam geven: zet dit aan en sla de widget op, en verlaat dan de bewerkmodus van het dashboard. Elke tegel toont een tekstveld: typ de naam, of laat het leeg om de naam van de ruimte te houden. Bewerk daarna de widget opnieuw en zet dit uit.",
+            "de": "Kacheln benennen: Schalte dies ein, speichere das Widget und verlasse den Bearbeitungsmodus des Dashboards. Jede Kachel zeigt ein Textfeld: Gib den Namen ein oder lass es leer, um den Namen des Raums zu behalten. Bearbeite danach das Widget erneut und schalte dies aus.",
+            "fr": "Pour nommer les tuiles : activez ceci, enregistrez le widget, puis quittez le mode édition du tableau de bord. Chaque tuile affiche un champ de texte : tapez son nom, ou laissez-le vide pour garder le nom de la pièce. Modifiez ensuite le widget à nouveau et désactivez ceci.",
+            "it": "Per dare un nome ai riquadri: attiva questa opzione e salva il widget, poi esci dalla modalità di modifica della dashboard. Ogni riquadro mostra un campo di testo: scrivi il nome, o lascialo vuoto per mantenere il nome della stanza. Poi modifica di nuovo il widget e disattiva questa opzione.",
+            "sv": "Så namnger du rutorna: slå på detta och spara widgeten, och lämna sedan instrumentpanelens redigeringsläge. Varje ruta visar ett textfält: skriv namnet, eller lämna det tomt för att behålla rummets namn. Redigera sedan widgeten igen och slå av detta.",
+            "no": "Slik gir du flisene navn: slå på dette og lagre widgeten, og gå så ut av dashbordets redigeringsmodus. Hver flis viser et tekstfelt: skriv navnet, eller la det stå tomt for å beholde rommets navn. Rediger så widgeten igjen og slå av dette.",
+            "es": "Para poner nombre a los mosaicos: activa esto y guarda el widget, luego sal del modo de edición del panel. Cada mosaico muestra un campo de texto: escribe su nombre, o déjalo vacío para mantener el nombre de la habitación. Después edita el widget de nuevo y desactiva esto.",
+            "da": "Sådan navngiver du felterne: slå dette til og gem widgetten, og forlad så dashboardets redigeringstilstand. Hvert felt viser et tekstfelt: skriv navnet, eller lad det stå tomt for at beholde rummets navn. Redigér derefter widgetten igen, og slå dette fra.",
+            "ru": "Чтобы назвать плитки: включите это и сохраните виджет, затем выйдите из режима редактирования панели. На каждой плитке появится текстовое поле: введите название или оставьте его пустым, чтобы оставить название комнаты. Затем снова откройте настройки виджета и выключите это.",
+            "pl": "Aby nazwać kafelki: włącz to i zapisz widżet, a potem wyjdź z trybu edycji pulpitu. Każdy kafelek pokaże pole tekstowe: wpisz nazwę albo zostaw je puste, aby zachować nazwę pokoju. Potem ponownie edytuj widżet i wyłącz to.",
+            "ko": "타일 이름을 정하려면: 이 옵션을 켜고 위젯을 저장한 뒤 대시보드 편집 모드를 나가세요. 각 타일에 입력란이 나타납니다. 이름을 입력하거나 비워 두면 방 이름이 그대로 쓰입니다. 그런 다음 위젯을 다시 편집해 이 옵션을 끄세요.",
+            "ar": "لتسمية المربعات: شغّل هذا الخيار واحفظ الأداة، ثم اخرج من وضع تحرير لوحة التحكم. يعرض كل مربع حقلًا نصيًا: اكتب اسمه، أو اتركه فارغًا لإبقاء اسم الغرفة. بعد ذلك حرّر الأداة مجددًا وأوقف هذا الخيار."
+          },
+          "value": false
+        },
+        {
+          "id": "tempMin",
+          "type": "number",
+          "title": {
+            "en": "Temperature: lowest (°C)",
+            "nl": "Temperatuur: laagste (°C)",
+            "de": "Temperatur: niedrigste (°C)",
+            "fr": "Température : minimale (°C)",
+            "it": "Temperatura: minima (°C)",
+            "sv": "Temperatur: lägsta (°C)",
+            "no": "Temperatur: laveste (°C)",
+            "es": "Temperatura: mínima (°C)",
+            "da": "Temperatur: laveste (°C)",
+            "ru": "Температура: минимум (°C)",
+            "pl": "Temperatura: najniższa (°C)",
+            "ko": "온도: 최저 (°C)",
+            "ar": "درجة الحرارة: الأدنى (°C)"
+          },
+          "hint": {
+            "en": "Comfortable ranges, the same for every room: inside them a ring is green, and it turns yellow, then red, the further a value is outside.",
+            "nl": "Comfortabele bereiken, voor elke ruimte dezelfde: daarbinnen is een ring groen, en hij wordt geel en dan rood naarmate een waarde verder buiten ligt.",
+            "de": "Angenehme Bereiche, für jeden Raum gleich: Darin ist ein Ring grün, und er wird gelb, dann rot, je weiter ein Wert außerhalb liegt.",
+            "fr": "Plages confortables, les mêmes pour chaque pièce : à l'intérieur, l'anneau est vert, et il devient jaune puis rouge à mesure qu'une valeur s'en éloigne.",
+            "it": "Intervalli confortevoli, uguali per ogni stanza: al loro interno l'anello è verde, e diventa giallo, poi rosso, quanto più un valore ne è fuori.",
+            "sv": "Behagliga intervall, samma för varje rum: inom dem är en ring grön, och den blir gul och sedan röd ju längre utanför ett värde ligger.",
+            "no": "Komfortable områder, like for hvert rom: innenfor dem er en ring grønn, og den blir gul og så rød jo lenger utenfor en verdi ligger.",
+            "es": "Rangos cómodos, iguales para cada habitación: dentro de ellos el anillo es verde, y se vuelve amarillo y luego rojo cuanto más se aleja un valor.",
+            "da": "Behagelige intervaller, de samme for alle rum: inden for dem er en ring grøn, og den bliver gul og så rød, jo længere en værdi ligger udenfor.",
+            "ru": "Комфортные диапазоны, одинаковые для всех комнат: внутри них кольцо зелёное, а чем дальше значение за их пределами, тем оно желтее, затем краснее.",
+            "pl": "Komfortowe zakresy, takie same dla każdego pokoju: w ich obrębie pierścień jest zielony, a im dalej wartość jest poza nimi, tym bardziej staje się żółty, potem czerwony.",
+            "ko": "모든 방에 같은 쾌적 범위입니다. 범위 안이면 링이 초록색이고, 값이 범위를 벗어날수록 노란색, 그다음 빨간색이 됩니다.",
+            "ar": "نطاقات مريحة، نفسها لكل غرفة: داخلها تكون الحلقة خضراء، وتصير صفراء ثم حمراء كلما ابتعدت القيمة عنها."
+          },
+          "value": 18,
+          "min": -20,
+          "max": 40
+        },
+        {
+          "id": "tempMax",
+          "type": "number",
+          "title": {
+            "en": "  – Highest (°C)",
+            "nl": "  – Hoogste (°C)",
+            "de": "  – Höchste (°C)",
+            "fr": "  – Maximale (°C)",
+            "it": "  – Massima (°C)",
+            "sv": "  – Högsta (°C)",
+            "no": "  – Høyeste (°C)",
+            "es": "  – Máxima (°C)",
+            "da": "  – Højeste (°C)",
+            "ru": "  – Максимум (°C)",
+            "pl": "  – Najwyższa (°C)",
+            "ko": "  – 최고 (°C)",
+            "ar": "  – الأعلى (°C)"
+          },
+          "value": 24,
+          "min": -20,
+          "max": 40
+        },
+        {
+          "id": "humidityMin",
+          "type": "number",
+          "title": {
+            "en": "Humidity: lowest (%)",
+            "nl": "Luchtvochtigheid: laagste (%)",
+            "de": "Luftfeuchte: niedrigste (%)",
+            "fr": "Humidité : minimale (%)",
+            "it": "Umidità: minima (%)",
+            "sv": "Luftfuktighet: lägsta (%)",
+            "no": "Luftfuktighet: laveste (%)",
+            "es": "Humedad: mínima (%)",
+            "da": "Luftfugtighed: laveste (%)",
+            "ru": "Влажность: минимум (%)",
+            "pl": "Wilgotność: najniższa (%)",
+            "ko": "습도: 최저 (%)",
+            "ar": "الرطوبة: الأدنى (%)"
+          },
+          "value": 30,
+          "min": 0,
+          "max": 100
+        },
+        {
+          "id": "humidityMax",
+          "type": "number",
+          "title": {
+            "en": "  – Highest (%)",
+            "nl": "  – Hoogste (%)",
+            "de": "  – Höchste (%)",
+            "fr": "  – Maximale (%)",
+            "it": "  – Massima (%)",
+            "sv": "  – Högsta (%)",
+            "no": "  – Høyeste (%)",
+            "es": "  – Máxima (%)",
+            "da": "  – Højeste (%)",
+            "ru": "  – Максимум (%)",
+            "pl": "  – Najwyższa (%)",
+            "ko": "  – 최고 (%)",
+            "ar": "  – الأعلى (%)"
+          },
+          "value": 60,
+          "min": 0,
+          "max": 100
+        },
+        {
+          "id": "co2Max",
+          "type": "number",
+          "title": {
+            "en": "Highest CO₂ (ppm)",
+            "nl": "Hoogste CO₂ (ppm)",
+            "de": "Höchstwert CO₂ (ppm)",
+            "fr": "CO₂ maximal (ppm)",
+            "it": "CO₂ massimo (ppm)",
+            "sv": "Högsta CO₂ (ppm)",
+            "no": "Høyeste CO₂ (ppm)",
+            "es": "CO₂ máximo (ppm)",
+            "da": "Højeste CO₂ (ppm)",
+            "ru": "Максимум CO₂ (ppm)",
+            "pl": "Najwyższe CO₂ (ppm)",
+            "ko": "최대 CO₂ (ppm)",
+            "ar": "الحد الأعلى لـ CO₂ (ppm)"
+          },
+          "hint": {
+            "en": "Above about 1000 ppm the air starts to feel stuffy.",
+            "nl": "Boven ongeveer 1000 ppm voelt de lucht bedompt.",
+            "de": "Ab etwa 1000 ppm wirkt die Luft stickig.",
+            "fr": "Au-delà d'environ 1000 ppm, l'air devient confiné.",
+            "it": "Oltre circa 1000 ppm l'aria comincia a sembrare viziata.",
+            "sv": "Över ungefär 1000 ppm börjar luften kännas instängd.",
+            "no": "Over omtrent 1000 ppm begynner lufta å føles tung.",
+            "es": "Por encima de unos 1000 ppm el aire empieza a sentirse cargado.",
+            "da": "Over cirka 1000 ppm begynder luften at føles indelukket.",
+            "ru": "Выше примерно 1000 ppm воздух начинает казаться спёртым.",
+            "pl": "Powyżej około 1000 ppm powietrze zaczyna być duszne.",
+            "ko": "약 1000 ppm을 넘으면 공기가 답답하게 느껴지기 시작합니다.",
+            "ar": "فوق نحو 1000 ppm يبدأ الهواء بالشعور بالكتمة."
+          },
+          "value": 1000,
+          "min": 0,
+          "max": 10000
+        },
+        {
+          "id": "radonMax",
+          "type": "number",
+          "title": {
+            "en": "Highest radon (Bq/m³)",
+            "nl": "Hoogste radon (Bq/m³)",
+            "de": "Höchstwert Radon (Bq/m³)",
+            "fr": "Radon maximal (Bq/m³)",
+            "it": "Radon massimo (Bq/m³)",
+            "sv": "Högsta radon (Bq/m³)",
+            "no": "Høyeste radon (Bq/m³)",
+            "es": "Radón máximo (Bq/m³)",
+            "da": "Højeste radon (Bq/m³)",
+            "ru": "Максимум радона (Bq/m³)",
+            "pl": "Najwyższy radon (Bq/m³)",
+            "ko": "최대 라돈 (Bq/m³)",
+            "ar": "الحد الأعلى للرادون (Bq/m³)"
+          },
+          "hint": {
+            "en": "The WHO's reference level is 100 Bq/m³.",
+            "nl": "Het referentieniveau van de WHO is 100 Bq/m³.",
+            "de": "Der Referenzwert der WHO ist 100 Bq/m³.",
+            "fr": "Le niveau de référence de l'OMS est de 100 Bq/m³.",
+            "it": "Il livello di riferimento dell'OMS è 100 Bq/m³.",
+            "sv": "WHO:s referensnivå är 100 Bq/m³.",
+            "no": "WHOs referansenivå er 100 Bq/m³.",
+            "es": "El nivel de referencia de la OMS es 100 Bq/m³.",
+            "da": "WHO's referenceniveau er 100 Bq/m³.",
+            "ru": "Контрольный уровень ВОЗ — 100 Bq/m³.",
+            "pl": "Poziom referencyjny WHO to 100 Bq/m³.",
+            "ko": "WHO의 참고 수준은 100 Bq/m³입니다.",
+            "ar": "المستوى المرجعي لمنظمة الصحة العالمية هو 100 Bq/m³."
+          },
+          "value": 100,
+          "min": 0,
+          "max": 10000
+        },
+        {
+          "id": "pm25Max",
+          "type": "number",
+          "title": {
+            "en": "Highest PM2.5 (μg/m³)",
+            "nl": "Hoogste PM2.5 (μg/m³)",
+            "de": "Höchstwert PM2.5 (μg/m³)",
+            "fr": "PM2.5 maximal (μg/m³)",
+            "it": "PM2.5 massimo (μg/m³)",
+            "sv": "Högsta PM2.5 (μg/m³)",
+            "no": "Høyeste PM2.5 (μg/m³)",
+            "es": "PM2.5 máximo (μg/m³)",
+            "da": "Højeste PM2.5 (μg/m³)",
+            "ru": "Максимум PM2.5 (μg/m³)",
+            "pl": "Najwyższe PM2.5 (μg/m³)",
+            "ko": "최대 PM2.5 (μg/m³)",
+            "ar": "الحد الأعلى لـ PM2.5 (μg/m³)"
+          },
+          "hint": {
+            "en": "The WHO's 24-hour guideline is 15 μg/m³.",
+            "nl": "De 24-uursrichtlijn van de WHO is 15 μg/m³.",
+            "de": "Der 24-Stunden-Richtwert der WHO ist 15 μg/m³.",
+            "fr": "La valeur guide de l'OMS sur 24 heures est de 15 μg/m³.",
+            "it": "Il valore guida dell'OMS sulle 24 ore è 15 μg/m³.",
+            "sv": "WHO:s riktvärde för 24 timmar är 15 μg/m³.",
+            "no": "WHOs retningslinje for 24 timer er 15 μg/m³.",
+            "es": "La guía de la OMS para 24 horas es 15 μg/m³.",
+            "da": "WHO's retningslinje for 24 timer er 15 μg/m³.",
+            "ru": "Рекомендация ВОЗ для 24 часов — 15 μg/m³.",
+            "pl": "Wytyczna WHO dla 24 godzin to 15 μg/m³.",
+            "ko": "WHO의 24시간 권고 기준은 15 μg/m³입니다.",
+            "ar": "الإرشاد اليومي لمنظمة الصحة العالمية هو 15 μg/m³."
+          },
+          "value": 15,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "id": "pm10Max",
+          "type": "number",
+          "title": {
+            "en": "Highest PM10 (μg/m³)",
+            "nl": "Hoogste PM10 (μg/m³)",
+            "de": "Höchstwert PM10 (μg/m³)",
+            "fr": "PM10 maximal (μg/m³)",
+            "it": "PM10 massimo (μg/m³)",
+            "sv": "Högsta PM10 (μg/m³)",
+            "no": "Høyeste PM10 (μg/m³)",
+            "es": "PM10 máximo (μg/m³)",
+            "da": "Højeste PM10 (μg/m³)",
+            "ru": "Максимум PM10 (μg/m³)",
+            "pl": "Najwyższe PM10 (μg/m³)",
+            "ko": "최대 PM10 (μg/m³)",
+            "ar": "الحد الأعلى لـ PM10 (μg/m³)"
+          },
+          "hint": {
+            "en": "The WHO's 24-hour guideline is 45 μg/m³.",
+            "nl": "De 24-uursrichtlijn van de WHO is 45 μg/m³.",
+            "de": "Der 24-Stunden-Richtwert der WHO ist 45 μg/m³.",
+            "fr": "La valeur guide de l'OMS sur 24 heures est de 45 μg/m³.",
+            "it": "Il valore guida dell'OMS sulle 24 ore è 45 μg/m³.",
+            "sv": "WHO:s riktvärde för 24 timmar är 45 μg/m³.",
+            "no": "WHOs retningslinje for 24 timer er 45 μg/m³.",
+            "es": "La guía de la OMS para 24 horas es 45 μg/m³.",
+            "da": "WHO's retningslinje for 24 timer er 45 μg/m³.",
+            "ru": "Рекомендация ВОЗ для 24 часов — 45 μg/m³.",
+            "pl": "Wytyczna WHO dla 24 godzin to 45 μg/m³.",
+            "ko": "WHO의 24시간 권고 기준은 45 μg/m³입니다.",
+            "ar": "الإرشاد اليومي لمنظمة الصحة العالمية هو 45 μg/m³."
+          },
+          "value": 45,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "id": "vocMax",
+          "type": "number",
+          "title": {
+            "en": "Highest VOC (ppb)",
+            "nl": "Hoogste VOS (ppb)",
+            "de": "Höchstwert VOC (ppb)",
+            "fr": "COV maximal (ppb)",
+            "it": "COV massimo (ppb)",
+            "sv": "Högsta VOC (ppb)",
+            "no": "Høyeste VOC (ppb)",
+            "es": "COV máximo (ppb)",
+            "da": "Højeste VOC (ppb)",
+            "ru": "Максимум ЛОС (ppb)",
+            "pl": "Najwyższe LZO (ppb)",
+            "ko": "최대 VOC (ppb)",
+            "ar": "الحد الأعلى لـ VOC (ppb)"
+          },
+          "hint": {
+            "en": "Only sensors that report VOC in ppb (such as Airthings and Aqara) count.",
+            "nl": "Alleen sensoren die VOS in ppb meten (zoals Airthings en Aqara) tellen mee.",
+            "de": "Nur Sensoren, die VOC in ppb melden (etwa Airthings und Aqara), zählen.",
+            "fr": "Seuls les capteurs qui mesurent les COV en ppb (comme Airthings et Aqara) comptent.",
+            "it": "Contano solo i sensori che misurano i COV in ppb (come Airthings e Aqara).",
+            "sv": "Bara sensorer som mäter VOC i ppb (som Airthings och Aqara) räknas.",
+            "no": "Bare sensorer som måler VOC i ppb (som Airthings og Aqara) teller.",
+            "es": "Solo cuentan los sensores que miden los COV en ppb (como Airthings y Aqara).",
+            "da": "Kun sensorer, der måler VOC i ppb (som Airthings og Aqara), tæller med.",
+            "ru": "Учитываются только датчики, которые измеряют ЛОС в ppb (например, Airthings и Aqara).",
+            "pl": "Liczą się tylko czujniki mierzące LZO w ppb (jak Airthings i Aqara).",
+            "ko": "VOC를 ppb로 측정하는 센서(Airthings, Aqara 등)만 반영됩니다.",
+            "ar": "تُحتسب فقط المستشعرات التي تقيس VOC بوحدة ppb (مثل Airthings وAqara)."
+          },
+          "value": 1000,
+          "min": 0,
+          "max": 100000
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        },
+        "getNames": {
+          "method": "GET",
+          "path": "/names"
+        },
+        "setName": {
+          "method": "POST",
+          "path": "/names"
+        }
+      },
+      "id": "roomhealth"
+    },
     "sensoralarms": {
       "name": {
         "en": "Sensor Alarms",
@@ -7764,7 +9592,7 @@
         "type": "global",
         "singular": false,
         "filter": {
-          "capabilities": "alarm_motion|alarm_presence|alarm_contact|alarm_person|alarm_vehicle|alarm_pet"
+          "capabilities": "alarm_motion|alarm_presence|alarm_contact|alarm_person|alarm_vehicle|alarm_pet|alarm_vibration"
         }
       },
       "settings": [
@@ -9855,19 +11683,19 @@
           "id": "b1Power",
           "type": "dropdown",
           "title": {
-            "en": "Button 1 – power",
-            "nl": "Knop 1 – aan/uit",
-            "de": "Taste 1 – Ein/Aus",
-            "fr": "Bouton 1 – marche/arrêt",
-            "it": "Pulsante 1 – accensione",
-            "sv": "Knapp 1 – på/av",
-            "no": "Knapp 1 – av/på",
-            "es": "Botón 1 – encendido",
-            "da": "Knap 1 – tænd/sluk",
-            "ru": "Кнопка 1 – питание",
-            "pl": "Przycisk 1 – zasilanie",
-            "ko": "버튼 1 – 전원",
-            "ar": "الزر 1 – التشغيل"
+            "en": "Button 1: power",
+            "nl": "Knop 1: aan/uit",
+            "de": "Taste 1: Ein/Aus",
+            "fr": "Bouton 1: marche/arrêt",
+            "it": "Pulsante 1: accensione",
+            "sv": "Knapp 1: på/av",
+            "no": "Knapp 1: av/på",
+            "es": "Botón 1: encendido",
+            "da": "Knap 1: tænd/sluk",
+            "ru": "Кнопка 1: питание",
+            "pl": "Przycisk 1: zasilanie",
+            "ko": "버튼 1: 전원",
+            "ar": "الزر 1: التشغيل"
           },
           "hint": {
             "en": "Leave mode, temperature or fan empty to keep them as they are.",
@@ -9946,76 +11774,76 @@
           "id": "b1Mode",
           "type": "autocomplete",
           "title": {
-            "en": "Button 1 – mode",
-            "nl": "Knop 1 – modus",
-            "de": "Taste 1 – Modus",
-            "fr": "Bouton 1 – mode",
-            "it": "Pulsante 1 – modalità",
-            "sv": "Knapp 1 – läge",
-            "no": "Knapp 1 – modus",
-            "es": "Botón 1 – modo",
-            "da": "Knap 1 – tilstand",
-            "ru": "Кнопка 1 – режим",
-            "pl": "Przycisk 1 – tryb",
-            "ko": "버튼 1 – 모드",
-            "ar": "الزر 1 – الوضع"
+            "en": "  – Mode",
+            "nl": "  – Modus",
+            "de": "  – Modus",
+            "fr": "  – Mode",
+            "it": "  – Modalità",
+            "sv": "  – Läge",
+            "no": "  – Modus",
+            "es": "  – Modo",
+            "da": "  – Tilstand",
+            "ru": "  – Режим",
+            "pl": "  – Tryb",
+            "ko": "  – 모드",
+            "ar": "  – الوضع"
           }
         },
         {
           "id": "b1Temp",
           "type": "autocomplete",
           "title": {
-            "en": "Button 1 – temperature",
-            "nl": "Knop 1 – temperatuur",
-            "de": "Taste 1 – Temperatur",
-            "fr": "Bouton 1 – température",
-            "it": "Pulsante 1 – temperatura",
-            "sv": "Knapp 1 – temperatur",
-            "no": "Knapp 1 – temperatur",
-            "es": "Botón 1 – temperatura",
-            "da": "Knap 1 – temperatur",
-            "ru": "Кнопка 1 – температура",
-            "pl": "Przycisk 1 – temperatura",
-            "ko": "버튼 1 – 온도",
-            "ar": "الزر 1 – درجة الحرارة"
+            "en": "  – Temperature",
+            "nl": "  – Temperatuur",
+            "de": "  – Temperatur",
+            "fr": "  – Température",
+            "it": "  – Temperatura",
+            "sv": "  – Temperatur",
+            "no": "  – Temperatur",
+            "es": "  – Temperatura",
+            "da": "  – Temperatur",
+            "ru": "  – Температура",
+            "pl": "  – Temperatura",
+            "ko": "  – 온도",
+            "ar": "  – درجة الحرارة"
           }
         },
         {
           "id": "b1Extra",
           "type": "autocomplete",
           "title": {
-            "en": "Button 1 – fan or other setting",
-            "nl": "Knop 1 – ventilator of andere instelling",
-            "de": "Taste 1 – Lüfter oder andere Einstellung",
-            "fr": "Bouton 1 – ventilation ou autre réglage",
-            "it": "Pulsante 1 – ventola o altra impostazione",
-            "sv": "Knapp 1 – fläkt eller annan inställning",
-            "no": "Knapp 1 – vifte eller annen innstilling",
-            "es": "Botón 1 – ventilador u otro ajuste",
-            "da": "Knap 1 – blæser eller anden indstilling",
-            "ru": "Кнопка 1 – вентилятор или другая настройка",
-            "pl": "Przycisk 1 – wentylator lub inne ustawienie",
-            "ko": "버튼 1 – 팬 또는 기타 설정",
-            "ar": "الزر 1 – المروحة أو إعداد آخر"
+            "en": "  – Fan or other setting",
+            "nl": "  – Ventilator of andere instelling",
+            "de": "  – Lüfter oder andere Einstellung",
+            "fr": "  – Ventilation ou autre réglage",
+            "it": "  – Ventola o altra impostazione",
+            "sv": "  – Fläkt eller annan inställning",
+            "no": "  – Vifte eller annen innstilling",
+            "es": "  – Ventilador u otro ajuste",
+            "da": "  – Blæser eller anden indstilling",
+            "ru": "  – Вентилятор или другая настройка",
+            "pl": "  – Wentylator lub inne ustawienie",
+            "ko": "  – 팬 또는 기타 설정",
+            "ar": "  – المروحة أو إعداد آخر"
           }
         },
         {
           "id": "b2Power",
           "type": "dropdown",
           "title": {
-            "en": "Button 2 – power",
-            "nl": "Knop 2 – aan/uit",
-            "de": "Taste 2 – Ein/Aus",
-            "fr": "Bouton 2 – marche/arrêt",
-            "it": "Pulsante 2 – accensione",
-            "sv": "Knapp 2 – på/av",
-            "no": "Knapp 2 – av/på",
-            "es": "Botón 2 – encendido",
-            "da": "Knap 2 – tænd/sluk",
-            "ru": "Кнопка 2 – питание",
-            "pl": "Przycisk 2 – zasilanie",
-            "ko": "버튼 2 – 전원",
-            "ar": "الزر 2 – التشغيل"
+            "en": "Button 2: power",
+            "nl": "Knop 2: aan/uit",
+            "de": "Taste 2: Ein/Aus",
+            "fr": "Bouton 2: marche/arrêt",
+            "it": "Pulsante 2: accensione",
+            "sv": "Knapp 2: på/av",
+            "no": "Knapp 2: av/på",
+            "es": "Botón 2: encendido",
+            "da": "Knap 2: tænd/sluk",
+            "ru": "Кнопка 2: питание",
+            "pl": "Przycisk 2: zasilanie",
+            "ko": "버튼 2: 전원",
+            "ar": "الزر 2: التشغيل"
           },
           "value": "on",
           "values": [
@@ -10079,76 +11907,76 @@
           "id": "b2Mode",
           "type": "autocomplete",
           "title": {
-            "en": "Button 2 – mode",
-            "nl": "Knop 2 – modus",
-            "de": "Taste 2 – Modus",
-            "fr": "Bouton 2 – mode",
-            "it": "Pulsante 2 – modalità",
-            "sv": "Knapp 2 – läge",
-            "no": "Knapp 2 – modus",
-            "es": "Botón 2 – modo",
-            "da": "Knap 2 – tilstand",
-            "ru": "Кнопка 2 – режим",
-            "pl": "Przycisk 2 – tryb",
-            "ko": "버튼 2 – 모드",
-            "ar": "الزر 2 – الوضع"
+            "en": "  – Mode",
+            "nl": "  – Modus",
+            "de": "  – Modus",
+            "fr": "  – Mode",
+            "it": "  – Modalità",
+            "sv": "  – Läge",
+            "no": "  – Modus",
+            "es": "  – Modo",
+            "da": "  – Tilstand",
+            "ru": "  – Режим",
+            "pl": "  – Tryb",
+            "ko": "  – 모드",
+            "ar": "  – الوضع"
           }
         },
         {
           "id": "b2Temp",
           "type": "autocomplete",
           "title": {
-            "en": "Button 2 – temperature",
-            "nl": "Knop 2 – temperatuur",
-            "de": "Taste 2 – Temperatur",
-            "fr": "Bouton 2 – température",
-            "it": "Pulsante 2 – temperatura",
-            "sv": "Knapp 2 – temperatur",
-            "no": "Knapp 2 – temperatur",
-            "es": "Botón 2 – temperatura",
-            "da": "Knap 2 – temperatur",
-            "ru": "Кнопка 2 – температура",
-            "pl": "Przycisk 2 – temperatura",
-            "ko": "버튼 2 – 온도",
-            "ar": "الزر 2 – درجة الحرارة"
+            "en": "  – Temperature",
+            "nl": "  – Temperatuur",
+            "de": "  – Temperatur",
+            "fr": "  – Température",
+            "it": "  – Temperatura",
+            "sv": "  – Temperatur",
+            "no": "  – Temperatur",
+            "es": "  – Temperatura",
+            "da": "  – Temperatur",
+            "ru": "  – Температура",
+            "pl": "  – Temperatura",
+            "ko": "  – 온도",
+            "ar": "  – درجة الحرارة"
           }
         },
         {
           "id": "b2Extra",
           "type": "autocomplete",
           "title": {
-            "en": "Button 2 – fan or other setting",
-            "nl": "Knop 2 – ventilator of andere instelling",
-            "de": "Taste 2 – Lüfter oder andere Einstellung",
-            "fr": "Bouton 2 – ventilation ou autre réglage",
-            "it": "Pulsante 2 – ventola o altra impostazione",
-            "sv": "Knapp 2 – fläkt eller annan inställning",
-            "no": "Knapp 2 – vifte eller annen innstilling",
-            "es": "Botón 2 – ventilador u otro ajuste",
-            "da": "Knap 2 – blæser eller anden indstilling",
-            "ru": "Кнопка 2 – вентилятор или другая настройка",
-            "pl": "Przycisk 2 – wentylator lub inne ustawienie",
-            "ko": "버튼 2 – 팬 또는 기타 설정",
-            "ar": "الزر 2 – المروحة أو إعداد آخر"
+            "en": "  – Fan or other setting",
+            "nl": "  – Ventilator of andere instelling",
+            "de": "  – Lüfter oder andere Einstellung",
+            "fr": "  – Ventilation ou autre réglage",
+            "it": "  – Ventola o altra impostazione",
+            "sv": "  – Fläkt eller annan inställning",
+            "no": "  – Vifte eller annen innstilling",
+            "es": "  – Ventilador u otro ajuste",
+            "da": "  – Blæser eller anden indstilling",
+            "ru": "  – Вентилятор или другая настройка",
+            "pl": "  – Wentylator lub inne ustawienie",
+            "ko": "  – 팬 또는 기타 설정",
+            "ar": "  – المروحة أو إعداد آخر"
           }
         },
         {
           "id": "b3Power",
           "type": "dropdown",
           "title": {
-            "en": "Button 3 – power",
-            "nl": "Knop 3 – aan/uit",
-            "de": "Taste 3 – Ein/Aus",
-            "fr": "Bouton 3 – marche/arrêt",
-            "it": "Pulsante 3 – accensione",
-            "sv": "Knapp 3 – på/av",
-            "no": "Knapp 3 – av/på",
-            "es": "Botón 3 – encendido",
-            "da": "Knap 3 – tænd/sluk",
-            "ru": "Кнопка 3 – питание",
-            "pl": "Przycisk 3 – zasilanie",
-            "ko": "버튼 3 – 전원",
-            "ar": "الزر 3 – التشغيل"
+            "en": "Button 3: power",
+            "nl": "Knop 3: aan/uit",
+            "de": "Taste 3: Ein/Aus",
+            "fr": "Bouton 3: marche/arrêt",
+            "it": "Pulsante 3: accensione",
+            "sv": "Knapp 3: på/av",
+            "no": "Knapp 3: av/på",
+            "es": "Botón 3: encendido",
+            "da": "Knap 3: tænd/sluk",
+            "ru": "Кнопка 3: питание",
+            "pl": "Przycisk 3: zasilanie",
+            "ko": "버튼 3: 전원",
+            "ar": "الزر 3: التشغيل"
           },
           "value": "on",
           "values": [
@@ -10212,57 +12040,57 @@
           "id": "b3Mode",
           "type": "autocomplete",
           "title": {
-            "en": "Button 3 – mode",
-            "nl": "Knop 3 – modus",
-            "de": "Taste 3 – Modus",
-            "fr": "Bouton 3 – mode",
-            "it": "Pulsante 3 – modalità",
-            "sv": "Knapp 3 – läge",
-            "no": "Knapp 3 – modus",
-            "es": "Botón 3 – modo",
-            "da": "Knap 3 – tilstand",
-            "ru": "Кнопка 3 – режим",
-            "pl": "Przycisk 3 – tryb",
-            "ko": "버튼 3 – 모드",
-            "ar": "الزر 3 – الوضع"
+            "en": "  – Mode",
+            "nl": "  – Modus",
+            "de": "  – Modus",
+            "fr": "  – Mode",
+            "it": "  – Modalità",
+            "sv": "  – Läge",
+            "no": "  – Modus",
+            "es": "  – Modo",
+            "da": "  – Tilstand",
+            "ru": "  – Режим",
+            "pl": "  – Tryb",
+            "ko": "  – 모드",
+            "ar": "  – الوضع"
           }
         },
         {
           "id": "b3Temp",
           "type": "autocomplete",
           "title": {
-            "en": "Button 3 – temperature",
-            "nl": "Knop 3 – temperatuur",
-            "de": "Taste 3 – Temperatur",
-            "fr": "Bouton 3 – température",
-            "it": "Pulsante 3 – temperatura",
-            "sv": "Knapp 3 – temperatur",
-            "no": "Knapp 3 – temperatur",
-            "es": "Botón 3 – temperatura",
-            "da": "Knap 3 – temperatur",
-            "ru": "Кнопка 3 – температура",
-            "pl": "Przycisk 3 – temperatura",
-            "ko": "버튼 3 – 온도",
-            "ar": "الزر 3 – درجة الحرارة"
+            "en": "  – Temperature",
+            "nl": "  – Temperatuur",
+            "de": "  – Temperatur",
+            "fr": "  – Température",
+            "it": "  – Temperatura",
+            "sv": "  – Temperatur",
+            "no": "  – Temperatur",
+            "es": "  – Temperatura",
+            "da": "  – Temperatur",
+            "ru": "  – Температура",
+            "pl": "  – Temperatura",
+            "ko": "  – 온도",
+            "ar": "  – درجة الحرارة"
           }
         },
         {
           "id": "b3Extra",
           "type": "autocomplete",
           "title": {
-            "en": "Button 3 – fan or other setting",
-            "nl": "Knop 3 – ventilator of andere instelling",
-            "de": "Taste 3 – Lüfter oder andere Einstellung",
-            "fr": "Bouton 3 – ventilation ou autre réglage",
-            "it": "Pulsante 3 – ventola o altra impostazione",
-            "sv": "Knapp 3 – fläkt eller annan inställning",
-            "no": "Knapp 3 – vifte eller annen innstilling",
-            "es": "Botón 3 – ventilador u otro ajuste",
-            "da": "Knap 3 – blæser eller anden indstilling",
-            "ru": "Кнопка 3 – вентилятор или другая настройка",
-            "pl": "Przycisk 3 – wentylator lub inne ustawienie",
-            "ko": "버튼 3 – 팬 또는 기타 설정",
-            "ar": "الزر 3 – المروحة أو إعداد آخر"
+            "en": "  – Fan or other setting",
+            "nl": "  – Ventilator of andere instelling",
+            "de": "  – Lüfter oder andere Einstellung",
+            "fr": "  – Ventilation ou autre réglage",
+            "it": "  – Ventola o altra impostazione",
+            "sv": "  – Fläkt eller annan inställning",
+            "no": "  – Vifte eller annen innstilling",
+            "es": "  – Ventilador u otro ajuste",
+            "da": "  – Blæser eller anden indstilling",
+            "ru": "  – Вентилятор или другая настройка",
+            "pl": "  – Wentylator lub inne ustawienie",
+            "ko": "  – 팬 또는 기타 설정",
+            "ar": "  – المروحة أو إعداد آخر"
           }
         }
       ],
@@ -10655,6 +12483,79 @@
                 "pl": "2",
                 "ko": "2",
                 "ar": "2"
+              }
+            }
+          ]
+        },
+        {
+          "id": "colorStyle",
+          "type": "dropdown",
+          "title": {
+            "en": "Colours",
+            "nl": "Kleuren",
+            "de": "Farben",
+            "fr": "Couleurs",
+            "it": "Colori",
+            "sv": "Färger",
+            "no": "Farger",
+            "es": "Colores",
+            "da": "Farver",
+            "ru": "Цвета",
+            "pl": "Kolory",
+            "ko": "색상",
+            "ar": "الألوان"
+          },
+          "hint": {
+            "en": "For percentage fills and colours set by a Flow. Bright fills the tile with the full colour, and the text turns dark (white on purple) so it stays readable.",
+            "nl": "Voor gevulde percentages en kleuren die een Flow instelt. Fel vult de tegel met de volle kleur, en de tekst wordt donker (wit op paars) zodat hij leesbaar blijft.",
+            "de": "Für gefüllte Prozentwerte und von einem Flow gesetzte Farben. Kräftig füllt die Kachel mit der vollen Farbe, und der Text wird dunkel (weiß auf Lila), damit er lesbar bleibt.",
+            "fr": "Pour les pourcentages remplis et les couleurs définies par un Flow. Vives remplit la tuile de la couleur pleine, et le texte devient foncé (blanc sur violet) pour rester lisible.",
+            "it": "Per le percentuali riempite e i colori impostati da un Flow. Vivaci riempie il riquadro con il colore pieno, e il testo diventa scuro (bianco sul viola) per restare leggibile.",
+            "sv": "För ifyllda procentvärden och färger som ett Flow ställer in. Starka fyller rutan med hela färgen, och texten blir mörk (vit på lila) så att den går att läsa.",
+            "no": "For utfylte prosentverdier og farger satt av en Flow. Sterke fyller flisen med full farge, og teksten blir mørk (hvit på lilla) så den er lett å lese.",
+            "es": "Para los porcentajes rellenos y los colores que pone un Flow. Vivos rellena el mosaico con el color pleno, y el texto pasa a oscuro (blanco sobre morado) para que se lea bien.",
+            "da": "Til udfyldte procenter og farver sat af et Flow. Stærke fylder feltet med hele farven, og teksten bliver mørk (hvid på lilla), så den er let at læse.",
+            "ru": "Для заливки процентов и цветов, заданных Flow. «Яркие» заливают плитку полным цветом, а текст становится тёмным (белым на фиолетовом), чтобы его было легко читать.",
+            "pl": "Dla wypełnień procentów i kolorów ustawianych przez Flow. Jaskrawe wypełniają kafelek pełnym kolorem, a tekst staje się ciemny (biały na fioletowym), aby był czytelny.",
+            "ko": "백분율 채우기와 Flow가 정한 색상에 적용됩니다. 선명하게는 타일을 원래 색으로 채우고, 글자를 어둡게(보라색 위에서는 흰색) 바꿔 잘 읽히게 합니다.",
+            "ar": "لتعبئة النسب المئوية والألوان التي يضبطها Flow. «زاهية» تملأ البلاطة باللون الكامل، ويصبح النص داكنًا (أبيض على البنفسجي) ليبقى مقروءًا."
+          },
+          "value": "soft",
+          "values": [
+            {
+              "id": "soft",
+              "title": {
+                "en": "Soft",
+                "nl": "Zacht",
+                "de": "Dezent",
+                "fr": "Douces",
+                "it": "Tenui",
+                "sv": "Dämpade",
+                "no": "Dempede",
+                "es": "Suaves",
+                "da": "Dæmpede",
+                "ru": "Мягкие",
+                "pl": "Stonowane",
+                "ko": "은은하게",
+                "ar": "هادئة"
+              }
+            },
+            {
+              "id": "bright",
+              "title": {
+                "en": "Bright",
+                "nl": "Fel",
+                "de": "Kräftig",
+                "fr": "Vives",
+                "it": "Vivaci",
+                "sv": "Starka",
+                "no": "Sterke",
+                "es": "Vivos",
+                "da": "Stærke",
+                "ru": "Яркие",
+                "pl": "Jaskrawe",
+                "ko": "선명하게",
+                "ar": "زاهية"
               }
             }
           ]
@@ -11511,6 +13412,530 @@
         }
       },
       "id": "variables"
+    },
+    "varpresets": {
+      "name": {
+        "en": "Variable Presets",
+        "nl": "Variabele-presets",
+        "de": "Variablen-Presets",
+        "fr": "Préréglages de variable",
+        "it": "Preimpostazioni variabile",
+        "sv": "Variabellägen",
+        "no": "Forhåndsvalg for variabel",
+        "es": "Preajustes de variable",
+        "da": "Variabelforvalg",
+        "ru": "Пресеты переменной",
+        "pl": "Presety zmiennej",
+        "ko": "변수 프리셋",
+        "ar": "إعدادات مسبقة للمتغير"
+      },
+      "height": 140,
+      "transparent": false,
+      "settings": [
+        {
+          "id": "variable",
+          "type": "autocomplete",
+          "title": {
+            "en": "Variable",
+            "nl": "Variabele",
+            "de": "Variable",
+            "fr": "Variable",
+            "it": "Variabile",
+            "sv": "Variabel",
+            "no": "Variabel",
+            "es": "Variable",
+            "da": "Variabel",
+            "ru": "Переменная",
+            "pl": "Zmienna",
+            "ko": "변수",
+            "ar": "المتغير"
+          },
+          "hint": {
+            "en": "Pick this first: the buttons’ values below are read from it. To change it from the widget, add an API key with the Variables permission in Widgetkeeper’s app settings.",
+            "nl": "Kies dit eerst: de waarden van de knoppen hieronder komen hieruit. Om hem vanuit de widget te wijzigen, voeg je in de app-instellingen van Widgetkeeper een API-sleutel toe met het recht Variabelen.",
+            "de": "Zuerst auswählen: Die Werte der Tasten darunter richten sich nach ihr. Um sie im Widget zu ändern, füge in den App-Einstellungen von Widgetkeeper einen API-Schlüssel mit dem Recht Variablen hinzu.",
+            "fr": "À choisir d’abord : les valeurs des boutons ci-dessous en dépendent. Pour la modifier depuis le widget, ajoutez une clé API avec le droit Variables dans les réglages de l’app Widgetkeeper.",
+            "it": "Sceglila per prima: i valori dei pulsanti qui sotto dipendono da essa. Per modificarla dal widget, aggiungi una chiave API con il permesso Variabili nelle impostazioni dell’app Widgetkeeper.",
+            "sv": "Välj den först: knapparnas värden nedan hämtas från den. Lägg till en API-nyckel med behörigheten Variabler i Widgetkeepers appinställningar för att ändra den från widgeten.",
+            "no": "Velg denne først: verdiene til knappene under hentes fra den. Legg til en API-nøkkel med tillatelsen Variabler i Widgetkeepers appinnstillinger for å endre den fra widgeten.",
+            "es": "Elígela primero: los valores de los botones de abajo dependen de ella. Para cambiarla desde el widget, añade una clave API con el permiso Variables en los ajustes de la app Widgetkeeper.",
+            "da": "Vælg den først: knappernes værdier nedenfor hentes fra den. Tilføj en API-nøgle med tilladelsen Variabler i Widgetkeepers app-indstillinger for at ændre den fra widgetten.",
+            "ru": "Выберите её первой: значения кнопок ниже берутся из неё. Чтобы менять её из виджета, добавьте ключ API с правом Переменные в настройках приложения Widgetkeeper.",
+            "pl": "Wybierz najpierw: wartości przycisków poniżej zależą od niej. Aby zmieniać ją z widżetu, dodaj klucz API z uprawnieniem Zmienne w ustawieniach aplikacji Widgetkeeper.",
+            "ko": "먼저 선택하세요. 아래 버튼 값은 이 변수에서 가져옵니다. 위젯에서 변경하려면 Widgetkeeper 앱 설정에서 변수 권한이 있는 API 키를 추가하세요.",
+            "ar": "اختره أولًا: تُؤخذ قيم الأزرار أدناه منه. لتغييره من الأداة، أضف مفتاح API بإذن المتغيرات في إعدادات تطبيق Widgetkeeper."
+          }
+        },
+        {
+          "id": "title",
+          "type": "text",
+          "title": {
+            "en": "Title",
+            "nl": "Titel",
+            "de": "Titel",
+            "fr": "Titre",
+            "it": "Titolo",
+            "sv": "Rubrik",
+            "no": "Tittel",
+            "es": "Título",
+            "da": "Titel",
+            "ru": "Заголовок",
+            "pl": "Tytuł",
+            "ko": "제목",
+            "ar": "العنوان"
+          },
+          "hint": {
+            "en": "Shown in place of the variable’s name. Leave empty for the name.",
+            "nl": "Getoond in plaats van de naam van de variabele. Laat leeg voor de naam.",
+            "de": "Wird statt des Namens der Variable angezeigt. Leer lassen für den Namen.",
+            "fr": "Affiché à la place du nom de la variable. Laissez vide pour le nom.",
+            "it": "Mostrato al posto del nome della variabile. Lascia vuoto per il nome.",
+            "sv": "Visas i stället för variabelns namn. Lämna tomt för namnet.",
+            "no": "Vises i stedet for variabelens navn. La stå tomt for navnet.",
+            "es": "Se muestra en lugar del nombre de la variable. Déjalo vacío para el nombre.",
+            "da": "Vises i stedet for variablens navn. Lad den være tom for navnet.",
+            "ru": "Показывается вместо имени переменной. Оставьте пустым для имени.",
+            "pl": "Wyświetlany zamiast nazwy zmiennej. Zostaw puste, aby była nazwa.",
+            "ko": "변수 이름 대신 표시됩니다. 비워 두면 이름이 표시됩니다.",
+            "ar": "يظهر بدل اسم المتغير. اتركه فارغًا لإظهار الاسم."
+          },
+          "value": ""
+        },
+        {
+          "id": "icon",
+          "type": "autocomplete",
+          "title": {
+            "en": "Icon",
+            "nl": "Pictogram",
+            "de": "Symbol",
+            "fr": "Icône",
+            "it": "Icona",
+            "sv": "Ikon",
+            "no": "Ikon",
+            "es": "Icono",
+            "da": "Ikon",
+            "ru": "Значок",
+            "pl": "Ikona",
+            "ko": "아이콘",
+            "ar": "الأيقونة"
+          },
+          "hint": {
+            "en": "Before the name. None for no icon.",
+            "nl": "Voor de naam. Geen voor geen pictogram.",
+            "de": "Vor dem Namen. Keine für kein Symbol.",
+            "fr": "Avant le nom. Aucun pour ne pas en mettre.",
+            "it": "Prima del nome. Nessuno per non mostrarla.",
+            "sv": "Före namnet. Ingen för ingen ikon.",
+            "no": "Foran navnet. Ingen for ingen ikon.",
+            "es": "Antes del nombre. Ninguno para no mostrarlo.",
+            "da": "Før navnet. Ingen for intet ikon.",
+            "ru": "Перед именем. «Нет», чтобы без значка.",
+            "pl": "Przed nazwą. Brak, aby nie było ikony.",
+            "ko": "이름 앞에 표시됩니다. 없음을 고르면 표시하지 않습니다.",
+            "ar": "قبل الاسم. لا شيء لعدم إظهار أيقونة."
+          }
+        },
+        {
+          "id": "layout",
+          "type": "dropdown",
+          "title": {
+            "en": "Layout",
+            "nl": "Indeling",
+            "de": "Layout",
+            "fr": "Disposition",
+            "it": "Layout",
+            "sv": "Layout",
+            "no": "Oppsett",
+            "es": "Diseño",
+            "da": "Layout",
+            "ru": "Макет",
+            "pl": "Układ",
+            "ko": "레이아웃",
+            "ar": "التخطيط"
+          },
+          "value": "standard",
+          "values": [
+            {
+              "id": "standard",
+              "title": {
+                "en": "Standard",
+                "nl": "Standaard",
+                "de": "Standard",
+                "fr": "Standard",
+                "it": "Standard",
+                "sv": "Standard",
+                "no": "Standard",
+                "es": "Estándar",
+                "da": "Standard",
+                "ru": "Стандартный",
+                "pl": "Standardowy",
+                "ko": "기본",
+                "ar": "قياسي"
+              }
+            },
+            {
+              "id": "compact",
+              "title": {
+                "en": "Compact",
+                "nl": "Compact",
+                "de": "Kompakt",
+                "fr": "Compacte",
+                "it": "Compatto",
+                "sv": "Kompakt",
+                "no": "Kompakt",
+                "es": "Compacto",
+                "da": "Kompakt",
+                "ru": "Компактный",
+                "pl": "Kompaktowy",
+                "ko": "컴팩트",
+                "ar": "مضغوط"
+              }
+            }
+          ]
+        },
+        {
+          "id": "color",
+          "type": "dropdown",
+          "title": {
+            "en": "Button colour",
+            "nl": "Knopkleur",
+            "de": "Tastenfarbe",
+            "fr": "Couleur des boutons",
+            "it": "Colore dei pulsanti",
+            "sv": "Knappfärg",
+            "no": "Knappfarge",
+            "es": "Color de los botones",
+            "da": "Knapfarve",
+            "ru": "Цвет кнопок",
+            "pl": "Kolor przycisków",
+            "ko": "버튼 색상",
+            "ar": "لون الأزرار"
+          },
+          "value": "blue",
+          "values": [
+            {
+              "id": "blue",
+              "title": {
+                "en": "Blue",
+                "nl": "Blauw",
+                "de": "Blau",
+                "fr": "Bleu",
+                "it": "Blu",
+                "sv": "Blå",
+                "no": "Blå",
+                "es": "Azul",
+                "da": "Blå",
+                "ru": "Синий",
+                "pl": "Niebieski",
+                "ko": "파랑",
+                "ar": "أزرق"
+              }
+            },
+            {
+              "id": "red",
+              "title": {
+                "en": "Red",
+                "nl": "Rood",
+                "de": "Rot",
+                "fr": "Rouge",
+                "it": "Rosso",
+                "sv": "Röd",
+                "no": "Rød",
+                "es": "Rojo",
+                "da": "Rød",
+                "ru": "Красный",
+                "pl": "Czerwony",
+                "ko": "빨강",
+                "ar": "أحمر"
+              }
+            },
+            {
+              "id": "orange",
+              "title": {
+                "en": "Orange",
+                "nl": "Oranje",
+                "de": "Orange",
+                "fr": "Orange",
+                "it": "Arancione",
+                "sv": "Orange",
+                "no": "Oransje",
+                "es": "Naranja",
+                "da": "Orange",
+                "ru": "Оранжевый",
+                "pl": "Pomarańczowy",
+                "ko": "주황",
+                "ar": "برتقالي"
+              }
+            },
+            {
+              "id": "yellow",
+              "title": {
+                "en": "Yellow",
+                "nl": "Geel",
+                "de": "Gelb",
+                "fr": "Jaune",
+                "it": "Giallo",
+                "sv": "Gul",
+                "no": "Gul",
+                "es": "Amarillo",
+                "da": "Gul",
+                "ru": "Жёлтый",
+                "pl": "Żółty",
+                "ko": "노랑",
+                "ar": "أصفر"
+              }
+            },
+            {
+              "id": "green",
+              "title": {
+                "en": "Green",
+                "nl": "Groen",
+                "de": "Grün",
+                "fr": "Vert",
+                "it": "Verde",
+                "sv": "Grön",
+                "no": "Grønn",
+                "es": "Verde",
+                "da": "Grøn",
+                "ru": "Зелёный",
+                "pl": "Zielony",
+                "ko": "초록",
+                "ar": "أخضر"
+              }
+            },
+            {
+              "id": "purple",
+              "title": {
+                "en": "Purple",
+                "nl": "Paars",
+                "de": "Lila",
+                "fr": "Violet",
+                "it": "Viola",
+                "sv": "Lila",
+                "no": "Lilla",
+                "es": "Morado",
+                "da": "Lilla",
+                "ru": "Фиолетовый",
+                "pl": "Fioletowy",
+                "ko": "보라",
+                "ar": "بنفسجي"
+              }
+            }
+          ],
+          "hint": {
+            "en": "The colour of the button that matches the variable.",
+            "nl": "De kleur van de knop die bij de variabele past.",
+            "de": "Die Farbe der Taste, die zur Variable passt.",
+            "fr": "La couleur du bouton qui correspond à la variable.",
+            "it": "Il colore del pulsante che corrisponde alla variabile.",
+            "sv": "Färgen på knappen som stämmer med variabeln.",
+            "no": "Fargen på knappen som stemmer med variabelen.",
+            "es": "El color del botón que coincide con la variable.",
+            "da": "Farven på den knap, der passer til variablen.",
+            "ru": "Цвет кнопки, совпадающей с переменной.",
+            "pl": "Kolor przycisku, który pasuje do zmiennej.",
+            "ko": "변수와 일치하는 버튼의 색상입니다.",
+            "ar": "لون الزر المطابق للمتغير."
+          }
+        },
+        {
+          "id": "value1",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 1: value",
+            "nl": "Knop 1: waarde",
+            "de": "Taste 1: Wert",
+            "fr": "Bouton 1: valeur",
+            "it": "Pulsante 1: valore",
+            "sv": "Knapp 1: värde",
+            "no": "Knapp 1: verdi",
+            "es": "Botón 1: valor",
+            "da": "Knap 1: værdi",
+            "ru": "Кнопка 1: значение",
+            "pl": "Przycisk 1: wartość",
+            "ko": "버튼 1: 값",
+            "ar": "الزر 1: القيمة"
+          },
+          "hint": {
+            "en": "Pick or type what this button sets the variable to: Yes or No, a number or a text, as the variable is. Buttons left on None are hidden.",
+            "nl": "Kies of typ waarop deze knop de variabele zet: Ja of Nee, een getal of een tekst, zoals de variabele is. Knoppen op Geen worden verborgen.",
+            "de": "Wähle oder tippe, worauf diese Taste die Variable setzt: Ja oder Nein, eine Zahl oder einen Text, je nach Variable. Tasten auf Keine werden ausgeblendet.",
+            "fr": "Choisissez ou tapez la valeur que ce bouton donne à la variable : Oui ou Non, un nombre ou un texte, selon la variable. Les boutons sur Aucun sont masqués.",
+            "it": "Scegli o digita il valore che questo pulsante dà alla variabile: Sì o No, un numero o un testo, secondo la variabile. I pulsanti su Nessuna sono nascosti.",
+            "sv": "Välj eller skriv vad knappen sätter variabeln till: Ja eller Nej, ett tal eller en text, efter variabeln. Knappar på Ingen döljs.",
+            "no": "Velg eller skriv hva knappen setter variabelen til: Ja eller Nei, et tall eller en tekst, etter variabelen. Knapper på Ingen skjules.",
+            "es": "Elige o escribe el valor que este botón da a la variable: Sí o No, un número o un texto, según la variable. Los botones en Ninguna se ocultan.",
+            "da": "Vælg eller skriv, hvad knappen sætter variablen til: Ja eller Nej, et tal eller en tekst, efter variablen. Knapper på Ingen skjules.",
+            "ru": "Выберите или введите значение, которое кнопка задаёт переменной: Да или Нет, число или текст, по типу переменной. Кнопки на «Нет» скрыты.",
+            "pl": "Wybierz lub wpisz, na co ten przycisk ustawia zmienną: Tak lub Nie, liczbę lub tekst, zależnie od zmiennej. Przyciski na Brak są ukryte.",
+            "ko": "이 버튼이 변수에 설정할 값을 고르거나 입력하세요. 변수에 맞게 예/아니요, 숫자 또는 텍스트입니다. 없음으로 둔 버튼은 숨겨집니다.",
+            "ar": "اختر أو اكتب القيمة التي يضبط بها هذا الزر المتغير: نعم أو لا، أو رقمًا أو نصًا، حسب المتغير. تُخفى الأزرار المضبوطة على لا شيء."
+          }
+        },
+        {
+          "id": "label1",
+          "type": "text",
+          "title": {
+            "en": "  – Label",
+            "nl": "  – Label",
+            "de": "  – Beschriftung",
+            "fr": "  – Libellé",
+            "it": "  – Etichetta",
+            "sv": "  – Etikett",
+            "no": "  – Etikett",
+            "es": "  – Etiqueta",
+            "da": "  – Etiket",
+            "ru": "  – Подпись",
+            "pl": "  – Etykieta",
+            "ko": "  – 레이블",
+            "ar": "  – التسمية"
+          },
+          "hint": {
+            "en": "Optional, such as Away. Shown on the button in place of the value.",
+            "nl": "Optioneel, zoals Weg. Getoond op de knop in plaats van de waarde.",
+            "de": "Optional, etwa Abwesend. Steht auf der Taste statt des Werts.",
+            "fr": "Facultatif, par exemple Absent. Affiché sur le bouton à la place de la valeur.",
+            "it": "Facoltativo, ad esempio Fuori casa. Mostrato sul pulsante al posto del valore.",
+            "sv": "Valfritt, till exempel Borta. Visas på knappen i stället för värdet.",
+            "no": "Valgfritt, for eksempel Borte. Vises på knappen i stedet for verdien.",
+            "es": "Opcional, por ejemplo Fuera. Se muestra en el botón en lugar del valor.",
+            "da": "Valgfrit, fx Ude. Vises på knappen i stedet for værdien.",
+            "ru": "Необязательно, например «Нет дома». Показывается на кнопке вместо значения.",
+            "pl": "Opcjonalnie, np. Poza domem. Widoczne na przycisku zamiast wartości.",
+            "ko": "선택 사항입니다(예: 외출). 값 대신 버튼에 표시됩니다.",
+            "ar": "اختياري، مثل خارج المنزل. يظهر على الزر بدل القيمة."
+          },
+          "value": ""
+        },
+        {
+          "id": "value2",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 2: value",
+            "nl": "Knop 2: waarde",
+            "de": "Taste 2: Wert",
+            "fr": "Bouton 2: valeur",
+            "it": "Pulsante 2: valore",
+            "sv": "Knapp 2: värde",
+            "no": "Knapp 2: verdi",
+            "es": "Botón 2: valor",
+            "da": "Knap 2: værdi",
+            "ru": "Кнопка 2: значение",
+            "pl": "Przycisk 2: wartość",
+            "ko": "버튼 2: 값",
+            "ar": "الزر 2: القيمة"
+          }
+        },
+        {
+          "id": "label2",
+          "type": "text",
+          "title": {
+            "en": "  – Label",
+            "nl": "  – Label",
+            "de": "  – Beschriftung",
+            "fr": "  – Libellé",
+            "it": "  – Etichetta",
+            "sv": "  – Etikett",
+            "no": "  – Etikett",
+            "es": "  – Etiqueta",
+            "da": "  – Etiket",
+            "ru": "  – Подпись",
+            "pl": "  – Etykieta",
+            "ko": "  – 레이블",
+            "ar": "  – التسمية"
+          },
+          "value": ""
+        },
+        {
+          "id": "value3",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 3: value",
+            "nl": "Knop 3: waarde",
+            "de": "Taste 3: Wert",
+            "fr": "Bouton 3: valeur",
+            "it": "Pulsante 3: valore",
+            "sv": "Knapp 3: värde",
+            "no": "Knapp 3: verdi",
+            "es": "Botón 3: valor",
+            "da": "Knap 3: værdi",
+            "ru": "Кнопка 3: значение",
+            "pl": "Przycisk 3: wartość",
+            "ko": "버튼 3: 값",
+            "ar": "الزر 3: القيمة"
+          }
+        },
+        {
+          "id": "label3",
+          "type": "text",
+          "title": {
+            "en": "  – Label",
+            "nl": "  – Label",
+            "de": "  – Beschriftung",
+            "fr": "  – Libellé",
+            "it": "  – Etichetta",
+            "sv": "  – Etikett",
+            "no": "  – Etikett",
+            "es": "  – Etiqueta",
+            "da": "  – Etiket",
+            "ru": "  – Подпись",
+            "pl": "  – Etykieta",
+            "ko": "  – 레이블",
+            "ar": "  – التسمية"
+          },
+          "value": ""
+        },
+        {
+          "id": "value4",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 4: value",
+            "nl": "Knop 4: waarde",
+            "de": "Taste 4: Wert",
+            "fr": "Bouton 4: valeur",
+            "it": "Pulsante 4: valore",
+            "sv": "Knapp 4: värde",
+            "no": "Knapp 4: verdi",
+            "es": "Botón 4: valor",
+            "da": "Knap 4: værdi",
+            "ru": "Кнопка 4: значение",
+            "pl": "Przycisk 4: wartość",
+            "ko": "버튼 4: 값",
+            "ar": "الزر 4: القيمة"
+          }
+        },
+        {
+          "id": "label4",
+          "type": "text",
+          "title": {
+            "en": "  – Label",
+            "nl": "  – Label",
+            "de": "  – Beschriftung",
+            "fr": "  – Libellé",
+            "it": "  – Etichetta",
+            "sv": "  – Etikett",
+            "no": "  – Etikett",
+            "es": "  – Etiqueta",
+            "da": "  – Etiket",
+            "ru": "  – Подпись",
+            "pl": "  – Etykieta",
+            "ko": "  – 레이블",
+            "ar": "  – التسمية"
+          },
+          "value": ""
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        },
+        "set": {
+          "method": "POST",
+          "path": "/set"
+        }
+      },
+      "id": "varpresets"
     },
     "weather": {
       "name": {
