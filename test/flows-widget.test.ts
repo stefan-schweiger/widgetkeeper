@@ -52,12 +52,6 @@ describe('render', () => {
     expect(rows()).toHaveLength(0);
     expect(message().textContent).toBe('Pick flows in the widget settings.');
   });
-
-  it('knows every icon the settings offer', async () => {
-    const { FLOW_ICON_PATHS } = await import('../lib/FlowService.js');
-    // The same paths too: the settings' previews are drawn from the service's copy.
-    expect(win.FLOW_BUTTON_ICON_PATHS).toEqual(FLOW_ICON_PATHS);
-  });
 });
 
 describe('start', () => {

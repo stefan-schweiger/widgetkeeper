@@ -1,8 +1,9 @@
 import { readFile } from 'node:fs/promises';
 import type Homey from 'homey';
-import { getAppApi } from './appApi.js';
 import { repeatKeys } from './TileNameService.js';
+import { devicesAndZones, matches } from './autocomplete.js';
 import { describeCapability } from './capabilities.js';
+import { driverIconPath, libraryIconUrl } from './deviceIcon.js';
 import { sparkCaps } from './SparklineService.js';
 import { valueCaps } from './ValueService.js';
 import type { AutocompleteListener, SettingItem } from './widgetAutocompletes.js';
@@ -79,13 +80,10 @@ const CAPABILITY_SLOTS: Record<string, { setting: RegExp, caps: (device: any) =>
   charts: { setting: /^chart\d$/, caps: sparkCaps },
 };
 
-/** A device's icon for the page: the user-picked library icon, else the driver's (`lib/deviceIcon.ts` does the same). */
+/** A device's icon for the page, as the widgets pick it: the user-picked library icon, else the driver's (on the Homey). */
 function webIcon(device: any): string | null {
-  if (typeof device?.iconOverride === 'string' && /^[a-z0-9-]+$/.test(device.iconOverride)) {
-    return `https://my.homey.app/img/devices/${device.iconOverride}.svg`;
-  }
-  const url = device?.iconObj?.url;
-  return typeof url === 'string' && url.startsWith('/') ? url : null;
+  const path = driverIconPath(device?.iconObj);
+  return libraryIconUrl(device) ?? (path?.startsWith('/') ? path : null);
 }
 
 /** A device as the editor shows it: its name, room and icon. */
@@ -251,12 +249,11 @@ export default class WebDashboardService {
   async devices(type: string, query = ''): Promise<WebDevice[]> {
     const w = this.manifestWidgets[type];
     if (!w?.devices) throw new Error(`No devices setting: ${type}`);
-    const [devices, zones] = await this.devicesAndZones();
-    const q = query.trim().toLowerCase();
+    const [devices, zones] = await devicesAndZones(this.homey);
     return devices
       .filter(d => passesDeviceFilter(d, w.devices.filter))
       .map(d => webDevice(d, zones))
-      .filter(d => !q || `${d.name} ${d.zone?.name ?? ''}`.toLowerCase().includes(q))
+      .filter(d => matches(query, d.name, d.zone?.name))
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
@@ -267,7 +264,7 @@ export default class WebDashboardService {
   async valueDevices(type: string): Promise<WebValueDevice[]> {
     const slots = Object.prototype.hasOwnProperty.call(CAPABILITY_SLOTS, type) ? CAPABILITY_SLOTS[type] : undefined;
     if (!slots) throw new Error(`No device value settings: ${type}`);
-    const [devices, zones] = await this.devicesAndZones();
+    const [devices, zones] = await devicesAndZones(this.homey);
     const out: WebValueDevice[] = [];
     for (const d of devices) {
       const caps = slots.caps(d).map((id) => {
@@ -277,15 +274,6 @@ export default class WebDashboardService {
       if (caps.length) out.push({ ...webDevice(d, zones), caps });
     }
     return out.sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  private async devicesAndZones(): Promise<[any[], Record<string, any>]> {
-    const api = await getAppApi(this.homey);
-    const [devices, zones] = await Promise.all([
-      api.devices.getDevices(),
-      api.zones.getZones().catch((): Record<string, any> => ({})),
-    ]) as [Record<string, any>, Record<string, any>];
-    return [Object.values(devices), zones];
   }
 
   /** An autocomplete setting's items, from the same listener Homey's widget settings use. */

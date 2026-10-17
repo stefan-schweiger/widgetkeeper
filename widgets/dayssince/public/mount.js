@@ -7,11 +7,7 @@ window.mountDaysSinceWidget = function (Homey, { root, frame }) {
 
   // Load marks for the app's diagnostics log, sent with the first request only.
   let perf = '';
-  function loadMarks(sdkAt) {
-    const nav = /** @type {PerformanceNavigationTiming | null} */ (performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null);
-    return [Math.round(performance.timeOrigin), nav ? Math.round(nav.responseEnd) : -1,
-      Math.round(sdkAt), Math.round(performance.now())].join(',');
-  }
+  const { loadMarks } = window.WidgetkeeperKit;
   function perfParam() {
     const p = perf ? `&perf=${perf}` : '';
     perf = '';
@@ -22,8 +18,10 @@ window.mountDaysSinceWidget = function (Homey, { root, frame }) {
   const settings = Homey.getSettings() || {};
   const counters = window.daysSinceCountersFromSettings(settings);
   const keys = new Set(counters.map(c => c.key));
-  // The app learns each counter's intervals from the widgets showing it (for the Flow cards).
+  // The app learns each counter's intervals from the widgets showing it (for the Flow cards), at a widget's first load:
+  // a refresh sends only the names, so two widgets that disagree don't take turns firing the overdue trigger.
   const defs = encodeURIComponent(JSON.stringify(counters.map(c => ({ name: c.name, amber: c.amber, red: c.red }))));
+  const names = encodeURIComponent(JSON.stringify(counters.map(c => ({ name: c.name }))));
   let readySent = false;
   let loaded = false;
   let loadedAt = 0;
@@ -63,7 +61,7 @@ window.mountDaysSinceWidget = function (Homey, { root, frame }) {
     loadedAt = Date.now();
     if (!counters.length) { ready(); return; }
     try {
-      widget.setState(await Homey.api('GET', `/state?counters=${defs}${perfParam()}`));
+      widget.setState(await Homey.api('GET', `/state?counters=${loaded ? names : defs}${perfParam()}`));
       loaded = true;
     } catch (err) {
       console.error(err);

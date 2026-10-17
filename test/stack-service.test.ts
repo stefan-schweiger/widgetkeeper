@@ -67,9 +67,18 @@ describe('dashboardPages', () => {
   it('knows every widget of the app but the stack, the spacer and Days Since', () => {
     const app = JSON.parse(readFileSync('app.json', 'utf8'));
     expect([...STACK_TYPES].sort()).toEqual(Object.keys(app.widgets).filter(id => id !== 'stack' && id !== 'spacer' && id !== 'dayssince').sort());
-    // The widget's own list (TYPES in widget.js) must match too.
+    // The widget's own list (TYPES in widget.js) must match too, both ways.
     const js = readFileSync('widgets/stack/public/widget.js', 'utf8');
-    for (const type of STACK_TYPES) expect(js).toMatch(new RegExp(`\\b${type}: 'mount\\w+Widget'`));
+    const types = js.match(/const TYPES = \{([\s\S]*?)\};/)![1];
+    expect([...types.matchAll(/(\w+): 'mount\w+Widget'/g)].map(m => m[1]).sort()).toEqual([...STACK_TYPES].sort());
+  });
+
+  it("offers every stack type on the Flow card, by its widget's name", () => {
+    const app = JSON.parse(readFileSync('app.json', 'utf8'));
+    const card = JSON.parse(readFileSync('.homeycompose/flow/actions/stack_show.json', 'utf8'));
+    const values = card.args.find((a: any) => a.name === 'widget').values;
+    expect(values.map((v: any) => v.id)).toEqual([...STACK_TYPES]);
+    for (const v of values) expect(v.title, v.id).toEqual(app.widgets[v.id].name);
   });
 });
 

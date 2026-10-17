@@ -310,3 +310,13 @@ describe('dualScale', () => {
     expect(labels.filter(l => l[0] === 'end').length).toBe(labels.filter(l => l[0] === 'start').length);
   });
 });
+
+describe('axis labels', () => {
+  it('shows exact thousands for a 250 step: 1,25k, not 1,3k', () => {
+    const co2 = entry(series(24 * HOUR, x => 900 + x * 700), { deviceId: 'd3', capabilityId: 'measure_co2', name: 'Bedroom', capability: cap({ title: 'CO₂', units: 'ppm', decimals: 0 }) });
+    const r = widget([{ span: '24h' }], [co2]);
+    const labels = r.all('.ch-chart svg text').map(t => t.textContent);
+    expect(labels).toEqual(expect.arrayContaining(['1,25k', '1,75k']));
+    expect(labels).not.toContain('1,3k');
+  });
+});

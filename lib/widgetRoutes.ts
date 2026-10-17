@@ -29,6 +29,11 @@ export function callWidgetRoute(homey: Homey, apis: WidgetApis, type: string, me
   return apis[type][route]({ homey, query: q, body: body ?? {}, params: {} });
 }
 
+/** The personal API key use an autocomplete acts with (the app's stored key), or null: only the Smart Stack's dashboards. */
+export function autocompleteKeyUse(type: string, setting: string): KeyUse | null {
+  return type === 'stack' && setting === 'dashboard' ? 'dashboards' : null;
+}
+
 /**
  * The personal API key use a widget route acts with (the app's stored key: changing a variable, starting a flow,
  * running a speaker's card, reading a dashboard, starting a Mood), or null for a route that doesn't. A Smart Stack's `/call` is its

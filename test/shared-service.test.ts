@@ -5,6 +5,7 @@ import { describeCapability, presentCaps, readCaps } from '../lib/capabilities.j
 import DeviceTracker, { isTransientError, readZones, zoneRef, type TrackedEntry } from '../lib/DeviceTracker.js';
 import { deviceImage, fetchDeviceIcon, fetchImageBase64, homeyUrl } from '../lib/deviceIcon.js';
 import { limitInsights, readFirstLog } from '../lib/insightsLog.js';
+import { lastUpdatedMs } from '../lib/appApi.js';
 import { KeyError } from '../lib/PersonalApiKey.js';
 import { sharedCache } from '../lib/sharedCache.js';
 import Timings from '../lib/Timings.js';
@@ -167,7 +168,7 @@ describe('DeviceTracker', () => {
     tracker.stop();
   });
 
-  it('shares the zones for a minute', async () => {
+  it('shares the zones for a minute, and gives the last ones when a read fails', async () => {
     const api = fakeApi({ zones: { z1: { id: 'z1', name: 'Hall' } } });
     const homey = fakeHomey(api);
     const log = vi.fn();
@@ -180,8 +181,9 @@ describe('DeviceTracker', () => {
     expect(api.zones.getZones).toHaveBeenCalledTimes(2);
     api.zones.getZones.mockRejectedValueOnce(new Error('busy'));
     vi.advanceTimersByTime(61e3);
-    expect(await readZones(homey, new Timings(), log, 'Light')).toEqual({});
+    expect(await readZones(homey, new Timings(), log, 'Light')).toEqual({ z1: { id: 'z1', name: 'Hall' } });
     expect(log).toHaveBeenCalledWith('Light zones unavailable:', expect.any(Error));
+    expect(api.zones.getZones).toHaveBeenCalledTimes(3);
     expect(await readZones(homey, new Timings(), log, 'Light')).toEqual({ z1: { id: 'z1', name: 'Hall' } }); // a failure isn't kept
   });
 
@@ -272,6 +274,26 @@ describe('readFirstLog', () => {
     expect(known.get('k')).toBe('b');
     await expect(readFirstLog('k', ['a', 'b'], known, read)).rejects.toThrow('no b');
     expect(known.has('k')).toBe(false);
+  });
+
+  it('throws a busy failure at once: no aliases tried, the remembered log kept', async () => {
+    const busy = Object.assign(new Error('Too many requests.'), { statusCode: 429 });
+    const read = vi.fn(async () => { throw busy; });
+    await expect(readFirstLog('k', ['a', 'b'], new Map(), read)).rejects.toBe(busy);
+    expect(read).toHaveBeenCalledTimes(1);
+    const known = new Map([['k', 'b']]);
+    await expect(readFirstLog('k', ['a', 'b'], known, read)).rejects.toBe(busy);
+    expect(known.get('k')).toBe('b');
+  });
+});
+
+describe('lastUpdatedMs', () => {
+  it('takes the Date homey-api makes, an ISO string or ms', () => {
+    expect(lastUpdatedMs(new Date(1790672723645))).toBe(1790672723645);
+    expect(lastUpdatedMs('2026-10-01T10:25:23.645Z')).toBe(Date.parse('2026-10-01T10:25:23.645Z'));
+    expect(lastUpdatedMs(5)).toBe(5);
+    expect(lastUpdatedMs(null)).toBeNull();
+    expect(lastUpdatedMs(new Date(NaN))).toBeNull();
   });
 });
 

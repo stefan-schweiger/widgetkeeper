@@ -8,11 +8,7 @@ window.mountElectricityWidget = function (Homey, { root, frame }) {
 
   // Load marks for the app's diagnostics log, sent with the first request only.
   let perf = '';
-  function loadMarks(sdkAt) {
-    const nav = /** @type {PerformanceNavigationTiming | null} */ (performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null);
-    return [Math.round(performance.timeOrigin), nav ? Math.round(nav.responseEnd) : -1,
-      Math.round(sdkAt), Math.round(performance.now())].join(',');
-  }
+  const { loadMarks } = window.WidgetkeeperKit;
   function perfParam() {
     const p = perf ? `&perf=${perf}` : '';
     perf = '';
@@ -29,9 +25,9 @@ window.mountElectricityWidget = function (Homey, { root, frame }) {
   const widget = window.createElectricityWidget(root, {
     t: (key, tokens) => Homey.__(key, tokens),
     layout: settings.layout, // missing on widgets placed before the setting: standard
-    onHeight: (h) => {
+    onHeight: () => {
       if (!readySent) return;
-      Homey.setHeight(h);
+      Homey.setHeight(Math.ceil(frame.getBoundingClientRect().height)); // the frame's, with its padding, as ready()
     },
   });
   widget.setSettings({
@@ -50,7 +46,9 @@ window.mountElectricityWidget = function (Homey, { root, frame }) {
     Homey.ready({ height: Math.ceil(frame.getBoundingClientRect().height) });
   }
 
+  /** Reads the snapshot; true when it loaded (or there's no meter to load). */
   async function load() {
+    let ok = false;
     try {
       const snapshot = await Homey.api('GET', `/snapshot?deviceId=${encodeURIComponent(deviceId || '')}${costsParam}${perfParam()}`);
       // Without readings (or with a meter error) the prices still show; the widget notes the meter.
@@ -59,31 +57,35 @@ window.mountElectricityWidget = function (Homey, { root, frame }) {
         widget.setData(snapshot);
         loaded = true;
       }
+      ok = true;
     } catch (err) {
       console.error(err);
       // A failed refresh keeps the last snapshot (the live readings still arrive); only a failed first load shows the error.
       if (!loaded) widget.setMessage(widget.t('error'));
     }
     ready();
+    return ok;
   }
 
   Homey.on('electricity:live', (data) => {
     if (data && data.deviceId === deviceId) widget.pushLive(data);
   });
 
-  // Minute tick: "minutes remaining" countdown. Hour boundary and every 5 min: fresh snapshot.
+  // Minute tick, just after each minute on the clock: "minutes remaining" countdown. Hour boundary and every 5 min: a
+  // fresh snapshot (the new hour's is tried each minute until one loads).
   let lastHour = new Date().getHours();
   let lastLoad = Date.now();
-  setInterval(() => {
+  function tick() {
     const now = new Date();
     if (now.getHours() !== lastHour || Date.now() - lastLoad >= REFRESH_MS) {
-      lastHour = now.getHours();
+      const hour = now.getHours();
       lastLoad = Date.now();
-      load();
+      load().then((ok) => { if (ok) lastHour = hour; });
     } else {
       widget.render();
     }
-  }, 60e3);
+  }
+  setTimeout(() => { tick(); setInterval(tick, 60e3); }, 60e3 - (Date.now() % 60e3) + 50);
 
   Promise.resolve(typeof Homey.getDeviceIds === 'function' ? Homey.getDeviceIds() : [])
     .then((ids) => { deviceId = (ids && ids[0]) || null; })

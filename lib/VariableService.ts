@@ -197,6 +197,7 @@ export default class VariableService {
     // The update event follows, but the next /state shouldn't show the old value until it does.
     const cached = this.vars.get(id);
     if (cached) cached.value = checked;
+    else if (this.changedDuringRead) this.vars.set(id, { ...v, value: checked }); // set during the first full read
     this.changedDuringRead?.add(id);
   }
 

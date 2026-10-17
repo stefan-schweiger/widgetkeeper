@@ -153,7 +153,8 @@
     "webPasswordIsSet": "Et passord er angitt.",
     "webPasswordSaved": "Passordet er lagret. Innloggede nettlesere må logge inn på nytt.",
     "webPasswordRemoved": "Passordet er fjernet.",
-    "webPasswordTooShort": "Bruk minst __min__ tegn."
+    "webPasswordTooShort": "Bruk minst __min__ tegn.",
+    "webPasswordTooLong": "Bruk høyst __max__ tegn."
   },
   "heatmap": {
     "selectDevice": "Velg en enhet og en verdi i widgetinnstillingene.",
@@ -183,7 +184,8 @@
     "unavailable": "Utilgjengelig",
     "on": "På",
     "off": "Av",
-    "renameFailed": "Kunne ikke lagre navnet."
+    "renameFailed": "Kunne ikke lagre navnet.",
+    "none": "Ingen"
   },
   "sparklines": {
     "selectSlots": "Velg enhetsverdier i widgetinnstillingene.",
@@ -448,7 +450,6 @@
     "loadFailed": "Fikk ikke kontakt med Widgetkeeper på Homey.",
     "retry": "Prøv igjen",
     "off": "Nettdashbordene er slått av. Slå dem på i innstillingene for Widgetkeeper-appen i Homey-appen.",
-    "noDashboards": "Ingen dashbord ennå.",
     "newDashboard": "Nytt dashbord",
     "untitled": "Dashbord",
     "widgetCount": "__count__ widgeter",

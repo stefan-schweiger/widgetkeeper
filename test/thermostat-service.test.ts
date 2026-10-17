@@ -178,9 +178,10 @@ describe('listTemperatures', () => {
     expect(values).toEqual([16, 16.1, 16.2, 16.3, 16.4, 16.5, 16.6, 16.7, 16.8, 16.9, 17]);
   });
 
-  it('caps the list at 200 items', async () => {
+  it('caps the list at 200 items, after the search, so any setpoint can be found', async () => {
     const { service } = setup([aircon({ target_temperature: { value: 20, min: 0, max: 100, step: 0.1 } })]);
     expect(await service.listTemperatures('dev1', '')).toHaveLength(201);
+    expect((await service.listTemperatures('dev1', '26.5')).map(i => i.name)).toEqual(["Don't change", '26.5 °C']);
   });
 
   it('falls back to 16–30 °C in 0.5 steps', async () => {

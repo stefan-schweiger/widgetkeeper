@@ -173,6 +173,33 @@ describe('overdue', () => {
     expect(overdue).toHaveBeenCalledTimes(1);
   });
 
+  it('fires once when two widgets disagree on red: a refresh sends only the names', async () => {
+    const { service, overdue } = setup();
+    service.sync([{ name: 'Plants', amber: 5, red: 7 }]); // widget A loads
+    service.setDaysAgo('Plants', 8);
+    await flush();
+    expect(overdue).toHaveBeenCalledTimes(1);
+    service.sync([{ name: 'Plants', amber: 5, red: 10 }]); // widget B loads: not overdue at red 10
+    for (let i = 0; i < 6; i++) {
+      service.sync([{ name: 'Plants' }]); // their 5-minute refreshes
+      service.sync([{ name: 'plants' }]);
+      await flush();
+    }
+    expect(overdue).toHaveBeenCalledTimes(1);
+    expect(service.isOverdue({ name: 'Plants' })).toBe(false);
+  });
+
+  it('takes the first slot\'s intervals for a counter a widget shows twice', async () => {
+    const { service, overdue } = setup();
+    service.sync([{ name: 'Plants', red: 7 }]);
+    service.setDaysAgo('Plants', 8);
+    await flush();
+    for (let i = 0; i < 3; i++) service.sync([{ name: 'Plants', red: 7 }, { name: 'plants', red: 10 }]);
+    await flush();
+    expect(overdue).toHaveBeenCalledTimes(1);
+    expect(service.isOverdue({ name: 'Plants' })).toBe(true);
+  });
+
   it('fires again when a raised interval runs out', async () => {
     const { service, overdue } = setup();
     service.sync([{ name: 'Plants', red: 7 }]);

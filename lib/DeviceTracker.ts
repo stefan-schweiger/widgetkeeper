@@ -220,17 +220,19 @@ export default class DeviceTracker<T extends TrackedEntry> {
 
 }
 
-const zoneReads = new WeakMap<object, ReturnType<typeof sharedCache<Record<string, any>>>>();
+const zoneReads = new WeakMap<object, { cache: ReturnType<typeof sharedCache<Record<string, any>>>, last: Record<string, any> }>();
 
 /**
- * The zones, for naming a device's room, shared for a minute by every widget asking; a failed read is logged as
- * `<what> zones unavailable:` and gives none.
+ * The zones, for naming a device's room, shared for a minute by every widget asking. A failed read is logged as
+ * `<what> zones unavailable:` and gives the last zones read (none before the first), so rooms don't split apart.
  */
 export function readZones(homey: Homey.App['homey'], tm: Timings, log: (...args: any[]) => void, what: string): Promise<Record<string, any>> {
-  let cache = zoneReads.get(homey);
-  if (!cache) zoneReads.set(homey, cache = sharedCache(async () => (await getAppApi(homey)).zones.getZones()));
-  return tm.time('zones', () => cache!.get(ZONES_MAX_AGE))
-    .catch((err: unknown) => { log(`${what} zones unavailable:`, err); return {}; });
+  let reads = zoneReads.get(homey);
+  if (!reads) zoneReads.set(homey, reads = { cache: sharedCache(async () => (await getAppApi(homey)).zones.getZones()), last: {} });
+  const r = reads;
+  return tm.time('zones', () => r.cache.get(ZONES_MAX_AGE))
+    .then((zones) => { r.last = zones; return zones; })
+    .catch((err: unknown) => { log(`${what} zones unavailable:`, err); return r.last; });
 }
 
 /** A zone id as `{id, name}`, or null when it's unknown. */

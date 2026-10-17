@@ -109,3 +109,22 @@ describe('mount: spans', () => {
     expect(await requested({ charts: 'overlay', chart1: null, span1: '6h', chart2: slot('b:y'), span2: '7d' })).toBe('b:y~7d');
   });
 });
+
+describe('chartBuckets: on the local clock across a DST change', () => {
+  it('keeps 6-hour bars at 00, 06, 12 and 18 after the change', () => {
+    const from = new Date('2026-10-21T18:40:00').getTime(); // summer time
+    const to = new Date('2026-10-28T18:40:00').getTime(); // winter time, after 25 October
+    const starts = win.chartBuckets([], from, to, 6 * HOUR).slice(1).map((b: any) => new Date(b.t).getHours());
+    expect([...new Set(starts)].sort((a: number, b: number) => a - b)).toEqual([0, 6, 12, 18]);
+  });
+
+  it('makes the bar across the change an hour longer, and 2-hour bars keep to even hours', () => {
+    const from = new Date('2026-10-24T22:00:00').getTime();
+    const to = new Date('2026-10-26T00:00:00').getTime();
+    const six = win.chartBuckets([], from, to, 6 * HOUR);
+    expect((six[0].end - six[0].t) / HOUR).toBe(2); // 22:00–24:00, cut to the span
+    expect((six[1].end - six[1].t) / HOUR).toBe(7); // 00:00–06:00 on the day the clocks went back
+    const two = win.chartBuckets([], from, to, 2 * HOUR).map((b: any) => new Date(b.t).getHours());
+    expect(two.every((h: number) => h % 2 === 0)).toBe(true);
+  });
+});

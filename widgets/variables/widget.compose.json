@@ -450,10 +450,6 @@
       "method": "POST",
       "path": "/set"
     },
-    "getNames": {
-      "method": "GET",
-      "path": "/names"
-    },
     "setName": {
       "method": "POST",
       "path": "/names"

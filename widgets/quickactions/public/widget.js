@@ -4,6 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
+  const { el, tileNames } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a tapped tile shows its new state while waiting for the device
@@ -40,84 +41,6 @@
     if (base === 'speaker_playing') return value ? GLYPHS.pause : GLYPHS.play;
     if (base === 'button') return GLYPHS.button;
     return GLYPHS.power;
-  }
-
-  function el(tag, attrs, parent) {
-    const node = document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
-  }
-
-  /**
-   * The names typed on the tiles (`renameTiles`; the app keeps them per widget instance, by tile key): `name(key, own)`
-   * is the typed name, else `own`. In rename mode `field(key, own)` is the tile's text field (made once per key, with
-   * `own` as the placeholder): it saves on change (Enter or leaving it), Escape puts it back, and a realtime update
-   * doesn't overwrite it while it has the focus. Its touches, clicks and keys never reach the tile's own taps.
-   * `failed(key)` shakes the tile and says so; the name goes back, unless the app's names came meanwhile.
-   */
-  function tileNames(opts, render, failed) {
-    let names = {};
-    let reads = 0; // set() calls: the app's names, by realtime or a read
-    const fields = new Map();
-    async function save(key, value) {
-      const before = names[key];
-      if ((before || '') === value) return;
-      const put = v => { names = { ...names }; if (v) names[key] = v; else delete names[key]; };
-      put(value);
-      const seen = reads;
-      render();
-      try {
-        if (opts.onRename) await opts.onRename(key, value);
-      } catch (err) {
-        console.error(err);
-        // Only while it still shows this save's name and nothing came from the app since: what came says what the
-        // app kept (a newer name, or this one when only the answer was lost).
-        if (reads === seen && (names[key] || '') === value) put(before);
-        failed(key);
-      }
-    }
-    return {
-      renaming: opts.renameTiles === true,
-      name: (key, own) => names[key] || own,
-      set(map) {
-        reads++;
-        names = {};
-        if (map && typeof map === 'object') for (const [k, v] of Object.entries(map)) if (typeof v === 'string' && v) names[k] = v;
-        render();
-      },
-      field(key, own) {
-        let input = fields.get(key);
-        if (!input) {
-          input = document.createElement('input');
-          input.type = 'text';
-          input.className = 'wk-rename';
-          input.dir = 'auto';
-          input.maxLength = 60;
-          input.autocomplete = 'off';
-          input.setAttribute('enterkeyhint', 'done');
-          const field = input;
-          for (const type of ['touchstart', 'touchend', 'pointerdown', 'click']) field.addEventListener(type, e => e.stopPropagation(), { passive: true });
-          field.addEventListener('keydown', (e) => {
-            e.stopPropagation();
-            if (e.key === 'Enter') field.blur();
-            else if (e.key === 'Escape') { field.value = names[key] || ''; field.blur(); }
-          });
-          field.addEventListener('change', () => { field.value = field.value.trim(); save(key, field.value); });
-          fields.set(key, input);
-        }
-        input.placeholder = own || '';
-        input.setAttribute('aria-label', own || '');
-        if (document.activeElement !== input) input.value = names[key] || '';
-        return input;
-      },
-    };
   }
 
   /**
@@ -264,10 +187,7 @@
       return tile;
     }
 
-    function setMask(node, url) {
-      const v = url ? `url("${url}")` : '';
-      if (node.style.getPropertyValue('--qa-mask') !== v) node.style.setProperty('--qa-mask', v);
-    }
+    const setMask = (node, url) => window.WidgetkeeperKit.setMask(node, url, '--qa-mask');
 
     let lastHeight = 0;
     function render() {
@@ -275,9 +195,13 @@
       for (const [id, tile] of tiles) {
         if (!ids.has(id)) { tile.button.remove(); tiles.delete(id); }
       }
+      let placed = null;
       for (const d of devices) {
         const tile = tileFor(d.id);
-        grid.appendChild(tile.button); // keeps the settings' order; a no-op when already in place
+        // Keeps the order, moving only what is out of place: a moved node loses the focus of a field in it.
+        const want = placed ? placed.nextSibling : grid.firstChild;
+        if (tile.button !== want) grid.insertBefore(tile.button, want);
+        placed = tile.button;
         const qa = !('missing' in d) ? d.quickAction : null;
         const until = pressed.get(d.id);
         const isPressed = !!until && Date.now() < until;

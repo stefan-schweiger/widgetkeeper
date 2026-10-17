@@ -4,6 +4,7 @@
  * in pages of two rows that scroll a page at a time. Plain browser JS (served as-is).
  */
 (function () {
+  const { el } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const SHOWN_HOURS = 36;
@@ -16,19 +17,6 @@
     today: 'Today',
     tomorrow: 'Tomorrow',
   };
-
-  function el(tag, attrs, parent) {
-    const node = document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
-  }
 
   // Temperature colour: the text colour at NEUTRAL, blending to full blue at COLD and full red at HOT.
   const NEUTRAL = 12;

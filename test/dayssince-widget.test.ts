@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { FLOW_ICON_PATHS } from '../lib/FlowService.js';
+import { FLOW_ICON_PATHS } from './helpers/flowIcons.js';
 import { counterKey } from '../lib/DaysSinceService.js';
 import { loadWidget } from './helpers/loadWidget.js';
 import { touch } from './helpers/touch.js';
@@ -91,9 +91,6 @@ describe('helpers', () => {
     for (const name of ['Plants', '  Vacuum Filter ', 'x'.repeat(70), '', '__proto__', 'ÆBLE']) expect(win.daysSinceKey(name)).toBe(counterKey(name));
   });
 
-  it('has Flow Buttons\' icons', () => {
-    expect(win.DAYS_SINCE_ICON_PATHS).toEqual(FLOW_ICON_PATHS);
-  });
 });
 
 describe('tiles', () => {

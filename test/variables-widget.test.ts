@@ -324,3 +324,16 @@ describe('the old name settings', () => {
     expect(sent()).toEqual([null]);
   });
 });
+
+describe('rendering', () => {
+  it('moves no row that is in place, so an open input keeps its focus', () => {
+    const { w, root } = widget([flag(), num(), text()]);
+    const grid = root.querySelector('.vr-row')!.parentElement!;
+    const observer = new MutationObserver(() => {});
+    observer.observe(grid, { childList: true });
+    w.setState([flag(true), num(19), text('Hi')]);
+    const removed = observer.takeRecords().flatMap(r => [...r.removedNodes]);
+    observer.disconnect();
+    expect(removed).toHaveLength(0);
+  });
+});

@@ -27,7 +27,7 @@ function meter(caps: Record<string, any> = { measure_power: { value: 512.4 } }) 
 function setup(opts: FakeApiOptions = {}) {
   const api = fakeApi({
     devices: [meter()],
-    logs: [{ id: 'homey:device:m1:measure_power', ownerUri: 'homey:device:m1', ownerId: 'measure_power' }],
+    logs: [{ id: 'homey:device:m1:energy_power', ownerUri: 'homey:device:m1', ownerId: 'energy_power' }],
     prices: ({ date }) => dayPrices(date),
     ...opts,
   });
@@ -274,30 +274,29 @@ describe('meter', () => {
         : { values: [] }),
     });
     const snap = await service.getSnapshot('m1');
-    expect(snap.deviceName).toBe('Electricity Meter');
     expect(snap.meterError).toBeNull();
     expect(snap.live).toEqual([{ t: NOW - 10e3, w: 301 }, { t: NOW - 5e3, w: 400 }, { t: NOW, w: 512 }]);
-    expect(api.insights.getLogEntries).toHaveBeenCalledWith({ uri: 'homey:device:m1', id: 'homey:device:m1:measure_power', resolution: 'lastHour' });
+    expect(api.insights.getLogEntries).toHaveBeenCalledWith({ uri: 'homey:device:m1', id: 'homey:device:m1:energy_power', resolution: 'lastHour' });
   });
 
-  it('falls back to the energy_power log', async () => {
+  it('falls back to the measure_power log', async () => {
     const { service, api } = setup({
       logs: [
-        { id: 'homey:device:other:measure_power', ownerUri: 'homey:device:other', ownerId: 'measure_power' },
-        { id: 'homey:device:m1:energy_power', ownerUri: 'homey:device:m1', ownerId: 'energy_power' },
+        { id: 'homey:device:other:energy_power', ownerUri: 'homey:device:other', ownerId: 'energy_power' },
+        { id: 'homey:device:m1:measure_power', ownerUri: 'homey:device:m1', ownerId: 'measure_power' },
       ],
     });
     await service.getSnapshot('m1');
     const read = (id: string) => api.insights.getLogEntries.mock.calls.filter(([a]) => a.id === id).map(([a]) => a.resolution);
-    expect(read('homey:device:m1:energy_power').sort()).toEqual(['last24Hours', 'lastHour']);
+    expect(read('homey:device:m1:measure_power').sort()).toEqual(['last24Hours', 'lastHour']);
     expect(api.insights.getLogs).not.toHaveBeenCalled();
 
-    // Remembered after the meter is dropped: only energy_power is read again.
+    // Remembered after the meter is dropped: only measure_power is read again.
     service.start();
     await vi.advanceTimersByTimeAsync(11 * MINUTE);
     api.insights.getLogEntries.mockClear();
     await service.getSnapshot('m1');
-    expect(api.insights.getLogEntries.mock.calls.every(([a]) => a.id === 'homey:device:m1:energy_power')).toBe(true);
+    expect(api.insights.getLogEntries.mock.calls.every(([a]) => a.id === 'homey:device:m1:measure_power')).toBe(true);
     await service.stop();
   });
 
@@ -312,7 +311,6 @@ describe('meter', () => {
     const { service } = setup({ devices: [meter({ onoff: { value: true } })] });
     const snap = await service.getSnapshot('m1');
     expect(snap.meterError).toBe('Device Electricity Meter has no measure_power capability');
-    expect(snap.deviceName).toBeNull();
     expect(snap.live).toEqual([]);
     expect(snap.prices).toHaveLength(49);
   });

@@ -153,7 +153,8 @@
     "webPasswordIsSet": "Ett lösenord är angivet.",
     "webPasswordSaved": "Lösenordet sparat. Inloggade webbläsare måste logga in igen.",
     "webPasswordRemoved": "Lösenordet borttaget.",
-    "webPasswordTooShort": "Använd minst __min__ tecken."
+    "webPasswordTooShort": "Använd minst __min__ tecken.",
+    "webPasswordTooLong": "Använd högst __max__ tecken."
   },
   "heatmap": {
     "selectDevice": "Välj en enhet och ett värde i widgetens inställningar.",
@@ -183,7 +184,8 @@
     "unavailable": "Inte tillgänglig",
     "on": "På",
     "off": "Av",
-    "renameFailed": "Kunde inte spara namnet."
+    "renameFailed": "Kunde inte spara namnet.",
+    "none": "Ingen"
   },
   "sparklines": {
     "selectSlots": "Välj enhetsvärden i widgetinställningarna.",
@@ -448,7 +450,6 @@
     "loadFailed": "Kunde inte nå Widgetkeeper på din Homey.",
     "retry": "Försök igen",
     "off": "Webbinstrumentpanelerna är avstängda. Slå på dem i Widgetkeeper-appens inställningar i Homey-appen.",
-    "noDashboards": "Inga instrumentpaneler än.",
     "newDashboard": "Ny instrumentpanel",
     "untitled": "Instrumentpanel",
     "widgetCount": "__count__ widgets",

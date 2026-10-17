@@ -73,10 +73,6 @@ describe('mediaButtonsFromSettings', () => {
     expect(icons(undefined)).toBeNull();
   });
 
-  it('has the same icons as Flow Buttons (the settings list those)', async () => {
-    const { FLOW_ICON_PATHS } = await import('../lib/FlowService.js');
-    expect(win.MEDIA_BUTTON_ICON_PATHS).toEqual(FLOW_ICON_PATHS);
-  });
 });
 
 describe('render', () => {
@@ -267,7 +263,7 @@ describe('buttons', () => {
     const { root, click } = widget(speaker(), { buttons: [{ id: 'flow:f1', name: 'TV', icon: 'tv' }, { id: 'flow:f2', name: 'Plain', icon: null }] });
     click('.mw-more');
     const chips = root.querySelectorAll<HTMLElement>('.mw-chip');
-    expect(chips[0].querySelector('.mw-glyph path')!.getAttribute('d')).toBe(win.MEDIA_BUTTON_ICON_PATHS.tv.d);
+    expect(chips[0].querySelector('.mw-glyph path')!.getAttribute('d')).toBe(win.WidgetkeeperKit.icons.tv.d);
     expect(chips[1].querySelector('.mw-glyph')).toBeNull();
   });
 

@@ -304,8 +304,9 @@
       expire();
       const requested = pages.filter(p => requests.has(p.page.type));
       if (requested.length) {
-        // The newest request first.
-        return requested.sort((a, b) => requests.get(b.page.type) - requests.get(a.page.type));
+        // The newest request first (`request()` puts it last in the map).
+        const order = [...requests.keys()];
+        return requested.sort((a, b) => order.indexOf(b.page.type) - order.indexOf(a.page.type));
       }
       if (opts.smart === false) return null;
       const urgent = pages.filter(p => attention.has(p.page.id) && !dismissed.has(p.page.id));
@@ -353,7 +354,7 @@
       shownAt = now();
       scrollTo(i, smooth);
       paint();
-      if (changed && opts.onHaptic) opts.onHaptic();
+      if (changed && byUser && opts.onHaptic) opts.onHaptic(); // not for rotation, attention or a Flow
     }
 
     let programmatic = 0; // until when a scroll is ours (real time: `opts.now` may be a fixed clock)
@@ -442,10 +443,18 @@
      */
     function request(type, until) {
       if (!(until > now())) return;
+      requests.delete(type); // to the end: the newest request comes first
       requests.set(type, until);
       pausedUntil = 0;
-      pickNow();
+      bringForward(type);
       paint();
+    }
+
+    /** Shows the page of a Flow request just made, even while an earlier request's page shows; else what should. */
+    function bringForward(type) {
+      const page = pages.find(p => p.page.type === type);
+      if (page && pages[current] && pages[current].page.type !== type) go(pages.indexOf(page), false);
+      else pickNow();
     }
 
     function resume() {
@@ -458,11 +467,21 @@
      * missed) acts like `request()`: it moves the stack even while the user holds it.
      */
     function setRequests(list) {
-      const before = new Map(requests);
-      requests.clear();
-      for (const r of list || []) if (r && r.until > now()) requests.set(r.type, r.until);
-      if ([...requests.keys()].some(type => !before.has(type))) pausedUntil = 0;
-      pickNow();
+      const fresh = new Map();
+      for (const r of list || []) if (r && r.until > now()) fresh.set(r.type, r.until);
+      const added = [...fresh.keys()].filter(type => !requests.has(type));
+      // The known ones keep their order (newest last), the new ones come after them.
+      for (const type of [...requests.keys()]) {
+        if (fresh.has(type)) requests.set(type, fresh.get(type));
+        else requests.delete(type);
+      }
+      for (const type of added) requests.set(type, fresh.get(type));
+      if (added.length) {
+        pausedUntil = 0;
+        bringForward(added[added.length - 1]);
+      } else {
+        pickNow();
+      }
       paint();
     }
 

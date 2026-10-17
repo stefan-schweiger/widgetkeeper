@@ -1,5 +1,6 @@
 import type Homey from 'homey';
-import { getAppApi, lastUpdatedMs } from './appApi.js';
+import { lastUpdatedMs } from './appApi.js';
+import { describeCapability } from './capabilities.js';
 import DeviceTracker, { type TrackedEntry } from './DeviceTracker.js';
 import { fetchDeviceIcon } from './deviceIcon.js';
 import Timings from './Timings.js';
@@ -10,7 +11,7 @@ export const SA_STATE_EVENT = 'sensoralarms:state';
  * Alarms that report a state (someone moved, a door opened) rather than a fault; the widget setting decides.
  * Presence (mmWave sensors such as the Aqara FP300) and cameras' person, vehicle and pet detections are motion too.
  */
-const STATE_ALARMS = new Set(['alarm_motion', 'alarm_presence', 'alarm_contact', 'alarm_person', 'alarm_vehicle', 'alarm_pet']);
+export const STATE_ALARMS = ['alarm_motion', 'alarm_presence', 'alarm_contact', 'alarm_person', 'alarm_vehicle', 'alarm_pet'];
 
 export type SensorAlarm = {
   capabilityId: string,
@@ -39,9 +40,9 @@ export function alarmCaps(device: any): SensorAlarm[] {
     .filter(id => id.split('.')[0].startsWith('alarm_') && caps[id]?.type === 'boolean')
     .map(id => ({
       capabilityId: id,
-      title: typeof caps[id].title === 'string' && caps[id].title ? caps[id].title : id,
+      title: describeCapability(caps[id], id).title,
       value: typeof caps[id].value === 'boolean' ? caps[id].value : null,
-      state: STATE_ALARMS.has(id.split('.')[0]),
+      state: STATE_ALARMS.includes(id.split('.')[0]),
       lastUpdated: lastUpdatedMs(caps[id].lastUpdated),
     }));
 }

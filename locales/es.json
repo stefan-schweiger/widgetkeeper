@@ -153,7 +153,8 @@
     "webPasswordIsSet": "Hay una contraseña establecida.",
     "webPasswordSaved": "Contraseña guardada. Los navegadores con sesión iniciada deben volver a entrar.",
     "webPasswordRemoved": "Contraseña quitada.",
-    "webPasswordTooShort": "Usa al menos __min__ caracteres."
+    "webPasswordTooShort": "Usa al menos __min__ caracteres.",
+    "webPasswordTooLong": "Usa como máximo __max__ caracteres."
   },
   "heatmap": {
     "selectDevice": "Elige un dispositivo y un valor en los ajustes del widget.",
@@ -183,7 +184,8 @@
     "unavailable": "No disponible",
     "on": "Encendido",
     "off": "Apagado",
-    "renameFailed": "No se pudo guardar el nombre."
+    "renameFailed": "No se pudo guardar el nombre.",
+    "none": "Ninguno"
   },
   "sparklines": {
     "selectSlots": "Elige valores en los ajustes del widget.",
@@ -448,7 +450,6 @@
     "loadFailed": "No se pudo contactar con Widgetkeeper en tu Homey.",
     "retry": "Reintentar",
     "off": "Los paneles web están desactivados. Actívalos en los ajustes de la app Widgetkeeper, en la app Homey.",
-    "noDashboards": "Aún no hay paneles.",
     "newDashboard": "Nuevo panel",
     "untitled": "Panel",
     "widgetCount": "__count__ widgets",

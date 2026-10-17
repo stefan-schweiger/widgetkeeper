@@ -41,7 +41,7 @@ function mockSnapshot({ futureHours = 24, solar = false, quarters = false } = {}
     if (solar && m > -20) v -= 1900;
     live.push({ t: Math.round(t), w: Math.round(v) });
   }
-  const snap = { now, deviceName: 'Meter', live, prices, usage, currency: 'DKK' };
+  const snap = { now, live, prices, usage, currency: 'DKK' };
   if (quarters) {
     const rq = mockRng(77); // its own, so the other mocks stay as they were
     snap.quarters = prices.flatMap((p, i) => [0, 1, 2, 3].map(k => {

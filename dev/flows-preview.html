@@ -6,6 +6,7 @@
   <title>Flow buttons widget preview</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../widgets/flows/public/widget.css">
+  <script src="../widgets/spacer/public/kit.js"></script>
   <script src="../widgets/flows/public/widget.js"></script>
   <script src="i18n.js"></script>
   <link rel="stylesheet" href="preview.css">
@@ -60,7 +61,7 @@
     mount('w1'); mount('w2');
     mount('w3', { columns: '2' }); mount('w4', { columns: '2' }); mount('w5', { columns: '2' });
     const colors = ['blue', 'red', 'orange', 'yellow', 'green', 'purple', 'grey'];
-    const all = FLOW_BUTTON_ICONS.map((icon, i) => ({ id: `flow:i${i}`, icon, color: colors[i % colors.length] }));
+    const all = Object.keys(WidgetkeeperKit.icons).map((icon, i) => ({ id: `flow:i${i}`, icon, color: colors[i % colors.length] }));
     mount('w6', { columns: '2' }, all, all.map(b => ({ id: b.id, name: b.icon, enabled: true, triggerable: true, advanced: false })));
     const empty = createFlowsWidget(document.getElementById('w7'), { t: devT });
     empty.setMessage(empty.t('selectSlots'));

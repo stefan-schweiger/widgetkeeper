@@ -1,6 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import type { SensorAlarm } from '../../lib/SensorAlarmService.js';
+import { STATE_ALARMS, type SensorAlarm } from '../../lib/SensorAlarmService.js';
 import { idList, logged, logPerf } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
@@ -9,7 +9,7 @@ type Homey = App['homey'];
  * The alarms a dot shows: Sensor Alarms' states (motion, presence, contact and camera detections) and vibration
  * (wk-049: the Aqara lumi.vibration.aq1). Not `state`, since Sensor Alarms counts vibration as an alarm.
  */
-export const ACTIVITY_CAPS = ['alarm_motion', 'alarm_presence', 'alarm_contact', 'alarm_person', 'alarm_vehicle', 'alarm_pet', 'alarm_vibration'];
+export const ACTIVITY_CAPS = [...STATE_ALARMS, 'alarm_vibration'];
 
 /** A device's alarms that are activity, sub-capabilities (`alarm_vibration.x`) included. */
 export function activityAlarms(alarms: SensorAlarm[]): SensorAlarm[] {

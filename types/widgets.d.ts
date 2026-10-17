@@ -21,7 +21,6 @@ interface Window {
   roomHealthRange: (settings: Record<string, unknown>) => Record<string, { min: number | null, max: number }>;
   roomHealthScore: (measure: string, value: unknown, ranges: Record<string, { min: number | null, max: number }>) => { score: number, side: 'low' | 'high' | null } | null;
   roomHealthRooms: (devices: object[]) => { key: string, name?: string, missing?: true, sensors: object[], values: Record<string, number | null> }[];
-  roomHealthWorst: (rooms: object[], ranges: Record<string, { min: number | null, max: number }>) => { room: any, measure: string, score: number, side: 'low' | 'high' } | null;
   createWeatherWidget: (root: HTMLElement, opts?: object) => any;
   createCamerasWidget: (root: HTMLElement, opts?: object) => any;
   createHeatmapWidget: (root: HTMLElement, opts?: object) => any;
@@ -33,13 +32,28 @@ interface Window {
   variableStepValue: (value: unknown, step: number, dir: number) => number;
   parseVariableNumber: (text: string) => number | null;
   /** The preset buttons shared by Thermostat Presets and Variable Presets (widgets/thermostat/public/presets.js). */
-  WidgetkeeperPresets: { create: (root: HTMLElement, hooks: any) => any, el: (tag: string, attrs?: object, parent?: Element) => HTMLElement, OPTIMISTIC_MS: number };
+  WidgetkeeperPresets: { create: (root: HTMLElement, hooks: any) => any };
+  /** The shared kit (widgets/spacer/public/kit.js), which every widget's index.html loads first. */
+  WidgetkeeperKit: {
+    icons: Record<string, { d: string, fill?: boolean }>,
+    TIGHT_UNITS: RegExp,
+    scaled: (cap: any, value: number) => number,
+    formatNumber: (cap: any, value: number) => string,
+    formatValue: (cap: any, value: unknown, t?: (key: string) => string) => string,
+    undoTextZoom: () => void,
+    el: (tag: string, attrs?: object | null, parent?: Element | null, ns?: string) => any,
+    setMask: (node: HTMLElement, url: string | null | undefined, name: string) => void,
+    tileNames: (opts: any, render: () => void, failed: (key: string) => void) => any,
+    withName: (entry: any, name: unknown) => any,
+    formatSince: (ms: number, now: number, language?: string, locale?: string) => string,
+    baseTitle: (title: unknown) => string,
+    lowestSlot: (slots: any[], from: number, hours: number) => number,
+    loadMarks: (sdkAt: number) => string,
+    wireTileNames: (Homey: any, setNames: (names: any) => void) => { state: (path: string) => Promise<any>, rename: (key: string, name: string) => Promise<any> },
+  };
   createVarPresetsWidget: (root: HTMLElement, opts?: object) => any;
   varPresetsFromSettings: (settings: Record<string, any>) => { value: boolean | number | string, type: string, label: string }[];
-  VARPRESETS_ICON_PATHS: Record<string, { d: string, fill?: boolean }>;
   createFlowsWidget:(root: HTMLElement, opts?: object) => any;
-  FLOW_BUTTON_ICONS: string[];
-  FLOW_BUTTON_ICON_PATHS: Record<string, { d: string, fill?: boolean }>;
   createPriceWidget: (root: HTMLElement, opts?: object) => any;
   electricityPriceLevel: (price: number | null, prices: (number | null)[]) => 'low' | 'medium' | 'high' | null;
   createTimersWidget: (root: HTMLElement, opts?: object) => any;
@@ -53,21 +67,17 @@ interface Window {
   createClockWidget: (root: HTMLElement, opts?: object) => any;
   createTextLineWidget: (root: HTMLElement, opts?: object) => any;
   textLineBoardKey: (name: unknown) => string;
-  textLineContent: (state: object, t: (key: string) => string) => { text: string, muted: boolean };
   textLineTilt: (seed: unknown) => number;
-  TEXTLINE_ICON_PATHS: Record<string, { d: string, fill?: boolean }>;
   createDaysSinceWidget: (root: HTMLElement, opts?: object) => any;
   daysSinceCountersFromSettings: (settings: Record<string, any>) => { key: string, name: string, icon: string | null, amber: number | null, red: number | null }[];
   daysSinceKey: (name: unknown) => string | null;
   daysSinceText: (days: number, units?: string, language?: string | null, locale?: string, today?: string) => string;
   daysSinceCalendarDays: (from: number, to: number) => number;
   daysSinceLevel: (counter: { amber: number | null, red: number | null }, resetAt: number | null, now: number) => 'amber' | 'red' | null;
-  DAYS_SINCE_ICON_PATHS: Record<string, { d: string, fill?: boolean }>;
   createSpacerWidget: (root: HTMLElement, opts?: { height?: unknown }) => { height: number };
   spacerHeight: (value: unknown) => number;
   mediaSource: (caps: object) => 'tv' | 'lineIn' | null;
   mediaButtonsFromSettings: (settings: object) => { id: string, name: string, icon: string | null }[];
-  MEDIA_BUTTON_ICON_PATHS: Record<string, { d: string, fill?: boolean }>;
   sparkPath: (points: [number, number][], from: number, to: number, w: number, h: number) => { line: string, area: string, dot: { x: number, y: number }, min: number, max: number } | null;
   formatCapabilityValue: (cap: object, value: unknown, t: (key: string) => string) => string;
   heatmapPeriodDays: (period: string | undefined) => number;

@@ -139,10 +139,6 @@
       "method": "POST",
       "path": "/trigger"
     },
-    "getNames": {
-      "method": "GET",
-      "path": "/names"
-    },
     "setName": {
       "method": "POST",
       "path": "/names"

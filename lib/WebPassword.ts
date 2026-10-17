@@ -20,6 +20,7 @@ const MAX_LOCK_MS = 15 * 60e3;
 
 type Session = { hash: string, created: number, used: number };
 type Stored = { salt: string, hash: string };
+type LoginResult = { ok: true, token: string } | { ok: false, reason: 'notSet' | 'wrong' | 'locked', retryAfter?: number };
 
 const sha256 = (s: string) => createHash('sha256').update(s).digest('hex');
 
@@ -38,6 +39,8 @@ export default class WebPassword {
 
   private failures = 0;
   private lockedUntil = 0;
+  /** The sign-in attempts, one at a time (`login()`). */
+  private attempts: Promise<unknown> = Promise.resolve();
   private sessions: Session[];
 
   constructor(
@@ -73,8 +76,17 @@ export default class WebPassword {
     return { ok: true };
   }
 
-  /** Signs a browser in: a new session token for the right password. */
-  async login(password: unknown): Promise<{ ok: true, token: string } | { ok: false, reason: 'notSet' | 'wrong' | 'locked', retryAfter?: number }> {
+  /**
+   * Signs a browser in: a new session token for the right password. One attempt at a time, so a burst of guesses
+   * can't all be checked before the lock is set.
+   */
+  login(password: unknown): Promise<LoginResult> {
+    const attempt = this.attempts.then(() => this.attempt(password));
+    this.attempts = attempt.catch(() => undefined);
+    return attempt;
+  }
+
+  private async attempt(password: unknown): Promise<LoginResult> {
     const stored = this.homey.settings.get(WEB_PASSWORD_SETTING) as Stored | null;
     if (!stored || !this.isSet) return { ok: false, reason: 'notSet' };
     const now = this.now();

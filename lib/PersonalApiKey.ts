@@ -1,5 +1,6 @@
 import type Homey from 'homey';
 import { HomeyAPI } from 'homey-api';
+import { isTransientError } from './DeviceTracker.js';
 
 /**
  * The app setting with the user's personal API key. Homey gives an app's own token `homey.logic.readonly` and
@@ -131,16 +132,20 @@ export default class PersonalApiKey {
 
   /**
    * Another key's scopes (the web dashboards page's own key), or null for a key Homey doesn't accept. Remembered
-   * for a minute, so a page's requests don't each ask Homey.
+   * for a minute, so a page's requests don't each ask Homey; a passing failure (Homey busy) throws and isn't kept.
    */
   scopesOf(token: string): Promise<string[] | null> {
     const now = Date.now();
     for (const [k, entry] of this.scopes) if (now - entry.at > SCOPES_TTL_MS) this.scopes.delete(k);
     let entry = this.scopes.get(token);
     if (!entry) {
-      const scopes = this.create(token)
+      const scopes: Promise<string[] | null> = this.create(token)
         .then(async api => (await api.sessions.getSessionMe())?.scopes ?? [])
-        .catch(() => null);
+        .catch((err: unknown) => {
+          if (!isTransientError(err)) return null;
+          if (this.scopes.get(token)?.scopes === scopes) this.scopes.delete(token);
+          throw err;
+        });
       entry = { at: now, scopes };
       this.scopes.set(token, entry);
     }

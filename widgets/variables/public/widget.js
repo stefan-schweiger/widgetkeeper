@@ -5,6 +5,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
+  const { el, tileNames } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a changed value shows while waiting for Homey's update
@@ -25,19 +26,6 @@
   };
   /** Why a change was refused, from the app (`{ok: false, reason}`): each has its own message. */
   const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
-
-  function el(tag, attrs, parent) {
-    const node = document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
-  }
 
   /** Digits after the decimal point (at most 6). */
   function decimalsOf(n) {
@@ -119,71 +107,6 @@
       seen.set(k, n);
       return n > 1 ? `${k}#${n}` : k;
     });
-  }
-
-  /**
-   * The names typed on the tiles (`renameTiles`; the app keeps them per widget instance, by tile key): `name(key, own)`
-   * is the typed name, else `own`. In rename mode `field(key, own)` is the tile's text field (made once per key, with
-   * `own` as the placeholder): it saves on change (Enter or leaving it), Escape puts it back, and a realtime update
-   * doesn't overwrite it while it has the focus. Its touches, clicks and keys never reach the tile's own taps.
-   * `failed(key)` shakes the tile and says so; the name goes back, unless the app's names came meanwhile.
-   */
-  function tileNames(opts, render, failed) {
-    let names = {};
-    let reads = 0; // set() calls: the app's names, by realtime or a read
-    const fields = new Map();
-    async function save(key, value) {
-      const before = names[key];
-      if ((before || '') === value) return;
-      const put = v => { names = { ...names }; if (v) names[key] = v; else delete names[key]; };
-      put(value);
-      const seen = reads;
-      render();
-      try {
-        if (opts.onRename) await opts.onRename(key, value);
-      } catch (err) {
-        console.error(err);
-        // Only while it still shows this save's name and nothing came from the app since: what came says what the
-        // app kept (a newer name, or this one when only the answer was lost).
-        if (reads === seen && (names[key] || '') === value) put(before);
-        failed(key);
-      }
-    }
-    return {
-      renaming: opts.renameTiles === true,
-      name: (key, own) => names[key] || own,
-      set(map) {
-        reads++;
-        names = {};
-        if (map && typeof map === 'object') for (const [k, v] of Object.entries(map)) if (typeof v === 'string' && v) names[k] = v;
-        render();
-      },
-      field(key, own) {
-        let input = fields.get(key);
-        if (!input) {
-          input = document.createElement('input');
-          input.type = 'text';
-          input.className = 'wk-rename';
-          input.dir = 'auto';
-          input.maxLength = 60;
-          input.autocomplete = 'off';
-          input.setAttribute('enterkeyhint', 'done');
-          const field = input;
-          for (const type of ['touchstart', 'touchend', 'pointerdown', 'click']) field.addEventListener(type, e => e.stopPropagation(), { passive: true });
-          field.addEventListener('keydown', (e) => {
-            e.stopPropagation();
-            if (e.key === 'Enter') field.blur();
-            else if (e.key === 'Escape') { field.value = names[key] || ''; field.blur(); }
-          });
-          field.addEventListener('change', () => { field.value = field.value.trim(); save(key, field.value); });
-          fields.set(key, input);
-        }
-        input.placeholder = own || '';
-        input.setAttribute('aria-label', own || '');
-        if (document.activeElement !== input) input.value = names[key] || '';
-        return input;
-      },
-    };
   }
 
   /**
@@ -425,9 +348,13 @@
     function render() {
       for (let i = rows.length - 1; i >= vars.length; i--) { rows[i].row.remove(); rows.pop(); }
       const named = nameKeys(vars);
+      let placed = null;
       vars.forEach((v, i) => {
         const r = rowAt(i);
-        grid.appendChild(r.row); // keeps the order; a no-op when already in place
+        // Keeps the order, moving only what is out of place: a moved node loses the focus of a field in it.
+        const want = placed ? placed.nextSibling : grid.firstChild;
+        if (r.row !== want) grid.insertBefore(r.row, want);
+        placed = r.row;
         const name = v.missing ? t('missing') : typed.name(named[i], v.name);
         if (editing && editing.index === i) {
           r.name.textContent = name;

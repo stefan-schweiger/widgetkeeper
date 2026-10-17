@@ -4,6 +4,7 @@
  * measurement used below. The drawing itself is chart.js (`window.WidgetkeeperChart`), shared with Charts.
  */
 (function () {
+  const { lowestSlot } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const C = window.WidgetkeeperChart; // chart.js, loaded first
@@ -517,16 +518,6 @@
       for (const q of kept) text(svg, q.x, ly, q.label, q.anchor, 'hanging');
     }
 
-    /** The cheapest slot from `from` up to `hours` ahead (the first of equal ones), or -1. As the Energy Price Strip. */
-    function lowestSlot(slots, from, hours) {
-      let low = -1;
-      for (let i = from; i <= from + hours && i < slots.length; i++) {
-        const p = slots[i].price;
-        if (p != null && (low < 0 || p < slots[low].price - 1e-9)) low = i;
-      }
-      return low;
-    }
-
     /**
      * `mode` is '12', '24' or 'both'. Both: `03:00 • 1,22 / 03:00 • 1,22`, without the unit;
      * when the 12h and 24h lowest are the same slot it's shown once, with the unit.
@@ -603,7 +594,8 @@
       scrollTimer = setInterval(() => { if (scrolling()) render(); }, Math.max(1000, liveWindowMs() / 300));
     }
     restartScroll();
-    document.addEventListener('visibilitychange', () => { if (scrolling()) render(); });
+    const onVisibility = () => { if (scrolling()) render(); };
+    document.addEventListener('visibilitychange', onVisibility);
     render();
 
     // ------------------------------------------------------------------ public API
@@ -624,10 +616,10 @@
         else live.push({ t: ts, w });
         const cutoff = Date.now() - LIVE_KEEP;
         while (live.length > 1 && live[1].t < cutoff) live.shift();
-        render();
+        if (!document.hidden && !offScreen) render(); // else drawn when it's back
       },
       t,
-      destroy() { ro.disconnect(); clearInterval(scrollTimer); },
+      destroy() { ro.disconnect(); clearInterval(scrollTimer); document.removeEventListener('visibilitychange', onVisibility); },
     };
   }
 

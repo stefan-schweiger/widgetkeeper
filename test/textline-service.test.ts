@@ -16,6 +16,8 @@ describe('boardKey', () => {
     expect(boardKey(' Kitchen ')).toBe('kitchen');
     expect(boardKey('')).toBe('note');
     expect(boardKey(undefined)).toBe('note');
+    expect(boardKey('__proto__')).toBe('');
+    expect(boardKey(' Constructor ')).toBe('');
   });
 });
 

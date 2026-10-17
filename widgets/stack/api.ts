@@ -25,11 +25,12 @@ import curtains from '../curtains/api.js';
 import media from '../media/api.js';
 import clock from '../clock/api.js';
 import textline from '../textline/api.js';
+import type { StackType } from '../../lib/StackService.js';
 
 type Homey = App['homey'];
 
-/** Each page widget's own API (its `api.ts`), by widget id. */
-export const PAGE_APIS: WidgetApis = {
+/** Each page widget's own API (its `api.ts`), by widget id: one for every `STACK_TYPES` (tsc checks). */
+export const PAGE_APIS: Record<StackType, WidgetApis[string]> = {
   electricity, thermostat, quickactions, sensoralarms, sensordots, roomhealth, weather, heatmap, cameras, values,
   lights, sparklines, charts, variables, varpresets, flows, price, timers, locks, curtains, media, clock, textline,
 };

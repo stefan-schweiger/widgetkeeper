@@ -17,8 +17,6 @@ export type RoomHealthDevice =
 type Tracked = TrackedEntry & {
   name: string,
   zone: string | null,
-  /** The zone as last resolved, kept for a refresh whose zones read failed (or the rooms would split). */
-  zoneRef: { id: string, name: string } | null,
   caps: HealthCap[],
   values: Partial<Record<Measure, number | null>>,
 };
@@ -91,7 +89,7 @@ export default class RoomHealthService {
       // again by itself once it has some (its signature changes).
       create: async (device) => {
         const caps = healthCaps(device);
-        return { name: device.name, zone: device.zone ?? null, zoneRef: null, caps, values: readValues(device, caps) };
+        return { name: device.name, zone: device.zone ?? null, caps, values: readValues(device, caps) };
       },
       listen: (t, device) => {
         const instances = t.caps.map(({ measure, capabilityId, scale }) => device.makeCapabilityInstance(capabilityId, (raw: unknown) => {
@@ -125,13 +123,10 @@ export default class RoomHealthService {
     const tm = new Timings();
     const zonesP = readZones(this.homey, tm, this.log, 'Room health');
     const out = await this.tracker.each(deviceIds, tm, this.log, 'Room health sensor', async (t, id): Promise<RoomHealthDevice> => {
-      const ref = zoneRef(await zonesP, t.zone);
-      if (ref) t.zoneRef = ref;
-      else if (t.zoneRef?.id !== t.zone) t.zoneRef = null;
       return {
         id,
         name: t.name,
-        zone: t.zoneRef ? { ...t.zoneRef } : null,
+        zone: zoneRef(await zonesP, t.zone),
         measures: Object.fromEntries(t.caps.map(c => [c.measure, { capabilityId: c.capabilityId, value: t.values[c.measure] ?? null }])),
       };
     });

@@ -104,12 +104,12 @@ export default class WidgetkeeperApp extends Homey.App {
     this.media.start();
     this.stack = new StackService(this.homey, log, debug, this.apiKey);
     this.registerStackFlows();
-    this.textLines = new TextLineService(this.homey, log, debug);
+    this.textLines = new TextLineService(this.homey, debug);
     this.registerTextLineFlows();
     this.daysSince = new DaysSinceService(this.homey, log, debug, counter => this.daysSinceOverdue(counter));
     this.registerDaysSinceFlows();
     this.daysSince.start();
-    this.tileNames = new TileNameService(this.homey, log, debug);
+    this.tileNames = new TileNameService(this.homey, debug);
     this.web = new WebDashboardService(this.homey, log, widgetAutocompletes(this));
     this.adoptOldTileNames();
     this.webPassword = new WebPassword(this.homey, log);

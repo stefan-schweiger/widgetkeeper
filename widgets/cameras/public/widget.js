@@ -9,6 +9,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
+  const { el, tileNames } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
@@ -21,6 +22,7 @@
   const ICE_WAIT_MS = 2000; // Homey's answer has every candidate, so the offer is sent once gathering is done
   const GRAB_MIN_MS = 60e3; // a video-only camera's frame grab: each one opens a stream through Homey
   const GRAB_RETRY_MS = 5 * 60e3; // after a failed grab
+  const SNAPSHOT_TIMEOUT_MS = 20e3; // a snapshot taking longer is skipped this round (they load one at a time)
   const GRAB_WIDTH = 640; // px; a grabbed frame is scaled down to this
 
   const DEFAULT_STRINGS = {
@@ -33,19 +35,6 @@
     liveH265: 'H.265 can\'t play live. Try H.264.',
     renameFailed: 'Could not save the name.',
   };
-
-  function el(tag, attrs, parent) {
-    const node = document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
-  }
 
   /** Loads an image off-screen, so a tile only swaps once the new snapshot has decoded. */
   /** The video's current frame as a JPEG data URL, or null before it has a size. */
@@ -78,78 +67,24 @@
     return i === (layout === 'top' ? 0 : n - 1);
   }
 
+  const timedOut = () => Object.assign(new Error('Snapshot timed out'), { timeout: true });
+
+  /** Loads an image; gives up after SNAPSHOT_TIMEOUT_MS (`timeout`), so a camera that hangs doesn't hold up the others. */
   function preload(src) {
     return new Promise((resolve, reject) => {
       const img = new Image();
-      img.onload = () => resolve(src);
-      img.onerror = () => reject(new Error('Image failed'));
+      const timer = setTimeout(() => { img.src = ''; reject(timedOut()); }, SNAPSHOT_TIMEOUT_MS);
+      img.onload = () => { clearTimeout(timer); resolve(src); };
+      img.onerror = () => { clearTimeout(timer); reject(new Error('Image failed')); };
       img.src = src;
     });
   }
 
-  /**
-   * The names typed on the tiles (`renameTiles`; the app keeps them per widget instance, by tile key): `name(key, own)`
-   * is the typed name, else `own`. In rename mode `field(key, own)` is the tile's text field (made once per key, with
-   * `own` as the placeholder): it saves on change (Enter or leaving it), Escape puts it back, and a realtime update
-   * doesn't overwrite it while it has the focus. Its touches, clicks and keys never reach the tile's own taps.
-   * `failed(key)` shakes the tile and says so; the name goes back, unless the app's names came meanwhile.
-   */
-  function tileNames(opts, render, failed) {
-    let names = {};
-    let reads = 0; // set() calls: the app's names, by realtime or a read
-    const fields = new Map();
-    async function save(key, value) {
-      const before = names[key];
-      if ((before || '') === value) return;
-      const put = v => { names = { ...names }; if (v) names[key] = v; else delete names[key]; };
-      put(value);
-      const seen = reads;
-      render();
-      try {
-        if (opts.onRename) await opts.onRename(key, value);
-      } catch (err) {
-        console.error(err);
-        // Only while it still shows this save's name and nothing came from the app since: what came says what the
-        // app kept (a newer name, or this one when only the answer was lost).
-        if (reads === seen && (names[key] || '') === value) put(before);
-        failed(key);
-      }
-    }
-    return {
-      renaming: opts.renameTiles === true,
-      name: (key, own) => names[key] || own,
-      set(map) {
-        reads++;
-        names = {};
-        if (map && typeof map === 'object') for (const [k, v] of Object.entries(map)) if (typeof v === 'string' && v) names[k] = v;
-        render();
-      },
-      field(key, own) {
-        let input = fields.get(key);
-        if (!input) {
-          input = document.createElement('input');
-          input.type = 'text';
-          input.className = 'wk-rename';
-          input.dir = 'auto';
-          input.maxLength = 60;
-          input.autocomplete = 'off';
-          input.setAttribute('enterkeyhint', 'done');
-          const field = input;
-          for (const type of ['touchstart', 'touchend', 'pointerdown', 'click']) field.addEventListener(type, e => e.stopPropagation(), { passive: true });
-          field.addEventListener('keydown', (e) => {
-            e.stopPropagation();
-            if (e.key === 'Enter') field.blur();
-            else if (e.key === 'Escape') { field.value = names[key] || ''; field.blur(); }
-          });
-          field.addEventListener('change', () => { field.value = field.value.trim(); save(key, field.value); });
-          fields.set(key, input);
-        }
-        input.placeholder = own || '';
-        input.setAttribute('aria-label', own || '');
-        if (document.activeElement !== input) input.value = names[key] || '';
-        return input;
-      },
-    };
+  /** `promise`, or a rejection with `timeout` after `ms`. */
+  function withTimeout(promise, ms) {
+    let timer;
+    const late = new Promise((_, reject) => { timer = setTimeout(() => reject(timedOut()), ms); });
+    return Promise.race([promise, late]).finally(() => clearTimeout(timer));
   }
 
   /**
@@ -245,7 +180,7 @@
     }
 
     async function appUrl(d) {
-      const s = await api('GET', `/snapshot?deviceId=${encodeURIComponent(d.id)}`);
+      const s = await withTimeout(api('GET', `/snapshot?deviceId=${encodeURIComponent(d.id)}`), SNAPSHOT_TIMEOUT_MS);
       return `data:${s.type};base64,${s.data}`;
     }
 
@@ -258,6 +193,7 @@
           directReported = true;
           return src;
         } catch (err) {
+          if (err && err.timeout) throw err; // slow, not unreachable: tried directly again next round
           appRoute.add(d.id);
           if (opts.report) opts.report(`direct snapshot URL failed for ${d.name} (frame ${location.origin}), using the app`);
         }
@@ -688,10 +624,7 @@
       return tile;
     }
 
-    function setMask(node, url) {
-      const v = url ? `url("${url}")` : '';
-      if (node.style.getPropertyValue('--cw-mask') !== v) node.style.setProperty('--cw-mask', v);
-    }
+    const setMask = (node, url) => window.WidgetkeeperKit.setMask(node, url, '--cw-mask');
 
     let lastHeight = 0;
     function render() {
@@ -699,9 +632,13 @@
       for (const [id, tile] of tiles) {
         if (!ids.has(id)) { tile.tile.remove(); tiles.delete(id); }
       }
+      let placed = null;
       devices.forEach((d, i) => {
         const tile = tileFor(d.id);
-        grid.appendChild(tile.tile); // keeps the settings' order; a no-op when already in place
+        // Keeps the order, moving only what is out of place: a moved node loses the focus of a field in it.
+        const want = placed ? placed.nextSibling : grid.firstChild;
+        if (tile.tile !== want) grid.insertBefore(tile.tile, want);
+        placed = tile.tile;
         const missing = 'missing' in d;
         tile.name.textContent = missing ? t('unavailable') : names.name(d.id, d.name);
         if (names.renaming && !missing) {

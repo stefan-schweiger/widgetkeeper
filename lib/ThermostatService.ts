@@ -248,11 +248,13 @@ export default class ThermostatService {
     const step = typeof cap.step === 'number' && cap.step > 0 ? cap.step : 0.5;
     const units = typeof cap.units === 'string' ? cap.units : '°C';
     const items: PresetOption[] = [];
-    for (let v = min; v <= max + 1e-9 && items.length < 200; v += step) {
+    // Every value (a fine step has hundreds), then the search, then the first 200 of what's left: so any setpoint can be
+    // found by typing it.
+    for (let v = min; v <= max + 1e-9 && items.length < 5000; v += step) {
       const value = Math.round(v * 100) / 100;
       items.push({ name: `${value} ${units}`, capabilityId: 'target_temperature', value });
     }
-    return [this.unchanged(), ...items.filter(i => matches(query, i.name))];
+    return [this.unchanged(), ...items.filter(i => matches(query, i.name)).slice(0, 200)];
   }
 
   private unchanged(): PresetOption {

@@ -266,7 +266,7 @@
             pwStatus.textContent = t(password ? 'webPasswordSaved' : 'webPasswordRemoved');
             showPasswordState();
           } else {
-            pwStatus.textContent = t('webPasswordTooShort', { min: 8 });
+            pwStatus.textContent = res && res.reason === 'tooLong' ? t('webPasswordTooLong', { max: 200 }) : t('webPasswordTooShort', { min: 8 });
           }
         });
       }

@@ -13,11 +13,7 @@ window.mountStackWidget = function (Homey, { root, frame }) {
 
   // Load marks for the app's diagnostics log, sent with the first request only.
   let perf = '';
-  function loadMarks(sdkAt) {
-    const nav = /** @type {PerformanceNavigationTiming | null} */ (performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null);
-    return [Math.round(performance.timeOrigin), nav ? Math.round(nav.responseEnd) : -1,
-      Math.round(sdkAt), Math.round(performance.now())].join(',');
-  }
+  const { loadMarks } = window.WidgetkeeperKit;
 
   const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};

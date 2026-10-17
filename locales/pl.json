@@ -153,7 +153,8 @@
     "webPasswordIsSet": "Hasło jest ustawione.",
     "webPasswordSaved": "Hasło zapisane. Zalogowane przeglądarki muszą zalogować się ponownie.",
     "webPasswordRemoved": "Hasło usunięte.",
-    "webPasswordTooShort": "Użyj co najmniej __min__ znaków."
+    "webPasswordTooShort": "Użyj co najmniej __min__ znaków.",
+    "webPasswordTooLong": "Użyj najwyżej __max__ znaków."
   },
   "heatmap": {
     "selectDevice": "Wybierz urządzenie i wartość w ustawieniach widżetu.",
@@ -183,7 +184,8 @@
     "unavailable": "Niedostępne",
     "on": "Wł.",
     "off": "Wył.",
-    "renameFailed": "Nie udało się zapisać nazwy."
+    "renameFailed": "Nie udało się zapisać nazwy.",
+    "none": "Brak"
   },
   "sparklines": {
     "selectSlots": "Wybierz wartości w ustawieniach widżetu.",
@@ -448,7 +450,6 @@
     "loadFailed": "Nie udało się połączyć z Widgetkeeper na Homey.",
     "retry": "Spróbuj ponownie",
     "off": "Pulpity webowe są wyłączone. Włącz je w ustawieniach aplikacji Widgetkeeper w aplikacji Homey.",
-    "noDashboards": "Brak pulpitów.",
     "newDashboard": "Nowy pulpit",
     "untitled": "Pulpit",
     "widgetCount": "Widżety: __count__",

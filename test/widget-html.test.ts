@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { Script } from 'node:vm';
 import { describe, expect, it } from 'vitest';
-import { DEPS, type WidgetName } from './helpers/loadWidget.js';
+import { DEPS, KIT, type WidgetName } from './helpers/loadWidget.js';
 
 // The widget tests load widget.js but not index.html, whose inline script wires it to Homey. A syntax
 // error there leaves the widget on Homey's spinner forever (a raw line break inside a regex did).
@@ -16,7 +16,7 @@ describe('widget index.html', () => {
   });
 });
 
-// Homey serves each widget's files separately, so shared helpers are copied; these must stay equal.
+// Most shared helpers are in the kit (widgets/spacer/public/kit.js); the copies left must stay equal.
 describe('copied widget helpers', () => {
   const read = (id: string, file: string) => readFileSync(`widgets/${id}/public/${file}`, 'utf8').replace(/\r\n/g, '\n');
   /** A function's source, from its `function` line to its closing brace, dedented (copies nest at different depths). */
@@ -30,19 +30,24 @@ describe('copied widget helpers', () => {
     for (const c of copies) expect(c === null ? c : normalise(c)).toBe(normalise(copies[0]!));
   };
 
-  it('withName() is the same in every widget that has one', () => {
-    expectSame(['values', 'flows', 'sensoralarms'].map(id => source(id, 'withName')));
+  it('no widget keeps a copy of a kit helper', () => {
+    const kit = ['undoTextZoom', 'el', 'setMask', 'tileNames', 'withName', 'formatSince', 'baseTitle', 'lowestSlot', 'loadMarks', 'wireTileNames'];
+    for (const id of WIDGETS) {
+      for (const file of ['widget.js', 'mount.js', 'index.html']) {
+        if (!existsSync(`widgets/${id}/public/${file}`)) continue;
+        for (const fn of kit) expect(source(id, fn, file), `${id}/${file}: ${fn}()`).toBeNull();
+      }
+    }
+    // Common names: only where the copies were (Room Health and Variables have functions of their own by these names).
+    for (const id of ['values', 'sparklines', 'charts']) {
+      for (const fn of ['scaled', 'formatNumber', 'formatValue']) expect(source(id, fn), `${id}: ${fn}()`).toBeNull();
+    }
   });
 
-  it('undoTextZoom() is the same in every index.html', () => {
-    expectSame(WIDGETS.map(id => source(id, 'undoTextZoom', 'index.html')));
-  });
-
-  it('loadMarks() is the same in every mount.js that makes requests, and perfParam() in every one that has it', () => {
-    // The spacer makes no requests, so it has neither.
+  it('perfParam() is the same in every mount.js that has it', () => {
+    // The spacer makes no requests, the stack's own carry no load marks. Weather's endpoint has no other query, so
+    // its perf= starts it.
     const requesting = WIDGETS.filter(id => id !== 'spacer');
-    expectSame(requesting.map(id => source(id, 'loadMarks', 'mount.js')));
-    // The stack's own requests carry no load marks. Weather's endpoint has no other query, so its perf= starts it.
     expectSame(requesting.filter(id => id !== 'stack').map(id => source(id, 'perfParam', 'mount.js')),
       s => s.replace('`?perf=', '`&perf='));
   });
@@ -55,14 +60,7 @@ describe('copied widget helpers', () => {
     expectSame(['timers', 'locks', 'dayssince'].map(id => source(id, 'onTap'))); // stops the tap at a button inside a row
   });
 
-  it('scaled() and formatNumber() are the same in Sparklines and Charts', () => {
-    for (const fn of ['scaled', 'formatNumber']) expectSame(['sparklines', 'charts'].map(id => source(id, fn)));
-  });
-
-  it('tileNames(), wireTileNames() and nameKeys() are the same in every widget with tile names', () => {
-    const named = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables', 'roomhealth'];
-    expectSame(named.map(id => source(id, 'tileNames')));
-    expectSame(named.map(id => source(id, 'wireTileNames', 'mount.js')));
+  it('nameKeys() is the same in every widget with repeatable slots', () => {
     expectSame(['values', 'sparklines', 'variables'].map(id => source(id, 'nameKeys')));
   });
 
@@ -70,14 +68,7 @@ describe('copied widget helpers', () => {
     expectSame(['lights', 'curtains'].map(id => source(id, 'wireBar')));
   });
 
-  it('formatSince(), baseTitle(), lowestSlot() and setMask() are the same in every copy', () => {
-    expectSame(['locks', 'sensordots'].map(id => source(id, 'formatSince')));
-    expectSame(['sensoralarms', 'sensordots'].map(id => source(id, 'baseTitle')));
-    expectSame(['electricity', 'price'].map(id => source(id, 'lowestSlot')));
-    // Each sets its own widget's mask variable.
-    expectSame(['cameras', 'lights', 'locks', 'quickactions', 'sensoralarms', 'sparklines', 'values'].map(id => source(id, 'setMask')),
-      s => s.replace(/--\w+-mask/g, '--x-mask'));
-  });
+
 
   /** The CSS without comments, with each widget's class prefix (`tw-`, `hm-` …) made `x-`. */
   const css = (id: string, prefix: string, file = 'widget.css') => read(id, file).replace(/\/\*[\s\S]*?\*\//g, '').replace(new RegExp(String.raw`\b${prefix}-`, 'g'), 'x-');
@@ -103,13 +94,20 @@ describe('copied widget helpers', () => {
 });
 
 describe('shared files', () => {
-  /** The files an index.html loads besides its own widget.*, mount.js: `<widget>/<name>` (`../electricity/chart.js` → `electricity/chart.js`). */
+  /** The files an index.html loads besides its own widget.*, mount.js and the kit: `<widget>/<name>` (`../electricity/chart.js` → `electricity/chart.js`). */
   const shared = (id: string, ext: string) => {
     const html = readFileSync(`widgets/${id}/public/index.html`, 'utf8');
     const refs = [...html.matchAll(/(?:src|href)="([^"]+)"/g)].map(m => m[1]).filter(r => r.endsWith(`.${ext}`));
     return refs.filter(r => !['widget.js', 'widget.css', 'mount.js'].includes(r))
-      .map(r => (r.startsWith('../') ? r.slice(3) : `${id}/${r}`));
+      .map(r => (r.startsWith('../') ? r.slice(3) : `${id}/${r}`))
+      .filter(r => r !== KIT);
   };
+
+  it.each(WIDGETS)('%s: index.html loads the kit before anything else', (id) => {
+    const html = readFileSync(`widgets/${id}/public/index.html`, 'utf8');
+    expect([...html.matchAll(/<script src="([^"]+)"/g)][0]?.[1]).toBe('../spacer/kit.js');
+    expect(html).toContain('WidgetkeeperKit.undoTextZoom();');
+  });
   const stackDeps: Record<string, string[]> = new Function(`return ${readFileSync('widgets/stack/public/mount.js', 'utf8')
     .match(/const DEPS = (\{[\s\S]*?\});/)![1]}`)();
 

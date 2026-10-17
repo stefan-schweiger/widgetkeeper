@@ -60,7 +60,8 @@ html, body { background: transparent !important; }
 .sk-dot.alert:not(.on)::before { background: var(--sk-accent); }
 
 .sk-message { display: none; }
-.sk.has-message .sk-message {
+/* The stack's own message, or a page that couldn't be shown (in its slide). */
+.sk.has-message .sk-message, .sk-slide > .sk-message {
   display: block; padding: 14px 16px; border-radius: var(--sk-radius); background: var(--sk-tile);
   font-size: var(--sk-fs-small); line-height: var(--sk-lh-small); color: var(--sk-muted); text-align: left;
 }

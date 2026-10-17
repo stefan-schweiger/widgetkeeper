@@ -68,7 +68,7 @@
       live.push({ t: Math.round(t), w: Math.round(w) });
     }
     live.push({ t: NOW, w: live[live.length - 1].w });
-    snapshot = { now: NOW, deviceName: 'Main meter', live, prices, usage, currency: 'DKK' };
+    snapshot = { now: NOW, live, prices, usage, currency: 'DKK' };
     return structuredClone(snapshot);
   }
 

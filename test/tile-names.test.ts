@@ -85,10 +85,10 @@ describe('TileNameService', () => {
     expect(service.describe()).toEqual({ widgets: 300, names: 300 });
   });
 
-  it('serves the widget routes', async () => {
-    const { homey } = setup();
+  it('serves the widget route', async () => {
+    const { homey, service } = setup();
     await tileNameRoutes.setName({ homey: homey as any, body: { instance: 'w1', key: 'd1', name: 'Hall' } });
-    expect(await tileNameRoutes.getNames({ homey: homey as any, query: { instance: 'w1' } })).toEqual({ instance: 'w1', names: { d1: 'Hall' } });
+    expect(service.get('w1')).toEqual({ instance: 'w1', names: { d1: 'Hall' } });
   });
 
   it('adds the names to a /state answer that asks with its instance', async () => {
@@ -101,7 +101,6 @@ describe('TileNameService', () => {
   it('is in the api of every widget with device tiles', () => {
     const manifest = JSON.parse(readFileSync('app.json', 'utf8'));
     for (const id of ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables', 'roomhealth']) {
-      expect(manifest.widgets[id].api.getNames).toEqual({ method: 'GET', path: '/names' });
       expect(manifest.widgets[id].api.setName).toEqual({ method: 'POST', path: '/names' });
       expect(manifest.widgets[id].settings.find((s: any) => s.id === 'renameTiles')).toMatchObject({ type: 'checkbox', value: false });
     }

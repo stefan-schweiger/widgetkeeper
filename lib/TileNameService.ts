@@ -63,7 +63,6 @@ export default class TileNameService {
 
   constructor(
     private homey: Homey.App['homey'],
-    private log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
   ) {}
 
@@ -155,7 +154,7 @@ const service = (homey: RouteArgs['homey']) => (homey.app as any).tileNames as T
 
 /**
  * A device-tile widget's `/state` answer, with its tile names when it asks with `instance=`: `{state, tileNames}`, so a
- * widget's load is one request, not two (`/names` too). Without `instance` (the Smart Stack's attention reads), the
+ * widget's load is one request, not two. Without `instance` (the Smart Stack's attention reads), the
  * state as it was. `oldNames` (JSON `{key: name}`, the names in the widget's old settings) are taken over first
  * (`adopt()`), so this answer has them; that going wrong never fails the state.
  */
@@ -172,12 +171,8 @@ export async function withTileNames<T>(homey: RouteArgs['homey'], query: RouteAr
   return { state: s, tileNames: service(homey).get(query.instance).names };
 }
 
-/** `GET /names?instance=` and `POST /names {instance, key, name}`: spread into each device-tile widget's api.ts. */
+/** `POST /names {instance, key, name}`: spread into each device-tile widget's api.ts (the names come with `/state`, `withTileNames()`). */
 export const tileNameRoutes = {
-  async getNames({ homey, query }: RouteArgs) {
-    return logged(homey.app as any, 'Tile names failed:', async () => service(homey).get(query?.instance));
-  },
-
   async setName({ homey, body }: RouteArgs) {
     return logged(homey.app as any, 'Tile name change failed:', async () => service(homey).set(body?.instance, body?.key, body?.name));
   },

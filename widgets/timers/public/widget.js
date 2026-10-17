@@ -6,6 +6,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
+  const { el } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
@@ -38,19 +39,6 @@
     bell: { d: 'M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 21h4' },
     close: { d: 'M7 7l10 10M17 7 7 17' },
   };
-
-  function el(tag, attrs, parent) {
-    const node = document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
-  }
 
   function glyph(name) {
     const g = GLYPHS[name];
@@ -172,13 +160,14 @@
       const text = el('div', { class: 'tm-preset-text' }, chip);
       el('div', { class: 'tm-preset-name', dir: 'auto', text: p.label || durationText(p.minutes) }, text);
       if (p.label) el('div', { class: 'tm-preset-time', text: durationText(p.minutes) }, text);
-      onTap(chip, () => start(p));
+      onTap(chip, () => { if (Date.now() - presetsShownAt >= 600) start(p); }); // not a double tap's second
     }
     const list = el('div', { class: 'tm-list' }, root);
     const messageEl = el('div', { class: 'tm-message', dir: 'auto' }, root);
     /** @type {Map<string, {row: HTMLElement, button: HTMLElement, name: HTMLElement, sub: HTMLElement, time: HTMLElement, glyph: string}>} */
     const rows = new Map();
 
+    let presetsShownAt = 0; // when the presets came back in place of a timer
     const isDone = (tm, now) => tm.doneAt != null || (tm.endsAt != null && tm.endsAt <= now);
     const remainingOf = (tm, now) => (tm.remaining != null ? tm.remaining : tm.endsAt != null ? tm.endsAt - now : 0);
 
@@ -187,6 +176,7 @@
       if (!state || !Array.isArray(state.timers)) return;
       if (typeof state.now === 'number') offset = state.now - clock();
       timers = state.timers.slice(-1).map(x => ({ ...x }));
+      if (!messageTimer) messageText = null; // a failed first load's message (a passing one runs out by itself)
       render();
     }
 
@@ -347,9 +337,13 @@
         if (!ids.has(id)) { r.row.remove(); rows.delete(id); }
       }
       const done = new Set();
+      let placed = null;
       for (const tm of timers) {
         const r = rowFor(tm);
-        list.appendChild(r.row);
+        // Keeps the order, moving only what is out of place: a moved node loses the focus of a field in it.
+        const want = placed ? placed.nextSibling : list.firstChild;
+        if (r.row !== want) list.insertBefore(r.row, want);
+        placed = r.row;
         if (paint(tm, now)) done.add(tm.id);
       }
       for (const id of done) if (!ringing.has(id)) { haptic(); startBeeping(); }
@@ -357,7 +351,9 @@
       if (!done.size) stopBeeping();
       // One row: the presets, or the timer in their place.
       list.style.display = timers.length ? '' : 'none';
-      presetsEl.style.display = presets.length && !timers.length ? '' : 'none';
+      const showPresets = presets.length && !timers.length;
+      if (showPresets && presetsEl.style.display === 'none') presetsShownAt = Date.now();
+      presetsEl.style.display = showPresets ? '' : 'none';
       const text = messageText || (!presets.length && !timers.length ? t('selectPresets') : null);
       messageEl.textContent = text || '';
       messageEl.style.display = text ? '' : 'none';

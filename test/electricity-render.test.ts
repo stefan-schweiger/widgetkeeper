@@ -33,7 +33,6 @@ function snapshot({ solar = false, quarters = false, fixed = false, noPrices = f
   })).filter(u => u.t <= NOW && (u.t < HOUR_START - 6 * HOUR || u.t > HOUR_START - 5 * HOUR)); // with a gap
   return {
     now: NOW,
-    deviceName: 'Meter',
     meterError: null,
     live,
     prices,

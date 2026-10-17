@@ -153,7 +153,8 @@
     "webPasswordIsSet": "تم تعيين كلمة مرور.",
     "webPasswordSaved": "تم حفظ كلمة المرور. يجب على المتصفحات المسجّلة إعادة تسجيل الدخول.",
     "webPasswordRemoved": "تمت إزالة كلمة المرور.",
-    "webPasswordTooShort": "استخدم __min__ أحرف على الأقل."
+    "webPasswordTooShort": "استخدم __min__ أحرف على الأقل.",
+    "webPasswordTooLong": "استخدم __max__ حرفًا على الأكثر."
   },
   "heatmap": {
     "selectDevice": "اختر جهازًا وقيمة في إعدادات الأداة.",
@@ -183,7 +184,8 @@
     "unavailable": "غير متاح",
     "on": "تشغيل",
     "off": "إيقاف",
-    "renameFailed": "تعذّر حفظ الاسم."
+    "renameFailed": "تعذّر حفظ الاسم.",
+    "none": "لا شيء"
   },
   "sparklines": {
     "selectSlots": "اختر قيم الأجهزة في إعدادات الأداة.",
@@ -448,7 +450,6 @@
     "loadFailed": "تعذّر الوصول إلى Widgetkeeper على Homey.",
     "retry": "حاول مجددًا",
     "off": "لوحات الويب متوقفة. شغّلها من إعدادات تطبيق Widgetkeeper في تطبيق Homey.",
-    "noDashboards": "لا توجد لوحات بعد.",
     "newDashboard": "لوحة جديدة",
     "untitled": "لوحة",
     "widgetCount": "الأدوات: __count__",

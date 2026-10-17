@@ -81,6 +81,7 @@ html, body { margin: 0; }
 }
 .tw-btn:first-child { border-radius: var(--tw-radius) var(--tw-radius-small) var(--tw-radius-small) var(--tw-radius); }
 .tw-btn:last-child { border-radius: var(--tw-radius-small) var(--tw-radius) var(--tw-radius) var(--tw-radius-small); }
+.tw-btn:only-child { border-radius: var(--tw-radius); }
 .tw-btn:active:not(:disabled) { transform: scale(.97); }
 .tw-btn:disabled { cursor: default; }
 .tw-btn:disabled:not(.active) > * { opacity: .5; }

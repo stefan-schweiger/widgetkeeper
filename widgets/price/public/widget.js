@@ -5,6 +5,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
+  const { el, lowestSlot } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const HOUR = 36e5;
@@ -21,19 +22,6 @@
     noPrices: 'No electricity prices. Set them up in Homey Energy.',
     error: 'Could not load the prices.',
   };
-
-  function el(tag, attrs, parent) {
-    const node = document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
-  }
 
   /** As the Electricity Overview: `kr.` for DKK (and no currency), `kr` for NOK and SEK, `€` for EUR. */
   function currencyUnit(code) {
@@ -64,16 +52,6 @@
   /** The index of the slot (`len` ms long) holding `now`, or -1. */
   function slotAt(slots, now, len = HOUR) {
     return slots.findIndex(s => s.start <= now && now < s.start + len);
-  }
-
-  /** The cheapest slot from `from` up to `hours` ahead (the first of equal ones), or -1. As the Electricity Overview. */
-  function lowestSlot(slots, from, hours) {
-    let low = -1;
-    for (let i = from; i <= from + hours && i < slots.length; i++) {
-      const p = slots[i].price;
-      if (p != null && (low < 0 || p < slots[low].price - 1e-9)) low = i;
-    }
-    return low;
   }
 
   /**

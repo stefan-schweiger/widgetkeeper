@@ -393,10 +393,6 @@
       "method": "GET",
       "path": "/state"
     },
-    "getNames": {
-      "method": "GET",
-      "path": "/names"
-    },
     "setName": {
       "method": "POST",
       "path": "/names"

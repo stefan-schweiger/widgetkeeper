@@ -153,7 +153,8 @@
     "webPasswordIsSet": "È impostata una password.",
     "webPasswordSaved": "Password salvata. I browser già connessi devono accedere di nuovo.",
     "webPasswordRemoved": "Password rimossa.",
-    "webPasswordTooShort": "Usa almeno __min__ caratteri."
+    "webPasswordTooShort": "Usa almeno __min__ caratteri.",
+    "webPasswordTooLong": "Usa al massimo __max__ caratteri."
   },
   "heatmap": {
     "selectDevice": "Scegli un dispositivo e un valore nelle impostazioni del widget.",
@@ -183,7 +184,8 @@
     "unavailable": "Non disponibile",
     "on": "Acceso",
     "off": "Spento",
-    "renameFailed": "Impossibile salvare il nome."
+    "renameFailed": "Impossibile salvare il nome.",
+    "none": "Nessuno"
   },
   "sparklines": {
     "selectSlots": "Scegli i valori nelle impostazioni del widget.",
@@ -448,7 +450,6 @@
     "loadFailed": "Impossibile raggiungere Widgetkeeper sul tuo Homey.",
     "retry": "Riprova",
     "off": "Le dashboard web sono disattivate. Attivale nelle impostazioni dell'app Widgetkeeper, nell'app Homey.",
-    "noDashboards": "Nessuna dashboard.",
     "newDashboard": "Nuova dashboard",
     "untitled": "Dashboard",
     "widgetCount": "__count__ widget",

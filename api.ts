@@ -1,7 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from './app.js';
-import { scopesAllow } from './lib/PersonalApiKey.js';
-import { callWidgetRoute, routeKeyUse, type WidgetApis } from './lib/widgetRoutes.js';
+import { scopesAllow, type KeyUse } from './lib/PersonalApiKey.js';
+import { autocompleteKeyUse, callWidgetRoute, routeKeyUse, type WidgetApis } from './lib/widgetRoutes.js';
 import dayssince from './widgets/dayssince/api.js';
 import stack, { PAGE_APIS } from './widgets/stack/api.js';
 
@@ -9,6 +9,13 @@ type Homey = App['homey'];
 
 /** Every widget's API, by widget id, for the web dashboards' frames (the Smart Stack's included, and Days Since, which isn't a stack page). */
 const WEB_APIS: WidgetApis = { ...PAGE_APIS, stack, dayssince };
+
+/** Why the web page's own key (`key`) may not do what the app's stored key would do here, or null when it may. */
+async function pageKeyProblem(app: WidgetkeeperApp, key: unknown, use: KeyUse): Promise<'keyInvalid' | 'keyScope' | null> {
+  const scopes = typeof key === 'string' && key ? await app.apiKey.scopesOf(key) : null;
+  if (!scopes) return 'keyInvalid';
+  return scopesAllow(scopes, use) ? null : 'keyScope';
+}
 
 /**
  * While the web dashboards have a password (`WebPassword`), their routes only answer a browser that also signed in
@@ -101,11 +108,18 @@ export default {
     return app.web.valueDevices(query.type || '');
   },
 
-  /** The web dashboards' editor: an autocomplete setting's items (`{type, setting, query, settings}`). */
+  /**
+   * The web dashboards' editor: an autocomplete setting's items (`{type, setting, query, settings, key}`). One that
+   * reads with the app's stored key (the Smart Stack's dashboards) answers only when the page's own key may too.
+   */
   async postWebAutocomplete({ homey, query, body }: { homey: Homey, query?: Record<string, string>, body: Record<string, any> }) {
     const app = homey.app as WidgetkeeperApp;
     assertWebSession(app, query);
-    return app.web.autocomplete(String(body?.type ?? ''), String(body?.setting ?? ''), String(body?.query ?? ''), body?.settings);
+    const [type, setting] = [String(body?.type ?? ''), String(body?.setting ?? '')];
+    const use = autocompleteKeyUse(type, setting);
+    const problem = use && await pageKeyProblem(app, body?.key, use);
+    if (problem) return [{ id: 'none', name: homey.__(`stack.${problem}`) || problem, description: homey.__('stack.keyHint') || '' }];
+    return app.web.autocomplete(type, setting, String(body?.query ?? ''), body?.settings);
   },
 
   /** Saves a web dashboard (a new one gets an id); answers it as kept. */
@@ -137,11 +151,8 @@ export default {
     assertWebSession(app, query);
     const [type, method, path] = [String(body?.type ?? ''), String(body?.method ?? ''), String(body?.path ?? '')];
     const use = routeKeyUse(type, method, path, body?.body);
-    if (use) {
-      const scopes = typeof body?.key === 'string' && body.key ? await app.apiKey.scopesOf(body.key) : null;
-      if (!scopes) return { ok: false, reason: 'keyInvalid' };
-      if (!scopesAllow(scopes, use)) return { ok: false, reason: 'keyScope' };
-    }
+    const problem = use && await pageKeyProblem(app, body?.key, use);
+    if (problem) return { ok: false, reason: problem };
     return callWidgetRoute(homey, WEB_APIS, type, method, path, body?.query, body?.body);
   },
 

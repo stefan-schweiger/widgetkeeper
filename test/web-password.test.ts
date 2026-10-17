@@ -22,6 +22,14 @@ function setup({ enabled = true, now = () => Date.now() } = {}) {
 }
 
 describe('web dashboards password', () => {
+  it('checks one sign-in at a time, so a burst of guesses is locked out like single ones', async () => {
+    const { password } = setup();
+    await password.setPassword('correct horse');
+    const results = await Promise.all([...Array.from({ length: 8 }, () => password.login('wrong guess')), password.login('correct horse')]);
+    expect(results.filter(r => r.ok)).toHaveLength(0);
+    expect(results.at(-1)).toMatchObject({ ok: false, reason: 'locked' });
+  });
+
   it('keeps only a salted hash, and signs a browser in with the right password', async () => {
     const { homey, password } = setup();
     expect(password.isSet).toBe(false);

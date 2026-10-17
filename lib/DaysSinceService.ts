@@ -146,26 +146,31 @@ export default class DaysSinceService {
   }
 
   /**
-   * A widget's counters (`/state`): each is created when it's new, takes the widget's intervals (the last widget to
-   * load wins, for the Flow cards) and is answered in the order asked, with the Homey's clock.
+   * A widget's counters (`/state`): each is created when it's new, takes the widget's intervals when it sends them (at
+   * a widget's first load: the last widget to load wins, for the Flow cards; a counter in two slots takes the first's)
+   * and is answered in the order asked, with the Homey's clock. A refresh sends only the names, so two widgets that
+   * disagree don't take turns, each turn firing the overdue trigger again.
    */
   sync(defs: CounterDef[]): { now: number, counters: CounterEntry[] } {
     const now = Date.now();
     const out: CounterEntry[] = [];
+    const seen = new Set<string>();
     for (const def of defs) {
       const key = counterKey(def.name);
       if (!key) continue;
       const name = cleanName(def.name);
-      const amber = intervalDays(def.amber);
-      const red = intervalDays(def.red);
+      const intervals = !seen.has(key) && (def.amber !== undefined || def.red !== undefined)
+        ? { amber: intervalDays(def.amber), red: intervalDays(def.red) }
+        : null;
+      seen.add(key);
       let c = this.counters.get(key);
       if (!c) {
-        c = { name, resetAt: null, amber, red, overdue: false, updatedAt: now };
+        c = { name, resetAt: null, amber: intervals?.amber ?? null, red: intervals?.red ?? null, overdue: false, updatedAt: now };
         this.counters.set(key, c);
         this.debug(`Days Since: new counter ${name}`);
         this.changed(key, c);
-      } else if (c.name !== name || c.amber !== amber || c.red !== red) {
-        Object.assign(c, { name, amber, red, updatedAt: now });
+      } else if (c.name !== name || (intervals && (c.amber !== intervals.amber || c.red !== intervals.red))) {
+        Object.assign(c, { name, ...intervals, updatedAt: now });
         this.evaluate(key, c, now);
         this.changed(key, c);
       } else if (now - c.updatedAt > SEEN_SAVE) {

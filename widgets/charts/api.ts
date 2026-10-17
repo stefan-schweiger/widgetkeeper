@@ -1,6 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
 import { idList, logged, logPerf } from '../../lib/widgetApi.js';
+import { parseSlot } from '../../lib/ValueService.js';
 
 type Homey = App['homey'];
 
@@ -23,7 +24,7 @@ export default {
         const slot = at > 0 ? chart.slice(0, at) : chart;
         const span = at > 0 ? chart.slice(at + 1) : undefined;
         const [state] = await app.sparklines.getState([slot], span);
-        return state ?? { deviceId: slot.split(':')[0], capabilityId: slot.slice(slot.indexOf(':') + 1), missing: true as const };
+        return state ?? { ...(parseSlot(slot) ?? { deviceId: slot, capabilityId: '' }), missing: true as const };
       })),
     }));
   },

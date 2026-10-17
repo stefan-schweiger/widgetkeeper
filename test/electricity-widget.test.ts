@@ -14,7 +14,6 @@ beforeAll(() => { win = loadWidget('electricity'); });
 function snapshot(over: Record<string, any> = {}, prices: Record<number, number | null> = {}) {
   return {
     now: NOW,
-    deviceName: 'Meter',
     meterError: null,
     live: [{ t: NOW - 5 * MIN, w: 400 }, { t: NOW - 10e3, w: 500 }],
     prices: Array.from({ length: 49 }, (_, i) => ({ start: HOUR_START + (i - 24) * HOUR, price: i in prices ? prices[i] : 2 })),

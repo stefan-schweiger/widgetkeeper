@@ -4,6 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
+  const { el, tileNames, formatNumber, formatValue } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -17,8 +18,7 @@
   /** The chart's vertical padding, so the line and the dot aren't cut at the top and bottom. */
   const PAD = 3;
 
-  // The glyphs, glyph(), percentOf() and formatValue() are copied from widgets/values/public/widget.js
-  // (Homey serves each widget's files separately), trimmed to numbers: only those have sparklines.
+  // The glyphs and glyph() are Device Values', trimmed to numbers: only those have sparklines.
   const svg = (viewBox, body) => `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none" stroke="#000" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`)}`;
   const GLYPHS = {
     thermometer: svg('7.4 2.4 9.2 19.6', '<path d="M10 13.8V5a2 2 0 0 1 4 0v8.8a4 4 0 1 1-4 0z"/><path d="M12 9v6"/>'),
@@ -51,28 +51,6 @@
     return s.capability.icon || glyph(s.capabilityId);
   }
 
-  const TIGHT_UNITS = /^(°|%)/;
-
-  /** A `%` number as 0–100 (a 0–1 range, like Homey's `dim`, is scaled up), else the number itself. */
-  function scaled(cap, value) {
-    return cap.units === '%' && cap.max === 1 && (cap.min == null || cap.min === 0) ? value * 100 : value;
-  }
-
-  /** The number in the device locale, to the capability's decimals (at most 1 without them). */
-  function formatNumber(cap, value) {
-    const percent = scaled(cap, value) !== value;
-    const digits = percent ? 0 : cap.decimals != null ? Math.max(0, Math.min(cap.decimals, 4)) : null;
-    return scaled(cap, value).toLocaleString(undefined, digits != null
-      ? { minimumFractionDigits: 0, maximumFractionDigits: digits }
-      : { maximumFractionDigits: 1 });
-  }
-
-  function formatValue(cap, value) {
-    if (typeof value !== 'number' || !isFinite(value)) return value == null ? '–' : String(value);
-    const text = formatNumber(cap, value);
-    if (!cap.units) return text;
-    return TIGHT_UNITS.test(cap.units) ? `${text}${cap.units}` : `${text} ${cap.units}`;
-  }
 
   /**
    * The line and area paths for `points` (`[t, v]`, oldest first) drawn over `[from, to]` in a `w` × `h`
@@ -95,18 +73,6 @@
     return { line, area, dot: { x: dx, y: dy }, min, max };
   }
 
-  function el(tag, attrs, parent, ns) {
-    const node = ns ? document.createElementNS(ns, tag) : document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
-  }
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
   const keyOf = s => `${s.deviceId}:${s.capabilityId}`;
@@ -122,71 +88,6 @@
     });
   }
   const lastT = points => (points.length ? points[points.length - 1][0] : -Infinity);
-
-  /**
-   * The names typed on the tiles (`renameTiles`; the app keeps them per widget instance, by tile key): `name(key, own)`
-   * is the typed name, else `own`. In rename mode `field(key, own)` is the tile's text field (made once per key, with
-   * `own` as the placeholder): it saves on change (Enter or leaving it), Escape puts it back, and a realtime update
-   * doesn't overwrite it while it has the focus. Its touches, clicks and keys never reach the tile's own taps.
-   * `failed(key)` shakes the tile and says so; the name goes back, unless the app's names came meanwhile.
-   */
-  function tileNames(opts, render, failed) {
-    let names = {};
-    let reads = 0; // set() calls: the app's names, by realtime or a read
-    const fields = new Map();
-    async function save(key, value) {
-      const before = names[key];
-      if ((before || '') === value) return;
-      const put = v => { names = { ...names }; if (v) names[key] = v; else delete names[key]; };
-      put(value);
-      const seen = reads;
-      render();
-      try {
-        if (opts.onRename) await opts.onRename(key, value);
-      } catch (err) {
-        console.error(err);
-        // Only while it still shows this save's name and nothing came from the app since: what came says what the
-        // app kept (a newer name, or this one when only the answer was lost).
-        if (reads === seen && (names[key] || '') === value) put(before);
-        failed(key);
-      }
-    }
-    return {
-      renaming: opts.renameTiles === true,
-      name: (key, own) => names[key] || own,
-      set(map) {
-        reads++;
-        names = {};
-        if (map && typeof map === 'object') for (const [k, v] of Object.entries(map)) if (typeof v === 'string' && v) names[k] = v;
-        render();
-      },
-      field(key, own) {
-        let input = fields.get(key);
-        if (!input) {
-          input = document.createElement('input');
-          input.type = 'text';
-          input.className = 'wk-rename';
-          input.dir = 'auto';
-          input.maxLength = 60;
-          input.autocomplete = 'off';
-          input.setAttribute('enterkeyhint', 'done');
-          const field = input;
-          for (const type of ['touchstart', 'touchend', 'pointerdown', 'click']) field.addEventListener(type, e => e.stopPropagation(), { passive: true });
-          field.addEventListener('keydown', (e) => {
-            e.stopPropagation();
-            if (e.key === 'Enter') field.blur();
-            else if (e.key === 'Escape') { field.value = names[key] || ''; field.blur(); }
-          });
-          field.addEventListener('change', () => { field.value = field.value.trim(); save(key, field.value); });
-          fields.set(key, input);
-        }
-        input.placeholder = own || '';
-        input.setAttribute('aria-label', own || '');
-        if (document.activeElement !== input) input.value = names[key] || '';
-        return input;
-      },
-    };
-  }
 
   /**
    * @param {HTMLElement} root
@@ -286,10 +187,7 @@
       return tile;
     }
 
-    function setMask(node, url) {
-      const v = url ? `url("${url}")` : '';
-      if (node.style.getPropertyValue('--sl-mask') !== v) node.style.setProperty('--sl-mask', v);
-    }
+    const setMask = (node, url) => window.WidgetkeeperKit.setMask(node, url, '--sl-mask');
 
     function drawChart(tile, s) {
       const w = Math.round(tile.plot.getBoundingClientRect().width) || 100;
@@ -316,9 +214,13 @@
       for (const [key, tile] of tiles) {
         if (!wanted.has(key)) { tile.tile.remove(); tiles.delete(key); }
       }
+      let placed = null;
       slots.forEach((s, i) => {
         const tile = tileFor(keys[i]);
-        grid.appendChild(tile.tile);
+        // Keeps the order, moving only what is out of place: a moved node loses the focus of a field in it.
+        const want = placed ? placed.nextSibling : grid.firstChild;
+        if (tile.tile !== want) grid.insertBefore(tile.tile, want);
+        placed = tile.tile;
         const missing = 'missing' in s;
         tile.name.textContent = missing ? t('unavailable') : names.name(named[i], s.name);
         if (names.renaming && !missing) {

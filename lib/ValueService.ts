@@ -133,6 +133,7 @@ export default class ValueService {
     const next = color === 'default' ? null : (TILE_COLORS as readonly string[]).includes(color) ? color as TileColor : undefined;
     if (next === undefined) throw new Error(`Unknown colour: ${color}`);
     const colors = { ...this.colors() };
+    if ((colors[slot] ?? null) === next) return; // the tiles have it already
     if (next) colors[slot] = next;
     else delete colors[slot];
     this.homey.settings.set(VALUE_COLORS_SETTING, colors);

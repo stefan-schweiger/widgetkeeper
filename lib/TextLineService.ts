@@ -20,10 +20,17 @@ export type TextLine = { name: string, text: string, color: TileColor | null, up
 /** What `/state` and the realtime event carry for a board. */
 export type TextLineEntry = TextLine & { key: string };
 
-/** A note's key: its name trimmed and lower-cased, so `Kitchen` and ` kitchen` are one note. Empty is the default note. */
+/** Keys that would reach `Object.prototype` in the setting's plain object. */
+const RESERVED = new Set(['__proto__', 'constructor', 'prototype']);
+
+/**
+ * A note's key: its name trimmed and lower-cased, so `Kitchen` and ` kitchen` are one note. Empty is the default note;
+ * a reserved name (`__proto__` …) has none, `''`.
+ */
 export function boardKey(name: unknown): string {
   const n = typeof name === 'string' ? name.trim() : '';
-  return (n || DEFAULT_BOARD).toLowerCase().slice(0, MAX_NAME);
+  const key = (n || DEFAULT_BOARD).toLowerCase().slice(0, MAX_NAME);
+  return RESERVED.has(key) ? '' : key;
 }
 
 /**
@@ -34,7 +41,6 @@ export default class TextLineService {
 
   constructor(
     private homey: Homey.App['homey'],
-    private log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
   ) {}
 
@@ -46,7 +52,7 @@ export default class TextLineService {
   /** A board's text, or an empty one for a board nothing has set. */
   get(board: unknown): TextLineEntry {
     const key = boardKey(board);
-    const line = this.boards()[key];
+    const line = key ? this.boards()[key] : undefined;
     if (line) return { key, ...line };
     const name = typeof board === 'string' && board.trim() ? board.trim().slice(0, MAX_NAME) : DEFAULT_BOARD;
     return { key, name, text: '', color: null, updatedAt: 0 };
@@ -60,10 +66,13 @@ export default class TextLineService {
     const next = color === 'default' ? null : (TILE_COLORS as readonly string[]).includes(color) ? color as TileColor : undefined;
     if (next === undefined) throw new Error(`Unknown colour: ${color}`);
     const key = boardKey(board);
+    if (!key) throw new Error(`Not a note name: ${String(board)}`);
     const name = typeof board === 'string' && board.trim() ? board.trim().slice(0, MAX_NAME) : DEFAULT_BOARD;
     const value = String(text ?? '').slice(0, MAX_TEXT);
     const boards = { ...this.boards() };
     const entry: TextLineEntry = { key, name, text: value, color: value ? next : null, updatedAt: Date.now() };
+    const prev = Object.prototype.hasOwnProperty.call(boards, key) ? boards[key] : null;
+    if (prev ? prev.text === value && prev.color === entry.color && prev.name === name : !value) return; // as it is
     if (value) {
       boards[key] = { name, text: value, color: entry.color, updatedAt: entry.updatedAt };
       // The oldest boards go first when there are too many.

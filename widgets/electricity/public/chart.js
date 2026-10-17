@@ -417,8 +417,8 @@
   const pointerX = (e, svg) => e.clientX - svg.getBoundingClientRect().left;
 
   window.WidgetkeeperChart = {
-    MIN, HOUR, L, X_LABEL_GAP, X_LABEL_H, LABEL_PAD, LABEL_MIN_GAP, TOUCH_HOLD_MS,
-    niceStep, el, clear, show, f1, smoothValues, monotonePath, roundedPath, linePath, stepPath, p985, p015,
+    MIN, HOUR, L, X_LABEL_GAP, X_LABEL_H, LABEL_PAD, LABEL_MIN_GAP,
+    niceStep, el, clear, show, f1, smoothValues, linePath, stepPath, p985, p015,
     compactNumber, ago, createKit, attachScrub, pointerX,
   };
 })();

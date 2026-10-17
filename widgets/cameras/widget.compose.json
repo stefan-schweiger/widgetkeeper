@@ -173,7 +173,6 @@
     "postOffer": { "method": "POST", "path": "/video/offer" },
     "postKeepAlive": { "method": "POST", "path": "/video/keepalive" },
     "postReport": { "method": "POST", "path": "/report" },
-    "getNames": { "method": "GET", "path": "/names" },
     "setName": { "method": "POST", "path": "/names" }
   }
 }

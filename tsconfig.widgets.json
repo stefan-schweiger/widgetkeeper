@@ -10,6 +10,6 @@
     "types": [],
     "skipLibCheck": true
   },
-  // Every widget.js and mount.js (each widget's public/ has only those two scripts), and the web dashboards page.
+  // Every widget's scripts (widget.js, mount.js, and the shared chart.js and presets.js), and the web dashboards page.
   "include": ["types/widgets.d.ts", "widgets/*/public/*.js", "settings/dashboard.js"]
 }

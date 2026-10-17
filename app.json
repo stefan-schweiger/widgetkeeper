@@ -2280,10 +2280,6 @@
           "method": "POST",
           "path": "/report"
         },
-        "getNames": {
-          "method": "GET",
-          "path": "/names"
-        },
         "setName": {
           "method": "POST",
           "path": "/names"
@@ -3918,10 +3914,6 @@
         "set": {
           "method": "POST",
           "path": "/set"
-        },
-        "getNames": {
-          "method": "GET",
-          "path": "/names"
         },
         "setName": {
           "method": "POST",
@@ -7854,10 +7846,6 @@
           "method": "POST",
           "path": "/mood"
         },
-        "getNames": {
-          "method": "GET",
-          "path": "/names"
-        },
         "setName": {
           "method": "POST",
           "path": "/names"
@@ -8028,10 +8016,6 @@
         "set": {
           "method": "POST",
           "path": "/set"
-        },
-        "getNames": {
-          "method": "GET",
-          "path": "/names"
         },
         "setName": {
           "method": "POST",
@@ -9048,10 +9032,6 @@
           "method": "POST",
           "path": "/trigger"
         },
-        "getNames": {
-          "method": "GET",
-          "path": "/names"
-        },
         "setName": {
           "method": "POST",
           "path": "/names"
@@ -9414,10 +9394,6 @@
           "method": "GET",
           "path": "/state"
         },
-        "getNames": {
-          "method": "GET",
-          "path": "/names"
-        },
         "setName": {
           "method": "POST",
           "path": "/names"
@@ -9558,10 +9534,6 @@
         "getState": {
           "method": "GET",
           "path": "/state"
-        },
-        "getNames": {
-          "method": "GET",
-          "path": "/names"
         },
         "setName": {
           "method": "POST",
@@ -10389,10 +10361,6 @@
         "getState": {
           "method": "GET",
           "path": "/state"
-        },
-        "getNames": {
-          "method": "GET",
-          "path": "/names"
         },
         "setName": {
           "method": "POST",
@@ -12939,10 +12907,6 @@
           "method": "GET",
           "path": "/state"
         },
-        "getNames": {
-          "method": "GET",
-          "path": "/names"
-        },
         "setName": {
           "method": "POST",
           "path": "/names"
@@ -13401,10 +13365,6 @@
         "set": {
           "method": "POST",
           "path": "/set"
-        },
-        "getNames": {
-          "method": "GET",
-          "path": "/names"
         },
         "setName": {
           "method": "POST",

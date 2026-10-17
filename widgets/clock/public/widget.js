@@ -4,22 +4,10 @@
  * Plain browser JS (served as-is).
  */
 (function () {
+  const { el } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const MINUTE = 60e3;
-
-  function el(tag, attrs, parent) {
-    const node = document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
-  }
 
   /** A whole degree, without a minus on zero. */
   function degrees(v) {

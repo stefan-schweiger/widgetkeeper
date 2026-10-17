@@ -153,7 +153,8 @@
     "webPasswordIsSet": "Ein Passwort ist festgelegt.",
     "webPasswordSaved": "Passwort gespeichert. Bereits angemeldete Browser müssen sich neu anmelden.",
     "webPasswordRemoved": "Passwort entfernt.",
-    "webPasswordTooShort": "Mindestens __min__ Zeichen verwenden."
+    "webPasswordTooShort": "Mindestens __min__ Zeichen verwenden.",
+    "webPasswordTooLong": "Höchstens __max__ Zeichen verwenden."
   },
   "heatmap": {
     "selectDevice": "Wähle ein Gerät und einen Wert in den Widget-Einstellungen.",
@@ -183,7 +184,8 @@
     "unavailable": "Nicht verfügbar",
     "on": "Ein",
     "off": "Aus",
-    "renameFailed": "Der Name konnte nicht gespeichert werden."
+    "renameFailed": "Der Name konnte nicht gespeichert werden.",
+    "none": "Keine"
   },
   "sparklines": {
     "selectSlots": "Wähle Gerätewerte in den Widget-Einstellungen.",
@@ -448,7 +450,6 @@
     "loadFailed": "Widgetkeeper auf deinem Homey ist nicht erreichbar.",
     "retry": "Erneut versuchen",
     "off": "Web-Dashboards sind ausgeschaltet. Schalte sie in den Einstellungen der Widgetkeeper-App in der Homey-App ein.",
-    "noDashboards": "Noch keine Dashboards.",
     "newDashboard": "Neues Dashboard",
     "untitled": "Dashboard",
     "widgetCount": "__count__ Widgets",

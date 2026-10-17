@@ -153,5 +153,5 @@
     return { setButtons, setState, setMessage, render, getState: () => state, presets: () => presets };
   }
 
-  window.WidgetkeeperPresets = { create: createPresets, el, OPTIMISTIC_MS };
+  window.WidgetkeeperPresets = { create: createPresets };
 })();

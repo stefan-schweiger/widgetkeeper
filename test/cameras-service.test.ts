@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeDevice, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
-import CameraService, { cameraImage, cameraVideo, cameraVideos, h265Videos } from '../lib/CameraService.js';
+import CameraService, { cameraImage, cameraVideos, h265Videos } from '../lib/CameraService.js';
 
 vi.mock('homey-api', () => homeyApiMock);
 
@@ -39,7 +39,19 @@ function stubFetch(type = 'image/jpeg') {
 beforeEach(() => { vi.useFakeTimers(); });
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
 
-describe('cameraImage / cameraVideo', () => {
+describe('state', () => {
+  it('keeps a camera whose read fails because Homey is busy, and drops a deleted one', async () => {
+    const { api, service } = setup();
+    const [first] = await service.getState(['kitchen']);
+    expect('missing' in first).toBe(false);
+    api.devices.getDevice.mockRejectedValueOnce(Object.assign(new Error('Too many requests.'), { statusCode: 429 }));
+    expect(await service.getState(['kitchen'])).toEqual([first]);
+    api.devices.getDevice.mockRejectedValueOnce(new Error('Not Found'));
+    expect(await service.getState(['kitchen'])).toEqual([{ id: 'kitchen', missing: true }]);
+  });
+});
+
+describe('cameraImage / cameraVideos', () => {
   it('picks the camera image, else any image', () => {
     expect(cameraImage({ images: [image('art', 'media'), image('snap')] })).toEqual({ id: 'snap', url: '/api/image/snap', lastUpdated: 1790672723645 });
     expect(cameraImage({ images: [image('art', 'media')] })?.id).toBe('art');
@@ -48,10 +60,10 @@ describe('cameraImage / cameraVideo', () => {
   });
 
   it('prefers the sub stream, then one that isn\'t H.265', () => {
-    expect(cameraVideo({ videos: [video('main', 'm'), video('sub', 's')] })).toBe('s');
-    expect(cameraVideo({ videos: [video('main', 'm', 'h265'), video('other', 'o')] })).toBe('o');
-    expect(cameraVideo({ videos: [video('main', 'm', 'h265')] })).toBe('m');
-    expect(cameraVideo({ videos: [] })).toBeNull();
+    expect(cameraVideos({ videos: [video('main', 'm'), video('sub', 's')] })[0]).toBe('s');
+    expect(cameraVideos({ videos: [video('main', 'm', 'h265'), video('other', 'o')] })[0]).toBe('o');
+    expect(cameraVideos({ videos: [video('main', 'm', 'h265')] })[0]).toBe('m');
+    expect(cameraVideos({ videos: [] })).toEqual([]);
   });
 
   it('lists every stream, best first, so live view can fall back', () => {

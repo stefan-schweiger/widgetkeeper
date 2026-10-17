@@ -18,8 +18,11 @@ export function getAppApi(homey: AppHomey): Promise<any> {
   return p;
 }
 
-/** A capability's `lastUpdated` (Homey sends an ISO string; checked 2026-10-08) in ms, or null. */
+/**
+ * A capability's `lastUpdated` in ms, or null: homey-api makes it a `Date` (`Device.transformGet`), Homey's own JSON
+ * has an ISO string (checked 2026-10-08).
+ */
 export function lastUpdatedMs(v: unknown): number | null {
-  const ms = typeof v === 'number' ? v : typeof v === 'string' ? Date.parse(v) : NaN;
+  const ms = v instanceof Date ? v.getTime() : typeof v === 'number' ? v : typeof v === 'string' ? Date.parse(v) : NaN;
   return Number.isFinite(ms) ? ms : null;
 }

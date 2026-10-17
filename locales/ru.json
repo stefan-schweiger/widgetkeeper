@@ -153,7 +153,8 @@
     "webPasswordIsSet": "Пароль задан.",
     "webPasswordSaved": "Пароль сохранён. Ранее вошедшие браузеры должны войти снова.",
     "webPasswordRemoved": "Пароль удалён.",
-    "webPasswordTooShort": "Не менее __min__ символов."
+    "webPasswordTooShort": "Не менее __min__ символов.",
+    "webPasswordTooLong": "Не более __max__ символов."
   },
   "heatmap": {
     "selectDevice": "Выберите устройство и значение в настройках виджета.",
@@ -183,7 +184,8 @@
     "unavailable": "Недоступно",
     "on": "Вкл.",
     "off": "Выкл.",
-    "renameFailed": "Не удалось сохранить название."
+    "renameFailed": "Не удалось сохранить название.",
+    "none": "Нет"
   },
   "sparklines": {
     "selectSlots": "Выберите значения в настройках виджета.",
@@ -448,7 +450,6 @@
     "loadFailed": "Не удалось связаться с Widgetkeeper на Homey.",
     "retry": "Повторить",
     "off": "Веб-панели выключены. Включите их в настройках приложения Widgetkeeper в приложении Homey.",
-    "noDashboards": "Панелей пока нет.",
     "newDashboard": "Новая панель",
     "untitled": "Панель",
     "widgetCount": "Виджетов: __count__",

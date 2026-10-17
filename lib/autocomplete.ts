@@ -1,6 +1,7 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import { describeCapability } from './capabilities.js';
+import { sharedCache } from './sharedCache.js';
 
 /** An item of a widget setting's or a Flow card argument's autocomplete. */
 export type AutocompleteItem = { name: string, description?: string, image?: string, id: string };
@@ -16,14 +17,25 @@ export function withNone(none: string, query: string, items: AutocompleteItem[])
   return matches(query, none) ? [{ name: none, id: 'none' }, ...items] : items;
 }
 
-/** Every device and the zones, for the lists below. A failed zone read only loses the descriptions. */
-async function devicesAndZones(homey: Homey.App['homey']): Promise<[any[], Record<string, any>]> {
-  const api = await getAppApi(homey);
-  const [devices, zones] = await Promise.all([
-    api.devices.getDevices(),
-    api.zones.getZones().catch(() => ({})),
-  ]);
-  return [Object.values(devices) as any[], zones as Record<string, any>];
+const deviceReads = new WeakMap<object, ReturnType<typeof sharedCache<[any[], Record<string, any>]>>>();
+
+/**
+ * Every device and the zones, for the lists below, the web editor's pickers and Media's speaker list: one read shared
+ * for 5 s, as an autocomplete asks on every keystroke. A failed zone read only loses the rooms.
+ */
+export function devicesAndZones(homey: Homey.App['homey']): Promise<[any[], Record<string, any>]> {
+  let cache = deviceReads.get(homey);
+  if (!cache) {
+    deviceReads.set(homey, cache = sharedCache(async () => {
+      const api = await getAppApi(homey);
+      const [devices, zones] = await Promise.all([
+        api.devices.getDevices(),
+        api.zones.getZones().catch(() => ({})),
+      ]);
+      return [Object.values(devices) as any[], zones as Record<string, any>];
+    }));
+  }
+  return cache.get(5e3);
 }
 
 /** The devices that pass `filter`, by name, described by their zone. */

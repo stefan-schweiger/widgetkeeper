@@ -4,6 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
+  const { TIGHT_UNITS, scaled, formatNumber } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const C = window.WidgetkeeperChart;
@@ -26,23 +27,6 @@
     noHistory: 'No history yet.',
   };
 
-  // scaled(), formatNumber() and formatValue() are copied from widgets/values/public/widget.js (as Sparklines'),
-  // trimmed to numbers: only those have charts. test/widget-html.test.ts checks the copies.
-  const TIGHT_UNITS = /^(°|%)/;
-
-  /** A `%` number as 0–100 (a 0–1 range, like Homey's `dim`, is scaled up), else the number itself. */
-  function scaled(cap, value) {
-    return cap.units === '%' && cap.max === 1 && (cap.min == null || cap.min === 0) ? value * 100 : value;
-  }
-
-  /** The number in the device locale, to the capability's decimals (at most 1 without them). */
-  function formatNumber(cap, value) {
-    const percent = scaled(cap, value) !== value;
-    const digits = percent ? 0 : cap.decimals != null ? Math.max(0, Math.min(cap.decimals, 4)) : null;
-    return scaled(cap, value).toLocaleString(undefined, digits != null
-      ? { minimumFractionDigits: 0, maximumFractionDigits: digits }
-      : { maximumFractionDigits: 1 });
-  }
 
   /**
    * Bars of `bucketMs` on the local clock over `[from, to]`: each the average of the points in it, or the last
@@ -53,18 +37,29 @@
    * @param {number | null} [current]
    */
   function chartBuckets(points, from, to, bucketMs, current = null) {
+    // Bars of whole hours start on the local clock's hours (00, 06, 12, 18), each counted from its day's midnight, so
+    // they stay there across a DST change (that day's bar is an hour longer or shorter). Shorter bars divide any
+    // hour: stepping by their length from the first stays on the clock.
+    const hours = bucketMs / HOUR;
+    const byClock = hours >= 1 && hours % 1 === 0;
     const offset = new Date(from).getTimezoneOffset() * MIN;
-    const align = t => Math.floor((t - offset) / bucketMs) * bucketMs + offset;
+    const hourStart = (t, add) => {
+      const d = new Date(t);
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() - d.getHours() % hours + add).getTime();
+    };
+    const align = t => (byClock ? hourStart(t, 0) : Math.floor((t - offset) / bucketMs) * bucketMs + offset);
+    const next = b => (byClock ? hourStart(b, hours) : b + bucketMs);
     const out = [];
     let j = 0, last = null;
     while (j < points.length && points[j][0] < from) last = points[j++][1];
-    for (let b = align(from); b < to; b += bucketMs) {
+    for (let b = align(from); b < to; b = next(b)) {
+      const e = next(b);
       let sum = 0, n = 0;
-      while (j < points.length && points[j][0] < b + bucketMs) {
+      while (j < points.length && points[j][0] < e) {
         if (points[j][0] <= to) { sum += points[j][1]; n++; }
         last = points[j++][1];
       }
-      const end = Math.min(b + bucketMs, to);
+      const end = Math.min(e, to);
       out.push({ t: Math.max(b, from), end, v: n ? sum / n : end === to && current != null ? current : last });
     }
     return out;
@@ -178,11 +173,16 @@
       return [s.name, s.capability.title].filter(Boolean).join(' · ');
     }
 
-    /** The axis labels: a number to the step's decimals, thousands as `1,5k` once the step is that coarse. */
+    /**
+     * The axis labels: a number to the step's decimals, thousands as `1,5k` once the step is that coarse, with the
+     * decimals the value needs (a 250 step's 1250 is `1,25k`, not `1,3k`).
+     */
     function axisLabel(v, step) {
       if (Math.abs(v) < step / 1e6) v = 0;
-      if (step >= 100 && Math.abs(v) >= 1000) return C.compactNumber(nf, v);
-      return (v < 0 ? '−' : '') + nf(Math.abs(v), stepDecimals(step));
+      const sign = v < 0 ? '−' : '';
+      const k = Math.abs(v) / 1000;
+      if (step >= 100 && k >= 1) return sign + nf(k, stepDecimals(k)) + 'k';
+      return sign + nf(Math.abs(v), stepDecimals(step));
     }
 
     // ------------------------------------------------------------------ render
@@ -511,7 +511,8 @@
     const scrolling = () => state.entries.length && !state.message && !offScreen && !document.hidden;
     const scrollTimer = setInterval(() => { if (scrolling()) render(); },
       Math.max(1000, Math.min(60e3, shortest / 300)));
-    document.addEventListener('visibilitychange', () => { if (scrolling()) render(); });
+    const onVisibility = () => { if (scrolling()) render(); };
+    document.addEventListener('visibilitychange', onVisibility);
 
     // ------------------------------------------------------------------ public API
 
@@ -544,7 +545,7 @@
           }
           changed = true;
         });
-        if (changed) render();
+        if (changed && !document.hidden && !offScreen) render(); // else drawn when it's back
       },
       /** A message in place of the charts, or with `transient` under them for 8 s (a failed refresh). */
       setMessage(text, transient) {
@@ -563,7 +564,7 @@
       t,
       /** The Smart Stack: whether this page is the one on screen (the lines only scroll while it is). */
       setVisible(visible) { offScreen = !visible; if (scrolling()) render(); },
-      destroy() { clearInterval(scrollTimer); },
+      destroy() { clearInterval(scrollTimer); document.removeEventListener('visibilitychange', onVisibility); },
     };
   }
 

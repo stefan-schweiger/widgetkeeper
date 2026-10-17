@@ -1,6 +1,6 @@
 // Renders the Flow Buttons icon previews for the settings' autocomplete into lib/flowIconImages.ts: PNG data URLs,
 // since the phone apps draw an item's `image` as a bitmap and showed nothing for an SVG (iOS, 2026-10-08).
-// Run it after changing `ICONS` in widgets/flows/public/widget.js: `npm run flow-icons`.
+// Run it after changing `ICONS` in widgets/spacer/public/kit.js: `npm run flow-icons`.
 import { readFileSync, writeFileSync } from 'node:fs';
 import vm from 'node:vm';
 import sharp from 'sharp';
@@ -8,8 +8,9 @@ import sharp from 'sharp';
 const SIZE = 96; // 3x a 32 px row image
 
 const win = {};
-vm.runInNewContext(readFileSync('widgets/flows/public/widget.js', 'utf8'), { window: win });
-const icons = win.FLOW_BUTTON_ICON_PATHS;
+const context = vm.createContext({ window: win });
+vm.runInContext(readFileSync('widgets/spacer/public/kit.js', 'utf8'), context);
+const icons = win.WidgetkeeperKit.icons;
 
 const lines = [];
 for (const [id, icon] of Object.entries(icons)) {

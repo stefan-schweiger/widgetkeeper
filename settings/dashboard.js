@@ -28,7 +28,6 @@
     loadFailed: 'Could not reach Widgetkeeper on your Homey.',
     retry: 'Try again',
     off: 'Web dashboards are turned off. Turn them on in the Widgetkeeper app settings in the Homey app.',
-    noDashboards: 'No dashboards yet.',
     newDashboard: 'New dashboard',
     untitled: 'Dashboard',
     widgetCount: '__count__ widgets',
@@ -311,13 +310,22 @@
     let retryMs = 2000;
     let lostAt = null;
     let activeSocket = null;
+    let retryTimer = null;
+
+    /** Closes a socket with its connection: closing the root socket alone left the `/api` namespace's open. */
+    function closeSocket(socket) {
+      try { socket.io.close(); } catch (e) { /* closed */ }
+      try { socket.close(); } catch (e) { /* closed */ }
+    }
 
     /** Closes the socket and stops its retries (a rejected key). */
     function stopSocket() {
       socketGen++;
       socketStarted = false;
       retryMs = 2000;
-      if (activeSocket) { try { activeSocket.close(); } catch (e) { /* closed */ } }
+      if (retryTimer) clearTimeout(retryTimer);
+      retryTimer = null;
+      if (activeSocket) closeSocket(activeSocket);
       activeSocket = null;
     }
 
@@ -354,10 +362,10 @@
         if (failed || gen !== socketGen) return;
         failed = true;
         console.warn('Realtime:', why && why.message ? why.message : why);
-        try { socket.close(); } catch (e) { /* closed */ }
+        closeSocket(socket);
         setLive(false);
         if (lostAt == null) lostAt = Date.now();
-        setTimeout(connectSocket, retryMs);
+        retryTimer = setTimeout(() => { retryTimer = null; connectSocket(); }, retryMs);
         retryMs = Math.min(retryMs * 2, 60e3);
       };
       try {
@@ -377,7 +385,7 @@
         socket.on('disconnect', () => fail('disconnected'));
         ns.on('disconnect', () => fail('namespace disconnected'));
         if (failed) return;
-        if (gen !== socketGen) { socket.close(); return; } // stopped meanwhile
+        if (gen !== socketGen) { closeSocket(socket); return; } // stopped meanwhile
         retryMs = 2000;
         setLive(true);
         if (lostAt != null && Date.now() - lostAt > STALE_AFTER_MS) reloadFrames();
@@ -459,7 +467,11 @@
           // The page's key goes along: a route that acts with the app's stored key checks that this key may too.
           const gen = frame.gen;
           request('POST', '/web/call', { type: w.type, method: String(data.method || 'GET').toUpperCase(), path, query, body: data.body == null ? {} : data.body, key })
-            .then(result => { if (frame.gen === gen) reply(frame, id, null, result); }, err => { if (frame.gen === gen) reply(frame, id, err); });
+            .then(result => { if (frame.gen === gen) reply(frame, id, null, result); }, (err) => {
+              if (frame.gen === gen) reply(frame, id, err);
+              // A rejected key, or the dashboards turned off, is the page's to handle, as for its own requests.
+              if (err && (err.unauthorized || /turned off/.test(String(err.message)))) failed(err);
+            });
           break;
         }
         case 'registerRealtimeListener': {
@@ -616,6 +628,7 @@
         error.textContent = '';
         try {
           const res = await request('POST', '/web/login', { password: input.value });
+          if (res && res.reason === 'notSet') { start(); return; } // the password was removed meanwhile: none needed
           if (!res || !res.ok) {
             go.disabled = false;
             error.textContent = res && res.reason === 'locked'
@@ -882,14 +895,15 @@
       name.value = d.name;
       name.placeholder = t('untitled');
       name.setAttribute('aria-label', t('name'));
-      name.addEventListener('change', () => { d.name = name.value.trim(); setTitle(d); persist(); });
+      // current.dashboard, not d, when it changes: a save the app corrected swaps it for the app's copy.
+      name.addEventListener('change', () => { const dash = current.dashboard; dash.name = name.value.trim(); setTitle(dash); persist(); });
 
       const cols = el('span', 'wd-stepper');
       const count = el('span', 'wd-count', String(d.columns.length));
       cols.append(
-        button('wd-btn small', '−', () => setColumns(d.columns.length - 1), t('columns')),
+        button('wd-btn small', '−', () => setColumns(current.dashboard.columns.length - 1), t('columns')),
         count,
-        button('wd-btn small', '+', () => setColumns(d.columns.length + 1), t('columns')),
+        button('wd-btn small', '+', () => setColumns(current.dashboard.columns.length + 1), t('columns')),
       );
       cols.title = t('columns');
 
@@ -902,8 +916,8 @@
       }
       theme.value = d.theme;
       theme.addEventListener('change', () => {
-        d.theme = theme.value;
-        applyTheme(d.theme);
+        current.dashboard.theme = theme.value;
+        applyTheme(theme.value);
         persist();
         syncGrid();
       });
@@ -976,9 +990,10 @@
         } else if (!column.length) {
           nodes.push(el('div', 'wd-empty'));
         }
-        // Only what's out of place moves.
+        // Only what's out of place moves: what left the column goes first, so the widgets after it stay put (a moved
+        // frame reloads).
+        for (const child of [...col.children]) if (!nodes.includes(child)) child.remove();
         nodes.forEach((node, i) => { if (col.children[i] !== node) col.insertBefore(node, col.children[i] || null); });
-        while (col.children.length > nodes.length) col.lastChild.remove();
       });
       for (const [id, entry] of widgets) {
         if (seen.has(id)) continue;
@@ -1227,7 +1242,7 @@
     function failed(err, message) {
       console.error(err);
       if (err && err.handled) return; // the password screen is up
-      if (err && err.unauthorized) { forgetKey(); renderKey(t('keyRejected')); return; }
+      if (err && err.unauthorized) { if (key) { forgetKey(); renderKey(t('keyRejected')); } return; } // once for several frames
       if (err && /turned off/.test(String(err.message))) { start(); return; } // turned off meanwhile
       toast(message || t('loadFailed'));
     }
@@ -1607,23 +1622,9 @@
     }
 
     /** A value as it reads now, for the picker: `21.5 °C`, `42%`, `On`, an enum's title, or `–`. */
+    /** A value as its tile shows it (the kit's `formatValue()`, which the page loads first). */
     function formatReading(cap) {
-      const v = cap.value;
-      if (v == null || v === '') return '–';
-      if (typeof v === 'boolean') return t(v ? 'valueOn' : 'valueOff');
-      if (typeof v === 'number') {
-        // Homey's `dim` and others are `%` from 0 to 1.
-        const n = cap.units === '%' && cap.max === 1 && (cap.min == null || cap.min === 0) ? v * 100 : v;
-        const digits = typeof cap.decimals === 'number' && cap.units !== '%' ? Math.min(cap.decimals, 2) : 1;
-        const text = new Intl.NumberFormat(undefined, { maximumFractionDigits: digits }).format(n);
-        if (!cap.units) return text;
-        return /^(°|%)/.test(cap.units) ? `${text}${cap.units}` : `${text} ${cap.units}`;
-      }
-      if (cap.values) {
-        const e = cap.values.find(x => x.id === String(v));
-        if (e) return e.title;
-      }
-      return String(v);
+      return window.WidgetkeeperKit.formatValue(cap, cap.value, key => t(key === 'on' ? 'valueOn' : 'valueOff'));
     }
 
     /** What a slot keeps (as its autocomplete's item, `listCapabilitySlots()`): the widgets read the id. */
@@ -1716,7 +1717,7 @@
         if (!groups.has(key)) groups.set(key, { key, label: dev.zone ? dev.zone.name : t('noRoom'), path: dev.zone ? dev.zone.path : [], devices: [] });
         groups.get(key).devices.push(dev);
       }
-      const sortKey = (g) => (g.key ? [...g.path, g.label].join('\u0000').toLowerCase() : '￿');
+      const sortKey = (g) => (g.key ? [...g.path, g.label].join('\u0000').toLowerCase() : '\uffff');
       const ordered = [...groups.values()].sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
       let room = 'all';
       // The device whose values show, or null for the rooms; opens at the current choice's device.
@@ -1850,7 +1851,8 @@
       const load = async () => {
         const mine = ++seq;
         try {
-          const items = await request('POST', '/web/autocomplete', { type: def.type, setting: s.id, query: search.value, settings: draft.settings });
+          // The page's key goes along: the Smart Stack's dashboards are read with the app's stored key.
+          const items = await request('POST', '/web/autocomplete', { type: def.type, setting: s.id, query: search.value, settings: draft.settings, key });
           if (mine !== seq) return;
           list.textContent = '';
           if (!items || !items.length) list.append(el('p', 'wd-hint', t('nothingFound')));

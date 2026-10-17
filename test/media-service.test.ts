@@ -235,6 +235,15 @@ describe('buttons', () => {
     expect(key.flow.runFlowCardAction).not.toHaveBeenCalled();
   });
 
+  it('runs only a speaker\'s own cards: the device named must be a speaker', async () => {
+    const { service, homey } = setup();
+    const key = keyApi();
+    keyApis.set('k', key);
+    homey.settings.set(API_KEY_SETTING, 'k');
+    await expect(service.runButton('lamp', 'card:homey:device:lamp:on')).rejects.toThrow(/not a speaker/);
+    expect(key.flow.runFlowCardAction).not.toHaveBeenCalled();
+  });
+
   it('says an app card needs a key', async () => {
     const { service } = setup();
     await expect(service.runButton('tv', 'card:homey:app:nl.xiut.sonoslocal:scan_library')).rejects.toMatchObject({ reason: 'noKey' });

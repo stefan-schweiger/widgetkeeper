@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
-import FlowService, { FLOW_ICON_PATHS, FLOW_ICONS, parseFlowId } from '../lib/FlowService.js';
+import FlowService, { FLOW_ICONS, parseFlowId } from '../lib/FlowService.js';
 import { FLOW_ICON_IMAGES } from '../lib/flowIconImages.js';
+import { FLOW_ICON_PATHS } from './helpers/flowIcons.js';
 import { API_KEY_SETTING } from '../lib/PersonalApiKey.js';
 
 vi.mock('homey-api', () => homeyApiMock);
@@ -93,7 +94,7 @@ describe('listFlows', () => {
   });
 
   it('has a preview of every icon, rendered from its current path (else run `npm run flow-icons`)', () => {
-    expect(Object.keys(FLOW_ICON_IMAGES).sort()).toEqual([...FLOW_ICONS].sort());
+    expect(Object.keys(FLOW_ICON_IMAGES)).toEqual(Object.keys(FLOW_ICON_PATHS));
     for (const id of FLOW_ICONS) expect(FLOW_ICON_IMAGES[id].d, id).toBe(FLOW_ICON_PATHS[id].d);
   });
 });

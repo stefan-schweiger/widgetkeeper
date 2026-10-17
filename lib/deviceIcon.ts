@@ -34,8 +34,7 @@ export async function fetchSvgIcon(
   label: string,
   log: (...args: any[]) => void,
 ): Promise<string | null> {
-  const obj = iconObj || {};
-  const path = obj.url || (obj.id ? `/api/icon/${obj.id}` : null);
+  const path = driverIconPath(iconObj);
   if (!path) return null;
   try {
     return await cachedSvg(await homeyUrl(api, path));
@@ -51,15 +50,27 @@ export async function fetchSvgIcon(
  * (that's where its own bundle loads it from); otherwise it's the driver's icon.
  */
 export async function fetchDeviceIcon(api: any, device: any, log: (...args: any[]) => void): Promise<string | null> {
-  const override = device?.iconOverride;
-  if (typeof override === 'string' && /^[\w-]+$/.test(override)) {
+  const library = libraryIconUrl(device);
+  if (library) {
     try {
-      return await cachedSvg(`https://my.homey.app/img/devices/${override}.svg`);
+      return await cachedSvg(library);
     } catch (err) {
-      if (!isRepeat(err)) log(`Could not load icon ${override} for ${device.name}, using the driver's`, err);
+      if (!isRepeat(err)) log(`Could not load icon ${device.iconOverride} for ${device.name}, using the driver's`, err);
     }
   }
   return fetchSvgIcon(api, device?.iconObj, device?.name, log);
+}
+
+/** A user-picked icon's URL in Homey's icon library (`iconOverride`, e.g. `lock`), or null. */
+export function libraryIconUrl(device: any): string | null {
+  const override = device?.iconOverride;
+  return typeof override === 'string' && /^[\w-]+$/.test(override) ? `https://my.homey.app/img/devices/${override}.svg` : null;
+}
+
+/** A driver's or capability's icon (`iconObj`): its path on the Homey (or a full URL), or null. */
+export function driverIconPath(iconObj: { id?: string, url?: string } | null | undefined): string | null {
+  const obj = iconObj || {};
+  return obj.url || (obj.id ? `/api/icon/${obj.id}` : null);
 }
 
 /** An icon fetch that takes longer gives up (my.homey.app unreachable, slow DNS): every device widget waits for it. */

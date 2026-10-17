@@ -1,6 +1,5 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { FLOW_ICON_PATHS } from '../lib/FlowService.js';
 import { boardKey } from '../lib/TextLineService.js';
 import { loadWidget } from './helpers/loadWidget.js';
 
@@ -76,7 +75,7 @@ describe('tile', () => {
   it("sets alignment, size, the icon and the setting's colour, a Flow's winning", () => {
     const { root, box, w } = widget({ align: 'center', size: 'large', icon: 'bell', color: 'blue' });
     expect(root.dataset).toMatchObject({ style: 'tile', align: 'center', size: 'large' });
-    expect(root.querySelector('.tl-icon path')!.getAttribute('d')).toBe(win.TEXTLINE_ICON_PATHS.bell.d);
+    expect(root.querySelector('.tl-icon path')!.getAttribute('d')).toBe(win.WidgetkeeperKit.icons.bell.d);
     expect(box().dataset.color).toBe('blue');
     w.setState({ board: board('Dryer done', 'red') });
     expect(box().dataset.color).toBe('red');
@@ -96,9 +95,6 @@ describe('tile', () => {
     expect(root.querySelector('.tl-wrap')!.classList.contains('scrolling')).toBe(false);
   });
 
-  it("copies Flow Buttons' icons", () => {
-    expect(win.TEXTLINE_ICON_PATHS).toEqual(FLOW_ICON_PATHS);
-  });
 });
 
 describe('Post-it', () => {
@@ -124,5 +120,5 @@ describe('Post-it', () => {
 });
 
 it("finds a board by the service's key", () => {
-  for (const name of ['Kitchen', ' kitchen ', '', 'Note', 'ÆBLE']) expect(win.textLineBoardKey(name)).toBe(boardKey(name));
+  for (const name of ['Kitchen', ' kitchen ', '', 'Note', 'ÆBLE', '__proto__', 'Constructor']) expect(win.textLineBoardKey(name)).toBe(boardKey(name));
 });

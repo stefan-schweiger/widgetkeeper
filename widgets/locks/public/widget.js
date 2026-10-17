@@ -6,10 +6,10 @@
  * Plain browser JS (served as-is).
  */
 (function () {
+  const { el, tileNames, formatSince } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
-  const DAY = 864e5;
   const BUSY_MS = 15e3; // how long a lock may take to report its new state before the button gives up
 
   const DEFAULT_STRINGS = {
@@ -51,19 +51,6 @@
     open: 'M6.5 11h11a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 18.5v-6A1.5 1.5 0 0 1 6.5 11zM8 11V7.5a4 4 0 0 1 7.8-1.25',
   };
   const CHEVRON = 'M6 9l6 6 6-6';
-
-  function el(tag, attrs, parent) {
-    const node = document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
-  }
 
   function svgPath(cls, d) {
     const svg = document.createElementNS(SVG_NS, 'svg');
@@ -118,19 +105,6 @@
     });
   }
 
-  /** As Activity Dots: the time today, the weekday and time within 6 days, else the date. */
-  function formatSince(ms, now, language, locale) {
-    const at = new Date(ms);
-    const time = at.toLocaleTimeString(locale || [], { hour: 'numeric', minute: '2-digit' });
-    const midnight = new Date(now);
-    midnight.setHours(0, 0, 0, 0);
-    if (ms >= midnight.getTime()) return time;
-    let lang = language || undefined;
-    try { new Intl.DateTimeFormat(lang); } catch (err) { lang = undefined; }
-    if (ms >= midnight.getTime() - 6 * DAY) return `${at.toLocaleDateString(lang, { weekday: 'short' })} ${time}`;
-    return at.toLocaleDateString(lang, { day: 'numeric', month: 'short' });
-  }
-
   /** The device's capabilities in a fixed order: `[[id, {value, setable, lastUpdated}]]`. */
   const capsOf = d => CAP_ORDER.filter(id => d.caps && d.caps[id]).map(id => [id, d.caps[id]]);
   const isSecure = (id, v) => v === SECURE[id];
@@ -145,71 +119,6 @@
     const caps = capsOf(d);
     if (caps.some(([id, c]) => isInsecure(id, c.value))) return 'insecure';
     return caps.length && caps.every(([id, c]) => isSecure(id, c.value)) ? 'secure' : 'unknown';
-  }
-
-  /**
-   * The names typed on the tiles (`renameTiles`; the app keeps them per widget instance, by tile key): `name(key, own)`
-   * is the typed name, else `own`. In rename mode `field(key, own)` is the tile's text field (made once per key, with
-   * `own` as the placeholder): it saves on change (Enter or leaving it), Escape puts it back, and a realtime update
-   * doesn't overwrite it while it has the focus. Its touches, clicks and keys never reach the tile's own taps.
-   * `failed(key)` shakes the tile and says so; the name goes back, unless the app's names came meanwhile.
-   */
-  function tileNames(opts, render, failed) {
-    let names = {};
-    let reads = 0; // set() calls: the app's names, by realtime or a read
-    const fields = new Map();
-    async function save(key, value) {
-      const before = names[key];
-      if ((before || '') === value) return;
-      const put = v => { names = { ...names }; if (v) names[key] = v; else delete names[key]; };
-      put(value);
-      const seen = reads;
-      render();
-      try {
-        if (opts.onRename) await opts.onRename(key, value);
-      } catch (err) {
-        console.error(err);
-        // Only while it still shows this save's name and nothing came from the app since: what came says what the
-        // app kept (a newer name, or this one when only the answer was lost).
-        if (reads === seen && (names[key] || '') === value) put(before);
-        failed(key);
-      }
-    }
-    return {
-      renaming: opts.renameTiles === true,
-      name: (key, own) => names[key] || own,
-      set(map) {
-        reads++;
-        names = {};
-        if (map && typeof map === 'object') for (const [k, v] of Object.entries(map)) if (typeof v === 'string' && v) names[k] = v;
-        render();
-      },
-      field(key, own) {
-        let input = fields.get(key);
-        if (!input) {
-          input = document.createElement('input');
-          input.type = 'text';
-          input.className = 'wk-rename';
-          input.dir = 'auto';
-          input.maxLength = 60;
-          input.autocomplete = 'off';
-          input.setAttribute('enterkeyhint', 'done');
-          const field = input;
-          for (const type of ['touchstart', 'touchend', 'pointerdown', 'click']) field.addEventListener(type, e => e.stopPropagation(), { passive: true });
-          field.addEventListener('keydown', (e) => {
-            e.stopPropagation();
-            if (e.key === 'Enter') field.blur();
-            else if (e.key === 'Escape') { field.value = names[key] || ''; field.blur(); }
-          });
-          field.addEventListener('change', () => { field.value = field.value.trim(); save(key, field.value); });
-          fields.set(key, input);
-        }
-        input.placeholder = own || '';
-        input.setAttribute('aria-label', own || '');
-        if (document.activeElement !== input) input.value = names[key] || '';
-        return input;
-      },
-    };
   }
 
   /**
@@ -240,7 +149,7 @@
     let expanded = alwaysOpen;
     let messageText = null;
     let messageTimer = null;
-    const busy = new Map(); // deviceId → timeout, while a lock or close is on its way
+    const busy = new Map(); // deviceId → {capabilityId, value, timer}, while a lock or close is on its way
 
     root.classList.add('lk');
     root.classList.toggle('renaming', names.renaming);
@@ -288,7 +197,8 @@
       if (!c) return;
       c.value = value;
       c.lastUpdated = typeof at === 'number' ? at : Date.now();
-      clearBusy(deviceId);
+      const b = busy.get(deviceId);
+      if (b && b.capabilityId === capabilityId && b.value === value) clearBusy(deviceId);
       render();
     }
 
@@ -303,8 +213,8 @@
     }
 
     function clearBusy(id) {
-      const timer = busy.get(id);
-      if (timer) clearTimeout(timer);
+      const b = busy.get(id);
+      if (b) clearTimeout(b.timer);
       busy.delete(id);
     }
 
@@ -331,7 +241,7 @@
     async function send(d, action) {
       if (busy.has(d.id) || names.renaming) return;
       if (opts.onHaptic) opts.onHaptic();
-      busy.set(d.id, setTimeout(() => { busy.delete(d.id); render(); }, BUSY_MS));
+      busy.set(d.id, { capabilityId: action.capabilityId, value: action.value, timer: setTimeout(() => { busy.delete(d.id); render(); }, BUSY_MS) });
       render();
       try {
         if (opts.onSet) await opts.onSet(d.id, action.capabilityId, action.value);
@@ -421,10 +331,7 @@
       return r;
     }
 
-    function setMask(node, url) {
-      const v = url ? `url("${url}")` : '';
-      if (node.style.getPropertyValue('--lk-mask') !== v) node.style.setProperty('--lk-mask', v);
-    }
+    const setMask = (node, url) => window.WidgetkeeperKit.setMask(node, url, '--lk-mask');
 
     let lastHeight = 0;
     function render() {
@@ -443,9 +350,13 @@
         if (!ids.has(id)) { r.row.remove(); rows.delete(id); clearBusy(id); }
       }
       let securable = 0;
+      let placed = null;
       for (const d of devices) {
         const r = rowFor(d);
-        list.appendChild(r.row); // keeps the settings' order
+        // Keeps the order, moving only what is out of place: a moved node loses the focus of a field in it.
+        const want = placed ? placed.nextSibling : list.firstChild;
+        if (r.row !== want) list.insertBefore(r.row, want);
+        placed = r.row;
         const level = lockLevel(d);
         r.row.dataset.level = level;
         r.name.textContent = 'missing' in d ? t('unavailable') : nameOf(d);

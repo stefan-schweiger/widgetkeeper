@@ -1,6 +1,6 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
-import { readFresh } from './DeviceTracker.js';
+import { isTransientError, readFresh } from './DeviceTracker.js';
 import { deviceImage, fetchDeviceIcon, fetchImageBase64, type DeviceImage } from './deviceIcon.js';
 import Timings from './Timings.js';
 
@@ -53,11 +53,6 @@ export function cameraVideos(device: any): string[] {
     .map(x => String(x.v.videoObj.id));
 }
 
-/** The best video for live view (see `cameraVideos`). */
-export function cameraVideo(device: any): string | null {
-  return cameraVideos(device)[0] ?? null;
-}
-
 /** The videos whose title says H.265. */
 export function h265Videos(device: any): string[] {
   return (Array.isArray(device?.videos) ? device.videos : [])
@@ -74,6 +69,8 @@ export function h265Videos(device: any): string[] {
 export default class CameraService {
 
   private images = new Map<string, { at: number, promise: Promise<Snapshot> }>();
+  /** Each camera's last entry, for a read that fails only because Homey is busy. */
+  private last = new Map<string, CameraDevice>();
   /** deviceId → image URL from the last state read, so a snapshot doesn't need a device read. */
   private imageUrls = new Map<string, string>();
 
@@ -85,6 +82,7 @@ export default class CameraService {
 
   async stop() {
     this.images.clear();
+    this.last.clear();
   }
 
   /** One entry per device, in the order asked for. A deleted device doesn't fail the others. */
@@ -98,7 +96,7 @@ export default class CameraService {
         const videos = cameraVideos(device);
         if (image) this.imageUrls.set(id, image.url);
         else this.imageUrls.delete(id);
-        return {
+        const entry: CameraDevice = {
           id,
           name: device.name,
           icon: await tm.time('icons', () => fetchDeviceIcon(api, device, this.log)),
@@ -107,8 +105,14 @@ export default class CameraService {
           videos,
           h265: h265Videos(device),
         };
+        this.last.set(id, entry);
+        return entry;
       } catch (err) {
         this.log(`Camera ${id} unavailable:`, err);
+        // Homey busy isn't a deleted camera: its last entry, so a live view goes on (as DeviceTracker keeps its entries).
+        const last = this.last.get(id);
+        if (last && isTransientError(err)) return last;
+        this.last.delete(id);
         return { id, missing: true };
       }
     }));

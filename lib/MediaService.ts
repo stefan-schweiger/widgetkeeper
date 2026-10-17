@@ -1,8 +1,8 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
-import { listDevicesWhere, matches, withNone, type AutocompleteItem } from './autocomplete.js';
+import { devicesAndZones, listDevicesWhere, matches, withNone, type AutocompleteItem } from './autocomplete.js';
 import { capabilityValues, presentCaps } from './capabilities.js';
-import DeviceTracker, { type TrackedEntry } from './DeviceTracker.js';
+import DeviceTracker, { isTransientError, type TrackedEntry } from './DeviceTracker.js';
 import { deviceImage, fetchDeviceIcon, fetchImageBase64 } from './deviceIcon.js';
 import type FlowService from './FlowService.js';
 import PersonalApiKey from './PersonalApiKey.js';
@@ -245,6 +245,8 @@ export default class MediaService {
       return state;
     } catch (err) {
       this.log(`Speaker ${deviceId} unavailable:`, err);
+      // Homey busy isn't a deleted speaker (a missing one makes a screen forget the speaker it switched to).
+      if (isTransientError(err)) throw err;
       return { id: deviceId, missing: true };
     } finally {
       this.debug(`Media state for ${deviceId}: ${tm.summary()}`);
@@ -254,11 +256,8 @@ export default class MediaService {
   /** Every speaker, for the widget's switcher: its icon, zone and what it plays, sorted by name. */
   async listSpeakers(): Promise<SpeakerItem[]> {
     const api = await getAppApi(this.homey);
-    const [devices, zones] = await Promise.all([
-      api.devices.getDevices(),
-      api.zones.getZones().catch(() => ({})),
-    ]);
-    const speakers = (Object.values(devices) as any[]).filter(isSpeaker);
+    const [devices, zones] = await devicesAndZones(this.homey);
+    const speakers = devices.filter(isSpeaker);
     const items = await Promise.all(speakers.map(async (d): Promise<SpeakerItem> => {
       const caps: Record<string, { value: unknown }> = {};
       for (const id of SUMMARY_CAPS) {
@@ -318,6 +317,9 @@ export default class MediaService {
       card = await this.speakerAppCard(cardId);
       if (!card) throw new Error(`${cardId} is not an action of a speaker app`);
     } else {
+      // Only a speaker's own card: the request names the device, and its card runs with the stored key.
+      const api = await getAppApi(this.homey);
+      if (!isSpeaker(await api.devices.getDevice({ id: deviceId }))) throw new Error(`${deviceId} is not a speaker`);
       const suffix = cardSuffix(cardId);
       card = (await this.deviceCards(deviceId)).find(c => cardSuffix(c.id) === suffix);
       if (!card) throw new Error(`${cardId} is not an action of speaker ${deviceId}`);

@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { FLOW_ICON_PATHS } from '../lib/FlowService.js';
+import { FLOW_ICON_PATHS } from './helpers/flowIcons.js';
 import { loadMount, loadWidget } from './helpers/loadWidget.js';
 
 let win: any;
@@ -140,9 +140,6 @@ describe('Variable Presets: header', () => {
     expect(compact.root.classList.contains('vp')).toBe(true);
   });
 
-  it("has Flow Buttons' icons (the setting lists those)", () => {
-    expect(win.VARPRESETS_ICON_PATHS).toEqual(FLOW_ICON_PATHS);
-  });
 });
 
 describe('Variable Presets: setting the variable', () => {

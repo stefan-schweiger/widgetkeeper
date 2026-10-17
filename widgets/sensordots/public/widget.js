@@ -5,6 +5,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
+  const { el, formatSince, baseTitle } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -28,20 +29,6 @@
   const colorOf = (id, fallback) => (COLORS.includes(id) ? id : fallback);
 
   const TAP_SLOP = 10; // px a touch may move and still count as a tap
-  const DAY = 864e5;
-
-  function el(tag, attrs, parent) {
-    const node = document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
-  }
 
   /**
    * Taps from the touch events, as in Device Quick Actions: a touch that ends within TAP_SLOP of where it
@@ -81,28 +68,7 @@
     });
   }
 
-  /** An alarm's title without a trailing unit "(…)" (as in Sensor Alarms). */
-  function baseTitle(title) {
-    return String(title).replace(/\s*\([^)]*\)\s*$/, '') || String(title);
-  }
-
   const baseId = a => String(a.capabilityId).split('.')[0];
-
-  /**
-   * When a sensor changed, for "since …": the time today, the weekday and time within the last 6 days, else
-   * the date. Times follow the device locale (or `locale`), weekday and month names Homey's language.
-   */
-  function formatSince(ms, now, language, locale) {
-    const at = new Date(ms);
-    const time = at.toLocaleTimeString(locale || [], { hour: 'numeric', minute: '2-digit' });
-    const midnight = new Date(now);
-    midnight.setHours(0, 0, 0, 0);
-    if (ms >= midnight.getTime()) return time;
-    let lang = language || undefined;
-    try { new Intl.DateTimeFormat(lang); } catch (err) { lang = undefined; }
-    if (ms >= midnight.getTime() - 6 * DAY) return `${at.toLocaleDateString(lang, { weekday: 'short' })} ${time}`;
-    return at.toLocaleDateString(lang, { day: 'numeric', month: 'short' });
-  }
 
   /**
    * @param {HTMLElement} root
@@ -134,7 +100,7 @@
     // The overlay, over the row of the dot it's open for. In the grid (absolutely positioned, as Light
     // Controls' swatch panel) so it can cover the row; the dots are kept before it.
     const panel = el('div', { class: 'sd-panel', role: 'button', tabindex: '0' }, grid);
-    const panelDot = el('span', { class: 'sd-panel-dot' }, panel);
+    el('span', { class: 'sd-panel-dot' }, panel);
     const panelText = el('div', { class: 'sd-panel-text' }, panel);
     const panelName = el('span', { class: 'sd-panel-name', dir: 'auto' }, panelText);
     const panelState = el('span', { class: 'sd-panel-state', dir: 'auto' }, panelText);

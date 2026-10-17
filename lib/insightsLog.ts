@@ -1,3 +1,4 @@
+import { isTransientError } from './DeviceTracker.js';
 /**
  * Insights log ids differ from capability ids in one known case: Homey logs `measure_power` as
  * `energy_power` (on every device with it on the test Homey, 2026-10-09: the meter, plugs, a heat pump,
@@ -38,7 +39,8 @@ export function logIdsFor(deviceId: string, capabilityId: string): string[] {
  * `read` with the first of the candidate log ids that works (a missing log throws, so they're tried in turn). The one
  * that worked is remembered in `known` under `key`, so later reads make one call. A remembered id that fails is
  * forgotten, so the next read tries every candidate again, unless `keep` (then it stays the only one tried). Throws
- * the last error when none works.
+ * the last error when none works, and a passing one (Homey busy, `isTransientError()`) at once: the other ids would
+ * fail the same way, and an alias's "not found" would hide that a retry soon may work.
  */
 export async function readFirstLog<T>(
   key: string, candidates: string[], known: Map<string, string>, read: (logId: string) => Promise<T>, { keep = false } = {},
@@ -51,6 +53,7 @@ export async function readFirstLog<T>(
       known.set(key, logId);
       return { logId, result };
     } catch (err) {
+      if (isTransientError(err)) throw err;
       error = err;
     }
   }

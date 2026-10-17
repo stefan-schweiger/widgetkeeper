@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit && tsc -p tsconfig.widgets.json",
+    "typecheck": "tsc --noEmit --noUnusedLocals && tsc -p tsconfig.widgets.json --noUnusedLocals",
     "test": "vitest run",
     "test:watch": "vitest",
     "app-images": "node scripts/render-app-images.mjs",

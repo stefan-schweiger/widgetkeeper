@@ -1,7 +1,7 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import { localHour } from './heatmap.js';
-import { limitInsights, readFirstLog } from './insightsLog.js';
+import { limitInsights, logIdsFor, readFirstLog } from './insightsLog.js';
 import Timings from './Timings.js';
 import {
   HOUR, MINUTE, QUARTER, SECOND, Sample,
@@ -18,14 +18,12 @@ const PRICE_PAST_HOURS = 24;
 const PRICE_FUTURE_HOURS = 24; // the chart shows 12; the lowest-price footer can look 24 ahead
 const PRICE_FUTURE_HOURS_MAX = 36; // the Energy Price Strip's longest window
 const IDLE_TIMEOUT = 10 * MINUTE;
-const POWER_LOGS = ['measure_power', 'energy_power']; // in order of preference
 const PRICE_TYPE_TTL = 5 * MINUTE; // a change in Homey's Energy settings shows within this
 
 export const LIVE_EVENT = 'electricity:live';
 
 export type Snapshot = {
   now: number,
-  deviceName: string | null,
   meterError: string | null, // why the selected meter could not be read
   priceError: string | null, // why the current hour's price could not be read (null when it's simply not set up)
   live: Sample[], // raw readings for the last hour, oldest first (the widget resamples)
@@ -151,7 +149,6 @@ export default class ElectricityService {
     this.debug(`Snapshot ${meter?.name ?? deviceId ?? '-'}: ${tm.summary()}`);
     return {
       now,
-      deviceName: meter?.name ?? null,
       meterError,
       priceError,
       live: meter ? meter.live.slice() : [],
@@ -222,10 +219,8 @@ export default class ElectricityService {
 
   /**
    * The device's power log for the last hour (5 s steps; seeds the live chart) and the last 24 h
-   * (5 min steps; usage). Homey logs power as `measure_power` for most devices, but as
-   * `energy_power` for some (e.g. cumulative electricity meters). Listing every insights log to find
-   * out is slow, so this reads them in turn (a missing log throws) and remembers the one that
-   * worked. Log ids are `homey:device:<id>:<capability>`.
+   * (5 min steps; usage), from the first of `logIdsFor()`'s ids that works (Homey logs `measure_power`
+   * as `energy_power`; a missing log throws), remembering the one that worked.
    */
   private async readPowerLogs(api: any, deviceId: string): Promise<{
     logId: string | null, lastHour: Sample[], last24Hours: Sample[] | null,
@@ -233,7 +228,7 @@ export default class ElectricityService {
     try {
       // A known log that fails is kept (`keep`), so the usage history is retried with it later.
       const { logId, result: [lastHour, last24Hours] } = await readFirstLog(
-        deviceId, POWER_LOGS.map(cap => `homey:device:${deviceId}:${cap}`), this.logIds,
+        deviceId, logIdsFor(deviceId, 'measure_power'), this.logIds,
         logId => Promise.all([
           this.readLog(api, deviceId, logId, 'lastHour'),
           this.readLog(api, deviceId, logId, 'last24Hours'),
@@ -333,6 +328,7 @@ export default class ElectricityService {
     this.priceTypePending ??= (async () => {
       const settings: PriceSettings = { fixed: null, costs: null, costsExpression: null };
       let api: any;
+      let failed = false;
       try {
         api = await getAppApi(this.homey);
         if (await api.energy.getElectricityPriceType() === 'fixed') {
@@ -340,6 +336,7 @@ export default class ElectricityService {
           if (settings.fixed == null) this.log('Fixed electricity price set, but no price found');
         }
       } catch (err) {
+        failed = true;
         this.log('Could not read the electricity price type', err);
       }
       if (settings.fixed == null && api) {
@@ -349,9 +346,12 @@ export default class ElectricityService {
           settings.costs = parsePriceCosts(expression);
           if (settings.costs) settings.costsExpression = expression;
         } catch (err) {
+          failed = true;
           this.log('Could not use the electricity price costs; showing spot prices', err);
         }
       }
+      // A failed read isn't kept: the last settings read stand in (spot prices before any), and the next request reads again.
+      if (failed) return this.priceType ?? settings;
       const prev = this.priceType;
       if (settings.fixed !== prev?.fixed || settings.costsExpression !== prev?.costsExpression) {
         this.debug(`Electricity price: ${settings.fixed != null ? `fixed ${settings.fixed}`

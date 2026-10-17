@@ -295,10 +295,6 @@
       "method": "POST",
       "path": "/mood"
     },
-    "getNames": {
-      "method": "GET",
-      "path": "/names"
-    },
     "setName": {
       "method": "POST",
       "path": "/names"

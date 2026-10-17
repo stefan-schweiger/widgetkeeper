@@ -153,7 +153,8 @@
     "webPasswordIsSet": "Un mot de passe est défini.",
     "webPasswordSaved": "Mot de passe enregistré. Les navigateurs déjà connectés doivent se reconnecter.",
     "webPasswordRemoved": "Mot de passe supprimé.",
-    "webPasswordTooShort": "Utilisez au moins __min__ caractères."
+    "webPasswordTooShort": "Utilisez au moins __min__ caractères.",
+    "webPasswordTooLong": "Utilisez au plus __max__ caractères."
   },
   "heatmap": {
     "selectDevice": "Choisissez un appareil et une valeur dans les réglages du widget.",
@@ -183,7 +184,8 @@
     "unavailable": "Indisponible",
     "on": "Allumé",
     "off": "Éteint",
-    "renameFailed": "Impossible d'enregistrer le nom."
+    "renameFailed": "Impossible d'enregistrer le nom.",
+    "none": "Aucun"
   },
   "sparklines": {
     "selectSlots": "Choisissez des valeurs dans les réglages du widget.",
@@ -448,7 +450,6 @@
     "loadFailed": "Impossible de joindre Widgetkeeper sur votre Homey.",
     "retry": "Réessayer",
     "off": "Les tableaux de bord web sont désactivés. Activez-les dans les réglages de l'app Widgetkeeper, dans l'app Homey.",
-    "noDashboards": "Aucun tableau de bord.",
     "newDashboard": "Nouveau tableau de bord",
     "untitled": "Tableau de bord",
     "widgetCount": "__count__ widgets",

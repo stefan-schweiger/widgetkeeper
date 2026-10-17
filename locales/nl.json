@@ -153,7 +153,8 @@
     "webPasswordIsSet": "Er is een wachtwoord ingesteld.",
     "webPasswordSaved": "Wachtwoord opgeslagen. Eerder ingelogde browsers moeten opnieuw inloggen.",
     "webPasswordRemoved": "Wachtwoord verwijderd.",
-    "webPasswordTooShort": "Gebruik minstens __min__ tekens."
+    "webPasswordTooShort": "Gebruik minstens __min__ tekens.",
+    "webPasswordTooLong": "Gebruik hoogstens __max__ tekens."
   },
   "heatmap": {
     "selectDevice": "Kies een apparaat en een waarde in de widgetinstellingen.",
@@ -183,7 +184,8 @@
     "unavailable": "Niet beschikbaar",
     "on": "Aan",
     "off": "Uit",
-    "renameFailed": "Kon de naam niet opslaan."
+    "renameFailed": "Kon de naam niet opslaan.",
+    "none": "Geen"
   },
   "sparklines": {
     "selectSlots": "Kies apparaatwaarden in de widgetinstellingen.",
@@ -448,7 +450,6 @@
     "loadFailed": "Kon Widgetkeeper op je Homey niet bereiken.",
     "retry": "Opnieuw proberen",
     "off": "Webdashboards zijn uitgeschakeld. Schakel ze in bij de instellingen van de Widgetkeeper-app in de Homey-app.",
-    "noDashboards": "Nog geen dashboards.",
     "newDashboard": "Nieuw dashboard",
     "untitled": "Dashboard",
     "widgetCount": "__count__ widgets",
