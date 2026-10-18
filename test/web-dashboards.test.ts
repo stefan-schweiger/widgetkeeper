@@ -146,6 +146,42 @@ describe('web dashboards: what the editor needs', () => {
     expect(types).toHaveLength(Object.keys(app.widgets).length);
   });
 
+  it("groups the settings by their titles: a group's head, the rows under it, and numbered slots", () => {
+    const types = setup().web.widgetTypes('en');
+    const of = (type: string) => types.find(t => t.type === type)!;
+    // The groups and slots in order (plain runs only by their place: other settings may join them), and which run a setting is in.
+    const shape = (type: string) => of(type).sections.map(s => (s.kind === 'group' ? `${s.title}${s.numbered ? '#' : ''}:${s.ids.length}` : s.kind === 'slots' ? `slots:${s.ids.length}` : 'plain'))
+      .filter((s, i, all) => s !== 'plain' || all[i - 1] !== 'plain');
+    const plainHas = (type: string, id: string) => of(type).sections.some(s => s.kind === 'plain' && s.ids.includes(id));
+    const groups = (type: string) => shape(type).filter(s => s !== 'plain');
+    expect(groups('flows')).toEqual(Array.from({ length: 8 }, (_, i) => `Button\u00A0${i + 1}#:4`));
+    expect(plainHas('flows', 'columns')).toBe(true);
+    expect(of('flows').settings.filter(s => /^(flow|color|icon|name)1$/.test(s.id)).map(s => s.label)).toEqual(['Flow', 'Colour', 'Icon', 'Name']);
+    expect(groups('timers')).toEqual(Array.from({ length: 4 }, (_, i) => `Timer\u00A0${i + 1}#:2`));
+    expect(plainHas('timers', 'sound')).toBe(true);
+    expect(groups('roomhealth')).toEqual(['Temperature:2', 'Humidity:2']);
+    expect(plainHas('roomhealth', 'co2Max')).toBe(true);
+    expect(of('roomhealth').settings.find(s => s.id === 'tempMax')!.label).toBe('Highest (°C)');
+    expect(groups('stack')).toEqual(['Show page dots:3']);
+    expect(groups('values')).toEqual(['slots:6']);
+    expect(groups('variables')).toEqual(['slots:10']);
+    expect(of('variables').settings.find(s => s.id === 'slot3')!.label).toBe('Variable\u00A03');
+    expect(groups('media')).toEqual(Array.from({ length: 4 }, (_, i) => `Button\u00A0${i + 1}#:3`)); // heads without a colon
+    expect(groups('clock')).toEqual([]);
+    for (const t of types) expect(t.sections.flatMap(s => s.ids), t.type).toEqual(t.settings.map(s => s.id));
+  });
+
+  it('groups the settings the same way in every language', () => {
+    const { web } = setup();
+    const kinds = (lang: string) => web.widgetTypes(lang).map(t => ({ type: t.type, sections: t.sections.map(s => [s.kind, s.ids, s.kind === 'group' && s.numbered]) }));
+    const en = kinds('en');
+    for (const lang of ['nl', 'de', 'fr', 'it', 'sv', 'no', 'es', 'da', 'ru', 'pl', 'ko', 'ar']) expect(kinds(lang), lang).toEqual(en);
+    // The labels are the language's: a head's after the colon, a row's without its dash.
+    const flows = web.widgetTypes('de').find(t => t.type === 'flows')!;
+    expect(flows.sections.find(s => s.kind === 'group')).toMatchObject({ title: 'Button\u00A01' });
+    expect(flows.settings.filter(s => /^(flow|color)1$/.test(s.id)).map(s => s.label)).toEqual(['Flow', 'Farbe']);
+  });
+
   it("filters devices as the widget's devices setting does", () => {
     const light = { class: 'light', capabilities: ['onoff', 'dim'] };
     const plug = { class: 'socket', virtualClass: 'light', capabilities: ['onoff'] };

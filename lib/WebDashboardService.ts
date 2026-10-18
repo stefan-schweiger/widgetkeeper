@@ -36,6 +36,8 @@ export type WebSettingDef = {
   id: string,
   type: string,
   title: string,
+  /** Its own label in its section: `Colour` for `  – Colour`, `Flow` for `Button 1: flow`; else the title. */
+  label: string,
   hint: string | null,
   value: unknown,
   min?: number,
@@ -53,7 +55,19 @@ export type WebWidgetType = {
   transparent: boolean,
   devices: { singular: boolean } | null,
   settings: WebSettingDef[],
+  /** How the editor groups the settings (`settingSections()`), in the manifest's order; every setting is in one. */
+  sections: WebSettingSection[],
 };
+
+/**
+ * A run of settings in the editor: `plain` ones, a `group` (a head and the rows under it: `Button 1: flow`,
+ * `  – Colour` …; `numbered` when its title ends in a number) or `slots` (`Tile 1` … `Tile 6`, numbered rows without
+ * rows under them).
+ */
+export type WebSettingSection =
+  | { kind: 'plain', ids: string[] }
+  | { kind: 'group', title: string, numbered: boolean, ids: string[] }
+  | { kind: 'slots', ids: string[] };
 
 /** A device the editor's device picker shows: its room (with the rooms above it) and its icon. */
 export type WebDevice = {
@@ -118,6 +132,73 @@ function loc(text: unknown, language: string): string {
     if (typeof t.en === 'string') return t.en;
   }
   return '';
+}
+
+const SUB_ROW = /^[\s\u2003]+–\s*/; // `\u2003\u2003– Colour`: a row under the group head above it
+const NUMBERED = /^(.*\S)\s+\d+$/; // `Tile 4` (with a no-break space before the number)
+
+const capitalize = (text: string) => text.charAt(0).toLocaleUpperCase() + text.slice(1);
+
+/**
+ * The editor's sections of a widget's settings, from the titles' convention (CLAUDE.md, *Widget settings*): a group's
+ * head is `Button 1: flow` (or a title without a colon) and the rows under it start with two em spaces and a dash.
+ * The structure comes from the English titles, so a translation can't split a group; the labels are the language's.
+ */
+export function settingSections(settings: any[], language: string): { sections: WebSettingSection[], labels: Map<string, string> } {
+  const en = settings.map(s => loc(s.title, 'en') || String(s.id));
+  const sub = en.map(t => SUB_ROW.test(t));
+  const labels = new Map<string, string>();
+  const sections: WebSettingSection[] = [];
+  let plain: string[] | null = null;
+  const flat = (id: string) => {
+    if (!plain) sections.push({ kind: 'plain', ids: plain = [] });
+    plain.push(id);
+  };
+  for (let i = 0; i < settings.length;) {
+    const id = String(settings[i].id);
+    const title = loc(settings[i].title, language) || id;
+    if (sub[i]) { // a row without a head: on its own
+      labels.set(id, capitalize(title.replace(SUB_ROW, '')));
+      flat(id);
+      i++;
+      continue;
+    }
+    let end = i + 1;
+    while (end < settings.length && sub[end]) end++;
+    if (end > i + 1) {
+      // A group: the head's group part names it, the part after the colon labels the head.
+      const enColon = en[i].indexOf(':');
+      const colon = title.indexOf(':');
+      const head = enColon < 0 || colon < 0 ? title : title.slice(0, colon).trim();
+      labels.set(id, enColon < 0 || colon < 0 ? title : capitalize(title.slice(colon + 1).trim()));
+      for (let j = i + 1; j < end; j++) {
+        const sid = String(settings[j].id);
+        labels.set(sid, capitalize((loc(settings[j].title, language) || sid).replace(SUB_ROW, '')));
+      }
+      sections.push({ kind: 'group', title: head, numbered: NUMBERED.test(enColon < 0 ? en[i] : en[i].slice(0, enColon)), ids: settings.slice(i, end).map(s => String(s.id)) });
+      plain = null;
+      i = end;
+      continue;
+    }
+    // Slots: numbered rows of one kind (`Tile 1` … `Tile 6`), none with rows under it.
+    const base = NUMBERED.exec(en[i])?.[1];
+    let last = i;
+    if (base && !en[i].includes(':')) {
+      while (last + 1 < settings.length && !sub[last + 1] && !sub[last + 2] && settings[last + 1].type === settings[i].type
+        && NUMBERED.exec(en[last + 1])?.[1] === base) last++;
+    }
+    if (last > i) {
+      for (let j = i; j <= last; j++) labels.set(String(settings[j].id), loc(settings[j].title, language) || String(settings[j].id));
+      sections.push({ kind: 'slots', ids: settings.slice(i, last + 1).map(s => String(s.id)) });
+      plain = null;
+      i = last + 1;
+      continue;
+    }
+    labels.set(id, title);
+    flat(id);
+    i++;
+  }
+  return { sections, labels };
 }
 
 /** Whether a device passes a widget's `devices.filter` (`class` and `capabilities`, each `a|b`: any of them). */
@@ -225,24 +306,30 @@ export default class WebDashboardService {
 
   /** Every widget type, in the manifest's order, with its settings in Homey's language. */
   widgetTypes(language = this.homey.i18n.getLanguage()): WebWidgetType[] {
-    return Object.entries(this.manifestWidgets).map(([type, w]) => ({
-      type,
-      name: loc(w.name, language) || type,
-      height: typeof w.height === 'number' ? w.height : null,
-      transparent: w.transparent === true,
-      devices: w.devices ? { singular: w.devices.singular === true } : null,
-      settings: (Array.isArray(w.settings) ? w.settings : []).map((s: any): WebSettingDef => ({
-        id: s.id,
-        type: s.type,
-        title: loc(s.title, language) || s.id,
-        hint: loc(s.hint, language) || null,
-        value: s.value ?? null,
-        ...(typeof s.min === 'number' ? { min: s.min } : {}),
-        ...(typeof s.max === 'number' ? { max: s.max } : {}),
-        ...(Array.isArray(s.values) ? { values: s.values.map((v: any) => ({ id: String(v.id), title: loc(v.title, language) || String(v.id) })) } : {}),
-        ...(s.type === 'autocomplete' && CAPABILITY_SLOTS[type]?.setting.test(s.id) ? { picker: 'capability' as const } : {}),
-      })),
-    }));
+    return Object.entries(this.manifestWidgets).map(([type, w]) => {
+      const settings = Array.isArray(w.settings) ? w.settings : [];
+      const { sections, labels } = settingSections(settings, language);
+      return {
+        type,
+        name: loc(w.name, language) || type,
+        height: typeof w.height === 'number' ? w.height : null,
+        transparent: w.transparent === true,
+        devices: w.devices ? { singular: w.devices.singular === true } : null,
+        settings: settings.map((s: any): WebSettingDef => ({
+          id: s.id,
+          type: s.type,
+          title: loc(s.title, language) || s.id,
+          label: labels.get(String(s.id)) ?? (loc(s.title, language) || s.id),
+          hint: loc(s.hint, language) || null,
+          value: s.value ?? null,
+          ...(typeof s.min === 'number' ? { min: s.min } : {}),
+          ...(typeof s.max === 'number' ? { max: s.max } : {}),
+          ...(Array.isArray(s.values) ? { values: s.values.map((v: any) => ({ id: String(v.id), title: loc(v.title, language) || String(v.id) })) } : {}),
+          ...(s.type === 'autocomplete' && CAPABILITY_SLOTS[type]?.setting.test(s.id) ? { picker: 'capability' as const } : {}),
+        })),
+        sections,
+      };
+    });
   }
 
   /** The devices a widget's `devices` setting may pick (its manifest filter), by name, with their rooms and icons. */

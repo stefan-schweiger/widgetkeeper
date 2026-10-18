@@ -214,6 +214,16 @@
     check: 'M5 12.5l4.5 4.5L19 7.5',
     grip: 'M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01',
     close: 'M6 6l12 12M18 6L6 18',
+    down: 'M6 9l6 6 6-6',
+  };
+
+  /**
+   * A colour setting's values drawn as swatches: the widgets' palette (Flow Buttons' colours). `default` and
+   * `neutral` are the widget's own colour, an outlined swatch.
+   */
+  const SWATCHES = {
+    blue: 'var(--homey-color-blue, #2F8DF6)', red: 'var(--homey-color-red, #F25F5C)', orange: 'var(--homey-color-orange, #F07A1F)',
+    yellow: '#F5C518', green: 'var(--homey-color-green, #71D51B)', purple: '#9033FC', grey: '#8E8F99', default: null, neutral: null,
   };
 
   function icon(name) {
@@ -1255,10 +1265,20 @@
 
     // ---- Dialogs: choose a widget, a widget's settings -------------------------------------------------------
 
-    function dialog(title) {
+    /** A dialog with a title (and for a widget's settings its preview and description) and ✕. */
+    function dialog(title, type) {
       const d = el('dialog', 'wd-dialog');
       const head = el('div', 'wd-dialog-head');
-      head.append(el('h2', 'wd-h2', title), button('wd-tool', '✕', () => d.close(), t('cancel')));
+      if (type) {
+        const who = el('div', 'wd-dialog-who');
+        const text = el('div', 'wd-dialog-titles');
+        text.append(el('h2', 'wd-h1', title), el('p', 'wd-muted', about(type)));
+        who.append(preview(type, 'wd-dialog-preview'), text);
+        head.append(who);
+      } else {
+        head.append(el('h2', 'wd-h2', title));
+      }
+      head.append(button('wd-tool', '✕', () => d.close(), t('cancel')));
       const body = el('div', 'wd-dialog-body');
       d.append(head, body);
       d.addEventListener('close', () => d.remove());
@@ -1291,16 +1311,11 @@
       d.showModal();
     }
 
-    function field(label, hint, control, forId) {
-      const row = el('div', 'wd-field');
-      const l = el('label', 'wd-label', label);
-      if (forId) l.htmlFor = forId;
-      row.append(l, control);
-      if (hint) row.append(el('p', 'wd-hint', hint));
-      return row;
-    }
-
-    /** A widget's settings; `pickDevices` (a widget just added) opens its device picker at once. */
+    /**
+     * A widget's settings, laid out in cards by the sections the app gives (`settingSections()`: the titles' groups):
+     * the devices, the general settings with the title, each group (a numbered one folds, with a summary of its
+     * values in its header) and the slots. `pickDevices` (a widget just added) opens its device picker at once.
+     */
     function editWidget(id, { pickDevices = false } = {}) {
       const at = find(id);
       if (!at) return;
@@ -1308,76 +1323,141 @@
       const def = types.get(w.type);
       if (!def) return;
       const draft = { title: w.title || '', settings: clone(w.settings || {}), deviceIds: (w.deviceIds || []).slice() };
-      const { d, body } = dialog(def.name);
+      for (const s of def.settings) if (!(s.id in draft.settings)) draft.settings[s.id] = clone(s.value);
+      const { d, body } = dialog(def.name, def.type);
+      d.classList.add('wd-settings');
+      const byId = new Map(def.settings.map(s => [s.id, s]));
+      const updates = []; // what follows the draft: the groups' summaries, the rows a switch turns off
+      const changed = () => { for (const f of updates) f(); };
       let n = 0;
       const uid = () => `wd-f${++n}`;
+      const card = (className) => el('section', `wd-set-card${className ? ` ${className}` : ''}`);
+      const rows = (ids, label, hints = true) => ids.map(sid => settingRow(def, byId.get(sid), draft, changed, uid(), label ? label(byId.get(sid)) : undefined, hints));
+
+      if (def.devices) body.append(devicePicker(def, draft, pickDevices));
 
       const title = el('input', 'wd-input');
       title.id = uid();
       title.value = draft.title;
       title.addEventListener('input', () => { draft.title = title.value; });
-      body.append(field(t('widgetTitle'), t('widgetTitleHint'), title, title.id));
+      const titleRow = el('div', 'wd-set-row inline');
+      const titleText = el('div', 'wd-set-text');
+      const titleLabel = el('label', 'wd-set-label', t('widgetTitle'));
+      titleLabel.htmlFor = title.id;
+      titleText.append(titleLabel, el('p', 'wd-hint', t('widgetTitleHint')));
+      titleRow.append(titleText, title);
 
-      if (def.devices) body.append(devicePicker(def, draft, pickDevices));
+      const sections = def.sections || [{ kind: 'plain', ids: def.settings.map(s => s.id) }];
+      // A run of numbered groups (Flow Buttons' eight buttons) shares a card; one of more than two starts folded.
+      const numbered = (sec) => sec && sec.kind === 'group' && sec.numbered;
+      const runOf = sections.map((sec, i) => {
+        if (!numbered(sec)) return 0;
+        let a = i;
+        let b = i;
+        while (numbered(sections[a - 1])) a--;
+        while (numbered(sections[b + 1])) b++;
+        return b - a + 1;
+      });
 
-      for (const s of def.settings) {
-        let control;
-        const fid = uid();
-        switch (s.type) {
-          case 'checkbox': {
-            const box = el('input');
-            box.type = 'checkbox';
-            box.id = fid;
-            box.checked = draft.settings[s.id] === true;
-            box.addEventListener('change', () => { draft.settings[s.id] = box.checked; });
-            const row = el('div', 'wd-field wd-check');
-            const l = el('label', 'wd-label', s.title);
-            l.htmlFor = fid;
-            row.append(box, l);
-            body.append(row);
-            if (s.hint) body.append(el('p', 'wd-hint wd-check-hint', s.hint));
-            continue;
+      let general = null;
+      let stack = null;
+      sections.forEach((sec, i) => {
+        if (!numbered(sec)) stack = null;
+        if (sec.kind === 'plain') {
+          const c = card();
+          if (i === 0) { c.append(titleRow); general = c; }
+          c.append(...rows(sec.ids));
+          body.append(c);
+        } else if (sec.kind === 'slots') {
+          // The slots' hint (on the first) goes above them, beside their narrow labels it would be a column.
+          const c = card('wd-set-slots');
+          const hint = sec.ids.map(sid => byId.get(sid).hint).find(Boolean);
+          if (hint) c.append(el('p', 'wd-hint wd-set-note', hint));
+          c.append(...rows(sec.ids, null, false));
+          body.append(c);
+        } else if (sec.numbered) {
+          if (!stack) body.append(stack = card('wd-set-stack'));
+          stack.append(groupCard(sec, runOf[i] <= 2));
+        } else {
+          const head = byId.get(sec.ids[0]);
+          const c = card('wd-set-group');
+          if (head.type === 'checkbox') {
+            // A switch with its settings under it (the Smart Stack's page dots): they fade while it's off.
+            c.append(...rows([head.id]));
+            const sub = el('div', 'wd-set-sub');
+            sub.append(...rows(sec.ids.slice(1)));
+            c.append(sub);
+            updates.push(() => { const off = draft.settings[head.id] !== true; sub.classList.toggle('off', off); sub.inert = off; });
+          } else {
+            c.append(el('h3', 'wd-set-title wd-set-caption', sec.title), ...rows(sec.ids));
           }
-          case 'number':
-            control = el('input', 'wd-input');
-            control.type = 'number';
-            control.step = 'any';
-            if (s.min != null) control.min = String(s.min);
-            if (s.max != null) control.max = String(s.max);
-            control.value = draft.settings[s.id] == null ? '' : String(draft.settings[s.id]);
-            control.addEventListener('input', () => {
-              const v = control.value.trim();
-              draft.settings[s.id] = v === '' ? null : Number(v);
-            });
-            break;
-          case 'textarea':
-            control = el('textarea', 'wd-input');
-            control.rows = 4;
-            control.value = String(draft.settings[s.id] ?? '');
-            control.addEventListener('input', () => { draft.settings[s.id] = control.value; });
-            break;
-          case 'dropdown':
-            control = el('select', 'wd-input');
-            for (const v of s.values || []) {
-              const o = el('option', null, v.title);
-              o.value = v.id;
-              control.append(o);
-            }
-            control.value = String(draft.settings[s.id] ?? '');
-            control.addEventListener('change', () => { draft.settings[s.id] = control.value; });
-            break;
-          case 'autocomplete':
-            control = s.picker === 'capability' ? valuePicker(def, s, draft) : autocompletePicker(def, s, draft);
-            break;
-          default: // text
-            control = el('input', 'wd-input');
-            control.value = String(draft.settings[s.id] ?? '');
-            control.addEventListener('input', () => { draft.settings[s.id] = control.value; });
+          body.append(c);
         }
-        control.id = fid;
-        body.append(field(s.title, s.hint, control, fid));
+      });
+      if (!general) {
+        general = card();
+        general.append(titleRow);
+        body.insertBefore(general, body.querySelector(':scope > .wd-set-card:not(.wd-set-devices)') || null);
       }
 
+      /** A numbered group (`Button 1`): a header that folds it, with what its values are; its rows under it. */
+      function groupCard(sec, open) {
+        const c = el('div', 'wd-set-fold');
+        const inner = el('div', 'wd-set-rows');
+        inner.id = uid();
+        const head = button('wd-set-head', '', () => setOpen(!open));
+        head.setAttribute('aria-controls', inner.id);
+        const summary = el('span', 'wd-set-summary');
+        const chevron = el('span', 'wd-set-chevron');
+        chevron.append(icon('down'));
+        head.append(el('span', 'wd-set-title', sec.title), summary, chevron);
+        // The head's own label is the group's title when its title has no colon (Media's `Button 1`): not twice.
+        inner.append(...rows(sec.ids, s => (s.label === sec.title ? '' : s.label)));
+        c.append(head, inner);
+        const setOpen = (on) => {
+          open = on;
+          c.classList.toggle('open', open);
+          head.setAttribute('aria-expanded', String(open));
+          inner.hidden = !open;
+        };
+        setOpen(open);
+        updates.push(() => {
+          const { parts, empty } = groupSummary(sec);
+          summary.textContent = '';
+          c.classList.toggle('empty', empty);
+          if (empty) return; // its title is dimmed
+          parts.forEach((p, k) => {
+            if (k) summary.append(' · ');
+            if (p.swatch !== undefined) summary.append(swatch(p.swatch, 'small'));
+            summary.append(p.text);
+          });
+        });
+        return c;
+      }
+
+      /** What a group's values are, for its header: the choices' names, the dropdowns' titles, the texts. */
+      function groupSummary(sec) {
+        const parts = [];
+        let empty = false;
+        sec.ids.forEach((sid, k) => {
+          const s = byId.get(sid);
+          const v = draft.settings[sid];
+          if (s.type === 'autocomplete') {
+            if (v && v.name) parts.push({ text: v.name });
+            else if (k === 0) empty = true;
+          } else if (s.type === 'dropdown') {
+            const opt = (s.values || []).find(o => o.id === String(v));
+            if (opt) parts.push(isSwatches(s) ? { text: opt.title, swatch: SWATCHES[opt.id] } : { text: opt.title });
+          } else if (s.type === 'number') {
+            if (k === 0 && v != null) parts.push({ text: `${v} ${splitUnit(s.title.slice(s.title.indexOf(':') + 1).trim()).label}`.trim() }); // `5 minutes`
+          } else if (s.type === 'text' || s.type === 'textarea') {
+            if (typeof v === 'string' && v.trim()) parts.push({ text: v.trim() });
+          }
+        });
+        return { parts, empty };
+      }
+
+      changed();
       const actions = el('div', 'wd-actions');
       actions.append(
         button('wd-btn quiet', t('cancel'), () => d.close()),
@@ -1395,6 +1475,159 @@
       );
       d.append(actions);
       d.showModal();
+    }
+
+    /** `Amber after (days)` → `Amber after` and `days`: a number's unit goes after its field. */
+    function splitUnit(label) {
+      const m = /^(.*\S)\s*\(([^()]{1,16})\)$/.exec(label || '');
+      return m ? { label: m[1], unit: m[2] } : { label: label || '', unit: '' };
+    }
+
+    /** A dropdown of the widgets' colours, drawn as swatches. */
+    const isSwatches = (s) => (s.values || []).length > 1 && s.values.every(v => v.id in SWATCHES) && s.values.some(v => SWATCHES[v.id]);
+
+    function swatch(colour, className) {
+      const dot = el('span', `wd-swatch-dot${className ? ` ${className}` : ''}${colour ? '' : ' plain'}`);
+      if (colour) dot.style.background = colour;
+      return dot;
+    }
+
+    /**
+     * One setting as a row: its label and hint, and its control, beside them (`inline`: a switch, a number, a short
+     * choice, a text) or under them (a list, a search, a long text).
+     */
+    function settingRow(def, s, draft, changed, fid, label = s.label || s.title, withHint = true) {
+      const { node, inline, labelable = true } = settingControl(def, s, draft, changed, fid);
+      let text = label;
+      if (s.type === 'number') {
+        const split = splitUnit(label);
+        text = split.label;
+        if (split.unit) node.append(el('span', 'wd-unit', split.unit));
+      }
+      const row = el('div', `wd-set-row${inline ? ' inline' : ''}${s.type === 'checkbox' ? ' switch' : ''}`);
+      const head = el('div', 'wd-set-text');
+      if (text) {
+        const l = el(labelable ? 'label' : 'span', 'wd-set-label', text);
+        if (labelable) l.htmlFor = fid;
+        else l.id = `${fid}-label`;
+        head.append(l);
+      }
+      if (s.hint && withHint) head.append(el('p', 'wd-hint', s.hint));
+      if (!labelable) node.setAttribute(text ? 'aria-labelledby' : 'aria-label', text ? `${fid}-label` : s.title);
+      if (head.childElementCount) row.append(head);
+      row.append(node);
+      return row;
+    }
+
+    /** A setting's control, writing to the draft: a switch, swatches, a segmented choice, a select, a field, a picker. */
+    function settingControl(def, s, draft, changed, fid) {
+      const set = (v) => { draft.settings[s.id] = v; changed(); };
+      const value = draft.settings[s.id];
+      switch (s.type) {
+        case 'checkbox': {
+          const box = el('input', 'wd-switch');
+          box.type = 'checkbox';
+          box.id = fid;
+          box.setAttribute('role', 'switch');
+          box.checked = value === true;
+          box.addEventListener('change', () => set(box.checked));
+          return { node: box, inline: true };
+        }
+        case 'number': {
+          const wrap = el('span', 'wd-num');
+          const input = el('input', 'wd-input');
+          input.type = 'number';
+          input.id = fid;
+          input.step = 'any';
+          if (s.min != null) input.min = String(s.min);
+          if (s.max != null) input.max = String(s.max);
+          input.value = value == null ? '' : String(value);
+          input.addEventListener('input', () => {
+            const v = input.value.trim();
+            set(v === '' ? null : Number(v));
+          });
+          wrap.append(input);
+          return { node: wrap, inline: true };
+        }
+        case 'textarea': {
+          const area = el('textarea', 'wd-input');
+          area.id = fid;
+          area.rows = 4;
+          area.value = String(value ?? '');
+          area.addEventListener('input', () => set(area.value));
+          return { node: area, inline: false };
+        }
+        case 'dropdown': {
+          const values = s.values || [];
+          if (isSwatches(s) || (values.length <= 3 && values.reduce((sum, v) => sum + v.title.length, 0) <= 24)) {
+            return { node: choiceGroup(s, values, value, set, isSwatches(s)), inline: true, labelable: false };
+          }
+          const select = el('select', 'wd-input');
+          select.id = fid;
+          for (const v of values) {
+            const o = el('option', null, v.title);
+            o.value = v.id;
+            select.append(o);
+          }
+          select.value = String(value ?? '');
+          select.addEventListener('change', () => set(select.value));
+          return { node: select, inline: true };
+        }
+        case 'autocomplete': {
+          const node = s.picker === 'capability' ? valuePicker(def, s, draft, changed) : autocompletePicker(def, s, draft, changed);
+          node.id = fid;
+          return { node, inline: false, labelable: false };
+        }
+        default: { // text
+          const input = el('input', 'wd-input');
+          input.id = fid;
+          input.value = String(value ?? '');
+          input.addEventListener('input', () => set(input.value));
+          return { node: input, inline: true };
+        }
+      }
+    }
+
+    /** A short dropdown as one row of choices (`1 | 2`, `Standard | Compact`), or a colour's as swatches. */
+    function choiceGroup(s, values, value, set, swatches) {
+      const group = el('div', swatches ? 'wd-swatches' : 'wd-seg');
+      group.setAttribute('role', 'radiogroup');
+      const name = el('span', 'wd-swatch-name');
+      const draw = (current) => {
+        for (const b of group.querySelectorAll('button')) {
+          const on = b.dataset.id === current;
+          b.classList.toggle('on', on);
+          b.setAttribute('aria-checked', String(on));
+          b.tabIndex = on || (!values.some(v => v.id === current) && b === group.querySelector('button')) ? 0 : -1;
+        }
+        const opt = values.find(v => v.id === current);
+        name.textContent = opt ? opt.title : '';
+      };
+      for (const v of values) {
+        const b = button(swatches ? 'wd-swatch' : 'wd-seg-option', swatches ? '' : v.title, () => { set(v.id); draw(v.id); });
+        b.dataset.id = v.id;
+        b.setAttribute('role', 'radio');
+        if (swatches) {
+          b.title = v.title;
+          b.setAttribute('aria-label', v.title);
+          b.append(swatch(SWATCHES[v.id]));
+        }
+        group.append(b);
+      }
+      // The arrow keys move the choice, as in a radio group.
+      group.addEventListener('keydown', (e) => {
+        const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+        if (!step) return;
+        e.preventDefault();
+        const all = [...group.querySelectorAll('button')];
+        const i = Math.max(0, all.findIndex(b => b.classList.contains('on')));
+        const next = all[(i + step + all.length) % all.length];
+        next.click();
+        next.focus();
+      });
+      if (swatches) group.append(name);
+      draw(String(value ?? ''));
+      return group;
     }
 
     /** A device's icon: Homey's own drawing (a black glyph, inverted in dark mode), else a rounded square. */
@@ -1420,7 +1653,9 @@
      */
     function devicePicker(def, draft, openAtOnce) {
       const singular = def.devices.singular;
-      const wrap = el('div', 'wd-devsel');
+      const wrap = el('section', 'wd-set-card wd-set-devices');
+      const head = el('div', 'wd-set-cardhead');
+      const count = el('span', 'wd-set-count');
       const list = el('div', 'wd-devlist');
       const hint = el('p', 'wd-hint', t('dragToOrder'));
       let byId = null; // id → device, once loaded
@@ -1430,18 +1665,21 @@
         return items || [];
       });
       loading.catch((err) => { list.textContent = ''; list.append(el('p', 'wd-error', String(err.message || err))); });
-      const choose = button('wd-btn', '', async () => {
+      const choose = button('wd-btn small', '', async () => {
         let items;
         try { items = await loading; } catch (e) { return; }
         chooseDevices(def, items, draft.deviceIds, (ids) => { draft.deviceIds = ids; draw(); });
       });
-      wrap.append(list, hint, choose);
+      const caption = el('h3', 'wd-set-title', singular ? t('device') : t('devices'));
+      head.append(caption, count, el('span', 'wd-spacer'), choose);
+      wrap.append(head, list, hint);
 
       function draw() {
         list.textContent = '';
         const ids = draft.deviceIds;
         choose.textContent = t(ids.length ? (singular ? 'changeDevice' : 'changeDevices') : (singular ? 'chooseDevice' : 'chooseDevices'));
         hint.hidden = singular || ids.length < 2;
+        count.textContent = singular || !ids.length ? '' : String(ids.length);
         if (!ids.length) { list.append(el('p', 'wd-hint wd-devnone', t('noneChosen'))); return; }
         for (const id of ids) {
           const dev = (byId && byId.get(id)) || { id, name: byId ? t('missingDevice') : '…', zone: null, icon: null, missing: !!byId };
@@ -1494,7 +1732,7 @@
 
       draw();
       if (openAtOnce && !draft.deviceIds.length) setTimeout(() => choose.click(), 0);
-      return field(singular ? t('device') : t('devices'), null, wrap);
+      return wrap;
     }
 
     /**
@@ -1637,7 +1875,7 @@
      * A device value slot (Device Values' and Sparklines' tiles): the chosen value as a row (the device's icon, the
      * value's name over the device and room; a tap changes it, ✕ empties the tile), or a button that opens the picker.
      */
-    function valuePicker(def, s, draft) {
+    function valuePicker(def, s, draft, changed = () => {}) {
       const wrap = el('div', 'wd-valsel');
       let devices = null;
       valueDevices(def.type).then((list) => { devices = list; draw(); }, () => {});
@@ -1654,7 +1892,7 @@
         try { list = await valueDevices(def.type); } catch (err) { toast(String(err.message || err)); return; }
         devices = list;
         const v = draft.settings[s.id];
-        chooseValue(list, v && v.id, (item) => { draft.settings[s.id] = item; draw(); });
+        chooseValue(list, v && v.id, (item) => { draft.settings[s.id] = item; draw(); changed(); });
       };
 
       function draw() {
@@ -1677,7 +1915,7 @@
         }
         row.append(deviceIcon(hit && hit.dev), text);
         if (hit) row.append(el('span', 'wd-valreading', formatReading(hit.cap)));
-        const remove = button('wd-icon wd-devremove', '', () => { draft.settings[s.id] = null; draw(); }, t('clear'));
+        const remove = button('wd-icon wd-devremove', '', () => { draft.settings[s.id] = null; draw(); changed(); }, t('clear'));
         remove.append(icon('close'));
         const line = el('div', 'wd-valline');
         line.append(row, remove);
@@ -1825,13 +2063,14 @@
     }
 
     /** An autocomplete setting: the choice, and a search through the app's own listener (with the draft's settings). */
-    function autocompletePicker(def, s, draft) {
+    function autocompletePicker(def, s, draft, changed = () => {}) {
       const wrap = el('div', 'wd-picker');
       const head = el('div', 'wd-row');
       const pick = button('wd-btn wd-choice', '', () => toggle());
       const clear = button('wd-btn quiet small', t('clear'), () => {
         draft.settings[s.id] = null;
         label();
+        changed();
       });
       head.append(pick, clear);
       const search = el('input', 'wd-input');
@@ -1862,6 +2101,7 @@
               for (const k in item) if (k !== 'image') chosen[k] = item[k];
               draft.settings[s.id] = chosen;
               label();
+              changed();
               toggle(false);
             });
             if (item.image) {

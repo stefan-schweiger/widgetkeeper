@@ -23,23 +23,75 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
     if (filter.capabilities && !any(filter.capabilities).some(c => d.capabilities.includes(c))) return false;
     return true;
   };
+  // The editor's sections, as lib/WebDashboardService.ts's settingSections() makes them (keep the two alike).
+  const SUB_ROW = /^[\s\u2003]+–\s*/;
+  const NUMBERED = /^(.*\S)\s+\d+$/;
+  const capitalize = (text) => text.charAt(0).toLocaleUpperCase() + text.slice(1);
+  function settingSections(settings) {
+    const en = settings.map(s => (s.title && s.title.en) || s.id);
+    const sub = en.map(t => SUB_ROW.test(t));
+    const labels = new Map();
+    const sections = [];
+    let plain = null;
+    for (let i = 0; i < settings.length;) {
+      const title = loc(settings[i].title) || settings[i].id;
+      let end = i + 1;
+      while (!sub[i] && end < settings.length && sub[end]) end++;
+      if (end > i + 1) {
+        const enColon = en[i].indexOf(':');
+        const colon = title.indexOf(':');
+        labels.set(settings[i].id, enColon < 0 || colon < 0 ? title : capitalize(title.slice(colon + 1).trim()));
+        for (let j = i + 1; j < end; j++) labels.set(settings[j].id, capitalize((loc(settings[j].title) || settings[j].id).replace(SUB_ROW, '')));
+        sections.push({ kind: 'group', title: enColon < 0 || colon < 0 ? title : title.slice(0, colon).trim(),
+          numbered: NUMBERED.test(enColon < 0 ? en[i] : en[i].slice(0, enColon)), ids: settings.slice(i, end).map(s => s.id) });
+        plain = null;
+        i = end;
+        continue;
+      }
+      const base = !sub[i] && !en[i].includes(':') ? (NUMBERED.exec(en[i]) || [])[1] : undefined;
+      let last = i;
+      if (base) {
+        while (last + 1 < settings.length && !sub[last + 1] && !sub[last + 2] && settings[last + 1].type === settings[i].type
+          && (NUMBERED.exec(en[last + 1]) || [])[1] === base) last++;
+      }
+      if (last > i) {
+        for (let j = i; j <= last; j++) labels.set(settings[j].id, loc(settings[j].title) || settings[j].id);
+        sections.push({ kind: 'slots', ids: settings.slice(i, last + 1).map(s => s.id) });
+        plain = null;
+        i = last + 1;
+        continue;
+      }
+      labels.set(settings[i].id, sub[i] ? capitalize(title.replace(SUB_ROW, '')) : title);
+      if (!plain) sections.push({ kind: 'plain', ids: plain = [] });
+      plain.push(settings[i].id);
+      i++;
+    }
+    return { sections, labels };
+  }
+
   async function answer(method, path, body) {
     await ready;
     const [p, qs] = path.split('?');
     const q = new URLSearchParams(qs || '');
     if (p === '/web/setup') {
-      const widgets = Object.entries(manifest.widgets).map(([type, w]) => ({
-        type,
-        name: loc(w.name) || type,
-        height: w.height ?? null,
-        transparent: !!w.transparent,
-        devices: w.devices ? { singular: w.devices.singular === true } : null,
-        settings: (w.settings || []).map(s => ({
-          id: s.id, type: s.type, title: loc(s.title) || s.id, hint: loc(s.hint) || null, value: s.value ?? null,
-          ...(s.values ? { values: s.values.map(v => ({ id: String(v.id), title: loc(v.title) || String(v.id) })) } : {}),
-          ...(((type === 'values' || type === 'sparklines') && /^slot\d+$/.test(s.id)) || (type === 'charts' && /^chart\d$/.test(s.id)) ? { picker: 'capability' } : {}),
-        })),
-      }));
+      const widgets = Object.entries(manifest.widgets).map(([type, w]) => {
+        const { sections, labels } = settingSections(w.settings || []);
+        return {
+          type,
+          name: loc(w.name) || type,
+          height: w.height ?? null,
+          transparent: !!w.transparent,
+          devices: w.devices ? { singular: w.devices.singular === true } : null,
+          settings: (w.settings || []).map(s => ({
+            id: s.id, type: s.type, title: loc(s.title) || s.id, label: labels.get(s.id) || loc(s.title) || s.id, hint: loc(s.hint) || null, value: s.value ?? null,
+            ...(typeof s.min === 'number' ? { min: s.min } : {}),
+            ...(typeof s.max === 'number' ? { max: s.max } : {}),
+            ...(s.values ? { values: s.values.map(v => ({ id: String(v.id), title: loc(v.title) || String(v.id) })) } : {}),
+            ...(((type === 'values' || type === 'sparklines') && /^slot\d+$/.test(s.id)) || (type === 'charts' && /^chart\d$/.test(s.id)) ? { picker: 'capability' } : {}),
+          })),
+          sections,
+        };
+      });
       return { appId: 'com.thomassidor.widgetkeeper', homeyId: 'preview', language: lang, strings, widgets, dashboards };
     }
     if (p === '/web/devices') {

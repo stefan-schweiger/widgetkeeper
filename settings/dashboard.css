@@ -250,12 +250,7 @@ textarea.wd-input { width: 100%; resize: vertical; }
   position: sticky; bottom: 0; display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px;
   background: var(--wd-tile); border-top: 1px solid var(--wd-line);
 }
-.wd-field { display: flex; flex-direction: column; gap: 6px; }
-.wd-label { font-size: 14px; line-height: 20px; font-weight: 700; }
 .wd-hint { margin: 0; font-size: 12px; line-height: 16px; color: var(--wd-muted); }
-.wd-check { flex-direction: row; align-items: center; gap: 10px; }
-.wd-check input { width: 20px; height: 20px; margin: 0; accent-color: var(--wd-accent); }
-.wd-check-hint { margin-top: -10px; padding-left: 30px; }
 .wd-types { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
 .wd-type {
   -webkit-appearance: none; appearance: none; border: 0; margin: 0; cursor: pointer; text-align: left;
@@ -379,6 +374,139 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .wd-valback svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; margin-left: -4px; }
 .wd-valwho { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .wd-valwho .wd-devname { font-size: 17px; line-height: 24px; }
+
+/* A widget's settings: a header with its preview, and cards on the dashboard's backdrop (the devices, the general
+   settings, each group, the slots). A row has its label and hint on the left and a short control on the right, or a
+   wide one under them. Sizes: the dialog's title 20, a card's 17, a label 14, a hint 12. */
+.wd-dialog.wd-settings { width: min(720px, calc(100vw - 32px)); background: var(--wd-bg); }
+.wd-settings .wd-dialog-head { align-items: flex-start; padding: 16px 12px 12px 20px; background: var(--wd-bg); border-bottom: 1px solid var(--wd-line); }
+.wd-settings .wd-dialog-body { gap: 12px; padding: 16px 20px 20px; }
+.wd-settings .wd-actions { background: var(--wd-bg); }
+.wd-dialog-who { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.wd-dialog-titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+/* The previews are 1024 px squares with the drawing in the middle: the middle 80 %, 5:4. */
+.wd-dialog-preview {
+  flex: none; width: 70px; height: 56px; object-fit: cover; border-radius: 10px;
+  background: var(--wd-tile); box-shadow: 0 0 0 1px var(--wd-line);
+}
+.wd-set-card {
+  display: flex; flex-direction: column; border-radius: 14px; background: var(--wd-tile);
+  box-shadow: 0 0 0 1px var(--wd-line); overflow: hidden;
+}
+.homey-dark-mode .wd-set-card, .homey-dark-mode .wd-dialog-preview { box-shadow: 0 0 0 1px rgba(255, 255, 255, .07); }
+.wd-set-title { margin: 0; font-size: 17px; line-height: 24px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wd-set-caption { padding: 12px 16px 0; }
+.wd-set-cardhead { display: flex; align-items: center; gap: 8px; padding: 10px 12px 10px 16px; }
+.wd-set-count {
+  min-width: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 11px; text-align: center;
+  background: var(--wd-raised); color: var(--wd-muted); font-size: 12px; line-height: 22px; font-weight: 700;
+}
+.wd-set-count:empty { display: none; }
+.wd-set-devices .wd-devlist { padding: 0 12px; }
+.wd-set-devices .wd-devnone { padding: 0 4px 6px; }
+.wd-set-devices > .wd-hint { padding: 8px 16px 0; }
+.wd-set-devices { padding-bottom: 12px; }
+
+.wd-set-row { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; min-width: 0; }
+.wd-set-row + .wd-set-row, .wd-set-sub > .wd-set-row:first-child { border-top: 1px solid var(--wd-line); }
+.wd-set-row.inline { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 16px; }
+.wd-set-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.wd-set-label { font-size: 14px; line-height: 20px; font-weight: 500; }
+.wd-set-row.inline > .wd-input { width: 240px; }
+.wd-set-row.inline > select.wd-input { width: auto; max-width: 280px; }
+.wd-settings .wd-input { background: var(--wd-bg); }
+.wd-num { display: inline-flex; align-items: center; gap: 8px; }
+.wd-num .wd-input { width: 96px; text-align: right; }
+.wd-unit { min-width: 44px; font-size: 14px; line-height: 20px; color: var(--wd-muted); white-space: nowrap; }
+.wd-settings textarea.wd-input { min-height: 96px; }
+
+/* A numbered group folds: its header shows its title and what its values are. */
+.wd-set-head {
+  -webkit-appearance: none; appearance: none; border: 0; margin: 0; cursor: pointer; text-align: left; width: 100%;
+  display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 12px 8px 16px;
+  background: transparent; color: var(--wd-text); font-family: inherit;
+}
+.wd-set-head:hover { background: color-mix(in srgb, var(--wd-text) 4%, transparent); }
+.wd-set-head:focus-visible { outline: 2px solid var(--wd-accent); outline-offset: -2px; }
+.wd-set-head .wd-set-title { flex: none; max-width: 45%; }
+.wd-set-summary {
+  flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font-size: 14px; line-height: 20px; color: var(--wd-muted);
+}
+.wd-set-fold.empty .wd-set-title { color: var(--wd-muted); }
+.wd-set-chevron { flex: none; display: flex; width: 32px; height: 32px; align-items: center; justify-content: center; color: var(--wd-muted); }
+.wd-set-chevron svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s ease; }
+.wd-set-fold.open .wd-set-chevron svg { transform: rotate(180deg); }
+.wd-set-fold.open .wd-set-head { border-bottom: 1px solid var(--wd-line); }
+.wd-set-fold + .wd-set-fold { border-top: 1px solid var(--wd-line); }
+.wd-set-fold.open .wd-set-rows { background: color-mix(in srgb, var(--wd-text) 2.5%, transparent); }
+.wd-set-fold.open .wd-set-summary { visibility: hidden; }
+/* A switch's settings under it, indented; faded while it's off. */
+.wd-set-sub { padding-left: 16px; transition: opacity .15s ease; }
+.wd-set-sub.off { opacity: .45; }
+/* Slots: a narrow label beside each value. */
+.wd-set-note { padding: 12px 16px 0; }
+.wd-set-note + .wd-set-row { border-top: 0; }
+.wd-set-slots .wd-set-row { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; column-gap: 12px; }
+
+/* A switch (a checkbox). */
+.wd-switch {
+  -webkit-appearance: none; appearance: none; position: relative; flex: none; margin: 0; cursor: pointer;
+  width: 44px; height: 26px; border-radius: 13px; background: color-mix(in srgb, var(--wd-text) 22%, transparent); transition: background .15s ease;
+}
+.wd-switch::after {
+  content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 10px;
+  background: #FFFFFF; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); transition: transform .15s ease;
+}
+.wd-switch:checked { background: var(--wd-accent); }
+.wd-switch:checked::after { transform: translateX(18px); }
+.wd-switch:focus-visible { outline: 2px solid var(--wd-accent); outline-offset: 2px; }
+
+/* A short choice as segments. */
+.wd-seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px; background: var(--wd-raised); }
+.wd-seg-option {
+  -webkit-appearance: none; appearance: none; border: 0; margin: 0; cursor: pointer; min-width: 40px; min-height: 30px; padding: 0 12px;
+  border-radius: 7px; background: transparent; color: var(--wd-muted); white-space: nowrap;
+  font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500;
+}
+.wd-seg-option:hover { color: var(--wd-text); }
+.wd-seg-option.on { background: var(--wd-tile); color: var(--wd-text); box-shadow: 0 1px 3px rgba(0, 0, 0, .18); }
+.homey-dark-mode .wd-seg-option.on { background: #3A3B47; }
+.wd-seg-option:focus-visible, .wd-swatch:focus-visible { outline: 2px solid var(--wd-accent); outline-offset: 1px; }
+
+/* A colour as swatches, its name after them. */
+.wd-swatches { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+.wd-swatch {
+  -webkit-appearance: none; appearance: none; border: 0; margin: 0; padding: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 16px; background: transparent;
+}
+.wd-swatch.on { box-shadow: inset 0 0 0 2px var(--wd-text); }
+.wd-swatch-dot { flex: none; width: 22px; height: 22px; border-radius: 11px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12); }
+.wd-swatch-dot.plain { box-shadow: inset 0 0 0 1.5px var(--wd-muted); }
+.wd-swatch-dot.small { width: 10px; height: 10px; border-radius: 5px; }
+.wd-swatch-name { min-width: 64px; margin-left: 6px; font-size: 14px; line-height: 20px; color: var(--wd-muted); }
+
+/* A search setting's choice reads as a field with a chevron. */
+.wd-settings .wd-choice {
+  min-height: 40px; padding: 0 36px 0 12px; position: relative; border: 1px solid var(--wd-line); background: var(--wd-bg);
+  font-size: 15px; font-weight: 400; display: block; text-align: left; line-height: 38px;
+}
+.wd-settings .wd-choice::after {
+  content: ''; position: absolute; right: 14px; top: 50%; width: 7px; height: 7px; margin-top: -6px;
+  border-right: 2px solid var(--wd-muted); border-bottom: 2px solid var(--wd-muted); transform: rotate(45deg);
+}
+.wd-settings .wd-picker.open .wd-choice::after { margin-top: -2px; transform: rotate(-135deg); }
+.wd-settings .wd-valsel > .wd-btn { align-self: stretch; justify-content: flex-start; border-radius: 8px; border: 1px dashed var(--wd-line); background: transparent; color: var(--wd-muted); }
+
+@media (max-width: 560px) {
+  .wd-settings .wd-dialog-body { padding: 12px; }
+  .wd-dialog-preview { display: none; }
+  .wd-set-row.inline:not(.switch) { display: flex; align-items: stretch; }
+  .wd-set-row.inline > .wd-seg, .wd-set-row.inline > .wd-swatches, .wd-set-row.inline > .wd-num { align-self: flex-start; }
+  .wd-set-row.inline > .wd-input, .wd-set-row.inline > select.wd-input { width: 100%; max-width: none; }
+  .wd-set-slots .wd-set-row { grid-template-columns: 72px minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { .wd-switch, .wd-switch::after, .wd-set-chevron svg, .wd-set-sub { transition: none; } }
 
 .wd-toast {
   position: fixed; left: 50%; bottom: 24px; z-index: 10; transform: translateX(-50%); max-width: calc(100vw - 32px);
