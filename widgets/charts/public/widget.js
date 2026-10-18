@@ -4,7 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { TIGHT_UNITS, scaled, formatNumber } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { TIGHT_UNITS, scaled, formatNumber, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const C = window.WidgetkeeperChart;
@@ -74,7 +74,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, locale?: string, language?: string, now?: () => number,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string, language?: string, now?: () => number,
    *   charts?: { span?: string, style?: string, color?: string, range?: string, negative?: boolean, smooth?: boolean, title?: string }[],
    *   overlay?: boolean, showHeader?: boolean, onHeight?: (h: number) => void }} opts
    */
@@ -127,6 +127,7 @@
     let messageTimer = null;
 
     const kit = C.createKit();
+    applyColors(root, { style: opts.colorStyle }); // on the root, so the chart markup stays as it was
     const wrap = el('div', { class: 'ew ch' }, root);
     const message = el('div', { class: 'ew-message', dir: 'auto' }, wrap);
     const header = el('div', { class: 'ew-header' }, wrap);

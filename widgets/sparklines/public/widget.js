@@ -4,7 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, formatNumber, formatValue } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, formatNumber, formatValue, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -91,7 +91,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, span?: string, columns?: number|string,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, span?: string, columns?: number|string,
    *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   now?: () => number, onHeight?: (h: number) => void }} opts
    */
@@ -109,6 +109,7 @@
     let messageTimer = null;
 
     root.classList.add('sl');
+    applyColors(root, { style: opts.colorStyle });
     const names = tileNames(opts, () => render(), (key) => {
       const i = nameKeys(slots).indexOf(key);
       const tile = i >= 0 ? tiles.get(`${keyOf(slots[i])}#${i}`) : null;

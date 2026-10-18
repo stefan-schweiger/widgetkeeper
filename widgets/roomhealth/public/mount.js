@@ -26,6 +26,7 @@ window.mountRoomHealthWidget = function (Homey, { root, frame }) {
   const ranges = {};
   for (const id of ['tempMin', 'tempMax', 'humidityMin', 'humidityMax', 'co2Max', 'radonMax', 'pm25Max', 'pm10Max', 'vocMax']) ranges[id] = settings[id];
   const widget = window.createRoomHealthWidget(root, {
+    colorStyle: settings.colorStyle,
     t: (key, tokens) => Homey.__(key, tokens),
     renameTiles: settings.renameTiles === true,
     onRename: (key, name) => tileNames.rename(key, name),

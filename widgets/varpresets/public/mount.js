@@ -24,6 +24,7 @@ window.mountVarPresetsWidget = function (Homey, { root, frame }) {
   let loadedAt = 0;
 
   const widget = window.createVarPresetsWidget(root, {
+    colorStyle: settings.colorStyle,
     t: (key, tokens) => Homey.__(key, tokens),
     layout: settings.layout, // standard unless compact
     color: settings.color, // missing or unknown: blue

@@ -9,14 +9,15 @@
   --sd-muted: var(--homey-text-color-light, #9C9DA5);
   --sd-blue: var(--homey-color-blue, #0091EA);
   --sd-red: var(--homey-color-red, #F25F5C);
-  /* The colour settings (data-idle / data-active on .sd): Device Values' Flow colours plus grey. */
+  /* The colour settings (data-idle / data-active on .sd): Device Values' Flow colours plus grey, kit.css's darker shades of
+     them (Deep: the bright colours, below). */
   --sd-c-grey: color-mix(in srgb, var(--sd-muted) 70%, var(--sd-tile));
-  --sd-c-blue: var(--sd-blue);
-  --sd-c-red: var(--sd-red);
-  --sd-c-orange: var(--homey-color-orange, #F07A1F);
-  --sd-c-yellow: #F5C518;
-  --sd-c-green: var(--homey-color-green, #71D51B);
-  --sd-c-purple: #9033FC;
+  --sd-c-blue: var(--wk-blue-shade);
+  --sd-c-red: var(--wk-red-shade);
+  --sd-c-orange: var(--wk-orange-shade);
+  --sd-c-yellow: var(--wk-yellow-shade);
+  --sd-c-green: var(--wk-green-shade);
+  --sd-c-purple: var(--wk-purple-shade);
   --sd-idle: var(--sd-c-grey);
   --sd-active: var(--sd-c-blue);
   --sd-fs-small: var(--homey-font-size-small, 14px);
@@ -27,6 +28,11 @@
 }
 /* Dark mode: Homey's native device tiles, as Device Quick Actions. */
 .homey-dark-mode .sd, .sd.homey-dark-mode { --sd-tile: #181920; --sd-raised: #2E3039; }
+/* Deep (kit.css): the bright colours at full strength (grey stays grey). */
+.sd.wk-deep {
+  --sd-c-blue: var(--wk-blue-bright); --sd-c-red: var(--wk-red-bright); --sd-c-orange: var(--wk-orange-bright);
+  --sd-c-yellow: var(--wk-yellow-bright); --sd-c-green: var(--wk-green-bright); --sd-c-purple: var(--wk-purple-bright);
+}
 .sd[data-idle="blue"] { --sd-idle: var(--sd-c-blue); }
 .sd[data-idle="red"] { --sd-idle: var(--sd-c-red); }
 .sd[data-idle="orange"] { --sd-idle: var(--sd-c-orange); }

@@ -46,7 +46,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, locale?: string,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string,
    *   onApply?: (values: {capabilityId: string, value: any}[]) => Promise<any>,
    *   onHeight?: (h: number) => void, layout?: string }} opts
    */
@@ -59,6 +59,7 @@
     const numberFmt = new Intl.NumberFormat(opts.locale, { maximumFractionDigits: 1 });
 
     // The header, the buttons and which is lit; the device model below reads its state ({ name, icon, values, caps }).
+    window.WidgetkeeperKit.applyColors(root, { style: opts.colorStyle }); // ../spacer/kit.js: the Deep colours
     const core = window.WidgetkeeperPresets.create(root, {
       layout: opts.layout,
       onHeight: opts.onHeight,

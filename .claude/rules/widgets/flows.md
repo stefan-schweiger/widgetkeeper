@@ -18,3 +18,4 @@ paths:
 - Starting uses the personal API key (`flow.triggerFlow({id})` / `flow.triggerAdvancedFlow({id})`); reading uses the app's token (`getFlows`, `getAdvancedFlows`, `getFlowFolders`). Not yet started from the widget on the real Homey.
 - `GET /state?ids=` (`{id, name, enabled, triggerable, advanced}` or missing), `POST /trigger {id}` (`{ok: true}` or `{ok: false, reason}`). No realtime: one read of all flows is shared for 60 s (the autocomplete's for 5 s), and widgets refetch every 5 min. Diagnostics' `flows`: counts and the last error, never names.
 - `dev/flows-preview.html` (`Broken flow` fails).
+- Colour style (`colorStyle`, Default/Deep; CLAUDE.md *Widget styling*, `kit.css`): after `columns`. `--fb-c-*` are the palette's. Deep: each row is its colour's shade, solid, with the text in its `--wk-on-<colour>`, the round button 20 % of that and the spinner in it; grey rows and missing flows are unchanged.

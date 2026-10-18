@@ -1,0 +1,100 @@
+/*
+ * The widgets' shared colours, the stylesheet half of kit.js: every index.html loads it as `../spacer/kit.css`, as it
+ * loads the kit. `applyColors()` puts `wk` on a widget root (not :root, so Homey's dark tokens on the frame resolve),
+ * `wk-deep` for the Deep colours, and `data-wk-color` for a colour setting.
+ *
+ * Every colour comes in two sets, both always defined:
+ * - bright (`--wk-<name>-bright`): Homey's colour tokens (the fallbacks are the dark-theme values outside Homey). Yellow
+ *   and purple have no Homey token: Device Values' yellow and Homey's web-app purple.
+ * - shade (`--wk-<name>-shade`): Homey's darker palette shades, with white text 5.2–7.2:1. Orange has no shades in
+ *   Homey's palette and purple none at all; yellow has no dark shade that still reads as yellow, so it stays, with dark text.
+ * `--wk-on-<name>-<set>` is the text or icon on a solid fill of it.
+ *
+ * `--wk-<name>` is the one the scheme picks for tinted tiles: bright, mixed 22 % into a tile (Default), or the shade as a
+ * solid fill (Deep). Widgets whose colours are small and solid already (a lit button, dots, heatmap cells, a play button)
+ * use the sets directly the other way round: the shade in Default, bright in Deep.
+ */
+.wk {
+  --wk-blue-bright: var(--homey-color-blue, #2F8DF6);
+  --wk-red-bright: var(--homey-color-red, #F25F5C);
+  --wk-orange-bright: var(--homey-color-orange, #F07A1F);
+  --wk-yellow-bright: #F5C518;
+  --wk-green-bright: var(--homey-color-green, #71D51B);
+  --wk-purple-bright: #9033FC;
+  --wk-on-blue-bright: #FFFFFF;
+  --wk-on-red-bright: #FFFFFF;
+  --wk-on-orange-bright: #FFFFFF;
+  --wk-on-yellow-bright: #1A1B21;
+  --wk-on-green-bright: #1A1B21;
+  --wk-on-purple-bright: #FFFFFF;
+
+  --wk-blue-shade: var(--homey-color-blue-600, #0068C8);
+  --wk-red-shade: var(--homey-color-red-600, #AD1617);
+  --wk-orange-shade: #A85700;
+  --wk-yellow-shade: #F5C518;
+  --wk-green-shade: var(--homey-color-green-700, #267700);
+  --wk-purple-shade: #7500FB;
+  --wk-on-blue-shade: #FFFFFF;
+  --wk-on-red-shade: #FFFFFF;
+  --wk-on-orange-shade: #FFFFFF;
+  --wk-on-yellow-shade: #1A1B21;
+  --wk-on-green-shade: #FFFFFF;
+  --wk-on-purple-shade: #FFFFFF;
+
+  --wk-blue: var(--wk-blue-bright);
+  --wk-red: var(--wk-red-bright);
+  --wk-orange: var(--wk-orange-bright);
+  --wk-yellow: var(--wk-yellow-bright);
+  --wk-green: var(--wk-green-bright);
+  --wk-purple: var(--wk-purple-bright);
+  --wk-on-blue: var(--wk-on-blue-bright);
+  --wk-on-red: var(--wk-on-red-bright);
+  --wk-on-orange: var(--wk-on-orange-bright);
+  --wk-on-yellow: var(--wk-on-yellow-bright);
+  --wk-on-green: var(--wk-on-green-bright);
+  --wk-on-purple: var(--wk-on-purple-bright);
+  /* The muted text on a Deep fill. */
+  --wk-on-muted: rgb(255 255 255 / .78);
+}
+.wk.wk-deep {
+  --wk-blue: var(--wk-blue-shade);
+  --wk-red: var(--wk-red-shade);
+  --wk-orange: var(--wk-orange-shade);
+  --wk-yellow: var(--wk-yellow-shade);
+  --wk-green: var(--wk-green-shade);
+  --wk-purple: var(--wk-purple-shade);
+  --wk-on-blue: var(--wk-on-blue-shade);
+  --wk-on-red: var(--wk-on-red-shade);
+  --wk-on-orange: var(--wk-on-orange-shade);
+  --wk-on-yellow: var(--wk-on-yellow-shade);
+  --wk-on-green: var(--wk-on-green-shade);
+  --wk-on-purple: var(--wk-on-purple-shade);
+}
+
+/* A colour setting (`data-wk-color`, on the root or on a tile): `--wk-c` and the text on it, `--wk-on`, and both sets. */
+.wk [data-wk-color="blue"], .wk[data-wk-color="blue"] {
+  --wk-c: var(--wk-blue); --wk-on: var(--wk-on-blue);
+  --wk-c-bright: var(--wk-blue-bright); --wk-on-bright: var(--wk-on-blue-bright); --wk-c-shade: var(--wk-blue-shade); --wk-on-shade: var(--wk-on-blue-shade);
+}
+.wk [data-wk-color="red"], .wk[data-wk-color="red"] {
+  --wk-c: var(--wk-red); --wk-on: var(--wk-on-red);
+  --wk-c-bright: var(--wk-red-bright); --wk-on-bright: var(--wk-on-red-bright); --wk-c-shade: var(--wk-red-shade); --wk-on-shade: var(--wk-on-red-shade);
+}
+.wk [data-wk-color="orange"], .wk[data-wk-color="orange"] {
+  --wk-c: var(--wk-orange); --wk-on: var(--wk-on-orange);
+  --wk-c-bright: var(--wk-orange-bright); --wk-on-bright: var(--wk-on-orange-bright); --wk-c-shade: var(--wk-orange-shade); --wk-on-shade: var(--wk-on-orange-shade);
+}
+.wk [data-wk-color="yellow"], .wk[data-wk-color="yellow"] {
+  --wk-c: var(--wk-yellow); --wk-on: var(--wk-on-yellow);
+  --wk-c-bright: var(--wk-yellow-bright); --wk-on-bright: var(--wk-on-yellow-bright); --wk-c-shade: var(--wk-yellow-shade); --wk-on-shade: var(--wk-on-yellow-shade);
+}
+.wk [data-wk-color="green"], .wk[data-wk-color="green"] {
+  --wk-c: var(--wk-green); --wk-on: var(--wk-on-green);
+  --wk-c-bright: var(--wk-green-bright); --wk-on-bright: var(--wk-on-green-bright); --wk-c-shade: var(--wk-green-shade); --wk-on-shade: var(--wk-on-green-shade);
+}
+.wk [data-wk-color="purple"], .wk[data-wk-color="purple"] {
+  --wk-c: var(--wk-purple); --wk-on: var(--wk-on-purple);
+  --wk-c-bright: var(--wk-purple-bright); --wk-on-bright: var(--wk-on-purple-bright); --wk-c-shade: var(--wk-purple-shade); --wk-on-shade: var(--wk-on-purple-shade);
+}
+/* Text on yellow stays dark in Deep; its muted text too. */
+.wk.wk-deep[data-wk-color="yellow"], .wk.wk-deep [data-wk-color="yellow"] { --wk-on-muted: rgb(26 27 33 / .75); }

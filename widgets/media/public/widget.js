@@ -11,7 +11,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a control shows its new value while waiting for the speaker
@@ -165,7 +165,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string,
+   * @param {{ colorStyle?: string, color?: string, t?: (key: string, tokens?: object) => string,
    *   onSet?: (capabilityId: string, value: any) => Promise<any>,
    *   onButton?: (id: string) => Promise<any>,
    *   onArt?: () => Promise<{type: string, data: string}>,
@@ -216,6 +216,7 @@
     let artShown = null; // the image URL on screen
 
     root.classList.add('mw');
+    applyColors(root, { style: opts.colorStyle, color: opts.color, fallback: 'blue' });
     root.classList.toggle('mw-volume-buttons', volumeButtons);
     /** The album art at the full width above the rest (wk-046), instead of beside the track. */
     const large = opts.layout === 'large';

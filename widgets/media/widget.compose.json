@@ -125,6 +125,224 @@
       }
     },
     {
+      "id": "color",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour",
+        "nl": "Kleur",
+        "de": "Farbe",
+        "fr": "Couleur",
+        "it": "Colore",
+        "sv": "Färg",
+        "no": "Farge",
+        "es": "Color",
+        "da": "Farve",
+        "ru": "Цвет",
+        "pl": "Kolor",
+        "ko": "색상",
+        "ar": "اللون"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        }
+      ],
+      "hint": {
+        "en": "The colour of the play button and what's on.",
+        "nl": "De kleur van de afspeelknop en wat aan staat.",
+        "de": "Die Farbe der Wiedergabetaste und von allem, was eingeschaltet ist.",
+        "fr": "La couleur du bouton de lecture et de ce qui est activé.",
+        "it": "Il colore del pulsante di riproduzione e di ciò che è attivo.",
+        "sv": "Färgen på uppspelningsknappen och det som är på.",
+        "no": "Fargen på avspillingsknappen og det som er på.",
+        "es": "El color del botón de reproducción y de lo que está activado.",
+        "da": "Farven på afspilningsknappen og det, der er slået til.",
+        "ru": "Цвет кнопки воспроизведения и включённых функций.",
+        "pl": "Kolor przycisku odtwarzania i tego, co jest włączone.",
+        "ko": "재생 버튼과 켜진 항목의 색입니다.",
+        "ar": "لون زر التشغيل وما هو مفعّل."
+      }
+    },
+    {
+      "id": "colorStyle",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour style",
+        "nl": "Kleurstijl",
+        "de": "Farbstil",
+        "fr": "Style de couleur",
+        "it": "Stile colori",
+        "sv": "Färgstil",
+        "no": "Fargestil",
+        "es": "Estilo de color",
+        "da": "Farvestil",
+        "ru": "Цветовой стиль",
+        "pl": "Styl kolorów",
+        "ko": "색상 스타일",
+        "ar": "نمط الألوان"
+      },
+      "hint": {
+        "en": "Deep shows the lit buttons and what's on in the full, bright colour.",
+        "nl": "Diep toont de verlichte knoppen en wat aan staat in de volle, felle kleur.",
+        "de": "Satt zeigt die hervorgehobenen Tasten und alles Eingeschaltete in der vollen, kräftigen Farbe.",
+        "fr": "Profondes affiche les boutons allumés et ce qui est activé dans la couleur pleine et vive.",
+        "it": "Intensi mostra i pulsanti accesi e ciò che è attivo nel colore pieno e vivace.",
+        "sv": "Djupa visar de tända knapparna och det som är på i full, klar färg.",
+        "no": "Dype viser de opplyste knappene og det som er på i full, klar farge.",
+        "es": "Intensos muestra los botones encendidos y lo que está activado en el color pleno y vivo.",
+        "da": "Dybe viser de tændte knapper og det, der er slået til, i fuld, klar farve.",
+        "ru": "«Насыщенные» показывают активные кнопки и включённые функции полным ярким цветом.",
+        "pl": "Głębokie pokazują podświetlone przyciski i to, co jest włączone, w pełnym, jaskrawym kolorze.",
+        "ko": "진하게는 켜진 버튼과 켜진 항목을 선명한 원래 색으로 표시합니다.",
+        "ar": "«عميقة» تعرض الأزرار المضاءة وما هو مفعّل باللون الكامل الزاهي."
+      },
+      "value": "soft",
+      "values": [
+        {
+          "id": "soft",
+          "title": {
+            "en": "Default",
+            "nl": "Standaard",
+            "de": "Standard",
+            "fr": "Par défaut",
+            "it": "Predefiniti",
+            "sv": "Standard",
+            "no": "Standard",
+            "es": "Predeterminados",
+            "da": "Standard",
+            "ru": "Обычные",
+            "pl": "Domyślne",
+            "ko": "기본",
+            "ar": "افتراضية"
+          }
+        },
+        {
+          "id": "deep",
+          "title": {
+            "en": "Deep",
+            "nl": "Diep",
+            "de": "Satt",
+            "fr": "Profondes",
+            "it": "Intensi",
+            "sv": "Djupa",
+            "no": "Dype",
+            "es": "Intensos",
+            "da": "Dybe",
+            "ru": "Насыщенные",
+            "pl": "Głębokie",
+            "ko": "진하게",
+            "ar": "عميقة"
+          }
+        }
+      ]
+    },
+    {
       "id": "switchSpeakers",
       "type": "checkbox",
       "value": true,

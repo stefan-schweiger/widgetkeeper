@@ -27,6 +27,7 @@ window.mountDaysSinceWidget = function (Homey, { root, frame }) {
   let loadedAt = 0;
 
   const widget = window.createDaysSinceWidget(root, {
+    colorStyle: settings.colorStyle,
     t: (key, tokens) => Homey.__(key, tokens),
     counters,
     units: settings.units,

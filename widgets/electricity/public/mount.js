@@ -25,6 +25,7 @@ window.mountElectricityWidget = function (Homey, { root, frame }) {
   const widget = window.createElectricityWidget(root, {
     t: (key, tokens) => Homey.__(key, tokens),
     layout: settings.layout, // missing on widgets placed before the setting: standard
+    colorStyle: settings.colorStyle,
     onHeight: () => {
       if (!readySent) return;
       Homey.setHeight(Math.ceil(frame.getBoundingClientRect().height)); // the frame's, with its padding, as ready()

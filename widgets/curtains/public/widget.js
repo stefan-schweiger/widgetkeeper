@@ -4,7 +4,7 @@
  * bottom sets the position (0 = closed, 1 = open). Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a changed tile shows its new value while waiting for the device
@@ -80,7 +80,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string,
+   * @param {{ colorStyle?: string, color?: string, t?: (key: string, tokens?: object) => string,
    *   onSet?: (deviceId: string, change: {action?: string, position?: number}) => Promise<any>,
    *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   onHeight?: (h: number) => void, groupByZone?: boolean, between?: string, invert?: boolean, openAt?: string, showState?: boolean }} opts
@@ -156,6 +156,7 @@
     let lastTouchTap = 0;
 
     root.classList.add('ct');
+    applyColors(root, { style: opts.colorStyle, color: opts.color, fallback: 'blue' });
     const names = tileNames(opts, () => render(), (key) => {
       shake(key);
       setMessage(t('renameFailed'), true);

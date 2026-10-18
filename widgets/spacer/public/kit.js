@@ -272,5 +272,32 @@
     };
   }
 
-  window.WidgetkeeperKit = { icons: ICONS, TIGHT_UNITS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, withName, formatSince, baseTitle, lowestSlot, loadMarks, wireTileNames };
+  /** The colour settings' names (Device Values' Flow colours), in kit.css's palette. */
+  const COLORS = ['blue', 'red', 'orange', 'yellow', 'green', 'purple'];
+
+  /**
+   * The `colorStyle` setting ("Colours"): 'deep' (Homey's darker shades as solid fills, white text) or 'soft' (the
+   * default). Device Values' old 'bright' reads as 'deep'; a missing or unknown value is the default.
+   */
+  function colorStyle(value) {
+    return value === 'deep' || value === 'bright' ? 'deep' : 'soft';
+  }
+
+  /**
+   * Puts a widget root on kit.css's palette: `wk`, `wk-deep` for the Deep colours, and `data-wk-color` (a colour
+   * setting, else `fallback`; null leaves it out) for `--wk-c`/`--wk-on`. Returns the scheme ('soft' or 'deep').
+   * @param {HTMLElement} root
+   * @param {{ style?: unknown, color?: unknown, fallback?: string | null }} [opts]
+   */
+  function applyColors(root, { style, color, fallback = null } = {}) {
+    const scheme = colorStyle(style);
+    root.classList.add('wk');
+    root.classList.toggle('wk-deep', scheme === 'deep');
+    const name = typeof color === 'string' && COLORS.includes(color) ? color : fallback;
+    if (name) root.dataset.wkColor = name;
+    else delete root.dataset.wkColor;
+    return scheme;
+  }
+
+  window.WidgetkeeperKit = { icons: ICONS, TIGHT_UNITS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, withName, formatSince, baseTitle, lowestSlot, loadMarks, wireTileNames, colorStyle, applyColors };
 })();

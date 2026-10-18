@@ -7,7 +7,11 @@
   --mw-card: var(--homey-background-color, #1F2029);
   --mw-text: var(--homey-text-color, #EDEEF0);
   --mw-muted: var(--homey-text-color-light, #9C9DA5);
-  --mw-accent: var(--homey-color-blue, #2F8DF6);
+  /* The colour setting (kit.css; blue by default): Homey's darker shade of it, or in Deep the bright colour (below). --mw-on is the
+     text or icon on it, --mw-mute the red of mute. */
+  --mw-accent: var(--wk-c-shade);
+  --mw-on: var(--wk-on-shade);
+  --mw-mute: var(--wk-red-shade);
   --mw-red: var(--homey-color-red, #F25F5C);
   --mw-white: var(--homey-text-color-white, #FFFFFF);
   --mw-grey: color-mix(in srgb, var(--mw-text) 10%, var(--mw-card)); /* Variables' −/+ fill */
@@ -116,18 +120,18 @@ button.mw-who.pressing { opacity: .6; }
 .mw-btn.pressing { transform: scale(.92); }
 .mw-btn:disabled { opacity: .4; cursor: default; }
 .mw-btn.flash { background: color-mix(in srgb, var(--mw-accent) 45%, var(--mw-grey)); }
-.mw-play { background: var(--mw-accent); color: var(--mw-white); }
+.mw-play { background: var(--mw-accent); color: var(--mw-on); }
 .mw-play .mw-glyph { width: 24px; height: 24px; }
 /* On TV or line-in: play, previous and next do nothing there, so they step back; mute and the volume stay. */
 .mw-external .mw-transport { opacity: .35; pointer-events: none; }
 .mw-external .mw-play { background: var(--mw-grey); color: var(--mw-text); }
-.mw-mute.on { background: var(--mw-red); color: var(--mw-white); }
+.mw-mute.on { background: var(--mw-mute); color: var(--mw-white); }
 .mw-small { width: 36px; height: 36px; background: transparent; color: var(--mw-muted); }
 .mw-small .mw-glyph { width: 20px; height: 20px; }
 .mw-small.on { color: var(--mw-accent); }
 .mw-badge {
   position: absolute; right: 3px; top: 3px; display: none; min-width: 12px; height: 12px; border-radius: 6px;
-  background: var(--mw-accent); color: var(--mw-white); font-size: 9px; line-height: 12px; font-weight: var(--mw-bold); text-align: center;
+  background: var(--mw-accent); color: var(--mw-on); font-size: 9px; line-height: 12px; font-weight: var(--mw-bold); text-align: center;
 }
 .mw-small.one .mw-badge { display: block; }
 
@@ -228,6 +232,20 @@ button.mw-who.pressing { opacity: .6; }
 .mw-chip.on:not(.mw-toggle) { background: color-mix(in srgb, var(--mw-accent) 30%, var(--mw-card)); }
 .mw-chip.running { animation: mw-pulse 1s ease-in-out infinite; }
 .mw-chip.done { background: color-mix(in srgb, var(--homey-color-green, #5DB815) 30%, var(--mw-card)); }
+
+/*
+ * Deep (kit.css): the bright colour, and what's lit is solid in it with its text and icons in --mw-on: the TV tile, the current
+ * speaker, the lit pills, shuffle, repeat and ⋯ (filled circles); mute in the bright red.
+ */
+.mw.wk-deep {
+  --mw-accent: var(--wk-c-bright); --mw-on: var(--wk-on-bright); --mw-mute: var(--wk-red-bright);
+  --mw-on-muted: color-mix(in srgb, var(--mw-on) 78%, transparent);
+}
+.mw.wk-deep .mw-art.external, .mw.wk-deep .mw-spk.current, .mw.wk-deep .mw-chip.on, .mw.wk-deep .mw-small.on, .mw.wk-deep .mw-more.on {
+  background: var(--mw-accent); color: var(--mw-on); --mw-text: var(--mw-on); --mw-muted: var(--mw-on-muted);
+}
+.mw.wk-deep .mw-spk.current :is(.mw-spk-icon, .mw-spk-check), .mw.wk-deep .mw-chip.on .mw-glyph { color: var(--mw-on); }
+.mw.wk-deep .mw-small.on .mw-badge { background: var(--mw-on); color: var(--mw-accent); }
 
 .mw-card.missing .mw-art, .mw-card.missing .mw-info { opacity: .5; }
 

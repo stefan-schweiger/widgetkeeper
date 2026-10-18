@@ -22,7 +22,10 @@
   --rh-bold: var(--homey-font-weight-bold, 700);
   --rh-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
   --rh-ring: 68px;
+  /* Colours (kit.css): the arcs and the hint's dot toned down, mixed into the track; Deep draws them in full colour. */
+  --rh-arc-mix: 60%;
 }
+.rh.wk-deep { --rh-arc-mix: 100%; }
 /* Dark mode: Homey's native device tiles, as Device Quick Actions. */
 .homey-dark-mode .rh, .rh.homey-dark-mode {
   --rh-tile: #181920; --rh-track: #2B2C36;
@@ -61,8 +64,10 @@ html, body { background: transparent !important; }
 .rh-room.pressing .rh-ring { transform: scale(.95); }
 .rh-ring svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .rh-arc { fill: none; stroke-linecap: round; stroke: var(--rh-track); transition: stroke .3s; }
-.rh-arc[data-level="good"] { stroke: var(--rh-green); }
-.rh-arc[data-level="off"] { stroke: color-mix(in oklab, var(--rh-red) calc(var(--k, 1) * 100%), var(--rh-yellow)); }
+.rh-arc[data-level="good"] { stroke: color-mix(in oklab, var(--rh-green) var(--rh-arc-mix), var(--rh-track)); }
+.rh-arc[data-level="off"] {
+  stroke: color-mix(in oklab, color-mix(in oklab, var(--rh-red) calc(var(--k, 1) * 100%), var(--rh-yellow)) var(--rh-arc-mix), var(--rh-track));
+}
 /* A sensor that's gone: a thin dashed ring. */
 .rh-room.missing .rh-arc { stroke: color-mix(in srgb, var(--rh-muted) 55%, transparent); stroke-dasharray: 5 7; }
 /* The centre: the worst value (17 bold), its unit under it when it has one. */
@@ -88,8 +93,10 @@ html, body { background: transparent !important; }
 /* The hint: the worst problem in the house (the room bold, the problem in its colour), or a tapped ring's readings. */
 .rh-hint { display: flex; align-items: center; gap: var(--homey-su-2, 8px); min-height: 20px; margin-top: var(--homey-su-3, 12px); }
 .rh-hint-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--rh-track); }
-.rh-hint-dot[data-level="good"] { background: var(--rh-green); }
-.rh-hint-dot[data-level="off"] { background: color-mix(in oklab, var(--rh-red) calc(var(--k, 1) * 100%), var(--rh-yellow)); }
+.rh-hint-dot[data-level="good"] { background: color-mix(in oklab, var(--rh-green) var(--rh-arc-mix), var(--rh-track)); }
+.rh-hint-dot[data-level="off"] {
+  background: color-mix(in oklab, color-mix(in oklab, var(--rh-red) calc(var(--k, 1) * 100%), var(--rh-yellow)) var(--rh-arc-mix), var(--rh-track));
+}
 .rh-hint-text {
   flex: 1; min-width: 0; font-size: var(--rh-fs-small); line-height: 20px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;

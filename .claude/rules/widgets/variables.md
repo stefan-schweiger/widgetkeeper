@@ -18,3 +18,4 @@ paths:
 - The service connects on the first `/state` and disconnects after 10 min without one. It re-reads every variable at most every 4 min (`$cache: false`) in case an event was missed; a variable changed meanwhile keeps the newer value. `set` checks the type (finite numbers, strings up to 1000 characters).
 - `GET /state?ids=a,b` (`{id, name, type, value}` or missing, in order), `POST /set {id, value}`. Realtime `variables:state`, only for ids asked for in the last 10 min. Diagnostics' `variables`: connection and counts, never values.
 - `dev/variables-preview.html` (`Broken flag` fails). The Energy and Security showcases have one.
+- Colour style (`colorStyle`, Default/Deep; CLAUDE.md *Widget styling*, `kit.css`): after `columns`, with `color` (the switch and the read-only dot, blue by default; `--vr-accent` is `--wk-c`). Deep: a row that's on is the shade, solid, with `--wk-on` text, a 40 % switch track and the dot in `--wk-on`.

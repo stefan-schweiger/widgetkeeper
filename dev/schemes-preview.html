@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Colour style: Default and Deep</title>
+  <!--
+    The Colour style setting (colorStyle): every widget that has it, Default next to Deep, with the real widget code and the
+    showcase's made-up house (showcase-data.js), on the fixed clock. The third column is Deep with another colour where the
+    widget has a colour setting (purple), or Weather's Deep theme. ?mode=light for light mode; ?tokens=homey uses Homey's own
+    token values (from the Homey's /widgets/css/_homey-variables.css, 2026-10-18) instead of the widgets' fallbacks, so the
+    page looks as on the Homey. Serve the repo root (python -m http.server 8765) and open /dev/schemes-preview.html.
+  -->
+  <script>
+    const PARAMS = new URLSearchParams(location.search);
+    if (PARAMS.get('mode') !== 'light') document.documentElement.classList.add('homey-dark-mode');
+  </script>
+  <!-- Light mode outside Homey: the light tokens Homey sets in the real frame (dev/preview.css's .light). -->
+  <style>
+    html:not(.homey-dark-mode) { --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+  </style>
+  <style id="homey-tokens" media="not all">
+    :root {
+      --homey-color-blue-600: #0068c8; --homey-color-blue-700: #004e96;
+      --homey-color-green-700: #267700; --homey-color-red-600: #ad1617;
+      --homey-color-blue: #0082fa; --homey-color-green: #3fc700; --homey-color-orange: #ff8400; --homey-color-red: #d81c1d;
+      --homey-background-color: #ffffff; --homey-text-color: #1c1c1c; --homey-text-color-light: #93939a; --homey-text-color-white: #ffffff;
+      --homey-line-color: #dadae2; --homey-line-color-light: #eaeaf1;
+      --homey-border-radius-small: 5px; --homey-border-radius-default: 10px;
+    }
+    .homey-dark-mode {
+      --homey-color-blue: #339bfb;
+      --homey-background-color: #1f2029; --homey-text-color: #e4e4e7; --homey-text-color-light: #999aa3;
+      --homey-line-color: #3b3d4a; --homey-line-color-light: #2b2c36;
+    }
+  </style>
+  <script>if (PARAMS.get('tokens') === 'homey') document.getElementById('homey-tokens').media = 'all';</script>
+  <script src="fixed-clock.js"></script>
+  <link rel="stylesheet" href="../widgets/spacer/public/kit.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/electricity/public/chart.css">
+  <link rel="stylesheet" href="../widgets/electricity/public/widget.css">
+  <link rel="stylesheet" href="../widgets/thermostat/public/presets.css">
+  <link rel="stylesheet" href="../widgets/thermostat/public/widget.css">
+  <link rel="stylesheet" href="../widgets/quickactions/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sensoralarms/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sensordots/public/widget.css">
+  <link rel="stylesheet" href="../widgets/roomhealth/public/widget.css">
+  <link rel="stylesheet" href="../widgets/weather/public/widget.css">
+  <link rel="stylesheet" href="../widgets/heatmap/public/widget.css">
+  <link rel="stylesheet" href="../widgets/values/public/widget.css">
+  <link rel="stylesheet" href="../widgets/variables/public/widget.css">
+  <link rel="stylesheet" href="../widgets/varpresets/public/widget.css">
+  <link rel="stylesheet" href="../widgets/flows/public/widget.css">
+  <link rel="stylesheet" href="../widgets/price/public/widget.css">
+  <link rel="stylesheet" href="../widgets/timers/public/widget.css">
+  <link rel="stylesheet" href="../widgets/locks/public/widget.css">
+  <link rel="stylesheet" href="../widgets/lights/public/widget.css">
+  <link rel="stylesheet" href="../widgets/curtains/public/widget.css">
+  <link rel="stylesheet" href="../widgets/media/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sparklines/public/widget.css">
+  <link rel="stylesheet" href="../widgets/charts/public/widget.css">
+  <link rel="stylesheet" href="../widgets/textline/public/widget.css">
+  <link rel="stylesheet" href="../widgets/dayssince/public/widget.css">
+  <script src="../widgets/spacer/public/kit.js"></script>
+  <script src="../widgets/electricity/public/chart.js"></script>
+  <script src="../widgets/electricity/public/widget.js"></script>
+  <script src="../widgets/thermostat/public/presets.js"></script>
+  <script src="../widgets/thermostat/public/widget.js"></script>
+  <script src="../widgets/quickactions/public/widget.js"></script>
+  <script src="../widgets/sensoralarms/public/widget.js"></script>
+  <script src="../widgets/sensordots/public/widget.js"></script>
+  <script src="../widgets/roomhealth/public/widget.js"></script>
+  <script src="../widgets/weather/public/widget.js"></script>
+  <script src="../widgets/heatmap/public/widget.js"></script>
+  <script src="../widgets/cameras/public/widget.js"></script>
+  <script src="../widgets/values/public/widget.js"></script>
+  <script src="../widgets/variables/public/widget.js"></script>
+  <script src="../widgets/varpresets/public/widget.js"></script>
+  <script src="../widgets/flows/public/widget.js"></script>
+  <script src="../widgets/price/public/widget.js"></script>
+  <script src="../widgets/timers/public/widget.js"></script>
+  <script src="../widgets/locks/public/widget.js"></script>
+  <script src="../widgets/lights/public/widget.js"></script>
+  <script src="../widgets/curtains/public/widget.js"></script>
+  <script src="../widgets/media/public/widget.js"></script>
+  <script src="../widgets/sparklines/public/widget.js"></script>
+  <script src="../widgets/charts/public/widget.js"></script>
+  <script src="../widgets/clock/public/widget.js"></script>
+  <script src="../widgets/textline/public/widget.js"></script>
+  <script src="../widgets/dayssince/public/widget.js"></script>
+  <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
+  <script src="mock-util.js"></script>
+  <script src="mock-media.js"></script>
+  <script src="showcase-data.js"></script>
+  <script src="showcase-mount.js"></script>
+  <style>
+    html { font-family: Roboto, system-ui, sans-serif; }
+    html, body { margin: 0; }
+    body { padding: 24px 28px 36px; background: #F2F3F5 !important; color: #1C1C1C; display: inline-block; }
+    .homey-dark-mode body { background: #111217 !important; color: #E4E4E7; }
+    h1 { font: 700 24px/32px Roboto, sans-serif; margin: 0 0 4px; }
+    .intro { font: 14px/20px Roboto, sans-serif; opacity: .8; max-width: 1200px; margin: 0 0 20px; }
+    .grid { display: grid; grid-template-columns: 140px repeat(3, 358px); column-gap: 28px; row-gap: 20px; align-items: start; }
+    .head { font: 700 17px/24px Roboto, sans-serif; }
+    .label { font: 500 14px/20px Roboto, sans-serif; padding-top: 4px; }
+    .label small { display: block; font: 12px/16px Roboto, sans-serif; opacity: .65; }
+    .cell { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+    /* A non-transparent widget's frame: Homey's widget card with its padding. */
+    .card { background: #FFFFFF; border-radius: 20px; padding: 16px; box-sizing: border-box; }
+    .homey-dark-mode .card { background: #1F2029; }
+    .homey-dark-mode .card.tw-frame, .homey-dark-mode .card.wf-frame, .homey-dark-mode .card.hm-frame, .homey-dark-mode .card.mw-frame { background: #181920; }
+    .error { color: #D81C1D; font: 12px/16px monospace; white-space: pre-wrap; }
+    .tm-row { animation: none !important; } /* still pictures */
+  </style>
+</head>
+<body>
+  <h1>Colour style: Default and Deep</h1>
+  <p class="intro">The Colour style setting (<code>colorStyle</code>) on the real widgets. Deep uses Homey's darker shades as solid fills with
+    white text (kit.css). The last column is Deep with another colour where the widget has a colour setting, or Weather's Deep theme.
+    <code>?mode=light</code> · <code>?tokens=homey</code></p>
+  <div class="grid" id="grid"></div>
+
+  <script>
+    const DAY = 864e5, MIN = 6e4;
+    const COLUMNS = [
+      ['Default', {}],
+      ['Deep', { colorStyle: 'deep' }],
+      ['Deep · another colour', { colorStyle: 'deep', color: 'purple' }],
+    ];
+
+    // Device Values: a tile per Flow colour, and percentage fills with an On.
+    const battery = findWidget('values', 1).slots[0];
+    const colorSlots = [['red', 'Freezer door', 8.2], ['orange', 'Sauna', 78], ['yellow', 'Greenhouse', 24.5],
+      ['green', 'Internet', 21], ['blue', 'Fridge', 3.8], ['purple', 'Wine cellar', 12.4]].map(([color, name, v], i) => ({
+      ...battery, deviceId: `fc${i}`, name, capabilityId: 'measure_temperature',
+      capability: { ...battery.capability, title: 'Temperature', units: '°C', decimals: 1 }, value: v, color,
+    }));
+    const fillSlots = [...findWidget('values', 1).slots.slice(0, 5), {
+      ...battery, deviceId: 'sw1', name: 'Heater', capabilityId: 'onoff',
+      capability: { ...battery.capability, title: 'Turned on', type: 'boolean', units: null, decimals: null }, value: true,
+    }];
+    const curtains = SHOWCASE.evening.columns.flat().find(w => w.type === 'curtains');
+    const kitchenTimer = SHOWCASE.kitchen.columns.flat().find(w => w.type === 'timers');
+    const board = (text, color) => ({ key: 'note', name: 'Note', text, color, updatedAt: SHOWCASE_NOW });
+    const flowRows = [['red', 'Alarm on', 'bell'], ['orange', "Dinner's ready", 'bell'], ['yellow', 'Good morning', 'sun'],
+      ['green', 'Mow the lawn', 'play'], ['blue', 'Leaving home', 'leave'], ['purple', 'Movie time', 'tv'], ['grey', 'Test flow', 'play']];
+    const mode = value => ({ id: `string:${JSON.stringify(value)}`, name: value, value, type: 'string' });
+    const sub = (el) => el.appendChild(document.createElement('div'));
+
+    // [label, note, mount(el, opts, column), frame class (a card) or null, the third column (null: empty)]
+    const ROWS = [
+      ['Quick Actions', 'water heater, fridge, oven on', (el, o) => MOUNT.quickactions(el, { ...findWidget('quickactions', 1), opts: o }), null, true],
+      ['Sensor Alarms', 'a CO₂ alarm, the garage open', (el, o) => MOUNT.sensoralarms(el, { ...findWidget('sensoralarms', 1), opts: { ...findWidget('sensoralarms', 1).opts, ...o } })],
+      ['Locks and Doors', 'the shed unlocked', (el, o) => MOUNT.locks(el, { ...findWidget('locks'), opts: { ...findWidget('locks').opts, ...o } })],
+      ['Device Values', 'Flow colours', (el, o) => MOUNT.values(el, { opts: { columns: '3', ...o }, slots: colorSlots })],
+      ['Device Values', 'fills, an On; pill tiles', (el, o) => {
+        MOUNT.values(sub(el), { opts: { columns: '3', percentFill: true, ...o }, slots: fillSlots });
+        MOUNT.values(sub(el), { opts: { columns: '2', percentFill: true, tileStyle: 'pill', ...o }, slots: fillSlots.slice(0, 4) });
+      }],
+      ['Light Controls', 'warm whites, colours, one off', (el, o) => MOUNT.lights(el, { devices: findWidget('lights').devices, opts: o })],
+      ['Curtains', 'closing, closed, open, 60 %', (el, o) => MOUNT.curtains(el, { opts: o, devices: [...curtains.devices,
+        { id: 'ec3', name: 'Bedroom blind', kind: 'blind', caps: { windowcoverings_set: { value: 1, setable: true }, windowcoverings_state: { value: 'idle', setable: true } } },
+        { id: 'ec4', name: 'Office', kind: 'curtain', caps: { windowcoverings_set: { value: 0.6, setable: true } } }] }), null, true],
+      ['Days Since', 'amber, red, fine', (el, o) => MOUNT.dayssince(el, { opts: o, counters: [
+        { name: 'Plants watered', icon: 'leaf', amber: 5, red: 7, ago: 6 * DAY + 3 * 3600e3 },
+        { name: 'Vacuum filter', icon: 'vacuum', amber: 75, red: 90, ago: 92 * DAY },
+        { name: 'Bedsheets', icon: 'bed', amber: 12, red: 14, ago: 9 * DAY },
+        { name: 'Fish fed', icon: 'paw', amber: 2, red: 3, ago: 26 * 3600e3 },
+      ] }), 'ds-card'],
+      ['Notes', 'tiles in a Flow\'s colour', (el, o) => {
+        for (const [color, text] of [['yellow', 'Take the bins out'], ['green', 'All windows closed'], ['purple', 'Guests arrive at 19:00']]) {
+          MOUNT.textline(sub(el), { opts: { source: 'flow', icon: 'bell', ...o }, board: board(text, color) });
+        }
+      }],
+      ['Timers', 'running, done', (el, o) => {
+        MOUNT.timers(sub(el), { ...kitchenTimer, opts: o });
+        MOUNT.timers(sub(el), { presets: kitchenTimer.presets, opts: o, timers: [
+          { id: 'd1', label: 'Eggs', duration: 7 * MIN, endsAt: SHOWCASE_NOW - 20e3, remaining: null, doneAt: SHOWCASE_NOW - 20e3 }] });
+      }, null, true],
+      ['Flow Buttons', 'each colour, and grey', (el, o) => MOUNT.flows(el, {
+        opts: { columns: '2', ...o, buttons: flowRows.map(([color, , icon], i) => ({ id: `flow:${i}`, color, icon })) },
+        flows: flowRows.map(([, name], i) => ({ id: `flow:${i}`, name, enabled: true, triggerable: true, advanced: false })),
+      })],
+      ['Variables', 'a flag on; read only', (el, o) => {
+        const vars = [
+          { id: 'f1', name: 'Away mode', type: 'boolean', value: false },
+          { id: 'f2', name: 'Guests staying over', type: 'boolean', value: true },
+          { id: 'f4', name: 'Night setpoint', type: 'number', value: 18.5 },
+        ];
+        MOUNT.variables(sub(el), { opts: o, vars });
+        MOUNT.variables(sub(el), { opts: { ...o, readOnly: true, columns: '2' }, vars: vars.slice(0, 2) });
+      }, null, true],
+      ['Variable Presets', 'Away lit (blue, then yellow)', (el, o, column) => MOUNT.varpresets(el, {
+        opts: { icon: 'home', ...o, color: column === 2 ? 'yellow' : 'blue' },
+        settings: { value1: mode('Home'), value2: mode('Away'), value3: mode('Night'), value4: mode('Holiday') },
+        variable: { id: 'm1', name: 'House mode', type: 'string', value: 'Away' },
+      }), 'tw-frame', true],
+      ['Thermostat Presets', 'Heat lit', (el, o) => MOUNT.thermostat(el, { ...findWidget('thermostat'), opts: o }), 'tw-frame'],
+      ['Energy Price Strip', 'the evening peak', (el, o) => MOUNT.price(el, { ...findWidget('price'), opts: o })],
+      ['Insights Heatmap', 'blue, then purple', (el, o, column) => MOUNT.heatmap(el, { ...findWidget('heatmap'),
+        opts: { ...findWidget('heatmap').opts, ...o, color: column === 2 ? 'purple' : undefined } }), 'hm-frame', true],
+      ['Sparklines', '', (el, o) => MOUNT.sparklines(el, { slots: findWidget('sparklines').slots, opts: o })],
+      ['Charts', 'an area and bars', (el, o) => {
+        const s = findWidget('sparklines').slots;
+        MOUNT.charts(el, { opts: { ...o, charts: [{ span: '24h', color: 'purple', smooth: true }, { span: '24h', style: 'bars', color: 'orange' }] },
+          charts: [s[0], s[1]] });
+      }, 'card'],
+      ['Electricity Overview', '', (el, o) => MOUNT.electricity(el, { ...findWidget('electricity'), opts: o }), 'card'],
+      ['Media', 'playing; the speaker list open', (el, o) => {
+        const w = findWidget('media');
+        MOUNT.media(el, { ...w, opts: { ...w.opts, ...o } });
+      }, 'mw-frame', true],
+      ['Room Health', 'a humid kitchen, a stuffy bedroom', (el, o) => {
+        const sensor = (id, zone, values) => ({ id, name: id, zone,
+          measures: Object.fromEntries(Object.entries(values).map(([m, v]) => [m, { capabilityId: `measure_${m}`, value: v }])) });
+        MOUNT.roomhealth(el, { opts: o, devices: [
+          sensor('rh1', { id: 'z1', name: 'Living room' }, { temperature: 21.4, humidity: 47, co2: 690 }),
+          sensor('rh2', { id: 'z2', name: 'Kitchen' }, { temperature: 22.6, humidity: 64 }),
+          sensor('rh3', { id: 'b1', name: 'Bedroom' }, { temperature: 18.2, humidity: 48, co2: 1400 }),
+        ] });
+      }],
+      ['Activity Dots', 'the driveway active', (el, o) => MOUNT.sensordots(el, { ...findWidget('sensordots', 1),
+        open: null, opts: { ...findWidget('sensordots', 1).opts, ...o } })],
+      ['Weather Forecast', 'Deep is a theme', (el, o) => MOUNT.weather(el, { hours: findWidget('weather').hours,
+        opts: { theme: o.colorStyle === 'deep' ? 'deep' : 'default', density: o.color ? 'detailed' : 'compact' } }), 'wf-frame', true],
+    ];
+
+    const grid = document.getElementById('grid');
+    const add = (cls, html) => { const d = grid.appendChild(document.createElement('div')); d.className = cls; if (html != null) d.innerHTML = html; return d; };
+    add('head', '');
+    for (const [name] of COLUMNS) add('head', name);
+    for (const [label, note, mount, frame, third] of ROWS) {
+      add('label', `${label}${note ? `<small>${note}</small>` : ''}`);
+      COLUMNS.forEach(([, opts], column) => {
+        const cell = add('cell');
+        if (column === 2 && !third) return;
+        const host = frame ? cell.appendChild(Object.assign(document.createElement('div'), { className: `card ${frame}` })) : cell;
+        try { mount(host.appendChild(document.createElement('div')), opts, column); } catch (err) {
+          host.appendChild(Object.assign(document.createElement('pre'), { className: 'error', textContent: String(err && err.stack || err) }));
+        }
+      });
+    }
+    document.fonts.ready.then(() => {
+      document.body.dataset.height = String(Math.ceil(document.body.getBoundingClientRect().height));
+    });
+  </script>
+</body>
+</html>

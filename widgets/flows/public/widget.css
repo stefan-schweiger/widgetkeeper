@@ -9,12 +9,12 @@
   --fb-muted: var(--homey-text-color-light, #9C9DA5);
   --fb-neutral: color-mix(in srgb, var(--fb-text) 8%, var(--fb-tile)); /* the grey button: Variables' −/+ */
   /* The colour setting (data-color on .fb-row): Device Values' Flow colours plus grey. */
-  --fb-c-blue: var(--homey-color-blue, #2F8DF6);
-  --fb-c-red: var(--homey-color-red, #F25F5C);
-  --fb-c-orange: var(--homey-color-orange, #F07A1F);
-  --fb-c-yellow: #F5C518;
-  --fb-c-green: var(--homey-color-green, #71D51B);
-  --fb-c-purple: #9033FC;
+  --fb-c-blue: var(--wk-blue); /* kit.css's palette */
+  --fb-c-red: var(--wk-red);
+  --fb-c-orange: var(--wk-orange);
+  --fb-c-yellow: var(--wk-yellow);
+  --fb-c-green: var(--wk-green);
+  --fb-c-purple: var(--wk-purple);
   --fb-on-color: #FFFFFF; /* the icon on a coloured button */
   --fb-on-light: #1A1B21; /* the icon on yellow and green, which are too light for white */
   /* Homey's type scale: only these size/line-height pairs are used natively. */
@@ -77,6 +77,23 @@ html, body { background: transparent !important; }
 .fb-row[data-color="grey"] .fb-button { --fb-color: var(--fb-neutral); color: var(--fb-text); }
 .fb-row.pressing .fb-button { transform: scale(.9); }
 .fb-row.missing .fb-button { background: none; box-shadow: inset 0 0 0 1.5px var(--fb-muted); color: var(--fb-muted); }
+/*
+ * Deep (kit.css): the whole row in its colour's darker shade, with the text in --wk-on and the button a lighter circle on it
+ * (grey rows and missing flows stay as they are).
+ */
+.fb.wk-deep .fb-row { --fb-row: var(--wk-blue); --fb-row-on: var(--wk-on-blue); }
+.fb.wk-deep .fb-row[data-color="red"] { --fb-row: var(--wk-red); --fb-row-on: var(--wk-on-red); }
+.fb.wk-deep .fb-row[data-color="orange"] { --fb-row: var(--wk-orange); --fb-row-on: var(--wk-on-orange); }
+.fb.wk-deep .fb-row[data-color="yellow"] { --fb-row: var(--wk-yellow); --fb-row-on: var(--wk-on-yellow); --wk-on-muted: rgb(26 27 33 / .75); }
+.fb.wk-deep .fb-row[data-color="green"] { --fb-row: var(--wk-green); --fb-row-on: var(--wk-on-green); }
+.fb.wk-deep .fb-row[data-color="purple"] { --fb-row: var(--wk-purple); --fb-row-on: var(--wk-on-purple); }
+.fb.wk-deep .fb-row:not([data-color="grey"]):not(.missing) {
+  background: var(--fb-row); --fb-text: var(--fb-row-on); --fb-muted: var(--wk-on-muted);
+}
+.fb.wk-deep .fb-row:not([data-color="grey"]):not(.missing) .fb-button {
+  --fb-color: color-mix(in srgb, var(--fb-row-on) 20%, transparent); color: var(--fb-row-on);
+}
+.fb.wk-deep .fb-row:not([data-color="grey"]).running .fb-button::after { border-top-color: var(--fb-row-on); border-right-color: var(--fb-row-on); }
 
 .fb-glyph { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2;
   stroke-linecap: round; stroke-linejoin: round; }

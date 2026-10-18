@@ -7,7 +7,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -201,7 +201,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, locale?: string, renameTiles?: boolean,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string, renameTiles?: boolean,
    *   onRename?: (key: string, name: string) => Promise<any>, onHeight?: (h: number) => void,
    *   tempMin?: unknown, tempMax?: unknown, humidityMin?: unknown, humidityMax?: unknown, co2Max?: unknown,
    *   radonMax?: unknown, pm25Max?: unknown, pm10Max?: unknown, vocMax?: unknown }} opts
@@ -222,6 +222,7 @@
     let readoutTimer = null;
 
     root.classList.add('rh');
+    applyColors(root, { style: opts.colorStyle });
     const typed = tileNames(opts, () => render(), (key) => {
       const cell = cells.get(key);
       if (cell) {

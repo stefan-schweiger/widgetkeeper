@@ -6,7 +6,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, formatSince } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, formatSince, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
@@ -123,7 +123,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, locale?: string, view?: string,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string, view?: string,
    *   allowUnlock?: boolean, onSet?: (deviceId: string, capabilityId: string, value: boolean) => Promise<any>,
    *   onHaptic?: () => void, onHeight?: (h: number) => void,
    *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any> }} opts
@@ -152,6 +152,7 @@
     const busy = new Map(); // deviceId → {capabilityId, value, timer}, while a lock or close is on its way
 
     root.classList.add('lk');
+    applyColors(root, { style: opts.colorStyle });
     root.classList.toggle('renaming', names.renaming);
     const tile = el('div', { class: 'lk-tile' }, root);
     const summary = el('div', { class: 'lk-summary' }, tile);

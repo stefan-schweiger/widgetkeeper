@@ -4,7 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a tapped tile shows its new state while waiting for the device
@@ -46,6 +46,7 @@
   /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, activeStyle?: 'tint' | 'lighter',
+   *   color?: string, colorStyle?: string,
    *   onTrigger?: (deviceId: string, value: boolean) => Promise<any>,
    *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   onHeight?: (h: number) => void }} opts
@@ -70,6 +71,7 @@
     });
     root.classList.toggle('renaming', names.renaming);
     root.dataset.activeStyle = opts.activeStyle === 'lighter' ? 'lighter' : 'tint';
+    applyColors(root, { style: opts.colorStyle, color: opts.color, fallback: 'blue' });
     const grid = el('div', { class: 'qa-grid' }, root);
     const messageEl = el('div', { class: 'qa-message', dir: 'auto' }, root);
     let lastTouchTap = 0;

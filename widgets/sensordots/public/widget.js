@@ -5,7 +5,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, formatSince, baseTitle } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, formatSince, baseTitle, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -72,7 +72,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, locale?: string, title?: string,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string, title?: string,
    *   idleColor?: string, activeColor?: string, onHeight?: (h: number) => void }} opts
    */
   function createSensorDotsWidget(root, opts = {}) {
@@ -89,6 +89,7 @@
     let openId = null; // the device whose overlay is open
 
     root.classList.add('sd');
+    applyColors(root, { style: opts.colorStyle });
     root.dataset.idle = colorOf(opts.idleColor, 'grey');
     root.dataset.active = colorOf(opts.activeColor, 'blue');
     // One device tile: an optional header (the `title` setting), then the dots.

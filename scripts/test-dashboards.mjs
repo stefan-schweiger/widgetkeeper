@@ -10,6 +10,7 @@
 // It writes the app setting `webDashboards` through the Homey CLI's login (the web dashboards' own API wants the
 // password's session too), so the app's `normalize()` checks it on the next read, as for any saved dashboard.
 // The "Rename tiles" widgets get a name already typed on a tile, in the app setting `tileNames`.
+// Each type also gets a Deep copy of its first plain widget (Colour style), one in purple where it has a colour setting.
 
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -85,6 +86,22 @@ function columns(widgets, n = 3) {
 const w = (type, title, settings = {}, deviceIds = []) => ({ type, title, settings, deviceIds });
 /** A widget in rename mode (`renameTiles`) with names already typed on its tiles (tile key → name; see TILE_NAMES). */
 const renaming = (type, title, settings, deviceIds, tileNames) => ({ ...w(type, title, { ...settings, renameTiles: true }, deviceIds), tileNames });
+
+/**
+ * Colour style (`colorStyle`): a Deep copy of a type's first plain widget (not renaming, no deleted device), one more in purple
+ * where the type has a colour setting, and Weather's Deep theme.
+ */
+function deepVariants(type, widgets) {
+  const ids = (widgetDefs[type].settings || []).map(s => s.id);
+  const base = widgets.find(x => !x.tileNames && !x.settings?.renameTiles && !x.deviceIds?.includes(MISSING));
+  if (!base) return [];
+  if (type === 'weather') return [{ ...base, title: `Deep theme · ${base.title}`, settings: { ...base.settings, theme: 'deep' } }];
+  if (!ids.includes('colorStyle')) return [];
+  const deep = { ...base, title: `Deep · ${base.title}`, settings: { ...base.settings, colorStyle: 'deep' } };
+  return ids.includes('color')
+    ? [deep, { ...deep, title: `Deep · purple · ${base.title}`, settings: { ...deep.settings, color: 'purple' } }]
+    : [deep];
+}
 
 /** The first n autocomplete items that pass, `None` and the like left out. */
 const pick = (items, fn = () => true, n = 1) => items.filter(i => i.id !== 'none' && fn(i)).slice(0, n);
@@ -601,6 +618,7 @@ const typedNames = {}; // widget instance → tile key → name
 if (!opts.remove) {
   for (const type of types) {
     const { cols, widgets } = await BUILD[type]();
+    widgets.push(...deepVariants(type, widgets));
     const name = `Test · ${widgetDefs[type].name?.en ?? type}`;
     const placed = widgets.map((x, i) => ({ id: `${type.slice(0, 20)}-${i + 1}`, ...x }));
     for (const { id, tileNames } of placed) if (tileNames) typedNames[`web-${PREFIX}${type}-${id}`] = tileNames;

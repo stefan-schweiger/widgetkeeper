@@ -35,6 +35,8 @@ window.mountVariablesWidget = function (Homey, { root, frame }) {
 
   const tileNames = wireTileNames(Homey, names => widget.setNames(names));
   const widget = window.createVariablesWidget(root, {
+    colorStyle: settings.colorStyle,
+    color: settings.color,
     t: (key, tokens) => Homey.__(key, tokens),
     renameTiles: settings.renameTiles === true,
     onRename: (key, name) => tileNames.rename(key, name),

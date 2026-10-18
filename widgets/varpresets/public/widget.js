@@ -66,7 +66,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, locale?: string, layout?: string, color?: string,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string, layout?: string, color?: string,
    *   icon?: string, title?: string, onSet?: (value: boolean | number | string) => Promise<any>,
    *   onHeight?: (h: number) => void }} opts
    */
@@ -85,6 +85,7 @@
     let shownKey = null; // the buttons on screen, so a refresh with the same ones keeps them (and a lit tap)
 
     root.classList.add('vp');
+    window.WidgetkeeperKit.applyColors(root, { style: opts.colorStyle });
     root.dataset.color = COLORS.includes(opts.color) ? opts.color : 'blue';
 
     const core = window.WidgetkeeperPresets.create(root, {

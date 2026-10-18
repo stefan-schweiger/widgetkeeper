@@ -7,7 +7,7 @@
   --vr-tile: var(--homey-background-color, #FFFFFF);
   --vr-text: var(--homey-text-color, #EDEEF0);
   --vr-muted: var(--homey-text-color-light, #9C9DA5);
-  --vr-accent: var(--homey-color-blue, #2F8DF6);
+  --vr-accent: var(--wk-c); /* the colour setting (kit.css; blue by default) */
   --vr-knob: var(--homey-color-white, #FFFFFF);
   --vr-off: color-mix(in srgb, var(--vr-text) 22%, var(--vr-tile)); /* the switch's track when off */
   --vr-button: color-mix(in srgb, var(--vr-text) 8%, var(--vr-tile)); /* the −/+ buttons */
@@ -89,6 +89,10 @@ html, body { background: transparent !important; }
   background: var(--vr-knob); box-shadow: 0 1px 2px rgb(0 0 0 / .25); transition: transform .15s;
 }
 .vr-row.active .vr-switch { background: var(--vr-accent); }
+/* Deep (kit.css): a row that is on is the colour's darker shade, solid, with its text, switch and dot in --wk-on. */
+.vr.wk-deep .vr-row.active { background: var(--vr-accent); --vr-text: var(--wk-on); --vr-muted: var(--wk-on-muted); }
+.vr.wk-deep .vr-row.active .vr-switch { background: color-mix(in srgb, var(--wk-on) 40%, transparent); }
+.vr.wk-deep .vr-row.active .vr-dot { background: var(--wk-on); }
 .vr-row.active .vr-knob { transform: translateX(16px); }
 
 /* Read only: nothing to tap. A yes/no is a dot (Homey's blue for yes, a ring when unknown) and Yes/No. */

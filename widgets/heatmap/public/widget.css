@@ -6,7 +6,7 @@
   --hm-card: var(--homey-background-color, #1F2029);
   --hm-text: var(--homey-text-color, #EDEEF0);
   --hm-muted: var(--homey-text-color-light, #9C9DA5);
-  --hm-accent: var(--homey-color-blue, #2F8DF6);
+  --hm-accent: var(--wk-blue-shade); /* kit.css: the colour setting's shade (Default), or the bright colour (Deep) */
   --hm-empty: color-mix(in srgb, var(--hm-text) 7%, var(--hm-card));
   /* Five steps from "less" to "more": the accent mixed into the empty tile colour. */
   --hm-l0: color-mix(in oklab, var(--hm-accent) 12%, var(--hm-empty));
@@ -25,12 +25,27 @@
   container: hm / inline-size;
 }
 
-/* The `color` setting (data-color; blue is the default): Device Values' Flow colours. Yellow and purple have no Homey token. */
-.hm[data-color="red"] { --hm-accent: var(--homey-color-red, #F25F5C); }
-.hm[data-color="orange"] { --hm-accent: var(--homey-color-orange, #F07A1F); }
-.hm[data-color="yellow"] { --hm-accent: #F5C518; }
-.hm[data-color="green"] { --hm-accent: var(--homey-color-green, #71D51B); }
-.hm[data-color="purple"] { --hm-accent: #9033FC; }
+/*
+ * The `color` setting (data-color; blue is the default): Device Values' Flow colours, from kit.css. Default draws them in
+ * Homey's darker shade; Deep in the bright colour, with a steeper ramp so the levels stand further apart.
+ */
+.hm[data-color="red"] { --hm-accent: var(--wk-red-shade); }
+.hm[data-color="orange"] { --hm-accent: var(--wk-orange-shade); }
+.hm[data-color="yellow"] { --hm-accent: var(--wk-yellow-shade); }
+.hm[data-color="green"] { --hm-accent: var(--wk-green-shade); }
+.hm[data-color="purple"] { --hm-accent: var(--wk-purple-shade); }
+.hm.wk-deep { --hm-accent: var(--wk-blue-bright); }
+.hm.wk-deep[data-color="red"] { --hm-accent: var(--wk-red-bright); }
+.hm.wk-deep[data-color="orange"] { --hm-accent: var(--wk-orange-bright); }
+.hm.wk-deep[data-color="yellow"] { --hm-accent: var(--wk-yellow-bright); }
+.hm.wk-deep[data-color="green"] { --hm-accent: var(--wk-green-bright); }
+.hm.wk-deep[data-color="purple"] { --hm-accent: var(--wk-purple-bright); }
+.hm.wk-deep {
+  --hm-l0: color-mix(in oklab, var(--hm-accent) 20%, var(--hm-empty));
+  --hm-l1: color-mix(in oklab, var(--hm-accent) 44%, var(--hm-empty));
+  --hm-l2: color-mix(in oklab, var(--hm-accent) 66%, var(--hm-empty));
+  --hm-l3: color-mix(in oklab, var(--hm-accent) 86%, var(--hm-empty));
+}
 
 /* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
 html { font-family: Roboto, -apple-system, system-ui, sans-serif; }

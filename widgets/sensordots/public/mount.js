@@ -22,6 +22,7 @@ window.mountSensorDotsWidget = function (Homey, { root, frame }) {
 
   const settings = Homey.getSettings() || {};
   const widget = window.createSensorDotsWidget(root, {
+    colorStyle: settings.colorStyle,
     t: (key, tokens) => Homey.__(key, tokens),
     title: typeof settings.title === 'string' ? settings.title : '',
     idleColor: settings.idleColor,

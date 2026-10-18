@@ -5,7 +5,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a changed value shows while waiting for Homey's update
@@ -111,7 +111,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, columns?: number|string, step?: number|string,
+   * @param {{ colorStyle?: string, color?: string, t?: (key: string, tokens?: object) => string, columns?: number|string, step?: number|string,
    *   min?: number|string|null, max?: number|string|null, readOnly?: boolean,
    *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   onSet?: (id: string, value: boolean|number|string) => Promise<any>,
@@ -143,6 +143,7 @@
     let messageTimer = null;
 
     root.classList.add('vr');
+    applyColors(root, { style: opts.colorStyle, color: opts.color, fallback: 'blue' });
     // The names typed on the rows (`renameTiles`): in rename mode a row's own taps do nothing.
     const typed = tileNames(opts, () => render(), (key) => {
       const i = nameKeys(vars).indexOf(key);

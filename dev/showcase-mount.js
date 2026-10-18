@@ -9,8 +9,8 @@ const SHOWCASE_NOW = Date.now(); // the timers count from this, so every render 
 
 // One mount per widget type: the element, then the widget's data from showcase-data.js.
 const MOUNT = {
-  electricity: (el, w) => { const x = createElectricityWidget(el, { locale: LOCALE }); x.setSettings(w.settings || {}); x.setData(w.data); },
-  thermostat: (el, w) => { const x = createThermostatWidget(el, { locale: LOCALE }); x.setButtons(thermostatPresetsFromSettings(w.presets)); x.setState(w.state); },
+  electricity: (el, w) => { const x = createElectricityWidget(el, { locale: LOCALE, ...w.opts }); x.setSettings(w.settings || {}); x.setData(w.data); },
+  thermostat: (el, w) => { const x = createThermostatWidget(el, { locale: LOCALE, ...w.opts }); x.setButtons(thermostatPresetsFromSettings(w.presets)); x.setState(w.state); },
   quickactions: (el, w) => createQuickActionsWidget(el, w.opts || {}).setState(w.devices),
   sensoralarms: (el, w) => createSensorAlarmsWidget(el, w.opts || {}).setState(w.devices),
   sensordots: (el, w) => { const x = createSensorDotsWidget(el, w.opts || {}); x.setState({ devices: w.devices, language: 'en' }); if (w.open) x.open(w.open); },

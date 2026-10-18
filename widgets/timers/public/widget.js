@@ -6,7 +6,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
@@ -119,7 +119,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, locale?: string,
+   * @param {{ colorStyle?: string, color?: string, t?: (key: string, tokens?: object) => string, locale?: string,
    *   presets?: {minutes: number, label: string}[], sound?: boolean,
    *   onStart?: (minutes: number, label: string) => Promise<any>,
    *   onAction?: (id: string, action: string) => Promise<any>,
@@ -152,6 +152,7 @@
     const serverNow = () => clock() + offset;
 
     root.classList.add('tm');
+    applyColors(root, { style: opts.colorStyle, color: opts.color, fallback: 'blue' });
     const presetsEl = el('div', { class: 'tm-presets' }, root);
     presetsEl.style.setProperty('--tm-presets', String(Math.max(1, presets.length)));
     for (const p of presets) {

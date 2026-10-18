@@ -7,24 +7,21 @@
   --vt-tile: var(--homey-background-color, #FFFFFF);
   --vt-text: var(--homey-text-color, #EDEEF0);
   --vt-muted: var(--homey-text-color-light, #9C9DA5);
-  --vt-accent: var(--homey-color-blue, #2F8DF6);
+  --vt-accent: var(--wk-blue);
   --vt-accent-icon: var(--vt-accent); /* the icon on a blue-tinted tile */
   /* Homey's type scale: only these size/line-height pairs are used natively. */
   --vt-fs-small: var(--homey-font-size-small, 14px); --vt-lh-small: var(--homey-line-height-small, 20px);
   --vt-bold: var(--homey-font-weight-bold, 700);
-  /* Percentage fills and Flow colours: Homey's red and green; yellow has no Homey token. Mixed into the tile so the text stays readable
-     (soft), or at full strength with text in --vt-ink (bright). */
-  --vt-red: var(--homey-color-red, #F25F5C);
-  --vt-yellow: #F5C518;
-  --vt-green: var(--homey-color-green, #71D51B);
+  /* Percentage fills and the tile colours a Flow sets: kit.css's palette. Mixed into the tile so the text stays readable, or in
+     Deep the darker shades at full strength, with the text in --vt-ink. */
+  --vt-red: var(--wk-red);
+  --vt-yellow: var(--wk-yellow);
+  --vt-green: var(--wk-green);
+  --vt-orange: var(--wk-orange);
+  --vt-blue: var(--wk-blue);
+  --vt-purple: var(--wk-purple);
   --vt-fill-mix: 22%;
-  /* The text on a bright colour: dark on red, orange, yellow, green and blue (5.1–10.5:1), white on purple (5.2:1). */
-  --vt-ink: #1A1B21;
-  --vt-ink-light: #FFFFFF;
-  /* Tile colours set by a Flow: Homey's tokens; yellow and purple have none (purple is Homey's web-app purple). */
-  --vt-orange: var(--homey-color-orange, #F07A1F);
-  --vt-blue: var(--homey-color-blue, #2F8DF6);
-  --vt-purple: #9033FC;
+  --vt-ink: var(--wk-on-blue); /* the text on a Deep colour: white, dark on yellow */
   --vt-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
 }
 /* Dark mode: each tile looks like a native device tile, darker than the default widget background. */
@@ -95,15 +92,19 @@ html, body { background: transparent !important; }
 .vt-tile.filled[data-color] { --vt-level: var(--vt-color);
   background: linear-gradient(to right, color-mix(in srgb, var(--vt-level) var(--vt-fill-mix), var(--vt-tile)) var(--vt-fill), var(--vt-tile) var(--vt-fill)); }
 
-/* Bright colours (a user found the soft yellow mustard and the orange brown: a 22 % tint of either on the dark tile can't look
-   yellow or orange): fills and Flow colours at full strength, with the text and icon in the ink colour. Not while renaming,
-   so the text field keeps its light text on the soft look. */
-.vt.vt-bright:not(.renaming) { --vt-fill-mix: 100%; }
-.vt-tile[data-color="purple"] { --vt-ink: var(--vt-ink-light); }
-.vt-bright:not(.renaming) .vt-tile[data-color]:not(.filled) { --vt-text: var(--vt-ink); }
+/* Deep (kit.css; it replaced Bright, which a user asked for as the soft yellow read mustard and the orange brown): fills and
+   Flow colours in the darker shades at full strength, with the text and icon in the ink colour. Not while renaming, so the
+   text field keeps its light text on the soft look. */
+.vt.wk-deep:not(.renaming) { --vt-fill-mix: 100%; }
+.vt-tile[data-color="yellow"], .vt-tile.filled[data-level="yellow"]:not([data-color]) { --vt-ink: var(--wk-on-yellow); }
+.vt.wk-deep:not(.renaming) .vt-tile[data-color]:not(.filled) { --vt-text: var(--vt-ink); }
+/* A boolean that is on: the blue shade, solid. */
+.vt.wk-deep:not(.renaming) .vt-tile.active:not([data-color]) {
+  background: var(--vt-accent); --vt-text: var(--vt-ink); --vt-muted: var(--vt-ink); --vt-accent-icon: var(--vt-ink);
+}
 /* A fill ends partway, so the icon and text are drawn again in the ink colour (.vt-ink, laid out as the tile) and clipped to it. */
 .vt-ink { display: none; }
-.vt-bright:not(.renaming) .vt-tile.filled .vt-ink {
+.vt.wk-deep:not(.renaming) .vt-tile.filled .vt-ink {
   position: absolute; inset: 0; padding: 8px 10px; pointer-events: none;
   display: flex; flex-direction: column; align-items: stretch; gap: 6px;
   color: var(--vt-ink); clip-path: inset(0 calc(100% - var(--vt-fill)) 0 0);
@@ -126,8 +127,8 @@ html, body { background: transparent !important; }
 .vt-text { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .vt-pill .vt-name, .vt-pill .vt-value { line-height: 18px; }
 .vt.vt-pill .vt-value { text-align: left; font-weight: var(--vt-regular); color: var(--vt-muted); }
-.vt-bright:not(.renaming) .vt-tile[data-color]:not(.filled), .vt-ink { --vt-muted: var(--vt-ink); }
-.vt-bright.vt-pill:not(.renaming) .vt-tile.filled .vt-ink { flex-direction: row; align-items: center; gap: 13px; padding: 7px 12px 5px 10px; }
+.vt.wk-deep:not(.renaming) .vt-tile[data-color]:not(.filled), .vt-ink { --vt-muted: var(--vt-ink); }
+.vt.wk-deep.vt-pill:not(.renaming) .vt-tile.filled .vt-ink { flex-direction: row; align-items: center; gap: 13px; padding: 7px 12px 5px 10px; }
 .vt-pill .wk-rename { margin: -3px 0; }
 
 .vt-message { font-size: var(--vt-fs-small); line-height: var(--vt-lh-small); color: var(--vt-muted); }

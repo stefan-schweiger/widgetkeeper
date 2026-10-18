@@ -91,7 +91,14 @@ html, body { margin: 0; }
 .tw-modetext { font-size: var(--tw-fs-aux); line-height: var(--tw-lh-aux); font-weight: var(--tw-regular); color: var(--c); }
 .tw-extra { font-size: var(--tw-fs-aux); line-height: var(--tw-lh-aux); font-weight: var(--tw-regular); color: var(--tw-muted); }
 
-.tw-btn.active {
+/*
+ * The lit button (kit.css's Colours): in Default the colour's darker shade, solid, with white text; --tw-shade is the shade
+ * each widget gives (the thermostat's modes, Variable Presets' colours), else the colour darkened. Deep lights it in the
+ * bright colour itself, as a gradient.
+ */
+.tw-btn { --tw-shade: color-mix(in oklab, var(--c) 70%, #000000); --tw-shade-on: #FFFFFF; }
+.tw-btn.active { color: var(--tw-shade-on); background: var(--tw-shade); }
+.tw.wk-deep .tw-btn.active:not([data-kind="off"]) {
   color: var(--tw-on-color);
   background: linear-gradient(135deg, color-mix(in srgb, var(--c) 92%, #fff), color-mix(in srgb, var(--c) 88%, #000));
 }

@@ -37,6 +37,7 @@ window.mountChartsWidget = function (Homey, { root, frame }) {
   let loaded = false;
 
   const widget = window.createChartsWidget(root, {
+    colorStyle: settings.colorStyle,
     t: (key, tokens) => Homey.__(key, tokens),
     charts,
     overlay: overlay && charts.length === 2,

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Device values widget preview</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/spacer/public/kit.css">
   <link rel="stylesheet" href="../widgets/values/public/widget.css">
   <script src="../widgets/spacer/public/kit.js"></script>
   <script src="../widgets/values/public/widget.js"></script>
@@ -25,17 +26,17 @@
   <div class="col"><span>358 px · light · percentage fill</span><div class="dash light" style="width:358px"><div id="w7"></div></div></div>
   <div class="col"><span>358 px · dark · colours set by a Flow</span><div class="dash homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
   <div class="col"><span>358 px · light · colours set by a Flow</span><div class="dash light" style="width:358px"><div id="w9"></div></div></div>
-  <div class="col"><span>358 px · dark · bright colours</span><div class="dash homey-dark-mode" style="width:358px"><div id="w10"></div></div></div>
-  <div class="col"><span>358 px · light · bright colours</span><div class="dash light" style="width:358px"><div id="w11"></div></div></div>
-  <div class="col"><span>358 px · dark · bright percentage fill</span><div class="dash homey-dark-mode" style="width:358px"><div id="w12"></div></div></div>
+  <div class="col"><span>358 px · dark · deep colours</span><div class="dash homey-dark-mode" style="width:358px"><div id="w10"></div></div></div>
+  <div class="col"><span>358 px · light · deep colours</span><div class="dash light" style="width:358px"><div id="w11"></div></div></div>
+  <div class="col"><span>358 px · dark · deep percentage fill</span><div class="dash homey-dark-mode" style="width:358px"><div id="w12"></div></div></div>
   <div class="col"><span>358 px · dark · pill</span><div class="dash homey-dark-mode" style="width:358px"><div id="p1"></div></div></div>
   <div class="col"><span>358 px · light · pill</span><div class="dash light" style="width:358px"><div id="p2"></div></div></div>
   <div class="col"><span>300 px · dark · pill</span><div class="dash homey-dark-mode" style="width:300px"><div id="p3"></div></div></div>
   <div class="col"><span>358 px · dark · pill · 2 columns</span><div class="dash homey-dark-mode" style="width:358px"><div id="p4"></div></div></div>
   <div class="col"><span>358 px · dark · pill · colours set by a Flow</span><div class="dash homey-dark-mode" style="width:358px"><div id="p5"></div></div></div>
-  <div class="col"><span>358 px · dark · pill · bright colours</span><div class="dash homey-dark-mode" style="width:358px"><div id="p6"></div></div></div>
-  <div class="col"><span>358 px · light · pill · bright colours</span><div class="dash light" style="width:358px"><div id="p7"></div></div></div>
-  <div class="col"><span>358 px · dark · pill · bright percentage fill · 2 columns</span><div class="dash homey-dark-mode" style="width:358px"><div id="p8"></div></div></div>
+  <div class="col"><span>358 px · dark · pill · deep colours</span><div class="dash homey-dark-mode" style="width:358px"><div id="p6"></div></div></div>
+  <div class="col"><span>358 px · light · pill · deep colours</span><div class="dash light" style="width:358px"><div id="p7"></div></div></div>
+  <div class="col"><span>358 px · dark · pill · deep percentage fill · 2 columns</span><div class="dash homey-dark-mode" style="width:358px"><div id="p8"></div></div></div>
   <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
 
   <script>
@@ -70,16 +71,16 @@
     // Pill tiles: Sensor Alarms' tile.
     for (const id of ['p1', 'p2', 'p3']) createValuesWidget(document.getElementById(id), { t: devT, tileStyle: 'pill' }).setState(slots());
     createValuesWidget(document.getElementById('p4'), { t: devT, tileStyle: 'pill', columns: '2' }).setState(slots());
-    createValuesWidget(document.getElementById('p8'), { t: devT, tileStyle: 'pill', columns: '2', percentFill: true, colorStyle: 'bright' }).setState(percents());
-    const pillFlow = { p5: undefined, p6: 'bright', p7: 'bright' };
+    createValuesWidget(document.getElementById('p8'), { t: devT, tileStyle: 'pill', columns: '2', percentFill: true, colorStyle: 'deep' }).setState(percents());
+    const pillFlow = { p5: undefined, p6: 'deep', p7: 'deep' };
     const flowWidgets = ['w8', 'w9', 'w10', 'w11', 'p5', 'p6', 'p7'].map(id => {
       const pill = id in pillFlow;
-      const colorStyle = pill ? pillFlow[id] : id === 'w10' || id === 'w11' ? 'bright' : undefined;
+      const colorStyle = pill ? pillFlow[id] : id === 'w10' || id === 'w11' ? 'deep' : undefined;
       const w = createValuesWidget(document.getElementById(id), { t: devT, percentFill: true, colorStyle, tileStyle: pill ? 'pill' : undefined });
       w.setState(colored());
       return w;
     });
-    createValuesWidget(document.getElementById('w12'), { t: devT, percentFill: true, colorStyle: 'bright' }).setState(percents());
+    createValuesWidget(document.getElementById('w12'), { t: devT, percentFill: true, colorStyle: 'deep' }).setState(percents());
     const cycle = ['blue', 'red', null, 'green'];
     let step = 0;
     setInterval(() => {

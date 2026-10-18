@@ -4,7 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, formatValue } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, formatValue, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -132,9 +132,9 @@
     // Pill tiles: Sensor Alarms' tile, the icon beside the name over the value (compact, Quick Actions' tile, otherwise).
     const pill = opts.tileStyle === 'pill';
     root.classList.toggle('vt-pill', pill);
-    // Bright colours: fills and Flow colours at full strength, with text that reads on them (soft, the 22 % tint, otherwise).
-    const bright = opts.colorStyle === 'bright';
-    root.classList.toggle('vt-bright', bright);
+    // Deep colours (kit.css): fills and Flow colours in the darker shades at full strength, with text that reads on them (the
+    // 22 % tint otherwise). The old Bright reads as Deep.
+    const deep = applyColors(root, { style: opts.colorStyle }) === 'deep';
     const num = (v, fallback) => (v !== '' && v != null && isFinite(Number(v)) ? Number(v) : fallback);
     const thresholds = { red: num(opts.redBelow, 10), yellow: num(opts.yellowBelow, 20) };
     const grid = el('div', { class: 'vt-grid' }, root);
@@ -204,8 +204,8 @@
       if (!tile) {
         const node = el('div', { class: 'vt-tile', 'data-slot': key });
         tile = { tile: node, ...parts(node), ink: null };
-        // Bright fills: the same icon and text again in the ink colour, which the CSS clips to the fill.
-        if (bright) tile.ink = parts(el('div', { class: 'vt-ink', 'aria-hidden': 'true' }, node));
+        // Deep fills: the same icon and text again in the ink colour, which the CSS clips to the fill.
+        if (deep) tile.ink = parts(el('div', { class: 'vt-ink', 'aria-hidden': 'true' }, node));
         tiles.set(key, tile);
       }
       return tile;

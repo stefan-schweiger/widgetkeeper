@@ -94,18 +94,20 @@ describe('copied widget helpers', () => {
 });
 
 describe('shared files', () => {
-  /** The files an index.html loads besides its own widget.*, mount.js and the kit: `<widget>/<name>` (`../electricity/chart.js` → `electricity/chart.js`). */
+  /** The files an index.html loads besides its own widget.*, mount.js and the kit (kit.js, kit.css): `<widget>/<name>` (`../electricity/chart.js` → `electricity/chart.js`). */
   const shared = (id: string, ext: string) => {
     const html = readFileSync(`widgets/${id}/public/index.html`, 'utf8');
     const refs = [...html.matchAll(/(?:src|href)="([^"]+)"/g)].map(m => m[1]).filter(r => r.endsWith(`.${ext}`));
     return refs.filter(r => !['widget.js', 'widget.css', 'mount.js'].includes(r))
       .map(r => (r.startsWith('../') ? r.slice(3) : `${id}/${r}`))
-      .filter(r => r !== KIT);
+      .filter(r => r !== KIT && r !== KIT.replace(/.js$/, '.css'));
   };
 
   it.each(WIDGETS)('%s: index.html loads the kit before anything else', (id) => {
     const html = readFileSync(`widgets/${id}/public/index.html`, 'utf8');
     expect([...html.matchAll(/<script src="([^"]+)"/g)][0]?.[1]).toBe('../spacer/kit.js');
+    // kit.css (the colour palette, wk / wk-deep) before every other stylesheet, so a widget's own rules can build on it.
+    expect([...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)][0]?.[1]).toBe('../spacer/kit.css');
     expect(html).toContain('WidgetkeeperKit.undoTextZoom();');
   });
   const stackDeps: Record<string, string[]> = new Function(`return ${readFileSync('widgets/stack/public/mount.js', 'utf8')

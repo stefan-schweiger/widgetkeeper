@@ -4,7 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, withName } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, withName, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
@@ -95,7 +95,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, columns?: number|string,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, columns?: number|string,
    *   buttons?: {id: string, color?: string, icon?: string, name?: string}[],
    *   onTrigger?: (id: string) => Promise<any>, onHaptic?: () => void,
    *   onHeight?: (h: number) => void }} opts
@@ -117,6 +117,7 @@
     let messageTimer = null;
 
     root.classList.add('fb');
+    applyColors(root, { style: opts.colorStyle });
     root.dataset.columns = String(opts.columns) === '2' ? '2' : '1';
     const grid = el('div', { class: 'fb-grid' }, root);
     const messageEl = el('div', { class: 'fb-message', dir: 'auto' }, root);

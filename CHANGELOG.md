@@ -41,6 +41,13 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Light Controls and Curtains grouped by room get a name per room tile, so two widgets with a "Living room" group can be called "Sofa lights" and "Living room". Users with several groups in one room asked for it.
 - The names belong to the widget: they stay with the right tiles when devices are renamed or reordered, and every screen showing the dashboard (and a Smart Stack page of it) gets them. Sensor Alarms' *Tile names* setting and Device Values' *Name* settings are gone: type those names on the tiles again.
 
+### Colour style
+- Every widget with a coloured state has a new setting, *Colour style*: *Default* is the calmer look and *Deep* the stronger one. Where a colour is mixed softly into a tile, such as a tile that's on, an alarm or a coloured note, Deep fills it with Homey's darker shade of the colour, with white text. Lights take a darker shade of their own colour, the charts get a stronger area under their lines, and Weather Forecast has *Deep* as a theme of its own *Colour style* setting (until now called *Colours*).
+- In Device Values, Deep fills percentage fills and the colours a Flow sets. A user found the default yellow looked like mustard and the orange looked brown.
+- Thermostat Presets, Variable Presets, Insights Heatmap, Media and Activity Dots now use Homey's darker shade of their colour by default: the lit button, the heatmap's cells, the play button and the dots are calmer. *Deep* shows them in the full, bright colour as before, and the heatmap's levels further apart.
+- Days Since shows how close a counter is only on its bar by default, in a softer colour, and Room Health's rings are softer too. Deep shows both in full colour, and puts an overdue Days Since row on a solid block.
+- Device Quick Actions, Variables, Curtains, Media and Timers have a new *Colour* setting for what was always blue: a tile that's on, a switch that's on, an open curtain, the play button and what's on, and a running timer.
+
 ### Curtains
 - Blinds that are fully open at 50%, with 0% and 100% both closed: vertical slatted blinds, and blinds that only tilt, such as SwitchBot Blind Tilt (these can now be picked too). A tap opens them to 50% or closes them to the nearer end, and the slider sets how far they're open. The new setting *Blinds are fully open at* chooses: 100%, 50% only for blinds that only tilt (the default), or 50% for all.
 - The tiles are as tall as Light Controls' again (they were 2 pixels taller), so the two line up side by side.
@@ -54,7 +61,6 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Sparklines and Device Values
 - Every battery tile shows the same battery icon. Some devices brought their own, so tiles side by side looked different.
-- Device Values has a new setting, *Colours*. *Bright* fills a tile with the full colour, both for a percentage fill and for a colour set by a Flow, with dark text and icons (white on purple) so they stay readable. A user found the soft yellow looked like mustard and the orange looked brown. *Soft* is the default and looks as before.
 - Device Values has a new setting, *Tile style*. *Pill* tiles look like Sensor Alarms' tiles, the icon beside the device name with the value under it. *Compact* is the default and looks as before.
 
 ### Light Controls

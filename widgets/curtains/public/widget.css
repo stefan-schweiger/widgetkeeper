@@ -7,7 +7,7 @@
   --ct-tile: var(--homey-background-color, #FFFFFF);
   --ct-text: var(--homey-text-color, #EDEEF0);
   --ct-muted: var(--homey-text-color-light, #9C9DA5);
-  --ct-accent: var(--homey-color-blue, #2F8DF6);
+  --ct-accent: var(--wk-c); /* the colour setting (kit.css; blue by default) */
   --ct-track: color-mix(in srgb, var(--ct-text) 12%, var(--ct-tile));
   --ct-tint: 18%; /* how much of the accent an open tile takes */
   /* Homey's type scale: only these size/line-height pairs are used natively. */
@@ -58,6 +58,10 @@ html, body { background: transparent !important; }
   background: linear-gradient(to bottom, color-mix(in srgb, var(--ct-accent) var(--ct-tint), var(--ct-tile)),
     color-mix(in srgb, var(--ct-accent) calc(var(--ct-tint) / 2), var(--ct-tile)));
 }
+/* Deep (kit.css): the colour's darker shade, solid, with the text, the bar's fill and track in --wk-on. */
+.ct.wk-deep .ct-tile:is(.open, .moving) { background: var(--ct-accent); --ct-text: var(--wk-on); --ct-muted: var(--wk-on-muted); }
+.ct.wk-deep .ct-tile:is(.open, .moving) .ct-track { background: color-mix(in srgb, var(--wk-on) 22%, transparent); }
+.ct.wk-deep .ct-tile:is(.open, .moving) .ct-fill { background: var(--wk-on); }
 
 /* 20px like Light Controls' icon row, so the tiles line up beside them (88px); the 22px pill overhangs it by 1px. */
 .ct-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; height: 20px; }

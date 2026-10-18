@@ -27,12 +27,13 @@
   --tl-tile: var(--homey-background-color, #FFFFFF);
   --tl-text: var(--homey-text-color, #EDEEF0);
   --tl-muted: var(--homey-text-color-light, #9C9DA5);
-  --tl-red: var(--homey-color-red, #F25F5C);
-  --tl-orange: var(--homey-color-orange, #F07A1F);
-  --tl-yellow: #F5C518;
-  --tl-green: var(--homey-color-green, #71D51B);
-  --tl-blue: var(--homey-color-blue, #2F8DF6);
-  --tl-purple: #9033FC;
+  /* The tile colours: kit.css's palette (Device Values' Flow colours; their darker shades in Deep). */
+  --tl-red: var(--wk-red);
+  --tl-orange: var(--wk-orange);
+  --tl-yellow: var(--wk-yellow);
+  --tl-green: var(--wk-green);
+  --tl-blue: var(--wk-blue);
+  --tl-purple: var(--wk-purple);
   --tl-fill-mix: 22%; /* Device Values' Flow colour tint */
   /* Homey's type scale: only these size/line-height pairs are used natively. */
   --tl-fs-small: var(--homey-font-size-small, 14px); --tl-lh-small: var(--homey-line-height-small, 20px);
@@ -112,6 +113,11 @@ html, body { background: transparent !important; }
 .tl-tile[data-color="blue"] { --tl-color: var(--tl-blue); }
 .tl-tile[data-color="purple"] { --tl-color: var(--tl-purple); }
 .tl-tile[data-color] { background: color-mix(in srgb, var(--tl-color) var(--tl-fill-mix), var(--tl-tile)); }
+/* Deep (kit.css): the colour's darker shade, solid, with white text (dark on yellow). The Post-it keeps its paper. */
+.tl.wk-deep .tl-tile[data-color] { --tl-fill-mix: 100%; color: var(--wk-on-blue); }
+.tl.wk-deep .tl-tile[data-color="yellow"] { color: var(--wk-on-yellow); }
+.tl.wk-deep.muted .tl-tile[data-color] { color: var(--wk-on-muted); }
+.tl.wk-deep.muted .tl-tile[data-color="yellow"] { color: rgb(26 27 33 / .75); }
 
 /* ---------------------------------------------------------------- the Post-it note */
 

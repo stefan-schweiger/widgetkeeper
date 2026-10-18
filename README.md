@@ -113,7 +113,7 @@ Empty space of the height you set, to line up widgets across columns<br clear="l
 
 Live power use, the hourly price from yesterday to 12 hours ahead (with your tariffs and taxes from Homey Energy), the last 24 hours of usage and the cheapest hour ahead. Tap a chart to see its values. Works with a fixed price too, and shows solar export below zero.
 
-**Settings:** power meter, live time span, prices, tariffs and taxes, usage history, smooth lines, lowest price in 12 h / 24 h, compact layout.
+**Settings:** power meter, live time span, prices, tariffs and taxes, usage history, smooth lines, lowest price in 12 h / 24 h, compact layout, [colour style](#colour-style).
 
 <a name="thermostat-shortcuts"></a>
 
@@ -122,21 +122,21 @@ Live power use, the hourly price from yesterday to 12 hours ahead (with your tar
 
 Three one-tap presets for a thermostat, heat pump or air conditioner, such as *Off*, *Heat 21°* and *Heat 24° · Fan level 5*. The matching preset lights up.
 
-**Settings:** the device, compact layout, and per button: power, mode, temperature and one extra option such as the fan speed.
+**Settings:** the device, compact layout, [colour style](#colour-style), and per button: power, mode, temperature and one extra option such as the fan speed.
 
 ## Device Quick Actions
 <img src="docs/screenshots/quickactions.png" alt="Device Quick Actions on a Homey dashboard" width="358">
 
 Half-height tiles that run a device's quick action with one tap (on/off, lock, play/pause, a button), highlighted while it's on.
 
-**Settings:** devices, active style, [rename tiles](#tile-names).
+**Settings:** devices, active style, colour, [colour style](#colour-style), [rename tiles](#tile-names).
 
 ## Sensor Alarms
 <img src="docs/screenshots/sensoralarms.png" alt="Sensor Alarms on a Homey dashboard" width="358">
 
 Tiles that show *No alarm*, the alarm that's on or how many, and turn red while one is. Every alarm counts, including apps' own such as radon. Tap a tile for all of its alarms.
 
-**Settings:** sensors, count motion and contact, [rename tiles](#tile-names).
+**Settings:** sensors, count motion and contact, [colour style](#colour-style), [rename tiles](#tile-names).
 
 <a name="sensor-dots"></a>
 
@@ -145,7 +145,7 @@ Tiles that show *No alarm*, the alarm that's on or how many, and turn red while 
 
 Motion, contact, vibration and camera sensors as a grid of dots that light up while active. Tap a dot for its name and since when, such as *Garage · Open since 18:17*.
 
-**Settings:** sensors, title, idle and active colours.
+**Settings:** sensors, title, idle and active colours, [colour style](#colour-style).
 
 ## Room Health
 <img src="docs/screenshots/roomhealth.png" alt="Room Health on a Homey dashboard: six rooms as rings, the kitchen humid" width="358">
@@ -164,14 +164,14 @@ The indoor climate of the whole house on one card. Pick the sensors, and they're
 
 A room shows whatever its sensors measure; a room with only a thermometer is judged on temperature. A heat pump's room temperature counts, its outdoor and water temperatures don't. Left out on purpose: carbon monoxide (a safety alarm: use [Sensor Alarms](#sensor-alarms)), air quality indexes and VOC in μg/m³ or as an index (their scales differ between devices), and PM1 (no guideline).
 
-**Settings:** sensors, [rename tiles](#tile-names), the comfortable range of each value (one range for every room).
+**Settings:** sensors, [rename tiles](#tile-names), [colour style](#colour-style), the comfortable range of each value (one range for every room).
 
 ## Weather Forecast
 <img src="docs/screenshots/weather.png" alt="Weather Forecast on a Homey dashboard" width="358">
 
 The next 36 hours from [MET Norway](https://www.met.no/en) ([yr.no](https://www.yr.no)), hour by hour, with today's and tomorrow's high and low. Swipe sideways to see further ahead.
 
-**Settings:** compact or detailed, one or two rows, 1–3 hours per column, colour theme.
+**Settings:** compact or detailed, one or two rows, 1–3 hours per column, colour theme (one of them is [Deep](#colour-style)).
 
 Weather data from MET Norway, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Icons: [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
 
@@ -180,7 +180,7 @@ Weather data from MET Norway, licensed under [CC BY 4.0](https://creativecommons
 
 A week of one Insights value as a grid of days and hours: numbers such as light or temperature, or how much of each hour a sensor was on.
 
-**Settings:** device and value, this week or the last 3–14 days, hours per column, colour, scale, legend.
+**Settings:** device and value, this week or the last 3–14 days, hours per column, colour, [colour style](#colour-style), scale, legend.
 
 ## Cameras
 <img src="docs/screenshots/cameras.png" alt="Cameras on a Homey dashboard" width="358">
@@ -194,28 +194,28 @@ Your cameras as a grid of snapshots that refresh every few seconds (cameras with
 
 Half-height tiles that each show one live device value. Percentages can fill their tile by level, and the Flow card **Set the tile colour of … to …** colours a tile, such as a fridge going red when it's too warm.
 
-**Settings:** up to six values, 3 or 2 per row, compact or pill tiles (pill tiles look like Sensor Alarms'), soft or bright colours (bright fills the tile with the full colour, with dark text), percentage fill and its limits, [rename tiles](#tile-names).
+**Settings:** up to six values, 3 or 2 per row, compact or pill tiles (pill tiles look like Sensor Alarms'), [colour style](#colour-style) (Deep fills percentage fills and the colours a Flow sets), percentage fill and its limits, [rename tiles](#tile-names).
 
 ## Light Controls
 <img src="docs/clips/lights.webp" alt="Light Controls on a Homey dashboard: a light turned on, dimmed with the bar, and given a colour and a white" width="358">
 
 Six lights in the space of three of Homey's light cards. Tap a tile to switch it, drag or tap the bar to dim, and tap the colour button for colours and whites. Lights in a room can share one tile. The Room's Moods palette puts the room's Homey Moods on the colour button instead of the colours and whites; starting one needs an [API key](#api-key) with **Set Moods**.
 
-**Settings:** lights, group by room, what the bar's far left does, colour palette, [rename tiles](#tile-names).
+**Settings:** lights, group by room, what the bar's far left does, colour palette, [colour style](#colour-style), [rename tiles](#tile-names).
 
 ## Sparklines
 <img src="docs/screenshots/sparklines.png" alt="Sparklines on a Homey dashboard" width="358">
 
 Device Values' tiles with a small live chart of each value and its highest and lowest.
 
-**Settings:** up to six values, time span (1 hour to 7 days), 2 or 1 per row, [rename tiles](#tile-names).
+**Settings:** up to six values, time span (1 hour to 7 days), 2 or 1 per row, [colour style](#colour-style), [rename tiles](#tile-names).
 
 ## Charts
 <img src="docs/screenshots/charts.png" alt="Charts on a Homey dashboard: the outdoor temperature as a line, and the power use as bars" width="358">
 
 One chart, two stacked, or two values on one chart (each with its own scale), of any value that Homey logs in Insights, drawn like Electricity Overview's charts. The value now sits at the top in the chart's colour. Tap a chart to see the value at that moment.
 
-**Settings:** one chart, two stacked or two on one chart; for each, the value, the time span (1 hour to 7 days), line with area, line or bars, the colour, a scale that fits the values or starts at zero, below zero in yellow, a smooth line and a title. The values at the top can be turned off.
+**Settings:** one chart, two stacked or two on one chart; for each, the value, the time span (1 hour to 7 days), line with area, line or bars, the colour, a scale that fits the values or starts at zero, below zero in yellow, a smooth line and a title. The values at the top can be turned off. [Colour style](#colour-style).
 
 <a name="flow-variables"></a>
 
@@ -224,21 +224,21 @@ One chart, two stacked, or two values on one chart (each with its own scale), of
 
 Logic variables as compact rows with their full name: a switch for yes/no, − and + for a number, and the text for a string. Tap a number or text to type a value. Needs an [API key](#api-key) with **Variables** to change them. Read only shows the values without anything to tap (a dot and Yes/No for yes/no), and needs no key.
 
-**Settings:** up to ten variables, 1 or 2 columns, read only, the − and + step, the lowest and highest number, [rename tiles](#tile-names).
+**Settings:** up to ten variables, 1 or 2 columns, colour, [colour style](#colour-style), read only, the − and + step, the lowest and highest number, [rename tiles](#tile-names).
 
 ## Variable Presets
 <img src="docs/screenshots/varpresets.png" alt="Variable Presets on a Homey dashboard" width="358">
 
 One Logic variable with two to four buttons, each setting it to a value you pick, such as *Home*, *Away* and *Night* for a house mode, or two setpoints. It looks like Thermostat Presets: the button whose value the variable has lights up in your colour, and when none does, the name says what it is now. A yes/no variable without buttons set gets Yes and No. Needs an [API key](#api-key) with **Variables** to change the variable.
 
-**Settings:** the variable, a title instead of its name, an icon, compact layout, the button colour, and per button: the value (Yes or No, a number or a text, as the variable is; pick the variable first) and a label.
+**Settings:** the variable, a title instead of its name, an icon, compact layout, the button colour, [colour style](#colour-style), and per button: the value (Yes or No, a number or a text, as the variable is; pick the variable first) and a label.
 
 ## Flow Buttons
 <img src="docs/screenshots/flows.png" alt="Flow Buttons on a Homey dashboard" width="358">
 
 Flows and Advanced Flows as rows with a round button in your colour and icon. Tap a row to start the flow. Needs an [API key](#api-key) with **Start Flows**.
 
-**Settings:** up to eight flows, each with a colour, an icon and an optional name; 1 or 2 columns.
+**Settings:** up to eight flows, each with a colour, an icon and an optional name; 1 or 2 columns; [colour style](#colour-style).
 
 <a name="price-badge"></a>
 
@@ -247,35 +247,35 @@ Flows and Advanced Flows as rows with a round button in your colour and icon. Ta
 
 The electricity price now, and the coming 12, 24 or 36 hours as small bars in one tile: green, yellow or red by each hour's level in its day, with a dot over the cheapest. Uses the Electricity Overview's prices and needs no meter.
 
-**Settings:** hours ahead, colour by level, tariffs and taxes.
+**Settings:** hours ahead, colour by level, [colour style](#colour-style), tariffs and taxes.
 
 ## Timers
 <img src="docs/clips/timers.webp" alt="Timers on a Homey dashboard: a pizza timer started from its preset, given a minute more, paused and resumed, then run out in red and dismissed" width="358">
 
 Up to four preset buttons, such as *Eggs · 7 min*. A started timer takes their place: tap to pause, **+1** for a minute more, **✕** to cancel. It beeps and turns red when done. The timer runs on Homey, so every screen sees it and the Flow card **A timer finished** fires with no dashboard open.
 
-**Settings:** four presets with minutes and an optional name, sound.
+**Settings:** colour, [colour style](#colour-style), four presets with minutes and an optional name, sound.
 
 ## Locks and Doors
 <img src="docs/screenshots/locks.png" alt="Locks and Doors on a Homey dashboard" width="358">
 
 Locks, doors, windows and garage doors in one line: *All locked and closed*, or what isn't, on a red tile. Tap it for the list, with **Lock** and **Close** buttons.
 
-**Settings:** devices, one line or the full list, allow unlocking, [rename tiles](#tile-names).
+**Settings:** devices, one line or the full list, allow unlocking, [colour style](#colour-style), [rename tiles](#tile-names).
 
 ## Curtains
 <img src="docs/clips/curtains.webp" alt="Curtains on a Homey dashboard: an open curtain tapped closed, a closed one tapped open and sent back with a second tap, and a blind dragged most of the way up" width="358">
 
 Curtains and blinds as tiles: tap to open or close (the corner label says which), or use the slider for anything between. A tap while it moves sends it back.
 
-**Settings:** devices, what a tap does halfway, inverted position, state line, group by room, [rename tiles](#tile-names).
+**Settings:** devices, what a tap does halfway, inverted position, state line, group by room, colour, [colour style](#colour-style), [rename tiles](#tile-names).
 
 ## Media
 <img src="docs/clips/media.webp" alt="Media on a Homey dashboard: the volume turned up, the next track, mute, the TV as the source from behind ⋯, and a switch to another speaker" width="358">
 
 One speaker as a card: album art, the track, play controls, mute, and a volume that moves on every tap but never overshoots or passes your maximum. Shows TV and line-in instead of old album art. Tap the name to switch speaker. Up to four buttons behind ⋯ run the speaker's own actions (such as *Set source to TV*), its app's (such as Sonos (LocalAPI)'s *Scan the music library*) or flows; they need an [API key](#api-key), with **Flows** for the actions and **Start Flows** for flows. A large layout puts the album art across the whole widget, with bigger text and buttons below it.
 
-**Settings:** layout (compact or large), speaker, speaker switching, volume as a bar or buttons, volume step and maximum, progress, shuffle and repeat, four buttons with an icon and a name.
+**Settings:** layout (compact or large), colour, [colour style](#colour-style), speaker, speaker switching, volume as a bar or buttons, volume step and maximum, progress, shuffle and repeat, four buttons with an icon and a name.
 
 ## Smart Stack
 <img src="docs/clips/stack.webp" width="382" alt="A Smart Stack on a Homey dashboard: it turns through four widgets, is swiped by hand, and brings the cameras forward when someone is at the door">
@@ -296,7 +296,7 @@ The time and the date in one tile, with the weather now and today's high and low
 
 A short message on the dashboard, as a tile with one line of text or as a Post-it note stuck on it, tilted, with a folded corner and written in handwriting. Type the message in the widget's settings, or let a Flow write it: *Write [text] on the note [name]*, optionally in a colour (red for *Dryer done*), and *Clear the note [name]*. Every Notes widget with that name shows it, on every screen, at once. It can show a Logic text variable instead. On the tile, long text is cut off or scrolls; the Post-it wraps it to three lines.
 
-**Settings:** style (tile or Post-it), text from (the message typed in the settings, a Flow card or a text variable), message, note name, variable, alignment, text size, long text, icon, colour.
+**Settings:** style (tile or Post-it), text from (the message typed in the settings, a Flow card or a text variable), message, note name, variable, alignment, text size, long text, icon, colour, [colour style](#colour-style).
 
 ## Days Since
 <img src="docs/screenshots/dayssince.png" alt="Days Since on a Homey dashboard: a list of chores with a bar each, plants watered 6 days ago in amber with 1 day left, the vacuum filter 3 months in red and 2 days overdue, and the fish just fed with Undo" width="358">
@@ -305,7 +305,7 @@ Counters for the things you do every so often: plants watered *6 days* ago, the 
 
 Flow cards: *Reset [counter]* (when the robot vacuum is done, for instance), *Set [counter] to [days] days ago* (for something done before you added the widget), the trigger *[counter] became overdue* (when it turns red, even with no dashboard open) and the condition *[counter] is overdue*; the last two also take *Any counter*.
 
-**Settings:** days only or days, weeks and months; up to eight counters, each with a name, an icon and the days until amber and red.
+**Settings:** days only or days, weeks and months; [colour style](#colour-style); up to eight counters, each with a name, an icon and the days until amber and red.
 
 ## Spacer
 An empty widget of the height you set, in pixels, to line up widgets of different heights at the top or bottom across a dashboard's columns. It's transparent in light and dark mode, and Homey keeps its usual gap above and below it.
@@ -344,6 +344,15 @@ Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an
 
 **Kitchen**
 <img src="docs/showcase/kitchen.png" alt="A kitchen dashboard with Widgetkeeper widgets on a tablet" width="100%">
+
+## Colour style
+Every widget with a coloured state has a **Colour style** setting: *Default* is the calmer look, *Deep* the stronger one.
+
+- Where a colour is mixed softly into a tile (a Quick Actions tile that's on, a Sensor Alarms alarm, a Flow Buttons row, a coloured note, Curtains, Timers, Variables …), Deep fills the tile with Homey's darker shade of the colour, with white text (dark on yellow). Lights take a darker shade of their own colour, and the charts get a stronger area under their lines.
+- Where the colour is already a small solid part (the lit button of Thermostat and Variable Presets, Insights Heatmap's cells, Media's play button and what's on, Activity Dots' dots), Default uses Homey's darker shade and Deep the full, bright colour.
+- Days Since shows the level only on its bars by default, and Deep puts an overdue row on a solid block. Room Health's rings are toned down by default and in full colour in Deep. Weather Forecast has *Deep* among its colour themes.
+
+Where a widget lets you pick a colour (Flow Buttons, Device Values' Flow colours, Notes, Charts, Insights Heatmap, Activity Dots, Variable Presets, and now Device Quick Actions, Variables, Curtains, Media and Timers), the colour you pick follows the setting.
 
 ## Tile names
 <img src="docs/clips/rename.webp" alt="Rename tiles: the setting turned on, names typed on two Light Controls tiles, and the setting turned off again with the names kept" width="358">

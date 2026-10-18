@@ -5,7 +5,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, baseTitle } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, baseTitle, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -24,7 +24,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, includeStates?: boolean,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, includeStates?: boolean,
    *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   onHeight?: (h: number) => void }} opts
    */
@@ -42,6 +42,7 @@
     let lastTouchTap = 0;
 
     root.classList.add('sa');
+    applyColors(root, { style: opts.colorStyle });
     const typed = tileNames(opts, () => render(), (key) => {
       const tile = tiles.get(key);
       if (tile) {

@@ -64,6 +64,14 @@ html, body { background: transparent !important; }
 .lc-tile.on.multi {
   background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--lc-tile) 50%, transparent)), var(--lc-tint-bg);
 }
+/*
+ * Deep (kit.css): a lit tile is the light's own colour darkened until white text reads on it, solid; several colours
+ * blend their darkened colours the same way (the tint mixes them into black at 55 %).
+ */
+.lc.wk-deep .lc-tile.on { --lc-text: #FFFFFF; --lc-muted: var(--wk-on-muted); }
+.lc.wk-deep .lc-tile.on:not(.multi) { background: color-mix(in oklab, var(--lc-light) 55%, #000000); }
+.lc.wk-deep .lc-tile.on.multi { --lc-tile: #000000; --lc-tint: 55%; }
+.lc.wk-deep .lc-tile.on .lc-track { background: rgb(255 255 255 / .22); }
 
 .lc-top { display: flex; align-items: center; gap: 6px; height: 20px; }
 .lc-icon, .lc-chip-glyph, .lc-close-glyph {

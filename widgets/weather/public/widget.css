@@ -173,3 +173,18 @@ html, body { margin: 0; }
   --wf-text: #FFFFFF; --wf-muted: rgb(255 255 255 / .78); --wf-line: rgb(255 255 255 / .22);
   --wf-rain: #A8D4FF; --wf-cold: #B5DCFF; --wf-hot: #FFB4A3;
 }
+
+/*
+ * Deep (the Colours setting's Deep, as a theme): each column a solid block of its temperature, Homey's darker shades:
+ * blue-700 when cold, the dark tile around 12°, the red shade when warm (no green), with white text in both modes. Only the
+ * columns turn white, so the footer reads on the card as in the default theme.
+ */
+.wf-theme-deep .wf-strip { border-radius: 8px; }
+.wf-theme-deep .wf-col {
+  --wf-deep-mild: #2B2C36; --wf-deep-cold: var(--homey-color-blue-700, #004E96); --wf-deep-hot: var(--homey-color-red-600, #AD1617);
+  --wf-text: #FFFFFF; --wf-muted: rgb(255 255 255 / .78); --wf-line: rgb(255 255 255 / .22); --wf-rain: #A8D4FF;
+  background: var(--wf-deep-mild); color: var(--wf-text);
+}
+.wf-theme-deep .wf-col.tint-cold { background: color-mix(in oklab, var(--wf-deep-cold) calc(var(--k, 1) * 100%), var(--wf-deep-mild)); }
+.wf-theme-deep .wf-col.tint-warm { background: color-mix(in oklab, var(--wf-deep-hot) calc(var(--k, 1) * 100%), var(--wf-deep-mild)); }
+.wf-theme-deep .wf-col .wf-temp { color: var(--wf-text); }

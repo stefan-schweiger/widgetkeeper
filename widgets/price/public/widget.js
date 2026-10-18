@@ -5,7 +5,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, lowestSlot } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, lowestSlot, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const HOUR = 36e5;
@@ -56,7 +56,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, locale?: string, hours?: string | number,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string, hours?: string | number,
    *   tint?: boolean, now?: () => number, onHeight?: (h: number) => void }} opts
    */
   function createPriceWidget(root, opts = {}) {
@@ -90,6 +90,7 @@
     let slotTimer = null;
 
     root.classList.add('pb');
+    applyColors(root, { style: opts.colorStyle });
     if (opts.tint === false) root.classList.add('no-tint');
     const tile = el('div', { class: 'pb-tile' }, root);
     const nowCell = el('div', { class: 'pb-now' }, tile);

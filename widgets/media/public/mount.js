@@ -37,6 +37,8 @@ window.mountMediaWidget = function (Homey, { root, frame }) {
   let loaded = false;
 
   const widget = window.createMediaWidget(root, {
+    colorStyle: settings.colorStyle,
+    color: settings.color,
     t: (key, tokens) => Homey.__(key, tokens),
     buttons: window.mediaButtonsFromSettings(settings),
     volumeStep: Number(settings.volumeStep || 5) / 100,

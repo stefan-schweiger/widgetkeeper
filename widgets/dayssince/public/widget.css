@@ -8,13 +8,10 @@
   --ds-text: var(--homey-text-color, #EDEEF0);
   --ds-muted: var(--homey-text-color-light, #9C9DA5);
   --ds-neutral: color-mix(in srgb, var(--ds-text) 8%, var(--ds-bg)); /* the track and the Undo pill: Variables' grey */
-  --ds-blue: var(--homey-color-blue, #2F8DF6);
+  --ds-blue: var(--wk-blue); /* kit.css: Homey's blue, its darker shade in Deep */
   /* Amber is Device Values' yellow (Homey has no token), red Homey's. */
   --ds-amber: #F5C518;
   --ds-red: var(--homey-color-red, #F25F5C);
-  /* The time, icon and overdue label in a level's colour: darker on a light card, so each passes 4.5:1 there. */
-  --ds-amber-text: #8A5F00;
-  --ds-red-text: #B42318;
   /* Homey's type scale: only these size/line-height pairs are used natively. */
   --ds-fs-default: var(--homey-font-size-default, 17px); --ds-lh-default: var(--homey-line-height-default, 24px);
   --ds-fs-small: var(--homey-font-size-small, 14px); --ds-lh-small: var(--homey-line-height-small, 20px);
@@ -22,7 +19,6 @@
   --ds-bold: var(--homey-font-weight-bold, 700);
   --ds-medium: var(--homey-font-weight-medium, 500);
 }
-.homey-dark-mode .ds, .ds.homey-dark-mode { --ds-amber-text: var(--ds-amber); --ds-red-text: #FF7B78; }
 
 /* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
 html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
@@ -72,7 +68,8 @@ html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
   margin-right: var(--homey-su-1, 4px); /* 16px to the label, with the column gap */
 }
 .ds-fill {
-  height: 100%; width: var(--ds-fill, 0%); border-radius: inherit; background: var(--ds-level, var(--ds-blue));
+  height: 100%; width: var(--ds-fill, 0%); border-radius: inherit;
+  background: color-mix(in srgb, var(--ds-level, var(--ds-blue)) 50%, var(--ds-neutral)); /* toned down: Deep fills it fully */
   transition: width .3s;
 }
 .ds .ds-left {
@@ -80,14 +77,29 @@ html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
   font-size: var(--ds-fs-label); line-height: var(--ds-lh-label); font-weight: var(--ds-medium);
   color: var(--ds-muted); font-variant-numeric: tabular-nums;
 }
-.ds-left.over { color: var(--ds-red-text); }
 /* Without an interval there's nothing to fill towards; the line keeps its height. */
 .ds-row.no-due .ds-bar, .ds-row.no-due .ds-left { visibility: hidden; }
 
-/* Amber, then red: the bar, the icon and the time in the colour. */
-.ds-row[data-level="amber"] { --ds-level: var(--ds-amber); --ds-level-text: var(--ds-amber-text); }
-.ds-row[data-level="red"] { --ds-level: var(--ds-red); --ds-level-text: var(--ds-red-text); }
-.ds-row[data-level] .ds-icon, .ds-row[data-level] .ds-value { color: var(--ds-level-text); }
+/* Amber, then red: only the bar shows it (the user's choice: a calm list; the text stays in the text colours). */
+.ds-row[data-level="amber"] { --ds-level: var(--ds-amber); }
+.ds-row[data-level="red"] { --ds-level: var(--ds-red); }
+/*
+ * Deep (kit.css): an amber or red row stands on a solid block of the colour (yellow, or the red shade), drawn behind it so the
+ * rows keep their grid; everything on it, the bar and the Undo pill included, is in the text on that colour.
+ */
+.ds.wk-deep .ds-row[data-level="amber"] { --wk-c: var(--wk-yellow); --wk-on: var(--wk-on-yellow); --wk-on-muted: rgb(26 27 33 / .75); }
+.ds.wk-deep .ds-row[data-level="red"] { --wk-c: var(--wk-red); --wk-on: var(--wk-on-red); }
+.ds.wk-deep .ds-row[data-level] {
+  isolation: isolate;
+  --ds-text: var(--wk-on); --ds-muted: var(--wk-on-muted); --ds-level: var(--wk-on);
+  --ds-neutral: color-mix(in srgb, var(--wk-on) 22%, transparent);
+}
+.ds.wk-deep .ds-row[data-level] .ds-icon { color: var(--wk-on); }
+/* Deep fills every bar at full strength. */
+.ds.wk-deep .ds-fill { background: var(--ds-level, var(--ds-blue)); }
+.ds.wk-deep .ds-row[data-level]::before {
+  content: ''; position: absolute; inset: -6px -8px; z-index: -1; border-radius: 10px; background: var(--wk-c);
+}
 
 /* Undo, for a few seconds after a tap: a grey pill after the time, its tap area reaching past it. */
 .ds-undo {

@@ -57,7 +57,7 @@ html, body { background: transparent !important; }
   display: flex; align-items: center; justify-content: center; gap: 6px;
 }
 .tm-preset-text { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
-.tm-preset .tm-glyph { flex: 0 0 auto; width: 12px; height: 12px; color: var(--tm-blue); }
+.tm-preset .tm-glyph { flex: 0 0 auto; width: 12px; height: 12px; color: var(--wk-c); }
 .tm-preset-name {
   /* 14 bold like Flow Buttons' names. */
   font-size: var(--tm-fs-small); line-height: var(--tm-lh-small); font-weight: var(--tm-bold);
@@ -71,7 +71,8 @@ html, body { background: transparent !important; }
  * The tile fills from the left with the time left, in blue, as a Device Values percentage.
  */
 .tm-row {
-  --tm-color: var(--tm-blue);
+  --tm-color: var(--wk-c); /* the colour setting (kit.css; blue by default) */
+  --tm-on: var(--wk-on); /* the button's icon on it */
   height: 56px; padding: 8px 8px 8px 10px; display: flex; align-items: center; gap: 10px;
   background: linear-gradient(to right, color-mix(in srgb, var(--tm-color) var(--tm-fill-mix), var(--tm-tile)) var(--tm-left, 0%), var(--tm-tile) var(--tm-left, 0%));
 }
@@ -80,10 +81,27 @@ html, body { background: transparent !important; }
 .tm-row[data-state="done"] { --tm-color: var(--tm-red);
   background: color-mix(in srgb, var(--tm-red) 30%, var(--tm-tile)); animation: tm-ring 1s ease-in-out infinite alternate; }
 @keyframes tm-ring { to { background: color-mix(in srgb, var(--tm-red) 16%, var(--tm-tile)); } }
+.tm-row[data-state="done"] { --tm-on: #FFFFFF; }
+/*
+ * Deep (kit.css): the time left in the colour's darker shade, the rest of the row a darker (on yellow a paler) shade of it,
+ * with the text, buttons and icons in --wk-on; a finished timer pulses between the red shade and a darker red.
+ */
+.tm.wk-deep .tm-row:not([data-state="paused"]) {
+  --tm-rest: color-mix(in oklab, var(--tm-color) 55%, #000000);
+  background: linear-gradient(to right, var(--tm-color) var(--tm-left, 0%), var(--tm-rest) var(--tm-left, 0%));
+  --tm-text: var(--tm-on); --tm-muted: var(--wk-on-muted); --tm-neutral: color-mix(in srgb, var(--tm-on) 16%, transparent);
+}
+.tm.wk-deep[data-wk-color="yellow"] .tm-row[data-state="running"] { --tm-rest: color-mix(in oklab, var(--tm-color) 45%, #FFFFFF); }
+.tm.wk-deep .tm-row:not([data-state="paused"]) .tm-button { background: color-mix(in srgb, var(--tm-on) 22%, transparent); }
+.tm.wk-deep .tm-row[data-state="done"] {
+  --tm-color: var(--wk-red); --tm-on: var(--wk-on-red); --tm-muted: rgb(255 255 255 / .78);
+  background: var(--wk-red); animation-name: tm-ring-deep;
+}
+@keyframes tm-ring-deep { to { background: color-mix(in oklab, var(--wk-red) 70%, #000000); } }
 
 .tm-button {
   flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%;
-  background: var(--tm-color); color: #FFFFFF;
+  background: var(--tm-color); color: var(--tm-on);
   display: flex; align-items: center; justify-content: center; transition: transform .1s;
 }
 .tm-row[data-state="paused"] .tm-button { background: var(--tm-neutral); color: var(--tm-text); }

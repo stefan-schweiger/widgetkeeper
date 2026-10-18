@@ -7,7 +7,7 @@
   --qa-text: var(--homey-text-color, #EDEEF0);
   --qa-muted: var(--homey-text-color-light, #9C9DA5);
   --qa-on-color: var(--homey-text-color-white, #FFFFFF);
-  --qa-accent: var(--homey-color-blue, #2F8DF6);
+  --qa-accent: var(--wk-c); /* the colour setting (kit.css; blue by default) */
   --qa-accent-icon: var(--qa-accent); /* icons on a blue-tinted tile */
   --qa-lighter: color-mix(in srgb, var(--qa-text) 9%, var(--qa-tile)); /* the "lighter tile" on-state */
   /* Homey's type scale: only these size/line-height pairs are used natively. */
@@ -16,7 +16,11 @@
   --qa-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
 }
 /* Dark mode: each tile looks like a native device tile, darker than the default widget background. */
-.homey-dark-mode .qa, .qa.homey-dark-mode { --qa-tile: #181920; --qa-accent-icon: #5AA6FF; --qa-lighter: #2E3039; }
+.homey-dark-mode .qa, .qa.homey-dark-mode {
+  --qa-tile: #181920; --qa-accent-icon: color-mix(in oklab, var(--qa-accent) 72%, #FFFFFF); --qa-lighter: #2E3039;
+}
+/* Blue keeps the lighter blue measured from the native tiles. */
+.homey-dark-mode .qa[data-wk-color="blue"], .qa.homey-dark-mode[data-wk-color="blue"] { --qa-accent-icon: #5AA6FF; }
 
 /* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
 html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
@@ -72,11 +76,16 @@ html, body { background: transparent !important; }
 
 /*
  * The whole tile shows the state: on, locked, playing (or a button just pressed). Two styles, picked
- * in the widget settings: a blue tint with blue icons (the default), or a plain lighter tile.
+ * in the widget settings: a tint of the colour setting with icons in it (the default), or a plain lighter tile.
  */
 .qa-tile.active { background: color-mix(in srgb, var(--qa-accent) 22%, var(--qa-tile)); }
 .qa-tile.active .qa-icon, .qa-tile.active .qa-action { color: var(--qa-accent-icon); }
 .qa[data-active-style="lighter"] .qa-tile.active { background: var(--qa-lighter); }
+/* Deep (kit.css): a tile that is on is the colour's darker shade, solid, with its text and icons in --wk-on. The lighter tile
+   keeps its grey. */
+.qa.wk-deep:not([data-active-style="lighter"]) .qa-tile.active {
+  background: var(--wk-c); --qa-text: var(--wk-on); --qa-muted: var(--wk-on-muted); --qa-accent-icon: var(--wk-on);
+}
 .qa[data-active-style="lighter"] .qa-tile.active .qa-icon,
 .qa[data-active-style="lighter"] .qa-tile.active .qa-action { color: inherit; }
 

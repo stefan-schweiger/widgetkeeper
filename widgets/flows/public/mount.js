@@ -32,6 +32,7 @@ window.mountFlowsWidget = function (Homey, { root, frame }) {
   let loaded = false;
 
   const widget = window.createFlowsWidget(root, {
+    colorStyle: settings.colorStyle,
     t: (key, tokens) => Homey.__(key, tokens),
     columns: settings.columns,
     buttons,

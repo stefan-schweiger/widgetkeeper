@@ -6,7 +6,7 @@
  * any drag. Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a changed tile shows its new value while waiting for the device
@@ -97,7 +97,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string,
    *   onSet?: (deviceId: string, change: {dim?: number, onoff?: boolean, temperature?: number,
    *     hue?: number, saturation?: number}) => Promise<any>,
    *   onMood?: (moodId: string) => Promise<any>,
@@ -124,6 +124,7 @@
     let messageTimer = null;
 
     root.classList.add('lc');
+    applyColors(root, { style: opts.colorStyle });
     const names = tileNames(opts, () => render(), (key) => {
       shake(key);
       setMessage(t('renameFailed'), true);

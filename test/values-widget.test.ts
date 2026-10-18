@@ -122,21 +122,24 @@ describe('render', () => {
     });
   });
 
-  describe('bright colours', () => {
+  describe('deep colours', () => {
     const battery = (value: number) => ({ deviceId: 'c', capabilityId: 'measure_battery', name: 'Sensor', capability: cap('number', { units: '%' }), value });
     const ink = (t: HTMLElement) => t.querySelector<HTMLElement>('.vt-ink');
 
-    it('is soft unless the setting says bright', () => {
+    it('is the default unless the setting says deep (or the old bright)', () => {
       for (const colorStyle of [undefined, 'soft', 'bogus']) {
         const { root, tiles } = widget([battery(50)], undefined, { colorStyle, percentFill: true });
-        expect(root.classList.contains('vt-bright')).toBe(false);
+        expect(root.classList.contains('wk-deep')).toBe(false);
         expect(ink(tiles()[0])).toBeNull();
       }
-      expect(widget([temp()], undefined, { colorStyle: 'bright' }).root.classList.contains('vt-bright')).toBe(true);
+      for (const colorStyle of ['deep', 'bright']) {
+        const { root } = widget([temp()], undefined, { colorStyle });
+        expect([...root.classList]).toEqual(expect.arrayContaining(['vt', 'wk', 'wk-deep']));
+      }
     });
 
     it("copies each tile's icon, value and name into its ink layer, and follows changes", () => {
-      const { w, tiles } = widget([battery(50), temp()], undefined, { colorStyle: 'bright', percentFill: true });
+      const { w, tiles } = widget([battery(50), temp()], undefined, { colorStyle: 'deep', percentFill: true });
       const copy = (t: HTMLElement) => {
         const layer = ink(t)!;
         expect(layer.getAttribute('aria-hidden')).toBe('true');
@@ -175,8 +178,8 @@ describe('render', () => {
       expect(text('.vt-value')).toEqual([`${dec(21.5)}°C`, 'On']);
     });
 
-    it('lays out the bright ink layer the same way', () => {
-      const { tiles } = widget([battery(50)], undefined, { tileStyle: 'pill', colorStyle: 'bright', percentFill: true });
+    it('lays out the deep ink layer the same way', () => {
+      const { tiles } = widget([battery(50)], undefined, { tileStyle: 'pill', colorStyle: 'deep', percentFill: true });
       const layer = tiles()[0].querySelector('.vt-ink')!;
       expect(layout(layer)).toEqual(pillLayout);
       expect([layer.querySelector('.vt-name')!.textContent, layer.querySelector('.vt-value')!.textContent]).toEqual(['Sensor', '50%']);

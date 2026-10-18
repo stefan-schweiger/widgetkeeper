@@ -27,6 +27,8 @@ window.mountQuickActionsWidget = function (Homey, { root, frame }) {
     renameTiles: settings.renameTiles === true,
     onRename: (key, name) => tileNames.rename(key, name),
     activeStyle: settings.activeStyle,
+    color: settings.color,
+    colorStyle: settings.colorStyle,
     onTrigger: (deviceId, value) => Homey.api('POST', '/trigger', { deviceId, value }),
     onHeight: () => {
       if (!readySent) return;

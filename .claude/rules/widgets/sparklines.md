@@ -14,3 +14,4 @@ paths:
 - Live: `ValueService.getState()` gives the name, icon and value, so tracking and `values:state` are Device Values'. Each live number is appended and the line runs on to now at the current value; a refresh keeps the live points newer than its last point. Redrawn every `span / 120` (10–60 s), so the line scrolls.
 - `GET /state?slots=a:cap,b:cap&span=24h`: Device Values' entries plus `points: [t, v][]`.
 - It copies Device Values' glyphs (trimmed to numbers; the number formatting is the kit's); `sparkPath()` (on `window`) draws the paths. The SVG elements stay in place and are measured at each render (a `ResizeObserver` redraws).
+- Colour style (`colorStyle`, Default/Deep; CLAUDE.md *Widget styling*, `kit.css`): after `columns`. Deep: the area at 0.45 and a 2 px line; the line keeps its colour.

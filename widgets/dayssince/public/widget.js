@@ -7,7 +7,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
@@ -212,7 +212,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, locale?: string,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string,
    *   counters?: {key: string, name: string, icon: string | null, amber: number | null, red: number | null}[],
    *   units?: string,
    *   onReset?: (name: string) => Promise<any>,
@@ -247,6 +247,7 @@
     let messageTimer = null;
 
     root.classList.add('ds');
+    applyColors(root, { style: opts.colorStyle });
     const list = el('div', { class: 'ds-list' }, root);
     const messageEl = el('div', { class: 'ds-message', dir: 'auto' }, root);
 

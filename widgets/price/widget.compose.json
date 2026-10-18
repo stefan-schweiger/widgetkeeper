@@ -177,6 +177,79 @@
         "ar": "يلوّن الأعمدة بالأخضر أو الأصفر أو الأحمر حسب موقع سعر كل ساعة ضمن نطاق يومها. إيقاف: كلها زرقاء."
       },
       "value": true
+    },
+    {
+      "id": "colorStyle",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour style",
+        "nl": "Kleurstijl",
+        "de": "Farbstil",
+        "fr": "Style de couleur",
+        "it": "Stile colori",
+        "sv": "Färgstil",
+        "no": "Fargestil",
+        "es": "Estilo de color",
+        "da": "Farvestil",
+        "ru": "Цветовой стиль",
+        "pl": "Styl kolorów",
+        "ko": "색상 스타일",
+        "ar": "نمط الألوان"
+      },
+      "hint": {
+        "en": "Deep draws with Homey's darker shades and more colour.",
+        "nl": "Diep tekent met de donkerdere tinten van Homey en meer kleur.",
+        "de": "Satt zeichnet mit Homeys dunkleren Tönen und mehr Farbe.",
+        "fr": "Profondes dessine avec les nuances plus foncées de Homey et plus de couleur.",
+        "it": "Intensi disegna con le tonalità più scure di Homey e più colore.",
+        "sv": "Djupa ritar med Homeys mörkare nyanser och mer färg.",
+        "no": "Dype tegner med Homeys mørkere nyanser og mer farge.",
+        "es": "Intensos dibuja con los tonos más oscuros de Homey y más color.",
+        "da": "Dybe tegner med Homeys mørkere nuancer og mere farve.",
+        "ru": "«Насыщенные» рисуют более тёмными оттенками Homey и ярче.",
+        "pl": "Głębokie rysują ciemniejszymi odcieniami Homey i z większą ilością koloru.",
+        "ko": "진하게는 Homey의 더 어두운 색조로 더 진하게 그립니다.",
+        "ar": "«عميقة» ترسم بدرجات Homey الأغمق وبألوان أكثر."
+      },
+      "value": "soft",
+      "values": [
+        {
+          "id": "soft",
+          "title": {
+            "en": "Default",
+            "nl": "Standaard",
+            "de": "Standard",
+            "fr": "Par défaut",
+            "it": "Predefiniti",
+            "sv": "Standard",
+            "no": "Standard",
+            "es": "Predeterminados",
+            "da": "Standard",
+            "ru": "Обычные",
+            "pl": "Domyślne",
+            "ko": "기본",
+            "ar": "افتراضية"
+          }
+        },
+        {
+          "id": "deep",
+          "title": {
+            "en": "Deep",
+            "nl": "Diep",
+            "de": "Satt",
+            "fr": "Profondes",
+            "it": "Intensi",
+            "sv": "Djupa",
+            "no": "Dype",
+            "es": "Intensos",
+            "da": "Dybe",
+            "ru": "Насыщенные",
+            "pl": "Głębokie",
+            "ko": "진하게",
+            "ar": "عميقة"
+          }
+        }
+      ]
     }
   ],
   "api": {

@@ -23,6 +23,7 @@ window.mountHeatmapWidget = function (Homey, { root, frame }) {
   let loaded = false;
 
   const widget = window.createHeatmapWidget(root, {
+    colorStyle: settings.colorStyle,
     t: (key, tokens) => Homey.__(key, tokens),
     period: settings.period,
     step: Number(settings.step) || 2,

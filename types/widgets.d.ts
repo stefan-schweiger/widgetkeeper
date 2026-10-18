@@ -50,6 +50,9 @@ interface Window {
     lowestSlot: (slots: any[], from: number, hours: number) => number,
     loadMarks: (sdkAt: number) => string,
     wireTileNames: (Homey: any, setNames: (names: any) => void) => { state: (path: string) => Promise<any>, rename: (key: string, name: string) => Promise<any> },
+    COLORS: string[],
+    colorStyle: (value: unknown) => 'soft' | 'deep',
+    applyColors: (root: HTMLElement, opts?: { style?: unknown, color?: unknown, fallback?: string | null }) => 'soft' | 'deep',
   };
   createVarPresetsWidget: (root: HTMLElement, opts?: object) => any;
   varPresetsFromSettings: (settings: Record<string, any>) => { value: boolean | number | string, type: string, label: string }[];

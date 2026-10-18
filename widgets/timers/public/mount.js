@@ -22,6 +22,8 @@ window.mountTimersWidget = function (Homey, { root, frame }) {
   let instance = '';
 
   const widget = window.createTimersWidget(root, {
+    colorStyle: settings.colorStyle,
+    color: settings.color,
     t: (key, tokens) => Homey.__(key, tokens),
     presets: window.timerPresetsFromSettings(settings),
     sound: settings.sound !== false,

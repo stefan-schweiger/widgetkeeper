@@ -258,19 +258,19 @@
       "id": "theme",
       "type": "dropdown",
       "title": {
-        "en": "Colours",
-        "nl": "Kleuren",
-        "de": "Farben",
-        "fr": "Couleurs",
-        "it": "Colori",
-        "sv": "Färger",
-        "no": "Farger",
-        "es": "Colores",
-        "da": "Farver",
-        "ru": "Цвета",
-        "pl": "Kolory",
-        "ko": "색상",
-        "ar": "الألوان"
+        "en": "Colour style",
+        "nl": "Kleurstijl",
+        "de": "Farbstil",
+        "fr": "Style de couleur",
+        "it": "Stile colori",
+        "sv": "Färgstil",
+        "no": "Fargestil",
+        "es": "Estilo de color",
+        "da": "Farvestil",
+        "ru": "Цветовой стиль",
+        "pl": "Styl kolorów",
+        "ko": "색상 스타일",
+        "ar": "نمط الألوان"
       },
       "value": "default",
       "values": [
@@ -362,6 +362,24 @@
             "pl": "Tło pogodowe",
             "ko": "날씨 배경",
             "ar": "خلفية الطقس"
+          }
+        },
+        {
+          "id": "deep",
+          "title": {
+            "en": "Deep",
+            "nl": "Diep",
+            "de": "Satt",
+            "fr": "Profondes",
+            "it": "Intensi",
+            "sv": "Djupa",
+            "no": "Dype",
+            "es": "Intensos",
+            "da": "Dybe",
+            "ru": "Насыщенные",
+            "pl": "Głębokie",
+            "ko": "진하게",
+            "ar": "عميقة"
           }
         }
       ]

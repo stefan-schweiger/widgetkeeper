@@ -354,6 +354,79 @@
           }
         }
       ]
+    },
+    {
+      "id": "colorStyle",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour style",
+        "nl": "Kleurstijl",
+        "de": "Farbstil",
+        "fr": "Style de couleur",
+        "it": "Stile colori",
+        "sv": "Färgstil",
+        "no": "Fargestil",
+        "es": "Estilo de color",
+        "da": "Farvestil",
+        "ru": "Цветовой стиль",
+        "pl": "Styl kolorów",
+        "ko": "색상 스타일",
+        "ar": "نمط الألوان"
+      },
+      "hint": {
+        "en": "Deep shows the colours bright and at full strength.",
+        "nl": "Diep toont de kleuren fel en op volle sterkte.",
+        "de": "Satt zeigt die Farben kräftig und in voller Stärke.",
+        "fr": "Profondes affiche les couleurs vives, à pleine intensité.",
+        "it": "Intensi mostra i colori vivaci e a piena intensità.",
+        "sv": "Djupa visar färgerna klara och i full styrka.",
+        "no": "Dype viser fargene klare og med full styrke.",
+        "es": "Intensos muestra los colores vivos y con toda su intensidad.",
+        "da": "Dybe viser farverne klare og i fuld styrke.",
+        "ru": "«Насыщенные» показывают цвета ярко и в полную силу.",
+        "pl": "Głębokie pokazują kolory jaskrawo i w pełnej mocy.",
+        "ko": "진하게는 색을 선명하고 진하게 표시합니다.",
+        "ar": "«عميقة» تعرض الألوان زاهية وبكامل قوتها."
+      },
+      "value": "soft",
+      "values": [
+        {
+          "id": "soft",
+          "title": {
+            "en": "Default",
+            "nl": "Standaard",
+            "de": "Standard",
+            "fr": "Par défaut",
+            "it": "Predefiniti",
+            "sv": "Standard",
+            "no": "Standard",
+            "es": "Predeterminados",
+            "da": "Standard",
+            "ru": "Обычные",
+            "pl": "Domyślne",
+            "ko": "기본",
+            "ar": "افتراضية"
+          }
+        },
+        {
+          "id": "deep",
+          "title": {
+            "en": "Deep",
+            "nl": "Diep",
+            "de": "Satt",
+            "fr": "Profondes",
+            "it": "Intensi",
+            "sv": "Djupa",
+            "no": "Dype",
+            "es": "Intensos",
+            "da": "Dybe",
+            "ru": "Насыщенные",
+            "pl": "Głębokie",
+            "ko": "진하게",
+            "ar": "عميقة"
+          }
+        }
+      ]
     }
   ],
   "api": {

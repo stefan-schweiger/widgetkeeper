@@ -21,6 +21,7 @@ window.mountPriceWidget = function (Homey, { root, frame }) {
   let loaded = false;
 
   const widget = window.createPriceWidget(root, {
+    colorStyle: settings.colorStyle,
     t: (key, tokens) => Homey.__(key, tokens),
     hours: settings.hours,
     tint: settings.tint !== false,

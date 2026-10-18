@@ -3,7 +3,7 @@
  * lowest to the highest value shown, with a scale and a legend. Plain browser JS (served as-is).
  */
 (function () {
-  const { el } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const LEVELS = 5;
@@ -82,7 +82,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, locale?: string,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string,
    *   period?: string, step?: number, color?: string, showScale?: boolean, showLegend?: boolean,
    *   onHeight?: (h: number) => void }} opts
    */
@@ -105,6 +105,7 @@
     let lastHeight = 0;
 
     root.classList.add('hm');
+    applyColors(root, { style: opts.colorStyle });
     root.style.setProperty('--hm-cols', String(cols));
     root.classList.toggle('hm-dense', step === 1);
     if (color !== 'blue') root.dataset.color = color;

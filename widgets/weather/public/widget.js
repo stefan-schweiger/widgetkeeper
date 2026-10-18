@@ -35,7 +35,7 @@
   }
 
   // Colour themes (the `theme` setting). They only change colours and backgrounds, in widget.css.
-  const THEMES = ['default', 'vivid', 'temperature', 'sky', 'card'];
+  const THEMES = ['default', 'vivid', 'temperature', 'sky', 'card', 'deep'];
 
   /** The kind of sky a MET symbol code shows, for the sky-coloured themes (`data-sky`). */
   function skyOf(symbol) {

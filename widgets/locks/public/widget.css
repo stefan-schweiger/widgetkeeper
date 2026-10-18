@@ -43,6 +43,11 @@ html, body { background: transparent !important; }
 }
 /* Something open or unlocked: Sensor Alarms' red-tinted tile, only while the list is closed (the list keeps the plain fill). */
 .lk-tile[data-level="insecure"]:not(.expanded) { background: color-mix(in srgb, var(--lk-red) 22%, var(--lk-tile)); }
+/* Deep (kit.css): the red shade, solid, with white text (the list keeps the tile's own colour, as without Deep). */
+.lk.wk-deep .lk-tile[data-level="insecure"]:not(.expanded) {
+  background: var(--wk-red); color: var(--wk-on-red);
+  --lk-text: var(--wk-on-red); --lk-muted: var(--wk-on-muted); --lk-red-text: var(--wk-on-red);
+}
 
 /* The summary: a 24 px padlock, the title (14 bold) over the detail (14 regular, muted), and a chevron. */
 .lk-summary {

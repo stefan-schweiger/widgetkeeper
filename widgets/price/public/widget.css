@@ -90,6 +90,16 @@ html, body { background: transparent !important; }
   background: color-mix(in srgb, var(--pb-level, var(--pb-muted)) 50%, var(--pb-tile));
 }
 .pb-bar.now { background: var(--pb-level, var(--pb-text)); }
+/* Deep (kit.css): the bars in Homey's darker shades at full strength; the current hour keeps the bright colour, so it stands out. */
+.pb.wk-deep .pb-bar[data-level="low"] { --pb-level: var(--wk-green); }
+.pb.wk-deep .pb-bar[data-level="medium"] { --pb-level: var(--wk-yellow); }
+.pb.wk-deep .pb-bar[data-level="high"] { --pb-level: var(--wk-red); }
+.pb.wk-deep.no-tint .pb-bar[data-level] { --pb-level: var(--wk-blue); }
+.pb.wk-deep .pb-bar:not(.none):not(.now) { background: var(--pb-level, var(--pb-muted)); }
+.pb.wk-deep .pb-bar.now[data-level="low"] { background: var(--pb-green); }
+.pb.wk-deep .pb-bar.now[data-level="medium"] { background: var(--pb-yellow); }
+.pb.wk-deep .pb-bar.now[data-level="high"] { background: var(--pb-red); }
+.pb.wk-deep.no-tint .pb-bar.now[data-level] { background: var(--pb-blue); }
 /* An hour without a price yet (tomorrow before publication): a stub on the baseline. */
 .pb-bar.none { height: 2px; background: var(--pb-track); }
 /* A dot over the cheapest hour. */

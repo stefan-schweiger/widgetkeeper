@@ -4,7 +4,7 @@
  * handwriting, wrapping up to three lines. Plain browser JS (served as-is).
  */
 (function () {
-  const { el } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -75,7 +75,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ style?: string, source?: string, align?: string, size?: string, overflow?: string, icon?: string | null,
+   * @param {{ colorStyle?: string, style?: string, source?: string, align?: string, size?: string, overflow?: string, icon?: string | null,
    *   color?: string, message?: string, variableChosen?: boolean, seed?: string, reducedMotion?: boolean,
    *   t?: (key: string, tokens?: Record<string, unknown>) => string | null, onHeight?: (h: number) => void }} opts
    */
@@ -101,6 +101,7 @@
     let loaded = false;
 
     root.classList.add('tl');
+    applyColors(root, { style: opts.colorStyle });
     root.dataset.style = postit ? 'postit' : 'tile';
     root.dataset.size = size;
     root.dataset.align = align;

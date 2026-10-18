@@ -64,6 +64,9 @@ html, body { background: transparent !important; }
 .sl-line { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
 .sl-area { fill: currentColor; fill-opacity: .15; stroke: none; }
 .sl-dot { fill: currentColor; }
+/* Deep (kit.css): a stronger area and line; the line keeps its colour, which reads on the dark tile. */
+.sl.wk-deep .sl-line { stroke-width: 2; }
+.sl.wk-deep .sl-area { fill-opacity: .45; }
 .sl-range {
   flex-shrink: 0; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end;
   font-size: var(--sl-fs-label); line-height: var(--sl-lh-label); color: var(--sl-muted);

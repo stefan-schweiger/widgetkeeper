@@ -4,7 +4,7 @@
  * measurement used below. The drawing itself is chart.js (`window.WidgetkeeperChart`), shared with Charts.
  */
 (function () {
-  const { lowestSlot } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { lowestSlot, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const C = window.WidgetkeeperChart; // chart.js, loaded first
@@ -78,7 +78,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string | null, locale?: string, layout?: string, onHeight?: (h: number) => void }} opts
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string | null, locale?: string, layout?: string, onHeight?: (h: number) => void }} opts
    */
   function createElectricityWidget(root, opts = {}) {
     const locale = opts.locale || navigator.language || 'da-DK';
@@ -124,6 +124,7 @@
       fineIdx: null, // usage/price scrub: 5-min index from the first slot
     };
 
+    applyColors(root, { style: opts.colorStyle }); // on the root, so the chart markup stays as it was
     const kit = C.createKit();
     const { text, gradient, dot, chip, prepareSvg } = kit;
 

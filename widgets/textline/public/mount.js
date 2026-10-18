@@ -29,6 +29,7 @@ window.mountTextLineWidget = function (Homey, { root, frame }) {
   let readySent = false;
 
   const widget = window.createTextLineWidget(root, {
+    colorStyle: settings.colorStyle,
     style,
     source,
     align: settings.align,
