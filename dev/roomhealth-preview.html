@@ -18,16 +18,18 @@
   </style>
 </head>
 <body>
-  <div class="col"><span>358 px (phone) · dark</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
-  <div class="col"><span>358 px · light</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
-  <div class="col"><span>300 px · dark</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
-  <div class="col"><span>420 px (a tablet column) · dark</span><div class="dash homey-dark-mode" style="width:420px"><div id="w4"></div></div></div>
+  <div class="col"><span>358 px (phone) · dark · icons</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · dark · bars</span><div class="dash homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
+  <div class="col"><span>358 px · light · icons, green when fine</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>358 px · dark · bars, green when fine, Deep</span><div class="dash homey-dark-mode" style="width:358px"><div id="w9"></div></div></div>
+  <div class="col"><span>300 px · dark · icons</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>420 px (a tablet column) · dark · bars</span><div class="dash homey-dark-mode" style="width:420px"><div id="w4"></div></div></div>
   <div class="col"><span>358 px · all fine, temperature only, an unavailable sensor</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
   <div class="col"><span>358 px · no readings yet</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
   <div class="col"><span>358 px · no devices</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
 
   <script>
-    // Made-up rooms. `?lang=de` for a language, `?open=zone:bed` shows that ring's readings (for screenshots).
+    // Made-up rooms. `?lang=de` for a language, `?open=zone:bed` steps that room to its next reading (for screenshots).
     const CAP = { temperature: 'measure_temperature', humidity: 'measure_humidity', co2: 'measure_co2', radon: 'measure_radon', pm25: 'measure_pm25', pm10: 'measure_pm10', voc: 'measure_voc' };
     const sensor = (id, zone, name, values) => ({
       id, name, zone,
@@ -51,7 +53,14 @@
       if (devices) w.setState(devices);
       return w;
     };
-    const widgets = ['w1', 'w2', 'w3', 'w4'].map(id => make(id, house()));
+    const widgets = [
+      make('w1', house()),
+      make('w8', house(), { layout: 'bars' }),
+      make('w2', house(), { greenWhenFine: true }),
+      make('w9', house(), { layout: 'bars', greenWhenFine: true, colorStyle: 'deep' }),
+      make('w3', house()),
+      make('w4', house(), { layout: 'bars' }),
+    ];
     make('w5', [
       sensor('l1', Z.living, 'Living room', { temperature: 21.4, humidity: 45, co2: 720 }),
       sensor('o1', Z.office, 'Office', { temperature: 19.2 }),
@@ -62,7 +71,7 @@
     empty.setMessage(empty.t('selectDevices'));
     const open = new URLSearchParams(location.search).get('open');
     if (open) for (const w of widgets) w.open(open);
-    // Simulate the bedroom getting stuffier, then aired out: the hint follows the worst room.
+    // Simulate the bedroom getting stuffier, then aired out.
     let co2 = 1400;
     setInterval(() => {
       co2 = co2 >= 1700 ? 700 : co2 + 100;

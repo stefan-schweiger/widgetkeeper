@@ -20,6 +20,8 @@ window.mountRoomHealthWidget = function (Homey, { root, frame }) {
   for (const id of ['tempMin', 'tempMax', 'humidityMin', 'humidityMax', 'co2Max', 'radonMax', 'pm25Max', 'pm10Max', 'vocMax']) ranges[id] = settings[id];
   const widget = window.createRoomHealthWidget(root, {
     colorStyle: settings.colorStyle,
+    layout: settings.layout,
+    greenWhenFine: settings.greenWhenFine === true,
     t: (key, tokens) => Homey.__(key, tokens),
     renameTiles: settings.renameTiles === true,
     onRename: (key, name) => tileNames.rename(key, name),
@@ -27,7 +29,7 @@ window.mountRoomHealthWidget = function (Homey, { root, frame }) {
     onHeight: link.setHeight,
   });
 
-  // Shown once the text font has loaded (at most 1 s), so the names don't pop in after the rings.
+  // Shown once the text font has loaded (at most 1 s), so the names don't pop in after the values.
   function ready() {
     return link.ready({ fonts: true });
   }
@@ -44,7 +46,7 @@ window.mountRoomHealthWidget = function (Homey, { root, frame }) {
       loaded = true;
     } catch (err) {
       console.error(err);
-      // A failed refresh keeps the rings; only a failed first load replaces them with the error.
+      // A failed refresh keeps the rooms; only a failed first load replaces them with the error.
       widget.setMessage(widget.t('error'), loaded);
     }
     ready();

@@ -26,7 +26,7 @@ Many motion, contact and vibration sensors at a glance, as dots that change colo
 
 <p><a href="#room-health"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/roomhealth-dark.png"><img src="docs/previews/roomhealth-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#room-health"><b>Room Health</b></a><br>
-Each room's temperature, humidity, CO₂, radon and particles as one ring, green to red, with what to do<br clear="left"></p>
+Each room's temperature, humidity, CO₂, radon and particles at a glance, as icons or bars that turn yellow to red<br clear="left"></p>
 
 <p><a href="#weather-forecast"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/weather-dark.png"><img src="docs/previews/weather-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#weather-forecast"><b>Weather Forecast</b></a><br>
@@ -148,9 +148,9 @@ Motion, contact, vibration and camera sensors as a grid of dots that light up wh
 **Settings:** sensors, title, idle and active colours, [colour style](#colour-style).
 
 ## Room Health
-<img src="docs/screenshots/roomhealth.png" alt="Room Health on a Homey dashboard: six rooms as rings, the kitchen humid" width="358">
+<img src="docs/screenshots/roomhealth.png" alt="Room Health on a Homey dashboard: six rooms with their icons, the kitchen humid" width="358">
 
-The indoor climate of the whole house on one card. Pick the sensors, and they're grouped by their Homey room: each room is a ring with an arc for every value it has, green while it's comfortable, then yellow and red the further it is outside. The ring shows the worst value (else the temperature), and under the rings one line names the worst problem in the house and what to do, such as *Bedroom: stuffy, 1,400 ppm. Air it out.* Tap a ring for all of that room's readings.
+The indoor climate of the whole house on one card. Pick the sensors, and they're grouped by their Homey room: each room shows its worst value large (else the temperature), its name, and a mark for every value it has: an icon, or a bar with the *Bars* layout. The marks line up from room to room in a fixed order (temperature, humidity, CO₂, radon, PM2.5, PM10, VOC). A value that's comfortable is grey, or green with *Green when fine*; outside its range it turns yellow, then red the further it is outside, and so does the large value. Tap a room to step through its other readings.
 
 | Value | Comfortable by default | Red at |
 |---|---|---|
@@ -164,7 +164,7 @@ The indoor climate of the whole house on one card. Pick the sensors, and they're
 
 A room shows whatever its sensors measure; a room with only a thermometer is judged on temperature. A heat pump's room temperature counts, its outdoor and water temperatures don't. Left out on purpose: carbon monoxide (a safety alarm: use [Sensor Alarms](#sensor-alarms)), air quality indexes and VOC in μg/m³ or as an index (their scales differ between devices), and PM1 (no guideline).
 
-**Settings:** sensors, [rename tiles](#tile-names), [colour style](#colour-style), the comfortable range of each value (one range for every room).
+**Settings:** sensors, [rename tiles](#tile-names), [colour style](#colour-style), icons or bars, green when fine, the comfortable range of each value (one range for every room).
 
 ## Weather Forecast
 <img src="docs/screenshots/weather.png" alt="Weather Forecast on a Homey dashboard" width="358">
@@ -350,7 +350,7 @@ Every widget with a coloured state has a **Colour style** setting: *Default* is 
 
 - Where a colour is mixed softly into a tile (a Quick Actions tile that's on, a Sensor Alarms alarm, a Flow Buttons row, a coloured note, Curtains, Timers, Variables …), Deep fills the tile with Homey's darker shade of the colour, with white text (dark on yellow). Lights take a darker shade of their own colour, and the charts get a stronger area under their lines.
 - Where the colour is already a small solid part (the lit button of Thermostat and Variable Presets, Insights Heatmap's cells, Media's play button and what's on, Activity Dots' dots), Default uses Homey's darker shade and Deep the full, bright colour.
-- Days Since shows the level only on its bars by default, and Deep puts an overdue row on a solid block. Room Health's rings are toned down by default and in full colour in Deep. Weather Forecast has *Deep* among its colour themes.
+- Days Since shows the level only on its bars by default, and Deep puts an overdue row on a solid block. Room Health's icons and bars are toned down by default and in full colour in Deep. Weather Forecast has *Deep* among its colour themes.
 
 Where a widget lets you pick a colour (Flow Buttons, Device Values' Flow colours, Notes, Charts, Insights Heatmap, Activity Dots, Variable Presets, and now Device Quick Actions, Variables, Curtains, Media and Timers), the colour you pick follows the setting.
 

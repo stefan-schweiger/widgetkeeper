@@ -69,7 +69,7 @@ const CASES: Record<string, { create: string, state: any, keys: string[], own: s
   },
   roomhealth: {
     create: 'createRoomHealthWidget', act: '', tile: '.rh-room', name: '.rh-name',
-    // A ring per room: the key is the zone's.
+    // A cell per room: the key is the zone's.
     state: [roomSensor('a', 'z1', 'Living room'), roomSensor('b', 'z2', 'Kitchen')], keys: ['zone:z1', 'zone:z2'], own: ['Living room', 'Kitchen'],
   },
 };
@@ -166,11 +166,11 @@ describe('tile names in context', () => {
     expect(names()).toEqual(['Ice', 'Fridge']);
   });
 
-  it('Room Health: the hint uses the typed name', () => {
+  it("Room Health: a room's label uses the typed name", () => {
     const { w, root } = mount('roomhealth');
     w.setState([roomSensor('a', 'z1', 'Living room', { co2: { capabilityId: 'measure_co2', value: 1400 } })]);
     w.setNames({ 'zone:z1': 'Lounge' });
-    expect(root.querySelector('.rh-hint-text')!.textContent).toMatch(/^Lounge: stuffy, /);
+    expect(root.querySelector('.rh-room')!.getAttribute('aria-label')).toMatch(/^Lounge: Stuffy, /);
   });
 
   it('Light Controls: two widgets grouping the same room each keep their own name', () => {

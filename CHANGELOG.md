@@ -32,8 +32,8 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Flow cards: *Reset [counter]*, *Set [counter] to [days] days ago*, the trigger *[counter] became overdue* (even with no dashboard open) and the condition *[counter] is overdue*, both also for any counter.
 
 ### New: Room Health
-- The indoor climate of the whole house on one card: pick your temperature, humidity, CO₂, radon, PM2.5, PM10 and VOC sensors, and each Homey room becomes a ring with an arc per value, green while it's comfortable and yellow to red the further it's outside.
-- One line under the rings names the worst problem in the house and what to do, such as *Bedroom: stuffy, 1,400 ppm. Air it out.* Tap a ring for all of that room's readings.
+- The indoor climate of the whole house on one card: pick your temperature, humidity, CO₂, radon, PM2.5, PM10 and VOC sensors, and each Homey room shows its worst value large, its name and an icon or a bar per value, lined up from room to room: grey (or green, if you like) while it's comfortable, yellow to red the further it's outside.
+- Tap a room to step through its other readings.
 - The comfortable ranges are settings, with defaults from the WHO's guidelines where there are any (18–24 °C, 30–60 % humidity, CO₂ up to 1000 ppm, radon up to 100 Bq/m³ …). A room with only some of the sensors uses what it has.
 
 ### Name the tiles
@@ -45,7 +45,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Every widget with a coloured state has a new setting, *Colour style*: *Default* is the calmer look and *Deep* the stronger one. Where a colour is mixed softly into a tile, such as a tile that's on, an alarm or a coloured note, Deep fills it with Homey's darker shade of the colour, with white text. Lights take a darker shade of their own colour, the charts get a stronger area under their lines, and Weather Forecast has *Deep* as a theme of its own *Colour style* setting (until now called *Colours*).
 - In Device Values, Deep fills percentage fills and the colours a Flow sets. A user found the default yellow looked like mustard and the orange looked brown.
 - Thermostat Presets, Variable Presets, Insights Heatmap, Media and Activity Dots now use Homey's darker shade of their colour by default: the lit button, the heatmap's cells, the play button and the dots are calmer. *Deep* shows them in the full, bright colour as before, and the heatmap's levels further apart.
-- Days Since shows how close a counter is only on its bar by default, in a softer colour, and Room Health's rings are softer too. Deep shows both in full colour, and puts an overdue Days Since row on a solid block.
+- Days Since shows how close a counter is only on its bar by default, in a softer colour, and Room Health's icons and bars are softer too. Deep shows both in full colour, and puts an overdue Days Since row on a solid block.
 - Device Quick Actions, Variables, Curtains, Media and Timers have a new *Colour* setting for what was always blue: a tile that's on, a switch that's on, an open curtain, the play button and what's on, and a running timer.
 
 ### Curtains

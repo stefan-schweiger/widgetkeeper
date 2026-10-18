@@ -10293,7 +10293,7 @@
         "ko": "실내 환경",
         "ar": "مناخ الغرف"
       },
-      "height": 172,
+      "height": 217,
       "transparent": true,
       "devices": {
         "type": "global",
@@ -10412,6 +10412,114 @@
           ]
         },
         {
+          "id": "layout",
+          "type": "dropdown",
+          "value": "icons",
+          "title": {
+            "en": "Layout",
+            "nl": "Indeling",
+            "de": "Layout",
+            "fr": "Disposition",
+            "it": "Layout",
+            "sv": "Layout",
+            "no": "Oppsett",
+            "es": "Diseño",
+            "da": "Layout",
+            "ru": "Макет",
+            "pl": "Układ",
+            "ko": "레이아웃",
+            "ar": "التخطيط"
+          },
+          "hint": {
+            "en": "Under each room, one mark per measure, in this order: temperature, humidity, CO₂, radon, PM2.5, PM10, VOC. Tap a room for its other readings.",
+            "nl": "Onder elke ruimte één teken per meetwaarde, in deze volgorde: temperatuur, luchtvochtigheid, CO₂, radon, PM2.5, PM10, VOS. Tik op een ruimte voor de andere metingen.",
+            "de": "Unter jedem Raum ein Zeichen pro Messwert, in dieser Reihenfolge: Temperatur, Luftfeuchte, CO₂, Radon, PM2.5, PM10, VOC. Tippe auf einen Raum für seine anderen Werte.",
+            "fr": "Sous chaque pièce, une marque par mesure, dans cet ordre : température, humidité, CO₂, radon, PM2.5, PM10, COV. Touchez une pièce pour ses autres mesures.",
+            "it": "Sotto ogni stanza, un segno per misura, in quest'ordine: temperatura, umidità, CO₂, radon, PM2.5, PM10, COV. Tocca una stanza per le altre letture.",
+            "sv": "Under varje rum ett märke per mätvärde, i denna ordning: temperatur, luftfuktighet, CO₂, radon, PM2.5, PM10, VOC. Tryck på ett rum för dess andra värden.",
+            "no": "Under hvert rom ett merke per måling, i denne rekkefølgen: temperatur, fuktighet, CO₂, radon, PM2.5, PM10, VOC. Trykk på et rom for de andre målingene.",
+            "es": "Bajo cada habitación, una marca por medida, en este orden: temperatura, humedad, CO₂, radón, PM2.5, PM10, COV. Toca una habitación para ver sus otras lecturas.",
+            "da": "Under hvert rum ét mærke pr. måling, i denne rækkefølge: temperatur, luftfugtighed, CO₂, radon, PM2.5, PM10, VOC. Tryk på et rum for dets andre målinger.",
+            "ru": "Под каждой комнатой по одной отметке на показатель, в таком порядке: температура, влажность, CO₂, радон, PM2.5, PM10, ЛОС. Нажмите на комнату, чтобы увидеть другие показания.",
+            "pl": "Pod każdym pomieszczeniem jeden znacznik na pomiar, w tej kolejności: temperatura, wilgotność, CO₂, radon, PM2.5, PM10, LZO. Dotknij pomieszczenia, aby zobaczyć inne odczyty.",
+            "ko": "각 방 아래에 측정값마다 표시가 하나씩 이 순서로 있습니다: 온도, 습도, CO₂, 라돈, PM2.5, PM10, VOC. 방을 탭하면 다른 측정값을 볼 수 있습니다.",
+            "ar": "تحت كل غرفة علامة لكل قياس، بهذا الترتيب: درجة الحرارة، الرطوبة، CO₂، الرادون، PM2.5، PM10، المركبات العضوية المتطايرة. المس غرفة لرؤية قراءاتها الأخرى."
+          },
+          "values": [
+            {
+              "id": "icons",
+              "title": {
+                "en": "Icons",
+                "nl": "Iconen",
+                "de": "Symbole",
+                "fr": "Icônes",
+                "it": "Icone",
+                "sv": "Ikoner",
+                "no": "Ikoner",
+                "es": "Iconos",
+                "da": "Ikoner",
+                "ru": "Значки",
+                "pl": "Ikony",
+                "ko": "아이콘",
+                "ar": "أيقونات"
+              }
+            },
+            {
+              "id": "bars",
+              "title": {
+                "en": "Bars",
+                "nl": "Balkjes",
+                "de": "Balken",
+                "fr": "Barres",
+                "it": "Barre",
+                "sv": "Staplar",
+                "no": "Streker",
+                "es": "Barras",
+                "da": "Streger",
+                "ru": "Полоски",
+                "pl": "Paski",
+                "ko": "막대",
+                "ar": "أشرطة"
+              }
+            }
+          ]
+        },
+        {
+          "id": "greenWhenFine",
+          "type": "checkbox",
+          "value": false,
+          "title": {
+            "en": "Green when fine",
+            "nl": "Groen als het goed is",
+            "de": "Grün, wenn in Ordnung",
+            "fr": "Vert si tout va bien",
+            "it": "Verde se va bene",
+            "sv": "Grönt när det är bra",
+            "no": "Grønt når det er bra",
+            "es": "Verde si está bien",
+            "da": "Grøn når det er fint",
+            "ru": "Зелёный, если всё в норме",
+            "pl": "Zielony, gdy w normie",
+            "ko": "정상이면 초록색",
+            "ar": "أخضر عندما يكون جيدًا"
+          },
+          "hint": {
+            "en": "Shows the values inside their range in green, not grey.",
+            "nl": "Toont waarden binnen hun bereik in groen, niet grijs.",
+            "de": "Zeigt Werte innerhalb ihres Bereichs grün statt grau.",
+            "fr": "Affiche en vert, et non en gris, les valeurs dans leur plage.",
+            "it": "Mostra in verde, non in grigio, i valori entro il loro intervallo.",
+            "sv": "Visar värden inom sitt intervall i grönt, inte grått.",
+            "no": "Viser verdier innenfor området i grønt, ikke grått.",
+            "es": "Muestra en verde, no en gris, los valores dentro de su rango.",
+            "da": "Viser værdier inden for deres interval i grønt, ikke gråt.",
+            "ru": "Показывает значения в пределах диапазона зелёным, а не серым.",
+            "pl": "Pokazuje wartości w zakresie na zielono, a nie na szaro.",
+            "ko": "범위 안의 값을 회색 대신 초록색으로 표시합니다.",
+            "ar": "يعرض القيم الواقعة ضمن نطاقها باللون الأخضر بدل الرمادي."
+          }
+        },
+        {
           "id": "tempMin",
           "type": "number",
           "title": {
@@ -10430,19 +10538,19 @@
             "ar": "درجة الحرارة: الأدنى (°C)"
           },
           "hint": {
-            "en": "Comfortable ranges, the same for every room: inside them a ring is green, and it turns yellow, then red, the further a value is outside.",
-            "nl": "Comfortabele bereiken, voor elke ruimte dezelfde: daarbinnen is een ring groen, en hij wordt geel en dan rood naarmate een waarde verder buiten ligt.",
-            "de": "Angenehme Bereiche, für jeden Raum gleich: Darin ist ein Ring grün, und er wird gelb, dann rot, je weiter ein Wert außerhalb liegt.",
-            "fr": "Plages confortables, les mêmes pour chaque pièce : à l'intérieur, l'anneau est vert, et il devient jaune puis rouge à mesure qu'une valeur s'en éloigne.",
-            "it": "Intervalli confortevoli, uguali per ogni stanza: al loro interno l'anello è verde, e diventa giallo, poi rosso, quanto più un valore ne è fuori.",
-            "sv": "Behagliga intervall, samma för varje rum: inom dem är en ring grön, och den blir gul och sedan röd ju längre utanför ett värde ligger.",
-            "no": "Komfortable områder, like for hvert rom: innenfor dem er en ring grønn, og den blir gul og så rød jo lenger utenfor en verdi ligger.",
-            "es": "Rangos cómodos, iguales para cada habitación: dentro de ellos el anillo es verde, y se vuelve amarillo y luego rojo cuanto más se aleja un valor.",
-            "da": "Behagelige intervaller, de samme for alle rum: inden for dem er en ring grøn, og den bliver gul og så rød, jo længere en værdi ligger udenfor.",
-            "ru": "Комфортные диапазоны, одинаковые для всех комнат: внутри них кольцо зелёное, а чем дальше значение за их пределами, тем оно желтее, затем краснее.",
-            "pl": "Komfortowe zakresy, takie same dla każdego pokoju: w ich obrębie pierścień jest zielony, a im dalej wartość jest poza nimi, tym bardziej staje się żółty, potem czerwony.",
-            "ko": "모든 방에 같은 쾌적 범위입니다. 범위 안이면 링이 초록색이고, 값이 범위를 벗어날수록 노란색, 그다음 빨간색이 됩니다.",
-            "ar": "نطاقات مريحة، نفسها لكل غرفة: داخلها تكون الحلقة خضراء، وتصير صفراء ثم حمراء كلما ابتعدت القيمة عنها."
+            "en": "Comfortable ranges, the same for every room: inside them a value is grey (or green), and it turns yellow, then red, the further it is outside.",
+            "nl": "Comfortabele bereiken, voor elke ruimte dezelfde: daarbinnen is een waarde grijs (of groen), en ze wordt geel en dan rood naarmate ze verder buiten ligt.",
+            "de": "Angenehme Bereiche, für jeden Raum gleich: Darin ist ein Wert grau (oder grün), und er wird gelb, dann rot, je weiter er außerhalb liegt.",
+            "fr": "Plages confortables, les mêmes pour chaque pièce : à l'intérieur, une valeur est grise (ou verte), et elle devient jaune puis rouge à mesure qu'elle s'en éloigne.",
+            "it": "Intervalli confortevoli, uguali per ogni stanza: al loro interno un valore è grigio (o verde), e diventa giallo, poi rosso, quanto più ne è fuori.",
+            "sv": "Behagliga intervall, samma för varje rum: inom dem är ett värde grått (eller grönt), och det blir gult och sedan rött ju längre utanför det ligger.",
+            "no": "Komfortable områder, like for hvert rom: innenfor dem er en verdi grå (eller grønn), og den blir gul og så rød jo lenger utenfor den ligger.",
+            "es": "Rangos cómodos, iguales para cada habitación: dentro de ellos un valor es gris (o verde), y se vuelve amarillo y luego rojo cuanto más se aleja.",
+            "da": "Behagelige intervaller, de samme for alle rum: inden for dem er en værdi grå (eller grøn), og den bliver gul og så rød, jo længere udenfor den ligger.",
+            "ru": "Комфортные диапазоны, одинаковые для всех комнат: внутри них значение серое (или зелёное), а чем дальше оно за их пределами, тем оно желтее, затем краснее.",
+            "pl": "Komfortowe zakresy, takie same dla każdego pokoju: w ich obrębie wartość jest szara (lub zielona), a im dalej jest poza nimi, tym bardziej staje się żółta, potem czerwona.",
+            "ko": "모든 방에 같은 쾌적 범위입니다. 범위 안이면 값이 회색(또는 초록색)이고, 범위를 벗어날수록 노란색, 그다음 빨간색이 됩니다.",
+            "ar": "نطاقات مريحة، نفسها لكل غرفة: داخلها تكون القيمة رمادية (أو خضراء)، وتصير صفراء ثم حمراء كلما ابتعدت عنها."
           },
           "value": 18,
           "min": -20,

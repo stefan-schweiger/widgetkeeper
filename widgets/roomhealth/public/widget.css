@@ -7,29 +7,33 @@
   --rh-text: var(--homey-text-color, #EDEEF0);
   --rh-muted: var(--homey-text-color-light, #9C9DA5);
   --rh-blue: var(--homey-color-blue, #0091EA);
-  --rh-track: color-mix(in srgb, var(--rh-text) 12%, var(--rh-tile)); /* an arc without a reading */
-  /* The arcs and the hint's dot: green inside the comfortable range, then yellow to red (`--k`, 0–1) further out. */
+  --rh-track: color-mix(in srgb, var(--rh-text) 12%, var(--rh-tile)); /* a bar without a reading */
+  --rh-line: var(--homey-line-color-light, color-mix(in srgb, var(--rh-text) 8%, transparent)); /* between the rooms */
+  /* The marks: grey (or green) inside the comfortable range, then yellow to red (`--k`, 0–1) further out. */
+  --rh-fine: var(--rh-muted);
   --rh-green: var(--homey-color-green, #71D51B);
   --rh-yellow: #F5C518;
   --rh-red: var(--homey-color-red, #F25F5C);
-  /* The same as text, in pairs that pass 4.5:1 on the tile (Locks' green, the electricity export yellow, Sensor Alarms' red). */
-  --rh-green-text: #237A08;
+  /* The large value in those colours, in pairs that pass 4.5:1 on the tile (the electricity export yellow, Sensor Alarms' red). */
   --rh-yellow-text: #9A6A00;
   --rh-red-text: #D93B37;
   --rh-fs-small: var(--homey-font-size-small, 14px);
   --rh-fs-default: var(--homey-font-size-default, 17px);
+  --rh-fs-value: var(--homey-font-size-xlarge, 24px);
   --rh-medium: var(--homey-font-weight-medium, 500);
   --rh-bold: var(--homey-font-weight-bold, 700);
   --rh-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
-  --rh-ring: 68px;
-  /* Colours (kit.css): the arcs and the hint's dot toned down, mixed into the track; Deep draws them in full colour. */
+  --rh-icon: var(--homey-icon-size-regular, 16px);
+  /* Colours (kit.css): the marks toned down, mixed into the track; Deep draws them in full colour. */
   --rh-arc-mix: 60%;
 }
 .rh.wk-deep { --rh-arc-mix: 100%; }
+/* Green when fine (`greenWhenFine`). */
+.rh.rh-green { --rh-fine: color-mix(in oklab, var(--rh-green) var(--rh-arc-mix), var(--rh-track)); }
 /* Dark mode: Homey's native device tiles, as Device Quick Actions. */
 .homey-dark-mode .rh, .rh.homey-dark-mode {
   --rh-tile: #181920; --rh-track: #2B2C36;
-  --rh-green-text: #71D51B; --rh-yellow-text: #F5C518; --rh-red-text: #FF7B78;
+  --rh-yellow-text: #F5C518; --rh-red-text: #FF7B78;
 }
 
 /* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
@@ -44,79 +48,87 @@ html, body { background: transparent !important; }
 /* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
 .rh [dir="auto"] { text-align: left; }
 
-/* One device tile: the rings, as many per row as fit (three at a phone's 358 px), then the hint line. */
-.rh-tile { position: relative; padding: var(--homey-su-3, 12px); background: var(--rh-tile); border-radius: var(--rh-radius); }
+/* One device tile: the rooms, as many per row as fit (three at a phone's 358 px and at 300 px, four on a tablet's 420). */
+.rh-tile { position: relative; overflow: hidden; background: var(--rh-tile); border-radius: var(--rh-radius); }
 /* The native tiles' 1px rim, brightest along the top. */
 .homey-dark-mode .rh-tile::after, .rh.homey-dark-mode .rh-tile::after {
   content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
 }
-.rh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: var(--homey-su-3, 12px) var(--homey-su-2, 8px); }
+/* Lines between the rooms: each draws its right and bottom one, and the grid reaches 1px past the tile, which clips the outer ones. */
+.rh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); margin: 0 -1px -1px 0; }
 
+/* A room: its value large, the name, then the marks. A container, so the value can shrink to fit its width. */
 .rh-room {
-  display: flex; flex-direction: column; align-items: center; min-width: 0; padding: 2px 2px 4px; border-radius: 8px;
+  display: flex; flex-direction: column; min-width: 0; padding: 14px; box-shadow: inset -1px -1px 0 var(--rh-line);
+  container-type: inline-size;
   cursor: pointer; -webkit-tap-highlight-color: transparent; outline: none; transition: background-color .15s;
 }
-.rh-room:focus-visible { box-shadow: 0 0 0 2px var(--rh-blue); }
-/* The ring whose readings the hint line shows. */
-.rh-room.selected { background: color-mix(in srgb, var(--rh-text) 7%, transparent); }
-.rh-ring { position: relative; width: var(--rh-ring); height: var(--rh-ring); flex: 0 0 auto; transition: transform .1s; }
-.rh-room.pressing .rh-ring { transform: scale(.95); }
-.rh-ring svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.rh-arc { fill: none; stroke-linecap: round; stroke: var(--rh-track); transition: stroke .3s; }
-.rh-arc[data-level="good"] { stroke: color-mix(in oklab, var(--rh-green) var(--rh-arc-mix), var(--rh-track)); }
-.rh-arc[data-level="off"] {
-  stroke: color-mix(in oklab, color-mix(in oklab, var(--rh-red) calc(var(--k, 1) * 100%), var(--rh-yellow)) var(--rh-arc-mix), var(--rh-track));
-}
-/* A sensor that's gone: a thin dashed ring. */
-.rh-room.missing .rh-arc { stroke: color-mix(in srgb, var(--rh-muted) 55%, transparent); stroke-dasharray: 5 7; }
-/* The centre: the worst value (17 bold), its unit under it when it has one. */
-.rh-center {
-  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  font-variant-numeric: tabular-nums; white-space: nowrap;
-}
-.rh-value { font-size: var(--rh-fs-default); line-height: 22px; font-weight: var(--rh-bold); }
-.rh-unit { font-size: 12px; line-height: 14px; color: var(--rh-muted); }
-/* Under the ring: the name (14/20 bold) and the state word (12/16 medium, in its colour). */
-.rh .rh-name, .rh .rh-state, .rh .wk-rename { text-align: center; }
-.rh-name {
-  max-width: 100%; margin-top: 6px; font-size: var(--rh-fs-small); line-height: 20px; font-weight: var(--rh-bold);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.rh-state {
-  max-width: 100%; min-height: 16px; font-size: 12px; line-height: 16px; font-weight: var(--rh-medium); color: var(--rh-muted);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.rh-state[data-level="good"], .rh-problem[data-level="good"] { color: var(--rh-green-text); }
-.rh-state[data-level="off"], .rh-problem[data-level="off"] { color: color-mix(in oklab, var(--rh-red-text) calc(var(--k, 1) * 100%), var(--rh-yellow-text)); }
+/* The last room draws no line into the empty rest of its row. */
+.rh-room:last-child { box-shadow: inset 0 -1px 0 var(--rh-line); }
+.rh-room:focus-visible { box-shadow: inset 0 0 0 2px var(--rh-blue); }
+/* Pressed, or a tap brought up another reading. */
+.rh-room.pressing, .rh-room.picking { background: color-mix(in srgb, var(--rh-text) 7%, transparent); }
 
-/* The hint: the worst problem in the house (the room bold, the problem in its colour), or a tapped ring's readings. */
-.rh-hint { display: flex; align-items: center; gap: var(--homey-su-2, 8px); min-height: 20px; margin-top: var(--homey-su-3, 12px); }
-.rh-hint-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--rh-track); }
-.rh-hint-dot[data-level="good"] { background: color-mix(in oklab, var(--rh-green) var(--rh-arc-mix), var(--rh-track)); }
-.rh-hint-dot[data-level="off"] {
+/*
+ * The value (24 bold, smaller when it wouldn't fit), in its colour when it's off; a unit other than ° and % after it,
+ * small. The line is always as tall as a full-size value, with its baseline in the same place, so the names line up.
+ */
+.rh-value {
+  height: 1.2em; font-size: var(--rh-fs-value); line-height: 1.2; overflow: hidden; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.rh-num {
+  font-size: min(var(--rh-fs-value), calc((100cqi - var(--rh-unit-w, 0px)) / var(--rh-em, 3)));
+  line-height: 1; font-weight: var(--rh-bold);
+}
+.rh-unit { margin-left: 2px; font-size: var(--rh-fs-small); line-height: 1; color: var(--rh-muted); }
+.rh-value[data-level="off"] { color: color-mix(in oklab, var(--rh-red-text) calc(var(--k, 1) * 100%), var(--rh-yellow-text)); }
+.rh-room.missing .rh-value, .rh-room.missing .rh-name { color: var(--rh-muted); }
+
+/* The name (17 medium). */
+.rh-name {
+  max-width: 100%; font-size: var(--rh-fs-default); line-height: var(--homey-line-height-default, 24px); font-weight: var(--rh-medium);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* The marks: one per measure any room has, so they line up from room to room. */
+.rh-marks { display: grid; margin-top: var(--homey-su-3, 12px); }
+.rh-bars .rh-marks { grid-template-columns: repeat(var(--rh-n, 1), minmax(0, 20px)); gap: var(--homey-su-1, 4px); }
+.rh-icons .rh-marks { grid-template-columns: repeat(var(--rh-n, 1), minmax(0, 24px)); height: var(--rh-icon); }
+.rh-mark { transition: opacity .2s, background-color .3s, color .3s; }
+.rh-room.picking .rh-mark:not(.picked) { opacity: .35; }
+
+/* Bars: the track without a reading or without the measure. */
+.rh-bars .rh-mark { height: 6px; border-radius: 3px; background: var(--rh-track); }
+.rh-bars .rh-mark[data-level="good"] { background: color-mix(in srgb, var(--rh-fine) 55%, var(--rh-track)); }
+.rh-bars.rh-green .rh-mark[data-level="good"] { background: var(--rh-fine); }
+.rh-bars .rh-mark[data-level="off"] {
   background: color-mix(in oklab, color-mix(in oklab, var(--rh-red) calc(var(--k, 1) * 100%), var(--rh-yellow)) var(--rh-arc-mix), var(--rh-track));
 }
-.rh-hint-text {
-  flex: 1; min-width: 0; font-size: var(--rh-fs-small); line-height: 20px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+
+/* Icons: none for a measure the room hasn't, faint without a reading. */
+.rh-icons .rh-mark { display: flex; color: var(--rh-fine); }
+.rh-icons .rh-mark svg {
+  width: min(var(--rh-icon), calc(100% - 2px)); height: var(--rh-icon); flex: 0 0 auto; overflow: visible;
+  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
-.rh-hint-text b { font-weight: var(--rh-bold); }
-.rh-problem { font-weight: var(--rh-medium); }
-.rh-hint.good .rh-hint-text { color: var(--rh-muted); }
-.rh-hint.readout .rh-hint-text { font-variant-numeric: tabular-nums; }
-.rh-hint.empty { visibility: hidden; }
+.rh-icons .rh-mark[data-level="absent"] { visibility: hidden; }
+.rh-icons .rh-mark[data-level="none"] { opacity: .4; }
+.rh-icons .rh-mark[data-level="off"] {
+  color: color-mix(in oklab, color-mix(in oklab, var(--rh-red) calc(var(--k, 1) * 100%), var(--rh-yellow)) var(--rh-arc-mix), var(--rh-track));
+}
 
 .rh-message { font-size: var(--rh-fs-small); line-height: var(--homey-line-height-small, 20px); color: var(--rh-muted); }
 .rh-message.error { color: var(--rh-red); }
 
 /* Rename tiles: the name becomes a text field (as Variables' input). */
 .rh.renaming .rh-room { cursor: default; }
-.rh.renaming .rh-room.pressing .rh-ring { transform: none; }
+.rh.renaming .rh-room.pressing { background: none; }
 .rh.renaming .rh-room:not(.missing) .rh-name { display: none; }
 .rh-room.missing .wk-rename { display: none; }
 .rh .wk-rename {
-  width: 100%; min-width: 0; height: 24px; margin: 4px 0 -2px; padding: 0 6px;
+  width: 100%; min-width: 0; height: 24px; margin: 0; padding: 0 6px;
   font: inherit; font-size: var(--rh-fs-small); font-weight: var(--rh-bold); color: var(--rh-text);
   background: color-mix(in srgb, var(--rh-text) 8%, transparent);
   border: 1px solid color-mix(in srgb, var(--rh-text) 24%, transparent); border-radius: 8px; outline: none;

@@ -223,6 +223,8 @@ const BUILD = {
       w('roomhealth', 'Defaults · air and climate sensors', {}, [...air, ...climate].slice(0, 16)),
       w('roomhealth', 'Strict: 21–22 °C, 45–50 %, CO₂ 600, radon 40, VOC 200 (yellow and red)',
         { tempMin: 21, tempMax: 22, humidityMin: 45, humidityMax: 50, co2Max: 600, radonMax: 40, vocMax: 200 }, [...air, ...climate].slice(0, 9)),
+      w('roomhealth', 'Bars, green when fine, strict CO₂ 600 (yellow and red)',
+        { layout: 'bars', greenWhenFine: true, co2Max: 600 }, [...air, ...climate].slice(0, 9)),
       w('roomhealth', 'Temperature only', {}, tempOnly),
       w('roomhealth', "A heat pump's room temperature · deleted device", {}, [...roomSub, MISSING]),
       w('roomhealth', 'No devices picked'),

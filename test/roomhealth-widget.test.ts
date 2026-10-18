@@ -18,7 +18,6 @@ const sensor = (id: string, zone: [string, string] | null, values: M) => ({
 });
 const LIVING: [string, string] = ['z1', 'Living room'];
 const BEDROOM: [string, string] = ['z2', 'Bedroom'];
-const KITCHEN: [string, string] = ['z3', 'Kitchen'];
 
 function widget(devices: any[], opts: object = {}) {
   const root = document.createElement('div');
@@ -27,9 +26,11 @@ function widget(devices: any[], opts: object = {}) {
   w.setState(devices);
   const rooms = () => [...root.querySelectorAll<HTMLElement>('.rh-room')];
   const text = (sel: string, i = 0) => rooms()[i].querySelector(sel)!.textContent;
-  const hint = () => root.querySelector('.rh-hint-text')!.textContent;
-  const arcs = (i = 0) => [...rooms()[i].querySelectorAll<SVGCircleElement>('circle')].map(c => [c.dataset.measure ?? null, c.dataset.level, c.style.getPropertyValue('--k') || null]);
-  return { w, root, rooms, text, hint, arcs };
+  // The large value with its unit, if it shows one.
+  const value = (i = 0) => [text('.rh-num', i), text('.rh-unit', i)].filter(Boolean).join(' ');
+  const marks = (i = 0) => [...rooms()[i].querySelectorAll<HTMLElement>('.rh-mark')].map(m => [m.dataset.measure, m.dataset.level, m.style.getPropertyValue('--k') || null]);
+  const label = (i = 0) => rooms()[i].getAttribute('aria-label');
+  return { w, root, rooms, text, value, marks, label };
 }
 
 describe('roomHealthRange', () => {
@@ -95,126 +96,144 @@ describe('roomHealthRooms', () => {
 });
 
 describe('Room Health widget', () => {
-  it('draws a ring per room with an arc per measure, each in its own colour', () => {
-    const { rooms, arcs, text } = widget([
+  it('shows each room as its value, its name and a mark per measure, each in its own colour', () => {
+    const { rooms, marks, text, value, label } = widget([
       sensor('a', LIVING, { temperature: 21.4, humidity: 45, co2: 720 }),
       sensor('b', BEDROOM, { temperature: 18.6, humidity: 51, co2: 1400 }),
     ]);
     expect(rooms()).toHaveLength(2);
-    expect(arcs(0)).toEqual([['temperature', 'good', null], ['humidity', 'good', null], ['co2', 'good', null]]);
-    expect(arcs(1)).toEqual([['temperature', 'good', null], ['humidity', 'good', null], ['co2', 'off', '0.8']]);
+    expect(marks(0)).toEqual([['temperature', 'good', null], ['humidity', 'good', null], ['co2', 'good', null]]);
+    expect(marks(1)).toEqual([['temperature', 'good', null], ['humidity', 'good', null], ['co2', 'off', '0.8']]);
     expect(text('.rh-name', 1)).toBe('Bedroom');
-    // The centre shows the worst value with its unit under it, else the temperature.
-    expect(text('.rh-value', 0)).toBe(`${num(21.4, 1)}°`);
-    expect(text('.rh-value', 1)).toBe(num(1400));
-    expect(text('.rh-unit', 1)).toBe('ppm');
-    expect(text('.rh-state', 0)).toBe('Good');
-    expect(text('.rh-state', 1)).toBe('Stuffy');
-    expect(rooms()[1].querySelector<HTMLElement>('.rh-state')!.dataset.level).toBe('off');
+    // The worst value when one is off, with its unit; else the temperature, `°` attached.
+    expect(value(0)).toBe(`${num(21.4, 1)}°`);
+    expect(value(1)).toBe(`${num(1400)} ppm`);
+    const level = (i: number) => rooms()[i].querySelector<HTMLElement>('.rh-value')!;
+    expect(level(0).dataset.level).toBe('good');
+    expect(level(1).dataset.level).toBe('off');
+    expect(level(1).style.getPropertyValue('--k')).toBe('0.8');
+    // For screen readers: the state word, then the readings.
+    expect(label(0)).toBe(`Living room: Good, ${num(21.4, 1)}°C, ${num(45)}%, ${num(720)} ppm`);
+    expect(label(1)).toMatch(/^Bedroom: Stuffy, /);
   });
 
-  it('a room with one sensor gets one full ring; a missing sensor a dashed one, named Unavailable', () => {
-    const { root, rooms, text, arcs } = widget([sensor('a', ['z9', 'Office'], { temperature: 19.2 }), { id: 'x', missing: true }]);
-    const one = rooms()[0].querySelector('circle')!;
-    expect(one.getAttribute('stroke-dasharray')).toBeNull();
-    expect(text('.rh-state', 0)).toBe('Good');
+  it('lines the marks up: a column per measure any room has, in a fixed order, absent where a room has none', () => {
+    const { marks } = widget([
+      sensor('a', LIVING, { co2: 700, temperature: 21 }),
+      sensor('b', BEDROOM, { radon: 40 }),
+    ]);
+    expect(marks(0).map(m => m.slice(0, 2))).toEqual([['temperature', 'good'], ['co2', 'good'], ['radon', 'absent']]);
+    expect(marks(1).map(m => m.slice(0, 2))).toEqual([['temperature', 'absent'], ['co2', 'absent'], ['radon', 'good']]);
+  });
+
+  it('draws icons by default, and bars with the Bars layout', () => {
+    const icons = widget([sensor('a', LIVING, { temperature: 21, humidity: 40 })]);
+    expect(icons.root.classList.contains('rh-icons')).toBe(true);
+    expect(icons.rooms()[0].querySelectorAll('.rh-mark svg path')).toHaveLength(2);
+    const bars = widget([sensor('a', LIVING, { temperature: 21, humidity: 40 })], { layout: 'bars' });
+    expect(bars.root.classList.contains('rh-bars')).toBe(true);
+    expect(bars.rooms()[0].querySelectorAll('.rh-mark')).toHaveLength(2);
+    expect(bars.rooms()[0].querySelector('.rh-mark svg')).toBeNull();
+  });
+
+  it('Green when fine is a class on the root, for the CSS', () => {
+    expect(widget([sensor('a', LIVING, { temperature: 21 })]).root.classList.contains('rh-green')).toBe(false);
+    expect(widget([sensor('a', LIVING, { temperature: 21 })], { greenWhenFine: true }).root.classList.contains('rh-green')).toBe(true);
+  });
+
+  it('a missing sensor is a muted room named Unavailable, without marks', () => {
+    const { rooms, text, value, marks, label } = widget([sensor('a', ['z9', 'Office'], { temperature: 19.2 }), { id: 'x', missing: true }]);
     expect(rooms()[1].classList.contains('missing')).toBe(true);
     expect(text('.rh-name', 1)).toBe('Unavailable');
-    expect(arcs(1)).toEqual([[null, 'none', null]]);
-    expect(root.querySelector('.rh-hint')!.classList.contains('good')).toBe(true);
+    expect(value(1)).toBe('–');
+    expect(marks(1)).toEqual([['temperature', 'absent', null]]);
+    expect(label(1)).toBe('Unavailable');
   });
 
-  it('a room without readings is muted and says so', () => {
-    const { text, arcs, root } = widget([sensor('a', LIVING, { co2: null })]);
-    expect(text('.rh-state')).toBe('No readings');
-    expect(text('.rh-value')).toBe('–');
-    expect(arcs()).toEqual([['co2', 'none', null]]);
-    // Nothing known: the hint line keeps its place but says nothing.
-    expect(root.querySelector('.rh-hint')!.classList.contains('empty')).toBe(true);
-  });
-
-  it('names the worst problem in the house, with the value and what to do', () => {
-    const { hint, root } = widget([
-      sensor('a', KITCHEN, { temperature: 22.8, humidity: 64 }),
-      sensor('b', BEDROOM, { temperature: 18.6, co2: 1400 }),
-      sensor('c', ['z4', "Emma's room"], { radon: 118 }),
-    ]);
-    expect(hint()).toBe(`Bedroom: stuffy, ${num(1400)} ppm. Air it out.`);
-    expect(root.querySelector('.rh-hint-text b')!.textContent).toBe('Bedroom');
-    expect(root.querySelector<HTMLElement>('.rh-problem')!.dataset.level).toBe('off');
-    expect(root.querySelector<HTMLElement>('.rh-hint-dot')!.style.getPropertyValue('--k')).toBe('0.8');
+  it('a room without readings shows a dash and faint marks', () => {
+    const { value, marks, label } = widget([sensor('a', LIVING, { co2: null, temperature: null })]);
+    expect(value()).toBe('–');
+    expect(marks()).toEqual([['temperature', 'none', null], ['co2', 'none', null]]);
+    expect(label()).toBe('Living room: No readings');
   });
 
   it.each([
-    [{ temperature: 16.5 }, `cold, ${num(16.5, 1)}°C. Turn up the heat.`],
-    [{ temperature: 26 }, `warm, ${num(26, 1)}°C. Cool it down.`],
-    [{ humidity: 22 }, `dry, ${num(22)}%. Humidify the air.`],
-    [{ humidity: 72 }, `humid, ${num(72)}%. Air it out.`],
-    [{ radon: 130 }, `high radon, ${num(130)} Bq/m³. Ventilate more.`],
-    [{ pm25: 30 }, `particles, ${num(30)} μg/m³. Run an air purifier.`],
-    [{ pm10: 60 }, `particles, ${num(60)} μg/m³. Run an air purifier.`],
-    [{ voc: 1300 }, `VOCs, ${num(1300)} ppb. Air it out.`],
-  ])('hint for %o', (values, text) => {
-    expect(widget([sensor('a', LIVING, values as M)]).hint()).toBe(`Living room: ${text}`);
+    [{ temperature: 16.5 }, `${num(16.5, 1)}°`, 'Cold'],
+    [{ temperature: 26 }, `${num(26, 1)}°`, 'Warm'],
+    [{ humidity: 22 }, `${num(22)}%`, 'Dry'],
+    [{ humidity: 72 }, `${num(72)}%`, 'Humid'],
+    [{ radon: 130 }, `${num(130)} Bq/m³`, 'Radon'],
+    [{ pm25: 30 }, `${num(30)} μg/m³`, 'Particles'],
+    [{ pm10: 60 }, `${num(60)} μg/m³`, 'Particles'],
+    [{ voc: 1300 }, `${num(1300)} ppb`, 'VOCs'],
+  ])('%o shows %s, %s', (values, shown, state) => {
+    const { value, label } = widget([sensor('a', LIVING, { temperature: 21, ...values } as M)]);
+    expect(value()).toBe(shown);
+    expect(label()).toMatch(new RegExp(`^Living room: ${state}, `));
   });
 
-  it('a tie goes to the first room, and within a room to the first measure', () => {
-    expect(widget([
-      sensor('a', LIVING, { humidity: 90, co2: 2000 }),
-      sensor('b', BEDROOM, { temperature: 10 }),
-    ]).hint()).toBe(`Living room: humid, ${num(90)}%. Air it out.`);
-  });
-
-  it('says all is well when every reading is inside its range', () => {
-    const { hint, root } = widget([sensor('a', LIVING, { temperature: 21, co2: 700 })]);
-    expect(hint()).toBe('All rooms are comfortable.');
-    expect(root.querySelector('.rh-hint')!.classList.contains('good')).toBe(true);
+  it('a tie goes to the first measure', () => {
+    expect(widget([sensor('a', LIVING, { humidity: 90, co2: 2000 })]).value()).toBe(`${num(90)}%`);
   });
 
   it('uses the ranges from the settings', () => {
-    const { hint } = widget([sensor('a', BEDROOM, { temperature: 17 })], { tempMin: 16, tempMax: 19 });
-    expect(hint()).toBe('All rooms are comfortable.');
-    expect(widget([sensor('a', BEDROOM, { co2: 900 })], { co2Max: 800 }).hint()).toBe(`Bedroom: stuffy, ${num(900)} ppm. Air it out.`);
+    expect(widget([sensor('a', BEDROOM, { temperature: 17 })], { tempMin: 16, tempMax: 19 }).marks()).toEqual([['temperature', 'good', null]]);
+    expect(widget([sensor('a', BEDROOM, { co2: 900 })], { co2Max: 800 }).marks()[0][1]).toBe('off');
   });
 
-  it("a tap shows the room's readings in the hint line for 6 s; another tap ends it", () => {
-    const { rooms, hint, root } = widget([
+  it("gives the value its width in ems, and the unit's, so the CSS can shrink it to fit", () => {
+    const { rooms } = widget([sensor('a', LIVING, { temperature: 21.4 }), sensor('b', BEDROOM, { co2: 1400 })]);
+    const style = (i: number) => rooms()[i].querySelector<HTMLElement>('.rh-value')!.style;
+    expect(Number(style(0).getPropertyValue('--rh-em'))).toBeGreaterThan(2);
+    expect(style(0).getPropertyValue('--rh-unit-w')).toBe('');
+    expect(style(1).getPropertyValue('--rh-unit-w')).toMatch(/^calc\(var\(--rh-fs-small\) \* [\d.]+ \+ 2px\)$/);
+  });
+
+  it("a tap steps the value through the room's other readings, back to the usual one past the last or after 6 s", () => {
+    const { rooms, value } = widget([
       sensor('a', LIVING, { temperature: 21.4, humidity: 45, co2: 720 }),
-      sensor('b', BEDROOM, { co2: 1400 }),
+      sensor('b', BEDROOM, { temperature: 19, co2: 1400 }),
     ]);
+    const picked = (i = 0) => [...rooms()[i].querySelectorAll<HTMLElement>('.rh-mark.picked')].map(m => m.dataset.measure);
     rooms()[0].click();
-    expect(hint()).toBe(`Living room · ${num(21.4, 1)}°C · ${num(45)}% · ${num(720)} ppm`);
-    expect(rooms()[0].classList.contains('selected')).toBe(true);
-    expect(root.querySelector('.rh-hint')!.classList.contains('readout')).toBe(true);
+    expect(value(0)).toBe(`${num(45)}%`);
+    expect(rooms()[0].classList.contains('picking')).toBe(true);
+    expect(picked()).toEqual(['humidity']);
+    rooms()[0].click();
+    expect(value(0)).toBe(`${num(720)} ppm`);
+    rooms()[0].click();
+    expect(value(0)).toBe(`${num(21.4, 1)}°`);
+    expect(rooms()[0].classList.contains('picking')).toBe(false);
+    // The bedroom shows its CO₂ (off), so a tap goes on from there, round to the temperature.
+    rooms()[1].click();
+    expect(value(1)).toBe(`${num(19, 1)}°`);
     vi.advanceTimersByTime(5999);
-    expect(hint()).toMatch(/^Living room · /);
+    expect(value(1)).toBe(`${num(19, 1)}°`);
     vi.advanceTimersByTime(1);
-    expect(hint()).toMatch(/^Bedroom: stuffy/);
-    expect(rooms()[0].classList.contains('selected')).toBe(false);
-    rooms()[1].click();
-    expect(hint()).toBe(`Bedroom · ${num(1400)} ppm`);
-    rooms()[1].click();
-    expect(hint()).toMatch(/^Bedroom: stuffy/);
+    expect(value(1)).toBe(`${num(1400)} ppm`);
+    expect(picked(1)).toEqual([]);
   });
 
-  it('a tap on a missing sensor does nothing', () => {
-    const { rooms, hint } = widget([sensor('a', LIVING, { temperature: 21 }), { id: 'x', missing: true }]);
+  it('a tap on a missing sensor or on a room with one reading does nothing', () => {
+    const { rooms, value } = widget([sensor('a', LIVING, { temperature: 21 }), { id: 'x', missing: true }]);
+    rooms()[0].click();
     rooms()[1].click();
-    expect(hint()).toBe('All rooms are comfortable.');
+    expect(value(0)).toBe(`${num(21, 1)}°`);
+    expect(rooms().some(r => r.classList.contains('picking'))).toBe(false);
   });
 
   it('updates from realtime events, for the capability it shows only', () => {
-    const { w, hint, text } = widget([sensor('a', BEDROOM, { co2: 800 })]);
-    expect(hint()).toBe('All rooms are comfortable.');
+    const { w, value, marks } = widget([sensor('a', BEDROOM, { co2: 800 })]);
+    expect(marks()[0][1]).toBe('good');
     w.pushChange({ deviceId: 'a', capabilityId: 'measure_co2', measure: 'co2', value: 1500 });
-    expect(hint()).toBe(`Bedroom: stuffy, ${num(1500)} ppm. Air it out.`);
-    expect(text('.rh-state')).toBe('Stuffy');
+    expect(value()).toBe(`${num(1500)} ppm`);
+    expect(marks()[0][1]).toBe('off');
     w.pushChange({ deviceId: 'a', capabilityId: 'measure_co2.other', measure: 'co2', value: 500 });
     w.pushChange({ deviceId: 'b', capabilityId: 'measure_co2', measure: 'co2', value: 500 });
-    expect(hint()).toMatch(/stuffy/);
+    expect(value()).toBe(`${num(1500)} ppm`);
   });
 
-  it('messages: a persistent one clears the rings, a transient one keeps them for 8 s', () => {
+  it('messages: a persistent one clears the rooms, a transient one keeps them for 8 s', () => {
     const { w, root, rooms } = widget([sensor('a', LIVING, { temperature: 21 })]);
     w.setMessage('Could not load the sensors.', true);
     expect(rooms()).toHaveLength(1);
@@ -226,15 +245,11 @@ describe('Room Health widget', () => {
     expect(root.querySelector<HTMLElement>('.rh-tile')!.style.display).toBe('none');
   });
 
-  it('takes its strings from Homey, with the hint in the language\'s own order', () => {
-    const t = (key: string, tokens?: Record<string, string>) => {
-      const nl: Record<string, string> = {
-        'roomhealth.hint': '__action__ (__room__ is __problem__: __value__)', 'roomhealth.problemStuffy': 'bedompt', 'roomhealth.actionAirOut': 'Lucht de ruimte.',
-      };
-      return (nl[key] ?? key).replace(/__(\w+)__/g, (_, k) => tokens?.[k] ?? '');
-    };
-    const { hint, root } = widget([sensor('a', BEDROOM, { co2: 1400 })], { t });
-    expect(hint()).toBe(`Lucht de ruimte. (Bedroom is bedompt: ${num(1400)} ppm)`);
-    expect(root.querySelector('.rh-hint-text b')!.textContent).toBe('Bedroom');
+  it('takes its strings from Homey', () => {
+    const nl: Record<string, string> = { 'roomhealth.stuffy': 'Bedompt', 'roomhealth.unavailable': 'Niet beschikbaar' };
+    const t = (key: string) => nl[key] ?? key;
+    const { label, text } = widget([sensor('a', BEDROOM, { co2: 1400 }), { id: 'x', missing: true }], { t });
+    expect(label()).toBe(`Bedroom: Bedompt, ${num(1400)} ppm`);
+    expect(text('.rh-name', 1)).toBe('Niet beschikbaar');
   });
 });

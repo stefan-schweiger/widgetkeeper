@@ -300,31 +300,22 @@ function sensorDots(t, theme) {
   </div>`;
 }
 
-// Room Health is transparent: one tile of rings, an arc per measure in its own colour (green inside the range, yellow
-// to red outside), a value in each ring, the room and its state under it, then the hint line.
+// Room Health is transparent: one tile of rooms with lines between them, each its value large (in the colour of what's off), its name, and a
+// bar per measure (grey inside the range, orange to red outside, the track where the room has none).
 function roomHealth(t, theme) {
   const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
   const rim = theme === 'dark' ? ',inset 0 3px 0 rgba(255,255,255,.05),inset 0 0 0 3px rgba(255,255,255,.03)' : '';
   const shadow = theme === 'dark' ? '0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
-  const YELLOW = theme === 'dark' ? '#F5C518' : '#C99A00', RED = theme === 'dark' ? '#F25F5C' : '#E0413E';
-  const ring = (colors) => {
-    const n = colors.length, gap = 16, r = 50 - 5.5;
-    const arcs = colors.map((c, i) => {
-      const len = 360 / n - gap;
-      return `<circle cx="50" cy="50" r="${r}" fill="none" stroke="${c}" stroke-width="11" stroke-linecap="round" pathLength="360"
-        stroke-dasharray="${len} ${360 - len}" stroke-dashoffset="${-(i * 360 / n + gap / 2)}" transform="rotate(-90 50 50)"/>`;
-    }).join('');
-    return `<div style="position:relative;width:200px;height:200px"><svg width="200" height="200" viewBox="0 0 100 100">${arcs}</svg>
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">${pill(84, 36, t.fg)}</div></div>`;
-  };
-  const room = (colors, state) => `<div style="display:flex;flex-direction:column;align-items:center;gap:22px">
-      ${ring(colors)}${pill(150, 28, t.fg, 'opacity:.85')}${pill(90, 22, state)}</div>`;
-  return `<div style="width:880px;border-radius:32px;background:${tileBg};box-shadow:${shadow}${rim};padding:56px 40px 48px;box-sizing:border-box;display:flex;flex-direction:column;gap:56px">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr)">
-      ${room([t.green, t.green, t.green], t.green)}${room([t.green, YELLOW], YELLOW)}${room([t.green, t.green, RED], RED)}
-    </div>
-    <div style="display:flex;align-items:center;gap:24px;padding:0 12px">
-      <div style="width:24px;height:24px;border-radius:50%;background:${RED};flex:none"></div>${pill(170, 26, t.fg)}${pill(110, 26, RED)}${pill(250, 26, t.tileText)}
+  const ORANGE = theme === 'dark' ? '#F0A050' : '#C77A1E', RED = theme === 'dark' ? '#F25F5C' : '#E0413E';
+  const FINE = theme === 'dark' ? '#55565F' : '#B8B9C0';
+  const LINE = theme === 'dark' ? 'rgba(255,255,255,.08)' : 'rgba(31,32,41,.08)';
+  const room = (value, bars) => `<div style="display:flex;flex-direction:column;gap:20px;padding:52px 40px;box-shadow:inset -3px -3px 0 ${LINE}">
+      ${pill(130, 48, value)}${pill(170, 30, t.fg, 'opacity:.85')}
+      <div style="display:flex;gap:10px;margin-top:14px">${bars.map(c => pill(48, 16, c || t.muted)).join('')}</div></div>`;
+  return `<div style="width:880px;border-radius:32px;background:${tileBg};box-shadow:${shadow}${rim};overflow:hidden">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);margin:0 -3px -3px 0">
+      ${room(t.fg, [FINE, FINE, FINE, null])}${room(ORANGE, [FINE, ORANGE, null, null])}${room(t.fg, [FINE, FINE, FINE, null])}
+      ${room(t.fg, [FINE, FINE, null, null])}${room(RED, [FINE, FINE, FINE, RED])}${room(t.fg, [FINE, FINE, null, FINE])}
     </div>
   </div>`;
 }

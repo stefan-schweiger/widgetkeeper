@@ -64,7 +64,7 @@ const CASES: Record<typeof IDS[number], { create: string, state: any, gone: any,
     gone: [{ id: 'a', missing: true }, { id: 'b', name: 'Flag b', type: 'boolean', value: false }],
   },
   roomhealth: {
-    // Sensors without a zone are rooms of their own, keyed by the device, so a missing one keeps its ring.
+    // Sensors without a zone are rooms of their own, keyed by the device, so a missing one keeps its cell.
     create: 'createRoomHealthWidget', name: '.rh-name', keys: ['a', 'b'],
     state: ['a', 'b'].map(id => ({ id, name: `Sensor ${id}`, zone: null, measures: { temperature: { capabilityId: 'measure_temperature', value: 21 } } })),
     gone: [{ id: 'a', missing: true }, { id: 'b', name: 'Sensor b', zone: null, measures: { temperature: { capabilityId: 'measure_temperature', value: 21 } } }],
