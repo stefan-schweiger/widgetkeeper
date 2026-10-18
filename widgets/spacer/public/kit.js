@@ -167,12 +167,6 @@
     };
   }
 
-  /** An entry with its own name from the settings (Flow Buttons' `nameN`), when one is set (a missing entry keeps none). */
-  function withName(entry, name) {
-    const n = typeof name === 'string' ? name.trim() : '';
-    return n && entry && !('missing' in entry) ? { ...entry, name: n } : entry;
-  }
-
   /** The time today, the weekday and time within 6 days, else the date (times in `locale`, names in `language`). */
   function formatSince(ms, now, language, locale) {
     const at = new Date(ms);
@@ -299,5 +293,5 @@
     return scheme;
   }
 
-  window.WidgetkeeperKit = { icons: ICONS, TIGHT_UNITS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, withName, formatSince, baseTitle, lowestSlot, loadMarks, wireTileNames, colorStyle, applyColors };
+  window.WidgetkeeperKit = { icons: ICONS, TIGHT_UNITS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, formatSince, baseTitle, lowestSlot, loadMarks, wireTileNames, colorStyle, applyColors };
 })();

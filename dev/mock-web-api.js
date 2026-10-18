@@ -24,7 +24,7 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
     return true;
   };
   // The editor's sections, as lib/WebDashboardService.ts's settingSections() makes them (keep the two alike).
-  const SUB_ROW = /^[\s\u2003]+–\s*/;
+  const SUB_ROW = /^\s+–\s*/;
   const NUMBERED = /^(.*\S)\s+\d+$/;
   const capitalize = (text) => text.charAt(0).toLocaleUpperCase() + text.slice(1);
   function settingSections(settings) {
@@ -83,7 +83,7 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
           transparent: !!w.transparent,
           devices: w.devices ? { singular: w.devices.singular === true } : null,
           settings: (w.settings || []).map(s => ({
-            id: s.id, type: s.type, title: loc(s.title) || s.id, label: labels.get(s.id) || loc(s.title) || s.id, hint: loc(s.hint) || null, value: s.value ?? null,
+            id: s.id, type: s.type, title: loc(s.title) || s.id, label: labels.get(s.id), hint: loc(s.hint) || null, value: s.value ?? null,
             ...(typeof s.min === 'number' ? { min: s.min } : {}),
             ...(typeof s.max === 'number' ? { max: s.max } : {}),
             ...(s.values ? { values: s.values.map(v => ({ id: String(v.id), title: loc(v.title) || String(v.id) })) } : {}),

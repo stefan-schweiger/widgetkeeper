@@ -133,17 +133,15 @@ describe('rows', () => {
     expect(left(0).textContent).toBe('1 d left');
     expect(fill(0)).toBe(`${(6 / 7 * 100).toFixed(2)}%`);
     expect(left(1).textContent).toBe('2 mo left'); // 67 days to red
-    expect(left(1).classList.contains('over')).toBe(false);
     expect(left(2).textContent).toBe(''); // no intervals: no bar
     expect(tiles()[2].classList.contains('no-due')).toBe(true);
     expect(tiles()[0].classList.contains('no-due')).toBe(false);
   });
 
-  it('says how long a red counter is overdue, in red', () => {
+  it('says how long a red counter is overdue', () => {
     const { tiles, left, fill } = widget([{ key: 'filter', resetAt: Date.now() - 125 * DAY }]);
     expect(tiles()[1].dataset.level).toBe('red');
     expect(left(1).textContent).toBe('+5 w'); // 35 days past 90
-    expect(left(1).classList.contains('over')).toBe(true);
     expect(fill(1)).toBe('100.00%');
   });
 

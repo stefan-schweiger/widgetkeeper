@@ -44,7 +44,6 @@ interface Window {
     el: (tag: string, attrs?: object | null, parent?: Element | null, ns?: string) => any,
     setMask: (node: HTMLElement, url: string | null | undefined, name: string) => void,
     tileNames: (opts: any, render: () => void, failed: (key: string) => void) => any,
-    withName: (entry: any, name: unknown) => any,
     formatSince: (ms: number, now: number, language?: string, locale?: string) => string,
     baseTitle: (title: unknown) => string,
     lowestSlot: (slots: any[], from: number, hours: number) => number,

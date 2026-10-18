@@ -4,7 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { TIGHT_UNITS, scaled, formatNumber, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { TIGHT_UNITS, COLORS, scaled, formatNumber, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const C = window.WidgetkeeperChart;
@@ -17,7 +17,6 @@
   /** Each bar's length per span: about 12–28 bars, on the clock. */
   const BAR_MS = { '1h': 5 * MIN, '6h': 15 * MIN, '24h': HOUR, '2d': 2 * HOUR, '3d': 3 * HOUR, '5d': 6 * HOUR, '7d': 6 * HOUR };
   const STYLES = ['area', 'line', 'bars'];
-  const COLORS = ['blue', 'red', 'orange', 'yellow', 'green', 'purple'];
 
   const DEFAULT_STRINGS = {
     now: 'Now',

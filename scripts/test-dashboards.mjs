@@ -298,9 +298,9 @@ const BUILD = {
       w('values', 'Mixed types · 2 columns', { columns: '2', ...slots('slot', mixed) }),
       w('values', 'Batteries · fill (red < 30, yellow < 50)', { percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
       w('values', 'Brightness (0–1 %) · fill', { percentFill: true, ...slots('slot', dims) }),
-      w('values', 'Batteries · bright fill (red < 30, yellow < 50)', { colorStyle: 'bright', percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
+      w('values', 'Batteries · Deep fill (red < 30, yellow < 50)', { colorStyle: 'deep', percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
       w('values', 'Mixed types · pill', { tileStyle: 'pill', ...slots('slot', mixed) }),
-      w('values', 'Batteries · pill · bright fill · 2 columns', { tileStyle: 'pill', columns: '2', colorStyle: 'bright', percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
+      w('values', 'Batteries · pill · Deep fill · 2 columns', { tileStyle: 'pill', columns: '2', colorStyle: 'deep', percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
       w('values', 'Gaps and a deleted device', { ...slots('slot', [temps[0], null, missing, null, batteries[0]]) }),
       w('values', 'Nothing picked'),
       // The same value twice: the second tile's key is `#2`.

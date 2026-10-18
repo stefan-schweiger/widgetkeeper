@@ -218,12 +218,12 @@
   };
 
   /**
-   * A colour setting's values drawn as swatches: the widgets' palette (Flow Buttons' colours). `default` and
-   * `neutral` are the widget's own colour, an outlined swatch.
+   * A colour setting's values drawn as swatches: the widgets' palette (kit.css's bright colours, which `swatch()`'s `wk`
+   * class defines), plus Flow Buttons' grey. `default` and `neutral` are the widget's own colour, an outlined swatch.
    */
   const SWATCHES = {
-    blue: 'var(--homey-color-blue, #2F8DF6)', red: 'var(--homey-color-red, #F25F5C)', orange: 'var(--homey-color-orange, #F07A1F)',
-    yellow: '#F5C518', green: 'var(--homey-color-green, #71D51B)', purple: '#9033FC', grey: '#8E8F99', default: null, neutral: null,
+    ...Object.fromEntries(window.WidgetkeeperKit.COLORS.map(c => [c, `var(--wk-${c}-bright)`])),
+    grey: '#8E8F99', default: null, neutral: null,
   };
 
   function icon(name) {
@@ -1487,7 +1487,7 @@
     const isSwatches = (s) => (s.values || []).length > 1 && s.values.every(v => v.id in SWATCHES) && s.values.some(v => SWATCHES[v.id]);
 
     function swatch(colour, className) {
-      const dot = el('span', `wd-swatch-dot${className ? ` ${className}` : ''}${colour ? '' : ' plain'}`);
+      const dot = el('span', `wd-swatch-dot wk${className ? ` ${className}` : ''}${colour ? '' : ' plain'}`); // wk: kit.css's colours
       if (colour) dot.style.background = colour;
       return dot;
     }

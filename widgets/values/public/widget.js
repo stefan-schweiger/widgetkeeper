@@ -4,7 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, formatValue, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, COLORS, tileNames, formatValue, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -61,9 +61,6 @@
     if (base === 'measure_battery' || base === 'alarm_battery') return glyph(s.capabilityId, s.value);
     return s.capability.icon || glyph(s.capabilityId, s.value);
   }
-
-  /** The tile colours a Flow can set (the `values_set_color` card). */
-  const COLORS = new Set(['red', 'orange', 'yellow', 'green', 'blue', 'purple']);
 
   /** Units written without a space, as the Homey app does (`21.5°C`, `45%`). */
 
@@ -253,7 +250,7 @@
           delete tile.tile.dataset.level;
         }
         // A colour set by a Flow tints the tile (and colours a percentage fill instead of its level).
-        const color = !missing && COLORS.has(s.color) ? s.color : null;
+        const color = !missing && COLORS.includes(s.color) ? s.color : null;
         if (color) tile.tile.dataset.color = color;
         else delete tile.tile.dataset.color;
         tile.tile.classList.toggle('missing', missing);

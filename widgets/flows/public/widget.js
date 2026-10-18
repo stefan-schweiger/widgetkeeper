@@ -4,7 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, withName, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
@@ -40,6 +40,12 @@
   /** The colour id if it's one of COLORS, else `blue`. */
   function colorOf(id) {
     return COLORS.includes(id) ? id : 'blue';
+  }
+
+  /** A flow with its own name from the settings (`nameN`), when one is set (a missing flow keeps none). */
+  function withName(entry, name) {
+    const n = typeof name === 'string' ? name.trim() : '';
+    return n && entry && !('missing' in entry) ? { ...entry, name: n } : entry;
   }
 
   /** An inline SVG of a glyph, stroked (or filled) in the current colour. */

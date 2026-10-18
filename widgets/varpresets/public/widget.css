@@ -1,27 +1,15 @@
 /*
  * Variable Presets' own styles: the lit button's colour and the labels. The header, the buttons, the highlight and
  * the dark frame are Thermostat Presets' presets.css, which index.html loads first (../thermostat/presets.css).
- * The colours are Device Values' Flow colours; the fallbacks are the dark-theme values, used outside Homey.
  */
-.vp {
-  --vp-red: var(--wk-red-bright); /* kit.css's bright colours (Deep); Default lights the button in their shades */
-  --vp-orange: var(--wk-orange-bright);
-  --vp-yellow: var(--wk-yellow-bright);
-  --vp-green: var(--wk-green-bright);
-  --vp-blue: var(--wk-blue-bright);
-  --vp-purple: var(--wk-purple-bright);
-  /* The lit button's text on yellow and green, where white doesn't read (Flow Buttons' dark ink). */
-  --vp-on-light: #1A1B21;
-}
 
-/* The colour a lit button takes: its shade in Default (`--tw-shade`), the bright colour in Deep (`--c`, presets.css's gradient). */
-.vp[data-color="blue"] .tw-btn { --c: var(--vp-blue); --tw-shade: var(--wk-blue-shade); }
-.vp[data-color="red"] .tw-btn { --c: var(--vp-red); --tw-shade: var(--wk-red-shade); }
-.vp[data-color="orange"] .tw-btn { --c: var(--vp-orange); --tw-shade: var(--wk-orange-shade); }
-.vp[data-color="yellow"] .tw-btn { --c: var(--vp-yellow); --tw-shade: var(--wk-yellow-shade); --tw-shade-on: var(--wk-on-yellow-shade); }
-.vp[data-color="green"] .tw-btn { --c: var(--vp-green); --tw-shade: var(--wk-green-shade); }
-.vp[data-color="purple"] .tw-btn { --c: var(--vp-purple); --tw-shade: var(--wk-purple-shade); }
-.vp.wk-deep[data-color="yellow"] .tw-btn.active, .vp.wk-deep[data-color="green"] .tw-btn.active { color: var(--vp-on-light); }
+/*
+ * The colour a lit button takes, the `color` setting's (kit.css's `data-wk-color` on `.vp`): its shade in Default
+ * (`--tw-shade`, with the text on it), the bright colour in Deep (`--c`, presets.css's gradient, with the text on it:
+ * dark on yellow and green, as Flow Buttons).
+ */
+.vp .tw-btn { --c: var(--wk-c-bright); --tw-shade: var(--wk-c-shade); --tw-shade-on: var(--wk-on-shade); }
+.vp.wk-deep .tw-btn.active:not([data-kind="off"]) { color: var(--wk-on-bright); }
 
 /* A label may take two lines in the standard layout's 68 px buttons; compact keeps one. */
 .vp:not(.tw-compact) .tw-big {

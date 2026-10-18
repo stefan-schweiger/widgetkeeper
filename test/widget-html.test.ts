@@ -31,7 +31,7 @@ describe('copied widget helpers', () => {
   };
 
   it('no widget keeps a copy of a kit helper', () => {
-    const kit = ['undoTextZoom', 'el', 'setMask', 'tileNames', 'withName', 'formatSince', 'baseTitle', 'lowestSlot', 'loadMarks', 'wireTileNames'];
+    const kit = ['undoTextZoom', 'el', 'setMask', 'tileNames', 'formatSince', 'baseTitle', 'lowestSlot', 'loadMarks', 'wireTileNames'];
     for (const id of WIDGETS) {
       for (const file of ['widget.js', 'mount.js', 'index.html']) {
         if (!existsSync(`widgets/${id}/public/${file}`)) continue;

@@ -4,7 +4,7 @@
  * handwriting, wrapping up to three lines. Plain browser JS (served as-is).
  */
 (function () {
-  const { el, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, COLORS, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -19,7 +19,6 @@
 
   /** The note a widget shows unless its `board` setting names another (DEFAULT_BOARD in lib/TextLineService.ts). */
   const DEFAULT_BOARD = 'Note';
-  const COLORS = ['yellow', 'orange', 'red', 'purple', 'blue', 'green'];
   const SIZES = ['small', 'default', 'large'];
   const ALIGNS = ['left', 'center', 'right'];
   /** The Post-it's handwriting in px per size, and the smaller steps it may take to fit three lines. */

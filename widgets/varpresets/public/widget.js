@@ -23,9 +23,6 @@
 
   const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
 
-  /** The lit button's colour: Device Values' Flow colours (the `color` setting). */
-  const COLORS = ['blue', 'red', 'orange', 'yellow', 'green', 'purple'];
-
   /** A variable's types; `typeof` a value of each is the type's name. */
   const TYPES = ['boolean', 'number', 'string'];
 
@@ -85,8 +82,8 @@
     let shownKey = null; // the buttons on screen, so a refresh with the same ones keeps them (and a lit tap)
 
     root.classList.add('vp');
-    window.WidgetkeeperKit.applyColors(root, { style: opts.colorStyle });
-    root.dataset.color = COLORS.includes(opts.color) ? opts.color : 'blue';
+    // The lit button's colour (the `color` setting) is kit.css's `data-wk-color`, blue by default.
+    window.WidgetkeeperKit.applyColors(root, { style: opts.colorStyle, color: opts.color, fallback: 'blue' });
 
     const core = window.WidgetkeeperPresets.create(root, {
       layout: opts.layout,

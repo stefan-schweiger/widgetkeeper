@@ -3,7 +3,7 @@
  * lowest to the highest value shown, with a scale and a legend. Plain browser JS (served as-is).
  */
 (function () {
-  const { el, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, COLORS, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const LEVELS = 5;
@@ -77,9 +77,6 @@
     return Math.min(LEVELS - 1, Math.floor(((v - min) / (max - min)) * LEVELS));
   }
 
-  /** The `color` setting's values. Blue (Homey's) is the default and sets no `data-color`. */
-  const HEATMAP_COLORS = ['blue', 'red', 'orange', 'yellow', 'green', 'purple'];
-
   /**
    * @param {HTMLElement} root
    * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string,
@@ -97,7 +94,7 @@
     const cols = 24 / step;
     const showScale = opts.showScale !== false;
     const showLegend = opts.showLegend !== false;
-    const color = HEATMAP_COLORS.includes(opts.color) ? opts.color : 'blue';
+    const color = COLORS.includes(opts.color) ? opts.color : 'blue';
 
     let data = null;
     let messageText = null;

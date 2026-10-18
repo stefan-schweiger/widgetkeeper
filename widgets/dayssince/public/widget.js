@@ -409,7 +409,6 @@
         const leftText = !p ? '' : p.over != null ? t('over', { time: shortText(p.over, units, t) })
           : t('left', { time: shortText(p.left, units, t) });
         tl.left.textContent = leftText;
-        tl.left.classList.toggle('over', !!p && p.over != null);
         tl.tile.classList.toggle('no-due', c.red == null && c.amber == null);
         tl.bar.style.setProperty('--ds-fill', p ? `${(p.fill * 100).toFixed(2)}%` : '0%');
         tl.tile.setAttribute('aria-label', t('resetLabel', { name: c.name, time: leftText ? `${text}, ${leftText}` : text }));

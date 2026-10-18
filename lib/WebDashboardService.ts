@@ -134,7 +134,7 @@ function loc(text: unknown, language: string): string {
   return '';
 }
 
-const SUB_ROW = /^[\s\u2003]+–\s*/; // `\u2003\u2003– Colour`: a row under the group head above it
+const SUB_ROW = /^\s+–\s*/; // `\u2003\u2003– Colour`: a row under the group head above it
 const NUMBERED = /^(.*\S)\s+\d+$/; // `Tile 4` (with a no-break space before the number)
 
 const capitalize = (text: string) => text.charAt(0).toLocaleUpperCase() + text.slice(1);
@@ -319,7 +319,7 @@ export default class WebDashboardService {
           id: s.id,
           type: s.type,
           title: loc(s.title, language) || s.id,
-          label: labels.get(String(s.id)) ?? (loc(s.title, language) || s.id),
+          label: labels.get(String(s.id))!, // settingSections() labels every setting
           hint: loc(s.hint, language) || null,
           value: s.value ?? null,
           ...(typeof s.min === 'number' ? { min: s.min } : {}),
