@@ -11,16 +11,13 @@ window.mountStackWidget = function (Homey, { root, frame }) {
   const ATTENTION_AFTER_MS = 3000; // the first smart-rotate read, after the pages' own requests
   const SEEN_FRESH_MS = 60e3; // a page whose own state came this recently isn't read again for smart rotate
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = window.WidgetkeeperKit.wireFrame(Homey, frame);
 
-  const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
   // `none`: the autocomplete's item that says an API key is needed (StackService.listDashboards()).
   const dashboardId = settings.dashboard && settings.dashboard.id && settings.dashboard.id !== 'none' ? settings.dashboard.id : null;
   const interval = Number(settings.interval);
-  let readySent = false;
   let loaded = null; // what the pages were built from: a change rebuilds the stack
   let built = false; // pages are mounted: from then on, any other set of pages reloads the frame
   const mounted = new Map(); // page id → what its mount returned
@@ -46,18 +43,10 @@ window.mountStackWidget = function (Homey, { root, frame }) {
       if (m && typeof m.setVisible === 'function') m.setVisible(visible);
       if (visible) checkFirstPage();
     },
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   // Shown once the text font has loaded and the first page has drawn itself (at most 3 s).
-  let readyStarted = false;
   let firstPageReady = null;
   const firstPage = new Promise((resolve) => { firstPageReady = resolve; });
   const readyPages = new Set(); // pages that have drawn themselves (their widget called ready, or failed)
@@ -66,16 +55,8 @@ window.mountStackWidget = function (Homey, { root, frame }) {
     const current = widget.current();
     if (current && readyPages.has(current.id)) firstPageReady();
   }
-  async function ready(waitForPage) {
-    if (readyStarted) return;
-    readyStarted = true;
-    const waits = [];
-    if (document.fonts && document.fonts.ready) waits.push(document.fonts.ready);
-    if (waitForPage) waits.push(firstPage);
-    await Promise.race([Promise.all(waits), new Promise(r => setTimeout(r, 3000))]);
-    readySent = true;
-    widget.measure();
-    Homey.ready({ height: bodyHeight() });
+  function ready(waitForPage) {
+    return link.ready({ fonts: true, waitFor: () => (waitForPage ? [firstPage] : []), maxMs: 3000, before: () => widget.measure() });
   }
 
   /** A page's request, sent through the stack to the page's own widget API. */
@@ -89,7 +70,7 @@ window.mountStackWidget = function (Homey, { root, frame }) {
       api: (method, path, body) => {
         const [p, qs] = String(path).split('?');
         const query = {};
-        // perf= is the frame's load marks (loadMarks()): the stack frame's, not the page's, so it's left out.
+        // perf= is the frame's load marks (the kit's `wireFrame()`): the stack frame's, not the page's, so it's left out.
         new URLSearchParams(qs || '').forEach((v, k) => { if (k !== 'perf') query[k] = v; });
         const res = call(page.type, method, p, query, body);
         // A page's own state also says whether it wants attention (smart rotate), so the watcher needn't read it too.
@@ -220,11 +201,9 @@ window.mountStackWidget = function (Homey, { root, frame }) {
       return;
     }
     try {
-      const marks = perf ? `&perf=${perf}` : '';
-      perf = '';
-      const res = await Homey.api('GET', `/pages?dashboardId=${encodeURIComponent(dashboardId)}${marks}`);
+      const res = await Homey.api('GET', `/pages?dashboardId=${encodeURIComponent(dashboardId)}${link.perfParam()}`);
       if (res && res.ok === false) {
-        if (!loaded) widget.setMessage(widget.t(window.STACK_KEY_PROBLEMS.includes(res.reason) ? res.reason : 'error'), true);
+        if (!loaded) widget.setMessage(widget.t(window.WidgetkeeperKit.KEY_PROBLEMS.includes(res.reason) ? res.reason : 'error'), true);
         ready(false);
         return;
       }
@@ -263,7 +242,6 @@ window.mountStackWidget = function (Homey, { root, frame }) {
   Homey.on('stack:show', (data) => { if (data && data.type) widget.request(data.type, toLocal(data.until, data.now)); });
   Homey.on('stack:resume', () => widget.resume());
 
-  perf = loadMarks(sdkAt);
   setInterval(load, REFRESH_MS);
   load();
 };

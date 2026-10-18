@@ -31,7 +31,8 @@ describe('copied widget helpers', () => {
   };
 
   it('no widget keeps a copy of a kit helper', () => {
-    const kit = ['undoTextZoom', 'el', 'setMask', 'tileNames', 'formatSince', 'baseTitle', 'lowestSlot', 'loadMarks', 'wireTileNames'];
+    const kit = ['undoTextZoom', 'el', 'setMask', 'tileNames', 'formatSince', 'baseTitle', 'lowestSlot', 'loadMarks', 'wireTileNames',
+      'wireFrame', 'getDeviceIds', 'perfParam', 'bodyHeight', 'frameHeight'];
     for (const id of WIDGETS) {
       for (const file of ['widget.js', 'mount.js', 'index.html']) {
         if (!existsSync(`widgets/${id}/public/${file}`)) continue;
@@ -44,12 +45,12 @@ describe('copied widget helpers', () => {
     }
   });
 
-  it('perfParam() is the same in every mount.js that has it', () => {
-    // The spacer makes no requests, the stack's own carry no load marks. Weather's endpoint has no other query, so
-    // its perf= starts it.
-    const requesting = WIDGETS.filter(id => id !== 'spacer');
-    expectSame(requesting.filter(id => id !== 'stack').map(id => source(id, 'perfParam', 'mount.js')),
-      s => s.replace('`?perf=', '`&perf='));
+  it("every mount.js but the spacer's wires its frame through the kit", () => {
+    for (const id of WIDGETS.filter(w => w !== 'spacer')) {
+      const mount = read(id, 'mount.js');
+      expect(mount, `${id}/mount.js`).toMatch(/wireFrame\(Homey, frame\)/);
+      expect(mount, `${id}/mount.js`).not.toMatch(/readySent|Homey\.ready\(|Homey\.setHeight\(/);
+    }
   });
 
   it('onTap() is the same in the widgets that share a version', () => {

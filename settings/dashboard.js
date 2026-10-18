@@ -1859,7 +1859,6 @@
       return promise;
     }
 
-    /** A value as it reads now, for the picker: `21.5 °C`, `42%`, `On`, an enum's title, or `–`. */
     /** A value as its tile shows it (the kit's `formatValue()`, which the page loads first). */
     function formatReading(cap) {
       return window.WidgetkeeperKit.formatValue(cap, cap.value, key => t(key === 'on' ? 'valueOn' : 'valueOff'));

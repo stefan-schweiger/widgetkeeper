@@ -6,30 +6,20 @@
 window.mountElectricityWidget = function (Homey, { root, frame }) {
   const REFRESH_MS = 5 * 60e3; // usage history resolution; also keeps the app's meter subscription alive
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame, getDeviceIds } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
   const costsParam = settings.priceCosts === false ? '&costs=0' : ''; // missing on older widgets: with costs
   let deviceId = null;
-  let readySent = false;
   let loaded = false;
 
   const widget = window.createElectricityWidget(root, {
     t: (key, tokens) => Homey.__(key, tokens),
     layout: settings.layout, // missing on widgets placed before the setting: standard
     colorStyle: settings.colorStyle,
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(Math.ceil(frame.getBoundingClientRect().height)); // the frame's, with its padding, as ready()
-    },
+    onHeight: link.setHeight,
   });
   widget.setSettings({
     showPrices: settings.showPrices !== false,
@@ -42,16 +32,14 @@ window.mountElectricityWidget = function (Homey, { root, frame }) {
   });
 
   function ready() {
-    if (readySent) return;
-    readySent = true;
-    Homey.ready({ height: Math.ceil(frame.getBoundingClientRect().height) });
+    return link.ready();
   }
 
   /** Reads the snapshot; true when it loaded (or there's no meter to load). */
   async function load() {
     let ok = false;
     try {
-      const snapshot = await Homey.api('GET', `/snapshot?deviceId=${encodeURIComponent(deviceId || '')}${costsParam}${perfParam()}`);
+      const snapshot = await Homey.api('GET', `/snapshot?deviceId=${encodeURIComponent(deviceId || '')}${costsParam}${link.perfParam()}`);
       // Without readings (or with a meter error) the prices still show; the widget notes the meter.
       if (!deviceId) widget.setMessage(widget.t('selectMeter'));
       else {
@@ -88,10 +76,9 @@ window.mountElectricityWidget = function (Homey, { root, frame }) {
   }
   setTimeout(() => { tick(); setInterval(tick, 60e3); }, 60e3 - (Date.now() % 60e3) + 50);
 
-  Promise.resolve(typeof Homey.getDeviceIds === 'function' ? Homey.getDeviceIds() : [])
-    .then((ids) => { deviceId = (ids && ids[0]) || null; })
-    .catch(() => { deviceId = null; })
-    .then(() => { perf = loadMarks(sdkAt); load(); });
+  getDeviceIds(Homey)
+    .then((ids) => { deviceId = ids[0] || null; })
+    .then(load);
 
   return {
     /** The Smart Stack: whether this page is the one on screen. */

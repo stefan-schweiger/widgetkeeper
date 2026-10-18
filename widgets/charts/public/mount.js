@@ -6,16 +6,10 @@
 window.mountChartsWidget = function (Homey, { root, frame }) {
   const REFRESH_MS = 5 * 60e3; // keeps the app's device subscriptions alive and resyncs the histories
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
   // '2': stacked; 'overlay': both on one chart, over chart 1's time span.
   const overlay = settings.charts === 'overlay';
@@ -33,7 +27,6 @@ window.mountChartsWidget = function (Homey, { root, frame }) {
   })).filter(c => typeof c.slot === 'string' && c.slot.indexOf(':') > 0 && !c.slot.endsWith(':')); // as parseSlot()
   // On one chart, series 2 takes chart 1's span (its scale too, in the widget); a lone chart keeps its own.
   if (overlay && charts.length === 2) charts[1].span = charts[0].span;
-  let readySent = false;
   let loaded = false;
 
   const widget = window.createChartsWidget(root, {
@@ -42,20 +35,11 @@ window.mountChartsWidget = function (Homey, { root, frame }) {
     charts,
     overlay: overlay && charts.length === 2,
     showHeader: settings.showHeader !== false, // missing: on
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   function ready() {
-    if (readySent) return;
-    readySent = true;
-    Homey.ready({ height: bodyHeight() });
+    return link.ready();
   }
 
   async function load() {
@@ -66,7 +50,7 @@ window.mountChartsWidget = function (Homey, { root, frame }) {
     }
     try {
       const list = charts.map(c => `${encodeURIComponent(c.slot)}~${encodeURIComponent(c.span || '24h')}`).join(',');
-      const res = await Homey.api('GET', `/state?charts=${list}${perfParam()}`);
+      const res = await Homey.api('GET', `/state?charts=${list}${link.perfParam()}`);
       widget.setState(res && res.charts, res && res.language);
       loaded = true;
     } catch (err) {
@@ -82,7 +66,6 @@ window.mountChartsWidget = function (Homey, { root, frame }) {
     if (data) widget.pushChange(data);
   });
 
-  perf = loadMarks(sdkAt);
   setInterval(load, REFRESH_MS);
   load();
 

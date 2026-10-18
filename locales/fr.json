@@ -185,7 +185,8 @@
     "on": "Allumé",
     "off": "Éteint",
     "renameFailed": "Impossible d'enregistrer le nom.",
-    "none": "Aucun"
+    "none": "Aucun",
+    "pickTileFirst": "Choisissez d'abord la tuile __n__."
   },
   "sparklines": {
     "selectSlots": "Choisissez des valeurs dans les réglages du widget.",

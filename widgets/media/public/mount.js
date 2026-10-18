@@ -6,16 +6,10 @@
 window.mountMediaWidget = function (Homey, { root, frame }) {
   const REFRESH_MS = 5 * 60e3; // keeps the app's device subscription alive and resyncs state
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  perf = loadMarks(performance.now());
   const settings = Homey.getSettings() || {};
   // The speaker in the settings is the default; with switching, each screen remembers the one it picked last
   // (per widget instance, in this screen's storage; it can come back empty, which means the default).
@@ -33,7 +27,6 @@ window.mountMediaWidget = function (Homey, { root, frame }) {
   let deviceId = defaultId && canSwitch ? store.get() || defaultId : defaultId;
   let loadSeq = 0;
   const maxVolume = Number(settings.maxVolume);
-  let readySent = false;
   let loaded = false;
 
   const widget = window.createMediaWidget(root, {
@@ -68,26 +61,12 @@ window.mountMediaWidget = function (Homey, { root, frame }) {
       try { if (Homey.hapticFeedback) Homey.hapticFeedback(); } catch (e) { /* not on every platform */ }
     },
     // The widget reports its own height; Homey needs the body's, which adds the widget padding.
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   // Shown once the text font has loaded (at most 1 s), so the text doesn't pop in after the icons.
-  let readyStarted = false;
-  async function ready() {
-    if (readyStarted) return;
-    readyStarted = true;
-    if (document.fonts && document.fonts.ready) {
-      await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1000))]);
-    }
-    readySent = true;
-    Homey.ready({ height: bodyHeight() });
+  function ready() {
+    return link.ready({ fonts: true });
   }
 
   async function load() {
@@ -101,7 +80,7 @@ window.mountMediaWidget = function (Homey, { root, frame }) {
     try {
       // A switched-to speaker also says which of its own actions it has, for the buttons picked for the default.
       const cards = id !== defaultId ? '&cards=1' : '';
-      const state = await Homey.api('GET', `/state?deviceId=${encodeURIComponent(id)}${cards}${perfParam()}`);
+      const state = await Homey.api('GET', `/state?deviceId=${encodeURIComponent(id)}${cards}${link.perfParam()}`);
       if (seq !== loadSeq) return; // switched again meanwhile
       if (state && state.missing && id !== defaultId) {
         // The speaker picked on this screen is gone: back to the default.

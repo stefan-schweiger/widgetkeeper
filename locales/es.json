@@ -185,7 +185,8 @@
     "on": "Encendido",
     "off": "Apagado",
     "renameFailed": "No se pudo guardar el nombre.",
-    "none": "Ninguno"
+    "none": "Ninguno",
+    "pickTileFirst": "Elige primero el mosaico __n__."
   },
   "sparklines": {
     "selectSlots": "Elige valores en los ajustes del widget.",

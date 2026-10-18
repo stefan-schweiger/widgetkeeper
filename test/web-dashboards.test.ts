@@ -1,9 +1,10 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
 import PersonalApiKey from '../lib/PersonalApiKey.js';
 import WebDashboardService, { passesDeviceFilter, WEB_DASHBOARDS_SETTING, WEB_ENABLED_SETTING } from '../lib/WebDashboardService.js';
 import { widgetAutocompletes } from '../lib/widgetAutocompletes.js';
+import { routeKeyUse } from '../lib/widgetRoutes.js';
 import WebPassword from '../lib/WebPassword.js';
 import api from '../api.js';
 
@@ -163,7 +164,8 @@ describe('web dashboards: what the editor needs', () => {
     expect(plainHas('roomhealth', 'co2Max')).toBe(true);
     expect(of('roomhealth').settings.find(s => s.id === 'tempMax')!.label).toBe('Highest (°C)');
     expect(groups('stack')).toEqual(['Show page dots:3']);
-    expect(groups('values')).toEqual(['slots:6']);
+    expect(groups('values')).toEqual(Array.from({ length: 6 }, (_, i) => `Tile ${i + 1}#:2`));
+    expect(of('values').settings.filter(s => /^(slot|second)1$/.test(s.id)).map(s => s.label)).toEqual(['Value', 'Second value']);
     expect(groups('variables')).toEqual(['slots:10']);
     expect(of('variables').settings.find(s => s.id === 'slot3')!.label).toBe('Variable\u00A03');
     expect(groups('media')).toEqual(Array.from({ length: 4 }, (_, i) => `Button\u00A0${i + 1}#:3`)); // heads without a colon
@@ -323,6 +325,34 @@ describe('web dashboards: the app API', () => {
   });
 });
 
+describe('web dashboards: the routes that act with the stored key', () => {
+  // A route left out of routeKeyUse() would let a page whose own key may do less borrow the stored key's permissions.
+  it('routeKeyUse() names exactly the widget routes that answer through keyResult()', () => {
+    const missed: string[] = [];
+    const extra: string[] = [];
+    for (const id of readdirSync('widgets')) {
+      let source: string;
+      try { source = readFileSync(`widgets/${id}/api.ts`, 'utf8'); } catch { continue; }
+      const handlers = source.split(/\n {2}async (?=\w+\()/).slice(1);
+      expect(handlers.length).toBeGreaterThan(0);
+      for (const handler of handlers) {
+        const name = handler.match(/^\w+/)![0];
+        const route = app.widgets[id]?.api?.[name];
+        if (!route) continue;
+        const usesKey = handler.includes('keyResult(');
+        const use = routeKeyUse(id, route.method, route.path, { id: '' });
+        if (id === 'stack' && name === 'call') continue; // its page's route, checked below
+        if (usesKey && !use) missed.push(`${id} ${name}`);
+        if (!usesKey && use) extra.push(`${id} ${name}`);
+      }
+    }
+    expect({ missed, extra }).toEqual({ missed: [], extra: [] });
+    expect(routeKeyUse('media', 'POST', '/button', { id: 'card:x' })).toBe('cards');
+    expect(routeKeyUse('stack', 'POST', '/call', { type: 'flows', method: 'POST', path: '/trigger' })).toBe('flows');
+    expect(routeKeyUse('stack', 'POST', '/call', { type: 'lights', method: 'POST', path: '/set' })).toBe(null);
+  });
+});
+
 describe('web dashboards: turned off', () => {
   it('is off by default: the setup only says so, and every other route refuses', async () => {
     const { homey, web } = setup({}, false);
@@ -353,6 +383,13 @@ describe('web dashboards page', () => {
   it('describes every widget type on the front page', () => {
     const en = JSON.parse(readFileSync('locales/en.json', 'utf8'));
     expect(Object.keys(en.web.about).sort()).toEqual(Object.keys(app.widgets).sort());
+  });
+
+  it("loads the kit from where the Homey serves it (a widget's public folder is /app/<appId>/widgets/<id>/)", () => {
+    const html = readFileSync('settings/dashboard.html', 'utf8');
+    expect(html).toContain('<script src="../widgets/spacer/kit.js"></script>');
+    expect(html).toContain('<link rel="stylesheet" href="../widgets/spacer/kit.css">');
+    expect(html).not.toContain('/public/');
   });
 
   it('bundles the socket.io-client version installed', () => {

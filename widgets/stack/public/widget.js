@@ -20,8 +20,6 @@
     clock: 'mountClockWidget', textline: 'mountTextLineWidget',
   };
 
-  const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
-
   /** A camera's detections that bring its page forward. */
   const CAMERA_DETECTIONS = ['alarm_person', 'alarm_vehicle', 'alarm_pet', 'alarm_motion'];
   /**
@@ -528,5 +526,4 @@
   window.createStackAttentionWatcher = createAttentionWatcher;
   window.stackAttention = stackAttention;
   window.STACK_TYPES = TYPES;
-  window.STACK_KEY_PROBLEMS = KEY_PROBLEMS;
 })();

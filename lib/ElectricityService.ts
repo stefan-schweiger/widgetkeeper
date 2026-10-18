@@ -1,5 +1,6 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import DeviceTracker, { type TrackedEntry } from './DeviceTracker.js';
 import { localHour } from './heatmap.js';
 import { limitInsights, logIdsFor, readFirstLog } from './insightsLog.js';
 import Timings from './Timings.js';
@@ -17,7 +18,6 @@ const USAGE_TTL = 5 * MINUTE;
 const PRICE_PAST_HOURS = 24;
 const PRICE_FUTURE_HOURS = 24; // the chart shows 12; the lowest-price footer can look 24 ahead
 const PRICE_FUTURE_HOURS_MAX = 36; // the Energy Price Strip's longest window
-const IDLE_TIMEOUT = 10 * MINUTE;
 const PRICE_TYPE_TTL = 5 * MINUTE; // a change in Homey's Energy settings shows within this
 
 export const LIVE_EVENT = 'electricity:live';
@@ -52,24 +52,20 @@ type PriceDay = {
 
 type Slots = { prices: Snapshot['prices'], quarters: Snapshot['quarters'] };
 
-type Meter = {
+type Meter = TrackedEntry & {
   deviceId: string,
-  name: string,
-  capability: any,
   live: Sample[],
   current: number | null,
   lastPush: number,
   pending: Sample | null, // latest reading not yet pushed (throttled)
   pushTimer: NodeJS.Timeout | null,
-  lastRequested: number,
   logId: string | null, // insights log with the power history (measure_power or energy_power)
   usage: { at: number, data: Sample[] } | null,
 };
 
 export default class ElectricityService {
 
-  private meters = new Map<string, Meter>();
-  private meterPromises = new Map<string, Promise<Meter>>();
+  private meters: DeviceTracker<Meter>;
   private logIds = new Map<string, string>(); // the power log that worked, per device; kept when a meter is dropped
   private priceDays = new Map<string, PriceDay>();
   private pricePending = new Map<string, Promise<PriceDay>>();
@@ -86,15 +82,39 @@ export default class ElectricityService {
     private homey: Homey.App['homey'],
     private log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
-  ) {}
+  ) {
+    // Re-read on each snapshot, so a deleted meter shows as unavailable instead of a frozen line.
+    this.meters = new DeviceTracker<Meter>({
+      homey,
+      debug,
+      what: 'Meter capabilities',
+      signature: device => (device.capabilities?.includes('measure_power') ? 'measure_power' : ''),
+      create: (device, api, tm, deviceId) => this.createMeter(device, api, tm, deviceId),
+      listen: (meter, device) => {
+        this.debug(`Tracking live power for ${device.name} (${meter.deviceId}), log ${meter.logId}, ${meter.live.length} readings`);
+        return [device.makeCapabilityInstance('measure_power', (value: number) => {
+          if (typeof value !== 'number') return;
+          meter.current = value;
+          const sample = { t: Date.now(), w: Math.round(value) };
+          meter.live.push(sample);
+          meter.pending = sample;
+          this.schedulePush(meter);
+        })];
+      },
+      label: meter => `live power for ${meter.name}`,
+      onDispose: (meter) => { if (meter.pushTimer) this.homey.clearTimeout(meter.pushTimer); },
+    });
+  }
 
   start() {
+    this.meters.start();
     this.tickTimer = this.homey.setInterval(() => this.tick(), TICK);
   }
 
   async stop() {
     if (this.tickTimer) this.homey.clearInterval(this.tickTimer);
-    for (const m of this.meters.values()) this.disposeMeter(m);
+    this.tickTimer = null;
+    this.meters.stop();
   }
 
   /** Connects to Homey's API and fetches the prices at app start, so the first widget doesn't wait for them. */
@@ -124,8 +144,7 @@ export default class ElectricityService {
     const message = (err: unknown) => (err instanceof Error ? err.message : String(err));
     // The usage history only needs the meter, so it's read while the prices are still on their way.
     const [metered, { prices, quarters }] = await Promise.all([
-      deviceId ? tm.time('meter', () => this.ensureMeter(deviceId, tm)).then(async (meter) => {
-        meter.lastRequested = now;
+      deviceId ? tm.time('meter', () => this.meters.current(deviceId, tm)).then(async (meter) => {
         const usage = await tm.time('usage', () => this.getUsage(meter, firstSlot, now)).catch((err): Sample[] => { this.log('Usage error', err); return []; });
         return { meter, usage };
       }, (err) => {
@@ -163,58 +182,26 @@ export default class ElectricityService {
 
   // ---------------------------------------------------------------- live power
 
-  private ensureMeter(deviceId: string, tm: Timings): Promise<Meter> {
-    const existing = this.meters.get(deviceId);
-    if (existing) return Promise.resolve(existing);
-    let p = this.meterPromises.get(deviceId);
-    if (!p) {
-      p = this.createMeter(deviceId, tm).finally(() => this.meterPromises.delete(deviceId));
-      this.meterPromises.set(deviceId, p);
-    }
-    return p;
-  }
-
-  private async createMeter(deviceId: string, tm: Timings): Promise<Meter> {
-    const api = await tm.time('api', () => getAppApi(this.homey));
-    // The power history doesn't need the device, so both are requested at once.
-    const [device, logs] = await Promise.all([
-      tm.time('getDevice', () => api.devices.getDevice({ id: deviceId })) as Promise<any>,
-      tm.time('history', () => this.readPowerLogs(api, deviceId)),
-    ]);
+  /** A meter's own fields from its first read, with the power history: seeded from insights (5 s steps for `lastHour`), so the chart is full on first render. */
+  private async createMeter(device: any, api: any, tm: Timings, deviceId: string): Promise<Omit<Meter, keyof TrackedEntry>> {
     if (!device.capabilities?.includes('measure_power')) {
       throw new Error(`Device ${device.name} has no measure_power capability`);
     }
-    const current = device.capabilitiesObj?.measure_power?.value ?? null;
-    const meter: Meter = {
+    const logs = await tm.time('history', () => this.readPowerLogs(api, deviceId));
+    const value = device.capabilitiesObj?.measure_power?.value;
+    const current = typeof value === 'number' ? value : null;
+    const live = logs.lastHour.map(p => ({ t: p.t, w: Math.round(p.w) }));
+    if (current != null) live.push({ t: Date.now(), w: Math.round(current) });
+    return {
       deviceId,
-      name: device.name,
-      capability: null,
-      live: [],
-      current: typeof current === 'number' ? current : null,
+      live,
+      current,
       lastPush: 0,
       pending: null,
       pushTimer: null,
-      lastRequested: Date.now(),
       logId: logs.logId,
       usage: logs.last24Hours ? { at: Date.now(), data: logs.last24Hours } : null,
     };
-
-    // Seeded from insights (5 s resolution for `lastHour`) so the chart is full on first render.
-    meter.live = logs.lastHour.map(p => ({ t: p.t, w: Math.round(p.w) }));
-    if (meter.current != null) meter.live.push({ t: Date.now(), w: Math.round(meter.current) });
-
-    meter.capability = device.makeCapabilityInstance('measure_power', (value: number) => {
-      if (typeof value !== 'number') return;
-      meter.current = value;
-      const sample = { t: Date.now(), w: Math.round(value) };
-      meter.live.push(sample);
-      meter.pending = sample;
-      this.schedulePush(meter);
-    });
-
-    this.meters.set(deviceId, meter);
-    this.debug(`Tracking live power for ${device.name} (${deviceId}), log ${meter.logId}, ${logs.lastHour.length} history points`);
-    return meter;
   }
 
   /**
@@ -248,15 +235,10 @@ export default class ElectricityService {
     })));
   }
 
-  /** Trims old readings and drops meters no open widget has asked for in IDLE_TIMEOUT. */
+  /** Trims old readings (the tracker drops meters no open widget has asked for in 10 minutes). */
   private tick() {
     const now = Date.now();
     for (const meter of this.meters.values()) {
-      // Open widgets re-request a snapshot every 5 minutes, which keeps `lastRequested` fresh.
-      if (now - meter.lastRequested > IDLE_TIMEOUT) {
-        this.disposeMeter(meter);
-        continue;
-      }
       // Keep one reading older than the window so the line starts at the left edge.
       const cutoff = now - LIVE_KEEP;
       let drop = 0;
@@ -277,13 +259,6 @@ export default class ElectricityService {
       meter.lastPush = Date.now();
       this.homey.api.realtime(LIVE_EVENT, { deviceId: meter.deviceId, t: sample.t, w: sample.w });
     }, wait);
-  }
-
-  private disposeMeter(meter: Meter) {
-    try { meter.capability?.destroy(); } catch (err) { /* ignore */ }
-    if (meter.pushTimer) this.homey.clearTimeout(meter.pushTimer);
-    this.meters.delete(meter.deviceId);
-    this.debug(`Stopped tracking ${meter.name}`);
   }
 
   // ---------------------------------------------------------------- usage history

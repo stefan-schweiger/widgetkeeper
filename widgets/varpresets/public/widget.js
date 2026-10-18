@@ -21,7 +21,7 @@
     keyInvalid: 'The API key was not accepted.',
   };
 
-  const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
+  const { KEY_PROBLEMS } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
 
   /** A variable's types; `typeof` a value of each is the type's name. */
   const TYPES = ['boolean', 'number', 'string'];

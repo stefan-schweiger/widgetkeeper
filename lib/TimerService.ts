@@ -1,4 +1,5 @@
 import type Homey from 'homey';
+import { DebouncedSetting } from './storedSetting.js';
 
 const SECOND = 1e3;
 const MINUTE = 60 * SECOND;
@@ -66,7 +67,7 @@ export default class TimerService {
   private instances = new Map<string, Timer[]>();
   private timeouts = new Map<string, NodeJS.Timeout>();
   private tickTimer: NodeJS.Timeout | null = null;
-  private saveTimer: NodeJS.Timeout | null = null;
+  private saved: DebouncedSetting;
   private nextId = 1;
 
   constructor(
@@ -75,7 +76,11 @@ export default class TimerService {
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
     /** Fires the Flow card; app.ts passes the trigger card's. */
     private onFinished: (timer: Timer) => Promise<unknown> | void = () => {},
-  ) {}
+  ) {
+    this.saved = new DebouncedSetting({
+      homey, setting: TIMERS_SETTING, delay: SAVE_DELAY, value: () => Object.fromEntries(this.instances), log, what: 'the timers',
+    });
+  }
 
   /** Loads the saved timers: one that ran out while the app was stopped is finished now. */
   start() {
@@ -102,10 +107,7 @@ export default class TimerService {
     if (this.tickTimer) this.homey.clearInterval(this.tickTimer);
     for (const t of this.timeouts.values()) this.homey.clearTimeout(t);
     this.timeouts.clear();
-    if (this.saveTimer) {
-      this.homey.clearTimeout(this.saveTimer);
-      this.save();
-    }
+    this.saved.flush();
   }
 
   getState(instance: string): TimersState {
@@ -233,21 +235,8 @@ export default class TimerService {
   private changed(instance: string): TimersState {
     const state = this.getState(instance);
     this.homey.api.realtime(TIMERS_STATE_EVENT, state);
-    if (!this.saveTimer) {
-      this.saveTimer = this.homey.setTimeout(() => {
-        this.saveTimer = null;
-        this.save();
-      }, SAVE_DELAY);
-    }
+    this.saved.schedule();
     return state;
-  }
-
-  private save() {
-    try {
-      this.homey.settings.set(TIMERS_SETTING, Object.fromEntries(this.instances));
-    } catch (err) {
-      this.log('Could not save the timers:', err);
-    }
   }
 
 }

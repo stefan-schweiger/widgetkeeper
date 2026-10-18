@@ -2,7 +2,6 @@ import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import { presentCaps, readCaps, type CapState } from './capabilities.js';
 import DeviceTracker, { readZones, zoneRef, type TrackedEntry } from './DeviceTracker.js';
-import { fetchDeviceIcon } from './deviceIcon.js';
 import PersonalApiKey from './PersonalApiKey.js';
 import { sharedCache } from './sharedCache.js';
 import Timings from './Timings.js';
@@ -51,7 +50,6 @@ const MOOD_COLORS = 4;
 export type LightChange = { dim?: unknown, onoff?: unknown, temperature?: unknown, hue?: unknown, saturation?: unknown };
 
 type Tracked = TrackedEntry & {
-  name: string,
   icon: string | null,
   /** The zone (room) id, for grouping the tiles by room. */
   zone: string | null,
@@ -127,8 +125,7 @@ export default class LightService {
       signature: device => `${lightCaps(device).join()}|${(groupMembers(device) ?? []).join()}`,
       create: async (device, api, tm) => {
         if (!device.capabilitiesObj?.dim && !device.capabilitiesObj?.onoff) throw new NotALight(`${device.name} has no dim or onoff capability`);
-        const icon = await tm.time('icons', () => fetchDeviceIcon(api, device, this.log));
-        return { name: device.name, icon, zone: device.zone ?? null, members: groupMembers(device), caps: readCaps(device, LIGHT_CAPS), lastDim: 1 };
+        return { zone: device.zone ?? null, members: groupMembers(device), caps: readCaps(device, LIGHT_CAPS), lastDim: 1 };
       },
       listen: (t, device) => {
         noteDim(t);
@@ -140,15 +137,14 @@ export default class LightService {
         this.debug(`Tracking light ${device.name} (${t.key}): ${JSON.stringify(Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, c.value])))}`);
         return instances;
       },
-      refresh: async (t, device, api, tm) => {
-        t.name = device.name;
+      refresh: (t, device) => {
         t.zone = device.zone ?? null;
         t.members = groupMembers(device);
-        t.icon = await tm.time('icons', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
         t.caps = readCaps(device, LIGHT_CAPS);
         noteDim(t);
       },
       label: t => `light ${t.name}`,
+      iconLog: log,
     });
   }
 

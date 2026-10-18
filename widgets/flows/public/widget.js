@@ -4,7 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, applyColors, KEY_PROBLEMS } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
@@ -22,8 +22,6 @@
     keyScope: 'The API key may not start flows: it needs Start Flows.',
     keyInvalid: 'The API key was not accepted.',
   };
-  /** Why a start was refused, from the app (`{ok: false, reason}`): each has its own message. */
-  const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
 
   const COLORS = ['blue', 'red', 'orange', 'yellow', 'green', 'purple', 'grey'];
 

@@ -6,20 +6,13 @@
 window.mountHeatmapWidget = function (Homey, { root, frame }) {
   const REFRESH_MS = 5 * 60e3; // the hour cells change at most hourly; keeps a recorded on/off value's request time fresh
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  perf = loadMarks(performance.now());
   const settings = Homey.getSettings() || {};
   const deviceId = (settings.device && settings.device.id) || null;
   const capabilityId = (settings.capability && settings.capability.id) || null;
-  let readySent = false;
   let loaded = false;
 
   const widget = window.createHeatmapWidget(root, {
@@ -31,20 +24,11 @@ window.mountHeatmapWidget = function (Homey, { root, frame }) {
     showScale: settings.showScale !== false,
     showLegend: settings.showLegend !== false,
     // The widget reports its own height; Homey needs the body's, which adds the widget padding.
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   function ready() {
-    if (readySent) return;
-    readySent = true;
-    Homey.ready({ height: bodyHeight() });
+    return link.ready();
   }
 
   async function load() {
@@ -55,7 +39,7 @@ window.mountHeatmapWidget = function (Homey, { root, frame }) {
     }
     try {
       widget.setData(await Homey.api('GET',
-        `/history?deviceId=${encodeURIComponent(deviceId)}&capabilityId=${encodeURIComponent(capabilityId)}&days=${window.heatmapPeriodDays(settings.period)}${perfParam()}`));
+        `/history?deviceId=${encodeURIComponent(deviceId)}&capabilityId=${encodeURIComponent(capabilityId)}&days=${window.heatmapPeriodDays(settings.period)}${link.perfParam()}`));
       loaded = true;
     } catch (err) {
       console.error(err);

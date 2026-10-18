@@ -6,16 +6,10 @@
 window.mountFlowsWidget = function (Homey, { root, frame }) {
   const REFRESH_MS = 5 * 60e3; // picks up renamed, turned-off and deleted flows
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
   // Each button: a flow (an autocomplete item whose id is `flow:<id>` or `advanced:<id>`; `none` empties it),
   // a colour (dropdown), an icon (an autocomplete item whose id is the icon's) and an optional name (text).
@@ -28,7 +22,6 @@ window.mountFlowsWidget = function (Homey, { root, frame }) {
     }))
     .filter(b => typeof b.id === 'string' && b.id && b.id !== 'none');
   const ids = buttons.map(b => b.id);
-  let readySent = false;
   let loaded = false;
 
   const widget = window.createFlowsWidget(root, {
@@ -44,26 +37,12 @@ window.mountFlowsWidget = function (Homey, { root, frame }) {
     onHaptic: () => {
       try { if (Homey.hapticFeedback) Homey.hapticFeedback(); } catch (e) { /* not on every platform */ }
     },
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   // Shown once the text font has loaded (at most 1 s), so the text doesn't pop in after the icons.
-  let readyStarted = false;
-  async function ready() {
-    if (readyStarted) return;
-    readyStarted = true;
-    if (document.fonts && document.fonts.ready) {
-      await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1000))]);
-    }
-    readySent = true;
-    Homey.ready({ height: bodyHeight() });
+  function ready() {
+    return link.ready({ fonts: true });
   }
 
   async function load() {
@@ -73,7 +52,7 @@ window.mountFlowsWidget = function (Homey, { root, frame }) {
       return;
     }
     try {
-      widget.setState(await Homey.api('GET', `/state?ids=${ids.map(encodeURIComponent).join(',')}${perfParam()}`));
+      widget.setState(await Homey.api('GET', `/state?ids=${ids.map(encodeURIComponent).join(',')}${link.perfParam()}`));
       loaded = true;
     } catch (err) {
       console.error(err);
@@ -83,7 +62,6 @@ window.mountFlowsWidget = function (Homey, { root, frame }) {
     ready();
   }
 
-  perf = loadMarks(sdkAt);
   setInterval(load, REFRESH_MS);
   load();
 };

@@ -1,7 +1,7 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import DeviceTracker, { type TrackedEntry } from './DeviceTracker.js';
-import { fetchDeviceIcon, fetchSvgIcon } from './deviceIcon.js';
+import { fetchSvgIcon } from './deviceIcon.js';
 import Timings from './Timings.js';
 
 export const QA_STATE_EVENT = 'quickactions:state';
@@ -22,7 +22,6 @@ export type QuickActionDevice =
   | { id: string, missing: true };
 
 type Tracked = TrackedEntry & {
-  name: string,
   icon: string | null,
   quickAction: QuickAction | null,
 };
@@ -64,13 +63,8 @@ export default class QuickActionService {
       create: async (device, api, tm) => {
         const id = quickActionId(device);
         const cap = id ? device.capabilitiesObj[id] : null;
-        const [icon, capIcon] = await tm.time('icons', () => Promise.all([
-          fetchDeviceIcon(api, device, this.log),
-          id ? fetchSvgIcon(api, cap.iconObj, `${device.name} ${id}`, this.log) : null,
-        ]));
+        const capIcon = id ? await tm.time('capability icon', () => fetchSvgIcon(api, cap.iconObj, `${device.name} ${id}`, this.log)) : null;
         return {
-          name: device.name,
-          icon,
           quickAction: id ? {
             capabilityId: id,
             value: cap.value ?? null,
@@ -88,9 +82,7 @@ export default class QuickActionService {
           this.homey.api.realtime(QA_STATE_EVENT, { deviceId: t.key, capabilityId: id, value });
         })] : [];
       },
-      refresh: async (t, device, api, tm) => {
-        t.name = device.name;
-        t.icon = await tm.time('icons', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
+      refresh: (t, device) => {
         if (t.quickAction) {
           const cap = device.capabilitiesObj[t.quickAction.capabilityId];
           t.quickAction.value = cap.value ?? null;
@@ -98,6 +90,7 @@ export default class QuickActionService {
         }
       },
       label: t => t.name,
+      iconLog: log,
     });
   }
 

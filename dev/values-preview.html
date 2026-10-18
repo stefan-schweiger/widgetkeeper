@@ -37,6 +37,13 @@
   <div class="col"><span>358 px · dark · pill · deep colours</span><div class="dash homey-dark-mode" style="width:358px"><div id="p6"></div></div></div>
   <div class="col"><span>358 px · light · pill · deep colours</span><div class="dash light" style="width:358px"><div id="p7"></div></div></div>
   <div class="col"><span>358 px · dark · pill · deep percentage fill · 2 columns</span><div class="dash homey-dark-mode" style="width:358px"><div id="p8"></div></div></div>
+  <div class="col"><span>358 px · dark · second values</span><div class="dash homey-dark-mode" style="width:358px"><div id="s1"></div></div></div>
+  <div class="col"><span>358 px · light · second values</span><div class="dash light" style="width:358px"><div id="s2"></div></div></div>
+  <div class="col"><span>300 px · dark · second values</span><div class="dash homey-dark-mode" style="width:300px"><div id="s3"></div></div></div>
+  <div class="col"><span>358 px · dark · second values · 2 columns</span><div class="dash homey-dark-mode" style="width:358px"><div id="s4"></div></div></div>
+  <div class="col"><span>358 px · dark · second values · deep percentage fill</span><div class="dash homey-dark-mode" style="width:358px"><div id="s5"></div></div></div>
+  <div class="col"><span>358 px · dark · pill · second values · 2 columns</span><div class="dash homey-dark-mode" style="width:358px"><div id="s6"></div></div></div>
+  <div class="col"><span>358 px · dark · pill · second values</span><div class="dash homey-dark-mode" style="width:358px"><div id="s7"></div></div></div>
   <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
 
   <script>
@@ -87,6 +94,29 @@
       const color = cycle[step++ % cycle.length];
       for (const w of flowWidgets) w.pushColor({ deviceId: 'fridge', capabilityId: 'measure_temperature', color });
     }, 2000);
+    // Second values: another value of the same device, small at the end of the name row (one-value tiles among them).
+    const second = (capabilityId, c, value) => ({ capabilityId, capability: c, value });
+    const humidity = second('measure_humidity', cap('number', { title: 'Humidity', units: '%', decimals: 0 }), 48);
+    const temperatureOf = value => second('measure_temperature', cap('number', { title: 'Temperature', units: '°C', decimals: 1 }), value);
+    const pairs = () => {
+      const [stue, , lamp, meter, , , co2, door] = slots();
+      return [
+        { ...stue, second: humidity },
+        { ...co2, second: temperatureOf(19.8) },
+        { ...lamp, second: second('measure_power', cap('number', { title: 'Power', units: 'W', decimals: 0 }), 45) },
+        meter,
+        { ...door, second: second('measure_battery', cap('number', { title: 'Battery', units: '%', decimals: 0 }), 64) },
+        { ...temperature('fridge', 'Fridge', 4.2), second: second('alarm_contact', cap('boolean', { title: 'Contact alarm' }), false) },
+      ];
+    };
+    for (const id of ['s1', 's2', 's3']) createValuesWidget(document.getElementById(id), { t: devT }).setState(pairs());
+    createValuesWidget(document.getElementById('s4'), { t: devT, columns: '2' }).setState(pairs());
+    createValuesWidget(document.getElementById('s5'), { t: devT, percentFill: true, colorStyle: 'deep' }).setState([
+      { ...pct('Hallway', 'measure_battery', 14), second: temperatureOf(20.1) }, { ...pct('Kitchen', 'measure_battery', 72), second: temperatureOf(22.4) },
+      { ...temperature('fridge', 'Fridge', 4.2, 'blue'), second: humidity }, ...pairs().slice(2, 5),
+    ]);
+    createValuesWidget(document.getElementById('s6'), { t: devT, tileStyle: 'pill', columns: '2' }).setState(pairs());
+    createValuesWidget(document.getElementById('s7'), { t: devT, tileStyle: 'pill' }).setState(pairs());
     const empty = createValuesWidget(document.getElementById('w4'), { t: devT });
     empty.setMessage(empty.t('selectSlots'));
   </script>

@@ -6,18 +6,11 @@
 window.mountSensorDotsWidget = function (Homey, { root, frame }) {
   const REFRESH_MS = 5 * 60e3; // keeps the app's device subscriptions alive and resyncs state
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame, getDeviceIds } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  const sdkAt = performance.now();
   let deviceIds = [];
-  let readySent = false;
   let loaded = false;
 
   const settings = Homey.getSettings() || {};
@@ -27,26 +20,12 @@ window.mountSensorDotsWidget = function (Homey, { root, frame }) {
     title: typeof settings.title === 'string' ? settings.title : '',
     idleColor: settings.idleColor,
     activeColor: settings.activeColor,
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   // Shown once the text font has loaded (at most 1 s), so the names don't pop in after the icons.
-  let readyStarted = false;
-  async function ready() {
-    if (readyStarted) return;
-    readyStarted = true;
-    if (document.fonts && document.fonts.ready) {
-      await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1000))]);
-    }
-    readySent = true;
-    Homey.ready({ height: bodyHeight() });
+  function ready() {
+    return link.ready({ fonts: true });
   }
 
   async function load() {
@@ -56,7 +35,7 @@ window.mountSensorDotsWidget = function (Homey, { root, frame }) {
       return;
     }
     try {
-      widget.setState(await Homey.api('GET', `/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${perfParam()}`));
+      widget.setState(await Homey.api('GET', `/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${link.perfParam()}`));
       loaded = true;
     } catch (err) {
       console.error(err);
@@ -71,11 +50,9 @@ window.mountSensorDotsWidget = function (Homey, { root, frame }) {
     if (data && deviceIds.includes(data.deviceId)) widget.pushChange(data);
   });
 
-  Promise.resolve(typeof Homey.getDeviceIds === 'function' ? Homey.getDeviceIds() : [])
-    .then((ids) => { deviceIds = Array.isArray(ids) ? ids : []; })
-    .catch(() => { deviceIds = []; })
+  getDeviceIds(Homey)
+    .then((ids) => { deviceIds = ids; })
     .then(() => {
-      perf = loadMarks(sdkAt);
       setInterval(load, REFRESH_MS);
       load();
     });

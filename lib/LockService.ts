@@ -1,8 +1,7 @@
 import type Homey from 'homey';
 import { getAppApi, lastUpdatedMs } from './appApi.js';
-import { presentCaps } from './capabilities.js';
+import { presentCaps, readCaps, type CapState } from './capabilities.js';
 import DeviceTracker, { type TrackedEntry } from './DeviceTracker.js';
-import { fetchDeviceIcon } from './deviceIcon.js';
 import Timings from './Timings.js';
 
 export const LOCKS_STATE_EVENT = 'locks:state';
@@ -23,7 +22,6 @@ export type LockDevice =
   | { id: string, missing: true };
 
 type Tracked = TrackedEntry & {
-  name: string,
   icon: string | null,
   caps: Partial<Record<LockCapId, LockCap>>,
 };
@@ -33,15 +31,11 @@ export function lockCaps(device: any): LockCapId[] {
   return presentCaps(device, Object.keys(LOCK_CAPS) as LockCapId[]);
 }
 
-function readCaps(device: any): Partial<Record<LockCapId, LockCap>> {
+/** `readCaps()` of the lock capabilities, with when each last changed; only `SETTABLE_LOCK_CAPS` can be set. */
+function readLockCaps(device: any): Partial<Record<LockCapId, LockCap>> {
   const out: Partial<Record<LockCapId, LockCap>> = {};
-  for (const id of lockCaps(device)) {
-    const c = device.capabilitiesObj[id];
-    out[id] = {
-      value: c.value ?? null,
-      setable: SETTABLE_LOCK_CAPS.includes(id) && c.setable !== false,
-      lastUpdated: lastUpdatedMs(c.lastUpdated),
-    };
+  for (const [id, c] of Object.entries(readCaps(device, Object.keys(LOCK_CAPS))) as [LockCapId, CapState][]) {
+    out[id] = { ...c, setable: c.setable && SETTABLE_LOCK_CAPS.includes(id), lastUpdated: lastUpdatedMs(device.capabilitiesObj[id].lastUpdated) };
   }
   return out;
 }
@@ -61,10 +55,9 @@ export default class LockService {
       debug,
       what: 'Lock capabilities',
       signature: device => lockCaps(device).join(),
-      create: async (device, api, tm) => {
+      create: async (device) => {
         if (!lockCaps(device).length) throw new Error(`${device.name} has no lock, contact or garage door capability`);
-        const icon = await tm.time('icons', () => fetchDeviceIcon(api, device, this.log));
-        return { name: device.name, icon, caps: readCaps(device) };
+        return { caps: readLockCaps(device) };
       },
       listen: (t, device) => {
         const instances = (Object.keys(t.caps) as LockCapId[]).map(id => device.makeCapabilityInstance(id, (value: unknown) => {
@@ -79,12 +72,9 @@ export default class LockService {
         this.debug(`Tracking lock ${device.name} (${t.key}): ${JSON.stringify(Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, c.value])))}`);
         return instances;
       },
-      refresh: async (t, device, api, tm) => {
-        t.name = device.name;
-        t.icon = await tm.time('icons', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
-        t.caps = readCaps(device);
-      },
+      refresh: (t, device) => { t.caps = readLockCaps(device); },
       label: t => `lock ${t.name}`,
+      iconLog: log,
     });
   }
 

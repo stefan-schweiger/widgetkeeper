@@ -22,8 +22,8 @@ function widget(slots: any[], columns?: unknown, extra: object = {}) {
   return { w, root, tiles, text };
 }
 
-describe('formatCapabilityValue', () => {
-  const f = (c: object, v: unknown) => win.formatCapabilityValue(c, v, (k: string) => ({ on: 'On', off: 'Off' } as any)[k]);
+describe("formatValue (the kit's)", () => {
+  const f = (c: object, v: unknown) => win.WidgetkeeperKit.formatValue(c, v, (k: string) => ({ on: 'On', off: 'Off' } as any)[k]);
 
   it('rounds numbers to the decimals and adds the units', () => {
     expect(f(cap('number', { units: '°C', decimals: 1 }), 21.46)).toBe(`${dec(21.5)}°C`);
@@ -160,13 +160,14 @@ describe('render', () => {
     const layout = (node: Element): unknown[] => [...node.children]
       .filter(c => !c.classList.contains('vt-ink'))
       .map(c => (c.children.length ? [c.className, layout(c)] : c.className));
-    const pillLayout = ['vt-icon', ['vt-text', ['vt-name', 'vt-value']]];
+    const second = ['vt-second', ['vt-second-icon', 'vt-second-value']];
+    const pillLayout = ['vt-icon', ['vt-text', ['vt-name', ['vt-row', ['vt-value', second]]]]];
 
     it('is compact unless the setting says pill', () => {
       for (const tileStyle of [undefined, 'compact', 'bogus']) {
         const { root, tiles } = widget([temp()], undefined, { tileStyle });
         expect(root.classList.contains('vt-pill')).toBe(false);
-        expect(layout(tiles()[0])).toEqual([['vt-top', ['vt-icon', 'vt-value']], 'vt-name']);
+        expect(layout(tiles()[0])).toEqual([['vt-top', ['vt-icon', 'vt-value']], ['vt-row', ['vt-name', second]]]);
       }
       expect(widget([temp()], undefined, { tileStyle: 'pill' }).root.classList.contains('vt-pill')).toBe(true);
     });
@@ -202,6 +203,60 @@ describe('render', () => {
     const mask = (t: HTMLElement) => (t.querySelector('.vt-icon') as HTMLElement).style.getPropertyValue('--vt-mask');
     expect(mask(tiles()[0])).toBe(`url("${icon}")`);
     expect(mask(tiles()[1])).toMatch(/^url\("data:image\/svg\+xml;base64,/);
+  });
+
+  describe('second value', () => {
+    const humidity = (value: unknown = 48) => ({ capabilityId: 'measure_humidity', capability: cap('number', { title: 'Humidity', units: '%', decimals: 0 }), value });
+    const pair = (second: object = humidity()) => ({ ...temp(), capability: cap('number', { title: 'Temperature', units: '°C', decimals: 1 }), second });
+    const seconds = (tiles: HTMLElement[]) => tiles.map(t => {
+      const el = t.querySelector<HTMLElement>(':scope > .vt-row .vt-second, :scope > .vt-text .vt-second')!;
+      return el.hidden ? null : el.textContent;
+    });
+
+    it('ends the name row with it, and stays hidden on a tile without one', () => {
+      const { tiles } = widget([pair(), temp()]);
+      expect(seconds(tiles())).toEqual(['48%', null]);
+      expect(tiles()[0].querySelector('.vt-row .vt-name')!.textContent).toBe('Stue');
+      const icon = tiles()[0].querySelector<HTMLElement>('.vt-second-icon')!;
+      expect(icon.style.getPropertyValue('--vt-mask')).toMatch(/^url\("data:image\/svg\+xml/);
+      expect(tiles()[0].title).toBe('Temperature · Humidity');
+    });
+
+    it('sits in the value row of a pill tile', () => {
+      const { tiles } = widget([pair()], undefined, { tileStyle: 'pill' });
+      expect(tiles()[0].querySelector('.vt-text > .vt-row > .vt-second')!.textContent).toBe('48%');
+    });
+
+    it('goes when a refresh brings the tile without it', () => {
+      const { w, tiles } = widget([pair()]);
+      w.setState([temp()]);
+      expect(seconds(tiles())).toEqual([null]);
+    });
+
+    it('takes realtime changes of its own capability', () => {
+      const { w, tiles, text } = widget([pair(), pair()]);
+      w.pushChange({ deviceId: 'a', capabilityId: 'measure_humidity', value: 55 });
+      expect(seconds(tiles())).toEqual(['55%', '55%']);
+      expect(text('.vt-value')).toEqual([`${dec(21.5)}°C`, `${dec(21.5)}°C`]);
+      w.pushChange({ deviceId: 'other', capabilityId: 'measure_humidity', value: 10 });
+      expect(seconds(tiles())).toEqual(['55%', '55%']);
+    });
+
+    it('leaves the colour to the first value', () => {
+      const on = { capabilityId: 'onoff', capability: cap('boolean'), value: true };
+      const battery = { capabilityId: 'measure_battery', capability: cap('number', { units: '%' }), value: 5 };
+      const { tiles } = widget([pair(on), pair(battery)], undefined, { percentFill: true });
+      expect(seconds(tiles())).toEqual(['On', '5%']);
+      expect(tiles().map(t => [t.classList.contains('active'), t.classList.contains('filled')])).toEqual([[false, false], [false, false]]);
+    });
+
+    it('is in the deep ink layer too', () => {
+      const battery = { deviceId: 'c', capabilityId: 'measure_battery', name: 'Sensor', capability: cap('number', { units: '%' }), value: 50, second: humidity() };
+      const { tiles } = widget([battery], undefined, { colorStyle: 'deep', percentFill: true });
+      const layer = tiles()[0].querySelector('.vt-ink')!;
+      expect(layer.querySelector<HTMLElement>('.vt-second')!.hidden).toBe(false);
+      expect(layer.querySelector('.vt-second-value')!.textContent).toBe('48%');
+    });
   });
 
   it('always uses the built-in glyph for batteries, whatever the driver ships', () => {

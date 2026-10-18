@@ -68,7 +68,6 @@ const SUMMARY_CAPS = ['speaker_playing', 'speaker_track', 'speaker_artist', 'son
 export type Art = { type: string, data: string };
 
 type Tracked = TrackedEntry & {
-  name: string,
   icon: string | null,
   caps: Record<string, MediaCap>,
   art: MediaArt | null,
@@ -91,7 +90,7 @@ export function mediaArt(device: any): MediaArt | null {
   return img && { url: img.url, lastUpdated: img.lastUpdated };
 }
 
-function readCaps(device: any): Record<string, MediaCap> {
+function readMediaCaps(device: any): Record<string, MediaCap> {
   const out: Record<string, MediaCap> = {};
   for (const id of mediaCaps(device)) {
     const c = device.capabilitiesObj[id];
@@ -160,10 +159,9 @@ export default class MediaService {
       debug,
       what: 'Media capabilities',
       signature: device => mediaCaps(device).join(),
-      create: async (device, api, tm) => {
+      create: async (device) => {
         if (!isSpeaker(device)) throw new Error(`${device.name} is not a speaker`);
-        const icon = await tm.time('icon', () => fetchDeviceIcon(api, device, this.log));
-        return { name: device.name, icon, caps: readCaps(device), art: mediaArt(device), artTimers: [] };
+        return { caps: readMediaCaps(device), art: mediaArt(device), artTimers: [] };
       },
       listen: (t, device) => {
         const instances = Object.keys(t.caps)
@@ -176,13 +174,12 @@ export default class MediaService {
         this.debug(`Tracking speaker ${device.name} (${t.key}): ${Object.keys(t.caps).join()}`);
         return instances;
       },
-      refresh: async (t, device, api, tm) => {
-        t.name = device.name;
-        t.icon = await tm.time('icon', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
-        t.caps = readCaps(device);
+      refresh: (t, device) => {
+        t.caps = readMediaCaps(device);
         t.art = mediaArt(device);
       },
       label: t => `speaker ${t.name}`,
+      iconLog: log,
       onDispose: (t) => { for (const timer of t.artTimers) this.homey.clearTimeout(timer); },
     });
   }

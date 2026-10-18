@@ -54,6 +54,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Electricity Overview and Energy Price Strip
 - 15-minute electricity prices, where Homey Energy has them: the price now is the current quarter's (it was the hour's average), the price chart steps every 15 minutes, and the lowest price is the cheapest quarter. The Energy Price Strip shows a bar per quarter. Markets with hourly prices look as before.
+- Electricity Overview: a power meter that's deleted while the widget is open now shows as unavailable, instead of a line that stopped moving.
 
 ### Activity Dots and Sensor Alarms
 - Presence sensors (such as the Aqara FP300) can be picked in Activity Dots: the dot lights up while someone is there, even sitting still, and the overlay says *Presence* or *No presence*. Sensor Alarms counts presence with motion and contact when *Count motion and contact as alarms* is on.
@@ -62,6 +63,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Sparklines and Device Values
 - Every battery tile shows the same battery icon. Some devices brought their own, so tiles side by side looked different.
 - Device Values has a new setting, *Tile style*. *Pill* tiles look like Sensor Alarms' tiles, the icon beside the device name with the value under it. *Compact* is the default and looks as before.
+- Device Values: a tile can show a second value of the same device, such as a room's humidity next to its temperature. Pick it under each tile with the new *– Second value* setting: it's shown small at the end of the name's row (in pill tiles, after the value), and the tile's colour still follows the first value.
 
 ### Light Controls
 - A new colour palette, *Room's Moods*: the colour button shows the Homey Moods of the light's room (or of the room's tile, grouped by room) in place of the colours and whites, and a tap starts one. A room without Moods keeps the colours. Starting a Mood needs an API key that may start Moods. A user asked for it.
@@ -84,6 +86,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Thermostat Presets
 - In the settings, each button's mode, temperature and fan setting are indented under its power setting, so it's clear which button they belong to.
+
+### Other fixes
+- Variables, Variable Presets, Flow Buttons, Media's buttons, Moods and the Smart Stack no longer say the API key wasn't accepted when Homey was only busy, and a good key saved at such a moment is no longer refused.
 
 ## 0.9.0
 

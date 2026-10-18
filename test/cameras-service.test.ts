@@ -95,6 +95,20 @@ describe('getState', () => {
   });
 });
 
+describe('idle cameras', () => {
+  it('forgets a camera no request has asked for in 10 minutes', async () => {
+    const { service } = setup();
+    await service.getState(['kitchen']);
+    expect((service as any).last.has('kitchen')).toBe(true);
+    expect((service as any).imageUrls.has('kitchen')).toBe(true);
+    vi.advanceTimersByTime(11 * 60e3);
+    await service.getState(['terrace']);
+    expect((service as any).last.has('kitchen')).toBe(false);
+    expect((service as any).imageUrls.has('kitchen')).toBe(false);
+    expect((service as any).last.has('terrace')).toBe(true);
+  });
+});
+
 describe('getSnapshot', () => {
   it('fetches the image from Homey as base64', async () => {
     const fetch = stubFetch();

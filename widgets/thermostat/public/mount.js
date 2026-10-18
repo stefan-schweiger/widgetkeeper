@@ -6,19 +6,12 @@
 window.mountThermostatWidget = function (Homey, { root, frame }) {
   const REFRESH_MS = 5 * 60e3; // keeps the app's device subscription alive and resyncs state
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  perf = loadMarks(performance.now());
   const settings = Homey.getSettings() || {};
   const deviceId = (settings.device && settings.device.id) || null;
-  let readySent = false;
   let loaded = false;
 
   const widget = window.createThermostatWidget(root, {
@@ -29,21 +22,12 @@ window.mountThermostatWidget = function (Homey, { root, frame }) {
       deviceId, values: values.map(({ capabilityId, value }) => ({ capabilityId, value })),
     }),
     // The widget reports its own height; Homey needs the body's, which adds the widget padding.
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
   widget.setButtons(window.thermostatPresetsFromSettings(settings));
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   function ready() {
-    if (readySent) return;
-    readySent = true;
-    Homey.ready({ height: bodyHeight() });
+    return link.ready();
   }
 
   async function load() {
@@ -53,7 +37,7 @@ window.mountThermostatWidget = function (Homey, { root, frame }) {
       return;
     }
     try {
-      const state = await Homey.api('GET', `/state?deviceId=${encodeURIComponent(deviceId)}${perfParam()}`);
+      const state = await Homey.api('GET', `/state?deviceId=${encodeURIComponent(deviceId)}${link.perfParam()}`);
       loaded = !state.missing; // a deleted device: the buttons go, the next error is persistent too
       if (state.missing) widget.setMessage(widget.t('error'));
       else widget.setState(state);

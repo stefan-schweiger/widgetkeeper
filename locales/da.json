@@ -185,7 +185,8 @@
     "on": "Til",
     "off": "Fra",
     "renameFailed": "Kunne ikke gemme navnet.",
-    "none": "Ingen"
+    "none": "Ingen",
+    "pickTileFirst": "Vælg felt __n__ først."
   },
   "sparklines": {
     "selectSlots": "Vælg enhedsværdier i widgetindstillingerne.",

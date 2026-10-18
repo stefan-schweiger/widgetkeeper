@@ -8,10 +8,11 @@ import { vi } from 'vitest';
 export const homeyApiMock = {
   HomeyAPI: {
     createAppAPI: async ({ homey }: any) => homey.fakeApi,
-    /** A personal API key's API: the one registered in `keyApis` for the token, else a rejected key. */
+    /** A personal API key's API: the one registered in `keyApis` for the token (an Error is thrown), else a rejected key. */
     createLocalAPI: async ({ token }: { address: string, token: string }) => {
       const api = keyApis.get(token);
       if (!api) throw new Error('Invalid token');
+      if (api instanceof Error) throw api;
       return api;
     },
   },

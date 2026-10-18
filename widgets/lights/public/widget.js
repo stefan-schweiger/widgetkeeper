@@ -6,7 +6,7 @@
  * any drag. Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, applyColors, KEY_PROBLEMS } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a changed tile shows its new value while waiting for the device
@@ -28,8 +28,6 @@
     moods: 'Moods',
     renameFailed: 'Could not save the name.',
   };
-  /** Why the app couldn't start a Mood (`{ok: false, reason}`): no usable personal API key. */
-  const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
 
   const svg = (viewBox, body) => `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`)}`;
   // A thermometer with a sun ray, for the temperature chip.

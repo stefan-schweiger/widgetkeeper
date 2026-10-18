@@ -185,7 +185,8 @@
     "on": "On",
     "off": "Off",
     "renameFailed": "Could not save the name.",
-    "none": "None"
+    "none": "None",
+    "pickTileFirst": "Pick Tile __n__ first."
   },
   "sparklines": {
     "selectSlots": "Pick device values in the widget settings.",

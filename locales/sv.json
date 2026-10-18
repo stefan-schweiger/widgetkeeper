@@ -185,7 +185,8 @@
     "on": "På",
     "off": "Av",
     "renameFailed": "Kunde inte spara namnet.",
-    "none": "Ingen"
+    "none": "Ingen",
+    "pickTileFirst": "Välj ruta __n__ först."
   },
   "sparklines": {
     "selectSlots": "Välj enhetsvärden i widgetinställningarna.",

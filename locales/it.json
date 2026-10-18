@@ -185,7 +185,8 @@
     "on": "Acceso",
     "off": "Spento",
     "renameFailed": "Impossibile salvare il nome.",
-    "none": "Nessuno"
+    "none": "Nessuno",
+    "pickTileFirst": "Scegli prima il riquadro __n__."
   },
   "sparklines": {
     "selectSlots": "Scegli i valori nelle impostazioni del widget.",

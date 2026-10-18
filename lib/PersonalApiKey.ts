@@ -84,6 +84,7 @@ export default class PersonalApiKey {
   /**
    * Checks a key and saves it (an empty key removes it). A key Homey doesn't accept, or one that may do none of
    * the uses (change variables, start flows, read dashboards, start Moods), isn't saved. The result says what the saved key may do.
+   * A passing failure (Homey busy or slow) throws, so a good key isn't called invalid.
    */
   async save(key: string): Promise<SaveResult> {
     key = key.trim();
@@ -97,6 +98,7 @@ export default class PersonalApiKey {
       const api = await this.create(key);
       scopes = (await api.sessions.getSessionMe())?.scopes ?? [];
     } catch (err) {
+      if (isTransientError(err)) throw err;
       this.log('The API key was not accepted:', String((err as any)?.message ?? err));
       return { ok: false, reason: 'keyInvalid' };
     }
@@ -156,8 +158,10 @@ export default class PersonalApiKey {
     const key = this.homey.settings.get(API_KEY_SETTING);
     if (typeof key !== 'string' || !key) return Promise.reject(new KeyError('noKey'));
     if (this.cached?.key !== key) {
+      // A passing failure (Homey busy or slow) is thrown as it is, not as an invalid key, and tried again next time.
       const api = this.create(key).catch(err => {
         if (this.cached?.api === api) this.cached = null;
+        if (isTransientError(err)) throw err;
         throw new KeyError('keyInvalid', String(err?.message ?? err));
       });
       this.cached = { key, api };

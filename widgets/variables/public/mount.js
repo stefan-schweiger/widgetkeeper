@@ -6,23 +6,16 @@
 window.mountVariablesWidget = function (Homey, { root, frame }) {
   const REFRESH_MS = 5 * 60e3; // keeps the app's Logic subscription alive and resyncs state
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks, wireTileNames } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame, wireTileNames } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
   // Each slot setting is an autocomplete item whose id is the Logic variable's id (`none` empties it).
   const picked = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     .map(n => ({ id: settings[`slot${n}`] && settings[`slot${n}`].id, name: settings[`name${n}`] }))
     .filter(s => typeof s.id === 'string' && s.id && s.id !== 'none');
   const ids = picked.map(s => s.id);
-  let readySent = false;
   let loaded = false;
 
   // The rows' names from the old settings (`nameN`, text, before Rename tiles), by tile key: sent with `/state` until a
@@ -51,26 +44,12 @@ window.mountVariablesWidget = function (Homey, { root, frame }) {
       // No usable API key: the widget says what to do (see the app settings).
       if (res && res.ok === false) throw Object.assign(new Error(res.reason), { reason: res.reason });
     },
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   // Shown once the text font has loaded (at most 1 s), so the text doesn't pop in after the icons.
-  let readyStarted = false;
-  async function ready() {
-    if (readyStarted) return;
-    readyStarted = true;
-    if (document.fonts && document.fonts.ready) {
-      await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1000))]);
-    }
-    readySent = true;
-    Homey.ready({ height: bodyHeight() });
+  function ready() {
+    return link.ready({ fonts: true });
   }
 
   async function load() {
@@ -80,7 +59,7 @@ window.mountVariablesWidget = function (Homey, { root, frame }) {
       return;
     }
     try {
-      const state = await tileNames.state(`/state?ids=${ids.map(encodeURIComponent).join(',')}${oldNames}${perfParam()}`);
+      const state = await tileNames.state(`/state?ids=${ids.map(encodeURIComponent).join(',')}${oldNames}${link.perfParam()}`);
       oldNames = '';
       widget.setState(state);
       loaded = true;
@@ -96,7 +75,6 @@ window.mountVariablesWidget = function (Homey, { root, frame }) {
     if (data) widget.pushChange(data);
   });
 
-  perf = loadMarks(sdkAt);
   setInterval(load, REFRESH_MS);
   load();
 };

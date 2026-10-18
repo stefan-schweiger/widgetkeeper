@@ -1,4 +1,5 @@
 import type Homey from 'homey';
+import { isReservedKey } from './storedSetting.js';
 import { logged } from './widgetApi.js';
 
 export const TILE_NAMES_EVENT = 'tilenames:state';
@@ -13,20 +14,17 @@ const MAX_INSTANCES = 300;
 /** `adopted`: the names the widget had in its own settings were taken over (`adopt()`), so it never happens again. */
 type TileNames = { names: Record<string, string>, updatedAt: number, adopted?: true };
 
-/** Ids that would reach (or read) `Object.prototype` as keys of a plain object: never an instance or a tile key. */
-const RESERVED = new Set(['__proto__', 'constructor', 'prototype']);
-
 function instanceId(instance: unknown): string {
   const id = typeof instance === 'string' ? instance.trim() : '';
   if (!id || id.length > MAX_KEY) throw new Error('Missing instance');
-  if (RESERVED.has(id)) throw new Error('Invalid instance');
+  if (isReservedKey(id)) throw new Error('Invalid instance');
   return id;
 }
 
 function tileKey(key: unknown): string {
   const k = typeof key === 'string' ? key : '';
   if (!k || k.length > MAX_KEY) throw new Error('Missing key');
-  if (RESERVED.has(k)) throw new Error('Invalid key');
+  if (isReservedKey(k)) throw new Error('Invalid key');
   return k;
 }
 
@@ -48,7 +46,7 @@ function readNames(v: unknown): Record<string, string> {
   const names: Record<string, string> = {};
   if (!isObject(v)) return names;
   for (const k of Object.keys(v)) {
-    if (!RESERVED.has(k) && typeof v[k] === 'string') names[k] = v[k] as string;
+    if (!isReservedKey(k) && typeof v[k] === 'string') names[k] = v[k] as string;
   }
   return names;
 }
@@ -73,7 +71,7 @@ export default class TileNameService {
     if (!isObject(v)) return all;
     for (const id of Object.keys(v)) {
       const entry = v[id];
-      if (RESERVED.has(id) || !isObject(entry)) continue;
+      if (isReservedKey(id) || !isObject(entry)) continue;
       all[id] = { names: readNames(entry.names), updatedAt: Number(entry.updatedAt) || 0 };
       if (entry.adopted === true) all[id].adopted = true;
     }

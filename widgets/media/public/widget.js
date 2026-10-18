@@ -11,7 +11,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, applyColors, KEY_PROBLEMS } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a control shows its new value while waiting for the speaker
@@ -24,7 +24,6 @@
   const PANEL_CLOSE_MS = 600; // after a button's check mark, the overlay closes this much later
   const SPEAKERS_IDLE_MS = 15e3; // the speaker list closes after this long without a touch
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
-  const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
 
   const DEFAULT_STRINGS = {
     selectDevice: 'Select a speaker in the widget settings.',

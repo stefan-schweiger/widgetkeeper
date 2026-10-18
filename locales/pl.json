@@ -185,7 +185,8 @@
     "on": "Wł.",
     "off": "Wył.",
     "renameFailed": "Nie udało się zapisać nazwy.",
-    "none": "Brak"
+    "none": "Brak",
+    "pickTileFirst": "Najpierw wybierz kafelek __n__."
   },
   "sparklines": {
     "selectSlots": "Wybierz wartości w ustawieniach widżetu.",

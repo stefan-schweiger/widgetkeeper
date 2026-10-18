@@ -69,6 +69,22 @@ html, body { background: transparent !important; }
 }
 .vt .vt-value { text-align: right; font-variant-numeric: tabular-nums; }
 
+/* The name's row (in pill tiles the value's), ended by the second value: another of the device's values, small and muted
+   with its 14px icon (the user's pick of three layouts, 2026-10-18). The name is cut short first; in pill tiles the second value. */
+.vt-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.vt-row .vt-name { flex: 1 1 auto; }
+.vt-second {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 3px; min-width: 0; color: var(--vt-muted);
+  font-size: var(--vt-fs-small); line-height: var(--vt-lh-small); font-weight: var(--homey-font-weight-regular, 400);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.vt-second[hidden], .vt.renaming .vt-second { display: none; }
+.vt-second-icon {
+  flex-shrink: 0; width: var(--homey-icon-size-small, 14px); height: var(--homey-icon-size-small, 14px); background: currentColor;
+  -webkit-mask: var(--vt-mask) center / contain no-repeat; mask: var(--vt-mask) center / contain no-repeat;
+}
+.vt-second-value { overflow: hidden; text-overflow: ellipsis; }
+
 /* A percentage filling the tile from the left: red, yellow or green by the thresholds in the settings. */
 .vt-tile.filled { --vt-level: var(--vt-green);
   background: linear-gradient(to right, color-mix(in srgb, var(--vt-level) var(--vt-fill-mix), var(--vt-tile)) var(--vt-fill), var(--vt-tile) var(--vt-fill)); }
@@ -127,6 +143,11 @@ html, body { background: transparent !important; }
 .vt-text { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .vt-pill .vt-name, .vt-pill .vt-value { line-height: 18px; }
 .vt.vt-pill .vt-value { text-align: left; font-weight: var(--vt-regular); color: var(--vt-muted); }
+.vt-pill .vt-row { gap: 8px; }
+/* The value spans its row as before, unless the second value follows it (as wide as its text, it would clip its last glyph's edge). */
+.vt-pill .vt-row .vt-value { flex: 1 1 auto; }
+.vt-pill .has-second .vt-row .vt-value { flex: 0 0 auto; max-width: 100%; }
+.vt-pill .vt-second { flex-shrink: 1; overflow: hidden; line-height: 18px; }
 .vt.wk-deep:not(.renaming) .vt-tile[data-color]:not(.filled), .vt-ink { --vt-muted: var(--vt-ink); }
 .vt.wk-deep.vt-pill:not(.renaming) .vt-tile.filled .vt-ink { flex-direction: row; align-items: center; gap: 13px; padding: 7px 12px 5px 10px; }
 .vt-pill .wk-rename { margin: -3px 0; }

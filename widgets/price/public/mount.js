@@ -6,18 +6,11 @@
 window.mountPriceWidget = function (Homey, { root, frame }) {
   const REFRESH_MS = 5 * 60e3; // picks up tomorrow's prices and a changed price type
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
-  let readySent = false;
   let loaded = false;
 
   const widget = window.createPriceWidget(root, {
@@ -25,31 +18,17 @@ window.mountPriceWidget = function (Homey, { root, frame }) {
     t: (key, tokens) => Homey.__(key, tokens),
     hours: settings.hours,
     tint: settings.tint !== false,
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   // Shown once the text font has loaded (at most 1 s), so the text doesn't pop in.
-  let readyStarted = false;
-  async function ready() {
-    if (readyStarted) return;
-    readyStarted = true;
-    if (document.fonts && document.fonts.ready) {
-      await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1000))]);
-    }
-    readySent = true;
-    Homey.ready({ height: bodyHeight() });
+  function ready() {
+    return link.ready({ fonts: true });
   }
 
   async function load() {
     try {
-      widget.setState(await Homey.api('GET', `/price?${[settings.priceCosts === false ? 'costs=0' : '', Number(settings.hours) > 24 ? 'hours=36' : '', perfParam().slice(1)].filter(Boolean).join('&')}`));
+      widget.setState(await Homey.api('GET', `/price?${[settings.priceCosts === false ? 'costs=0' : '', Number(settings.hours) > 24 ? 'hours=36' : '', link.perfParam('')].filter(Boolean).join('&')}`));
       loaded = true;
     } catch (err) {
       console.error(err);
@@ -59,7 +38,6 @@ window.mountPriceWidget = function (Homey, { root, frame }) {
     ready();
   }
 
-  perf = loadMarks(sdkAt);
   setInterval(load, REFRESH_MS);
   load();
 };

@@ -7,19 +7,12 @@ window.mountVarPresetsWidget = function (Homey, { root, frame }) {
   // The events keep it current; this keeps the app's interest in the variable alive and catches a missed one.
   const REFRESH_MS = 5 * 60e3;
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  perf = loadMarks(performance.now());
   const settings = Homey.getSettings() || {};
   const variableId = settings.variable && settings.variable.id && settings.variable.id !== 'none' ? settings.variable.id : null;
-  let readySent = false;
   let loaded = false;
   let loadedAt = 0;
 
@@ -36,21 +29,12 @@ window.mountVarPresetsWidget = function (Homey, { root, frame }) {
       return res;
     },
     // The widget reports its own height; Homey needs the frame's, which adds the widget padding.
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(frameHeight());
-    },
+    onHeight: link.setHeight,
   });
   widget.setPresets(window.varPresetsFromSettings(settings));
 
-  function frameHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   function ready() {
-    if (readySent) return;
-    readySent = true;
-    Homey.ready({ height: frameHeight() });
+    return link.ready();
   }
 
   async function load() {
@@ -60,7 +44,7 @@ window.mountVarPresetsWidget = function (Homey, { root, frame }) {
       return;
     }
     try {
-      const state = await Homey.api('GET', `/state?id=${encodeURIComponent(variableId)}${perfParam()}`);
+      const state = await Homey.api('GET', `/state?id=${encodeURIComponent(variableId)}${link.perfParam()}`);
       loadedAt = Date.now();
       loaded = !!state && !state.missing; // a deleted variable: the buttons go, the next error is persistent too
       if (!loaded) widget.setMessage(widget.t('missing'));

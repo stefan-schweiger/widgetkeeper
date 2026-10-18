@@ -39,9 +39,11 @@ export function widgetAutocompletes(app: WidgetkeeperApp): Record<string, Record
   add('heatmap', 'device', query => app.heatmap.listDevices(query));
   add('heatmap', 'capability', (query, settings) => app.heatmap.listCapabilities(settings?.device?.id, query));
 
-  // Device values and sparklines: every tile slot lists the `Device · Capability` pairs.
+  // Device values and sparklines: every tile slot lists the `Device · Capability` pairs; a value tile's second value, the
+  // other values of that tile's device.
   for (const n of VALUE_SLOTS) {
     add('values', `slot${n}`, query => app.values.listSlots(query));
+    add('values', `second${n}`, (query, settings) => app.values.listSecondValues(settings?.[`slot${n}`]?.id, query, n));
     add('sparklines', `slot${n}`, query => app.sparklines.listSlots(query));
   }
   // Charts: each chart's value, from Sparklines' list (logged numbers).

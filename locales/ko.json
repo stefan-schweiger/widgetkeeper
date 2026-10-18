@@ -185,7 +185,8 @@
     "on": "켜짐",
     "off": "꺼짐",
     "renameFailed": "이름을 저장하지 못했습니다.",
-    "none": "없음"
+    "none": "없음",
+    "pickTileFirst": "먼저 타일 __n__을(를) 선택하세요."
   },
   "sparklines": {
     "selectSlots": "위젯 설정에서 기기 값을 선택하세요.",

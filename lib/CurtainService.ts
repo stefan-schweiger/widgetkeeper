@@ -27,7 +27,6 @@ export type CurtainDevice =
 export type CurtainChange = { action?: unknown, position?: unknown };
 
 type Tracked = TrackedEntry & {
-  name: string,
   kind: CurtainKind,
   /** The zone (room) id, for grouping the tiles by room. */
   zone: string | null,
@@ -61,7 +60,7 @@ export default class CurtainService {
       signature: device => curtainCaps(device).join(),
       create: async (device) => {
         if (!curtainCaps(device).length) throw new Error(`${device.name} has no curtain capability`);
-        return { name: device.name, kind: curtainKind(device), zone: device.zone ?? null, caps: readCaps(device, CURTAIN_CAPS) };
+        return { kind: curtainKind(device), zone: device.zone ?? null, caps: readCaps(device, CURTAIN_CAPS) };
       },
       listen: (t, device) => {
         const instances = Object.keys(t.caps).map(id => device.makeCapabilityInstance(id, (value: unknown) => {
@@ -72,7 +71,6 @@ export default class CurtainService {
         return instances;
       },
       refresh: (t, device) => {
-        t.name = device.name;
         t.kind = curtainKind(device);
         t.zone = device.zone ?? null;
         t.caps = readCaps(device, CURTAIN_CAPS);

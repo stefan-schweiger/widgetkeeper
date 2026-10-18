@@ -37,6 +37,7 @@ interface Window {
   WidgetkeeperKit: {
     icons: Record<string, { d: string, fill?: boolean }>,
     TIGHT_UNITS: RegExp,
+    KEY_PROBLEMS: string[],
     scaled: (cap: any, value: number) => number,
     formatNumber: (cap: any, value: number) => string,
     formatValue: (cap: any, value: unknown, t?: (key: string) => string) => string,
@@ -47,7 +48,13 @@ interface Window {
     formatSince: (ms: number, now: number, language?: string, locale?: string) => string,
     baseTitle: (title: unknown) => string,
     lowestSlot: (slots: any[], from: number, hours: number) => number,
-    loadMarks: (sdkAt: number) => string,
+    wireFrame: (Homey: any, frame: HTMLElement) => {
+      height: () => number,
+      setHeight: () => void,
+      ready: (opts?: { fonts?: boolean, waitFor?: (() => Promise<unknown>[]) | null, maxMs?: number, before?: (() => void) | null }) => Promise<void>,
+      perfParam: (sep?: string) => string,
+    },
+    getDeviceIds: (Homey: any) => Promise<string[]>,
     wireTileNames: (Homey: any, setNames: (names: any) => void) => { state: (path: string) => Promise<any>, rename: (key: string, name: string) => Promise<any> },
     COLORS: string[],
     colorStyle: (value: unknown) => 'soft' | 'deep',
@@ -82,7 +89,6 @@ interface Window {
   mediaSource: (caps: object) => 'tv' | 'lineIn' | null;
   mediaButtonsFromSettings: (settings: object) => { id: string, name: string, icon: string | null }[];
   sparkPath: (points: [number, number][], from: number, to: number, w: number, h: number) => { line: string, area: string, dot: { x: number, y: number }, min: number, max: number } | null;
-  formatCapabilityValue: (cap: object, value: unknown, t: (key: string) => string) => string;
   heatmapPeriodDays: (period: string | undefined) => number;
   thermostatPresetsFromSettings: (settings: Record<string, any>) => { values: object[] }[];
   mountCamerasWidget: MountWidget;
@@ -115,5 +121,4 @@ interface Window {
   createStackAttentionWatcher: (pages: any[], io: object) => { refresh: () => Promise<unknown>, attention: (id: string) => boolean };
   stackAttention: (page: { type: string, settings?: object }, state: object) => boolean;
   STACK_TYPES: Record<string, string>;
-  STACK_KEY_PROBLEMS: string[];
 }

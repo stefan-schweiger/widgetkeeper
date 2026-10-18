@@ -6,6 +6,7 @@ import { fetchDeviceIcon } from './deviceIcon.js';
 import { hourlyAverages, hourlyShareTrue, spanFor, type HeatmapDay, type Span } from './heatmap.js';
 import { limitInsights, readCapabilityLog } from './insightsLog.js';
 import { HOUR, MINUTE, parseInsightsEntries } from './series.js';
+import { DebouncedSetting } from './storedSetting.js';
 import Timings from './Timings.js';
 
 const TICK = MINUTE;
@@ -95,14 +96,16 @@ export default class HeatmapService {
   private recorded = new Map<string, Recorded>();
   private instances = new Map<string, any>();
   private backfilledAt = new Map<string, number>();
-  private saveTimer: NodeJS.Timeout | null = null;
+  private saved: DebouncedSetting;
   private tickTimer: NodeJS.Timeout | null = null;
 
   constructor(
     private homey: Homey.App['homey'],
     private log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
-  ) {}
+  ) {
+    this.saved = new DebouncedSetting({ homey, setting: HISTORY_SETTING, delay: SAVE_DELAY, value: () => this.savedHistory(), log, what: 'the heatmap history' });
+  }
 
   /** Resumes recording the booleans that widgets asked for before the app restarted. */
   start() {
@@ -123,10 +126,7 @@ export default class HeatmapService {
   async stop() {
     if (this.tickTimer) this.homey.clearInterval(this.tickTimer);
     for (const k of [...this.instances.keys()]) this.unsubscribe(k);
-    if (this.saveTimer) {
-      this.homey.clearTimeout(this.saveTimer);
-      this.save();
-    }
+    this.saved.flush();
   }
 
   // ---------------------------------------------------------------- settings autocomplete
@@ -226,7 +226,7 @@ export default class HeatmapService {
     // After the backfill, so the state now only counts as a change if it differs from Insights' last.
     if (!this.instances.has(k)) await this.subscribe(r, device);
     this.prune(r);
-    this.scheduleSave();
+    this.saved.schedule();
     return hourlyShareTrue(r.changes.map(([t, v]) => ({ t, v: v === 1 })), Date.now(), this.homey.clock.getTimezone(), span);
   }
 
@@ -255,7 +255,7 @@ export default class HeatmapService {
     const last = r.changes[r.changes.length - 1];
     if (last && last[1] === (value ? 1 : 0)) return;
     r.changes.push([Date.now(), value ? 1 : 0]);
-    this.scheduleSave();
+    this.saved.schedule();
   }
 
   /** Drops changes older than `KEEP`, keeping the last of them as the state the window starts in. */
@@ -266,25 +266,14 @@ export default class HeatmapService {
     if (i) r.changes.splice(0, i);
   }
 
-  private scheduleSave() {
-    if (this.saveTimer) return;
-    this.saveTimer = this.homey.setTimeout(() => {
-      this.saveTimer = null;
-      this.save();
-    }, SAVE_DELAY);
-  }
-
-  private save() {
+  /** The recorded changes as saved, each pruned to the kept span. */
+  private savedHistory(): Record<string, Recorded> {
     const out: Record<string, Recorded> = {};
     for (const [k, r] of this.recorded) {
       this.prune(r);
       out[k] = r;
     }
-    try {
-      this.homey.settings.set(HISTORY_SETTING, out);
-    } catch (err) {
-      this.log('Could not save the heatmap history:', err);
-    }
+    return out;
   }
 
   private tick() {
@@ -298,7 +287,7 @@ export default class HeatmapService {
         this.recorded.delete(k);
         this.backfilledAt.delete(k);
         this.debug(`Stopped recording ${r.capabilityId} of ${r.deviceId}`);
-        this.scheduleSave();
+        this.saved.schedule();
       }
     }
   }

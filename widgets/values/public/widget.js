@@ -1,6 +1,7 @@
 /*
  * Device Values: a grid of half-height tiles in the style of Device Quick Actions, each showing one
- * capability of a device: its icon and value on top, the device name below. Display only.
+ * capability of a device: its icon and value on top, the device name below (and, if picked, a second value of the
+ * same device, small at the end of the name's row). Display only.
  * Plain browser JS (served as-is).
  */
 (function () {
@@ -136,8 +137,9 @@
     const thresholds = { red: num(opts.redBelow, 10), yellow: num(opts.yellowBelow, 20) };
     const grid = el('div', { class: 'vt-grid' }, root);
     const messageEl = el('div', { class: 'vt-message', dir: 'auto' }, root);
-    /** @type {Map<string, {tile: HTMLElement, icon: HTMLElement, value: HTMLElement, name: HTMLElement,
-     *   ink: {icon: HTMLElement, value: HTMLElement, name: HTMLElement} | null}>} */
+    /** @typedef {{icon: HTMLElement, value: HTMLElement, name: HTMLElement, second: HTMLElement, secondIcon: HTMLElement,
+     *   secondValue: HTMLElement}} TileParts */
+    /** @type {Map<string, TileParts & {tile: HTMLElement, ink: TileParts | null}>} */
     const tiles = new Map();
 
     function setState(list) {
@@ -149,8 +151,13 @@
     function pushChange({ deviceId, capabilityId, value }) {
       let changed = false;
       for (const s of slots) {
-        if (s.deviceId === deviceId && s.capabilityId === capabilityId && !('missing' in s)) {
+        if (s.deviceId !== deviceId || 'missing' in s) continue;
+        if (s.capabilityId === capabilityId) {
           s.value = value;
+          changed = true;
+        }
+        if (s.second && s.second.capabilityId === capabilityId) {
+          s.second.value = value;
           changed = true;
         }
       }
@@ -179,20 +186,27 @@
       render();
     }
 
-    /** A tile's icon, value and name in `parent`: the icon and value over the name, or in pill tiles the icon beside the name over the value. */
+    /**
+     * A tile's icon, value and name in `parent`: the icon and value over the name, or in pill tiles the icon beside the name
+     * over the value. The second value (hidden without one) ends the name's row, or in pill tiles the value's.
+     */
     function parts(parent) {
+      const secondIn = (row) => {
+        const second = el('span', { class: 'vt-second' }, row);
+        return { second, secondIcon: el('span', { class: 'vt-second-icon' }, second), secondValue: el('span', { class: 'vt-second-value', dir: 'auto' }, second) };
+      };
       if (pill) {
         const icon = el('span', { class: 'vt-icon' }, parent);
         const text = el('div', { class: 'vt-text' }, parent);
         const name = el('span', { class: 'vt-name', dir: 'auto' }, text);
-        return { icon, value: el('span', { class: 'vt-value', dir: 'auto' }, text), name };
+        const row = el('div', { class: 'vt-row' }, text);
+        return { icon, value: el('span', { class: 'vt-value', dir: 'auto' }, row), name, ...secondIn(row) };
       }
       const top = el('div', { class: 'vt-top' }, parent);
-      return {
-        icon: el('span', { class: 'vt-icon' }, top),
-        value: el('span', { class: 'vt-value', dir: 'auto' }, top),
-        name: el('span', { class: 'vt-name', dir: 'auto' }, parent),
-      };
+      const icon = el('span', { class: 'vt-icon' }, top);
+      const value = el('span', { class: 'vt-value', dir: 'auto' }, top);
+      const row = el('div', { class: 'vt-row' }, parent);
+      return { icon, value, name: el('span', { class: 'vt-name', dir: 'auto' }, row), ...secondIn(row) };
     }
 
     // A slot can appear twice (the same value picked for two tiles), so tiles are keyed by position too.
@@ -233,6 +247,15 @@
         }
         tile.value.textContent = missing ? '' : formatValue(s.capability, s.value, t);
         setMask(tile.icon, iconFor(s));
+        // The second value: another of the device's values, as text only (the first decides the tile's colour).
+        const second = !missing && s.second ? s.second : null;
+        const secondText = second ? formatValue(second.capability, second.value, t) : '';
+        tile.tile.classList.toggle('has-second', !!second);
+        for (const p of tile.ink ? [tile, tile.ink] : [tile]) {
+          p.second.hidden = !second;
+          p.secondValue.textContent = secondText;
+          setMask(p.secondIcon, second ? iconFor(second) : null);
+        }
         if (tile.ink) {
           tile.ink.name.textContent = tile.name.textContent;
           tile.ink.value.textContent = tile.value.textContent;
@@ -255,7 +278,7 @@
         else delete tile.tile.dataset.color;
         tile.tile.classList.toggle('missing', missing);
         tile.tile.dataset.capability = s.capabilityId;
-        tile.tile.title = missing ? '' : s.capability.title;
+        tile.tile.title = missing ? '' : second ? `${s.capability.title} · ${second.capability.title}` : s.capability.title;
       });
       grid.style.display = slots.length ? '' : 'none';
       messageEl.textContent = messageText || '';
@@ -270,5 +293,4 @@
   }
 
   window.createValuesWidget = createValuesWidget;
-  window.formatCapabilityValue = formatValue;
 })();

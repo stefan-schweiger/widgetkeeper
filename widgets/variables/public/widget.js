@@ -5,7 +5,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, applyColors, KEY_PROBLEMS } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a changed value shows while waiting for Homey's update
@@ -24,8 +24,6 @@
     keyInvalid: 'The API key was not accepted.',
     renameFailed: 'Could not save the name.',
   };
-  /** Why a change was refused, from the app (`{ok: false, reason}`): each has its own message. */
-  const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
 
   /** Digits after the decimal point (at most 6). */
   function decimalsOf(n) {

@@ -2,7 +2,6 @@ import type Homey from 'homey';
 import { lastUpdatedMs } from './appApi.js';
 import { describeCapability } from './capabilities.js';
 import DeviceTracker, { type TrackedEntry } from './DeviceTracker.js';
-import { fetchDeviceIcon } from './deviceIcon.js';
 import Timings from './Timings.js';
 
 export const SA_STATE_EVENT = 'sensoralarms:state';
@@ -28,7 +27,6 @@ export type SensorAlarmDevice =
   | { id: string, missing: true };
 
 type Tracked = TrackedEntry & {
-  name: string,
   icon: string | null,
   alarms: SensorAlarm[],
 };
@@ -63,10 +61,7 @@ export default class SensorAlarmService {
       debug,
       what: 'Alarm capabilities',
       signature: device => alarmCaps(device).map(a => a.capabilityId).join(),
-      create: async (device, api, tm) => {
-        const icon = await tm.time('icons', () => fetchDeviceIcon(api, device, this.log));
-        return { name: device.name, icon, alarms: alarmCaps(device) };
-      },
+      create: async device => ({ alarms: alarmCaps(device) }),
       listen: (t, device) => {
         const instances = t.alarms.map(({ capabilityId }) => device.makeCapabilityInstance(capabilityId, (value: unknown) => {
           const now = Date.now();
@@ -80,12 +75,9 @@ export default class SensorAlarmService {
         this.debug(`Tracking alarms of ${device.name} (${t.key}): ${t.alarms.map(a => `${a.capabilityId}=${a.value}`).join(', ') || 'none'}`);
         return instances;
       },
-      refresh: async (t, device, api, tm) => {
-        t.name = device.name;
-        t.icon = await tm.time('icons', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
-        t.alarms = alarmCaps(device);
-      },
+      refresh: (t, device) => { t.alarms = alarmCaps(device); },
       label: t => t.name,
+      iconLog: log,
     });
   }
 

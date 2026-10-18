@@ -8,6 +8,7 @@ import { limitInsights, readFirstLog } from '../lib/insightsLog.js';
 import { lastUpdatedMs } from '../lib/appApi.js';
 import { KeyError } from '../lib/PersonalApiKey.js';
 import { sharedCache } from '../lib/sharedCache.js';
+import { DebouncedSetting, isReservedKey } from '../lib/storedSetting.js';
 import Timings from '../lib/Timings.js';
 import { idList, keyResult, logged, logPerf } from '../lib/widgetApi.js';
 
@@ -233,6 +234,43 @@ describe('capabilities', () => {
     const device = { capabilitiesObj: { dim: { value: 0.4 }, onoff: { value: null, setable: false } } };
     expect(presentCaps(device, ['onoff', 'light_hue', 'dim'])).toEqual(['onoff', 'dim']);
     expect(readCaps(device, ['onoff', 'dim'])).toEqual({ onoff: { value: null, setable: false }, dim: { value: 0.4, setable: true } });
+  });
+});
+
+describe('DebouncedSetting', () => {
+  it('writes a burst of changes once, and a pending one at once on flush', () => {
+    const homey = fakeHomey(fakeApi({}));
+    let value = 1;
+    const saved = new DebouncedSetting({ homey, setting: 'x', delay: 2000, value: () => value, log: () => {}, what: 'x' });
+    saved.schedule();
+    value = 2;
+    saved.schedule();
+    vi.advanceTimersByTime(1999);
+    expect(homey.settings.set).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(homey.settings.set.mock.calls).toEqual([['x', 2]]);
+    saved.flush(); // nothing pending
+    value = 3;
+    saved.schedule();
+    saved.flush();
+    expect(homey.settings.set.mock.calls).toEqual([['x', 2], ['x', 3]]);
+    vi.advanceTimersByTime(5000);
+    expect(homey.settings.set).toHaveBeenCalledTimes(2);
+  });
+
+  it('logs a failed write', () => {
+    const homey = fakeHomey(fakeApi({}));
+    homey.settings.set.mockImplementation(() => { throw new Error('Too large'); });
+    const log = vi.fn();
+    const saved = new DebouncedSetting({ homey, setting: 'x', delay: 10, value: () => 1, log, what: 'the things' });
+    saved.schedule();
+    vi.advanceTimersByTime(10);
+    expect(log).toHaveBeenCalledWith('Could not save the things:', expect.any(Error));
+  });
+
+  it('refuses the keys that reach Object.prototype', () => {
+    expect(['__proto__', 'constructor', 'prototype'].map(isReservedKey)).toEqual([true, true, true]);
+    expect(isReservedKey('kitchen')).toBe(false);
   });
 });
 

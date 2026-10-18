@@ -7,18 +7,11 @@ window.mountWeatherWidget = function (Homey, { root, frame }) {
   // The app only refetches from MET when its forecast expires (~30 min); this picks that up.
   const REFRESH_MS = 5 * 60e3;
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `?perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  perf = loadMarks(performance.now());
   const settings = Homey.getSettings() || {};
-  let readySent = false;
 
   const widget = window.createWeatherWidget(root, {
     t: (key, tokens) => Homey.__(key, tokens),
@@ -28,26 +21,17 @@ window.mountWeatherWidget = function (Homey, { root, frame }) {
     theme: settings.theme,
     frame: frame,
     // The widget reports its own height; Homey needs the body's, which adds the widget padding.
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   function ready() {
-    if (readySent) return;
-    readySent = true;
-    Homey.ready({ height: bodyHeight() });
+    return link.ready();
   }
 
   let loaded = false;
   async function load() {
     try {
-      widget.setForecast(await Homey.api('GET', `/forecast${perfParam()}`));
+      widget.setForecast(await Homey.api('GET', `/forecast${link.perfParam('?')}`));
       loaded = true;
     } catch (err) {
       console.error(err);

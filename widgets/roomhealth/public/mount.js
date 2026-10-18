@@ -6,19 +6,12 @@
 window.mountRoomHealthWidget = function (Homey, { root, frame }) {
   const REFRESH_MS = 5 * 60e3; // keeps the app's device subscriptions alive and resyncs state
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks, wireTileNames } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame, getDeviceIds, wireTileNames } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
   let deviceIds = [];
-  let readySent = false;
   let loaded = false;
 
   const tileNames = wireTileNames(Homey, names => widget.setNames(names));
@@ -31,26 +24,12 @@ window.mountRoomHealthWidget = function (Homey, { root, frame }) {
     renameTiles: settings.renameTiles === true,
     onRename: (key, name) => tileNames.rename(key, name),
     ...ranges,
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   // Shown once the text font has loaded (at most 1 s), so the names don't pop in after the rings.
-  let readyStarted = false;
-  async function ready() {
-    if (readyStarted) return;
-    readyStarted = true;
-    if (document.fonts && document.fonts.ready) {
-      await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1000))]);
-    }
-    readySent = true;
-    Homey.ready({ height: bodyHeight() });
+  function ready() {
+    return link.ready({ fonts: true });
   }
 
   async function load() {
@@ -60,7 +39,7 @@ window.mountRoomHealthWidget = function (Homey, { root, frame }) {
       return;
     }
     try {
-      const state = await tileNames.state(`/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${perfParam()}`);
+      const state = await tileNames.state(`/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${link.perfParam()}`);
       widget.setState(state);
       loaded = true;
     } catch (err) {
@@ -75,11 +54,9 @@ window.mountRoomHealthWidget = function (Homey, { root, frame }) {
     if (data && deviceIds.includes(data.deviceId)) widget.pushChange(data);
   });
 
-  Promise.resolve(typeof Homey.getDeviceIds === 'function' ? Homey.getDeviceIds() : [])
-    .then((ids) => { deviceIds = Array.isArray(ids) ? ids : []; })
-    .catch(() => { deviceIds = []; })
+  getDeviceIds(Homey)
+    .then((ids) => { deviceIds = ids; })
     .then(() => {
-      perf = loadMarks(sdkAt);
       setInterval(load, REFRESH_MS);
       load();
     });

@@ -5,16 +5,10 @@
 window.mountDaysSinceWidget = function (Homey, { root, frame }) {
   const REFRESH_MS = 5 * 60e3; // resyncs in case a realtime event was missed
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
   const counters = window.daysSinceCountersFromSettings(settings);
   const keys = new Set(counters.map(c => c.key));
@@ -22,7 +16,6 @@ window.mountDaysSinceWidget = function (Homey, { root, frame }) {
   // a refresh sends only the names, so two widgets that disagree don't take turns firing the overdue trigger.
   const defs = encodeURIComponent(JSON.stringify(counters.map(c => ({ name: c.name, amber: c.amber, red: c.red }))));
   const names = encodeURIComponent(JSON.stringify(counters.map(c => ({ name: c.name }))));
-  let readySent = false;
   let loaded = false;
   let loadedAt = 0;
 
@@ -36,33 +29,19 @@ window.mountDaysSinceWidget = function (Homey, { root, frame }) {
     onHaptic: () => {
       try { if (Homey.hapticFeedback) Homey.hapticFeedback(); } catch (e) { /* not on every platform */ }
     },
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   // Shown once the text font has loaded (at most 1 s), so the text doesn't pop in.
-  let readyStarted = false;
-  async function ready() {
-    if (readyStarted) return;
-    readyStarted = true;
-    if (document.fonts && document.fonts.ready) {
-      await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1000))]);
-    }
-    readySent = true;
-    Homey.ready({ height: bodyHeight() });
+  function ready() {
+    return link.ready({ fonts: true });
   }
 
   async function load() {
     loadedAt = Date.now();
     if (!counters.length) { ready(); return; }
     try {
-      widget.setState(await Homey.api('GET', `/state?counters=${loaded ? names : defs}${perfParam()}`));
+      widget.setState(await Homey.api('GET', `/state?counters=${loaded ? names : defs}${link.perfParam()}`));
       loaded = true;
     } catch (err) {
       console.error(err);
@@ -83,7 +62,6 @@ window.mountDaysSinceWidget = function (Homey, { root, frame }) {
     if (loaded && Date.now() - loadedAt >= REFRESH_MS) load();
   });
 
-  perf = loadMarks(sdkAt);
   setInterval(load, REFRESH_MS);
   load();
 };

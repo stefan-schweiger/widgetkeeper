@@ -6,22 +6,10 @@
  */
 (function () {
   'use strict';
+  const { el } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
 
   const OPTIMISTIC_MS = 10e3; // how long a tapped button stays lit while waiting for the state to follow
   const MESSAGE_MS = 8000; // how long a transient message stays
-
-  function el(tag, attrs, parent) {
-    const node = document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
-  }
 
   /**
    * @param {HTMLElement} root

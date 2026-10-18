@@ -64,6 +64,26 @@ describe('listSlots', () => {
   });
 });
 
+describe('listSecondValues', () => {
+  it("lists the other values of Tile N's device, by title, with None first", async () => {
+    const { service } = setup();
+    expect(await service.listSecondValues('sensor:measure_temperature', '', 1)).toEqual([
+      { name: 'None', id: 'none' },
+      { name: 'Humidity', description: '%', id: 'sensor:measure_humidity' },
+    ]);
+    expect((await service.listSecondValues('ac:onoff', '', 2)).map(i => i.id)).toEqual(['none', 'ac:mode']);
+    expect((await service.listSecondValues('ac:onoff', 'mode', 2)).map(i => i.id)).toEqual(['ac:mode']);
+  });
+
+  it('is only None, saying to pick Tile N first, without a device in it', async () => {
+    const { service, homey } = setup();
+    homey.__ = (key: string, tokens?: any) => (key === 'values.none' ? 'None' : `${key} ${tokens?.n}`);
+    for (const slot of [undefined, 'none', 'gone:onoff']) {
+      expect(await service.listSecondValues(slot, '', 3)).toEqual([{ name: 'None', description: 'values.pickTileFirst 3', id: 'none' }]);
+    }
+  });
+});
+
 describe('getState', () => {
   it('returns the slots in order, with missing ones marked', async () => {
     const { service } = setup();
@@ -80,6 +100,28 @@ describe('getState', () => {
       },
       { deviceId: 'sensor', capabilityId: 'gone', missing: true },
     ]);
+  });
+
+  it('adds each slot its second value, tracked and kept live like a slot', async () => {
+    const { service, devices } = setup();
+    const state = await service.getState(['sensor:measure_temperature', 'ac:onoff', 'sensor:measure_humidity'], ['measure_humidity', '', 'measure_humidity']);
+    expect(state[0]).toMatchObject({
+      capabilityId: 'measure_temperature', value: 21.5,
+      second: { capabilityId: 'measure_humidity', value: 48, capability: { title: 'Humidity', units: '%' } },
+    });
+    expect(state[1]).not.toHaveProperty('second');
+    expect(state[2]).not.toHaveProperty('second'); // its own capability
+    devices[0].report('measure_humidity', 52);
+    const [s] = await service.getState(['sensor:measure_temperature'], ['measure_humidity']);
+    expect(s).toMatchObject({ second: { value: 52 } });
+    expect(devices[0].listenerCount('measure_humidity')).toBe(1);
+  });
+
+  it('leaves out a second value that is gone, keeping the first', async () => {
+    const { service } = setup();
+    const [s] = await service.getState(['sensor:measure_temperature'], ['gone']);
+    expect(s).toMatchObject({ value: 21.5 });
+    expect(s).not.toHaveProperty('second');
   });
 
   it('pushes changes over realtime and serves the latest value', async () => {

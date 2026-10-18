@@ -362,6 +362,44 @@ describe('meter', () => {
     expect(device.listenerCount('measure_power')).toBe(1); // tracked again on request
     await service.stop();
   });
+
+  it('re-reads a tracked meter: a deleted one is a meter error, not a frozen line', async () => {
+    const device = meter();
+    const devices = [device];
+    const { service } = setup({ devices });
+    expect((await service.getSnapshot('m1')).meterError).toBeNull();
+    devices.length = 0;
+    const snap = await service.getSnapshot('m1');
+    expect(snap.meterError).toBe('No device m1');
+    expect(snap.live).toEqual([]);
+    expect(device.listenerCount('measure_power')).toBe(0);
+  });
+
+  it('keeps a tracked meter when a re-read only failed to answer in time', async () => {
+    const device = meter();
+    const { service, api } = setup({ devices: [device] });
+    await service.getSnapshot('m1');
+    api.devices.getDevice.mockRejectedValueOnce(Object.assign(new Error('Too many requests.'), { statusCode: 429 }));
+    const snap = await service.getSnapshot('m1');
+    expect(snap.meterError).toBeNull();
+    expect(snap.live.length).toBeGreaterThan(0);
+    expect(device.listenerCount('measure_power')).toBe(1);
+  });
+
+  it('subscribes to nothing when stopped while a meter is being tracked', async () => {
+    let release!: () => void;
+    const held = new Promise<void>(r => { release = r; });
+    const device = meter();
+    const { service, api } = setup({ devices: [device] });
+    api.insights.getLogEntries.mockImplementation(async () => { await held; return { values: [] }; });
+    service.start();
+    const snap = service.getSnapshot('m1');
+    await vi.advanceTimersByTimeAsync(0);
+    await service.stop();
+    release();
+    expect((await snap).meterError).toMatch(/Stopped before m1 was tracked/);
+    expect(device.listenerCount('measure_power')).toBe(0);
+  });
 });
 
 describe('usage', () => {

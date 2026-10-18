@@ -3,7 +3,6 @@ import { getAppApi } from './appApi.js';
 import { listDevicesWhere, matches, type AutocompleteItem } from './autocomplete.js';
 import { capabilityValues, describeCapability } from './capabilities.js';
 import DeviceTracker, { type TrackedEntry } from './DeviceTracker.js';
-import { fetchDeviceIcon } from './deviceIcon.js';
 import Timings from './Timings.js';
 
 const CONFIRM_TIMEOUT = 4000; // wait for a value to be reported before sending the next
@@ -31,7 +30,6 @@ export type CapValue = { capabilityId: string, value: unknown };
 type PresetOption = { name: string, capabilityId?: string, value?: unknown };
 
 type Tracked = TrackedEntry & {
-  name: string,
   icon: string | null,
   values: Record<string, unknown>,
   caps: Record<string, CapInfo>,
@@ -86,9 +84,9 @@ export default class ThermostatService {
       debug,
       what: 'Thermostat capabilities',
       signature: device => (isThermostat(device) ? relevantCaps(device).join() : 'not a thermostat'),
-      create: async (device, api, tm) => {
+      create: async (device) => {
         this.assertThermostat(device);
-        const t = { name: device.name, icon: await tm.time('icon', () => fetchDeviceIcon(api, device, this.log)), values: {}, caps: {} };
+        const t = { values: {}, caps: {} };
         readState(t as Tracked, device);
         return t;
       },
@@ -101,12 +99,9 @@ export default class ThermostatService {
           this.homey.api.realtime(STATE_EVENT, { deviceId: t.key, capabilityId: id, value });
         }));
       },
-      refresh: async (t, device, api, tm) => {
-        t.name = device.name;
-        t.icon = await tm.time('icon', () => fetchDeviceIcon(api, device, this.log)); // cached per URL
-        readState(t, device);
-      },
+      refresh: (t, device) => readState(t, device),
       label: t => t.name,
+      iconLog: log,
       readError: err => new MissingError(err),
     });
   }

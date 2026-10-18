@@ -195,6 +195,9 @@
     return low;
   }
 
+  /** Why a write through the personal API key failed (`KeyProblem` in lib/PersonalApiKey.ts): each has its own message. */
+  const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
+
   /** Units written right after the number: `21°C`, `45%`. */
   const TIGHT_UNITS = /^(°|%)/;
 
@@ -231,11 +234,56 @@
     return v ? v.title : String(value);
   }
 
-  /** A mount's load marks for the app's diagnostics log (sent with its first request only, as `perf=`). */
+  /** A frame's load marks for the app's diagnostics log (`wireFrame()`'s `perf=`): start, HTML, SDK ready, request. */
   function loadMarks(sdkAt) {
     const nav = /** @type {PerformanceNavigationTiming | null} */ (performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null);
     return [Math.round(performance.timeOrigin), nav ? Math.round(nav.responseEnd) : -1,
       Math.round(sdkAt), Math.round(performance.now())].join(',');
+  }
+
+  /**
+   * A mount's link to Homey's frame (`frame`: the body, or a Smart Stack slide):
+   * - `ready(opts)` tells Homey the widget is ready, once (later calls do nothing). `fonts: true` waits for the text
+   *   font first, so text doesn't pop in after the icons, with `waitFor()`'s promises too, at most `maxMs`; `before()`
+   *   runs just before.
+   * - `setHeight()` passes the frame's height on, once ready (the widget's `onHeight`); `height()` is that height.
+   * - `perfParam(sep)` is the load marks for the app's diagnostics log, `&perf=…` (`?perf=…` with `'?'`), on the first
+   *   request only.
+   */
+  function wireFrame(Homey, frame) {
+    const sdkAt = performance.now();
+    let marksSent = false;
+    let readyStarted = false;
+    let readySent = false;
+    const height = () => Math.ceil(frame.getBoundingClientRect().height);
+    return {
+      height,
+      setHeight() {
+        if (readySent) Homey.setHeight(height());
+      },
+      async ready({ fonts = false, waitFor = null, maxMs = 1000, before = null } = {}) {
+        if (readyStarted) return;
+        readyStarted = true;
+        /** @type {Promise<unknown>[]} */
+        const waits = waitFor ? waitFor() : [];
+        if (fonts && document.fonts && document.fonts.ready) waits.unshift(document.fonts.ready);
+        if (waits.length) await Promise.race([Promise.all(waits), new Promise(r => setTimeout(r, maxMs))]);
+        if (before) before();
+        readySent = true;
+        Homey.ready({ height: height() });
+      },
+      perfParam(sep = '&') {
+        if (marksSent) return '';
+        marksSent = true;
+        return `${sep}perf=${loadMarks(sdkAt)}`;
+      },
+    };
+  }
+
+  /** The widget's `devices` setting (`Homey.getDeviceIds()`), always a list: empty without one or on a failure. */
+  function getDeviceIds(Homey) {
+    return Promise.resolve(typeof Homey.getDeviceIds === 'function' ? Homey.getDeviceIds() : [])
+      .then(ids => (Array.isArray(ids) ? ids : []), () => []);
   }
 
   /**
@@ -293,5 +341,5 @@
     return scheme;
   }
 
-  window.WidgetkeeperKit = { icons: ICONS, TIGHT_UNITS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, formatSince, baseTitle, lowestSlot, loadMarks, wireTileNames, colorStyle, applyColors };
+  window.WidgetkeeperKit = { icons: ICONS, TIGHT_UNITS, KEY_PROBLEMS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, formatSince, baseTitle, lowestSlot, wireFrame, getDeviceIds, wireTileNames, colorStyle, applyColors };
 })();

@@ -1,5 +1,6 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
+import { fetchDeviceIcon } from './deviceIcon.js';
 import { sharedCache } from './sharedCache.js';
 import type Timings from './Timings.js';
 
@@ -14,6 +15,10 @@ const ZONES_MAX_AGE = MINUTE;
 export type TrackedEntry = {
   /** The tracker's key: the device id, or e.g. `<deviceId>:<capabilityId>`. */
   key: string,
+  /** The device's name, from every read. */
+  name: string,
+  /** With `iconLog`: the device's icon (`fetchDeviceIcon()`), from every read. */
+  icon?: string | null,
   /** The capability instances, destroyed with the entry. */
   instances: any[],
   lastRequested: number,
@@ -34,8 +39,10 @@ export type DeviceTrackerOptions<T extends TrackedEntry> = {
   create: (device: any, api: any, tm: Timings, key: string) => Promise<Omit<T, keyof TrackedEntry>>,
   /** The capability instances that keep the entry live; also the place to log what's tracked. */
   listen: (entry: T, device: any) => any[],
-  /** Updates the entry from a fresh read of a tracked device. Throwing disposes it. */
-  refresh: (entry: T, device: any, api: any, tm: Timings) => Promise<void> | void,
+  /** Updates the entry from a fresh read of a tracked device (`name` and `icon` are already). Throwing disposes it. */
+  refresh?: (entry: T, device: any, api: any, tm: Timings) => Promise<void> | void,
+  /** Keeps the device's icon in `icon`, fetched on every read (cached per URL); a failed fetch is logged here. */
+  iconLog?: (...args: any[]) => void,
   /** How the entry reads in `Stopped tracking …`. */
   label: (entry: T) => string,
   /** Anything else to stop with the entry (timers …). */
@@ -166,7 +173,9 @@ export default class DeviceTracker<T extends TrackedEntry> {
       return this.ensureTracked(key, tm);
     }
     try {
-      await this.opts.refresh(t, device, api, tm);
+      t.name = device.name;
+      if (this.opts.iconLog) t.icon = await this.icon(api, device, tm);
+      await this.opts.refresh?.(t, device, api, tm);
     } catch (err) {
       this.dispose(t);
       throw err;
@@ -188,12 +197,21 @@ export default class DeviceTracker<T extends TrackedEntry> {
   private async track(key: string, tm: Timings): Promise<T> {
     const api = await tm.time('api', () => getAppApi(this.opts.homey));
     const device: any = await tm.time('getDevice', () => api.devices.getDevice({ id: this.deviceId(key) }));
-    const own = await this.opts.create(device, api, tm, key);
+    const [own, icon] = await Promise.all([
+      this.opts.create(device, api, tm, key),
+      this.opts.iconLog ? this.icon(api, device, tm) : undefined,
+    ]);
     if (this.stopped) throw new Error(`Stopped before ${key} was tracked`); // nothing would ever destroy its instances
-    const t = { ...own, key, instances: [], lastRequested: Date.now(), signature: this.opts.signature(device, key) } as unknown as T;
+    const t = {
+      ...own, key, name: device.name, ...(this.opts.iconLog ? { icon } : {}), instances: [], lastRequested: Date.now(), signature: this.opts.signature(device, key),
+    } as unknown as T;
     t.instances = this.opts.listen(t, device);
     this.tracked.set(key, t);
     return t;
+  }
+
+  private icon(api: any, device: any, tm: Timings): Promise<string | null> {
+    return tm.time('icon', () => fetchDeviceIcon(api, device, this.opts.iconLog!));
   }
 
   private deviceId(key: string) {

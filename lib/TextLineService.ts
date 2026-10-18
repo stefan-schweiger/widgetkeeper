@@ -1,5 +1,6 @@
 import type Homey from 'homey';
 import { matches, type AutocompleteItem } from './autocomplete.js';
+import { isReservedKey } from './storedSetting.js';
 import { TILE_COLORS, type TileColor } from './ValueService.js';
 
 export const TEXTLINE_STATE_EVENT = 'textline:state';
@@ -20,9 +21,6 @@ export type TextLine = { name: string, text: string, color: TileColor | null, up
 /** What `/state` and the realtime event carry for a board. */
 export type TextLineEntry = TextLine & { key: string };
 
-/** Keys that would reach `Object.prototype` in the setting's plain object. */
-const RESERVED = new Set(['__proto__', 'constructor', 'prototype']);
-
 /**
  * A note's key: its name trimmed and lower-cased, so `Kitchen` and ` kitchen` are one note. Empty is the default note;
  * a reserved name (`__proto__` …) has none, `''`.
@@ -30,7 +28,7 @@ const RESERVED = new Set(['__proto__', 'constructor', 'prototype']);
 export function boardKey(name: unknown): string {
   const n = typeof name === 'string' ? name.trim() : '';
   const key = (n || DEFAULT_BOARD).toLowerCase().slice(0, MAX_NAME);
-  return RESERVED.has(key) ? '' : key;
+  return isReservedKey(key) ? '' : key;
 }
 
 /**

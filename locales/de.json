@@ -185,7 +185,8 @@
     "on": "Ein",
     "off": "Aus",
     "renameFailed": "Der Name konnte nicht gespeichert werden.",
-    "none": "Keine"
+    "none": "Keine",
+    "pickTileFirst": "Wähle zuerst Kachel __n__."
   },
   "sparklines": {
     "selectSlots": "Wähle Gerätewerte in den Widget-Einstellungen.",

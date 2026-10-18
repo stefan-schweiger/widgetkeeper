@@ -27,17 +27,10 @@
     return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
   }
 
+  /** The kit's el() (../spacer/kit.js, loaded first), with `svg:<tag>` made in the SVG namespace. */
   function el(tag, attrs, parent) {
-    const node = tag.startsWith('svg:') ? document.createElementNS(SVG_NS, tag.slice(4)) : document.createElement(tag);
-    if (attrs) {
-      for (const [k, v] of Object.entries(attrs)) {
-        if (v == null) continue;
-        if (k === 'text') node.textContent = v;
-        else node.setAttribute(k, v);
-      }
-    }
-    if (parent) parent.appendChild(node);
-    return node;
+    const kitEl = window.WidgetkeeperKit.el;
+    return tag.startsWith('svg:') ? kitEl(tag.slice(4), attrs, parent, SVG_NS) : kitEl(tag, attrs, parent);
   }
 
   function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }

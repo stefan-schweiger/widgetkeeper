@@ -1,5 +1,5 @@
 import type Homey from 'homey';
-import { listCapabilitySlots, type AutocompleteItem } from './autocomplete.js';
+import { devicesAndZones, listCapabilitySlots, matches, withNone, type AutocompleteItem } from './autocomplete.js';
 import { describeCapability, type CapabilityDescription } from './capabilities.js';
 import DeviceTracker, { type TrackedEntry } from './DeviceTracker.js';
 import { fetchSvgIcon } from './deviceIcon.js';
@@ -20,14 +20,16 @@ export type ValueCapability = CapabilityDescription & {
   icon: string | null,
 };
 
+/** A tile's second value: another capability of the same device, shown small beside the name. */
+export type ValueSecond = { capabilityId: string, capability: ValueCapability, value: unknown };
+
 export type ValueSlot =
-  | { deviceId: string, capabilityId: string, name: string, capability: ValueCapability, value: unknown, color?: TileColor }
+  | { deviceId: string, capabilityId: string, name: string, capability: ValueCapability, value: unknown, color?: TileColor, second?: ValueSecond }
   | { deviceId: string, capabilityId: string, missing: true };
 
 type Tracked = TrackedEntry & {
   deviceId: string,
   capabilityId: string,
-  name: string,
   capability: ValueCapability,
   value: unknown,
 };
@@ -78,7 +80,6 @@ export default class ValueService {
         return {
           deviceId,
           capabilityId,
-          name: device.name,
           capability: { ...describeCapability(cap, capabilityId), icon },
           value: cap.value ?? null,
         };
@@ -94,7 +95,6 @@ export default class ValueService {
       refresh: (t, device) => {
         const cap = device.capabilitiesObj?.[t.capabilityId];
         if (!cap) throw new Error(`${device.name} has no capability ${t.capabilityId}`);
-        t.name = device.name;
         t.capability = { ...describeCapability(cap, t.capabilityId), icon: t.capability.icon };
         t.value = cap.value ?? null;
       },
@@ -114,6 +114,25 @@ export default class ValueService {
   /** Every device × capability pair, as `Device · Capability`, with `None` first. */
   listSlots(query: string): Promise<AutocompleteItem[]> {
     return listCapabilitySlots(this.homey, query, valueCaps);
+  }
+
+  /**
+   * A tile's second value (`secondN`): the other values of the device picked in Tile N (`slot`, its id), by
+   * capability title, with `None` first. Without a device in Tile N there's only `None`, saying to pick it first.
+   */
+  async listSecondValues(slot: string | undefined, query: string, tile: number): Promise<AutocompleteItem[]> {
+    const none = this.homey.__('values.none') || 'None';
+    const s = parseSlot(slot || '');
+    const [devices] = s ? await devicesAndZones(this.homey) : [[]];
+    const device = s && devices.find(d => d.id === s.deviceId);
+    if (!s || !device) return [{ name: none, description: this.homey.__('values.pickTileFirst', { n: tile }), id: 'none' }];
+    const items: AutocompleteItem[] = [];
+    for (const id of valueCaps(device)) {
+      if (id === s.capabilityId) continue;
+      const c = describeCapability(device.capabilitiesObj[id], id);
+      if (matches(query, c.title, id)) items.push({ name: c.title, description: c.units || undefined, id: `${device.id}:${id}` });
+    }
+    return withNone(none, query, items);
   }
   // ---------------------------------------------------------------- tile colours (Flow)
 
@@ -148,17 +167,24 @@ export default class ValueService {
 
   // ---------------------------------------------------------------- live state
 
-  /** One entry per slot, in the order asked for. A deleted device or capability doesn't fail the others. */
-  async getState(slots: string[]): Promise<ValueSlot[]> {
+  /**
+   * One entry per slot, in the order asked for. A deleted device or capability doesn't fail the others. `seconds[i]`
+   * is slot i's second value, a capability id of the same device; one that can't be read is left out of the entry.
+   */
+  async getState(slots: string[], seconds: (string | undefined)[] = []): Promise<ValueSlot[]> {
     const tm = new Timings();
     const colors = this.colors();
-    const out = await Promise.all(slots.map(async (slot): Promise<ValueSlot | null> => {
+    const out = await Promise.all(slots.map(async (slot, i): Promise<ValueSlot | null> => {
       const s = parseSlot(slot);
       if (!s) return null;
       try {
         const t = await this.tracker.current(`${s.deviceId}:${s.capabilityId}`, tm);
         const color = colors[t.key];
-        return { deviceId: t.deviceId, capabilityId: t.capabilityId, name: t.name, capability: { ...t.capability }, value: t.value, ...(color ? { color } : {}) };
+        const second = await this.second(s.deviceId, seconds[i], s.capabilityId, tm);
+        return {
+          deviceId: t.deviceId, capabilityId: t.capabilityId, name: t.name, capability: { ...t.capability }, value: t.value,
+          ...(color ? { color } : {}), ...(second ? { second } : {}),
+        };
       } catch (err) {
         this.log(`Value ${slot} unavailable:`, err);
         return { ...s, missing: true };
@@ -166,6 +192,18 @@ export default class ValueService {
     }));
     this.debug(`Values state for ${slots.length} slots: ${tm.summary()}`);
     return out.filter((x): x is ValueSlot => x !== null);
+  }
+
+  /** A slot's second value, tracked like a slot of its own, or null for none, its own capability or one that can't be read. */
+  private async second(deviceId: string, capabilityId: string | undefined, first: string, tm: Timings): Promise<ValueSecond | null> {
+    if (!capabilityId || capabilityId === first) return null;
+    try {
+      const t = await this.tracker.current(`${deviceId}:${capabilityId}`, tm);
+      return { capabilityId: t.capabilityId, capability: { ...t.capability }, value: t.value };
+    } catch (err) {
+      this.log(`Second value ${deviceId}:${capabilityId} unavailable:`, err);
+      return null;
+    }
   }
 
 }

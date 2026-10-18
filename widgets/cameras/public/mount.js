@@ -6,20 +6,13 @@
 window.mountCamerasWidget = function (Homey, { root, frame }) {
   const REFRESH_MS = 5 * 60e3; // re-reads the devices (names, image and video ids)
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks, wireTileNames } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame, getDeviceIds, wireTileNames } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
   const snapshotMs = (Number(settings.refresh) || 10) * 1000;
   let deviceIds = [];
-  let readySent = false;
   let loaded = false;
   let snapshotTimer = null;
   let visible = true; // false while the Smart Stack shows another page
@@ -34,25 +27,11 @@ window.mountCamerasWidget = function (Homey, { root, frame }) {
     layout: settings.layout,
     api:(method, path, body) => Homey.api(method, path, body),
     report: (text, warn) => { Homey.api('POST', '/report', { text, warn: !!warn }).catch(() => {}); },
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
-  let readyStarted = false;
-  async function ready() {
-    if (readyStarted) return;
-    readyStarted = true;
-    if (document.fonts && document.fonts.ready) {
-      await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1000))]);
-    }
-    readySent = true;
-    Homey.ready({ height: bodyHeight() });
+  function ready() {
+    return link.ready({ fonts: true });
   }
 
   // Snapshots refresh on their own timer, and not while the dashboard is in the background (or the stack's
@@ -78,7 +57,7 @@ window.mountCamerasWidget = function (Homey, { root, frame }) {
       return;
     }
     try {
-      const state = await tileNames.state(`/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${perfParam()}`);
+      const state = await tileNames.state(`/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${link.perfParam()}`);
       widget.setState(state);
       loaded = true;
       startSnapshots();
@@ -90,11 +69,9 @@ window.mountCamerasWidget = function (Homey, { root, frame }) {
     ready();
   }
 
-  Promise.resolve(typeof Homey.getDeviceIds === 'function' ? Homey.getDeviceIds() : [])
-    .then((ids) => { deviceIds = Array.isArray(ids) ? ids : []; })
-    .catch(() => { deviceIds = []; })
+  getDeviceIds(Homey)
+    .then((ids) => { deviceIds = ids; })
     .then(() => {
-      perf = loadMarks(sdkAt);
       setInterval(load, REFRESH_MS);
       load();
     });

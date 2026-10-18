@@ -185,7 +185,8 @@
     "on": "Aan",
     "off": "Uit",
     "renameFailed": "Kon de naam niet opslaan.",
-    "none": "Geen"
+    "none": "Geen",
+    "pickTileFirst": "Kies eerst Tegel __n__."
   },
   "sparklines": {
     "selectSlots": "Kies apparaatwaarden in de widgetinstellingen.",

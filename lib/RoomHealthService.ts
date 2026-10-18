@@ -15,7 +15,6 @@ export type RoomHealthDevice =
   | { id: string, missing: true };
 
 type Tracked = TrackedEntry & {
-  name: string,
   zone: string | null,
   caps: HealthCap[],
   values: Partial<Record<Measure, number | null>>,
@@ -89,7 +88,7 @@ export default class RoomHealthService {
       // again by itself once it has some (its signature changes).
       create: async (device) => {
         const caps = healthCaps(device);
-        return { name: device.name, zone: device.zone ?? null, caps, values: readValues(device, caps) };
+        return { zone: device.zone ?? null, caps, values: readValues(device, caps) };
       },
       listen: (t, device) => {
         const instances = t.caps.map(({ measure, capabilityId, scale }) => device.makeCapabilityInstance(capabilityId, (raw: unknown) => {
@@ -101,7 +100,6 @@ export default class RoomHealthService {
         return instances;
       },
       refresh: (t, device) => {
-        t.name = device.name;
         t.zone = device.zone ?? null;
         t.caps = healthCaps(device);
         t.values = readValues(device, t.caps);

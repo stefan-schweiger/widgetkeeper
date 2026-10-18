@@ -53,6 +53,16 @@ describe('save', () => {
     expect(key.has()).toBe(false);
   });
 
+  it("doesn't call a key invalid when Homey is only busy", async () => {
+    const { key } = setup();
+    const busy = Object.assign(new Error('Too many requests.'), { statusCode: 429 });
+    keyApis.set('k', { sessions: { getSessionMe: vi.fn(async () => { throw busy; }) } });
+    await expect(key.save('k')).rejects.toBe(busy);
+    keyApis.set('k', busy);
+    await expect(key.save('k')).rejects.toBe(busy);
+    expect(key.has()).toBe(false);
+  });
+
   it('switches to a new key at once', async () => {
     const { homey, key } = setup();
     const logic = homey.fakeApi.logic;
@@ -78,6 +88,16 @@ describe('run', () => {
     await expect(key.run(async () => { throw Object.assign(new Error('Invalid Session'), { statusCode: 401 }); })).rejects.toMatchObject({ reason: 'keyInvalid' });
     homey.settings.set(API_KEY_SETTING, 'unknown');
     await expect(key.run(async () => 1)).rejects.toMatchObject({ reason: 'keyInvalid' });
+  });
+
+  it("passes a busy Homey on as it is, not as an invalid key, and tries again next time", async () => {
+    const { homey, key } = setup();
+    const busy = Object.assign(new Error('Timed out'), { statusCode: 408 });
+    keyApis.set('k', busy);
+    homey.settings.set(API_KEY_SETTING, 'k');
+    await expect(key.run(async () => 1)).rejects.toBe(busy);
+    keyApis.set('k', keyApi(['homey.logic']));
+    expect(await key.run(async () => 1)).toBe(1);
   });
 
   it('passes other errors on unchanged', async () => {

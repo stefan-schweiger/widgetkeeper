@@ -293,6 +293,12 @@ const BUILD = {
       pick(items, cap('target_temperature'))[0],
     ];
     const missing = { id: `${MISSING}:measure_temperature`, name: 'Deleted device · Temperature' };
+    // Second values: each tile's first other value of its device (humidity, battery …), from the widget's own autocomplete.
+    const paired = [...temps.slice(0, 3), batteries[0], ...mixed.slice(0, 2)];
+    const seconds = await Promise.all(paired.map(async item => (item
+      ? (await autocomplete('values', 'second1', { slot1: item.id })).find(i => i.id !== 'none') ?? null
+      : null)));
+    const otherDevice = batteries.find(b => b && temps[0] && b.id.split(':')[0] !== temps[0].id.split(':')[0]);
     return { cols: 2, widgets: [
       w('values', 'Temperatures · 3 columns', slots('slot', temps)),
       w('values', 'Mixed types · 2 columns', { columns: '2', ...slots('slot', mixed) }),
@@ -301,6 +307,11 @@ const BUILD = {
       w('values', 'Batteries · Deep fill (red < 30, yellow < 50)', { colorStyle: 'deep', percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
       w('values', 'Mixed types · pill', { tileStyle: 'pill', ...slots('slot', mixed) }),
       w('values', 'Batteries · pill · Deep fill · 2 columns', { tileStyle: 'pill', columns: '2', colorStyle: 'deep', percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
+      w('values', 'Second values · 3 columns', { ...slots('slot', paired), ...slots('second', seconds) }),
+      w('values', 'Second values · pill · 2 columns', { tileStyle: 'pill', columns: '2', ...slots('slot', paired), ...slots('second', seconds) }),
+      w('values', 'Second values · Deep fill', { colorStyle: 'deep', percentFill: true, ...slots('slot', paired), ...slots('second', seconds) }),
+      // A second value left from another device (Tile 1 changed since): the tile shows only its value.
+      w('values', 'Second value of another device: left out', { ...slots('slot', [temps[0]]), ...slots('second', [otherDevice]) }),
       w('values', 'Gaps and a deleted device', { ...slots('slot', [temps[0], null, missing, null, batteries[0]]) }),
       w('values', 'Nothing picked'),
       // The same value twice: the second tile's key is `#2`.

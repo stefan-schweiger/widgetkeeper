@@ -192,9 +192,9 @@ Your cameras as a grid of snapshots that refresh every few seconds (cameras with
 ## Device Values
 <img src="docs/screenshots/values.png" alt="Device Values on a Homey dashboard" width="358">
 
-Half-height tiles that each show one live device value. Percentages can fill their tile by level, and the Flow card **Set the tile colour of … to …** colours a tile, such as a fridge going red when it's too warm.
+Half-height tiles that each show one live device value, and if you like a second value of the same device small beside the name, such as a room's humidity next to its temperature. Percentages can fill their tile by level, and the Flow card **Set the tile colour of … to …** colours a tile, such as a fridge going red when it's too warm.
 
-**Settings:** up to six values, 3 or 2 per row, compact or pill tiles (pill tiles look like Sensor Alarms'), [colour style](#colour-style) (Deep fills percentage fills and the colours a Flow sets), percentage fill and its limits, [rename tiles](#tile-names).
+**Settings:** up to six values, each with an optional second value, 3 or 2 per row, compact or pill tiles (pill tiles look like Sensor Alarms'), [colour style](#colour-style) (Deep fills percentage fills and the colours a Flow sets), percentage fill and its limits, [rename tiles](#tile-names).
 
 ## Light Controls
 <img src="docs/clips/lights.webp" alt="Light Controls on a Homey dashboard: a light turned on, dimmed with the bar, and given a colour and a white" width="358">

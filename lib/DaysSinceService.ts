@@ -1,6 +1,7 @@
 import type Homey from 'homey';
 import { matches, withNone, type AutocompleteItem } from './autocomplete.js';
 import { localHour } from './heatmap.js';
+import { DebouncedSetting, isReservedKey } from './storedSetting.js';
 
 const SECOND = 1e3;
 const MINUTE = 60 * SECOND;
@@ -27,9 +28,6 @@ export const DAYS_SINCE_OVERDUE_CARD = 'dayssince_overdue';
 export const DAYS_SINCE_IS_OVERDUE_CARD = 'dayssince_is_overdue';
 /** The id of the Flow cards' "Any counter" item (it's recognised by `any`, the id only has to differ from a name). */
 const ANY_ID = 'dayssince:any';
-
-/** Keys an object can't hold safely. */
-const REFUSED = new Set(['__proto__', 'constructor', 'prototype']);
 
 export type Counter = {
   /** As a widget's setting (or a Flow) last spelled it. */
@@ -62,7 +60,7 @@ export function counterKey(name: unknown): string | null {
   const n = typeof name === 'string' ? name.trim() : '';
   if (!n) return null;
   const key = n.toLowerCase().slice(0, MAX_NAME);
-  return REFUSED.has(key) ? null : key;
+  return isReservedKey(key) ? null : key;
 }
 
 /** An interval in days: a positive number up to MAX_DAYS, else null (off). */
@@ -112,7 +110,7 @@ export default class DaysSinceService {
   /** The last widget reset of each counter, while it can be undone. */
   private undos = new Map<string, { at: number, previous: { resetAt: number | null, overdue: boolean }, until: number }>();
   private tickTimer: NodeJS.Timeout | null = null;
-  private saveTimer: NodeJS.Timeout | null = null;
+  private saved: DebouncedSetting;
 
   constructor(
     private homey: Homey.App['homey'],
@@ -120,7 +118,11 @@ export default class DaysSinceService {
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
     /** Fires the trigger card; app.ts passes the card's. */
     private onOverdue: (counter: OverdueCounter) => Promise<unknown> | void = () => {},
-  ) {}
+  ) {
+    this.saved = new DebouncedSetting({
+      homey, setting: DAYS_SINCE_SETTING, delay: SAVE_DELAY, value: () => Object.fromEntries(this.counters), log, what: 'the Days Since counters',
+    });
+  }
 
   /** Loads the saved counters; one that turned red while the app was stopped fires now. */
   start() {
@@ -138,11 +140,7 @@ export default class DaysSinceService {
   async stop() {
     if (this.tickTimer) this.homey.clearInterval(this.tickTimer);
     this.tickTimer = null;
-    if (this.saveTimer) {
-      this.homey.clearTimeout(this.saveTimer);
-      this.saveTimer = null;
-      this.save();
-    }
+    this.saved.flush();
   }
 
   /**
@@ -175,7 +173,7 @@ export default class DaysSinceService {
         this.changed(key, c);
       } else if (now - c.updatedAt > SEEN_SAVE) {
         c.updatedAt = now;
-        this.scheduleSave();
+        this.saved.schedule();
       }
       out.push(this.entry(key, c));
     }
@@ -331,7 +329,7 @@ export default class DaysSinceService {
     const overdue = isOverdueAt(c, now);
     if (overdue === c.overdue) return;
     c.overdue = overdue;
-    this.scheduleSave();
+    this.saved.schedule();
     if (!overdue) return;
     const counter: OverdueCounter = { key, name: c.name, days: calendarDays(c.resetAt!, now, this.homey.clock.getTimezone()) };
     this.debug(`Days Since: ${c.name} is overdue (${counter.days} days)`);
@@ -354,29 +352,13 @@ export default class DaysSinceService {
       this.counters.delete(key);
       this.undos.delete(key);
     }
-    this.scheduleSave();
+    this.saved.schedule();
   }
 
   /** Sends the counter to the widgets showing it and saves (debounced). */
   private changed(key: string, c: Counter) {
     this.homey.api.realtime(DAYS_SINCE_STATE_EVENT, this.entry(key, c));
-    this.scheduleSave();
-  }
-
-  private scheduleSave() {
-    if (this.saveTimer) return;
-    this.saveTimer = this.homey.setTimeout(() => {
-      this.saveTimer = null;
-      this.save();
-    }, SAVE_DELAY);
-  }
-
-  private save() {
-    try {
-      this.homey.settings.set(DAYS_SINCE_SETTING, Object.fromEntries(this.counters));
-    } catch (err) {
-      this.log('Could not save the Days Since counters:', err);
-    }
+    this.saved.schedule();
   }
 
 }

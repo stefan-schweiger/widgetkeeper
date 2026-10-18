@@ -185,7 +185,8 @@
     "on": "På",
     "off": "Av",
     "renameFailed": "Kunne ikke lagre navnet.",
-    "none": "Ingen"
+    "none": "Ingen",
+    "pickTileFirst": "Velg flis __n__ først."
   },
   "sparklines": {
     "selectSlots": "Velg enhetsverdier i widgetinnstillingene.",

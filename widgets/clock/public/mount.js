@@ -9,42 +9,21 @@ window.mountClockWidget = function (Homey, { root, frame }) {
   // The time needn't wait for the weather: shown with it, or without it this long in (the weather follows).
   const WEATHER_WAIT_MS = 1500;
 
-  // Load marks for the app's diagnostics log, sent with the first request only.
-  let perf = '';
-  const { loadMarks } = window.WidgetkeeperKit;
-  function perfParam() {
-    const p = perf ? `&perf=${perf}` : '';
-    perf = '';
-    return p;
-  }
+  const { wireFrame } = window.WidgetkeeperKit;
+  // Homey's frame: ready, the height, and the load marks sent with the first request.
+  const link = wireFrame(Homey, frame);
 
-  const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
   const showWeather = settings.showWeather !== false;
-  let readySent = false;
 
   const widget = window.createClockWidget(root, {
     showWeather,
-    onHeight: () => {
-      if (!readySent) return;
-      Homey.setHeight(bodyHeight());
-    },
+    onHeight: link.setHeight,
   });
 
-  function bodyHeight() {
-    return Math.ceil(frame.getBoundingClientRect().height);
-  }
-
   // Shown once the text font has loaded (at most 1 s), so the text doesn't pop in.
-  let readyStarted = false;
-  async function ready() {
-    if (readyStarted) return;
-    readyStarted = true;
-    if (document.fonts && document.fonts.ready) {
-      await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1000))]);
-    }
-    readySent = true;
-    Homey.ready({ height: bodyHeight() });
+  function ready() {
+    return link.ready({ fonts: true });
   }
 
   let loadedAt = 0;
@@ -52,7 +31,7 @@ window.mountClockWidget = function (Homey, { root, frame }) {
     if (!loadedAt) setTimeout(ready, WEATHER_WAIT_MS);
     loadedAt = Date.now();
     try {
-      widget.setState(await Homey.api('GET', `/clock?weather=${showWeather ? 1 : 0}${perfParam()}`));
+      widget.setState(await Homey.api('GET', `/clock?weather=${showWeather ? 1 : 0}${link.perfParam()}`));
     } catch (err) {
       // The clock runs on without the app: a failed read keeps the weather shown (none on the first).
       console.error(err);
@@ -67,7 +46,6 @@ window.mountClockWidget = function (Homey, { root, frame }) {
     if (Date.now() - loadedAt >= REFRESH_MS) load();
   });
 
-  perf = loadMarks(sdkAt);
   setInterval(load, REFRESH_MS);
   load();
 };

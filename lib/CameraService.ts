@@ -6,6 +6,8 @@ import Timings from './Timings.js';
 
 /** Several widgets (or a fast refresh) asking for the same snapshot within this share one fetch. */
 const IMAGE_REUSE = 2000;
+/** A camera no request has asked for in this long is forgotten (open widgets re-fetch every 5 min). */
+const IDLE_TIMEOUT = 10 * 60e3;
 
 export type CameraImage = DeviceImage;
 
@@ -73,6 +75,8 @@ export default class CameraService {
   private last = new Map<string, CameraDevice>();
   /** deviceId → image URL from the last state read, so a snapshot doesn't need a device read. */
   private imageUrls = new Map<string, string>();
+  /** When each camera was last asked for, so `last` and `imageUrls` don't keep cameras no widget shows any more. */
+  private requested = new Map<string, number>();
 
   constructor(
     private homey: Homey.App['homey'],
@@ -83,6 +87,8 @@ export default class CameraService {
   async stop() {
     this.images.clear();
     this.last.clear();
+    this.imageUrls.clear();
+    this.requested.clear();
   }
 
   /** One entry per device, in the order asked for. A deleted device doesn't fail the others. */
@@ -90,6 +96,7 @@ export default class CameraService {
     const tm = new Timings();
     const api = await tm.time('api', () => getAppApi(this.homey));
     const out = await Promise.all(deviceIds.map(async (id): Promise<CameraDevice> => {
+      this.requestedNow(id);
       try {
         const device: any = await tm.time('getDevice', () => readFresh(api.devices, id));
         const image = cameraImage(device);
@@ -122,6 +129,7 @@ export default class CameraService {
 
   /** The device's current snapshot, for a widget that can't load the image URL itself. */
   async getSnapshot(deviceId: string): Promise<Snapshot> {
+    this.requestedNow(deviceId);
     let url = this.imageUrls.get(deviceId);
     if (!url) {
       const api = await getAppApi(this.homey);
@@ -154,6 +162,18 @@ export default class CameraService {
   async keepAlive(videoId: string, streamId: string) {
     const api = await getAppApi(this.homey);
     await api.videos.videoKeepAlive({ id: videoId, streamId });
+  }
+
+  /** Marks `id` as asked for, and forgets the cameras nothing has asked for in IDLE_TIMEOUT. */
+  private requestedNow(id: string) {
+    const now = Date.now();
+    this.requested.set(id, now);
+    for (const [k, at] of this.requested) {
+      if (now - at <= IDLE_TIMEOUT) continue;
+      this.requested.delete(k);
+      this.last.delete(k);
+      this.imageUrls.delete(k);
+    }
   }
 
   private async fetchImage(url: string): Promise<Snapshot> {
