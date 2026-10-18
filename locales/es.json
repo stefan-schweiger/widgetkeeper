@@ -424,6 +424,12 @@
     "notStarted": "Sin empezar",
     "undo": "Deshacer",
     "resetLabel": "__name__: __time__. Toca para reiniciar.",
+    "left": "quedan __time__",
+    "over": "+__time__",
+    "shortDay": "__n__ d",
+    "shortWeek": "__n__ sem.",
+    "shortMonth": "__n__ mes.",
+    "shortYear": "__n__ a",
     "newCounter": "Contador nuevo",
     "anyCounter": "Cualquier contador"
   },

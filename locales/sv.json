@@ -424,6 +424,12 @@
     "notStarted": "Inte startad",
     "undo": "Ångra",
     "resetLabel": "__name__: __time__. Tryck för att nollställa.",
+    "left": "__time__ kvar",
+    "over": "+__time__",
+    "shortDay": "__n__ d",
+    "shortWeek": "__n__ v",
+    "shortMonth": "__n__ mån",
+    "shortYear": "__n__ år",
     "newCounter": "Ny räknare",
     "anyCounter": "Valfri räknare"
   },

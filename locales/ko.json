@@ -424,6 +424,12 @@
     "notStarted": "시작 안 함",
     "undo": "실행 취소",
     "resetLabel": "__name__: __time__. 탭하면 초기화됩니다.",
+    "left": "__time__ 남음",
+    "over": "+__time__",
+    "shortDay": "__n__일",
+    "shortWeek": "__n__주",
+    "shortMonth": "__n__개월",
+    "shortYear": "__n__년",
     "newCounter": "새 카운터",
     "anyCounter": "아무 카운터"
   },

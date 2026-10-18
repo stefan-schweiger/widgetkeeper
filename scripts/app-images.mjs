@@ -1,5 +1,5 @@
 // The App Store images: the widget previews (widgets/<id>/preview-<theme>.png) as a tilted collage of columns
-// on the blurred, darkened hero photo, laid out by dev/app-images.json. Used by render-app-images.mjs and
+// on a gradient in the brand colour, laid out by dev/app-images.json. Used by render-app-images.mjs and
 // render-previews.mjs (which re-renders them when it rendered a preview they use).
 import { existsSync, readFileSync } from 'node:fs';
 import sharp from 'sharp';
@@ -18,7 +18,7 @@ const CARD = 800;
 const SHADOW = 64;
 const CLEAR = { r: 0, g: 0, b: 0, alpha: 0 };
 
-/** The config, checked: an unknown widget, a missing preview or background, or a bad number throws. */
+/** The config, checked: an unknown widget, a missing preview, a bad colour or a bad number throws. */
 export function readConfig() {
   const config = JSON.parse(readFileSync(CONFIG, 'utf8'));
   const fail = msg => { throw new Error(`${CONFIG}: ${msg}`); };
@@ -36,8 +36,13 @@ export function readConfig() {
   for (const key of ['columnWidth', 'gap', 'stagger', 'tilt']) if (!Number.isFinite(config[key])) fail(`${key} must be a number`);
   if (config.columnWidth <= 0 || config.columnWidth > 1) fail('columnWidth must be above 0 and at most 1');
   const bg = config.background;
-  if (!bg || !existsSync(bg.image)) fail(`background.image ${bg?.image} is missing`);
-  if (!Number.isFinite(bg.blur) || !Number.isFinite(bg.brightness)) fail('background.blur and background.brightness must be numbers');
+  const isColour = c => typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c);
+  if (!bg || !Array.isArray(bg.stops) || bg.stops.length < 2 || !bg.stops.every(isColour)) fail('background.stops must be two or more #rrggbb colours');
+  if (!Number.isFinite(bg.angle)) fail('background.angle must be a number');
+  const glow = bg.glow;
+  if (glow && (!isColour(glow.color) || !['opacity', 'x', 'y', 'radius'].every(k => Number.isFinite(glow[k])))) {
+    fail('background.glow needs a #rrggbb color and numbers opacity, x, y and radius');
+  }
   return config;
 }
 
@@ -91,16 +96,29 @@ async function collage(config) {
   return sharp(layer).rotate(config.tilt, { background: CLEAR }).png().toBuffer();
 }
 
+/**
+ * The background at w×h: a linear gradient through `stops` (evenly spaced) at `angle` degrees like CSS's
+ * (0 runs upwards, 90 to the right), with an optional radial `glow` (its centre and radius fractions of the width).
+ */
+function background({ stops, angle, glow }, w, h) {
+  const a = angle * Math.PI / 180, dx = Math.sin(a), dy = -Math.cos(a);
+  const half = (Math.abs(w * dx) + Math.abs(h * dy)) / 2;
+  const line = `x1="${w / 2 - dx * half}" y1="${h / 2 - dy * half}" x2="${w / 2 + dx * half}" y2="${h / 2 + dy * half}"`;
+  const linear = stops.map((c, i) => `<stop offset="${i / (stops.length - 1)}" stop-color="${c}"/>`).join('');
+  const radial = glow ? `<radialGradient id="g" gradientUnits="userSpaceOnUse" cx="${glow.x * w}" cy="${glow.y * h}" r="${glow.radius * w}">`
+    + `<stop offset="0" stop-color="${glow.color}" stop-opacity="${glow.opacity}"/><stop offset="1" stop-color="${glow.color}" stop-opacity="0"/>`
+    + '</radialGradient>' : '';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><defs>`
+    + `<linearGradient id="l" gradientUnits="userSpaceOnUse" ${line}>${linear}</linearGradient>${radial}</defs>`
+    + `<rect width="${w}" height="${h}" fill="url(#l)"/>${glow ? `<rect width="${w}" height="${h}" fill="url(#g)"/>` : ''}</svg>`;
+  return sharp(Buffer.from(svg)).png().toBuffer();
+}
+
 /** Renders every size in SIZES, each with one downscale of the collage, and returns the files written. */
 export async function renderAppImages(config = readConfig()) {
   const layer = await collage(config);
   const { width: lw, height: lh } = await sharp(layer).metadata();
   for (const [out, [w, h]] of Object.entries(SIZES)) {
-    const k = w / 1000;
-    let bg = sharp(config.background.image).resize(w, h, { fit: 'cover' });
-    if (config.background.blur * k >= 0.3) bg = bg.blur(config.background.blur * k);
-    const background = await bg.modulate({ brightness: config.background.brightness }).png().toBuffer();
-
     const s = config.columnWidth * w / CARD;
     if (s > 1) throw new Error(`${CONFIG}: columnWidth ${config.columnWidth} would scale the previews up at ${w}×${h}`);
     const rw = Math.round(lw * s), rh = Math.round(lh * s);
@@ -112,7 +130,7 @@ export async function renderAppImages(config = readConfig()) {
     const frame = await sharp(centred).extract({ left: Math.floor((cw - w) / 2), top: Math.floor((ch - h) / 2), width: w, height: h })
       .png().toBuffer();
 
-    await sharp(background).composite([{ input: frame }]).png({ compressionLevel: 9 }).toFile(out);
+    await sharp(await background(config.background, w, h)).composite([{ input: frame }]).png({ compressionLevel: 9 }).toFile(out);
   }
   return Object.keys(SIZES);
 }

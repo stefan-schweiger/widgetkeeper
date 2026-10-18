@@ -136,7 +136,7 @@ Half-height tiles that run a device's quick action with one tap (on/off, lock, p
 
 Tiles that show *No alarm*, the alarm that's on or how many, and turn red while one is. Every alarm counts, including apps' own such as radon. Tap a tile for all of its alarms.
 
-**Settings:** sensors, count motion and contact, tile names, [rename tiles](#tile-names).
+**Settings:** sensors, count motion and contact, [rename tiles](#tile-names).
 
 <a name="sensor-dots"></a>
 
@@ -194,7 +194,7 @@ Your cameras as a grid of snapshots that refresh every few seconds (cameras with
 
 Half-height tiles that each show one live device value. Percentages can fill their tile by level, and the Flow card **Set the tile colour of … to …** colours a tile, such as a fridge going red when it's too warm.
 
-**Settings:** up to six values with optional names, 3 or 2 per row, soft or bright colours (bright fills the tile with the full colour, with dark text), percentage fill and its limits, [rename tiles](#tile-names).
+**Settings:** up to six values, 3 or 2 per row, compact or pill tiles (pill tiles look like Sensor Alarms'), soft or bright colours (bright fills the tile with the full colour, with dark text), percentage fill and its limits, [rename tiles](#tile-names).
 
 ## Light Controls
 <img src="docs/clips/lights.webp" alt="Light Controls on a Homey dashboard: a light turned on, dimmed with the bar, and given a colour and a white" width="358">
@@ -299,9 +299,9 @@ A short message on the dashboard, as a tile with one line of text or as a Post-i
 **Settings:** style (tile or Post-it), text from (the message typed in the settings, a Flow card or a text variable), message, note name, variable, alignment, text size, long text, icon, colour.
 
 ## Days Since
-<img src="docs/screenshots/dayssince.png" alt="Days Since on a Homey dashboard: plants watered 6 days ago in amber, the vacuum filter 3 months in red, and the fish just fed with Undo" width="358">
+<img src="docs/screenshots/dayssince.png" alt="Days Since on a Homey dashboard: a list of chores with a bar each, plants watered 6 days ago in amber with 1 day left, the vacuum filter 3 months in red and 2 days overdue, and the fish just fed with Undo" width="358">
 
-Counters for the things you do every so often: plants watered *6 days* ago, the vacuum filter changed *3 months* ago, the sheets *2 weeks*. Each tile turns amber, then red, the number of days you set after it was last done. Tap a tile when you've done it: it starts again from *Today*, with **Undo** for a few seconds. The counters are kept on Homey by name, so every widget (and every screen) with the same counter shows the same one.
+Counters for the things you do every so often: plants watered *6 days* ago, the vacuum filter changed *3 months* ago, the sheets *2 weeks*. They're a list on one card: each counter's bar fills up towards the day it's due, with the time left under it. A counter turns amber, then red, the number of days you set after it was last done, and then says how long it's overdue (*+2 d*). Tap a row when you've done it: it starts again from *Today*, with **Undo** for a few seconds. The counters are kept on Homey by name, so every widget (and every screen) with the same counter shows the same one.
 
 Flow cards: *Reset [counter]* (when the robot vacuum is done, for instance), *Set [counter] to [days] days ago* (for something done before you added the widget), the trigger *[counter] became overdue* (when it turns red, even with no dashboard open) and the condition *[counter] is overdue*; the last two also take *Any counter*.
 
@@ -354,7 +354,7 @@ Give any tile a name of your own, such as *Sofa corner* for a room's lights grou
 2. Leave the dashboard's edit mode. Each tile now shows a text field: type its name, or leave it empty to keep the device's (or room's) own name.
 3. Edit the widget again and turn **Rename tiles** off.
 
-The names belong to that widget: they stay with the right tiles when you rename or reorder devices, every screen showing the dashboard gets them, and a Smart Stack showing the widget does too. Sensor Alarms' tile names and Device Values' names still work; a name typed on the tile wins. Variables' rows used to be named in its settings: on Homey's dashboards, type those names on the rows again (web dashboards and Smart Stacks keep them).
+The names belong to that widget: they stay with the right tiles when you rename or reorder devices, every screen showing the dashboard gets them, and a Smart Stack showing the widget does too. Sensor Alarms, Device Values and Variables used to name their tiles in the widget settings. Those settings are gone, so type the names on the tiles again (Variables' names were carried over on web dashboards and Smart Stacks).
 
 ## API key
 Homey doesn't let apps change variables, start flows, read dashboards or start Moods on their own. For those, create a key in the Homey web app under **Settings → API Keys**, tick the permissions below for the widgets you use, and paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey, and that page says what it may do once it's saved.

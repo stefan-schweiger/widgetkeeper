@@ -1,0 +1,15 @@
+---
+paths:
+  - "widgets/varpresets/**"
+  - "test/varpresets-*.test.ts"
+  - "dev/varpresets-preview.html"
+  - "widgets/thermostat/public/presets.*"
+---
+# Variable Presets widget (`varpresets`)
+
+- One Logic variable and 2–4 buttons that set it to preset values (wk-068, the user's idea: Thermostat Presets for a variable). Thermostat Presets' look and code: `index.html` loads `../thermostat/presets.css` and `presets.js` (see Thermostat Presets), and `widget.js` gives it the hooks. Not transparent: `homey-widget tw-frame`. No service: `widgets/varpresets/api.ts` uses `app.variables` (`getState([id])`, `set()`), so tracking, `variables:state` and the key are Variables'.
+- Settings (13): `variable` (`listVariables()`; its items carry `type` too), `title` (instead of the name), `icon` (Flow Buttons' `listIcons(…, {none: true})`; the kit's `icons`, drawn as a thinner-stroked SVG data URL in the core's masked icon box), `layout` (the thermostat's), `color` (Device Values' six, blue default; `data-color` on `.vp` sets `--c`; dark `#1A1B21` text on lit yellow and green, as Flow Buttons), then per button `valueN` (`Button 1: value`) and `labelN` (`  – Label`; empty shows the value).
+- The values follow the variable (the user's choice over a text field): `listPresetValues(variableId, query)` reads the picked variable (`settings.variable.id`, else it throws `varpresets.selectVariableFirst`) and gives `None`, then Yes and No for a boolean; for a number or text what's typed (`parseNumber()`, a decimal comma too; text cut at `MAX_PRESET_TEXT` = 200, what the web dashboards keep of an item's string), then the current value (described `Current value`). Each item keeps `value` and `type`, id `<type>:<json>`. `varPresetsFromSettings()` keeps choices whose `typeof value` is their type.
+- Buttons: the presets of the variable's type (one picked for another variable is left out; none left: `noPresets`); a yes/no variable without any gets Yes and No. Before the state, the presets show disabled. Text: the label, else the value (`yes`/`no`, numbers in `opts.locale` up to 3 decimals, the text); 2 lines in standard, 1 in compact. Matching: numbers within 1e-9 relative, else `===`. No match: `Currently __value__` (`–` for null or empty). A tap sends `/set {id, value}`; `{ok: false, reason}` shakes the button with `KEY_PROBLEMS`' text, anything else `failed` (`Could not change __name__.`).
+- `GET /state?id=` (one `{id, name, type, value}` or `{id, missing: true}`), `POST /set {id, value}` (`routeKeyUse()`: `variables`). The mount listens to `variables:state` for its id (a `missing` one shows `missing`; one while not loaded reloads), refetches every 5 min and when the page becomes visible. A Smart Stack page; no attention rule.
+- `dev/varpresets-preview.html` (`Broken` fails with `noKey`); the README screenshot `varpresets` is inline in `mock-dashboard.js` (made-up "House mode"). `npm run test-dashboards -- varpresets` picks a variable of each type by the items' `type` and the values through `value1` with typed queries; a tap sets the real variable, as on Variables'.

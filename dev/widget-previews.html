@@ -571,13 +571,13 @@ function clock(t, theme) {
   </div>`;
 }
 
-// Days Since: 2 tiles per row, each a chore's icon (Flow Buttons' glyphs) and the time since (real digits, the unit a
-// pill) over the name; amber when it's due soon, red when overdue (the widget's 22 % tint, the icon and count in the
-// colour), and a tile just reset says Today with Undo (a grey pill) at the end of its name row.
+// Days Since: one card of chores, each a row of its icon (Flow Buttons' glyphs), the name and the time since (pills),
+// then a bar filling up towards the day it's due and a small label of the time left; amber when it's due soon, red
+// when overdue (the bar, the icon and the time in the colour), and one just reset with an empty bar and Undo.
 function daysSince(t, theme) {
-  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
-  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
-  const neutral = theme === 'dark' ? '#2E3039' : '#EDEEF1';
+  const card = theme === 'dark' ? '#1F2029' : '#FFFFFF';
+  const neutral = `color-mix(in srgb, ${t.fg} 8%, ${card})`;
+  const muted = theme === 'dark' ? 'rgba(237,238,240,.45)' : 'rgba(31,32,41,.4)';
   const LEVEL = {
     amber: ['#F5C518', theme === 'dark' ? '#F5C518' : '#8A5F00'],
     red: ['#F25F5C', theme === 'dark' ? '#FF7B78' : '#B42318'],
@@ -588,26 +588,21 @@ function daysSince(t, theme) {
     bed: 'M3 6v13M3 16h18v3M21 16v-3.5a2.5 2.5 0 0 0-2.5-2.5H11v6M7 13a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z',
     paw: 'M12 13c-2.5 0-5 3-5 5a2.5 2.5 0 0 0 2.5 2.5c1 0 1.5-.5 2.5-.5s1.5.5 2.5.5A2.5 2.5 0 0 0 17 18c0-2-2.5-5-5-5zM5.5 9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9 4.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM15 4.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM18.5 9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z',
     coffee: 'M4 9h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9zM16 10h1.5a2.5 2.5 0 0 1 0 5H16M8 2.5v3M12 2.5v3',
-    drop: 'M12 3.5s-6 6.6-6 11a6 6 0 0 0 12 0c0-4.4-6-11-6-11z',
   };
-  const tile = ([icon, digits, unitW, nameW, level, undo]) => {
+  const row = ([icon, nameW, valueW, fill, level, undo]) => {
     const text = level ? LEVEL[level][1] : t.fg;
-    const bg = level ? `color-mix(in srgb, ${LEVEL[level][0]} 22%, ${tileBg})` : tileBg;
-    const count = digits
-      ? `<div style="display:flex;align-items:center;gap:14px"><div style="font-size:64px;line-height:56px;font-weight:700;color:${text};font-variant-numeric:tabular-nums">${digits}</div>${pill(unitW, 30, text, 'opacity:.85')}</div>`
-      : pill(unitW, 36, text);
-    const undoPill = undo ? `<div class="pill" style="height:56px;padding:0 30px;background:${neutral};display:flex;align-items:center;flex:none">${pill(84, 24, t.fg, 'opacity:.85')}</div>` : '';
-    return `<div style="height:200px;border-radius:32px;background:${bg};box-shadow:${shadow};padding:36px 32px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <svg width="64" height="64" viewBox="0 0 24 24" style="flex:none"><path d="${ICON[icon]}" fill="none" stroke="${text}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        ${count}
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;height:56px">${pill(nameW, 30, t.fg, 'opacity:.55')}${undoPill}</div>
+    const bar = level ? LEVEL[level][0] : BLUE;
+    const undoPill = undo ? `<div class="pill" style="height:64px;padding:0 30px;background:${neutral};display:flex;align-items:center;flex:none;margin:-8px 0">${pill(64, 24, t.fg, 'opacity:.85')}</div>` : '';
+    return `<div style="display:grid;grid-template-columns:52px 1fr 104px;column-gap:30px;row-gap:16px;align-items:center">
+      <svg width="52" height="52" viewBox="0 0 24 24"><path d="${ICON[icon]}" fill="none" stroke="${level ? text : muted}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div style="grid-column:2/4;display:flex;align-items:center;gap:28px;height:48px">${pill(nameW, 30, t.fg, 'opacity:.85')}<div style="flex:1"></div>${pill(valueW, 30, text)}${undoPill}</div>
+      <div style="grid-column:2;height:16px;border-radius:8px;background:${neutral};overflow:hidden;margin-right:12px"><div style="height:100%;width:${fill}%;border-radius:8px;background:${bar}"></div></div>
+      <div style="grid-column:3;display:flex;justify-content:flex-end">${pill(level === 'red' ? 60 : 84, 18, level === 'red' ? text : muted)}</div>
     </div>`;
   };
-  return `<div style="width:880px;display:grid;grid-template-columns:repeat(2,1fr);gap:32px">
-    ${[['leaf', '6', 96, 150, 'amber'], ['vacuum', '82', 96, 220, 'red'], ['bed', '2', 130, 180], ['paw', null, 140, 110, null, true],
-      ['coffee', '3', 96, 200], ['drop', '11', 96, 140]].map(tile).join('')}
+  return `<div class="card" style="gap:44px">
+    ${[['vacuum', 220, 150, 100, 'red'], ['leaf', 240, 110, 78, 'amber'], ['bed', 190, 110, 64],
+      ['coffee', 280, 130, 38], ['paw', 150, 110, 0, null, true]].map(row).join('')}
   </div>`;
 }
 

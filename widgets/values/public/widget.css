@@ -110,6 +110,26 @@ html, body { background: transparent !important; }
 }
 .vt .vt-tile .vt-ink .vt-icon { color: var(--vt-ink); }
 
+/*
+ * Pill tiles (the "Tile style" setting): Sensor Alarms' tile (widgets/sensoralarms/public/widget.css), 52px high with the 24px icon
+ * beside the name over the value, both 14px on an 18px line (a deliberate exception) and 1px below centre (7/5 padding), flat in
+ * the native temperature tiles' dark colour. The colour rules above apply unchanged; the muted value turns to ink with the text.
+ */
+.vt-pill { --vt-regular: var(--homey-font-weight-regular, 400); }
+.homey-dark-mode .vt.vt-pill, .vt.vt-pill.homey-dark-mode { --vt-tile: #2B2C36; }
+.vt-pill .vt-tile { flex-direction: row; align-items: center; gap: 13px; height: 52px; padding: 7px 12px 5px 10px; }
+.vt.vt-pill .vt-tile::after { display: none; }
+.vt-pill .vt-icon {
+  width: 24px; height: 24px; color: var(--vt-muted);
+  -webkit-mask: var(--vt-mask) center / contain no-repeat; mask: var(--vt-mask) center / contain no-repeat;
+}
+.vt-text { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.vt-pill .vt-name, .vt-pill .vt-value { line-height: 18px; }
+.vt.vt-pill .vt-value { text-align: left; font-weight: var(--vt-regular); color: var(--vt-muted); }
+.vt-bright:not(.renaming) .vt-tile[data-color]:not(.filled), .vt-ink { --vt-muted: var(--vt-ink); }
+.vt-bright.vt-pill:not(.renaming) .vt-tile.filled .vt-ink { flex-direction: row; align-items: center; gap: 13px; padding: 7px 12px 5px 10px; }
+.vt-pill .wk-rename { margin: -3px 0; }
+
 .vt-message { font-size: var(--vt-fs-small); line-height: var(--vt-lh-small); color: var(--vt-muted); }
 .vt-message.error { color: var(--homey-color-red, #F25F5C); }
 

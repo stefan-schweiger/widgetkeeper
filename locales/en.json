@@ -424,6 +424,12 @@
     "notStarted": "Not started",
     "undo": "Undo",
     "resetLabel": "__name__: __time__. Tap to reset.",
+    "left": "__time__ left",
+    "over": "+__time__",
+    "shortDay": "__n__ d",
+    "shortWeek": "__n__ w",
+    "shortMonth": "__n__ mo",
+    "shortYear": "__n__ y",
     "newCounter": "New counter",
     "anyCounter": "Any counter"
   },

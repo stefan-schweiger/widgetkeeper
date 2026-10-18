@@ -424,6 +424,12 @@
     "notStarted": "Ikke startet",
     "undo": "Fortryd",
     "resetLabel": "__name__: __time__. Tryk for at nulstille.",
+    "left": "__time__ tilbage",
+    "over": "+__time__",
+    "shortDay": "__n__ d",
+    "shortWeek": "__n__ u",
+    "shortMonth": "__n__ md",
+    "shortYear": "__n__ år",
     "newCounter": "Ny tæller",
     "anyCounter": "Enhver tæller"
   },

@@ -10,5 +10,9 @@
   "gap": 64,
   "stagger": 160,
   "tilt": -8,
-  "background": { "image": "dev/hero.webp", "blur": 6, "brightness": 0.6 }
+  "background": {
+    "angle": 150,
+    "stops": ["#4A2F94", "#2A1958", "#120A27"],
+    "glow": { "color": "#8A6BEA", "opacity": 0.35, "x": 0.15, "y": 0.05, "radius": 0.75 }
+  }
 }

@@ -4,7 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, withName, formatValue } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, formatValue } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -100,8 +100,8 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ t?: (key: string, tokens?: object) => string, columns?: number|string, colorStyle?: string,
-   *   percentFill?: boolean, redBelow?: number|string, yellowBelow?: number|string, names?: string[],
+   * @param {{ t?: (key: string, tokens?: object) => string, columns?: number|string, tileStyle?: string, colorStyle?: string,
+   *   percentFill?: boolean, redBelow?: number|string, yellowBelow?: number|string,
    *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   onHeight?: (h: number) => void }} opts
    */
@@ -112,13 +112,11 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
 
-    const names = Array.isArray(opts.names) ? opts.names : []; // per tile, lined up with the entries
     let slots = []; // [{ deviceId, capabilityId, name, capability, value, color? } | { deviceId, capabilityId, missing }]
     let messageText = null;
     let messageTimer = null;
 
     root.classList.add('vt');
-    // The typed names win over the `nameN` settings (which give the field its placeholder).
     const typed = tileNames(opts, () => render(), (key) => {
       const i = nameKeys(slots).indexOf(key);
       const tile = i >= 0 ? tiles.get(`${keyOf(slots[i])}#${i}`) : null;
@@ -131,6 +129,9 @@
     });
     root.classList.toggle('renaming', typed.renaming);
     root.dataset.columns = String(opts.columns) === '2' ? '2' : '3';
+    // Pill tiles: Sensor Alarms' tile, the icon beside the name over the value (compact, Quick Actions' tile, otherwise).
+    const pill = opts.tileStyle === 'pill';
+    root.classList.toggle('vt-pill', pill);
     // Bright colours: fills and Flow colours at full strength, with text that reads on them (soft, the 22 % tint, otherwise).
     const bright = opts.colorStyle === 'bright';
     root.classList.toggle('vt-bright', bright);
@@ -143,7 +144,7 @@
     const tiles = new Map();
 
     function setState(list) {
-      slots = (Array.isArray(list) ? list : []).map((s, i) => withName(s, names[i]));
+      slots = Array.isArray(list) ? list : [];
       messageText = null;
       render();
     }
@@ -181,29 +182,30 @@
       render();
     }
 
+    /** A tile's icon, value and name in `parent`: the icon and value over the name, or in pill tiles the icon beside the name over the value. */
+    function parts(parent) {
+      if (pill) {
+        const icon = el('span', { class: 'vt-icon' }, parent);
+        const text = el('div', { class: 'vt-text' }, parent);
+        const name = el('span', { class: 'vt-name', dir: 'auto' }, text);
+        return { icon, value: el('span', { class: 'vt-value', dir: 'auto' }, text), name };
+      }
+      const top = el('div', { class: 'vt-top' }, parent);
+      return {
+        icon: el('span', { class: 'vt-icon' }, top),
+        value: el('span', { class: 'vt-value', dir: 'auto' }, top),
+        name: el('span', { class: 'vt-name', dir: 'auto' }, parent),
+      };
+    }
+
     // A slot can appear twice (the same value picked for two tiles), so tiles are keyed by position too.
     function tileFor(key) {
       let tile = tiles.get(key);
       if (!tile) {
         const node = el('div', { class: 'vt-tile', 'data-slot': key });
-        const top = el('div', { class: 'vt-top' }, node);
-        tile = {
-          tile: node,
-          icon: el('span', { class: 'vt-icon' }, top),
-          value: el('span', { class: 'vt-value', dir: 'auto' }, top),
-          name: el('span', { class: 'vt-name', dir: 'auto' }, node),
-          ink: null,
-        };
+        tile = { tile: node, ...parts(node), ink: null };
         // Bright fills: the same icon and text again in the ink colour, which the CSS clips to the fill.
-        if (bright) {
-          const ink = el('div', { class: 'vt-ink', 'aria-hidden': 'true' }, node);
-          const inkTop = el('div', { class: 'vt-top' }, ink);
-          tile.ink = {
-            icon: el('span', { class: 'vt-icon' }, inkTop),
-            value: el('span', { class: 'vt-value', dir: 'auto' }, inkTop),
-            name: el('span', { class: 'vt-name', dir: 'auto' }, ink),
-          };
-        }
+        if (bright) tile.ink = parts(el('div', { class: 'vt-ink', 'aria-hidden': 'true' }, node));
         tiles.set(key, tile);
       }
       return tile;

@@ -111,6 +111,79 @@
       ]
     },
     {
+      "id": "tileStyle",
+      "type": "dropdown",
+      "title": {
+        "en": "Tile style",
+        "nl": "Tegelstijl",
+        "de": "Kachelstil",
+        "fr": "Style des tuiles",
+        "it": "Stile dei riquadri",
+        "sv": "Rutstil",
+        "no": "Flisstil",
+        "es": "Estilo de mosaico",
+        "da": "Feltstil",
+        "ru": "Стиль плиток",
+        "pl": "Styl kafelków",
+        "ko": "타일 스타일",
+        "ar": "نمط البلاطات"
+      },
+      "hint": {
+        "en": "Pill: the icon beside the name and value, like Sensor Alarms' tiles.",
+        "nl": "Pil: het pictogram naast de naam en waarde, zoals de tegels van Sensoralarmen.",
+        "de": "Kapsel: das Symbol neben Name und Wert, wie die Kacheln von Sensoralarme.",
+        "fr": "Pilule : l'icône à côté du nom et de la valeur, comme les tuiles d'Alarmes des capteurs.",
+        "it": "Pillola: l'icona accanto al nome e al valore, come i riquadri di Allarmi sensori.",
+        "sv": "Kapsel: ikonen bredvid namnet och värdet, som rutorna i Sensorlarm.",
+        "no": "Kapsel: ikonet ved siden av navnet og verdien, som flisene i Sensoralarmer.",
+        "es": "Píldora: el icono junto al nombre y el valor, como los mosaicos de Alarmas de sensores.",
+        "da": "Kapsel: ikonet ved siden af navnet og værdien, som felterne i Sensoralarmer.",
+        "ru": "Капсула: значок рядом с именем и значением, как плитки «Тревоги датчиков».",
+        "pl": "Pigułka: ikona obok nazwy i wartości, jak kafelki Alarmów czujników.",
+        "ko": "알약형: 센서 알람의 타일처럼 아이콘이 이름과 값 옆에 놓입니다.",
+        "ar": "كبسولة: الأيقونة بجانب الاسم والقيمة، مثل بلاطات إنذارات المستشعرات."
+      },
+      "value": "compact",
+      "values": [
+        {
+          "id": "compact",
+          "title": {
+            "en": "Compact",
+            "nl": "Compact",
+            "de": "Kompakt",
+            "fr": "Compact",
+            "it": "Compatto",
+            "sv": "Kompakt",
+            "no": "Kompakt",
+            "es": "Compacto",
+            "da": "Kompakt",
+            "ru": "Компактный",
+            "pl": "Kompaktowy",
+            "ko": "컴팩트",
+            "ar": "مدمج"
+          }
+        },
+        {
+          "id": "pill",
+          "title": {
+            "en": "Pill",
+            "nl": "Pil",
+            "de": "Kapsel",
+            "fr": "Pilule",
+            "it": "Pillola",
+            "sv": "Kapsel",
+            "no": "Kapsel",
+            "es": "Píldora",
+            "da": "Kapsel",
+            "ru": "Капсула",
+            "pl": "Pigułka",
+            "ko": "알약형",
+            "ar": "كبسولة"
+          }
+        }
+      ]
+    },
+    {
       "id": "colorStyle",
       "type": "dropdown",
       "title": {
@@ -327,41 +400,6 @@
       }
     },
     {
-      "id": "name1",
-      "type": "text",
-      "title": {
-        "en": "  – Name",
-        "nl": "  – Naam",
-        "de": "  – Name",
-        "fr": "  – Nom",
-        "it": "  – Nome",
-        "sv": "  – Namn",
-        "no": "  – Navn",
-        "es": "  – Nombre",
-        "da": "  – Navn",
-        "ru": "  – Название",
-        "pl": "  – Nazwa",
-        "ko": "  – 이름",
-        "ar": "  – الاسم"
-      },
-      "hint": {
-        "en": "Optional. Leave empty to keep the original name.",
-        "nl": "Optioneel. Laat leeg om de oorspronkelijke naam te houden.",
-        "de": "Optional. Leer lassen, um den ursprünglichen Namen zu behalten.",
-        "fr": "Facultatif. Laissez vide pour garder le nom d'origine.",
-        "it": "Facoltativo. Lascia vuoto per mantenere il nome originale.",
-        "sv": "Valfritt. Lämna tomt för att behålla det ursprungliga namnet.",
-        "no": "Valgfritt. La stå tomt for å beholde det opprinnelige navnet.",
-        "es": "Opcional. Déjalo vacío para mantener el nombre original.",
-        "da": "Valgfrit. Lad feltet stå tomt for at beholde det oprindelige navn.",
-        "ru": "Необязательно. Оставьте пустым, чтобы сохранить исходное название.",
-        "pl": "Opcjonalnie. Zostaw puste, aby zachować oryginalną nazwę.",
-        "ko": "선택 사항입니다. 비워 두면 원래 이름을 사용합니다.",
-        "ar": "اختياري. اتركه فارغًا للإبقاء على الاسم الأصلي."
-      },
-      "value": ""
-    },
-    {
       "id": "slot2",
       "type": "autocomplete",
       "title": {
@@ -379,26 +417,6 @@
         "ko": "타일 2",
         "ar": "البلاطة 2"
       }
-    },
-    {
-      "id": "name2",
-      "type": "text",
-      "title": {
-        "en": "  – Name",
-        "nl": "  – Naam",
-        "de": "  – Name",
-        "fr": "  – Nom",
-        "it": "  – Nome",
-        "sv": "  – Namn",
-        "no": "  – Navn",
-        "es": "  – Nombre",
-        "da": "  – Navn",
-        "ru": "  – Название",
-        "pl": "  – Nazwa",
-        "ko": "  – 이름",
-        "ar": "  – الاسم"
-      },
-      "value": ""
     },
     {
       "id": "slot3",
@@ -420,26 +438,6 @@
       }
     },
     {
-      "id": "name3",
-      "type": "text",
-      "title": {
-        "en": "  – Name",
-        "nl": "  – Naam",
-        "de": "  – Name",
-        "fr": "  – Nom",
-        "it": "  – Nome",
-        "sv": "  – Namn",
-        "no": "  – Navn",
-        "es": "  – Nombre",
-        "da": "  – Navn",
-        "ru": "  – Название",
-        "pl": "  – Nazwa",
-        "ko": "  – 이름",
-        "ar": "  – الاسم"
-      },
-      "value": ""
-    },
-    {
       "id": "slot4",
       "type": "autocomplete",
       "title": {
@@ -457,26 +455,6 @@
         "ko": "타일 4",
         "ar": "البلاطة 4"
       }
-    },
-    {
-      "id": "name4",
-      "type": "text",
-      "title": {
-        "en": "  – Name",
-        "nl": "  – Naam",
-        "de": "  – Name",
-        "fr": "  – Nom",
-        "it": "  – Nome",
-        "sv": "  – Namn",
-        "no": "  – Navn",
-        "es": "  – Nombre",
-        "da": "  – Navn",
-        "ru": "  – Название",
-        "pl": "  – Nazwa",
-        "ko": "  – 이름",
-        "ar": "  – الاسم"
-      },
-      "value": ""
     },
     {
       "id": "slot5",
@@ -498,26 +476,6 @@
       }
     },
     {
-      "id": "name5",
-      "type": "text",
-      "title": {
-        "en": "  – Name",
-        "nl": "  – Naam",
-        "de": "  – Name",
-        "fr": "  – Nom",
-        "it": "  – Nome",
-        "sv": "  – Namn",
-        "no": "  – Navn",
-        "es": "  – Nombre",
-        "da": "  – Navn",
-        "ru": "  – Название",
-        "pl": "  – Nazwa",
-        "ko": "  – 이름",
-        "ar": "  – الاسم"
-      },
-      "value": ""
-    },
-    {
       "id": "slot6",
       "type": "autocomplete",
       "title": {
@@ -535,26 +493,6 @@
         "ko": "타일 6",
         "ar": "البلاطة 6"
       }
-    },
-    {
-      "id": "name6",
-      "type": "text",
-      "title": {
-        "en": "  – Name",
-        "nl": "  – Naam",
-        "de": "  – Name",
-        "fr": "  – Nom",
-        "it": "  – Nome",
-        "sv": "  – Namn",
-        "no": "  – Navn",
-        "es": "  – Nombre",
-        "da": "  – Navn",
-        "ru": "  – Название",
-        "pl": "  – Nazwa",
-        "ko": "  – 이름",
-        "ar": "  – الاسم"
-      },
-      "value": ""
     }
   ],
   "api": {

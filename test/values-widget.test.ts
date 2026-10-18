@@ -136,7 +136,7 @@ describe('render', () => {
     });
 
     it("copies each tile's icon, value and name into its ink layer, and follows changes", () => {
-      const { w, tiles } = widget([battery(50), temp()], undefined, { colorStyle: 'bright', percentFill: true, names: ['', 'Living room'] });
+      const { w, tiles } = widget([battery(50), temp()], undefined, { colorStyle: 'bright', percentFill: true });
       const copy = (t: HTMLElement) => {
         const layer = ink(t)!;
         expect(layer.getAttribute('aria-hidden')).toBe('true');
@@ -144,10 +144,52 @@ describe('render', () => {
           .toBe((t.querySelector('.vt-icon') as HTMLElement).style.getPropertyValue('--vt-mask'));
         return [layer.querySelector('.vt-value')!.textContent, layer.querySelector('.vt-name')!.textContent];
       };
-      expect(tiles().map(copy)).toEqual([['50%', 'Sensor'], [`${dec(21.5)}°C`, 'Living room']]);
+      expect(tiles().map(copy)).toEqual([['50%', 'Sensor'], [`${dec(21.5)}°C`, 'Stue']]);
       w.pushChange({ deviceId: 'c', capabilityId: 'measure_battery', value: 8 });
       w.setNames({ 'c:measure_battery': 'Back door' });
       expect(copy(tiles()[0])).toEqual(['8%', 'Back door']);
+    });
+  });
+
+  describe('pill style', () => {
+    const battery = (value: number) => ({ deviceId: 'c', capabilityId: 'measure_battery', name: 'Sensor', capability: cap('number', { units: '%' }), value });
+    // The classes of a tile's (or its ink layer's) children, nested ones as arrays.
+    const layout = (node: Element): unknown[] => [...node.children]
+      .filter(c => !c.classList.contains('vt-ink'))
+      .map(c => (c.children.length ? [c.className, layout(c)] : c.className));
+    const pillLayout = ['vt-icon', ['vt-text', ['vt-name', 'vt-value']]];
+
+    it('is compact unless the setting says pill', () => {
+      for (const tileStyle of [undefined, 'compact', 'bogus']) {
+        const { root, tiles } = widget([temp()], undefined, { tileStyle });
+        expect(root.classList.contains('vt-pill')).toBe(false);
+        expect(layout(tiles()[0])).toEqual([['vt-top', ['vt-icon', 'vt-value']], 'vt-name']);
+      }
+      expect(widget([temp()], undefined, { tileStyle: 'pill' }).root.classList.contains('vt-pill')).toBe(true);
+    });
+
+    it('puts the icon beside the name over the value, with the same text', () => {
+      const { tiles, text } = widget([temp(), lamp()], undefined, { tileStyle: 'pill' });
+      expect(layout(tiles()[0])).toEqual(pillLayout);
+      expect(text('.vt-name')).toEqual(['Stue', 'Lamp']);
+      expect(text('.vt-value')).toEqual([`${dec(21.5)}°C`, 'On']);
+    });
+
+    it('lays out the bright ink layer the same way', () => {
+      const { tiles } = widget([battery(50)], undefined, { tileStyle: 'pill', colorStyle: 'bright', percentFill: true });
+      const layer = tiles()[0].querySelector('.vt-ink')!;
+      expect(layout(layer)).toEqual(pillLayout);
+      expect([layer.querySelector('.vt-name')!.textContent, layer.querySelector('.vt-value')!.textContent]).toEqual(['Sensor', '50%']);
+    });
+
+    it('puts the rename field right after the name', () => {
+      const { tiles } = widget([temp()], undefined, { tileStyle: 'pill', renameTiles: true, onRename: async () => ({}) });
+      expect(tiles()[0].querySelector('.wk-rename')!.previousElementSibling!.className).toBe('vt-name');
+    });
+
+    it('still follows the tiles per row', () => {
+      expect(widget([temp()], undefined, { tileStyle: 'pill' }).root.dataset.columns).toBe('3');
+      expect(widget([temp()], '2', { tileStyle: 'pill' }).root.dataset.columns).toBe('2');
     });
   });
 
@@ -187,17 +229,5 @@ describe('render', () => {
     expect(root.querySelector('.vt-message')!.classList.contains('error')).toBe(true);
     w.setMessage('Pick');
     expect(tiles()).toHaveLength(0);
-  });
-});
-
-describe('name override', () => {
-  it("shows a tile's own name, by position, and keeps the device's when empty", () => {
-    const { text } = widget([temp(), temp(), lamp()], undefined, { names: ['Living room', '', '  '] });
-    expect(text('.vt-name')).toEqual(['Living room', 'Stue', 'Lamp']);
-  });
-
-  it('says a missing value is unavailable, whatever its name', () => {
-    const { text } = widget([{ deviceId: 'x', capabilityId: 'onoff', missing: true }], undefined, { names: ['Lamp'] });
-    expect(text('.vt-name')).toEqual(['Unavailable']);
   });
 });

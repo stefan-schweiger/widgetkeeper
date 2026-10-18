@@ -424,6 +424,12 @@
     "notStarted": "Niet gestart",
     "undo": "Ongedaan maken",
     "resetLabel": "__name__: __time__. Tik om te resetten.",
+    "left": "nog __time__",
+    "over": "+__time__",
+    "shortDay": "__n__ d",
+    "shortWeek": "__n__ w",
+    "shortMonth": "__n__ mnd",
+    "shortYear": "__n__ j",
     "newCounter": "Nieuwe teller",
     "anyCounter": "Elke teller"
   },

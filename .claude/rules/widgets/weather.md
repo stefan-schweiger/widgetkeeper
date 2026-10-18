@@ -1,0 +1,26 @@
+---
+paths:
+  - "widgets/weather/**"
+  - "test/weather-*.test.ts"
+  - "dev/weather-preview.html"
+  - "lib/WeatherService.ts"
+  - "dev/mock-weather.js"
+---
+# Weather Forecast widget (`weather`)
+
+- The next 36 hours at the Homey's location (`homey.geolocation`, needs `homey:manager:geolocation`) from MET Norway's Locationforecast 2.0 `compact` (the data behind yr.no); `lib/WeatherService.ts`.
+- Settings: `density` (`compact` default, `detailed`), `rows` (`1`/`2`), `step` (`1`/`2`/`3` hours per column) and `theme`, as `opts.*`.
+- Themes ("Colours"; the user asked for more pop when it's all overcast, dry and ~12°) change colours and backgrounds only, never layout, icons or type: `wf-theme-<id>` on `.wf`, the CSS at the end of `widget.css`. `default`; `vivid` (blue → gold `--wf-mild` at 12° → red, no plain point; the Now column on a blue pill; day labels and lines blue); `temperature` (each column a vertical gradient of its temperature colour, `tint-cold/warm` + `--k`); `sky` (a gradient per weather, `data-sky` from `skyOf()`: clear, partly, cloudy, fog, rain, snow, thunder, night); `card` (`opts.frame` gets `.wf-card-frame` and the current hour's `data-sky`: a dark gradient with white text in both modes). **No green anywhere** (the user rejected a rainbow scale). The preview shows every theme on the mock day and a bland overcast one; `?theme=`.
+- `step` 2 or 3 combines hours (`group()`/`combine()`) into columns on the clock (00, 03, 06 …; the first runs to the next boundary): average temperature and wind speed, summed precipitation, wind direction averaged as speed-weighted vectors, and the wettest hour's icon (the first hour's when dry). The footer's day ranges use the raw hours.
+- MET's terms, which the service follows: an identifying `User-Agent` (`Widgetkeeper/<version> github.com/thomassidor/widgetkeeper`; without one MET answers 403); at most 4 decimals in coordinates (we round to 3); no refetch before `Expires` (~30 min), then revalidate with `If-Modified-Since` (a 304 only moves the expiry). The limits count every installation's traffic, so it only fetches while a widget asks: an expired cache is dropped after 10 min without a request (a still valid one is kept, so a waking tablet is answered at once), and on a location change. A request gives up after 15 s. The data is CC BY 4.0: the credit is in the store text (each `README.<lang>.txt`'s last line) and README.md, not in the widget.
+- A failed refetch keeps the previous forecast and retries after 5 min; a failed first fetch is an error.
+- `GET /forecast`: up to 48 hourly entries from the current hour, `{t, symbol, temp, wind, windDir, precip}`, plus `updatedAt`, `language` and `icons` (the SVG text of each symbol in use, read once per app run, so the icons aren't a ~0.4 s request each; the widget makes data URLs, falling back to `icons/<symbol>.svg`), or `noLocation: true`. The widget shows 36, drops passed hours on the hour, and skips rebuilding when a refresh brings the same hours, hour and column count. Fields used: `instant.details.air_temperature`, `wind_speed`, `wind_from_direction`, and `next_1_hours`'s `symbol_code` and `precipitation_amount` (compact is hourly for ~60 h, then 6-hourly without `next_1_hours`).
+- Icons: MET's own (`metno/weathericons`, MIT) in `widgets/weather/public/icons/`, named by symbol code (MET kept the `lightssleet…`/`lightssnow…` typos in both).
+- Layout: a strip of hour columns (the hour, icon, temperature, then precipitation and wind at 12/16), `100% / --wf-cols` set by container queries.
+  - Detailed: a 36 px icon, the temperature 17 bold, units on every value.
+  - Compact: a 28 px icon, the temperature 14 bold (an exception, so `-12°` fits ~34 px), plain numbers with `mm · m/s` once in the footer; more columns than detailed.
+  - Two rows: scroll-snapped pages (`.wf-page`) of 2 × `--wf-cols` hours; `widget.js` reads `--wf-cols` and re-renders through a `ResizeObserver` when it changes.
+  - Temperature colour: blue → the text colour → red (`colorTemp()`: a `cold`/`warm` class and `--k` 0–1, neutral at 12°, full blue at -5°, full red at 28°; `color-mix(in oklab, …)`), with a dark pair and a darker light pair that each pass 4.5:1. The user rejected a red/blue split at 0° ("red for 10° is weird") and a rainbow ("green is weird"). Precipitation is blank at 0. The wind arrow points where the wind blows (`wind_from_direction` + 180°).
+  - The first column is "Now"; midnight shows the weekday in Homey's language with a divider. The dark frame `.wf-frame` copies `.tw-frame`.
+- Native `overflow-x` scrolling without `preventDefault`, so vertical swipes still scroll the dashboard; a mouse drags it. Untested on Android: if the dashboard cancels it there, add ‹ › paging buttons (taps work).
+- Footer: today's and tomorrow's high and low (`Today ↑10° ↓4°  Tomorrow ↑8° ↓-2°`, coloured), from all 48 hours in the device's local days, today from the current hour on; in compact, `mm · m/s` on the right.

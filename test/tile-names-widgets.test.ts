@@ -157,13 +157,6 @@ describe('tile names in context', () => {
     expect(root.querySelector('.lk-sub')!.textContent).toBe('Shed, Door b');
   });
 
-  it('Sensor Alarms: a typed name wins over the names setting', () => {
-    const { w, names } = mount('sensoralarms', { names: ['Hall', 'Attic'] });
-    expect(names()).toEqual(['Hall', 'Attic']);
-    w.setNames({ a: 'Porch' });
-    expect(names()).toEqual(['Porch', 'Attic']);
-  });
-
   it('Device Values: the names stay with the value when the slots are reordered', () => {
     const { w, names } = mount('values');
     w.setState([value('a', 'Fridge'), value('b', 'Freezer')]);

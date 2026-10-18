@@ -1,0 +1,14 @@
+---
+paths:
+  - "widgets/sensordots/**"
+  - "test/sensordots-*.test.ts"
+  - "dev/sensordots-preview.html"
+---
+# Activity Dots widget (`sensordots`)
+
+- Motion, contact, presence, vibration and camera-detection sensors as a grid of dots (the user's request; dots only, no labels, no halo): 16 px in `idleColor` (default `grey`) while idle and `activeColor` (default `blue`) while any detection is `true`, the idle colour faded without a value, a hollow ring for a missing device. Both dropdowns offer `grey` and Device Values' Flow colours, as `data-idle`/`data-active` → `--sd-idle`/`--sd-active` (`colorOf()` falls back for an unknown id). The overlay's active text mixes the active colour 75 % with the text colour, so yellow and grey read in light mode.
+- One device-style tile (Quick Actions' `#181920`, radius and rim; the overlay `#2E3039`), transparent. `title` (empty) adds a header (`.sd-header`); the grid is its own element, so the overlay covers only a row. Each dot is a 44 px touch target (`auto-fill`), 7 per row at 358 px.
+- No service: `widgets/sensordots/api.ts` calls `app.sensorAlarms.getState()` and keeps `ACTIVITY_CAPS` (`activityAlarms()`, by base id): Sensor Alarms' `STATE_ALARMS`, the `state: true` alarms (`alarm_motion`, `alarm_presence`, `alarm_contact`, `alarm_person`, `alarm_vehicle`, `alarm_pet`) and `alarm_vibration` (wk-049, the Aqara lumi.vibration.aq1; Sensor Alarms still counts it as an alarm, the user's choice, 2026-10-16), returning `{devices, language}`; the widget listens to `sensoralarms:state`. The device picker filters on those seven. `alarm_presence` is the mmWave sensors' (wk-032: the Aqara FP300 has it beside `alarm_motion`; Shelly, SwitchBot and LinknLink drivers too, some with only it or `alarm_presence.zoneN`).
+- "Since" comes from `SensorAlarm.lastUpdated` (ms: homey-api makes `capabilitiesObj[id].lastUpdated` a `Date`, Homey's own JSON an ISO string, and `lastUpdatedMs()` takes both; until 2026-10-17 it only took the string, so no load ever had a time) and the event's `t`.
+- A tap opens an overlay (`.sd-panel`) over the dot's row, placed like Light Controls' swatch panel (absolute at the dot's `offsetTop`/`offsetHeight`), so the height doesn't change: a small dot, the name (14 bold), ` · `, the state (muted; red while active). A tap on it closes it, another dot moves it, it follows the row on resize.
+- `stateText()`: active → `Open` (contact), `Motion`, `Presence`, `Vibration`, else the capability's title (`Person Detected`), joined with `, `; idle → `Closed`, `No presence`, `No motion`, `No vibration` or `Nothing detected` (the first that applies); no value → `–`. Then `since 18:17` from the newest `lastUpdated` of the active ones (of all when idle): today's time, `Tue 07:15` within 6 days, else `28 Sep` (`formatSince()`: times in the device locale or `opts.locale`, names in Homey's language).

@@ -74,6 +74,7 @@ interface Window {
   daysSinceText: (days: number, units?: string, language?: string | null, locale?: string, today?: string) => string;
   daysSinceCalendarDays: (from: number, to: number) => number;
   daysSinceLevel: (counter: { amber: number | null, red: number | null }, resetAt: number | null, now: number) => 'amber' | 'red' | null;
+  daysSinceProgress: (counter: { amber: number | null, red: number | null }, resetAt: number | null, now: number) => { fill: number, left: number | null, over: number | null } | null;
   createSpacerWidget: (root: HTMLElement, opts?: { height?: unknown }) => { height: number };
   spacerHeight: (value: unknown) => number;
   mediaSource: (caps: object) => 'tv' | 'lineIn' | null;

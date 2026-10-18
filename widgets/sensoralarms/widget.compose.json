@@ -90,41 +90,6 @@
         "ar": "إيقاف: الباب المفتوح أو الحركة أو التواجد لا يجعل البلاطة حمراء."
       },
       "value": false
-    },
-    {
-      "id": "names",
-      "type": "textarea",
-      "title": {
-        "en": "Tile names",
-        "nl": "Tegelnamen",
-        "de": "Kachelnamen",
-        "fr": "Noms des tuiles",
-        "it": "Nomi dei riquadri",
-        "sv": "Rutnamn",
-        "no": "Flisnavn",
-        "es": "Nombres de mosaicos",
-        "da": "Feltnavne",
-        "ru": "Названия плиток",
-        "pl": "Nazwy kafelków",
-        "ko": "타일 이름",
-        "ar": "أسماء البلاطات"
-      },
-      "hint": {
-        "en": "Optional. One per line: Device name = Tile name. A line without = names the device in that position.",
-        "nl": "Optioneel. Eén per regel: Apparaatnaam = Tegelnaam. Een regel zonder = geeft het apparaat op die plek een naam.",
-        "de": "Optional. Eine pro Zeile: Gerätename = Kachelname. Eine Zeile ohne = benennt das Gerät an dieser Stelle.",
-        "fr": "Facultatif. Un par ligne : Nom de l'appareil = Nom de la tuile. Une ligne sans = nomme l'appareil à cette position.",
-        "it": "Facoltativo. Uno per riga: Nome dispositivo = Nome riquadro. Una riga senza = rinomina il dispositivo in quella posizione.",
-        "sv": "Valfritt. En per rad: Enhetsnamn = Rutnamn. En rad utan = namnger enheten på den platsen.",
-        "no": "Valgfritt. Én per linje: Enhetsnavn = Flisnavn. En linje uten = gir enheten på den plassen et navn.",
-        "es": "Opcional. Uno por línea: Nombre del dispositivo = Nombre del mosaico. Una línea sin = nombra el dispositivo en esa posición.",
-        "da": "Valgfrit. Én pr. linje: Enhedsnavn = Feltnavn. En linje uden = navngiver enheden på den plads.",
-        "ru": "Необязательно. По одному в строке: Название устройства = Название плитки. Строка без = называет устройство на этом месте.",
-        "pl": "Opcjonalnie. Jedna w wierszu: Nazwa urządzenia = Nazwa kafelka. Wiersz bez = nazywa urządzenie na tej pozycji.",
-        "ko": "선택 사항입니다. 한 줄에 하나씩: 기기 이름 = 타일 이름. = 없는 줄은 그 순서의 기기 이름이 됩니다.",
-        "ar": "اختياري. سطر لكل اسم: اسم الجهاز = اسم البلاطة. السطر بدون = يسمّي الجهاز في ذلك الموضع."
-      },
-      "value": ""
     }
   ],
   "api": {

@@ -27,7 +27,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### New: Days Since
 - Counters for the things you do every so often: the plants watered *6 days* ago, the vacuum filter changed *3 months* ago, the sheets *2 weeks*. Up to eight per widget, each with a name and an icon.
-- Each turns amber, then red, the number of days you set after it was last done. Tap a tile when it's done: it starts again from *Today*, with Undo for a few seconds.
+- A list on one card: each counter's bar fills up towards the day it's due, with the days or weeks left under the time. It turns amber, then red, the number of days you set after it was last done, and then says how long it's overdue. Tap a row when it's done: it starts again from *Today*, with Undo for a few seconds.
 - The counters are kept on Homey by name: every widget and screen with the same counter shows the same one.
 - Flow cards: *Reset [counter]*, *Set [counter] to [days] days ago*, the trigger *[counter] became overdue* (even with no dashboard open) and the condition *[counter] is overdue*, both also for any counter.
 
@@ -39,7 +39,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Name the tiles
 - Every widget with device tiles has a new setting, *Rename tiles*: turn it on, and each tile shows a text field. Type the name you want, or leave it empty to keep the device's (or room's) own name, then turn the setting off again. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Room Health, Device Values, Sparklines, Locks and Doors, Cameras and Variables have it.
 - Light Controls and Curtains grouped by room get a name per room tile, so two widgets with a "Living room" group can be called "Sofa lights" and "Living room". Users with several groups in one room asked for it.
-- The names belong to the widget: they stay with the right tiles when devices are renamed or reordered, and every screen showing the dashboard (and a Smart Stack page of it) gets them. Sensor Alarms' *Tile names* and Device Values' names still work; a name typed on the tile wins.
+- The names belong to the widget: they stay with the right tiles when devices are renamed or reordered, and every screen showing the dashboard (and a Smart Stack page of it) gets them. Sensor Alarms' *Tile names* setting and Device Values' *Name* settings are gone: type those names on the tiles again.
 
 ### Curtains
 - Blinds that are fully open at 50%, with 0% and 100% both closed: vertical slatted blinds, and blinds that only tilt, such as SwitchBot Blind Tilt (these can now be picked too). A tap opens them to 50% or closes them to the nearer end, and the slider sets how far they're open. The new setting *Blinds are fully open at* chooses: 100%, 50% only for blinds that only tilt (the default), or 50% for all.
@@ -55,6 +55,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Sparklines and Device Values
 - Every battery tile shows the same battery icon. Some devices brought their own, so tiles side by side looked different.
 - Device Values has a new setting, *Colours*. *Bright* fills a tile with the full colour, both for a percentage fill and for a colour set by a Flow, with dark text and icons (white on purple) so they stay readable. A user found the soft yellow looked like mustard and the orange looked brown. *Soft* is the default and looks as before.
+- Device Values has a new setting, *Tile style*. *Pill* tiles look like Sensor Alarms' tiles, the icon beside the device name with the value under it. *Compact* is the default and looks as before.
 
 ### Light Controls
 - A new colour palette, *Room's Moods*: the colour button shows the Homey Moods of the light's room (or of the room's tile, grouped by room) in place of the colours and whites, and a tap starts one. A room without Moods keeps the colours. Starting a Mood needs an API key that may start Moods. A user asked for it.

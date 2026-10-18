@@ -11,19 +11,19 @@
   <script src="i18n.js"></script>
   <link rel="stylesheet" href="preview.css">
   <style>
-    /* The widget is transparent: it sits straight on the dashboard background. */
-    .dash { padding: 0; box-sizing: border-box; }
-    .light { background: #F2F3F5; padding: 12px; border-radius: 12px; }
+    /* Homey's widget card (`homey-widget`: 16 px padding) around the widget. */
+    .card { background: var(--homey-background-color, #1F2029); border-radius: 14px; padding: 16px; box-sizing: border-box; }
+    .light { color: var(--ds-text); }
   </style>
 </head>
 <body>
   <!-- `?lang=de` for a language. Every widget shares the simulated app's counters: a tap on one shows on the others. -->
-  <div class="col"><span>358 px (phone) · dark</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
-  <div class="col"><span>358 px · light</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
-  <div class="col"><span>300 px · dark · days only · Undo open</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
-  <div class="col"><span>220 px · dark · one column</span><div class="dash homey-dark-mode" style="width:220px"><div id="w4"></div></div></div>
-  <div class="col"><span>358 px · dark · Broken fails</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
-  <div class="col"><span>358 px · no counters</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px (phone) · dark</span><div class="card homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · light</span><div class="card light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>300 px · dark · days only · Undo open</span><div class="card homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>220 px · dark · narrow</span><div class="card homey-dark-mode" style="width:220px"><div id="w4"></div></div></div>
+  <div class="col"><span>358 px · dark · Broken fails</span><div class="card homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · no counters</span><div class="card homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
 
   <script>
     // A simulated app: the counters by key, as lib/DaysSinceService.ts keeps them; "Broken" can't be reset.
@@ -88,7 +88,7 @@
     mount('w5', [{ name: 'Broken', icon: 'bolt', amber: 1, red: 2 }, { name: 'Plants', icon: 'leaf', amber: 5, red: 7 }]);
     mount('w6', []);
     // Opens Undo on the 300 px widget's Fish, as a tap would.
-    const fish = document.querySelectorAll('#w3 .ds-tile')[3];
+    const fish = document.querySelectorAll('#w3 .ds-row')[3];
     fish.dispatchEvent(new MouseEvent('click', { bubbles: true }));
   </script>
 </body>

@@ -32,7 +32,7 @@ npm run flow-icons                     # re-render the Flow Buttons icon images 
 The npm scripts run the project-local CLI too. The render scripts need Microsoft Edge (set `EDGE` to its path if it isn't the default).
 
 ### App Store images
-The app's App Store images (`assets/images/small.png`, `large.png` and `xlarge.png`: 250×175, 500×350 and 1000×700, Homey's sizes) are rendered from the widget previews: columns of preview cards, tilted, on the blurred and darkened photo `dev/hero.webp`. `dev/app-images.json` sets which widgets appear and in what order (`columns`, by widget id), the previews' `theme`, the tilt, the column width (a fraction of the image), the gaps and the photo's blur and brightness.
+The app's App Store images (`assets/images/small.png`, `large.png` and `xlarge.png`: 250×175, 500×350 and 1000×700, Homey's sizes) are rendered from the widget previews: columns of preview cards, tilted, on a gradient in the brand colour. `dev/app-images.json` sets which widgets appear and in what order (`columns`, by widget id), the previews' `theme`, the tilt, the column width (a fraction of the image), the gaps and the gradient (its colours, angle and glow).
 - `npm run app-images` renders all three (with `sharp`, so no Edge needed). Every preview is only ever scaled down, and the same inputs give the same files.
 - `npm run previews` runs it too when it rendered a preview the images use, so a changed preview is in the store images at once.
 - `npx homey app validate` checks the images, and `npm test` checks their sizes and that the config's widgets have previews.

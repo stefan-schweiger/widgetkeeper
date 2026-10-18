@@ -87,4 +87,4 @@ window.mountDaysSinceWidget = function (Homey, { root, frame }) {
   load();
 };
 /** The classes index.html puts on its body. */
-window.mountDaysSinceWidget.frameClass = 'homey-widget-full';
+window.mountDaysSinceWidget.frameClass = 'homey-widget';

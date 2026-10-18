@@ -5,7 +5,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, withName, baseTitle } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, baseTitle } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -23,23 +23,9 @@
   const TAP_SLOP = 10; // px a touch may move and still count as a tap
 
   /**
-   * The `names` line for the device at `i`: a `Device name = Tile name` line by the device's own name
-   * (so removing or reordering a device doesn't move the names), else a plain line at its position.
-   */
-  function nameLine(names, entry, i) {
-    const own = entry && typeof entry.name === 'string' ? entry.name.trim().toLowerCase() : '';
-    for (const line of names) {
-      const at = typeof line === 'string' ? line.indexOf('=') : -1;
-      if (at > 0 && own && line.slice(0, at).trim().toLowerCase() === own) return line.slice(at + 1);
-    }
-    const line = names[i];
-    return typeof line === 'string' && !line.includes('=') ? line : '';
-  }
-
-  /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, includeStates?: boolean,
-   *   names?: string[], renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
+   *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   onHeight?: (h: number) => void }} opts
    */
   function createSensorAlarmsWidget(root, opts = {}) {
@@ -49,7 +35,6 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
 
-    const names = Array.isArray(opts.names) ? opts.names : []; // the `names` lines, see nameLine()
     let devices = []; // [{ id, name, icon, alarms: [{ capabilityId, title, value, state }] } | { id, missing }]
     let messageText = null;
     let messageTimer = null;
@@ -57,7 +42,6 @@
     let lastTouchTap = 0;
 
     root.classList.add('sa');
-    // The typed names win over the `names` lines (which give the field its placeholder).
     const typed = tileNames(opts, () => render(), (key) => {
       const tile = tiles.get(key);
       if (tile) {
@@ -76,7 +60,7 @@
     const tiles = new Map();
 
     function setState(list) {
-      devices = (Array.isArray(list) ? list : []).map((d, i) => withName(d, nameLine(names, d, i)));
+      devices = Array.isArray(list) ? list : [];
       messageText = null;
       render();
     }

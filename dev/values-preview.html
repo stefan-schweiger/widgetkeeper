@@ -28,6 +28,14 @@
   <div class="col"><span>358 px · dark · bright colours</span><div class="dash homey-dark-mode" style="width:358px"><div id="w10"></div></div></div>
   <div class="col"><span>358 px · light · bright colours</span><div class="dash light" style="width:358px"><div id="w11"></div></div></div>
   <div class="col"><span>358 px · dark · bright percentage fill</span><div class="dash homey-dark-mode" style="width:358px"><div id="w12"></div></div></div>
+  <div class="col"><span>358 px · dark · pill</span><div class="dash homey-dark-mode" style="width:358px"><div id="p1"></div></div></div>
+  <div class="col"><span>358 px · light · pill</span><div class="dash light" style="width:358px"><div id="p2"></div></div></div>
+  <div class="col"><span>300 px · dark · pill</span><div class="dash homey-dark-mode" style="width:300px"><div id="p3"></div></div></div>
+  <div class="col"><span>358 px · dark · pill · 2 columns</span><div class="dash homey-dark-mode" style="width:358px"><div id="p4"></div></div></div>
+  <div class="col"><span>358 px · dark · pill · colours set by a Flow</span><div class="dash homey-dark-mode" style="width:358px"><div id="p5"></div></div></div>
+  <div class="col"><span>358 px · dark · pill · bright colours</span><div class="dash homey-dark-mode" style="width:358px"><div id="p6"></div></div></div>
+  <div class="col"><span>358 px · light · pill · bright colours</span><div class="dash light" style="width:358px"><div id="p7"></div></div></div>
+  <div class="col"><span>358 px · dark · pill · bright percentage fill · 2 columns</span><div class="dash homey-dark-mode" style="width:358px"><div id="p8"></div></div></div>
   <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
 
   <script>
@@ -59,8 +67,15 @@
       alarm('dns', 'DNS check', true, 'red'), alarm('vpn', 'VPN', false, 'yellow'), pct('Back door', 'measure_battery', 64),
       { ...pct('Hallway', 'measure_battery', 30), color: 'purple' }, { ...pct('Kitchen', 'measure_battery', 80), color: 'orange' },
     ];
-    const flowWidgets = ['w8', 'w9', 'w10', 'w11'].map(id => {
-      const w = createValuesWidget(document.getElementById(id), { t: devT, percentFill: true, colorStyle: id === 'w10' || id === 'w11' ? 'bright' : undefined });
+    // Pill tiles: Sensor Alarms' tile.
+    for (const id of ['p1', 'p2', 'p3']) createValuesWidget(document.getElementById(id), { t: devT, tileStyle: 'pill' }).setState(slots());
+    createValuesWidget(document.getElementById('p4'), { t: devT, tileStyle: 'pill', columns: '2' }).setState(slots());
+    createValuesWidget(document.getElementById('p8'), { t: devT, tileStyle: 'pill', columns: '2', percentFill: true, colorStyle: 'bright' }).setState(percents());
+    const pillFlow = { p5: undefined, p6: 'bright', p7: 'bright' };
+    const flowWidgets = ['w8', 'w9', 'w10', 'w11', 'p5', 'p6', 'p7'].map(id => {
+      const pill = id in pillFlow;
+      const colorStyle = pill ? pillFlow[id] : id === 'w10' || id === 'w11' ? 'bright' : undefined;
+      const w = createValuesWidget(document.getElementById(id), { t: devT, percentFill: true, colorStyle, tileStyle: pill ? 'pill' : undefined });
       w.setState(colored());
       return w;
     });

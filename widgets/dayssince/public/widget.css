@@ -1,106 +1,117 @@
 /*
  * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
- * The fallbacks are the dark-theme values, used outside Homey (dev/dayssince-preview.html).
- * The tile copies Device Values' (widgets/values/public/widget.css), which copies Device Quick Actions'.
+ * The fallbacks are the dark-theme values, used outside Homey (dev/dayssince-preview.html). The widget sits on
+ * Homey's own card (`homey-widget`), so it draws no background of its own.
  */
 .ds {
-  --ds-tile: var(--homey-background-color, #FFFFFF);
+  --ds-bg: var(--homey-background-color, #1F2029);
   --ds-text: var(--homey-text-color, #EDEEF0);
   --ds-muted: var(--homey-text-color-light, #9C9DA5);
-  --ds-neutral: color-mix(in srgb, var(--ds-text) 8%, var(--ds-tile)); /* the Undo pill: Variables' grey */
+  --ds-neutral: color-mix(in srgb, var(--ds-text) 8%, var(--ds-bg)); /* the track and the Undo pill: Variables' grey */
   --ds-blue: var(--homey-color-blue, #2F8DF6);
-  /* Amber is Device Values' yellow (Homey has no token; its orange reads as red at 22 %), red Homey's. */
+  /* Amber is Device Values' yellow (Homey has no token), red Homey's. */
   --ds-amber: #F5C518;
   --ds-red: var(--homey-color-red, #F25F5C);
-  /* The count and icon on a tinted light tile: darker, so each passes 4.5:1 there. */
+  /* The time, icon and overdue label in a level's colour: darker on a light card, so each passes 4.5:1 there. */
   --ds-amber-text: #8A5F00;
   --ds-red-text: #B42318;
-  --ds-tint-mix: 22%; /* a Device Values tile's tint */
   /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --ds-fs-default: var(--homey-font-size-default, 17px); --ds-lh-default: var(--homey-line-height-default, 24px);
   --ds-fs-small: var(--homey-font-size-small, 14px); --ds-lh-small: var(--homey-line-height-small, 20px);
   --ds-fs-label: 12px; --ds-lh-label: 16px; /* the Electricity Overview's labels: a step below Homey's scale */
   --ds-bold: var(--homey-font-weight-bold, 700);
-  --ds-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+  --ds-medium: var(--homey-font-weight-medium, 500);
 }
-/* Dark mode: each tile looks like a native device tile, darker than the default widget background. */
-.homey-dark-mode .ds, .ds.homey-dark-mode {
-  --ds-tile: #181920; --ds-neutral: #2E3039; --ds-amber-text: var(--ds-amber); --ds-red-text: #FF7B78;
-}
+.homey-dark-mode .ds, .ds.homey-dark-mode { --ds-amber-text: var(--ds-amber); --ds-red-text: #FF7B78; }
 
 /* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
 html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
-html, body { margin: 0; }
-/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
-html, body { background: transparent !important; }
 
-.ds { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--ds-text);
-  container: ds / inline-size; }
+.ds { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--ds-text); }
 .ds * { box-sizing: border-box; }
 /* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
 .ds [dir="auto"] { text-align: left; }
 
-.ds-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--homey-su-3, 12px); }
-@container ds (max-width: 239px) { .ds-grid { grid-template-columns: minmax(0, 1fr); } }
-
-/* A compact tile (62px): the icon and the days, then the name (and Undo after a tap). */
-.ds-tile {
-  position: relative; color: var(--ds-text); outline: none;
-  background: var(--ds-tile); border-radius: var(--ds-radius); padding: 8px 10px; min-width: 0;
-  display: flex; flex-direction: column; align-items: stretch; gap: 6px;
+/*
+ * The rows share one grid: the icon, the name and bar, and the label column, as wide as the widest label, so every
+ * bar ends at the same x. A WebView without subgrid gets a fixed label column instead.
+ */
+.ds-list {
+  display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; column-gap: var(--homey-su-3, 12px);
+  row-gap: var(--homey-su-4, 16px);
+}
+.ds-row {
+  grid-column: 1 / -1; display: grid; grid-template-columns: 20px minmax(0, 1fr) 64px;
+  grid-template-columns: subgrid; grid-template-rows: var(--ds-lh-default) var(--ds-lh-label); row-gap: 5px;
+  align-items: center; position: relative; color: var(--ds-text); outline: none; min-width: 0;
   cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
-  transition: background-color .15s, color .15s, transform .1s;
+  border-radius: 6px; transition: transform .1s;
 }
-/* The native tiles' 1px rim, brightest along the top. */
-.homey-dark-mode .ds-tile::after, .ds.homey-dark-mode .ds-tile::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
-}
-.ds-tile:focus-visible { box-shadow: 0 0 0 2px var(--ds-blue); }
-.ds-tile.pressing { transform: scale(.98); }
+.ds-row:focus-visible { box-shadow: 0 0 0 4px var(--ds-bg), 0 0 0 6px var(--ds-blue); }
+.ds-row.pressing { transform: scale(.98); }
 
-.ds-top, .ds-bottom { display: flex; align-items: center; justify-content: space-between; gap: 6px; height: 20px; }
 .ds-icon {
-  flex: 0 0 auto; width: var(--homey-icon-size-medium, 20px); height: var(--homey-icon-size-medium, 20px);
-  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  grid-column: 1; grid-row: 1; width: var(--homey-icon-size-medium, 20px); height: var(--homey-icon-size-medium, 20px);
+  color: var(--ds-muted); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 .ds-icon .filled { fill: currentColor; stroke: none; }
-.ds-value, .ds-name {
-  /* 14 bold like the native temperature tiles' name (and Device Values). */
-  font-size: var(--ds-fs-small); line-height: var(--ds-lh-small); font-weight: var(--ds-bold);
+
+/* The first line: the name, the time since and (after a tap) Undo. */
+.ds-top { grid-column: 2 / -1; grid-row: 1; display: flex; align-items: center; gap: var(--homey-su-3, 12px); min-width: 0; }
+.ds-name, .ds-value {
+  font-size: var(--ds-fs-default); line-height: var(--ds-lh-default); font-weight: var(--ds-bold);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
 }
-.ds .ds-value { flex: 1 1 auto; text-align: right; font-variant-numeric: tabular-nums; }
 .ds-name { flex: 1 1 auto; }
-.ds-tile.not-started .ds-value { color: var(--ds-muted); font-weight: normal; }
+.ds .ds-value { flex: 0 0 auto; text-align: right; font-variant-numeric: tabular-nums; }
+.ds-row.not-started .ds-value { color: var(--ds-muted); font-weight: normal; }
 
-/* Amber, then red: the tile tinted as a Device Values colour, the icon and the days in the colour. */
-.ds-tile[data-level="amber"] { --ds-level: var(--ds-amber); --ds-level-text: var(--ds-amber-text); }
-.ds-tile[data-level="red"] { --ds-level: var(--ds-red); --ds-level-text: var(--ds-red-text); }
-.ds-tile[data-level] { background: color-mix(in srgb, var(--ds-level) var(--ds-tint-mix), var(--ds-tile)); }
-.ds-tile[data-level] .ds-icon, .ds-tile[data-level] .ds-value { color: var(--ds-level-text); }
+/* The second line: the bar towards the day it's due, and the time left (or overdue). */
+.ds-bar {
+  grid-column: 2; grid-row: 2; height: 6px; border-radius: 3px; background: var(--ds-neutral); overflow: hidden;
+  margin-right: var(--homey-su-1, 4px); /* 16px to the label, with the column gap */
+}
+.ds-fill {
+  height: 100%; width: var(--ds-fill, 0%); border-radius: inherit; background: var(--ds-level, var(--ds-blue));
+  transition: width .3s;
+}
+.ds .ds-left {
+  grid-column: 3; grid-row: 2; text-align: right; white-space: nowrap;
+  font-size: var(--ds-fs-label); line-height: var(--ds-lh-label); font-weight: var(--ds-medium);
+  color: var(--ds-muted); font-variant-numeric: tabular-nums;
+}
+.ds-left.over { color: var(--ds-red-text); }
+/* Without an interval there's nothing to fill towards; the line keeps its height. */
+.ds-row.no-due .ds-bar, .ds-row.no-due .ds-left { visibility: hidden; }
 
-/* Undo, for a few seconds after a tap: a grey pill at the end of the name row, its tap area reaching into the padding. */
+/* Amber, then red: the bar, the icon and the time in the colour. */
+.ds-row[data-level="amber"] { --ds-level: var(--ds-amber); --ds-level-text: var(--ds-amber-text); }
+.ds-row[data-level="red"] { --ds-level: var(--ds-red); --ds-level-text: var(--ds-red-text); }
+.ds-row[data-level] .ds-icon, .ds-row[data-level] .ds-value { color: var(--ds-level-text); }
+
+/* Undo, for a few seconds after a tap: a grey pill after the time, its tap area reaching past it. */
 .ds-undo {
-  display: none; flex: 0 0 auto; position: relative; height: 24px; margin: -2px -4px -2px 0; padding: 0 10px; border-radius: 12px;
+  display: none; flex: 0 0 auto; position: relative; height: 30px; margin: -3px 0; padding: 0 14px; border-radius: 15px;
   align-items: center; justify-content: center;
-  font-size: var(--ds-fs-label); line-height: var(--ds-lh-label); font-weight: var(--ds-bold);
+  font-size: var(--ds-fs-small); line-height: var(--ds-lh-small); font-weight: var(--ds-bold);
   background: var(--ds-neutral); color: var(--ds-text);
   outline: none; transition: transform .1s;
 }
-.ds-undo::before { content: ''; position: absolute; inset: -8px -6px -10px; }
-.ds-tile.undoable .ds-undo { display: flex; }
-.ds-tile.undoable { cursor: default; }
+.ds-undo::before { content: ''; position: absolute; inset: -8px -8px -10px -6px; }
+.ds-row.undoable .ds-undo { display: flex; }
+.ds-row.undoable { cursor: default; }
 .ds-undo.pressing { transform: scale(.95); }
-.ds-undo:focus-visible { box-shadow: 0 0 0 2px var(--ds-tile), 0 0 0 4px var(--ds-blue); }
+.ds-undo:focus-visible { box-shadow: 0 0 0 2px var(--ds-bg), 0 0 0 4px var(--ds-blue); }
 
 .ds-message { font-size: var(--ds-fs-small); line-height: var(--ds-lh-small); color: var(--ds-muted); }
 .ds-message.error { color: var(--ds-red); }
 
-.ds-tile.shake { animation: ds-shake .35s; }
+.ds-row.shake { animation: ds-shake .35s; }
 @keyframes ds-shake {
   20%, 60% { transform: translateX(-4px); }
   40%, 80% { transform: translateX(4px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ds-tile.shake { animation: none; }
+  .ds-row.shake { animation: none; }
+  .ds-fill { transition: none; }
 }

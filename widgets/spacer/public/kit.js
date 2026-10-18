@@ -167,7 +167,7 @@
     };
   }
 
-  /** An entry with the tile's own name from the settings, when one is set (a missing entry keeps none). */
+  /** An entry with its own name from the settings (Flow Buttons' `nameN`), when one is set (a missing entry keeps none). */
   function withName(entry, name) {
     const n = typeof name === 'string' ? name.trim() : '';
     return n && entry && !('missing' in entry) ? { ...entry, name: n } : entry;

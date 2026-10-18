@@ -424,6 +424,12 @@
     "notStarted": "Nie rozpoczęto",
     "undo": "Cofnij",
     "resetLabel": "__name__: __time__. Dotknij, aby wyzerować.",
+    "left": "jeszcze __time__",
+    "over": "+__time__",
+    "shortDay": "__n__ d",
+    "shortWeek": "__n__ tyg.",
+    "shortMonth": "__n__ mies.",
+    "shortYear": "__n__ l.",
     "newCounter": "Nowy licznik",
     "anyCounter": "Dowolny licznik"
   },

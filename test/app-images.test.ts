@@ -10,7 +10,7 @@ describe('app store images', () => {
     expect(ids.length).toBeGreaterThan(0);
     expect(new Set(ids).size).toBe(ids.length);
     for (const id of ids) expect(existsSync(`widgets/${id}/preview-${config.theme}.png`), id).toBe(true);
-    expect(existsSync(config.background.image)).toBe(true);
+    expect(config.background.stops.length).toBeGreaterThanOrEqual(2);
   });
 
   it("are the app's images, in Homey's sizes", () => {

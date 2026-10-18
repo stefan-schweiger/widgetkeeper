@@ -15,7 +15,7 @@
     "ar": "أيام منذ"
   },
   "height": 136,
-  "transparent": true,
+  "transparent": false,
   "settings": [
     {
       "id": "units",

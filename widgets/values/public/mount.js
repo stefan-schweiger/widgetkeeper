@@ -18,11 +18,9 @@ window.mountValuesWidget = function (Homey, { root, frame }) {
   const sdkAt = performance.now();
   const settings = Homey.getSettings() || {};
   // Each slot setting is an autocomplete item whose id is `<deviceId>:<capabilityId>`.
-  // An optional name per tile (`nameN`, text) replaces the device's.
-  const picked = [1, 2, 3, 4, 5, 6]
-    .map(n => ({ id: settings[`slot${n}`] && settings[`slot${n}`].id, name: settings[`name${n}`] }))
-    .filter(s => typeof s.id === 'string' && s.id.indexOf(':') > 0 && !s.id.endsWith(':')); // as parseSlot(), so the names stay in line
-  const slots = picked.map(s => s.id);
+  const slots = [1, 2, 3, 4, 5, 6]
+    .map(n => settings[`slot${n}`] && settings[`slot${n}`].id)
+    .filter(id => typeof id === 'string' && id.indexOf(':') > 0 && !id.endsWith(':')); // as parseSlot()
   let readySent = false;
   let loaded = false;
 
@@ -32,11 +30,11 @@ window.mountValuesWidget = function (Homey, { root, frame }) {
     renameTiles: settings.renameTiles === true,
     onRename: (key, name) => tileNames.rename(key, name),
     columns: settings.columns,
+    tileStyle: settings.tileStyle,
     colorStyle: settings.colorStyle,
     percentFill: settings.percentFill === true,
     redBelow: settings.redBelow,
     yellowBelow: settings.yellowBelow,
-    names: picked.map(s => s.name),
     onHeight: () => {
       if (!readySent) return;
       Homey.setHeight(bodyHeight());

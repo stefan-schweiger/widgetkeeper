@@ -27,8 +27,6 @@ window.mountSensorAlarmsWidget = function (Homey, { root, frame }) {
     renameTiles: settings.renameTiles === true,
     onRename: (key, name) => tileNames.rename(key, name),
     includeStates: settings.includeStates === true,
-    // One optional name per line: `Device name = Tile name`, or a plain name for the device in that position.
-    names: typeof settings.names === 'string' ? settings.names.split(/\r?\n/) : [],
     onHeight: () => {
       if (!readySent) return;
       Homey.setHeight(bodyHeight());

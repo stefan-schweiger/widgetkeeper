@@ -98,7 +98,7 @@
   MOUNT.textline(el('w-textline'), { opts: { source: 'flow', icon: 'bell' }, board: board('The washing machine is done', 'blue') });
   MOUNT.textline(el('w-textline-note'), findWidget('textline'));
 
-  // Days Since isn't on a showcase dashboard: the README's household, one tile amber, one red, and Fish just fed (Undo).
+  // Days Since isn't on a showcase dashboard: the README's household, one row amber, one red, and Fish just fed (Undo).
   const DAY = 864e5;
   MOUNT.dayssince(el('w-dayssince'), { counters: [
     { name: 'Plants watered', icon: 'leaf', amber: 5, red: 7, ago: 6 * DAY + 3 * 3600e3 },
@@ -108,5 +108,5 @@
     { name: 'Descale coffee machine', icon: 'coffee', amber: 50, red: 60, ago: 23 * DAY },
     { name: 'Smoke alarm test', icon: 'bell', amber: 25, red: 30, ago: 12 * DAY },
   ] });
-  el('w-dayssince').querySelectorAll('.ds-tile')[3].click();
+  el('w-dayssince').querySelectorAll('.ds-row')[3].click();
 })();

@@ -424,6 +424,12 @@
     "notStarted": "Nicht gestartet",
     "undo": "Rückgängig",
     "resetLabel": "__name__: __time__. Tippen zum Zurücksetzen.",
+    "left": "noch __time__",
+    "over": "+__time__",
+    "shortDay": "__n__ T.",
+    "shortWeek": "__n__ Wo.",
+    "shortMonth": "__n__ Mon.",
+    "shortYear": "__n__ J.",
     "newCounter": "Neuer Zähler",
     "anyCounter": "Beliebiger Zähler"
   },

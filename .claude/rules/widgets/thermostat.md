@@ -1,0 +1,22 @@
+---
+paths:
+  - "widgets/thermostat/**"
+  - "test/thermostat-*.test.ts"
+  - "dev/thermostat-preview.html"
+  - "lib/ThermostatService.ts"
+  - "lib/deviceIcon.ts"
+  - "widgets/varpresets/**"
+---
+# Thermostat Presets widget (`thermostat`)
+
+- Three preset buttons for one device (the `device` autocomplete); `lib/ThermostatService.ts`.
+- Per button: `bNPower` (keep/on/off) and the autocompletes `bNMode`, `bNTemp` and `bNExtra`, in that order, each item `{capabilityId, value}`, read from the device's `target_temperature` range and its settable enum capabilities. Titled as in *Widget settings* (wk-066): `Button 1: power`, then `  – Mode`, `  – Temperature`, `  – Fan or other setting` (`test/locales.test.ts` checks every language).
+- `GET /state?deviceId=` (re-read as the usual device widget: renames show, changed capabilities re-track, a device that can't be read is `{missing: true}`; any other failed refresh keeps the buttons with a transient error) and `POST /apply {deviceId, values}`. Realtime `thermostat:state`.
+- `apply` sets `onoff=true` first and `onoff=false` last, and sends mode → temperature → extra one at a time, waiting up to 4 s for each to be reported (some drivers check the fan speed against the *current* mode). It skips values the device has right then, updating its view after each confirmed value (aircons with a setpoint per mode bring back the mode's own setpoint).
+- The **Mode** field defines the mode capability (often the driver's own, not `thermostat_mode`). Without `onoff`, "turn off" becomes that mode's `off` value and "turn on" is dropped (`deviceValues()` in the widget).
+- A button is highlighted while the device matches every value it sets; a preset that doesn't turn the device off never matches while it's off. Without a match, the header shows `Currently Cool 23° · Fan auto` under the name.
+- Layout: a header with the device icon and name, then a segmented row of three buttons whose text comes from the preset (`21°` / `Heat` / `Fan slow`, or `Off`; no custom labels or icons). The name and values are 17 bold; the mode/extra text 12/16, a deliberate exception so three lines fit the 68 px buttons.
+- `layout` (`standard`; `compact` adds `.tw-compact`, CSS only on the same markup, about 108 px with the frame against 156): a one-line header (`· Currently …` ellipsized beside the name, `.has-sub`; an error wraps below) and one-line buttons with the value and the mode, or the first extra without a mode (`.tw-modetext ~ .tw-extra` hides the rest, so presets that differ only in fan speed read the same).
+- Dark mode: `body.tw-frame` mimics Homey's native device tiles (gated on `.homey-dark-mode`; light mode keeps the default frame): a `#181920` fill and a 1 px rim, lighter at the top (a fixed `::after`, out of the height), with a 10 px radius measured from a phone screenshot. Other widgets' dark frames copy it.
+- **The shared presets module** (wk-068, for Variable Presets; Charts' pattern) is `public/presets.js` + `presets.css`, `window.WidgetkeeperPresets.create(root, hooks)`: the header (icon, name, subtitle), the segmented row (`--tw-count` columns), which button is lit (10 s optimistic after a tap, then `matches`), the shake and the messages (transient 8 s; persistent ones clear the state), the height. The hooks are `text(preset, state)` → `{big, mode, kind, extras}`, `matches`, `usable` (else disabled), `apply`, `failed(err)`, `current(state, presets)`, plus `layout`, `onHeight` and `fallbackIcon: false` (no icon box without an icon). `presets.css` has everything but the mode colours (`[data-kind]` in the thermostat's `widget.css`), the `tw-` classes kept, so the thermostat's screenshot and previews stayed byte-identical. `widget.js` keeps the device model and text and reads `core.getState()`/`core.presets()`. Both `index.html`s, the dev pages that mount either, `DEPS` in `test/helpers/loadWidget.ts` and in the stack's `mount.js` load it first; the frame check reads `presets.css`, the rim check every `.css`.
+- Device icons (`lib/deviceIcon.ts`, used by every device widget): fetched by the app, sent as an SVG data URL and used as a CSS mask (a rounded square as fallback). A user-picked icon (`device.iconOverride`, e.g. `lock`) is `https://my.homey.app/img/devices/<name>.svg` (public; the web app loads it from there), else the driver's `api.baseUrl` + `device.iconObj.url`. Each URL is fetched once per app run (it took 150–450 ms per widget load); a fetch gives up after 5 s, and a failed URL fails at once for 10 min (logged once).

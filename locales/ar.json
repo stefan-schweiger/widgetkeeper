@@ -424,6 +424,12 @@
     "notStarted": "لم يبدأ",
     "undo": "تراجع",
     "resetLabel": "__name__: __time__. المس لإعادة الضبط.",
+    "left": "متبقٍ __time__",
+    "over": "+__time__",
+    "shortDay": "__n__ ي",
+    "shortWeek": "__n__ أسب",
+    "shortMonth": "__n__ ش",
+    "shortYear": "__n__ س",
     "newCounter": "عداد جديد",
     "anyCounter": "أي عداد"
   },

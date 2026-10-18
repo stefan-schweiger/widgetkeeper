@@ -424,6 +424,12 @@
     "notStarted": "Non iniziato",
     "undo": "Annulla",
     "resetLabel": "__name__: __time__. Tocca per azzerare.",
+    "left": "ancora __time__",
+    "over": "+__time__",
+    "shortDay": "__n__ g",
+    "shortWeek": "__n__ sett.",
+    "shortMonth": "__n__ mes.",
+    "shortYear": "__n__ a",
     "newCounter": "Nuovo contatore",
     "anyCounter": "Qualsiasi contatore"
   },

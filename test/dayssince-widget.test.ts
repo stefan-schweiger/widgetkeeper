@@ -26,11 +26,13 @@ function widget(entries: object[], opts: object = {}) {
   const onHaptic = vi.fn();
   const w = win.createDaysSinceWidget(root, { counters: COUNTERS, language: 'en', onReset, onUndo, onHaptic, ...opts });
   w.setState({ now: Date.now(), language: 'en', counters: entries });
-  const tiles = () => [...root.querySelectorAll<HTMLElement>('.ds-tile')];
+  const tiles = () => [...root.querySelectorAll<HTMLElement>('.ds-row')];
   const value = (i: number) => tiles()[i].querySelector('.ds-value')!.textContent;
   const undo = (i: number) => tiles()[i].querySelector<HTMLElement>('.ds-undo')!;
+  const left = (i: number) => tiles()[i].querySelector<HTMLElement>('.ds-left')!;
+  const fill = (i: number) => tiles()[i].querySelector<HTMLElement>('.ds-bar')!.style.getPropertyValue('--ds-fill');
   const message = () => root.querySelector<HTMLElement>('.ds-message')!;
-  return { w, root, tiles, value, undo, message, onReset, onUndo, onHaptic };
+  return { w, root, tiles, value, undo, left, fill, message, onReset, onUndo, onHaptic };
 }
 
 const tap = (node: HTMLElement) => { touch(node, 'touchstart', 10, 10); touch(node, 'touchend', 10, 10); };
@@ -73,6 +75,17 @@ describe('helpers', () => {
     expect(win.daysSinceLevel(c, null, r)).toBeNull();
   });
 
+  it('fills towards red (else amber) and counts the whole days left, or over', () => {
+    const r = Date.now();
+    expect(win.daysSinceProgress({ amber: 5, red: 8 }, r, r + 6 * DAY)).toEqual({ fill: 0.75, left: 2, over: null });
+    expect(win.daysSinceProgress({ amber: 5, red: 8 }, r, r + 8 * DAY - HOUR)).toEqual({ fill: (8 * DAY - HOUR) / (8 * DAY), left: 1, over: null });
+    expect(win.daysSinceProgress({ amber: 5, red: 8 }, r, r + 8 * DAY)).toEqual({ fill: 1, left: null, over: 1 });
+    expect(win.daysSinceProgress({ amber: 5, red: 8 }, r, r + 10 * DAY + HOUR)).toEqual({ fill: 1, left: null, over: 3 });
+    expect(win.daysSinceProgress({ amber: 4, red: null }, r, r + DAY)).toEqual({ fill: 0.25, left: 3, over: null });
+    expect(win.daysSinceProgress({ amber: null, red: null }, r, r + DAY)).toBeNull();
+    expect(win.daysSinceProgress({ amber: 5, red: 8 }, null, r)).toBeNull();
+  });
+
   it('reads the counters from the settings', () => {
     const counters = win.daysSinceCountersFromSettings({
       counter1: { id: 'Plants', name: 'Plants' }, icon1: { id: 'leaf' }, amber1: 3, red1: 0,
@@ -93,7 +106,7 @@ describe('helpers', () => {
 
 });
 
-describe('tiles', () => {
+describe('rows', () => {
   it('shows each counter\'s time since and colour', () => {
     const { tiles, value } = widget([
       { key: 'plants', resetAt: Date.now() - 6 * DAY },
@@ -108,7 +121,41 @@ describe('tiles', () => {
     expect(tiles()[2].classList.contains('not-started')).toBe(true);
     expect(tiles()[0].querySelector('.ds-icon path')!.getAttribute('d')).toBe(FLOW_ICON_PATHS.leaf.d);
     expect(tiles()[2].querySelector('.ds-icon')).toBeNull();
-    expect(tiles()[0].getAttribute('aria-label')).toBe('Plants: 6 days. Tap to reset.');
+    expect(tiles()[0].getAttribute('aria-label')).toBe('Plants: 6 days, 1 d left. Tap to reset.');
+  });
+
+  it('shows a bar and the time left under each name, in short units', () => {
+    const { tiles, left, fill } = widget([
+      { key: 'plants', resetAt: Date.now() - 6 * DAY },
+      { key: 'filter', resetAt: Date.now() - 23 * DAY },
+      { key: 'fish', resetAt: Date.now() - DAY },
+    ]);
+    expect(left(0).textContent).toBe('1 d left');
+    expect(fill(0)).toBe(`${(6 / 7 * 100).toFixed(2)}%`);
+    expect(left(1).textContent).toBe('2 mo left'); // 67 days to red
+    expect(left(1).classList.contains('over')).toBe(false);
+    expect(left(2).textContent).toBe(''); // no intervals: no bar
+    expect(tiles()[2].classList.contains('no-due')).toBe(true);
+    expect(tiles()[0].classList.contains('no-due')).toBe(false);
+  });
+
+  it('says how long a red counter is overdue, in red', () => {
+    const { tiles, left, fill } = widget([{ key: 'filter', resetAt: Date.now() - 125 * DAY }]);
+    expect(tiles()[1].dataset.level).toBe('red');
+    expect(left(1).textContent).toBe('+5 w'); // 35 days past 90
+    expect(left(1).classList.contains('over')).toBe(true);
+    expect(fill(1)).toBe('100.00%');
+  });
+
+  it('counts the time left in days with `units: days`', () => {
+    const { left } = widget([{ key: 'filter', resetAt: Date.now() - 23 * DAY }], { units: 'days' });
+    expect(left(1).textContent).toBe('67 d left');
+  });
+
+  it('a counter not started has an empty bar and no label', () => {
+    const { left, fill } = widget([{ key: 'plants', resetAt: null }]);
+    expect(left(0).textContent).toBe('');
+    expect(fill(0)).toBe('0%');
   });
 
   it('says 7 days on the 7th day, but turns red only at the time of the reset', () => {
@@ -141,15 +188,15 @@ describe('tiles', () => {
     expect(message().textContent).toBe('Name your counters in the widget settings.');
   });
 
-  it('a failed first load shows the error instead of the tiles; a failed refresh keeps them', () => {
+  it('a failed first load shows the error instead of the rows; a failed refresh keeps them', () => {
     const root = document.createElement('div');
     document.body.append(root);
     const w = win.createDaysSinceWidget(root, { counters: COUNTERS });
     w.setMessage('Could not load the counters.', false);
-    expect(root.querySelector<HTMLElement>('.ds-grid')!.style.display).toBe('none');
+    expect(root.querySelector<HTMLElement>('.ds-list')!.style.display).toBe('none');
     w.setState({ now: Date.now(), counters: [{ key: 'plants', resetAt: Date.now() }] });
     w.setMessage('Could not load the counters.', true);
-    expect(root.querySelector<HTMLElement>('.ds-grid')!.style.display).toBe('');
+    expect(root.querySelector<HTMLElement>('.ds-list')!.style.display).toBe('');
   });
 
   it('takes realtime changes for its counters', () => {
@@ -163,7 +210,7 @@ describe('tiles', () => {
 
 describe('reset and undo', () => {
   it('a tap resets at once and offers Undo for 5 s', async () => {
-    const { tiles, value, onReset, onHaptic } = widget([{ key: 'plants', resetAt: Date.now() - 8 * DAY }]);
+    const { tiles, value, undo, onReset, onHaptic } = widget([{ key: 'plants', resetAt: Date.now() - 8 * DAY }]);
     expect(tiles()[0].dataset.level).toBe('red');
     tap(tiles()[0]);
     expect(value(0)).toBe('Today');
@@ -171,6 +218,8 @@ describe('reset and undo', () => {
     expect(tiles()[0].classList.contains('undoable')).toBe(true);
     expect(onReset).toHaveBeenCalledWith('Plants');
     expect(onHaptic).toHaveBeenCalled();
+    expect(undo(0).parentElement!.classList.contains('ds-top')).toBe(true); // in the name's line, after the time
+
     await vi.advanceTimersByTimeAsync(5100);
     expect(tiles()[0].classList.contains('undoable')).toBe(false);
   });
@@ -188,11 +237,11 @@ describe('reset and undo', () => {
     expect(tiles()[0].classList.contains('undoable')).toBe(false);
     await vi.advanceTimersByTimeAsync(0);
     expect(onUndo).toHaveBeenCalledWith('Plants', at);
-    expect(onReset).toHaveBeenCalledTimes(1); // the Undo tap isn't also the tile's
+    expect(onReset).toHaveBeenCalledTimes(1); // the Undo tap isn't also the row's
     expect(value(0)).toBe('8 days');
   });
 
-  it('a tap on the tile while Undo shows does nothing', async () => {
+  it('a tap on the row while Undo shows does nothing', async () => {
     const { tiles, onReset } = widget([{ key: 'plants', resetAt: Date.now() - 8 * DAY }]);
     tap(tiles()[0]);
     await vi.advanceTimersByTimeAsync(0);
@@ -218,7 +267,7 @@ describe('reset and undo', () => {
     expect(onUndo).toHaveBeenCalledWith('Plants', Date.now());
   });
 
-  it('a failed reset puts the time back and shakes the tile', async () => {
+  it('a failed reset puts the time back and shakes the row', async () => {
     const { tiles, value, message } = widget([{ key: 'plants', resetAt: Date.now() - 6 * DAY }], {
       onReset: async () => { throw new Error('offline'); },
     });

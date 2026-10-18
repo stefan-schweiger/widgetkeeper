@@ -424,6 +424,12 @@
     "notStarted": "Не начат",
     "undo": "Отменить",
     "resetLabel": "__name__: __time__. Нажмите, чтобы сбросить.",
+    "left": "ещё __time__",
+    "over": "+__time__",
+    "shortDay": "__n__ д",
+    "shortWeek": "__n__ нед",
+    "shortMonth": "__n__ мес",
+    "shortYear": "__n__ г",
     "newCounter": "Новый счётчик",
     "anyCounter": "Любой счётчик"
   },

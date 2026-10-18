@@ -1,8 +1,9 @@
 /*
- * Days Since: counters for household rhythms (plants watered, a filter changed, sheets washed) as tiles: the icon and
- * the time since the last reset on top, the name below. A tile turns amber, then red, the set number of days after
- * its reset. A tap starts it again from today, with Undo for a few seconds. The counters live in the app, shared by
- * name with other widgets and Flows.
+ * Days Since: counters for household rhythms (plants watered, a filter changed, sheets washed) as a list: per row the
+ * icon, the name and the time since the last reset, then a bar filling up towards the day it's due and the time left
+ * (or how long it's overdue). A row turns amber, then red, the set number of days after its reset. A tap starts it
+ * again from today, with Undo for a few seconds. The counters live in the app, shared by name with other widgets and
+ * Flows.
  * Plain browser JS (served as-is).
  */
 (function () {
@@ -28,6 +29,12 @@
     notStarted: 'Not started',
     undo: 'Undo',
     resetLabel: '__name__: __time__. Tap to reset.',
+    left: '__time__ left',
+    over: '+__time__',
+    shortDay: '__n__ d',
+    shortWeek: '__n__ w',
+    shortMonth: '__n__ mo',
+    shortYear: '__n__ y',
   };
 
   /** The tile icons: Flow Buttons' (the kit's; the `iconN` settings list them through FlowService's listIcons()). */
@@ -163,7 +170,27 @@
     return f ? f.format(value) : `${value} ${unit[0]}`;
   }
 
-  /** The time since a reset as a tile shows it: `Today`, `6 days`, `2 weeks` (`today` is the translated word). */
+  /**
+   * How far a counter is towards the day it's due (`red`, else `amber`), on exact time like the colours: `fill` 0–1,
+   * and the whole days `left` (at least 1) or, once past, `over` (from 1 in the first 24 h). Null without either
+   * interval or a reset.
+   */
+  function progressOf(counter, resetAt, now) {
+    const due = counter.red != null ? counter.red : counter.amber;
+    if (resetAt == null || due == null) return null;
+    const dueAt = resetAt + due * DAY;
+    if (now < dueAt) return { fill: Math.min(1, Math.max(0, (now - resetAt) / (due * DAY))), left: Math.ceil((dueAt - now) / DAY), over: null };
+    return { fill: 1, left: null, over: Math.max(1, Math.ceil((now - dueAt) / DAY)) };
+  }
+
+  const SHORT_KEYS = { day: 'shortDay', week: 'shortWeek', month: 'shortMonth', year: 'shortYear' };
+  /** A number of days as the label under a bar shows it: `2 d`, `5 w`, `3 mo` (`t` the widget's strings). */
+  function shortText(days, units, t) {
+    const a = amountOf(days, units);
+    return t(SHORT_KEYS[a.unit], { n: a.value });
+  }
+
+  /** The time since a reset as a row shows it: `Today`, `6 days`, `2 weeks` (`today` is the translated word). */
   function daysSinceText(days, units, language, locale, today) {
     if (days <= 0) return today || DEFAULT_STRINGS.today;
     const a = amountOf(days, units);
@@ -220,20 +247,22 @@
     let messageTimer = null;
 
     root.classList.add('ds');
-    const grid = el('div', { class: 'ds-grid' }, root);
+    const list = el('div', { class: 'ds-list' }, root);
     const messageEl = el('div', { class: 'ds-message', dir: 'auto' }, root);
 
     const tiles = counters.map((c) => {
-      const tile = el('div', { class: 'ds-tile', role: 'button', tabindex: '0', 'data-key': c.key }, grid);
+      const tile = el('div', { class: 'ds-row', role: 'button', tabindex: '0', 'data-key': c.key }, list);
+      if (c.icon) tile.appendChild(iconSvg(c.icon));
       const top = el('div', { class: 'ds-top' }, tile);
-      if (c.icon) top.appendChild(iconSvg(c.icon));
+      el('div', { class: 'ds-name', dir: 'auto', text: c.name }, top);
       const value = el('div', { class: 'ds-value', dir: 'auto' }, top);
-      const bottom = el('div', { class: 'ds-bottom' }, tile);
-      el('div', { class: 'ds-name', dir: 'auto', text: c.name }, bottom);
-      const undo = el('div', { class: 'ds-undo', role: 'button', tabindex: '0', text: t('undo') }, bottom);
+      const undo = el('div', { class: 'ds-undo', role: 'button', tabindex: '0', text: t('undo') }, top);
+      const bar = el('div', { class: 'ds-bar' }, tile);
+      el('div', { class: 'ds-fill' }, bar);
+      const left = el('div', { class: 'ds-left', dir: 'auto' }, tile);
       onTap(tile, () => reset(c));
       onTap(undo, () => undoReset(c));
-      return { counter: c, tile, value, undo };
+      return { counter: c, tile, value, undo, bar, left };
     });
 
     function haptic() {
@@ -361,7 +390,7 @@
       const screenNow = clock();
       const now = serverNow();
       for (const [key, mark] of undoable) if (mark.until <= screenNow) undoable.delete(key);
-      grid.style.display = counters.length && !failed ? '' : 'none';
+      list.style.display = counters.length && !failed ? '' : 'none';
       for (const tl of tiles) {
         const c = tl.counter;
         const e = entries.get(c.key);
@@ -375,7 +404,14 @@
         if (level) tl.tile.dataset.level = level;
         else delete tl.tile.dataset.level;
         tl.tile.classList.toggle('undoable', undoable.has(c.key));
-        tl.tile.setAttribute('aria-label', t('resetLabel', { name: c.name, time: text }));
+        const p = progressOf(c, resetAt, now);
+        const leftText = !p ? '' : p.over != null ? t('over', { time: shortText(p.over, units, t) })
+          : t('left', { time: shortText(p.left, units, t) });
+        tl.left.textContent = leftText;
+        tl.left.classList.toggle('over', !!p && p.over != null);
+        tl.tile.classList.toggle('no-due', c.red == null && c.amber == null);
+        tl.bar.style.setProperty('--ds-fill', p ? `${(p.fill * 100).toFixed(2)}%` : '0%');
+        tl.tile.setAttribute('aria-label', t('resetLabel', { name: c.name, time: leftText ? `${text}, ${leftText}` : text }));
       }
       const msg = messageText || (!counters.length ? t('setup') : null);
       messageEl.textContent = msg || '';
@@ -408,4 +444,5 @@
   window.daysSinceText = daysSinceText;
   window.daysSinceCalendarDays = calendarDays;
   window.daysSinceLevel = levelOf;
+  window.daysSinceProgress = progressOf;
 })();

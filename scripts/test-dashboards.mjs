@@ -162,16 +162,12 @@ const BUILD = {
     const counted = where(d => alarmCaps(d).length > 0, 8);
     const states = where(d => has(d, 'alarm_contact') || has(d, 'alarm_motion') || has(d, 'alarm_presence'), 6);
     const none = where(d => !(d.capabilities ?? []).some(c => c.startsWith('alarm_')), 1);
-    const named = counted.slice(0, 4);
-    const nameOf = id => devices.find(d => d.id === id)?.name ?? '';
     return { cols: 3, widgets: [
       w('sensoralarms', 'Defaults · alarm sensors', {}, counted),
       w('sensoralarms', 'Motion and contact counted', { includeStates: true }, [...states, ...counted.slice(0, 2)]),
       w('sensoralarms', 'Motion and contact not counted', {}, states),
-      w('sensoralarms', 'Renamed: Device = Tile', { names: named.map((id, i) => `${nameOf(id)} = Sensor ${i + 1}`).join('\n') }, named),
-      w('sensoralarms', 'Renamed by position, one kept', { names: 'First tile\n\nThird tile' }, named.slice(0, 3)),
       w('sensoralarms', 'No alarms · deleted device', {}, [...none, MISSING]),
-      renaming('sensoralarms', 'Rename tiles · over the names setting', { names: 'First tile' }, named.slice(0, 2), { [named[0]]: 'Typed name' }),
+      renaming('sensoralarms', 'Rename tiles', {}, counted.slice(0, 2), counted[0] ? { [counted[0]]: 'Typed name' } : {}),
     ] };
   },
 
@@ -282,10 +278,12 @@ const BUILD = {
     const missing = { id: `${MISSING}:measure_temperature`, name: 'Deleted device · Temperature' };
     return { cols: 2, widgets: [
       w('values', 'Temperatures · 3 columns', slots('slot', temps)),
-      w('values', 'Mixed types · 2 columns · renamed', { columns: '2', ...slots('slot', mixed), name1: 'Power', name3: 'Mode' }),
+      w('values', 'Mixed types · 2 columns', { columns: '2', ...slots('slot', mixed) }),
       w('values', 'Batteries · fill (red < 30, yellow < 50)', { percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
       w('values', 'Brightness (0–1 %) · fill', { percentFill: true, ...slots('slot', dims) }),
       w('values', 'Batteries · bright fill (red < 30, yellow < 50)', { colorStyle: 'bright', percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
+      w('values', 'Mixed types · pill', { tileStyle: 'pill', ...slots('slot', mixed) }),
+      w('values', 'Batteries · pill · bright fill · 2 columns', { tileStyle: 'pill', columns: '2', colorStyle: 'bright', percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
       w('values', 'Gaps and a deleted device', { ...slots('slot', [temps[0], null, missing, null, batteries[0]]) }),
       w('values', 'Nothing picked'),
       // The same value twice: the second tile's key is `#2`.

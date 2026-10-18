@@ -424,6 +424,12 @@
     "notStarted": "Ikke startet",
     "undo": "Angre",
     "resetLabel": "__name__: __time__. Trykk for å nullstille.",
+    "left": "__time__ igjen",
+    "over": "+__time__",
+    "shortDay": "__n__ d",
+    "shortWeek": "__n__ u",
+    "shortMonth": "__n__ mnd",
+    "shortYear": "__n__ år",
     "newCounter": "Ny teller",
     "anyCounter": "Hvilken som helst teller"
   },
