@@ -528,6 +528,12 @@
     "valueOn": "På",
     "valueOff": "Av",
     "missingValue": "Värdet hittades inte",
+    "otherApps": "Andra appar",
+    "otherAppsKey": "Andra appars widgetar kräver en API-nyckel med full åtkomst (Homey) i den här webbläsaren.",
+    "otherAppsFailed": "Kunde inte läsa andra appars widgetar.",
+    "notInstalled": "__name__ är inte installerad.",
+    "trustTitle": "Lita på den här widgeten",
+    "trustHint": "Kör den utanför sandlådan, för en widget som inte fungerar i den. En betrodd widget kan läsa den här webbläsarens API-nyckel.",
     "about": {
       "electricity": "Effekt i realtid, dagens priser och din förbrukning i diagram.",
       "thermostat": "Tre förinställningsknappar för en termostat eller AC.",

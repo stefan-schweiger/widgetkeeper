@@ -12,6 +12,11 @@
  * `getInitialData` (the widget's settings, devices, strings, dark mode), `api` (through the app's `/web/call`, to
  * the widget's own API), `registerRealtimeListener` (our app's realtime events, from Homey's realtime socket),
  * `ready`/`setHeight` (the frame's height), `popup` and `shortPressHapticFeedback`.
+ *
+ * Other apps' widgets (`homey:app:<appId>:<widgetId>`) run the same way from `/app/<appId>/widgets/<id>/`, but talk to
+ * Homey directly with this page's key: Homey's list of them, their own API, autocompletes, strings and realtime.
+ * Their frames are sandboxed (an opaque origin: they can't read this page's `localStorage`, where the key is) unless
+ * the user trusts one.
  */
 (function () {
   'use strict';
@@ -98,6 +103,12 @@
     valueOn: 'On',
     valueOff: 'Off',
     missingValue: 'Value not found',
+    otherApps: 'Other apps',
+    otherAppsKey: 'Other apps\' widgets need an API key with full access (Homey) in this browser.',
+    otherAppsFailed: 'Could not read other apps\' widgets.',
+    notInstalled: '__name__ isn\'t installed.',
+    trustTitle: 'Trust this widget',
+    trustHint: 'Runs it outside the sandbox, for a widget that doesn\'t work in it. A trusted widget can read this browser\'s API key.',
     about: {
       electricity: 'Live power, the day\'s prices and your usage in charts.',
       thermostat: 'Three preset buttons for a thermostat or an aircon.',
@@ -243,6 +254,34 @@
   /** The app id from this page's path (`/app/<appId>/settings/dashboard.html`). */
   const APP_ID = (location.pathname.match(/\/app\/([^/]+)\//) || [])[1] || 'com.thomassidor.widgetkeeper';
 
+  /** Another app's widget type (`homey:app:<appId>:<widgetId>`, its id on Homey's dashboards), split; null for ours. */
+  function appWidget(type) {
+    const m = /^homey:app:([A-Za-z0-9._-]{1,100}):([A-Za-z0-9_-]{1,60})$/.exec(String(type));
+    return m && m[1] !== APP_ID ? { appId: m[1], widgetId: m[2] } : null;
+  }
+
+  /** What another app's widget frame may do: no `allow-same-origin`, so it can't read this page or its key. */
+  const SANDBOX = 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox';
+
+  /** A text from another app's manifest: a string, or one per language. */
+  function appText(text, language) {
+    if (typeof text === 'string') return text;
+    if (text && typeof text === 'object') return text[language] || text.en || '';
+    return '';
+  }
+
+  /** `settings[device][id]=…`: settings as bracketed query keys, as Homey's autocomplete route reads them. */
+  function bracketQuery(params, value, prefix) {
+    for (const k of Object.keys(value || {})) {
+      const v = value[k];
+      const name = prefix ? `${prefix}[${k}]` : k;
+      if (v == null) continue;
+      if (typeof v === 'object') bracketQuery(params, v, name);
+      else params.append(name, String(v));
+    }
+    return params;
+  }
+
   /**
    * `opts.mountWidget(widget, wrap)`, when given, draws a widget into `wrap` in place of its iframe (the dev renders,
    * `dev/web-showcase.html`, mount the widgets with made-up data; `dashboard.html` never passes it).
@@ -252,6 +291,10 @@
     let session = storageGet(SESSION_STORAGE);
     let setup = null; // `/web/setup`: {appId, homeyId, language, strings, widgets, dashboards}
     let types = new Map(); // widget id → its type (name, settings, devices …)
+    let foreign = new Map(); // another app's widget (`homey:app:<appId>:<id>`) → its type, from Homey's list
+    let foreignState = null; // that list: 'ok', 'noScope' (this key may not read it) or 'failed'
+    const appLocales = new Map(); // app id → Promise of its strings
+    const typeOf = (type) => types.get(type) || foreign.get(type);
     let dashboards = [];
     let current = null; // {dashboard, editing, grid, columns: Map<widget id, {el, sig}>}
     let live = false;
@@ -270,18 +313,31 @@
     // ---- The app's API, with the key ------------------------------------------------------------------------
 
     async function request(method, path, body) {
+      const url = session ? `${path}${path.includes('?') ? '&' : '?'}session=${encodeURIComponent(session)}` : path;
+      return fetchJson(method, `/api/app/${APP_ID}${url}`, body, true);
+    }
+
+    /**
+     * Homey's own API (`/api<path>`) with the key: other apps' widget lists, routes, autocompletes and strings. A 403
+     * there is a permission this key lacks (`scope`), not a rejected key.
+     */
+    function homeyRequest(method, path, body) {
+      return fetchJson(method, `/api${path}`, body, false);
+    }
+
+    async function fetchJson(method, url, body, ours) {
       const headers = { Authorization: `Bearer ${key}` };
       if (body !== undefined) headers['Content-Type'] = 'application/json';
-      const url = session ? `${path}${path.includes('?') ? '&' : '?'}session=${encodeURIComponent(session)}` : path;
-      const res = await fetch(`/api/app/${APP_ID}${url}`, {
+      const res = await fetch(url, {
         method, headers, body: body === undefined ? undefined : JSON.stringify(body),
       });
       const text = await res.text();
       let data = null;
       try { data = text ? JSON.parse(text) : null; } catch (e) { data = text; }
-      if (res.status === 401 || res.status === 403) {
+      if (res.status === 401 || (ours && res.status === 403)) {
         throw Object.assign(new Error((data && data.error) || `HTTP ${res.status}`), { unauthorized: true });
       }
+      if (res.status === 403) throw Object.assign(new Error((data && data.error) || `HTTP ${res.status}`), { scope: true });
       if (!res.ok) {
         const err = new Error((data && (data.error || data.message)) || (typeof data === 'string' && data) || `HTTP ${res.status}`);
         // Signed out of the password (it changed, or was set meanwhile): ask for it again.
@@ -315,12 +371,85 @@
       }
     }
 
+    /**
+     * Other apps' widgets, from Homey's list of every app's (`getAppWidgets()`, which needs `homey.dashboard.readonly`:
+     * only a key with full access). Without it the dashboards still show them; only adding and editing them can't.
+     */
+    async function loadAll() {
+      // Asked at once, read once the setup (with Homey's language) is in.
+      const list = homeyRequest('GET', '/manager/dashboards/appwidget').then(all => ({ all, err: null }), err => ({ all: null, err }));
+      await loadSetup();
+      const { all, err } = await list;
+      foreign = new Map();
+      if (err) {
+        if (err.unauthorized) throw err;
+        foreignState = err.scope ? 'noScope' : 'failed';
+        return;
+      }
+      const language = (setup && setup.language) || 'en';
+      for (const w of Object.values(all || {})) {
+        const at = w && appWidget(w.id);
+        if (at) foreign.set(w.id, foreignType(w, at, language));
+      }
+      foreignState = 'ok';
+    }
+
+    /** Another app's widget as the editor offers it, like ours from `/web/setup` (`widgetTypes()`). */
+    function foreignType(w, at, language) {
+      const settings = (Array.isArray(w.settings) ? w.settings : []).filter(s => s && typeof s.id === 'string' && s.id).map((s) => {
+        const title = appText(s.title, language) || s.id;
+        const units = appText(s.units, language);
+        return {
+          id: s.id,
+          type: s.type,
+          title,
+          // A number's unit goes after its field, from the label's `(…)` (`splitUnit()`).
+          label: s.type === 'number' && units ? `${title} (${units})` : title,
+          hint: appText(s.hint, language) || null,
+          value: s.value === undefined ? null : s.value,
+          min: typeof s.min === 'number' ? s.min : undefined,
+          max: typeof s.max === 'number' ? s.max : undefined,
+          values: Array.isArray(s.values) ? s.values.map(v => ({ id: String(v.id), title: appText(v.title, language) || String(v.id) })) : undefined,
+        };
+      });
+      const filter = (w.devices && w.devices.filter) || {};
+      const anyOf = (v) => (Array.isArray(v) ? v.join('|') : v == null ? '' : String(v));
+      return {
+        type: w.id,
+        app: at,
+        name: appText(w.name, language) || at.widgetId,
+        ownerName: appText(w.ownerName, language) || at.appId,
+        height: typeof w.height === 'number' ? w.height : null,
+        transparent: w.transparent === true,
+        devices: w.devices ? { singular: w.devices.singular === true, app: w.devices.type === 'app', class: anyOf(filter.class), capabilities: anyOf(filter.capabilities) } : null,
+        settings,
+        // Other apps' titles don't follow ours (CLAUDE.md, *Widget settings*): one card of them.
+        sections: settings.length ? [{ kind: 'plain', ids: settings.map(s => s.id) }] : [],
+        deprecated: w.deprecated === true,
+      };
+    }
+
+    /** Another app's strings in Homey's language, as Homey gives its widget frames (`Homey.__`); `{}` when they can't be read. */
+    function stringsOf(appId) {
+      let p = appLocales.get(appId);
+      if (!p) {
+        p = homeyRequest('GET', `/manager/apps/app/${encodeURIComponent(appId)}/locale`).then(s => (s && typeof s === 'object' ? s : {}), () => {
+          appLocales.delete(appId); // tried again by the next frame
+          return {};
+        });
+        appLocales.set(appId, p);
+      }
+      return p;
+    }
+
     // ---- Realtime: Homey's socket (socket.io v2), as homey-api connects ------------------------------------
 
     let socketGen = 0;
     let retryMs = 2000;
     let lostAt = null;
     let activeSocket = null;
+    let activeNs = null; // its `/api` namespace, once subscribed
+    const otherApps = new Set(); // the other apps whose events their widgets' frames listen to
     let retryTimer = null;
 
     /** Closes a socket with its connection: closing the root socket alone left the `/api` namespace's open. */
@@ -336,6 +465,7 @@
       retryMs = 2000;
       if (retryTimer) clearTimeout(retryTimer);
       retryTimer = null;
+      activeNs = null;
       if (activeSocket) closeSocket(activeSocket);
       activeSocket = null;
     }
@@ -373,6 +503,7 @@
         if (failed || gen !== socketGen) return;
         failed = true;
         console.warn('Realtime:', why && why.message ? why.message : why);
+        activeNs = null;
         closeSocket(socket);
         setLive(false);
         if (lostAt == null) lostAt = Date.now();
@@ -386,7 +517,7 @@
         const res = await ack(socket, 'handshakeClient', { token: key, homeyId: setup.homeyId });
         const ns = socket.io.socket(res && res.namespace ? res.namespace : '/api');
         const uri = `homey:app:${APP_ID}`;
-        ns.on(uri, (event, data) => dispatch(event, data));
+        ns.on(uri, (event, data) => dispatch(uri, event, data));
         if (!ns.connected) {
           const nsConnected = waitFor(ns, 'connect');
           ns.open();
@@ -397,6 +528,8 @@
         ns.on('disconnect', () => fail('namespace disconnected'));
         if (failed) return;
         if (gen !== socketGen) { closeSocket(socket); return; } // stopped meanwhile
+        activeNs = ns;
+        for (const appId of otherApps) subscribeApp(ns, appId);
         retryMs = 2000;
         setLive(true);
         if (lostAt != null && Date.now() - lostAt > STALE_AFTER_MS) reloadFrames();
@@ -411,8 +544,25 @@
       for (const node of root.querySelectorAll('.wd-live')) /** @type {HTMLElement} */ (node).hidden = on;
     }
 
-    function dispatch(event, data) {
-      for (const fn of listeners.get(event) || []) {
+    /** Another app's realtime events (`homey:app:<appId>`), for its widgets' frames; one that fails just stays quiet. */
+    function subscribeApp(ns, appId) {
+      const uri = `homey:app:${appId}`;
+      ns.on(uri, (event, data) => dispatch(uri, event, data));
+      ack(ns, 'subscribe', uri).catch(err => console.warn(`Realtime ${uri}:`, err && err.message ? err.message : err));
+    }
+
+    /** Subscribes to an app's events once its first widget frame listens (and again on every new socket). */
+    function listenToApp(appId) {
+      if (otherApps.has(appId)) return;
+      otherApps.add(appId);
+      if (activeNs && activeNs.connected) subscribeApp(activeNs, appId);
+    }
+
+    /** Listeners are per app and event (`homey:app:<appId>\n<event>`): two apps may both send `state`. */
+    const listenerKey = (uri, event) => `${uri}\n${event}`;
+
+    function dispatch(uri, event, data) {
+      for (const fn of listeners.get(listenerKey(uri, event)) || []) {
         try { fn(data); } catch (e) { console.error(e); }
       }
     }
@@ -421,7 +571,8 @@
 
     function post(frame, message) {
       const win = frame.iframe.contentWindow;
-      if (win) win.postMessage(PREFIX + hexEncode(JSON.stringify(message)), location.origin);
+      // A sandboxed frame (another app's widget) has an opaque origin, which no target origin but `*` matches.
+      if (win) win.postMessage(PREFIX + hexEncode(JSON.stringify(message)), frame.sandboxed ? '*' : location.origin);
     }
 
     function reply(frame, callbackId, err, result) {
@@ -442,26 +593,45 @@
       if (Number.isFinite(h) && h >= 0) frame.iframe.style.height = `${Math.ceil(h)}px`;
     }
 
+    /**
+     * Another app's widget's own request (`Homey.api(method, path, body)`), straight to that widget's API on the
+     * Homey (`/api/app/<appId>/widget/<widgetId>/api<path>`, as Homey's dashboard calls it) with this page's key.
+     * Only below that: a path that leaves it (`..`) is refused, or a sandboxed widget could use the key for anything.
+     */
+    function appApi(app, method, path, qs, body) {
+      const base = `/app/${encodeURIComponent(app.appId)}/widget/${encodeURIComponent(app.widgetId)}/api`;
+      const rel = `${base}${String(path).startsWith('/') ? '' : '/'}${path}`;
+      const url = new URL(`/api${rel}`, location.origin);
+      if (url.pathname !== `/api${rel}` || !url.pathname.startsWith(`/api${base}/`)) return Promise.reject(new Error(`Not a widget route: ${path}`));
+      const withBody = method !== 'GET' && method !== 'DELETE';
+      return homeyRequest(method, `${rel}${qs ? `?${qs}` : ''}`, withBody ? (body == null ? {} : body) : undefined);
+    }
+
     function handle(frame, msg) {
       const id = msg.callbackId;
       const w = frame.widget;
-      const def = types.get(w.type);
+      const def = typeOf(w.type);
       switch (msg.event) {
-        case 'getInitialData':
+        case 'getInitialData': {
           // A new document in the frame (it reloads when it's moved): the old one's listeners and pending answers go.
           dropListeners(frame);
-          frame.gen++;
-          reply(frame, id, null, {
-            settings: clone(w.settings || {}),
-            deviceIds: (w.deviceIds || []).slice(),
-            transparent: !!(def && def.transparent),
-            locales: (setup && setup.strings) || {},
-            language: (setup && setup.language) || 'en',
-            devmode: false,
-            fontScale: 1,
-            isDarkMode: isDark(),
+          const gen = ++frame.gen;
+          const strings = frame.app ? stringsOf(frame.app.appId) : Promise.resolve((setup && setup.strings) || {});
+          strings.then((locales) => {
+            if (frame.gen !== gen) return;
+            reply(frame, id, null, {
+              settings: clone(w.settings || {}),
+              deviceIds: (w.deviceIds || []).slice(),
+              transparent: !!(def && def.transparent),
+              locales,
+              language: (setup && setup.language) || 'en',
+              devmode: false,
+              fontScale: 1,
+              isDarkMode: isDark(),
+            });
           });
           break;
+        }
         case 'ready':
           if (msg.data && msg.data.height != null) setFrameHeight(frame, msg.data.height);
           reply(frame, id, null, null);
@@ -477,7 +647,8 @@
           new URLSearchParams(qs || '').forEach((v, k) => { query[k] = v; });
           // The page's key goes along: a route that acts with the app's stored key checks that this key may too.
           const gen = frame.gen;
-          request('POST', '/web/call', { type: w.type, method: String(data.method || 'GET').toUpperCase(), path, query, body: data.body == null ? {} : data.body, key })
+          const method = String(data.method || 'GET').toUpperCase();
+          (frame.app ? appApi(frame.app, method, path, qs, data.body) : request('POST', '/web/call', { type: w.type, method, path, query, body: data.body == null ? {} : data.body, key }))
             .then(result => { if (frame.gen === gen) reply(frame, id, null, result); }, (err) => {
               if (frame.gen === gen) reply(frame, id, err);
               // A rejected key, or the dashboards turned off, is the page's to handle, as for its own requests.
@@ -486,7 +657,8 @@
           break;
         }
         case 'registerRealtimeListener': {
-          const event = String(msg.data || '');
+          const event = listenerKey(`homey:app:${frame.app ? frame.app.appId : APP_ID}`, String(msg.data || ''));
+          if (frame.app) listenToApp(frame.app.appId);
           const fn = (data) => post(frame, { type: 'cb', args: [data], callbackId: id });
           frame.subs.set(id, { event, fn });
           if (!listeners.has(event)) listeners.set(event, new Set());
@@ -608,7 +780,7 @@
         key = value;
         go.disabled = true;
         try {
-          await loadSetup();
+          await loadAll();
           storageSet(KEY_STORAGE, key);
           route();
         } catch (err) {
@@ -699,17 +871,27 @@
       return note;
     }
 
-    /** A widget type's short description (`web.about.<type>`). */
+    /** A widget type's short description (`web.about.<type>`); another app's widget's is its app's name. */
     function about(type) {
+      const other = foreign.get(type);
+      if (other) return other.ownerName;
       const strings = setup && setup.strings && setup.strings.web;
       const own = strings && strings.about && strings.about[type];
       return (typeof own === 'string' && own) || DEFAULT_STRINGS.about[type] || '';
     }
 
+    /** Where the Homey serves a widget's files (`index.html`, the previews): ours beside this page, another app's under it. */
+    function widgetFolder(type) {
+      const app = appWidget(type);
+      return app
+        ? `/app/${encodeURIComponent(app.appId)}/widgets/${encodeURIComponent(app.widgetId)}`
+        : `../widgets/${encodeURIComponent(type)}`;
+    }
+
     /** A widget type's own preview (as Homey's widget picker shows it), served beside its files, in the page's theme. */
     function preview(type, className) {
       const img = el('img', className);
-      img.src = `../widgets/${encodeURIComponent(type)}/preview-${isDark() ? 'dark' : 'light'}.png`;
+      img.src = `${widgetFolder(type)}/preview-${isDark() ? 'dark' : 'light'}.png`;
       img.alt = '';
       img.loading = 'lazy';
       img.decoding = 'async';
@@ -858,7 +1040,7 @@
     }
 
     /** The widget ids' frame signature: a change (settings, devices, title, theme) reloads that frame. */
-    const signature = (w) => JSON.stringify([w.type, w.title, w.settings, w.deviceIds, isDark()]);
+    const signature = (w) => JSON.stringify([w.type, w.title, w.settings, w.deviceIds, w.trusted === true, isDark()]);
 
     function renderDashboard(dashboard, editing) {
       clearRoot();
@@ -1015,15 +1197,18 @@
     }
 
     function widgetElement(w) {
-      const def = types.get(w.type);
+      const app = appWidget(w.type);
+      // Another app's widget still shows when this key can't read Homey's list (its defaults then: a card, no height).
+      const def = typeOf(w.type) || (app && foreignState !== 'ok' ? { name: app.widgetId, height: null, transparent: false } : null);
       const node = el('article', 'wd-widget');
       node.dataset.id = w.id;
       if (current.editing) node.append(dragHandle(el('div', 'wd-tools')));
       if (w.title) node.append(el('h2', 'wd-title', w.title));
       if (!def) {
-        node.append(el('p', 'wd-error', w.type));
+        node.append(el('p', 'wd-error', app ? t('notInstalled', { name: app.appId }) : w.type));
         return node;
       }
+      if (app && opts.mountWidget) return node; // the dev renders draw only ours
       const wrap = el('div', def.transparent ? 'wd-frame' : 'wd-frame card');
       if (opts.mountWidget) {
         node.append(wrap);
@@ -1038,10 +1223,13 @@
       iframe.loading = 'lazy';
       // The dashboard and widget ids: a Timers widget keeps its own timer, a Media widget its speaker choice.
       const instance = `web-${current.dashboard.id}-${w.id}`;
-      iframe.src = `../widgets/${encodeURIComponent(w.type)}/index.html?widgetInstanceId=${encodeURIComponent(instance)}`;
+      // Another app's widget is sandboxed (no `allow-same-origin`: it can't read the key) unless the user trusts it.
+      const sandboxed = !!app && w.trusted !== true;
+      if (sandboxed) iframe.setAttribute('sandbox', SANDBOX);
+      iframe.src = `${widgetFolder(w.type)}/index.html?widgetInstanceId=${encodeURIComponent(instance)}`;
       wrap.append(iframe);
       node.append(wrap);
-      frames.add({ widget: clone(w), iframe, subs: new Map(), gen: 0 });
+      frames.add({ widget: clone(w), iframe, subs: new Map(), gen: 0, app, sandboxed });
       return node;
     }
 
@@ -1049,7 +1237,7 @@
     function setTools(node, w, c, i, n) {
       const tools = node.querySelector(':scope > .wd-tools');
       if (!tools) return;
-      const def = types.get(w.type);
+      const def = typeOf(w.type);
       const cols = current.dashboard.columns.length;
       tools.textContent = '';
       const grip = el('span', 'wd-grip', '⠿');
@@ -1057,7 +1245,7 @@
       grip.setAttribute('aria-hidden', 'true');
       tools.append(
         grip,
-        el('span', 'wd-tools-name', (def && def.name) || w.type),
+        el('span', 'wd-tools-name', (def && def.name) || (appWidget(w.type) || { widgetId: w.type }).widgetId),
         el('span', 'wd-spacer'),
         button('wd-tool', '⚙', () => editWidget(w.id), t('settings')),
         button('wd-tool', '↑', () => move(w.id, 0, -1), t('moveUp')),
@@ -1143,7 +1331,7 @@
 
     function beginDrag() {
       const at = find(drag.id);
-      const def = at && types.get(at.widget.type);
+      const def = at && typeOf(at.widget.type);
       drag.active = true;
       root.classList.add('dragging');
       drag.node.classList.add('lifted');
@@ -1291,8 +1479,26 @@
       const { d, body } = dialog(t('chooseWidget'));
       d.classList.add('wide');
       const list = el('div', 'wd-types');
-      const sorted = [...types.values()].sort((a, b) => a.name.localeCompare(b.name));
-      for (const def of sorted) {
+      for (const def of [...types.values()].sort((a, b) => a.name.localeCompare(b.name))) list.append(typeButton(def));
+      body.append(list);
+      // Then other apps' widgets, by app (only what Homey still offers: not a deprecated one).
+      const others = [...foreign.values()].filter(f => !f.deprecated)
+        .sort((a, b) => a.ownerName.localeCompare(b.ownerName) || a.name.localeCompare(b.name));
+      if (others.length || foreignState !== 'ok') {
+        const head = el('div', 'wd-types-head');
+        head.append(el('h3', 'wd-h2', t('otherApps')));
+        if (foreignState === 'noScope') head.append(el('p', 'wd-muted', t('otherAppsKey')));
+        else if (foreignState === 'failed') head.append(el('p', 'wd-error', t('otherAppsFailed')));
+        body.append(head);
+      }
+      if (others.length) {
+        const more = el('div', 'wd-types');
+        for (const def of others) more.append(typeButton(def));
+        body.append(more);
+      }
+      d.showModal();
+
+      function typeButton(def) {
         const b = button('wd-type', '', () => {
           d.close();
           const settings = {};
@@ -1306,10 +1512,8 @@
         const text = el('span', 'wd-type-text');
         text.append(el('span', 'wd-type-name', def.name), el('span', 'wd-type-about', about(def.type)));
         b.append(preview(def.type, 'wd-type-preview'), text);
-        list.append(b);
+        return b;
       }
-      body.append(list);
-      d.showModal();
     }
 
     /**
@@ -1321,9 +1525,10 @@
       const at = find(id);
       if (!at) return;
       const w = at.widget;
-      const def = types.get(w.type);
+      const def = typeOf(w.type);
       if (!def) return;
       const draft = { title: w.title || '', settings: clone(w.settings || {}), deviceIds: (w.deviceIds || []).slice() };
+      const trust = { settings: { trusted: w.trusted === true } }; // another app's widget: run it unsandboxed
       for (const s of def.settings) if (!(s.id in draft.settings)) draft.settings[s.id] = clone(s.value);
       const { d, body } = dialog(def.name, def.type);
       d.classList.add('wd-settings');
@@ -1400,6 +1605,11 @@
         general.append(titleRow);
         body.insertBefore(general, body.querySelector(':scope > .wd-set-card:not(.wd-set-devices)') || null);
       }
+      if (def.app) {
+        const c = card();
+        c.append(settingRow(def, { id: 'trusted', type: 'checkbox', title: t('trustTitle'), hint: t('trustHint') }, trust, () => {}, uid()));
+        body.append(c);
+      }
 
       /** A numbered group (`Button 1`): a header that folds it, with what its values are; its rows under it. */
       function groupCard(sec, open) {
@@ -1468,6 +1678,8 @@
             now.widget.title = draft.title.trim();
             now.widget.settings = draft.settings;
             now.widget.deviceIds = draft.deviceIds;
+            if (trust.settings.trusted === true) now.widget.trusted = true;
+            else delete now.widget.trusted;
             persist();
             syncGrid();
           }
@@ -1660,7 +1872,9 @@
       const list = el('div', 'wd-devlist');
       const hint = el('p', 'wd-hint', t('dragToOrder'));
       let byId = null; // id → device, once loaded
-      const loading = request('GET', `/web/devices?type=${encodeURIComponent(def.type)}`).then((items) => {
+      // Another app's widget sends its filter: only this page can read that app's manifest.
+      const filter = def.app ? `&class=${encodeURIComponent(def.devices.class)}&capabilities=${encodeURIComponent(def.devices.capabilities)}${def.devices.app ? '&app=1' : ''}` : '';
+      const loading = request('GET', `/web/devices?type=${encodeURIComponent(def.type)}${filter}`).then((items) => {
         byId = new Map((items || []).map(d => [d.id, d]));
         draw();
         return items || [];
@@ -2090,8 +2304,11 @@
       const load = async () => {
         const mine = ++seq;
         try {
-          // The page's key goes along: the Smart Stack's dashboards are read with the app's stored key.
-          const items = await request('POST', '/web/autocomplete', { type: def.type, setting: s.id, query: search.value, settings: draft.settings, key });
+          // The page's key goes along: the Smart Stack's dashboards are read with the app's stored key. Another app's
+          // autocomplete is Homey's to ask that app (it needs a key with full access, as Homey's list of them does).
+          const items = def.app
+            ? await homeyRequest('GET', `/manager/dashboards/appwidget/${encodeURIComponent(def.type)}/autocomplete?${bracketQuery(new URLSearchParams({ settingId: s.id, query: search.value }), draft.settings, 'settings')}`)
+            : await request('POST', '/web/autocomplete', { type: def.type, setting: s.id, query: search.value, settings: draft.settings, key });
           if (mine !== seq) return;
           list.textContent = '';
           if (!items || !items.length) list.append(el('p', 'wd-hint', t('nothingFound')));
@@ -2160,7 +2377,7 @@
     async function start() {
       if (!key) { renderKey(); return; }
       try {
-        await loadSetup();
+        await loadAll();
         route();
       } catch (err) {
         if (err.unauthorized) {

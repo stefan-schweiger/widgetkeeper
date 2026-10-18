@@ -528,6 +528,12 @@
     "valueOn": "Aan",
     "valueOff": "Uit",
     "missingValue": "Waarde niet gevonden",
+    "otherApps": "Andere apps",
+    "otherAppsKey": "Widgets van andere apps hebben in deze browser een API-sleutel met volledige toegang (Homey) nodig.",
+    "otherAppsFailed": "Kon de widgets van andere apps niet lezen.",
+    "notInstalled": "__name__ is niet geïnstalleerd.",
+    "trustTitle": "Deze widget vertrouwen",
+    "trustHint": "Draait hem buiten de sandbox, voor een widget die daarin niet werkt. Een vertrouwde widget kan de API-sleutel van deze browser lezen.",
     "about": {
       "electricity": "Actueel vermogen, de prijzen van de dag en je verbruik in grafieken.",
       "thermostat": "Drie voorkeuzeknoppen voor een thermostaat of airco.",

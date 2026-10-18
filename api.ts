@@ -94,11 +94,14 @@ export default {
     return { url: `http://${address.replace(/:80$/, '')}/app/${homey.manifest.id}/settings/dashboard.html` };
   },
 
-  /** The web dashboards' editor: the devices a widget's devices setting may pick (`?type=&query=`). */
+  /**
+   * The web dashboards' editor: the devices a widget's devices setting may pick (`?type=&query=`; another app's widget
+   * also sends its filter, `&class=&capabilities=&app=1`).
+   */
   async getWebDevices({ homey, query }: { homey: Homey, query: Record<string, string> }) {
     const app = homey.app as WidgetkeeperApp;
     assertWebSession(app, query);
-    return app.web.devices(query.type || '', query.query || '');
+    return app.web.devices(query.type || '', query.query || '', { class: query.class, capabilities: query.capabilities, app: query.app === '1' });
   },
 
   /** The web dashboards' editor: the devices and their values for a widget's device value slots (`?type=`). */

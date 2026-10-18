@@ -528,6 +528,12 @@
     "valueOn": "Wł.",
     "valueOff": "Wył.",
     "missingValue": "Nie znaleziono wartości",
+    "otherApps": "Inne aplikacje",
+    "otherAppsKey": "Widżety innych aplikacji wymagają w tej przeglądarce klucza API z pełnym dostępem (Homey).",
+    "otherAppsFailed": "Nie udało się odczytać widżetów innych aplikacji.",
+    "notInstalled": "__name__ nie jest zainstalowana.",
+    "trustTitle": "Ufaj temu widżetowi",
+    "trustHint": "Uruchamia go poza piaskownicą, dla widżetu, który w niej nie działa. Zaufany widżet może odczytać klucz API tej przeglądarki.",
     "about": {
       "electricity": "Moc na żywo, ceny dnia i Twoje zużycie na wykresach.",
       "thermostat": "Trzy przyciski ustawień dla termostatu lub klimatyzatora.",

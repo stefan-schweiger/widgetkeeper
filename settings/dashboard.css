@@ -267,6 +267,9 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .wd-type-text { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px 12px; }
 .wd-type-about { font-weight: 400; font-size: 12px; line-height: 16px; color: var(--wd-muted); }
 .wd-type:hover { outline: 2px solid var(--wd-accent); outline-offset: -2px; }
+/* Other apps' widgets, under ours in Add widget. */
+.wd-types-head { display: flex; flex-direction: column; gap: 4px; margin: 24px 0 12px; }
+.wd-types-head p { margin: 0; font-size: 14px; line-height: 20px; }
 .wd-picker { display: flex; flex-direction: column; gap: 8px; }
 .wd-choice { justify-content: flex-start; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; border-radius: 8px; }
 .wd-options { display: flex; flex-direction: column; max-height: 280px; overflow: auto; border: 1px solid var(--wd-line); border-radius: 8px; }

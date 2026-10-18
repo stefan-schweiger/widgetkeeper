@@ -528,6 +528,12 @@
     "valueOn": "Activé",
     "valueOff": "Désactivé",
     "missingValue": "Valeur introuvable",
+    "otherApps": "Autres apps",
+    "otherAppsKey": "Les widgets des autres apps demandent dans ce navigateur une clé API avec accès complet (Homey).",
+    "otherAppsFailed": "Impossible de lire les widgets des autres apps.",
+    "notInstalled": "__name__ n'est pas installée.",
+    "trustTitle": "Faire confiance à ce widget",
+    "trustHint": "L'exécute hors du bac à sable, pour un widget qui n'y fonctionne pas. Un widget de confiance peut lire la clé API de ce navigateur.",
     "about": {
       "electricity": "Puissance en direct, prix du jour et consommation en graphiques.",
       "thermostat": "Trois boutons préréglés pour un thermostat ou une clim.",

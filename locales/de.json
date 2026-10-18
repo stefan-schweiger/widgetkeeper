@@ -528,6 +528,12 @@
     "valueOn": "Ein",
     "valueOff": "Aus",
     "missingValue": "Wert nicht gefunden",
+    "otherApps": "Andere Apps",
+    "otherAppsKey": "Widgets anderer Apps brauchen in diesem Browser einen API-Schlüssel mit vollem Zugriff (Homey).",
+    "otherAppsFailed": "Die Widgets anderer Apps konnten nicht gelesen werden.",
+    "notInstalled": "__name__ ist nicht installiert.",
+    "trustTitle": "Diesem Widget vertrauen",
+    "trustHint": "Führt es außerhalb der Sandbox aus, für ein Widget, das darin nicht funktioniert. Ein vertrautes Widget kann den API-Schlüssel dieses Browsers lesen.",
     "about": {
       "electricity": "Aktuelle Leistung, die Tagespreise und dein Verbrauch in Diagrammen.",
       "thermostat": "Drei Vorwahltasten für ein Thermostat oder eine Klimaanlage.",

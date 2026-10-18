@@ -528,6 +528,12 @@
     "valueOn": "On",
     "valueOff": "Off",
     "missingValue": "Value not found",
+    "otherApps": "Other apps",
+    "otherAppsKey": "Other apps' widgets need an API key with full access (Homey) in this browser.",
+    "otherAppsFailed": "Could not read other apps' widgets.",
+    "notInstalled": "__name__ isn't installed.",
+    "trustTitle": "Trust this widget",
+    "trustHint": "Runs it outside the sandbox, for a widget that doesn't work in it. A trusted widget can read this browser's API key.",
     "about": {
       "electricity": "Live power, the day's prices and your usage in charts.",
       "thermostat": "Three preset buttons for a thermostat or an aircon.",

@@ -326,7 +326,7 @@ An empty widget of the height you set, in pixels, to line up widgets of differen
 **Settings:** height.
 
 ## Web dashboards
-Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an old iPad, a computer or a TV. Turn them on under **Apps → Widgetkeeper → Configure**, open the address shown there (`http://<your Homey's address>/app/com.thomassidor.widgetkeeper/settings/dashboard.html`), paste a Homey API key ([which permissions](#web-dashboards-key)) (and, if you set one there, the web dashboards password), and build the dashboards on the page itself: columns of widgets, each with the same settings as on a Homey dashboard, in light, dark or automatic. They're the same widgets with the same live updates, and the dashboards are kept on your Homey, so every browser shows them. Home network only for now.
+Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an old iPad, a computer or a TV. Turn them on under **Apps → Widgetkeeper → Configure**, open the address shown there (`http://<your Homey's address>/app/com.thomassidor.widgetkeeper/settings/dashboard.html`), paste a Homey API key ([which permissions](#web-dashboards-key)) (and, if you set one there, the web dashboards password), and build the dashboards on the page itself: columns of widgets, each with the same settings as on a Homey dashboard, in light, dark or automatic. They're the same widgets with the same live updates, and the dashboards are kept on your Homey, so every browser shows them. Widgets from your other apps can go on them too ([key](#web-dashboards-key)). Home network only for now.
 
 <img src="docs/web/dashboard.png" alt="A web dashboard with Widgetkeeper widgets in a browser window" width="100%">
 
@@ -398,6 +398,7 @@ Each browser connects with a key of its own, which stays in that browser:
 - The page itself only talks to Widgetkeeper: its own API and its live updates. A key with the **Homey** permission works; whether a narrower key does hasn't been tried yet, as Homey doesn't document which permission an app's own API takes.
 - A widget that changes something also needs that permission in the browser's key, as in the table above, even though the change is made with the key in the app's settings. So a browser whose key may not start flows can't start them through the app's key either.
 - The Smart Stack on a web dashboard reads its dashboard with the app's key, so the browser's key needs **Homey** too.
+- Other apps' widgets (*Add widget* → **Other apps**) need **Homey** in the browser's key: Homey only lists them, and answers their settings' searches, with that. They run in a sandbox, so their code can't read the page or the key stored in the browser. A widget that doesn't work there can be trusted in its settings (*Trust this widget*); it then runs as on a Homey dashboard and could read the key.
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic, following Homey's language.

@@ -95,7 +95,10 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
       return { appId: 'com.thomassidor.widgetkeeper', homeyId: 'preview', language: lang, strings, widgets, dashboards };
     }
     if (p === '/web/devices') {
-      const filter = manifest.widgets[q.get('type')]?.devices?.filter;
+      // Another app's widget sends its filter (the made-up app has no devices of its own, so `app=1` is left out).
+      const filter = String(q.get('type')).startsWith('homey:app:')
+        ? { class: q.get('class') || undefined, capabilities: q.get('capabilities') || undefined }
+        : manifest.widgets[q.get('type')]?.devices?.filter;
       return devices.filter(d => passes(d, filter))
         .map(d => ({ id: d.id, name: d.name, zone: zoneOf(d), icon: d.icon }))
         .sort((a, b) => a.name.localeCompare(b.name));
@@ -124,8 +127,41 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
     if (p === '/web/autocomplete') return [];
     throw new Error(`Not in the preview: ${method} ${p}`);
   }
+  // Homey's own API, for other apps' widgets: a made-up app's two, its (empty) strings and autocompletes.
+  const OTHER_APP = 'com.example.garden';
+  const OTHER_WIDGETS = {
+    [`homey:app:${OTHER_APP}:plants`]: {
+      id: `homey:app:${OTHER_APP}:plants`, ownerUri: `homey:app:${OTHER_APP}`, ownerName: 'Garden Helper', name: 'Plant status',
+      devices: { type: 'app', singular: false, filter: { class: 'sensor' } }, height: 160, transparent: null, deprecated: null,
+      settings: [
+        { id: 'show', type: 'dropdown', title: 'Show', hint: null, values: [{ id: 'all', title: 'All plants' }, { id: 'thirsty', title: 'Thirsty ones' }], units: null, value: 'all' },
+        { id: 'refresh', type: 'number', title: 'Refresh every', hint: 'How often it reads the sensors.', units: 'min', value: 15 },
+        { id: 'names', type: 'checkbox', title: 'Show names', hint: null, value: true },
+      ],
+    },
+    [`homey:app:${OTHER_APP}:watering`]: {
+      id: `homey:app:${OTHER_APP}:watering`, ownerUri: `homey:app:${OTHER_APP}`, ownerName: 'Garden Helper', name: 'Watering',
+      devices: null, height: null, transparent: true, deprecated: null,
+      settings: [{ id: 'zone', type: 'autocomplete', title: 'Zone', hint: null, value: null }],
+    },
+  };
+  function homeyAnswer(p) {
+    if (p === '/manager/dashboards/appwidget') return OTHER_WIDGETS;
+    if (/^\/manager\/dashboards\/appwidget\/[^/]+\/autocomplete/.test(p)) return [{ id: 'front', name: 'Front lawn' }, { id: 'beds', name: 'Flower beds' }];
+    if (/^\/manager\/apps\/app\/[^/]+\/locale$/.test(p)) return {};
+    throw new Error(`Not in the preview: ${p}`);
+  }
+
   const realFetch = window.fetch.bind(window);
   window.fetch = async (url, init = {}) => {
+    const h = String(url).match(/^\/api(\/manager\/[^?]*)/);
+    if (h) {
+      try {
+        return new Response(JSON.stringify(homeyAnswer(h[1])), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 404 });
+      }
+    }
     const m = String(url).match(/^\/api\/app\/[^/]+(\/.*)$/);
     if (!m) return realFetch(url, init);
     try {

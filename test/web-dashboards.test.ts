@@ -109,6 +109,90 @@ describe('web dashboards: storage', () => {
   });
 });
 
+describe("web dashboards: other apps' widgets", () => {
+  it('keeps them with plain settings (no manifest to check them against)', () => {
+    const { web } = setup();
+    const long = 'x'.repeat(3000);
+    const saved = web.save({
+      columns: [[{
+        type: 'homey:app:com.example.plants:status',
+        title: 'Plants',
+        deviceIds: ['p1', 'p1', 'p2', 3],
+        trusted: true,
+        settings: {
+          stage: 'beta',
+          count: 3,
+          inf: Infinity,
+          on: false,
+          none: null,
+          note: long,
+          device: { id: 'd1', name: 'Fern', image: 'data:image/png;base64,AAAA', nested: { a: 1 } },
+          bare: { id: 'no-name' },
+          list: [1, 2],
+          ['k'.repeat(41)]: 1,
+          constructor: 'x',
+        },
+      }, {
+        type: 'homey:app:com.example.plants:status',
+        trusted: 'yes',
+      }]],
+    });
+    const [w, untrusted] = saved.columns[0];
+    expect(w.type).toBe('homey:app:com.example.plants:status');
+    expect(w.title).toBe('Plants');
+    expect(w.trusted).toBe(true);
+    expect(w.deviceIds).toEqual(['p1', 'p2']);
+    expect(w.settings).toEqual({ stage: 'beta', count: 3, on: false, none: null, note: 'x'.repeat(2000), device: { id: 'd1', name: 'Fern' } });
+    expect(untrusted).not.toHaveProperty('trusted');
+    expect(untrusted.settings).toEqual({});
+  });
+
+  it("drops our own app's id in that form, a malformed one and a trusted flag on ours", () => {
+    const { web } = setup();
+    const saved = web.save({
+      columns: [[
+        { type: 'homey:app:com.thomassidor.widgetkeeper:timers' },
+        { type: 'homey:app:com.example' },
+        { type: 'homey:app:com.example:a/b' },
+        { type: 'homey:manager:dashboards:x' },
+        { type: 'timers', trusted: true },
+      ]],
+    });
+    expect(saved.columns[0].map(w => w.type)).toEqual(['timers']);
+    expect(saved.columns[0][0]).not.toHaveProperty('trusted');
+  });
+
+  it('keeps at most 60 settings', () => {
+    const settings = Object.fromEntries(Array.from({ length: 80 }, (_, i) => [`s${i}`, i]));
+    const saved = setup().web.save({ columns: [[{ type: 'homey:app:com.example:w', settings }]] });
+    expect(Object.keys(saved.columns[0][0].settings)).toHaveLength(60);
+  });
+
+  it("lists their devices by the filter the page sends, and only the app's own with app=1", async () => {
+    const homey = fakeHomey(fakeApi({
+      devices: [
+        { id: 'w1', name: 'Washer', class: 'other', capabilities: ['washer_state'], ownerUri: 'homey:app:com.example' },
+        { id: 'w2', name: 'Other washer', class: 'other', capabilities: ['washer_state'], ownerUri: 'homey:app:com.else' },
+        { id: 'l1', name: 'Lamp', class: 'light', capabilities: ['onoff'], ownerUri: 'homey:app:com.example' },
+      ] as any,
+      zones: {} as any,
+    }));
+    const web = new WebDashboardService(homey, vi.fn(), {});
+    const ids = async (filter: any) => (await web.devices('homey:app:com.example:washer', '', filter)).map(d => d.id);
+    expect(await ids({})).toEqual(['l1', 'w2', 'w1']);
+    expect(await ids({ capabilities: 'washer_state' })).toEqual(['w2', 'w1']);
+    expect(await ids({ capabilities: 'washer_state', app: true })).toEqual(['w1']);
+    expect(await ids({ class: 'light|socket' })).toEqual(['l1']);
+  });
+
+  it('passes the filter on from the route', async () => {
+    const { homey, web } = setup();
+    const spy = vi.spyOn(web, 'devices').mockResolvedValue([]);
+    await api.getWebDevices({ homey, query: { type: 'homey:app:com.example:washer', query: 'w', class: 'other', capabilities: 'a|b', app: '1' } } as any);
+    expect(spy).toHaveBeenCalledWith('homey:app:com.example:washer', 'w', { class: 'other', capabilities: 'a|b', app: true });
+  });
+});
+
 describe('web dashboards: the old Variables names', () => {
   it("reads each Variables widget's row names from the saved dashboards, by tile key", () => {
     const { web, homey } = setup();

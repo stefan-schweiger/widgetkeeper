@@ -528,6 +528,12 @@
     "valueOn": "Encendido",
     "valueOff": "Apagado",
     "missingValue": "Valor no encontrado",
+    "otherApps": "Otras apps",
+    "otherAppsKey": "Los widgets de otras apps necesitan en este navegador una clave API con acceso total (Homey).",
+    "otherAppsFailed": "No se pudieron leer los widgets de otras apps.",
+    "notInstalled": "__name__ no está instalada.",
+    "trustTitle": "Confiar en este widget",
+    "trustHint": "Lo ejecuta fuera del sandbox, para un widget que no funciona en él. Un widget de confianza puede leer la clave API de este navegador.",
     "about": {
       "electricity": "Potencia en directo, los precios del día y tu consumo en gráficos.",
       "thermostat": "Tres botones predefinidos para un termostato o un aire acondicionado.",

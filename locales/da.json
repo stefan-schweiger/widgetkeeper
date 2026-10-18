@@ -528,6 +528,12 @@
     "valueOn": "Til",
     "valueOff": "Fra",
     "missingValue": "Værdien blev ikke fundet",
+    "otherApps": "Andre apps",
+    "otherAppsKey": "Andre apps' widgets kræver en API-nøgle med fuld adgang (Homey) i denne browser.",
+    "otherAppsFailed": "Kunne ikke læse andre apps' widgets.",
+    "notInstalled": "__name__ er ikke installeret.",
+    "trustTitle": "Stol på denne widget",
+    "trustHint": "Kører den uden for sandkassen, til en widget der ikke virker i den. En widget, du stoler på, kan læse denne browsers API-nøgle.",
     "about": {
       "electricity": "Effekt lige nu, dagens priser og dit forbrug i grafer.",
       "thermostat": "Tre forvalgsknapper til en termostat eller et aircondition-anlæg.",

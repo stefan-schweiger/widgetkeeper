@@ -528,6 +528,12 @@
     "valueOn": "På",
     "valueOff": "Av",
     "missingValue": "Fant ikke verdien",
+    "otherApps": "Andre apper",
+    "otherAppsKey": "Andre apper sine widgeter trenger en API-nøkkel med full tilgang (Homey) i denne nettleseren.",
+    "otherAppsFailed": "Kunne ikke lese andre apper sine widgeter.",
+    "notInstalled": "__name__ er ikke installert.",
+    "trustTitle": "Stol på denne widgeten",
+    "trustHint": "Kjører den utenfor sandkassen, for en widget som ikke virker i den. En widget du stoler på, kan lese API-nøkkelen i denne nettleseren.",
     "about": {
       "electricity": "Effekt i sanntid, dagens priser og forbruket ditt i diagrammer.",
       "thermostat": "Tre forhåndsvalgknapper for en termostat eller et klimaanlegg.",

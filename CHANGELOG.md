@@ -101,6 +101,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - A widget's settings are easier to get an overview of. They were one long list of equal rows (Flow Buttons had 33). Now the dialog shows the widget's preview and what it does on top, then cards: the devices, the title with the general settings, and a card for each button, tile or column. A user found the old list impossible to get an overview of.
 - Numbered groups such as Flow Buttons' eight buttons fold, and each one's header sums up what's set: the flow, the colour and the icon. Settings that only matter while a switch is on fade while it's off.
 - Each setting has a control that fits it: a switch, colour swatches, segments for a short choice, a number with its unit, or a list.
+- Widgets from your other apps can go on web dashboards too: *Add widget* lists them under **Other apps**, with their own settings. They need a browser key with the **Homey** permission. They run sealed off from the page, so they can't read the browser's key; *Trust this widget* runs one that doesn't work that way as it would on a Homey dashboard.
 
 ### Other fixes
 - Variables, Variable Presets, Flow Buttons, Media's buttons, Moods and the Smart Stack no longer say the API key wasn't accepted when Homey was only busy, and a good key saved at such a moment is no longer refused.

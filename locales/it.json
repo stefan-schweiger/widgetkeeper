@@ -528,6 +528,12 @@
     "valueOn": "Acceso",
     "valueOff": "Spento",
     "missingValue": "Valore non trovato",
+    "otherApps": "Altre app",
+    "otherAppsKey": "I widget di altre app richiedono in questo browser una chiave API con accesso completo (Homey).",
+    "otherAppsFailed": "Impossibile leggere i widget delle altre app.",
+    "notInstalled": "__name__ non è installata.",
+    "trustTitle": "Considera affidabile questo widget",
+    "trustHint": "Lo esegue fuori dalla sandbox, per un widget che lì non funziona. Un widget affidabile può leggere la chiave API di questo browser.",
     "about": {
       "electricity": "Potenza in tempo reale, prezzi del giorno e consumi in grafici.",
       "thermostat": "Tre pulsanti preimpostati per un termostato o un condizionatore.",
