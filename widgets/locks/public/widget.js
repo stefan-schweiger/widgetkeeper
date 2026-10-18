@@ -2,7 +2,8 @@
  * Locks: one line that says whether every lock, door and garage door picked is locked and closed
  * (*All locked and closed*, or *Back door · Unlocked since 18:12*). A tap shows every device with its state and,
  * for a lock or a garage door that isn't secure, a button to lock or close it (*Lock all* for several).
- * Unlocking and opening only with the `allowUnlock` setting.
+ * Unlocking and opening only with the `allowUnlock` setting; with it, a lock that has the capability picked in
+ * `openCapability` also gets *Open* (pulls the latch), which takes two taps.
  * Plain browser JS (served as-is).
  */
 (function () {
@@ -11,6 +12,8 @@
 
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
   const BUSY_MS = 15e3; // how long a lock may take to report its new state before the button gives up
+  const CONFIRM_MS = 3e3; // how long Open waits for its second tap
+  const OPEN_MIN_MS = 1.5e3; // Open pulses at least this long: a button capability reports no value to wait for
 
   const DEFAULT_STRINGS = {
     selectDevices: 'Select locks and doors in the widget settings.',
@@ -37,6 +40,8 @@
     close: 'Close',
     openAction: 'Open',
     lockAll: 'Lock all',
+    openDoor: 'Open',
+    tapToOpen: 'Tap to open',
     renameFailed: 'Could not save the name.',
   };
 
@@ -125,6 +130,7 @@
    * @param {HTMLElement} root
    * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string, view?: string,
    *   allowUnlock?: boolean, onSet?: (deviceId: string, capabilityId: string, value: boolean) => Promise<any>,
+   *   allowOpen?: boolean, onOpen?: (deviceId: string, capabilityId: string) => Promise<any>,
    *   onHaptic?: () => void, onHeight?: (h: number) => void,
    *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any> }} opts
    */
@@ -143,6 +149,7 @@
     /** A device's name: the one typed on its row, else its own. */
     const nameOf = d => names.name(d.id, d.name);
     const allowUnlock = opts.allowUnlock === true;
+    const allowOpen = opts.allowOpen === true;
 
     let devices = []; // [{ id, name, icon, caps: { locked?, alarm_contact?, garagedoor_closed? } } | { id, missing }]
     let language = null;
@@ -150,6 +157,7 @@
     let messageText = null;
     let messageTimer = null;
     const busy = new Map(); // deviceId → {capabilityId, value, timer}, while a lock or close is on its way
+    const opening = new Map(); // deviceId → {busy, timer}: waiting for Open's second tap, or opening
 
     root.classList.add('lk');
     applyColors(root, { style: opts.colorStyle });
@@ -180,7 +188,7 @@
       }
     });
     const messageEl = el('div', { class: 'lk-message', dir: 'auto' }, root);
-    /** @type {Map<string, {row: HTMLElement, icon: HTMLElement, name: HTMLElement, state: HTMLElement, button: HTMLElement}>} */
+    /** @type {Map<string, {row: HTMLElement, icon: HTMLElement, name: HTMLElement, state: HTMLElement, button: HTMLElement, openButton: HTMLElement}>} */
     const rows = new Map();
 
     /** `{devices, language}` from `/state`, or just the device list. */
@@ -217,6 +225,46 @@
       const b = busy.get(id);
       if (b) clearTimeout(b.timer);
       busy.delete(id);
+    }
+
+    function clearOpening(id) {
+      const o = opening.get(id);
+      if (o) clearTimeout(o.timer);
+      opening.delete(id);
+    }
+
+    /** The capability that opens (unlatches) the lock: the widget's Open capability, when this lock has it. */
+    const openCapOf = d => (allowOpen && !('missing' in d) && typeof d.open === 'string' && d.open ? d.open : null);
+
+    /**
+     * Open: the first tap asks for a second (*Tap to open*, CONFIRM_MS), the second pulls the latch. It physically
+     * opens the door, so a stray tap on the dashboard mustn't.
+     */
+    async function tapOpen(id) {
+      const d = devices.find(x => x.id === id);
+      const cap = d && openCapOf(d);
+      const o = opening.get(id);
+      if (!cap || names.renaming || (o && o.busy)) return;
+      if (!o) {
+        opening.set(id, { busy: false, timer: setTimeout(() => { opening.delete(id); render(); }, CONFIRM_MS) });
+        render();
+        return;
+      }
+      clearTimeout(o.timer);
+      opening.set(id, { busy: true, timer: null });
+      if (opts.onHaptic) opts.onHaptic();
+      render();
+      const started = Date.now();
+      try {
+        if (opts.onOpen) await opts.onOpen(id, cap);
+      } catch (err) {
+        console.error(err);
+        clearOpening(id);
+        shake(id);
+        setMessage(t('failed', { name: nameOf(d) }), true);
+        return;
+      }
+      opening.set(id, { busy: true, timer: setTimeout(() => { opening.delete(id); render(); }, Math.max(0, OPEN_MIN_MS - (Date.now() - started))) });
     }
 
     /**
@@ -327,7 +375,9 @@
         const a = cur && actionOf(cur);
         if (a) send(cur, a);
       });
-      r = { row, icon: rIcon, name, state, button };
+      const openButton = el('div', { class: 'lk-open', role: 'button', tabindex: '0' }, row);
+      onTap(openButton, () => tapOpen(d.id));
+      r = { row, icon: rIcon, name, state, button, openButton };
       rows.set(d.id, r);
       return r;
     }
@@ -348,7 +398,7 @@
 
       const ids = new Set(devices.map(d => d.id));
       for (const [id, r] of rows) {
-        if (!ids.has(id)) { r.row.remove(); rows.delete(id); clearBusy(id); }
+        if (!ids.has(id)) { r.row.remove(); rows.delete(id); clearBusy(id); clearOpening(id); }
       }
       let securable = 0;
       let placed = null;
@@ -374,6 +424,12 @@
         r.button.style.display = a ? '' : 'none';
         r.button.textContent = a ? a.label : '';
         r.button.classList.toggle('busy', busy.has(d.id));
+        if (!openCapOf(d)) clearOpening(d.id);
+        const o = opening.get(d.id);
+        r.openButton.style.display = openCapOf(d) && !names.renaming ? '' : 'none';
+        r.openButton.textContent = o && !o.busy ? t('tapToOpen') : t('openDoor');
+        r.openButton.classList.toggle('confirm', !!o && !o.busy);
+        r.openButton.classList.toggle('busy', !!o && o.busy);
       }
       list.style.display = expanded && devices.length ? '' : 'none';
       allButton.style.display = expanded && securable > 1 ? '' : 'none';

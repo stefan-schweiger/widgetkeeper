@@ -130,8 +130,8 @@
     // Pill tiles: Sensor Alarms' tile, the icon beside the name over the value (compact, Quick Actions' tile, otherwise).
     const pill = opts.tileStyle === 'pill';
     root.classList.toggle('vt-pill', pill);
-    // Deep colours (kit.css): fills and Flow colours in the darker shades at full strength, with text that reads on them (the
-    // 22 % tint otherwise). The old Bright reads as Deep.
+    // Vivid colours (kit.css): fills and Flow colours in the darker shades at full strength, with text that reads on them (the
+    // 22 % tint otherwise). The old Bright reads as Vivid.
     const deep = applyColors(root, { style: opts.colorStyle }) === 'deep';
     const num = (v, fallback) => (v !== '' && v != null && isFinite(Number(v)) ? Number(v) : fallback);
     const thresholds = { red: num(opts.redBelow, 10), yellow: num(opts.yellowBelow, 20) };
@@ -215,7 +215,7 @@
       if (!tile) {
         const node = el('div', { class: 'vt-tile', 'data-slot': key });
         tile = { tile: node, ...parts(node), ink: null };
-        // Deep fills: the same icon and text again in the ink colour, which the CSS clips to the fill.
+        // Vivid fills: the same icon and text again in the ink colour, which the CSS clips to the fill.
         if (deep) tile.ink = parts(el('div', { class: 'vt-ink', 'aria-hidden': 'true' }, node));
         tiles.set(key, tile);
       }

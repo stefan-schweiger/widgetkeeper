@@ -1,0 +1,126 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/valuematrix-preview.html).
+ */
+.vm {
+  --vm-tile: var(--homey-background-color, #FFFFFF);
+  --vm-text: var(--homey-text-color, #EDEEF0);
+  --vm-muted: var(--homey-text-color-light, #9C9DA5);
+  --vm-track: color-mix(in srgb, var(--vm-text) 8%, var(--vm-tile)); /* a cell without a range or a reading */
+  --vm-red: var(--homey-color-red, #F25F5C);
+  --vm-fs-small: var(--homey-font-size-small, 14px);
+  --vm-fs-default: var(--homey-font-size-default, 17px);
+  --vm-medium: var(--homey-font-weight-medium, 500);
+  --vm-bold: var(--homey-font-weight-bold, 700);
+  --vm-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+  --vm-cell-radius: 8px;
+  --vm-gap: var(--homey-su-1, 4px);
+  /* Colours (kit.css): the levels mixed 22 % into the tile, as the tinted widgets; Vivid fills them solid. */
+  --vm-mix: 22%;
+}
+/* Dark mode: Homey's native device tiles, as Device Quick Actions. */
+.homey-dark-mode .vm, .vm.homey-dark-mode { --vm-tile: #181920; --vm-track: #2B2C36; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* The widget is transparent, but until the SDK adds .homey-dark-mode (~1 s in) Homey's stylesheet paints body
+   in its light background, which shows as white corners around Homey's rounded loading overlay. */
+html, body { background: transparent !important; }
+
+.vm { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--vm-text); }
+.vm * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.vm [dir="auto"] { text-align: left; }
+
+/* One device tile: the header, a row per room or device, then the legend. */
+.vm-tile {
+  position: relative; display: flex; flex-direction: column; gap: var(--vm-gap); padding: 14px;
+  background: var(--vm-tile); border-radius: var(--vm-radius);
+}
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .vm-tile::after, .vm.homey-dark-mode .vm-tile::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+/*
+ * One grid: the names as wide as the longest (up to 40 % of the tile; 28 % with more than four columns), the cells
+ * sharing the rest. The header and the rows are `display: contents`, so their parts are the grid's items.
+ */
+.vm-grid {
+  display: grid; align-items: center; gap: var(--vm-gap);
+  grid-template-columns: fit-content(var(--vm-name-max, 40%)) repeat(var(--vm-n, 1), minmax(0, 1fr));
+}
+.vm-grid.vm-many { --vm-name-max: 28%; }
+.vm-row { display: contents; }
+.vm-row.shake > * { animation: vm-shake .35s; }
+@keyframes vm-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+/* The header: each column's label (14, muted, centred). */
+.vm-label {
+  min-width: 0; font-size: var(--vm-fs-small); line-height: var(--homey-line-height-small, 20px); color: var(--vm-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.vm .vm-label[dir="auto"] { text-align: center; }
+
+/* The name (17 medium). */
+.vm-name {
+  min-width: 0; padding-right: var(--homey-su-1, 4px);
+  font-size: var(--vm-fs-default); line-height: var(--homey-line-height-default, 24px); font-weight: var(--vm-medium);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.vm-row.missing .vm-name { color: var(--vm-muted); }
+
+/* A cell: its value (17 bold; 14, then 12, in a narrow cell), on its level's colour. A container, so the value can shrink. */
+.vm-cell {
+  display: flex; align-items: center; justify-content: center; height: 40px; min-width: 0;
+  border-radius: var(--vm-cell-radius); background: var(--vm-track); container-type: inline-size;
+  transition: background-color .3s, color .3s;
+}
+.vm-num {
+  font-size: var(--vm-fs-default); line-height: 1; font-weight: var(--vm-bold); font-variant-numeric: tabular-nums;
+  white-space: nowrap; overflow: hidden;
+}
+@container (max-width: 51px) { .vm-num { font-size: var(--vm-fs-small); } }
+/* The labels' 12 px (no token), for six columns on a 300 px card. */
+@container (max-width: 39px) { .vm-num { font-size: 12px; } }
+.vm-cell[data-level="none"] .vm-num { color: var(--vm-muted); font-weight: var(--vm-medium); }
+/* A value the row hasn't: stripes of the track. */
+.vm-cell[data-level="absent"] {
+  background: repeating-linear-gradient(135deg, var(--vm-track) 0 4px, transparent 4px 8px);
+}
+
+/* The levels, on the cells and the legend's swatches: green (OK) inside the range, orange (Warning) outside, red (Alert) far outside. */
+.vm [data-level="good"] { background: color-mix(in srgb, var(--wk-green) var(--vm-mix), var(--vm-tile)); }
+.vm [data-level="out"] { background: color-mix(in srgb, var(--wk-orange) var(--vm-mix), var(--vm-tile)); }
+.vm [data-level="far"] { background: color-mix(in srgb, var(--wk-red) var(--vm-mix), var(--vm-tile)); }
+.vm.wk-deep [data-level="good"] { background: var(--wk-green); color: var(--wk-on-green); }
+.vm.wk-deep [data-level="out"] { background: var(--wk-orange); color: var(--wk-on-orange); }
+.vm.wk-deep [data-level="far"] { background: var(--wk-red); color: var(--wk-on-red); }
+
+/* The legend: a swatch and a word per level. */
+.vm-legend {
+  display: flex; flex-wrap: wrap; gap: var(--homey-su-1, 4px) var(--homey-su-4, 16px); margin-top: var(--homey-su-2, 8px);
+  font-size: var(--vm-fs-small); line-height: var(--homey-line-height-small, 20px); color: var(--vm-muted);
+}
+.vm-key { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.vm-swatch { width: 12px; height: 12px; border-radius: 3px; flex: 0 0 auto; }
+
+.vm-message { font-size: var(--vm-fs-small); line-height: var(--homey-line-height-small, 20px); color: var(--vm-muted); }
+.vm-message.error { color: var(--vm-red); }
+
+/* Rename tiles: the name becomes a text field (as Room Health's). */
+.vm.renaming .vm-row:not(.missing) .vm-name { display: none; }
+.vm-row.missing .wk-rename { display: none; }
+.vm .wk-rename {
+  width: 100%; min-width: 0; height: 24px; margin: 0; padding: 0 6px;
+  font: inherit; font-size: var(--vm-fs-small); font-weight: var(--vm-bold); color: var(--vm-text);
+  background: color-mix(in srgb, var(--vm-text) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--vm-text) 24%, transparent); border-radius: 8px; outline: none;
+  user-select: text; -webkit-user-select: text;
+}
+.vm .wk-rename::placeholder { color: var(--vm-muted); opacity: 1; }
+.vm .wk-rename:focus { border-color: var(--homey-color-blue, #0091EA); }

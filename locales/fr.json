@@ -76,6 +76,21 @@
     "particles": "Particules",
     "voc": "COV"
   },
+  "valuematrix": {
+    "selectDevices": "Choisissez des appareils dans les réglages.",
+    "selectColumns": "Choisissez les valeurs dans les réglages.",
+    "error": "Impossible de charger les valeurs.",
+    "unavailable": "Indisponible",
+    "renameFailed": "Impossible d'enregistrer le nom.",
+    "ok": "OK",
+    "warning": "Attention",
+    "alert": "Alerte",
+    "noReading": "Aucune mesure",
+    "radon": "Radon",
+    "voc": "COV",
+    "none": "Aucun",
+    "devices": "__count__ appareils"
+  },
   "weather": {
     "now": "Actuel",
     "error": "Impossible de charger les prévisions.",
@@ -341,6 +356,8 @@
     "close": "Fermer",
     "openAction": "Ouvrir",
     "lockAll": "Tout verrouiller",
+    "openDoor": "Ouvrir",
+    "tapToOpen": "Touchez pour ouvrir",
     "renameFailed": "Impossible d'enregistrer le nom."
   },
   "curtains": {
@@ -518,6 +535,7 @@
       "sensoralarms": "Des tuiles qui virent au rouge quand un capteur déclenche une alarme.",
       "sensordots": "Mouvement, portes et caméras sous forme de points.",
       "roomhealth": "La température, l'humidité et l'air de chaque pièce d'un coup d'œil, du jaune au rouge quand ça ne va pas.",
+      "valuematrix": "Appareils ou pièces face aux valeurs choisies, en vert, orange ou rouge selon leur plage.",
       "weather": "Les 36 prochaines heures, heure par heure.",
       "heatmap": "Une semaine d'une valeur en carte de chaleur jour × heure.",
       "cameras": "Images des caméras, avec la vidéo en direct d'un geste.",

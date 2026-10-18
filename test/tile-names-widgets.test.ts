@@ -4,7 +4,7 @@ import { loadWidget } from './helpers/loadWidget.js';
 
 let win: any;
 beforeAll(() => {
-  for (const id of ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables', 'roomhealth'] as const) win = loadWidget(id);
+  for (const id of ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables', 'roomhealth', 'valuematrix'] as const) win = loadWidget(id);
 });
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-15T12:00:00Z')); });
 afterEach(() => { vi.useRealTimers(); document.body.innerHTML = ''; });
@@ -71,6 +71,12 @@ const CASES: Record<string, { create: string, state: any, keys: string[], own: s
     create: 'createRoomHealthWidget', act: '', tile: '.rh-room', name: '.rh-name',
     // A cell per room: the key is the zone's.
     state: [roomSensor('a', 'z1', 'Living room'), roomSensor('b', 'z2', 'Kitchen')], keys: ['zone:z1', 'zone:z2'], own: ['Living room', 'Kitchen'],
+  },
+  valuematrix: {
+    create: 'createValueMatrixWidget', act: '', tile: '.vm-row:not(.vm-head)', name: '.vm-name', opts: { columns: [{ capabilityId: 'measure_temperature' }] },
+    // A row per room: the key is the zone's.
+    state: { columns: [], devices: [['a', 'z1', 'Living room'], ['b', 'z2', 'Kitchen']].map(([id, zone, room]) => ({ id, name: `Sensor ${id}`, zone: { id: zone, name: room }, values: { measure_temperature: 21 } })) },
+    keys: ['zone:z1', 'zone:z2'], own: ['Living room', 'Kitchen'],
   },
 };
 

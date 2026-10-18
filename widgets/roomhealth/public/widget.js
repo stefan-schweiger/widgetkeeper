@@ -195,7 +195,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ colorStyle?: string, layout?: string, greenWhenFine?: boolean, t?: (key: string, tokens?: object) => string,
+   * @param {{ colorStyle?: string, layout?: string, columns?: number|string, greenWhenFine?: boolean, t?: (key: string, tokens?: object) => string,
    *   locale?: string, renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>, onHeight?: (h: number) => void,
    *   tempMin?: unknown, tempMax?: unknown, humidityMin?: unknown, humidityMax?: unknown, co2Max?: unknown,
    *   radonMax?: unknown, pm25Max?: unknown, pm10Max?: unknown, vocMax?: unknown }} opts
@@ -218,6 +218,7 @@
 
     root.classList.add('rh', `rh-${layout}`);
     root.classList.toggle('rh-green', opts.greenWhenFine === true);
+    root.dataset.columns = ['2', '4'].includes(String(opts.columns)) ? String(opts.columns) : '3';
     applyColors(root, { style: opts.colorStyle });
     const typed = tileNames(opts, () => render(), (key) => {
       const cell = cells.get(key);
@@ -402,6 +403,10 @@
         setLevel(cell.value, score ? score.score : null);
         // For screen readers: the worst problem's word, `Good` or `No readings`, then the readings.
         const worst = missing ? null : worstOf(room, ranges);
+        // The room's worst in three steps, which Vivid fills the cell with; a fine room only when it's green.
+        const tone = !worst ? null : worst.score > 0 ? (worst.score < 1 / 3 ? 'yellow' : worst.score < 2 / 3 ? 'orange' : 'red') : opts.greenWhenFine === true ? 'green' : null;
+        if (tone) cell.node.dataset.tone = tone;
+        else delete cell.node.dataset.tone;
         const state = !worst ? t('noReadings') : worst.score > 0 ? t(PROBLEMS[worst.measure][worst.side]) : t('good');
         const values = readable(room).map(m => formatValue(m, room.values[m]));
         cell.node.setAttribute('aria-label', missing ? t('unavailable') : [`${roomName(room)}: ${state}`, ...values].join(', '));

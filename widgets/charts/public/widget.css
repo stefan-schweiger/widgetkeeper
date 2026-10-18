@@ -34,7 +34,7 @@ html, body { margin: 0; }
 /* Below zero, with the chart's `negative` setting; `exportSplit()` in chart.js clips it. */
 .ch .series-line.export { stroke: var(--ew-export); }
 .ch .series-stop.export { stop-color: var(--ew-export); }
-/* Deep (kit.css, on the widget's root): more colour in the area and the bars; the lines keep their colours. */
+/* Vivid (kit.css, on the widget's root): more colour in the area and the bars; the lines keep their colours. */
 .wk-deep .ch .series-stop:not(.export)[offset="0"], .wk-deep .ch .series-stop.export[offset="1"] { stop-opacity: .75; }
 .wk-deep .ch .series-stop:not(.export)[offset="1"], .wk-deep .ch .series-stop.export[offset="0"] { stop-opacity: .08; }
 .wk-deep .ch .series-bars { fill: color-mix(in srgb, var(--ch-color) 90%, transparent); }

@@ -26,7 +26,8 @@
     "test-dashboards": "node scripts/test-dashboards.mjs",
     "validate": "homey app validate --level debug",
     "start": "homey app run",
-    "install-homey": "homey app install"
+    "install-homey": "homey app install",
+    "whats-new": "node scripts/render-whats-new.mjs"
   },
   "dependencies": {
     "homey-api": "^3.20.0"

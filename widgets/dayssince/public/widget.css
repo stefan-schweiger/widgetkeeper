@@ -8,7 +8,7 @@
   --ds-text: var(--homey-text-color, #EDEEF0);
   --ds-muted: var(--homey-text-color-light, #9C9DA5);
   --ds-neutral: color-mix(in srgb, var(--ds-text) 8%, var(--ds-bg)); /* the track and the Undo pill: Variables' grey */
-  --ds-blue: var(--wk-blue); /* kit.css: Homey's blue, its darker shade in Deep */
+  --ds-blue: var(--wk-blue); /* kit.css: Homey's blue, its darker shade in Vivid */
   /* Amber is Device Values' yellow (Homey has no token), red Homey's. */
   --ds-amber: #F5C518;
   --ds-red: var(--homey-color-red, #F25F5C);
@@ -69,7 +69,7 @@ html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
 }
 .ds-fill {
   height: 100%; width: var(--ds-fill, 0%); border-radius: inherit;
-  background: color-mix(in srgb, var(--ds-level, var(--ds-blue)) 50%, var(--ds-neutral)); /* toned down: Deep fills it fully */
+  background: color-mix(in srgb, var(--ds-level, var(--ds-blue)) 50%, var(--ds-neutral)); /* toned down: Vivid fills it fully */
   transition: width .3s;
 }
 .ds .ds-left {
@@ -84,7 +84,7 @@ html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
 .ds-row[data-level="amber"] { --ds-level: var(--ds-amber); }
 .ds-row[data-level="red"] { --ds-level: var(--ds-red); }
 /*
- * Deep (kit.css): an amber or red row stands on a solid block of the colour (yellow, or the red shade), drawn behind it so the
+ * Vivid (kit.css): an amber or red row stands on a solid block of the colour (yellow, or the red shade), drawn behind it so the
  * rows keep their grid; everything on it, the bar and the Undo pill included, is in the text on that colour.
  */
 .ds.wk-deep .ds-row[data-level="amber"] { --wk-c: var(--wk-yellow); --wk-on: var(--wk-on-yellow); --wk-on-muted: rgb(26 27 33 / .75); }
@@ -95,7 +95,7 @@ html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
   --ds-neutral: color-mix(in srgb, var(--wk-on) 22%, transparent);
 }
 .ds.wk-deep .ds-row[data-level] .ds-icon { color: var(--wk-on); }
-/* Deep fills every bar at full strength. */
+/* Vivid fills every bar at full strength. */
 .ds.wk-deep .ds-fill { background: var(--ds-level, var(--ds-blue)); }
 .ds.wk-deep .ds-row[data-level]::before {
   content: ''; position: absolute; inset: -6px -8px; z-index: -1; border-radius: 10px; background: var(--wk-c);

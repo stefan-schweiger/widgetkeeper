@@ -76,6 +76,21 @@
     "particles": "미세먼지",
     "voc": "VOC"
   },
+  "valuematrix": {
+    "selectDevices": "위젯 설정에서 기기를 선택하세요.",
+    "selectColumns": "위젯 설정에서 표시할 값을 고르세요.",
+    "error": "값을 불러올 수 없습니다.",
+    "unavailable": "사용할 수 없음",
+    "renameFailed": "이름을 저장하지 못했습니다.",
+    "ok": "정상",
+    "warning": "주의",
+    "alert": "경고",
+    "noReading": "측정값 없음",
+    "radon": "라돈",
+    "voc": "VOC",
+    "none": "없음",
+    "devices": "기기 __count__개"
+  },
   "weather": {
     "now": "지금",
     "error": "예보를 불러올 수 없습니다.",
@@ -341,6 +356,8 @@
     "close": "닫기",
     "openAction": "열기",
     "lockAll": "모두 잠그기",
+    "openDoor": "열기",
+    "tapToOpen": "다시 탭하여 열기",
     "renameFailed": "이름을 저장하지 못했습니다."
   },
   "curtains": {
@@ -518,6 +535,7 @@
       "sensoralarms": "센서가 경보를 울리면 빨갛게 변하는 타일.",
       "sensordots": "동작, 문, 카메라를 점 격자로.",
       "roomhealth": "방마다 온도, 습도, 공기를 한눈에 보여 주고, 문제가 있으면 노란색에서 빨간색으로 표시합니다.",
+      "valuematrix": "기기나 방을 고른 값과 함께 표로, 범위에 따라 초록·주황·빨강으로.",
       "weather": "앞으로 36시간을 시간별로.",
       "heatmap": "어떤 값이든 일주일을 요일 × 시간 히트맵으로.",
       "cameras": "카메라 스냅샷, 탭하면 실시간 영상.",

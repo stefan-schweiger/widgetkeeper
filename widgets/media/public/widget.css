@@ -7,7 +7,7 @@
   --mw-card: var(--homey-background-color, #1F2029);
   --mw-text: var(--homey-text-color, #EDEEF0);
   --mw-muted: var(--homey-text-color-light, #9C9DA5);
-  /* The colour setting (kit.css; blue by default): Homey's darker shade of it, or in Deep the bright colour (below). --mw-on is the
+  /* The colour setting (kit.css; blue by default): Homey's darker shade of it, or in Vivid the bright colour (below). --mw-on is the
      text or icon on it, --mw-mute the red of mute. */
   --mw-accent: var(--wk-c-shade);
   --mw-on: var(--wk-on-shade);
@@ -234,7 +234,7 @@ button.mw-who.pressing { opacity: .6; }
 .mw-chip.done { background: color-mix(in srgb, var(--homey-color-green, #5DB815) 30%, var(--mw-card)); }
 
 /*
- * Deep (kit.css): the bright colour, and what's lit is solid in it with its text and icons in --mw-on: the TV tile, the current
+ * Vivid (kit.css): the bright colour, and what's lit is solid in it with its text and icons in --mw-on: the TV tile, the current
  * speaker, the lit pills, shuffle, repeat and ⋯ (filled circles); mute in the bright red.
  */
 .mw.wk-deep {

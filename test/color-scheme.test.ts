@@ -3,9 +3,10 @@ import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { KIT, loadMount, loadWidget, type WidgetName } from './helpers/loadWidget.js';
 
-// The Colour style setting (`colorStyle`: Default or Deep, kit.css's palette) and the colour pickers it goes with.
+// The Colour style setting (`colorStyle`: Muted or Vivid, kit.css's palette) and the colour pickers it goes with.
 const SCHEME_WIDGETS: WidgetName[] = ['quickactions', 'sensoralarms', 'locks', 'values', 'lights', 'curtains', 'dayssince', 'textline',
-  'timers', 'flows', 'variables', 'varpresets', 'thermostat', 'price', 'heatmap', 'sparklines', 'charts', 'electricity', 'media', 'sensordots', 'roomhealth'];
+  'timers', 'flows', 'variables', 'varpresets', 'thermostat', 'price', 'heatmap', 'sparklines', 'charts', 'electricity', 'media', 'sensordots', 'roomhealth',
+  'valuematrix'];
 // Widgets whose fixed state colour became a `color` setting with Colour style.
 const PICKERS: WidgetName[] = ['quickactions', 'variables', 'curtains', 'media', 'timers'];
 
@@ -18,11 +19,11 @@ const mountName = (id: string) => readFileSync(`widgets/${id}/public/mount.js`, 
 describe('the Colour style setting', () => {
   const values = setting('values', 'colorStyle')!;
 
-  it('is Default (soft) or Deep, the default first', () => {
+  it('is Muted (soft) or Vivid, the default first', () => {
     expect(values.type).toBe('dropdown');
     expect(values.value).toBe('soft');
     expect(values.values!.map(v => v.id)).toEqual(['soft', 'deep']);
-    expect(values.values!.map(v => v.title.en)).toEqual(['Default', 'Deep']);
+    expect(values.values!.map(v => v.title.en)).toEqual(['Muted', 'Vivid']);
   });
 
   it.each(SCHEME_WIDGETS)('%s: has it, the same as everywhere', (id) => {
@@ -32,12 +33,12 @@ describe('the Colour style setting', () => {
     expect(Object.keys(s!.hint!).length).toBe(13);
   });
 
-  it('Weather has Deep as a theme of its own Colour style instead', () => {
+  it('Weather has Vivid (`card`) as a theme of its own Colour style instead', () => {
     expect(setting('weather', 'colorStyle')).toBeUndefined();
     const theme = setting('weather', 'theme')!;
-    expect(theme.values!.find(v => v.id === 'deep')!.title).toEqual(values.values![1].title);
-    expect(readFileSync('widgets/weather/public/widget.js', 'utf8')).toMatch(/const THEMES = \[[^\]]*'deep'/);
-    expect(css('weather')).toContain('.wf-theme-deep');
+    expect(theme.values!.find(v => v.id === 'card')!.title).toEqual(values.values![1].title);
+    expect(readFileSync('widgets/weather/public/widget.js', 'utf8')).toMatch(/const THEMES = \[[^\]]*'card'/);
+    expect(css('weather')).toContain('.wf-theme-card');
   });
 
   it.each(PICKERS)('%s: has a colour setting, Heatmap\'s six colours (blue by default), before Colour style', (id) => {
@@ -49,7 +50,7 @@ describe('the Colour style setting', () => {
     expect(ids.indexOf('colorStyle')).toBe(ids.indexOf('color') + 1);
   });
 
-  it.each(SCHEME_WIDGETS)('%s: its mount passes the setting on, and its CSS has Deep rules', (id) => {
+  it.each(SCHEME_WIDGETS)('%s: its mount passes the setting on, and its CSS has Vivid rules', (id) => {
     expect(readFileSync(`widgets/${id}/public/mount.js`, 'utf8')).toContain('colorStyle: settings.colorStyle');
     if (PICKERS.includes(id)) expect(readFileSync(`widgets/${id}/public/mount.js`, 'utf8')).toContain('color: settings.color');
     const own = id === 'thermostat' || id === 'varpresets' ? css(id) + readFileSync('widgets/thermostat/public/presets.css', 'utf8') : css(id);
@@ -64,10 +65,10 @@ describe('kit.js colours', () => {
     kit = (window as any).WidgetkeeperKit;
   });
 
-  it('reads Deep, and Device Values\' old Bright as Deep; anything else is the default', () => {
+  it('reads Vivid, and Device Values\' old Bright as Vivid; anything else is the default', () => {
     expect(kit.colorStyle('deep')).toBe('deep');
     expect(kit.colorStyle('bright')).toBe('deep');
-    for (const v of [undefined, null, '', 'soft', 'Deep', 42]) expect(kit.colorStyle(v)).toBe('soft');
+    for (const v of [undefined, null, '', 'soft', 'Vivid', 42]) expect(kit.colorStyle(v)).toBe('soft');
   });
 
   it('puts a root on the palette: wk, wk-deep and the colour (else the fallback, or none)', () => {
@@ -116,7 +117,7 @@ describe('a mounted widget', () => {
     return root;
   };
 
-  it.each(SCHEME_WIDGETS)('%s: takes Deep (and a colour) from its settings', (id) => {
+  it.each(SCHEME_WIDGETS)('%s: takes Vivid (and a colour) from its settings', (id) => {
     const root = mount(id, { colorStyle: 'deep', color: 'purple' });
     expect(root.classList.contains('wk')).toBe(true);
     expect(root.classList.contains('wk-deep')).toBe(true);

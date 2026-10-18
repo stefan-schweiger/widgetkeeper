@@ -18,13 +18,12 @@
   --rh-yellow-text: #9A6A00;
   --rh-red-text: #D93B37;
   --rh-fs-small: var(--homey-font-size-small, 14px);
-  --rh-fs-default: var(--homey-font-size-default, 17px);
-  --rh-fs-value: var(--homey-font-size-xlarge, 24px);
+  --rh-fs-value: var(--homey-font-size-large, 20px);
   --rh-medium: var(--homey-font-weight-medium, 500);
   --rh-bold: var(--homey-font-weight-bold, 700);
   --rh-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
-  --rh-icon: var(--homey-icon-size-regular, 16px);
-  /* Colours (kit.css): the marks toned down, mixed into the track; Deep draws them in full colour. */
+  --rh-icon: var(--homey-icon-size-medium, 20px);
+  /* Colours (kit.css): the marks toned down, mixed into the track; Vivid draws them in full colour. */
   --rh-arc-mix: 60%;
 }
 .rh.wk-deep { --rh-arc-mix: 100%; }
@@ -48,7 +47,7 @@ html, body { background: transparent !important; }
 /* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
 .rh [dir="auto"] { text-align: left; }
 
-/* One device tile: the rooms, as many per row as fit (three at a phone's 358 px and at 300 px, four on a tablet's 420). */
+/* One device tile: the rooms, 2, 3 or 4 per row (`columns`, `data-columns`). */
 .rh-tile { position: relative; overflow: hidden; background: var(--rh-tile); border-radius: var(--rh-radius); }
 /* The native tiles' 1px rim, brightest along the top. */
 .homey-dark-mode .rh-tile::after, .rh.homey-dark-mode .rh-tile::after {
@@ -56,22 +55,26 @@ html, body { background: transparent !important; }
   box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
 }
 /* Lines between the rooms: each draws its right and bottom one, and the grid reaches 1px past the tile, which clips the outer ones. */
-.rh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); margin: 0 -1px -1px 0; }
+.rh-grid { display: grid; grid-template-columns: repeat(var(--rh-cols, 3), minmax(0, 1fr)); margin: 0 -1px -1px 0; }
+.rh[data-columns="2"] { --rh-cols: 2; }
+.rh[data-columns="4"] { --rh-cols: 4; }
 
 /* A room: its value large, the name, then the marks. A container, so the value can shrink to fit its width. */
 .rh-room {
-  display: flex; flex-direction: column; min-width: 0; padding: 14px; box-shadow: inset -1px -1px 0 var(--rh-line);
+  display: flex; flex-direction: column; min-width: 0; padding: var(--rh-pad, 14px); box-shadow: inset -1px -1px 0 var(--rh-line);
   container-type: inline-size;
   cursor: pointer; -webkit-tap-highlight-color: transparent; outline: none; transition: background-color .15s;
 }
 /* The last room draws no line into the empty rest of its row. */
 .rh-room:last-child { box-shadow: inset 0 -1px 0 var(--rh-line); }
 .rh-room:focus-visible { box-shadow: inset 0 0 0 2px var(--rh-blue); }
+/* Four to a row: less padding, so the marks keep their room. */
+.rh[data-columns="4"] .rh-room { --rh-pad: 10px; }
 /* Pressed, or a tap brought up another reading. */
 .rh-room.pressing, .rh-room.picking { background: color-mix(in srgb, var(--rh-text) 7%, transparent); }
 
 /*
- * The value (24 bold, smaller when it wouldn't fit), in its colour when it's off; a unit other than ° and % after it,
+ * The value (20 bold, smaller when it wouldn't fit), in its colour when it's off; a unit other than ° and % after it,
  * small. The line is always as tall as a full-size value, with its baseline in the same place, so the names line up.
  */
 .rh-value {
@@ -86,16 +89,16 @@ html, body { background: transparent !important; }
 .rh-value[data-level="off"] { color: color-mix(in oklab, var(--rh-red-text) calc(var(--k, 1) * 100%), var(--rh-yellow-text)); }
 .rh-room.missing .rh-value, .rh-room.missing .rh-name { color: var(--rh-muted); }
 
-/* The name (17 medium). */
+/* The name (14 medium). */
 .rh-name {
-  max-width: 100%; font-size: var(--rh-fs-default); line-height: var(--homey-line-height-default, 24px); font-weight: var(--rh-medium);
+  max-width: 100%; font-size: var(--rh-fs-small); line-height: var(--homey-line-height-small, 20px); font-weight: var(--rh-medium);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
 /* The marks: one per measure any room has, so they line up from room to room. */
 .rh-marks { display: grid; margin-top: var(--homey-su-3, 12px); }
 .rh-bars .rh-marks { grid-template-columns: repeat(var(--rh-n, 1), minmax(0, 20px)); gap: var(--homey-su-1, 4px); }
-.rh-icons .rh-marks { grid-template-columns: repeat(var(--rh-n, 1), minmax(0, 24px)); height: var(--rh-icon); }
+.rh-icons .rh-marks { grid-template-columns: repeat(var(--rh-n, 1), minmax(0, 28px)); height: var(--rh-icon); }
 .rh-mark { transition: opacity .2s, background-color .3s, color .3s; }
 .rh-room.picking .rh-mark:not(.picked) { opacity: .35; }
 
@@ -118,6 +121,29 @@ html, body { background: transparent !important; }
 .rh-icons .rh-mark[data-level="off"] {
   color: color-mix(in oklab, color-mix(in oklab, var(--rh-red) calc(var(--k, 1) * 100%), var(--rh-yellow)) var(--rh-arc-mix), var(--rh-track));
 }
+
+/*
+ * Vivid: the cell filled with the room's worst (`data-tone`: yellow, orange or red; green when fine with
+ * `greenWhenFine`), in the kit's shades, with the text and the marks in the colour on it. Lines in the tile's colour.
+ */
+.rh.wk-deep .rh-room[data-tone="yellow"] { --rh-fill: var(--wk-yellow); --rh-on: var(--wk-on-yellow); }
+.rh.wk-deep .rh-room[data-tone="orange"] { --rh-fill: var(--wk-orange); --rh-on: var(--wk-on-orange); }
+.rh.wk-deep .rh-room[data-tone="red"] { --rh-fill: var(--wk-red); --rh-on: var(--wk-on-red); }
+.rh.wk-deep .rh-room[data-tone="green"] { --rh-fill: var(--wk-green); --rh-on: var(--wk-on-green); }
+.rh.wk-deep .rh-room[data-tone] {
+  --rh-text: var(--rh-on);
+  --rh-muted: color-mix(in srgb, var(--rh-on) 78%, transparent);
+  --rh-track: color-mix(in srgb, var(--rh-on) 22%, var(--rh-fill));
+  --rh-fine: color-mix(in srgb, var(--rh-on) 55%, var(--rh-fill));
+  color: var(--rh-text); background-color: var(--rh-fill); box-shadow: inset -1px -1px 0 var(--rh-tile);
+}
+.rh.wk-deep .rh-room[data-tone]:focus-visible { box-shadow: inset 0 0 0 2px var(--rh-on); }
+.rh.wk-deep:not(.renaming) .rh-room[data-tone].pressing, .rh.wk-deep .rh-room[data-tone].picking {
+  background-color: color-mix(in srgb, var(--rh-on) 14%, var(--rh-fill));
+}
+.rh.wk-deep .rh-room[data-tone] .rh-value { color: inherit; }
+.rh.wk-deep.rh-bars .rh-room[data-tone] .rh-mark[data-level="off"] { background: var(--rh-on); }
+.rh.wk-deep.rh-icons .rh-room[data-tone] .rh-mark[data-level="off"] { color: var(--rh-on); }
 
 .rh-message { font-size: var(--rh-fs-small); line-height: var(--homey-line-height-small, 20px); color: var(--rh-muted); }
 .rh-message.error { color: var(--rh-red); }

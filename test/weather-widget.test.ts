@@ -222,13 +222,12 @@ describe('themes', () => {
     expect(widget(undefined, { theme: 'neon' }).root.classList.contains('wf-theme-default')).toBe(true);
   });
 
-  it('marks each column with its sky and temperature tint', () => {
-    const { cols, root } = widget(undefined, { theme: 'sky' });
-    expect(root.classList.contains('wf-theme-sky')).toBe(true);
-    expect(cols()[0].dataset.sky).toBe('partly');
-    expect(cols()[1].dataset.sky).toBe('rain');
-    expect(cols()[0].classList.contains('tint-cold')).toBe(true);
-    expect(root.dataset.sky).toBe('partly');
+  it('reads the themes removed in 1.0.0 as the closest one left', () => {
+    const themeOf = (theme: string) => [...widget(undefined, { theme }).root.classList].find(c => c.startsWith('wf-theme-'));
+    expect(themeOf('temperature')).toBe('wf-theme-vivid');
+    expect(themeOf('sky')).toBe('wf-theme-card');
+    expect(themeOf('deep')).toBe('wf-theme-card');
+    expect(themeOf('constructor')).toBe('wf-theme-default');
   });
 
   it('paints the frame with the current sky only in the card theme', () => {

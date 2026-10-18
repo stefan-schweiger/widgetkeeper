@@ -4,8 +4,8 @@
  */
 
 /*
- * The colour a lit button takes, the `color` setting's (kit.css's `data-wk-color` on `.vp`): its shade in Default
- * (`--tw-shade`, with the text on it), the bright colour in Deep (`--c`, presets.css's gradient, with the text on it:
+ * The colour a lit button takes, the `color` setting's (kit.css's `data-wk-color` on `.vp`): its shade in Muted
+ * (`--tw-shade`, with the text on it), the bright colour in Vivid (`--c`, presets.css's gradient, with the text on it:
  * dark on yellow and green, as Flow Buttons).
  */
 .vp .tw-btn { --c: var(--wk-c-bright); --tw-shade: var(--wk-c-shade); --tw-shade-on: var(--wk-on-shade); }

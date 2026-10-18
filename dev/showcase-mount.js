@@ -16,6 +16,8 @@ const MOUNT = {
   sensordots: (el, w) => { const x = createSensorDotsWidget(el, w.opts || {}); x.setState({ devices: w.devices, language: 'en' }); if (w.open) x.open(w.open); },
   // Room Health: `w.devices` are the widget's `/state` entries (sensors with their zone and readings).
   roomhealth: (el, w) => { const x = createRoomHealthWidget(el, { locale: LOCALE, ...w.opts }); x.setState(w.devices); if (w.open) x.open(w.open); },
+  // Value Matrix: `w.columns` its column settings, `w.state` the widget's `/state` (`{columns, devices}`).
+  valuematrix: (el, w) => createValueMatrixWidget(el, { locale: LOCALE, columns: w.columns, ...w.opts }).setState(w.state),
   values: (el, w) => createValuesWidget(el, w.opts || {}).setState(w.slots),
   variables: (el, w) => createVariablesWidget(el, w.opts || {}).setState(w.vars),
   varpresets: (el, w) => { const x = createVarPresetsWidget(el, { locale: LOCALE, ...w.opts }); x.setPresets(varPresetsFromSettings(w.settings)); x.setState(w.variable); },
@@ -31,7 +33,7 @@ const MOUNT = {
   heatmap: (el, w) => createHeatmapWidget(el, { locale: LOCALE, ...w.opts }).setData(w.data),
   // The made-up speakers of mock-media.js (drawn covers); the fixed clock keeps the position still.
   media: (el, w) => mountMockMedia(el, mockSpeaker(...w.speaker), { now: () => SHOWCASE_NOW, ...w.opts }),
-  weather: (el, w) => createWeatherWidget(el, { locale: LOCALE, iconBase: '../widgets/weather/public/icons/', ...w.opts })
+  weather: (el, w) => createWeatherWidget(el, { locale: LOCALE, iconBase: '../widgets/weather/public/icons/', frame: el.parentElement, ...w.opts })
     .setForecast({ hours: w.hours, language: 'en' }),
   // The weather is the showcase's own (w.weather: {symbol, temp, high, low}); the icon comes from the files.
   textline: (el, w) => createTextLineWidget(el, { reducedMotion: true, ...w.opts }).setState({ language: 'en', board: w.board || null, variable: w.variable || null }),

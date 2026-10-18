@@ -76,6 +76,21 @@
     "particles": "Pyły",
     "voc": "LZO"
   },
+  "valuematrix": {
+    "selectDevices": "Wybierz urządzenia w ustawieniach widżetu.",
+    "selectColumns": "Wybierz wartości w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać wartości.",
+    "unavailable": "Niedostępne",
+    "renameFailed": "Nie udało się zapisać nazwy.",
+    "ok": "OK",
+    "warning": "Ostrzeżenie",
+    "alert": "Alarm",
+    "noReading": "Brak odczytu",
+    "radon": "Radon",
+    "voc": "LZO",
+    "none": "Brak",
+    "devices": "Urządzenia: __count__"
+  },
   "weather": {
     "now": "Teraz",
     "error": "Nie udało się wczytać prognozy.",
@@ -341,6 +356,8 @@
     "close": "Zamknij",
     "openAction": "Otwórz",
     "lockAll": "Zamknij wszystkie",
+    "openDoor": "Otwórz drzwi",
+    "tapToOpen": "Dotknij, by otworzyć",
     "renameFailed": "Nie udało się zapisać nazwy."
   },
   "curtains": {
@@ -518,6 +535,7 @@
       "sensoralarms": "Kafelki, które robią się czerwone, gdy czujnik zgłasza alarm.",
       "sensordots": "Ruch, drzwi i kamery jako siatka kropek.",
       "roomhealth": "Temperatura, wilgotność i powietrze każdego pokoju w jednym spojrzeniu, od żółtego do czerwonego, gdy coś jest nie tak.",
+      "valuematrix": "Urządzenia lub pomieszczenia względem wybranych wartości, zielone, pomarańczowe lub czerwone według zakresu.",
       "weather": "Najbliższe 36 godzin, godzina po godzinie.",
       "heatmap": "Tydzień dowolnej wartości jako mapa cieplna dzień × godzina.",
       "cameras": "Zdjęcia z kamer, z obrazem na żywo po dotknięciu.",

@@ -326,7 +326,7 @@
   }
 
   /**
-   * Puts a widget root on kit.css's palette: `wk`, `wk-deep` for the Deep colours, and `data-wk-color` (a colour
+   * Puts a widget root on kit.css's palette: `wk`, `wk-deep` for the Vivid colours, and `data-wk-color` (a colour
    * setting, else `fallback`; null leaves it out) for `--wk-c`/`--wk-on`. Returns the scheme ('soft' or 'deep').
    * @param {HTMLElement} root
    * @param {{ style?: unknown, color?: unknown, fallback?: string | null }} [opts]

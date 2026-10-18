@@ -76,6 +76,21 @@
     "particles": "Polveri",
     "voc": "COV"
   },
+  "valuematrix": {
+    "selectDevices": "Scegli i dispositivi nelle impostazioni del widget.",
+    "selectColumns": "Scegli i valori nelle impostazioni del widget.",
+    "error": "Impossibile caricare i valori.",
+    "unavailable": "Non disponibile",
+    "renameFailed": "Impossibile salvare il nome.",
+    "ok": "OK",
+    "warning": "Avviso",
+    "alert": "Allarme",
+    "noReading": "Nessuna misura",
+    "radon": "Radon",
+    "voc": "COV",
+    "none": "Nessuno",
+    "devices": "__count__ dispositivi"
+  },
   "weather": {
     "now": "Ora",
     "error": "Impossibile caricare le previsioni.",
@@ -341,6 +356,8 @@
     "close": "Chiudi",
     "openAction": "Apri",
     "lockAll": "Blocca tutto",
+    "openDoor": "Apri",
+    "tapToOpen": "Tocca per aprire",
     "renameFailed": "Impossibile salvare il nome."
   },
   "curtains": {
@@ -518,6 +535,7 @@
       "sensoralarms": "Tessere che diventano rosse quando un sensore dà l'allarme.",
       "sensordots": "Movimento, porte e telecamere come una griglia di punti.",
       "roomhealth": "Temperatura, umidità e aria di ogni stanza a colpo d'occhio, dal giallo al rosso quando qualcosa non va.",
+      "valuematrix": "Dispositivi o stanze per i valori scelti, verdi, arancioni o rossi secondo il loro intervallo.",
       "weather": "Le prossime 36 ore, ora per ora.",
       "heatmap": "Una settimana di un valore come mappa di calore giorno × ora.",
       "cameras": "Istantanee delle telecamere, con video dal vivo con un tocco.",

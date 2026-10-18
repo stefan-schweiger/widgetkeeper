@@ -22,7 +22,7 @@
   <div class="col"><span>358 px · dark · one unlocked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w2"></div></div></div>
   <div class="col"><span>358 px · dark · two not secure, list open</span><div class="dash homey-dark-mode" style="width:358px"><div id="w3"></div></div></div>
   <div class="col"><span>358 px · light · two not secure, list open</span><div class="dash light" style="width:358px"><div id="w4"></div></div></div>
-  <div class="col"><span>358 px · light · all secure, list, unlocking allowed</span><div class="dash light" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · light · all secure, list, unlocking and Open allowed</span><div class="dash light" style="width:358px"><div id="w5"></div></div></div>
   <div class="col"><span>300 px · dark · list, one gone</span><div class="dash homey-dark-mode" style="width:300px"><div id="w6"></div></div></div>
   <div class="col"><span>358 px · dark · doors only</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
   <div class="col"><span>358 px · no devices</span><div class="dash homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
@@ -46,6 +46,7 @@
           resolve();
           setTimeout(() => w.pushChange({ deviceId, capabilityId, value, t: Date.now() }), 1500);
         }, 300)),
+        onOpen: () => new Promise(resolve => setTimeout(resolve, 300)),
       });
       w.setState({ devices: list, language: 'en' });
       return w;
@@ -54,7 +55,8 @@
     mount('w2', devices(true, false, true));
     mount('w3', devices(true, false, false)).expand();
     mount('w4', devices(true, false, false)).expand();
-    mount('w5', devices(true, true, true), { view: 'list', allowUnlock: true });
+    // The front door's lock can pull the latch (an `open` capability, picked in the widget's settings).
+    mount('w5', devices(true, true, true).map(d => (d.id === 'front' ? { ...d, open: 'open' } : d)), { view: 'list', allowUnlock: true, allowOpen: true });
     mount('w6', [...devices(false, true, true), { id: 'gone', missing: true }], { view: 'list' });
     mount('w7', devices(true, true, true).filter(d => !d.caps.locked));
     const empty = createLocksWidget(document.getElementById('w8'), { t: devT });

@@ -17,4 +17,4 @@ paths:
 - The icon is drawn: a rod with two drapes that part with the position (half open when unknown), or for blinds and sunshades (`kind`, `virtualClass || class`) a rising panel.
 - `showState` (on): off adds `.ct-no-state` (88 px tiles). `groupByZone` as Light Controls': the average position; a tap moves all the same way, the bar sets every one with a position.
 - `GET /state` entries: `{id, name, kind, zone, caps: {windowcoverings_*: {value, setable}}}`. `POST /set {deviceId, position}` (the device's own scale) or `{deviceId, action: open|close}`. Realtime `curtains:state`.
-- Colour style (`colorStyle`, Default/Deep; CLAUDE.md *Widget styling*, `kit.css`): last, with `color` (an open or moving tile, blue by default; `--ct-accent` is `--wk-c`). Deep: the open tile is the shade, solid, with `--wk-on` text, fill and a 22 % track.
+- Colour style (`colorStyle`, Muted/Vivid; CLAUDE.md *Widget styling*, `kit.css`): last, with `color` (an open or moving tile, blue by default; `--ct-accent` is `--wk-c`). Vivid: the open tile is the shade, solid, with `--wk-on` text, fill and a 22 % track.

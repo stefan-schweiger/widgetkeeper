@@ -89,7 +89,7 @@ html, body { background: transparent !important; }
   background: var(--vr-knob); box-shadow: 0 1px 2px rgb(0 0 0 / .25); transition: transform .15s;
 }
 .vr-row.active .vr-switch { background: var(--vr-accent); }
-/* Deep (kit.css): a row that is on is the colour's darker shade, solid, with its text, switch and dot in --wk-on. */
+/* Vivid (kit.css): a row that is on is the colour's darker shade, solid, with its text, switch and dot in --wk-on. */
 .vr.wk-deep .vr-row.active { background: var(--vr-accent); --vr-text: var(--wk-on); --vr-muted: var(--wk-on-muted); }
 .vr.wk-deep .vr-row.active .vr-switch { background: color-mix(in srgb, var(--wk-on) 40%, transparent); }
 .vr.wk-deep .vr-row.active .vr-dot { background: var(--wk-on); }

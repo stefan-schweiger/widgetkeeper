@@ -10,7 +10,7 @@
   --sd-blue: var(--homey-color-blue, #0091EA);
   --sd-red: var(--homey-color-red, #F25F5C);
   /* The colour settings (data-idle / data-active on .sd): Device Values' Flow colours plus grey, kit.css's darker shades of
-     them (Deep: the bright colours, below). */
+     them (Vivid: the bright colours, below). */
   --sd-c-grey: color-mix(in srgb, var(--sd-muted) 70%, var(--sd-tile));
   --sd-c-blue: var(--wk-blue-shade);
   --sd-c-red: var(--wk-red-shade);
@@ -28,7 +28,7 @@
 }
 /* Dark mode: Homey's native device tiles, as Device Quick Actions. */
 .homey-dark-mode .sd, .sd.homey-dark-mode { --sd-tile: #181920; --sd-raised: #2E3039; }
-/* Deep (kit.css): the bright colours at full strength (grey stays grey). */
+/* Vivid (kit.css): the bright colours at full strength (grey stays grey). */
 .sd.wk-deep {
   --sd-c-blue: var(--wk-blue-bright); --sd-c-red: var(--wk-red-bright); --sd-c-orange: var(--wk-orange-bright);
   --sd-c-yellow: var(--wk-yellow-bright); --sd-c-green: var(--wk-green-bright); --sd-c-purple: var(--wk-purple-bright);

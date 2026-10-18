@@ -43,7 +43,7 @@ html, body { background: transparent !important; }
 }
 /* Something open or unlocked: Sensor Alarms' red-tinted tile, only while the list is closed (the list keeps the plain fill). */
 .lk-tile[data-level="insecure"]:not(.expanded) { background: color-mix(in srgb, var(--lk-red) 22%, var(--lk-tile)); }
-/* Deep (kit.css): the red shade, solid, with white text (the list keeps the tile's own colour, as without Deep). */
+/* Vivid (kit.css): the red shade, solid, with white text (the list keeps the tile's own colour, as without Vivid). */
 .lk.wk-deep .lk-tile[data-level="insecure"]:not(.expanded) {
   background: var(--wk-red); color: var(--wk-on-red);
   --lk-text: var(--wk-on-red); --lk-muted: var(--wk-on-muted); --lk-red-text: var(--wk-on-red);
@@ -92,8 +92,8 @@ html, body { background: transparent !important; }
 .lk-row[data-level="insecure"] .lk-state { color: var(--lk-red-text); }
 .lk-row[data-level="missing"] > * { opacity: .5; }
 
-/* Lock / Close, Unlock / Open and Lock all: Variables' grey pills, 32 px high. */
-.lk-action, .lk-all {
+/* Lock / Close, Unlock / Open, a lock's Open (unlatch) and Lock all: Variables' grey pills, 32 px high. */
+.lk-action, .lk-open, .lk-all {
   flex: 0 0 auto; height: 32px; padding: 0 14px; border-radius: 16px;
   display: flex; align-items: center; justify-content: center;
   font-size: var(--lk-fs-small); line-height: var(--lk-lh-small); font-weight: var(--lk-bold);
@@ -101,12 +101,15 @@ html, body { background: transparent !important; }
   cursor: pointer; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; -webkit-user-select: none;
   transition: transform .1s, opacity .15s;
 }
-.lk-action.pressing, .lk-all.pressing { transform: scale(.95); }
-.lk-action:focus-visible, .lk-all:focus-visible { box-shadow: 0 0 0 2px var(--lk-tile), 0 0 0 4px var(--lk-blue); }
+.lk-action.pressing, .lk-open.pressing, .lk-all.pressing { transform: scale(.95); }
+.lk-action:focus-visible, .lk-open:focus-visible, .lk-all:focus-visible { box-shadow: 0 0 0 2px var(--lk-tile), 0 0 0 4px var(--lk-blue); }
+/* Open after its first tap, waiting for the second: the insecure red tint (Vivid: the red shade, solid). */
+.lk-open.confirm { background: color-mix(in srgb, var(--lk-red) 22%, var(--lk-tile)); color: var(--lk-red-text); }
+.lk.wk-deep .lk-open.confirm { background: var(--wk-red); color: var(--wk-on-red); }
 /* Waiting for the lock to report back: faded, with a pulse. */
-.lk-action.busy, .lk-all.busy { opacity: .55; animation: lk-pulse 1s ease-in-out infinite alternate; }
+.lk-action.busy, .lk-open.busy, .lk-all.busy { opacity: .55; animation: lk-pulse 1s ease-in-out infinite alternate; }
 /* A busy row button ignores taps (`send()` skips busy devices); Lock all keeps them, so a tap on it never reaches the summary. */
-.lk-action.busy { pointer-events: none; }
+.lk-action.busy, .lk-open.busy { pointer-events: none; }
 @keyframes lk-pulse { to { opacity: .3; } }
 
 .lk-message { font-size: var(--lk-fs-small); line-height: var(--lk-lh-small); color: var(--lk-muted); }
@@ -118,14 +121,14 @@ html, body { background: transparent !important; }
   40%, 80% { transform: translateX(4px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .lk-action.busy, .lk-all.busy, .lk-row.shake { animation: none; }
+  .lk-action.busy, .lk-open.busy, .lk-all.busy, .lk-row.shake { animation: none; }
 }
 
 /* Rename tiles: the list shows, each row's name a text field (as Variables' input), without the buttons. */
 .lk { --lk-accent: var(--homey-color-blue, #2F8DF6); }
 .lk.renaming .lk-row:not([data-level="missing"]) .lk-name { display: none; }
 .lk-row[data-level="missing"] .wk-rename { display: none; }
-.lk.renaming .lk-action, .lk.renaming .lk-all { display: none !important; }
+.lk.renaming .lk-action, .lk.renaming .lk-open, .lk.renaming .lk-all { display: none !important; }
 .lk .wk-rename {
   width: 100%; min-width: 0; height: 24px; margin: -2px 0; padding: 0 8px;
   font: inherit; font-size: var(--lk-fs-small); font-weight: var(--lk-bold); color: var(--lk-text);

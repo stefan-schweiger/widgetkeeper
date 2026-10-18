@@ -174,6 +174,24 @@
           }
         },
         {
+          "id": "valuematrix",
+          "title": {
+            "en": "Value Matrix",
+            "nl": "Waardematrix",
+            "de": "Wertematrix",
+            "fr": "Matrice de valeurs",
+            "it": "Matrice dei valori",
+            "sv": "Värdematris",
+            "no": "Verdimatrise",
+            "es": "Matriz de valores",
+            "da": "Værdimatrix",
+            "ru": "Матрица значений",
+            "pl": "Macierz wartości",
+            "ko": "값 매트릭스",
+            "ar": "مصفوفة القيم"
+          }
+        },
+        {
           "id": "weather",
           "title": {
             "en": "Weather Forecast",

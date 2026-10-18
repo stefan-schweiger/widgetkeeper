@@ -83,7 +83,7 @@ html, body { background: transparent !important; }
 @keyframes tm-ring { to { background: color-mix(in srgb, var(--tm-red) 16%, var(--tm-tile)); } }
 .tm-row[data-state="done"] { --tm-on: #FFFFFF; }
 /*
- * Deep (kit.css): the time left in the colour's darker shade, the rest of the row a darker (on yellow a paler) shade of it,
+ * Vivid (kit.css): the time left in the colour's darker shade, the rest of the row a darker (on yellow a paler) shade of it,
  * with the text, buttons and icons in --wk-on; a finished timer pulses between the red shade and a darker red.
  */
 .tm.wk-deep .tm-row:not([data-state="paused"]) {

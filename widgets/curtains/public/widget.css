@@ -58,7 +58,7 @@ html, body { background: transparent !important; }
   background: linear-gradient(to bottom, color-mix(in srgb, var(--ct-accent) var(--ct-tint), var(--ct-tile)),
     color-mix(in srgb, var(--ct-accent) calc(var(--ct-tint) / 2), var(--ct-tile)));
 }
-/* Deep (kit.css): the colour's darker shade, solid, with the text, the bar's fill and track in --wk-on. */
+/* Vivid (kit.css): the colour's darker shade, solid, with the text, the bar's fill and track in --wk-on. */
 .ct.wk-deep .ct-tile:is(.open, .moving) { background: var(--ct-accent); --ct-text: var(--wk-on); --ct-muted: var(--wk-on-muted); }
 .ct.wk-deep .ct-tile:is(.open, .moving) .ct-track { background: color-mix(in srgb, var(--wk-on) 22%, transparent); }
 .ct.wk-deep .ct-tile:is(.open, .moving) .ct-fill { background: var(--wk-on); }

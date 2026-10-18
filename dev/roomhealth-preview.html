@@ -21,9 +21,13 @@
   <div class="col"><span>358 px (phone) · dark · icons</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
   <div class="col"><span>358 px · dark · bars</span><div class="dash homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
   <div class="col"><span>358 px · light · icons, green when fine</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
-  <div class="col"><span>358 px · dark · bars, green when fine, Deep</span><div class="dash homey-dark-mode" style="width:358px"><div id="w9"></div></div></div>
+  <div class="col"><span>358 px · dark · bars, green when fine, Vivid</span><div class="dash homey-dark-mode" style="width:358px"><div id="w9"></div></div></div>
+  <div class="col"><span>358 px · dark · icons, Vivid</span><div class="dash homey-dark-mode" style="width:358px"><div id="w10"></div></div></div>
+  <div class="col"><span>358 px · light · icons, green when fine, Vivid</span><div class="dash light" style="width:358px"><div id="w11"></div></div></div>
+  <div class="col"><span>358 px · dark · icons, 2 per row</span><div class="dash homey-dark-mode" style="width:358px"><div id="w12"></div></div></div>
+  <div class="col"><span>420 px · dark · icons, 4 per row, Vivid</span><div class="dash homey-dark-mode" style="width:420px"><div id="w13"></div></div></div>
   <div class="col"><span>300 px · dark · icons</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
-  <div class="col"><span>420 px (a tablet column) · dark · bars</span><div class="dash homey-dark-mode" style="width:420px"><div id="w4"></div></div></div>
+  <div class="col"><span>420 px (a tablet column) · dark · bars, 4 per row</span><div class="dash homey-dark-mode" style="width:420px"><div id="w4"></div></div></div>
   <div class="col"><span>358 px · all fine, temperature only, an unavailable sensor</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
   <div class="col"><span>358 px · no readings yet</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
   <div class="col"><span>358 px · no devices</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
@@ -58,8 +62,12 @@
       make('w8', house(), { layout: 'bars' }),
       make('w2', house(), { greenWhenFine: true }),
       make('w9', house(), { layout: 'bars', greenWhenFine: true, colorStyle: 'deep' }),
+      make('w10', house(), { colorStyle: 'deep' }),
+      make('w11', house(), { greenWhenFine: true, colorStyle: 'deep' }),
+      make('w12', house(), { columns: '2' }),
+      make('w13', house(), { columns: '4', colorStyle: 'deep' }),
       make('w3', house()),
-      make('w4', house(), { layout: 'bars' }),
+      make('w4', house(), { layout: 'bars', columns: '4' }),
     ];
     make('w5', [
       sensor('l1', Z.living, 'Living room', { temperature: 21.4, humidity: 45, co2: 720 }),

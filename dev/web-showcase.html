@@ -7,7 +7,7 @@
   <!--
     The web dashboards page (settings/dashboard.js) with the made-up home of showcase-data.js, in a drawn desktop
     browser window: the showcase dashboards as web dashboards, their widgets mounted in place of the iframes (the
-    `mountWidget` hook) with the real widget code. `?v=dashboard|front|editor` picks the view, `&d=<id>` the
+    `mountWidget` hook) with the real widget code. `?v=dashboard|front|editor|settings` picks the view (settings: the editor with Flow Buttons' settings dialog open), `&d=<id>` the
     dashboard (default home). Serve the repo root (the page and mock-web-api.js fetch /app.json and /locales/en.json)
     and open /dev/web-showcase.html; scripts/render-web-showcase.mjs (`npm run web-showcase [-- <view>…]`) renders
     them to docs/web/<view>.png on a transparent background. The clock is fixed (fixed-clock.js), so every render is
@@ -85,12 +85,29 @@
         return { id: wid, type: w.type, title: '', settings: {}, deviceIds: [] };
       })),
     }));
-    mockWebApi({ lang: 'en', dashboards: BOARDS });
-
     const params = new URLSearchParams(location.search);
     const VIEW = params.get('v') || 'dashboard';
     const BOARD = params.get('d') || 'home';
-    const HASH = VIEW === 'front' ? '#/' : VIEW === 'editor' ? `#/d/${BOARD}/edit` : `#/d/${BOARD}`;
+    const HASH = VIEW === 'front' ? '#/' : VIEW === 'editor' || VIEW === 'settings' ? `#/d/${BOARD}/edit` : `#/d/${BOARD}`;
+
+    // The settings view: Home's Flow Buttons set up as the showcase draws them (four buttons), and the dialog drawn
+    // inside the window: shown non-modal over a backdrop of its own, since a modal one sits over the whole render.
+    const SETTINGS_WIDGET = 'home-0-2';
+    if (VIEW === 'settings') {
+      const flows = BOARDS.find(b => b.id === 'home').columns.flat().find(w => w.id === SETTINGS_WIDGET);
+      const buttons = [['Good night', 'purple', 'moon', 'Moon'], ['Good morning', 'yellow', 'sun', 'Sun'], ['Movie time', 'orange', 'tv', 'TV'], ['Leaving home', 'blue', 'leave', 'Leave']];
+      flows.settings = { columns: '2', colorStyle: 'soft' };
+      buttons.forEach(([name, color, icon, iconName], i) => Object.assign(flows.settings, {
+        [`flow${i + 1}`]: { id: `flow:${i + 1}`, name }, [`color${i + 1}`]: color,
+        [`icon${i + 1}`]: { id: icon, name: iconName }, [`name${i + 1}`]: '',
+      }));
+      HTMLDialogElement.prototype.showModal = function () {
+        this.show();
+        const viewport = document.querySelector('.viewport');
+        viewport.append(Object.assign(document.createElement('div'), { className: 'shot-backdrop' }), this);
+      };
+    }
+    mockWebApi({ lang: 'en', dashboards: BOARDS });
     history.replaceState(null, '', HASH);
   </script>
   <script src="../settings/dashboard.js"></script>
@@ -131,6 +148,10 @@
     .wd-live { display: none !important; }
     /* A non-transparent widget's frame: Homey's widget padding, as the widget's own body has in an iframe. */
     .wd-frame.card > .sc-body { padding: 16px; }
+    /* The settings view: the dialog inside the page, over a backdrop like a modal's. */
+    .viewport.settings { height: 1040px; }
+    .shot-backdrop { position: absolute; inset: 0; z-index: 9998; background: rgba(0, 0, 0, .5); }
+    .viewport > .wd-dialog { position: absolute; inset: 40px 0 auto; height: calc(100% - 80px); max-height: none; margin: 0 auto; z-index: 9999; box-shadow: 0 24px 64px rgba(0, 0, 0, .5); }
   </style>
 </head>
 <body>
@@ -170,6 +191,17 @@
     document.getElementById('favicon').src = document.querySelector('link[rel=icon]')?.href
       || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232A1958'/%3E%3Cg fill='none' stroke='%23fff' stroke-width='3'%3E%3Crect x='11.5' y='11.5' width='17' height='17' rx='5'/%3E%3Crect x='11.5' y='35.5' width='17' height='17' rx='5'/%3E%3Crect x='35.5' y='35.5' width='17' height='17' rx='5'/%3E%3C/g%3E%3Cpath d='M44 11Q44 20 53 20Q44 20 44 29Q44 20 35 20Q44 20 44 11Z' fill='%23fff'/%3E%3C/svg%3E";
     document.getElementById('hash').textContent = HASH === '#/' ? '' : HASH;
+    // The settings view: once the editor is there, open the widget's settings and its first button.
+    if (VIEW === 'settings') {
+      document.querySelector('.viewport').classList.add('settings');
+      const open = () => {
+        const tools = [...document.querySelectorAll('.wd-tools')].find(x => x.querySelector('.wd-tools-name')?.textContent === 'Flow Buttons');
+        if (!tools) { setTimeout(open, 50); return; }
+        tools.querySelector('.wd-tool').click();
+        document.querySelector('.wd-dialog .wd-set-head')?.click();
+      };
+      open();
+    }
     // The front page's previews load lazily, so a render caught some of them still loading: load them all at once.
     new MutationObserver(() => {
       for (const img of document.querySelectorAll('img[loading="lazy"]')) img.loading = 'eager';

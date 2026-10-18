@@ -440,7 +440,7 @@
           { type: 'sparklines', slots: indoorSparks },
         ],
         [
-          { type: 'weather', opts: { density: 'detailed', theme: 'temperature' }, hours: weatherHours() },
+          { type: 'weather', opts: { density: 'detailed', theme: 'vivid' }, hours: weatherHours() },
           flowButtons('2', [
             ['flow:c1', 'Air out', 'blue', 'fan'], ['flow:c2', 'Eco mode', 'green', 'drop'],
             ['flow:c3', 'Warm bathroom', 'orange', 'flame'], ['advanced:c4', 'Frost guard', 'grey', 'snowflake'],
@@ -511,7 +511,7 @@
           { type: 'lights', devices: outdoorLights },
         ],
         [
-          { type: 'weather', opts: { density: 'detailed', rows: 2, theme: 'sky' }, hours: weatherHours() },
+          { type: 'weather', opts: { density: 'detailed', rows: 2, theme: 'card' }, hours: weatherHours() },
           { type: 'heatmap', opts: { period: 'rolling', step: 2, color: 'yellow' }, data: heatLux() },
         ],
         [

@@ -163,3 +163,64 @@ describe('level', () => {
     expect(win.lockLevel({ id: 'x', missing: true })).toBe('missing');
   });
 });
+
+describe('open', () => {
+  const loqed = () => ({ ...front(), id: 'loqed', name: 'Loqed', open: 'open' });
+  function opening(devices: any[], opts: object = {}) {
+    const onOpen = vi.fn(async (_d: string, _c: string) => {});
+    const w = widget(devices, { view: 'list', allowOpen: true, onOpen, ...opts });
+    const openButton = (id: string) => {
+      const b = w.row(id).querySelector<HTMLElement>('.lk-open')!;
+      return b.style.display === 'none' ? null : b;
+    };
+    return { ...w, onOpen, openButton };
+  }
+
+  it('shows Open only on a lock with the capability, and only when allowed', () => {
+    const { openButton } = opening([loqed(), back()]);
+    expect(openButton('loqed')!.textContent).toBe('Open');
+    expect(openButton('back')).toBe(null);
+    expect(opening([loqed()], { allowOpen: false }).openButton('loqed')).toBe(null);
+  });
+
+  it('asks for a second tap, which opens it', async () => {
+    const { openButton, onOpen } = opening([loqed()]);
+    openButton('loqed')!.click();
+    expect(onOpen).not.toHaveBeenCalled();
+    expect(openButton('loqed')!.textContent).toBe('Tap to open');
+    expect(openButton('loqed')!.classList.contains('confirm')).toBe(true);
+    openButton('loqed')!.click();
+    expect(onOpen).toHaveBeenCalledWith('loqed', 'open');
+    expect(openButton('loqed')!.classList.contains('busy')).toBe(true);
+    openButton('loqed')!.click(); // busy: ignored
+    expect(onOpen).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1500);
+    expect(openButton('loqed')!.classList.contains('busy')).toBe(false);
+    expect(openButton('loqed')!.textContent).toBe('Open');
+  });
+
+  it('forgets the first tap after 3 s', async () => {
+    const { openButton, onOpen } = opening([loqed()]);
+    openButton('loqed')!.click();
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(openButton('loqed')!.textContent).toBe('Open');
+    openButton('loqed')!.click();
+    expect(onOpen).not.toHaveBeenCalled();
+  });
+
+  it('shakes the row and says so when it fails', async () => {
+    const { openButton, onOpen, row, message } = opening([loqed()]);
+    onOpen.mockRejectedValueOnce(new Error('offline'));
+    openButton('loqed')!.click();
+    openButton('loqed')!.click();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(message().textContent).toBe('Could not change Loqed.');
+    expect(row('loqed').classList.contains('shake')).toBe(true);
+    expect(openButton('loqed')!.classList.contains('busy')).toBe(false);
+  });
+
+  it('is hidden while renaming', () => {
+    const { openButton } = opening([loqed()], { renameTiles: true });
+    expect(openButton('loqed')).toBe(null);
+  });
+});

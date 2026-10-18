@@ -76,6 +76,21 @@
     "particles": "Feinstaub",
     "voc": "VOC"
   },
+  "valuematrix": {
+    "selectDevices": "Wähle Geräte in den Widget-Einstellungen.",
+    "selectColumns": "Wähle die Werte in den Widget-Einstellungen.",
+    "error": "Werte konnten nicht geladen werden.",
+    "unavailable": "Nicht verfügbar",
+    "renameFailed": "Der Name konnte nicht gespeichert werden.",
+    "ok": "OK",
+    "warning": "Warnung",
+    "alert": "Alarm",
+    "noReading": "Kein Messwert",
+    "radon": "Radon",
+    "voc": "VOC",
+    "none": "Keine",
+    "devices": "__count__ Geräte"
+  },
   "weather": {
     "now": "Jetzt",
     "error": "Vorhersage nicht geladen.",
@@ -341,6 +356,8 @@
     "close": "Schließen",
     "openAction": "Öffnen",
     "lockAll": "Alle verriegeln",
+    "openDoor": "Öffnen",
+    "tapToOpen": "Zum Öffnen tippen",
     "renameFailed": "Der Name konnte nicht gespeichert werden."
   },
   "curtains": {
@@ -518,6 +535,7 @@
       "sensoralarms": "Kacheln, die rot werden, wenn ein Sensor Alarm meldet.",
       "sensordots": "Bewegung, Türen und Kameras als Punkteraster.",
       "roomhealth": "Temperatur, Feuchte und Luft jedes Raums auf einen Blick, gelb bis rot, wenn etwas nicht passt.",
+      "valuematrix": "Geräte oder Räume gegen gewählte Werte, grün, orange oder rot nach ihrem Bereich.",
       "weather": "Die nächsten 36 Stunden, Stunde für Stunde.",
       "heatmap": "Eine Woche eines Werts als Heatmap aus Wochentag × Stunde.",
       "cameras": "Kamerabilder, mit Live-Video auf Tipp.",

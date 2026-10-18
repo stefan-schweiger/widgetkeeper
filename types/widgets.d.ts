@@ -20,6 +20,10 @@ interface Window {
   createRoomHealthWidget: (root: HTMLElement, opts?: object) => any;
   roomHealthRange: (settings: Record<string, unknown>) => Record<string, { min: number | null, max: number }>;
   roomHealthScore: (measure: string, value: unknown, ranges: Record<string, { min: number | null, max: number }>) => { score: number, side: 'low' | 'high' | null } | null;
+  createValueMatrixWidget: (root: HTMLElement, opts?: object) => any;
+  valueMatrixRange: (text: unknown, column?: { capabilityId?: string, units?: string | null } | null) => { min: number | null, max: number | null } | null;
+  valueMatrixLevel: (value: unknown, range: { min: number | null, max: number | null } | null) => 'good' | 'out' | 'far' | 'plain' | 'none';
+  valueMatrixRows: (devices: object[], mode?: string) => { key: string, name?: string, missing?: true, devices: object[], values: Record<string, number | null> }[];
   roomHealthRooms: (devices: object[]) => { key: string, name?: string, missing?: true, sensors: object[], values: Record<string, number | null> }[];
   createWeatherWidget: (root: HTMLElement, opts?: object) => any;
   createCamerasWidget: (root: HTMLElement, opts?: object) => any;
@@ -108,6 +112,7 @@ interface Window {
   mountSensorAlarmsWidget: MountWidget;
   mountSensorDotsWidget: MountWidget;
   mountRoomHealthWidget: MountWidget;
+  mountValueMatrixWidget: MountWidget;
   mountSparklinesWidget: MountWidget;
   mountChartsWidget: MountWidget;
   mountThermostatWidget: MountWidget;

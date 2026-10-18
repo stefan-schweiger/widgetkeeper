@@ -76,6 +76,21 @@
     "particles": "Fijnstof",
     "voc": "VOS"
   },
+  "valuematrix": {
+    "selectDevices": "Kies apparaten in de widgetinstellingen.",
+    "selectColumns": "Kies de waarden in de widgetinstellingen.",
+    "error": "Kan de waarden niet laden.",
+    "unavailable": "Niet beschikbaar",
+    "renameFailed": "Kon de naam niet opslaan.",
+    "ok": "OK",
+    "warning": "Waarschuwing",
+    "alert": "Alarm",
+    "noReading": "Geen meting",
+    "radon": "Radon",
+    "voc": "VOS",
+    "none": "Geen",
+    "devices": "__count__ apparaten"
+  },
   "weather": {
     "now": "Nu",
     "error": "Kon de verwachting niet laden.",
@@ -341,6 +356,8 @@
     "close": "Sluit",
     "openAction": "Open",
     "lockAll": "Alles vergrendelen",
+    "openDoor": "Open",
+    "tapToOpen": "Tik om te openen",
     "renameFailed": "Kon de naam niet opslaan."
   },
   "curtains": {
@@ -518,6 +535,7 @@
       "sensoralarms": "Tegels die rood worden als een sensor alarm slaat.",
       "sensordots": "Beweging, deuren en camera's als een raster van stippen.",
       "roomhealth": "Temperatuur, vochtigheid en lucht per ruimte in één oogopslag, geel tot rood als iets niet goed is.",
+      "valuematrix": "Apparaten of ruimtes tegen gekozen waarden, groen, oranje of rood naar hun bereik.",
       "weather": "De komende 36 uur, uur voor uur.",
       "heatmap": "Een week van een waarde als heatmap van dag × uur.",
       "cameras": "Camerabeelden, met live video na een tik.",

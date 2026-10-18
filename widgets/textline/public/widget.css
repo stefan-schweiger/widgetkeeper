@@ -27,7 +27,7 @@
   --tl-tile: var(--homey-background-color, #FFFFFF);
   --tl-text: var(--homey-text-color, #EDEEF0);
   --tl-muted: var(--homey-text-color-light, #9C9DA5);
-  /* The tile colours: kit.css's palette (Device Values' Flow colours; their darker shades in Deep). */
+  /* The tile colours: kit.css's palette (Device Values' Flow colours; their darker shades in Vivid). */
   --tl-red: var(--wk-red);
   --tl-orange: var(--wk-orange);
   --tl-yellow: var(--wk-yellow);
@@ -113,7 +113,7 @@ html, body { background: transparent !important; }
 .tl-tile[data-color="blue"] { --tl-color: var(--tl-blue); }
 .tl-tile[data-color="purple"] { --tl-color: var(--tl-purple); }
 .tl-tile[data-color] { background: color-mix(in srgb, var(--tl-color) var(--tl-fill-mix), var(--tl-tile)); }
-/* Deep (kit.css): the colour's darker shade, solid, with white text (dark on yellow). The Post-it keeps its paper. */
+/* Vivid (kit.css): the colour's darker shade, solid, with white text (dark on yellow). The Post-it keeps its paper. */
 .tl.wk-deep .tl-tile[data-color] { --tl-fill-mix: 100%; color: var(--wk-on-blue); }
 .tl.wk-deep .tl-tile[data-color="yellow"] { color: var(--wk-on-yellow); }
 .tl.wk-deep.muted .tl-tile[data-color] { color: var(--wk-on-muted); }

@@ -7,7 +7,7 @@
   <!--
     The Weather Forecast widget with mock data. Serve the repo root and open /dev/weather-preview.html.
     `?snap=/temp/met-compact.json` uses a real MET compact response; `?lang=de` uses locales/de.json.
-    `?theme=vivid|temperature|sky|card|deep` sets the theme of the first cards; the last rows show every theme,
+    `?theme=vivid|card` sets the theme of the first cards; the last rows show every theme,
     with the mock day and with a bland one (overcast, dry, 10-13°).
   -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -59,7 +59,7 @@
     const bland = hours.map((h, i) => ({ ...h, symbol: 'cloudy', temp: 10 + 3 * Math.sin(i / 4), precip: 0 }));
     const themesEl = document.getElementById('themes');
     for (const [label, data] of [['mock', hours], ['bland', bland]]) {
-      for (const th of ['default', 'vivid', 'temperature', 'sky', 'card', 'deep']) {
+      for (const th of ['default', 'vivid', 'card']) {
         for (const mode of ['dark', 'light']) {
           const col = document.createElement('div');
           col.className = 'col';

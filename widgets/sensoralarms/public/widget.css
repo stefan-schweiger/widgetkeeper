@@ -65,7 +65,7 @@ html, body { background: transparent !important; }
 .sa-tile.alarm .sa-icon:not(.fallback) { background: var(--sa-red-text); }
 .sa-tile.alarm .sa-icon.fallback { border-color: var(--sa-red-text); }
 .sa-tile.alarm .sa-status { color: var(--sa-red-text); }
-/* Deep (kit.css): an alarm is the red shade, solid, with white text and icon. */
+/* Vivid (kit.css): an alarm is the red shade, solid, with white text and icon. */
 .sa.wk-deep .sa-tile.alarm {
   background: var(--wk-red); color: var(--wk-on-red);
   --sa-text: var(--wk-on-red); --sa-muted: var(--wk-on-muted); --sa-red-text: var(--wk-on-red);

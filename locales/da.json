@@ -76,6 +76,21 @@
     "particles": "Partikler",
     "voc": "VOC"
   },
+  "valuematrix": {
+    "selectDevices": "Vælg enheder i widgetindstillingerne.",
+    "selectColumns": "Vælg værdierne i widgetindstillingerne.",
+    "error": "Kunne ikke hente værdierne.",
+    "unavailable": "Utilgængelig",
+    "renameFailed": "Kunne ikke gemme navnet.",
+    "ok": "OK",
+    "warning": "Advarsel",
+    "alert": "Alarm",
+    "noReading": "Ingen måling",
+    "radon": "Radon",
+    "voc": "VOC",
+    "none": "Ingen",
+    "devices": "__count__ enheder"
+  },
   "weather": {
     "now": "Nu",
     "error": "Kunne ikke hente vejrudsigten.",
@@ -341,6 +356,8 @@
     "close": "Luk",
     "openAction": "Åbn",
     "lockAll": "Lås alle",
+    "openDoor": "Åbn",
+    "tapToOpen": "Tryk for at åbne",
     "renameFailed": "Kunne ikke gemme navnet."
   },
   "curtains": {
@@ -518,6 +535,7 @@
       "sensoralarms": "Fliser, der bliver røde, når en sensor giver alarm.",
       "sensordots": "Bevægelse, døre og kameraer som et gitter af prikker.",
       "roomhealth": "Hvert rums temperatur, luftfugtighed og luft med ét blik, gul til rød, når noget er galt.",
+      "valuematrix": "Enheder eller rum mod valgte værdier, grønne, orange eller røde efter deres interval.",
       "weather": "De næste 36 timer, time for time.",
       "heatmap": "En uge af en værdi som heatmap over ugedag × time.",
       "cameras": "Kamerabilleder med live video ved et tryk.",

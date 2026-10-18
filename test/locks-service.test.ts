@@ -91,3 +91,63 @@ describe('set', () => {
     expect(devices.flatMap(d => d.sent)).toEqual([]);
   });
 });
+
+describe('open', () => {
+  const loqed = () => fakeDevice({
+    id: 'loqed', name: 'Loqed',
+    caps: {
+      locked: { type: 'boolean', value: true },
+      open: { type: 'boolean', value: null, getable: false, title: 'Open' },
+      onoff: { type: 'boolean', value: false, setable: false },
+      measure_battery: { type: 'number', value: 90 },
+    },
+  });
+  const matter = () => fakeDevice({
+    id: 'matter', name: 'Back door',
+    caps: { locked: { type: 'boolean', value: true }, open_lock: { type: 'boolean', value: false, title: 'Open lock' } },
+  });
+  const doorbell = () => fakeDevice({ id: 'bell', name: 'Doorbell', caps: { open: { type: 'boolean', value: null, getable: false } } });
+
+  it('tells which locks have the Open capability', async () => {
+    const { service } = setup([loqed(), matter(), garage()]);
+    const state = await service.getState(['loqed', 'matter', 'garage'], 'open');
+    expect(state.map(d => ('open' in d ? d.open : null))).toEqual(['open', null, null]);
+    expect((await service.getState(['loqed']))[0]).not.toHaveProperty('open');
+  });
+
+  it('re-tracks when a lock gets a new on/off capability', async () => {
+    const { service, devices } = setup([matter()]);
+    expect((await service.getState(['matter'], 'open'))[0]).not.toHaveProperty('open');
+    devices[0].capabilitiesObj.open = { id: 'open', type: 'boolean', value: null, getable: false };
+    expect((await service.getState(['matter'], 'open'))[0]).toMatchObject({ open: 'open' });
+  });
+
+  it('opens a lock with a setable on/off capability, and nothing else', async () => {
+    const { service, devices } = setup([loqed(), matter(), doorbell(), lock()]);
+    await service.open('loqed', 'open');
+    await service.open('matter', 'open_lock');
+    expect(devices[0].sent).toEqual(['open=true']);
+    expect(devices[1].sent).toEqual(['open_lock=true']);
+    await expect(service.open('loqed', 'locked')).rejects.toThrow();
+    await expect(service.open('loqed', 'onoff')).rejects.toThrow(); // not setable
+    await expect(service.open('loqed', 'measure_battery')).rejects.toThrow(); // not on/off
+    await expect(service.open('loqed', 'open_lock')).rejects.toThrow(); // not on this lock
+    await expect(service.open('front', 'alarm_contact')).rejects.toThrow();
+    await expect(service.open('bell', 'open')).rejects.toThrow(/isn't a lock/);
+    await expect(service.open('loqed', 42)).rejects.toThrow();
+    expect(devices.flatMap(d => d.sent)).toEqual(['open=true', 'open_lock=true']);
+  });
+
+  it('lists every lock’s on/off capabilities by id, buttons first, after None', async () => {
+    const second = loqed();
+    second.id = 'loqed2';
+    second.name = 'Garden gate';
+    const { service } = setup([loqed(), matter(), second, doorbell(), lock()]);
+    expect(await service.listOpenCapabilities('')).toEqual([
+      { name: 'None', id: 'none' },
+      { name: 'Open', description: 'open · Garden gate, Loqed', id: 'open' },
+      { name: 'Open lock', description: 'open_lock · Back door', id: 'open_lock' },
+    ]);
+    expect((await service.listOpenCapabilities('back')).map(i => i.id)).toEqual(['open_lock']);
+  });
+});

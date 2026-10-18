@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html class="homey-dark-mode">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>What's new so far</title>
+  <!--
+    A poster of what's new so far in 1.0.0 (CHANGELOG.md; it isn't out yet): the real widgets with the made-up home of showcase-data.js, in
+    Homey's dark mode at a phone's widget width (358 px), each with a short caption. scripts/render-whats-new.mjs
+    (`npm run whats-new`) renders it to docs/whats-new-1.0.0.png at 2x. The clock is fixed (fixed-clock.js).
+    The web dashboards panel shows docs/web/settings.png (`npm run web-showcase -- settings`).
+  -->
+  <script src="fixed-clock.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/spacer/public/kit.css">
+  <link rel="stylesheet" href="../widgets/electricity/public/chart.css">
+  <link rel="stylesheet" href="../widgets/thermostat/public/presets.css">
+  <link rel="stylesheet" href="../widgets/quickactions/public/widget.css">
+  <link rel="stylesheet" href="../widgets/sensordots/public/widget.css">
+  <link rel="stylesheet" href="../widgets/roomhealth/public/widget.css">
+  <link rel="stylesheet" href="../widgets/valuematrix/public/widget.css">
+  <link rel="stylesheet" href="../widgets/locks/public/widget.css">
+  <link rel="stylesheet" href="../widgets/values/public/widget.css">
+  <link rel="stylesheet" href="../widgets/variables/public/widget.css">
+  <link rel="stylesheet" href="../widgets/varpresets/public/widget.css">
+  <link rel="stylesheet" href="../widgets/price/public/widget.css">
+  <link rel="stylesheet" href="../widgets/curtains/public/widget.css">
+  <link rel="stylesheet" href="../widgets/lights/public/widget.css">
+  <link rel="stylesheet" href="../widgets/media/public/widget.css">
+  <link rel="stylesheet" href="../widgets/charts/public/widget.css">
+  <link rel="stylesheet" href="../widgets/textline/public/widget.css">
+  <link rel="stylesheet" href="../widgets/dayssince/public/widget.css">
+  <script src="../widgets/spacer/public/kit.js"></script>
+  <script src="../widgets/electricity/public/chart.js"></script>
+  <script src="../widgets/electricity/public/widget.js"></script>
+  <script src="../widgets/thermostat/public/presets.js"></script>
+  <script src="../widgets/quickactions/public/widget.js"></script>
+  <script src="../widgets/sensordots/public/widget.js"></script>
+  <script src="../widgets/roomhealth/public/widget.js"></script>
+  <script src="../widgets/valuematrix/public/widget.js"></script>
+  <script src="../widgets/locks/public/widget.js"></script>
+  <script src="../widgets/values/public/widget.js"></script>
+  <script src="../widgets/variables/public/widget.js"></script>
+  <script src="../widgets/varpresets/public/widget.js"></script>
+  <script src="../widgets/price/public/widget.js"></script>
+  <script src="../widgets/curtains/public/widget.js"></script>
+  <script src="../widgets/lights/public/widget.js"></script>
+  <script src="../widgets/media/public/widget.js"></script>
+  <script src="../widgets/charts/public/widget.js"></script>
+  <script src="../widgets/textline/public/widget.js"></script>
+  <script src="../widgets/dayssince/public/widget.js"></script>
+  <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
+  <script src="mock-media.js"></script>
+  <script src="mock-util.js"></script>
+  <script src="showcase-data.js"></script>
+  <script src="showcase-mount.js"></script>
+  <style>
+    html { background: #0C0B12 !important; }
+    body {
+      margin: 0; padding: 56px 48px 48px; width: 1760px; box-sizing: border-box; font-family: Roboto, sans-serif; color: #FFFFFF;
+      background:
+        radial-gradient(1100px 520px at 18% -4%, rgba(92, 64, 180, 0.55), transparent 70%),
+        radial-gradient(900px 600px at 96% 8%, rgba(42, 25, 88, 0.9), transparent 70%),
+        #0C0B12 !important;
+    }
+
+    header { display: flex; align-items: center; gap: 28px; margin: 0 8px 44px; }
+    .logo {
+      width: 96px; height: 96px; flex: none; border-radius: 26px; background: #2A1958;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 12px 32px rgba(0, 0, 0, 0.4);
+      display: grid; place-items: center;
+    }
+    .logo svg { width: 72px; height: 72px; display: block; }
+    header h1 { margin: 0; font-size: 64px; line-height: 68px; font-weight: 900; letter-spacing: -1.5px; }
+    .eyebrow { display: flex; align-items: center; gap: 12px; margin: 0 0 6px; font-size: 20px; line-height: 28px; font-weight: 700; color: #B9A6FF; }
+    .eyebrow span { padding: 2px 10px; border-radius: 999px; background: rgba(185, 166, 255, 0.16); font-size: 13px; line-height: 20px; letter-spacing: 0.6px; text-transform: uppercase; }
+    header p { margin: 8px 0 0; font-size: 22px; line-height: 30px; color: #B4B2C6; }
+    .chips { margin-left: auto; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; max-width: 620px; }
+    .chips span { padding: 8px 14px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); color: #DCDAE8; font-size: 15px; font-weight: 500; }
+    .chips b { color: #FFFFFF; }
+
+    .columns { display: flex; gap: 24px; align-items: flex-start; }
+    .column { width: 398px; display: flex; flex-direction: column; gap: 24px; }
+
+    .feat {
+      background: #111217; border-radius: 28px; padding: 22px 20px 20px; box-sizing: border-box;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07), 0 16px 40px rgba(0, 0, 0, 0.35);
+    }
+    .tag {
+      display: inline-block; margin: 0 0 10px; padding: 3px 10px; border-radius: 999px; font-size: 12px; line-height: 18px;
+      font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; background: rgba(255, 255, 255, 0.08); color: #C9C7D6;
+    }
+    .tag.new { background: #6C4CE0; color: #FFFFFF; }
+    .feat h2 { margin: 0 0 6px; font-size: 24px; line-height: 30px; font-weight: 700; }
+    .feat p { margin: 0 0 18px; font-size: 15px; line-height: 21px; color: #A9A8B8; }
+    .feat .label { margin: 14px 0 8px; font-size: 13px; line-height: 16px; font-weight: 500; color: #8E8DA0; text-transform: uppercase; letter-spacing: 0.5px; }
+    .feat .label:first-of-type { margin-top: 0; }
+    .stack { display: flex; flex-direction: column; gap: 8px; }
+
+    /* A non-transparent widget's frame (default widget background, with Homey's widget padding), as in screenshots.html. */
+    .card { background: #1F2029; border-radius: 20px; padding: 16px; box-sizing: border-box; }
+    .card.tw-frame { background: #181920; }
+
+    /* The Spacer: two columns lined up by an empty widget. */
+    .spacer-demo { display: flex; gap: 10px; }
+    .spacer-demo div { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .spacer-demo i { display: block; border-radius: 12px; background: #2B2C36; }
+    .spacer-demo i.gap { background: none; border: 2px dashed #6C4CE0; display: grid; place-items: center; color: #B9A6FF; font: 500 13px Roboto, sans-serif; font-style: normal; }
+
+    .wide { margin-top: 24px; display: flex; gap: 40px; align-items: center; padding: 32px 40px 32px 36px; }
+    .wide .text { flex: 1 1 auto; min-width: 0; }
+    .wide p { margin-bottom: 22px; }
+    .wide img { flex: none; width: 1140px; margin: -16px -24px -24px 0; display: block; }
+    ul.more { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    ul.more li { font-size: 15px; line-height: 21px; color: #A9A8B8; padding-left: 18px; position: relative; }
+    ul.more li::before { content: ''; position: absolute; left: 2px; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: #8E6CFF; }
+    ul.more b { color: #FFFFFF; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><svg viewBox="0 0 64 64"><g fill="none" stroke="#FFFFFF" stroke-width="3"><rect x="11.5" y="11.5" width="17" height="17" rx="5"/><rect x="11.5" y="35.5" width="17" height="17" rx="5"/><rect x="35.5" y="35.5" width="17" height="17" rx="5"/></g><path d="M44 11Q44 20 53 20Q44 20 44 29Q44 20 35 20Q44 20 44 11Z" fill="#FFFFFF"/></svg></div>
+    <div>
+      <div class="eyebrow">Widgetkeeper 1.0.0 <span>In progress</span></div>
+      <h1>What's new so far</h1>
+      <p>Seven new widgets, names on your tiles, a colour style, a better web editor and more.</p>
+    </div>
+    <div class="chips">
+      <span>Price Badge → <b>Energy Price Strip</b></span>
+      <span>Thermostat Shortcuts → <b>Thermostat Presets</b></span>
+      <span>Sensor Dots → <b>Activity Dots</b></span>
+      <span>Flow Variables → <b>Variables</b></span>
+    </div>
+  </header>
+
+  <div class="columns">
+    <div class="column">
+      <section class="feat">
+        <span class="tag new">New widget</span>
+        <h2>Charts</h2>
+        <p>Any value Homey logs in Insights: a line, an area or bars, over 1 hour to 7 days. One chart, two stacked, or two values with a scale each.</p>
+        <div class="card"><div id="w-charts"></div></div>
+      </section>
+      <section class="feat">
+        <span class="tag new">New widget</span>
+        <h2>Notes</h2>
+        <p>A short message on a tile, or a handwritten Post-it. Type it in the settings, or let a Flow write it.</p>
+        <div class="stack"><div id="w-note-tile"></div><div id="w-note-postit"></div></div>
+      </section>
+      <section class="feat">
+        <span class="tag new">New widget</span>
+        <h2>Room Health</h2>
+        <p>The whole house's indoor climate on one card: each room's worst value, and yellow to red the further it's outside the WHO's ranges.</p>
+        <div id="w-roomhealth"></div>
+      </section>
+      <section class="feat">
+        <span class="tag new">New widget</span>
+        <h2>Value Matrix</h2>
+        <p>Any devices against any values in one table: each room gets a row, each cell green, orange or red against the range you type.</p>
+        <div id="w-valuematrix"></div>
+      </section>
+    </div>
+
+    <div class="column">
+      <section class="feat">
+        <span class="tag new">New widget</span>
+        <h2>Days Since</h2>
+        <p>Counters for the chores you do every so often. Each bar fills towards the day it's due; tap a row when it's done.</p>
+        <div class="card"><div id="w-dayssince"></div></div>
+      </section>
+      <section class="feat">
+        <span class="tag new">New widget</span>
+        <h2>Variable Presets</h2>
+        <p>One Logic variable, two to four buttons: a house mode, two setpoints, or Yes and No.</p>
+        <div class="card tw-frame"><div id="w-varpresets"></div></div>
+      </section>
+      <section class="feat">
+        <span class="tag">Light Controls</span>
+        <h2>Your room's Moods</h2>
+        <p>Tiles blend every colour their lights shine in. The colour button shows the Homey Moods of the light's room; a tap starts one.</p>
+        <div id="w-lights"></div>
+      </section>
+      <section class="feat">
+        <span class="tag">Locks and Doors</span>
+        <h2>An Open button</h2>
+        <p>For locks that can pull the latch, such as Matter locks. Tap it twice to open the door, so a stray tap can't.</p>
+        <div id="w-locks"></div>
+      </section>
+    </div>
+
+    <div class="column">
+      <section class="feat">
+        <span class="tag">Ten widgets</span>
+        <h2>Name the tiles</h2>
+        <p>Turn on <i>Rename tiles</i> and type the names right on the tiles. They stay with the right tiles, on every screen.</p>
+        <div id="w-rename"></div>
+      </section>
+      <section class="feat">
+        <span class="tag">Every coloured widget</span>
+        <h2>Colour style</h2>
+        <p><i>Muted</i> is the calmer look, <i>Vivid</i> fills tiles with Homey's darker shades and white text.</p>
+        <div class="label">Muted</div>
+        <div id="w-style-default"></div>
+        <div class="label">Vivid</div>
+        <div id="w-style-deep"></div>
+      </section>
+      <section class="feat">
+        <span class="tag">Media</span>
+        <h2>A large layout</h2>
+        <p>The album art across the widget, with bigger text and buttons. The buttons can run the speaker app's own actions too.</p>
+        <div class="card mw-frame"><div id="w-media"></div></div>
+      </section>
+      <section class="feat">
+        <span class="tag">Variables</span>
+        <h2>Limits and read only</h2>
+        <p>A lowest and highest number for − and +, and rows for information only, with no API key.</p>
+        <div id="w-variables"></div>
+      </section>
+    </div>
+
+    <div class="column">
+      <section class="feat">
+        <span class="tag">Energy</span>
+        <h2>15-minute prices</h2>
+        <p>Where Homey Energy has them: the price now is the quarter's, with a bar per quarter.</p>
+        <div id="w-price"></div>
+      </section>
+      <section class="feat">
+        <span class="tag">Device Values</span>
+        <h2>A second value, pill tiles</h2>
+        <p>A room's humidity next to its temperature, and a new <i>Pill</i> tile style.</p>
+        <div class="stack"><div id="w-values-second"></div><div id="w-values-pill"></div></div>
+      </section>
+      <section class="feat">
+        <span class="tag">Activity Dots</span>
+        <h2>Presence and vibration</h2>
+        <p>Presence sensors light up while someone is there, even sitting still. Vibration sensors too.</p>
+        <div id="w-dots"></div>
+      </section>
+      <section class="feat">
+        <span class="tag">Curtains</span>
+        <h2>Blinds open at 50%</h2>
+        <p>Vertical slatted blinds and tilt-only blinds such as SwitchBot Blind Tilt: a tap opens them halfway.</p>
+        <div id="w-curtains"></div>
+      </section>
+      <section class="feat">
+        <span class="tag new">New widget</span>
+        <h2>Spacer</h2>
+        <p>An empty widget of the height you set, to line up widgets across a dashboard's columns.</p>
+        <div class="spacer-demo">
+          <div><i style="height:96px"></i><i style="height:44px"></i></div>
+          <div><i style="height:52px"></i><i class="gap" style="height:36px">Spacer</i><i style="height:44px"></i></div>
+          <div><i style="height:96px"></i><i style="height:44px"></i></div>
+        </div>
+      </section>
+      <section class="feat">
+        <span class="tag">And also</span>
+        <ul class="more">
+          <li><b>Cameras:</b> live view tries another stream when one won't play, can stay on until tapped, and a new layout.</li>
+          <li><b>Curtains, Quick Actions, Variables, Media, Timers:</b> a colour setting for what was always blue.</li>
+          <li><b>Weather Forecast:</b> fewer colour themes, each clearly different: <i>Vivid</i> and <i>Warm and cold</i>.</li>
+          <li><b>Electricity Overview:</b> a deleted power meter shows as unavailable.</li>
+          <li><b>API key:</b> no longer called invalid when Homey is only busy.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <section class="feat wide">
+    <div class="text">
+      <span class="tag">Web dashboards</span>
+      <h2>A better settings editor</h2>
+      <p>A widget's settings on a web dashboard were one long list of equal rows: 33 for Flow Buttons. Now they come in cards, with the widget's preview on top.</p>
+      <ul class="more">
+        <li><b>Grouped:</b> each button, tile or column gets a card of its own. They fold, and the header sums up what's set.</li>
+        <li><b>The right controls:</b> switches, colour swatches, segments for short choices, numbers with their unit.</li>
+        <li><b>Pickers:</b> devices by room with a search, and values with their readings.</li>
+      </ul>
+    </div>
+    <img src="../docs/web/settings.png" alt="">
+  </section>
+
+  <script>
+    (function () {
+      const el = id => document.getElementById(id);
+      const DAY = 864e5;
+
+      // Charts: the README's two, from the sparklines' made-up 24 hours (outdoor, main meter).
+      const sparkSlot = (deviceId) => {
+        for (let n = 0; findWidget('sparklines', n); n++) {
+          const s = findWidget('sparklines', n).slots.find(x => x.deviceId === deviceId);
+          if (s) return s;
+        }
+        return null;
+      };
+      MOUNT.charts(el('w-charts'), {
+        opts: { charts: [{ span: '24h', color: 'purple', smooth: true }, { span: '24h', style: 'bars', color: 'orange' }] },
+        charts: [['g1', 'Temperature'], ['m1', 'Power']].map(([id, title]) => {
+          const s = sparkSlot(id);
+          return { ...s, capability: { ...s.capability, title } };
+        }),
+      });
+
+      // Notes: a tile a Flow wrote on in blue, and the Kitchen's Post-it.
+      const board = (text, color = null) => ({ key: 'note', name: 'Note', text, color, updatedAt: SHOWCASE_NOW });
+      MOUNT.textline(el('w-note-tile'), { opts: { source: 'flow', icon: 'bell' }, board: board('The washing machine is done', 'blue') });
+      MOUNT.textline(el('w-note-postit'), findWidget('textline'));
+
+      // Room Health: the Climate dashboard's rooms, the kitchen humid after dinner.
+      const zone = (id, name) => ({ id, name });
+      const sensor = (id, z, values) => ({
+        id, name: id, zone: z,
+        measures: Object.fromEntries(Object.entries(values).map(([m, v]) => [m, { capabilityId: `measure_${m}`, value: v }])),
+      });
+      MOUNT.roomhealth(el('w-roomhealth'), { devices: [
+        sensor('rh1', zone('z1', 'Living room'), { temperature: 21.4, humidity: 47, co2: 690, radon: 48 }),
+        sensor('rh2', zone('z2', 'Kitchen'), { temperature: 22.6, humidity: 64 }),
+        sensor('rh5', zone('z4', 'Office'), { temperature: 20.6, humidity: 45, co2: 1180 }),
+      ] });
+
+      // Value Matrix: the same rooms with CO₂ and radon (one room far over).
+      const T = 'measure_temperature', H = 'measure_humidity', C = 'measure_co2', R = 'measure_radon';
+      const room = (id, z, values) => ({ id, name: id, zone: z, values });
+      MOUNT.valuematrix(el('w-valuematrix'), {
+        columns: [T, H, C, R].map(capabilityId => ({ capabilityId })),
+        state: {
+          columns: [
+            { capabilityId: T, title: 'Temperature', units: '°C', decimals: 1 }, { capabilityId: H, title: 'Humidity', units: '%', decimals: 0 },
+            { capabilityId: C, title: 'CO2', units: 'ppm', decimals: 0 }, { capabilityId: R, title: 'Radon', units: 'Bq/m³', decimals: 0 },
+          ],
+          devices: [
+            room('vm1', zone('z1', 'Living room'), { [T]: 21.4, [H]: 47, [C]: 690, [R]: 48 }),
+            room('vm2', zone('z2', 'Kitchen'), { [T]: 22.6, [H]: 64 }),
+            room('vm3', zone('b1', 'Bedroom'), { [T]: 18.2, [H]: 48, [C]: 1210 }),
+            room('vm4', zone('z7', 'Bathroom'), { [T]: 22.8, [H]: 56 }),
+            room('vm6', zone('z4', 'Office'), { [T]: 19.4, [R]: 162 }),
+          ],
+        },
+      });
+
+      // Days Since: one row amber, one red, and Fish just fed (Undo).
+      MOUNT.dayssince(el('w-dayssince'), { counters: [
+        { name: 'Plants watered', icon: 'leaf', amber: 5, red: 7, ago: 6 * DAY + 3 * 3600e3 },
+        { name: 'Vacuum filter', icon: 'vacuum', amber: 75, red: 90, ago: 92 * DAY },
+        { name: 'Bedsheets', icon: 'bed', amber: 12, red: 14, ago: 9 * DAY },
+        { name: 'Fish fed', icon: 'paw', amber: 2, red: 3, ago: 26 * 3600e3 },
+        { name: 'Smoke alarm test', icon: 'bell', amber: 25, red: 30, ago: 12 * DAY },
+      ] });
+      el('w-dayssince').querySelectorAll('.ds-row')[3].click();
+
+      // Variable Presets: a house mode with four buttons, Away lit.
+      const mode = value => ({ id: `string:${JSON.stringify(value)}`, name: value, value, type: 'string' });
+      MOUNT.varpresets(el('w-varpresets'), {
+        opts: { icon: 'home' },
+        settings: { value1: mode('Home'), value2: mode('Away'), value3: mode('Night'), value4: mode('Holiday') },
+        variable: { id: 'm1', name: 'House mode', type: 'string', value: 'Away' },
+      });
+
+      // Light Controls: the evening's lights by room, the living room's Moods open on its tile (three colours blended).
+      const lcap = v => ({ value: v, setable: true });
+      const evening = SHOWCASE_WIDGETS.find(w => w.type === 'lights' && w.opts && w.opts.palette === 'dusk').devices.slice(0, 5);
+      const moods = [
+        ['m1', 'Cosy evening', [{ temperature: 1 }, { hue: 0.07, saturation: 0.85 }]],
+        ['m2', 'Movie night', [{ hue: 0.68, saturation: 0.9 }, { hue: 0.78, saturation: 1 }]],
+        ['m3', 'Dinner party', [{ hue: 0.1, saturation: 0.6 }, { hue: 0.02, saturation: 0.8 }]],
+        ['m4', 'Reading', [{ temperature: 0.5 }]],
+        ['m5', 'Bright', [{ temperature: 0.1 }, { temperature: 0.2 }]],
+      ].map(([id, name, colors]) => ({ id, name, zone: 'z1', colors })).concat([
+        ['k1', 'Cooking', [{ temperature: 0.2 }]],
+        ['k2', 'Dinner', [{ temperature: 0.9 }]],
+        ['k3', 'Baking', [{ temperature: 0.4 }]],
+        ['k4', 'Midnight snack', [{ hue: 0.08, saturation: 0.9 }]],
+      ].map(([id, name, colors]) => ({ id, name, zone: 'z2', colors })));
+      const lights = createLightsWidget(el('w-lights'), { groupByZone: true, palette: 'moods', onMood: async () => {} });
+      lights.setState(evening.map(d => ({ ...d, caps: { ...d.caps, onoff: lcap(true) } })));
+      lights.setMoods(moods);
+      el('w-lights').querySelector('.lc-tile[data-device="v5"] .lc-chip').click();
+
+      // Locks and Doors: the security dashboard's doors as a list, the two front locks with an Open button.
+      const doors = findWidget('locks');
+      MOUNT.locks(el('w-locks'), {
+        opts: { ...doors.opts, view: 'list', allowUnlock: true, allowOpen: true, onOpen: async () => {} },
+        devices: doors.devices.map(d => (d.id === 'k1' || d.id === 'k2' ? { ...d, open: 'open_lock' } : d)),
+      });
+
+      // Rename tiles: Home's lock, coffee machine and TV, the coffee machine being named.
+      const qa = findWidget('quickactions', 0).devices;
+      const rename = createQuickActionsWidget(el('w-rename'), { renameTiles: true, onRename: async () => {} });
+      rename.setState(qa);
+      rename.setNames({ [qa[1].id]: 'Espresso' });
+
+      // Colour style: the security dashboard's batteries, Muted and Vivid.
+      const batteries = findWidget('values', 1);
+      for (const [id, colorStyle] of [['w-style-default', undefined], ['w-style-deep', 'deep']]) {
+        MOUNT.values(el(id), { opts: { ...batteries.opts, columns: '3', colorStyle }, slots: batteries.slots.slice(0, 3) });
+      }
+
+      // Media: the large layout.
+      MOUNT.media(el('w-media'), { speaker: ['Kitchen', 0], opts: { layout: 'large', buttons: [{ id: 'card:tv', name: 'TV', icon: 'tv' }, { id: 'card:scan', name: 'Scan library' }] } });
+
+      // 15-minute prices: each hour's quarters ramp towards the next hour, with some noise.
+      const price = findWidget('price');
+      let seed = 7;
+      const noise = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647 - 0.5; };
+      const prices = price.state.prices;
+      const quarters = prices.flatMap((p, i) => [0, 1, 2, 3].map(k => {
+        const next = prices[i + 1] && prices[i + 1].price != null ? prices[i + 1].price : p.price;
+        return { start: p.start + k * 9e5, price: p.price == null ? null : Math.round((p.price + (next - p.price) * (k - 1.5) / 4 + noise() * 0.06) * 1000) / 1000 };
+      }));
+      MOUNT.price(el('w-price'), { state: { ...price.state, quarters } });
+
+      // Device Values: second values, and pill tiles.
+      const vcap = (title, units, decimals = 1) => ({ title, type: 'number', units, decimals, values: null, icon: null });
+      const v = (deviceId, capabilityId, name, c, value, second) => ({ deviceId, capabilityId, name, capability: c, value, ...(second && { second }) });
+      const humidity = h => ({ capabilityId: 'measure_humidity', capability: vcap('Humidity', '%', 0), value: h });
+      const temp = (deviceId, name, t, h) => v(deviceId, 'measure_temperature', name, vcap('Temperature', '°C'), t, h == null ? null : humidity(h));
+      MOUNT.values(el('w-values-second'), { opts: { columns: '2' }, slots: [temp('r1', 'Living room', 21.4, 47), temp('r2', 'Bathroom', 23.1, 68), temp('r3', 'Bedroom', 18.2, 48), temp('r4', 'Kitchen', 22.6, 64)] });
+      MOUNT.values(el('w-values-pill'), { opts: { tileStyle: 'pill', columns: '2' }, slots: [
+        v('p1', 'measure_co2', "Emma's room", vcap('CO₂', 'ppm', 0), 783),
+        v('p2', 'measure_power', 'Heat pump', vcap('Power', 'W', 0), 1240),
+      ] });
+
+      // Activity Dots: the study's presence sensor (someone sitting still), its panel open.
+      const MIN = 6e4;
+      const dotAlarm = (capabilityId, value, title, min) => ({ capabilityId, title, value, state: true, lastUpdated: SHOWCASE_NOW - min * MIN });
+      MOUNT.sensordots(el('w-dots'), { opts: { locale: 'en-GB', title: 'Who\'s where' }, open: 'a3', devices: [
+        { id: 'a1', name: 'Hallway', icon: null, alarms: [dotAlarm('alarm_motion', false, 'Motion alarm', 4)] },
+        { id: 'a2', name: 'Kitchen', icon: null, alarms: [dotAlarm('alarm_presence', false, 'Presence detected', 22)] },
+        { id: 'a3', name: 'Office', icon: null, alarms: [dotAlarm('alarm_presence', true, 'Presence detected', 48)] },
+        { id: 'a4', name: 'Living room', icon: null, alarms: [dotAlarm('alarm_presence', true, 'Presence detected', 12)] },
+        { id: 'a5', name: 'Patio door', icon: null, alarms: [dotAlarm('alarm_vibration', false, 'Vibration alarm', 95)] },
+        { id: 'a6', name: 'Front door', icon: null, alarms: [dotAlarm('alarm_contact', false, 'Contact alarm', 52)] },
+        { id: 'a7', name: 'Bedroom', icon: null, alarms: [dotAlarm('alarm_presence', false, 'Presence detected', 160)] },
+        { id: 'a8', name: 'Garage', icon: null, alarms: [dotAlarm('alarm_contact', false, 'Contact alarm', 23)] },
+        { id: 'a9', name: 'Bathroom', icon: null, alarms: [dotAlarm('alarm_motion', true, 'Motion alarm', 1)] },
+        { id: 'a10', name: 'Shed door', icon: null, alarms: [dotAlarm('alarm_vibration', false, 'Vibration alarm', 300)] },
+        { id: 'a11', name: 'Back door', icon: null, alarms: [dotAlarm('alarm_contact', false, 'Contact alarm', 95)] },
+        { id: 'a12', name: 'Terrace', icon: null, alarms: [dotAlarm('alarm_motion', false, 'Motion alarm', 75)] },
+      ] });
+
+      // Curtains: slatted blinds open at 50%.
+      const ccap = value => ({ value, setable: true });
+      MOUNT.curtains(el('w-curtains'), { opts: { openAt: 'middle' }, devices: [
+        { id: 'b1', name: 'Living room slats', kind: 'blinds', caps: { windowcoverings_set: ccap(0.5), windowcoverings_state: ccap('idle') } },
+        { id: 'b2', name: 'Office blind tilt', kind: 'blinds', caps: { windowcoverings_tilt_set: ccap(0.15) } },
+      ] });
+
+      // Variables: read only.
+      MOUNT.variables(el('w-variables'), { opts: { readOnly: true }, vars: [
+        { id: 'r1', name: 'Guests staying over', type: 'boolean', value: true },
+        { id: 'r2', name: 'Morning blinds level', type: 'number', value: 0.95 },
+        { id: 'r3', name: 'Last arrival', type: 'string', value: 'Emma, 17:42' },
+      ] });
+
+      // The page's size and the columns' heights, for the render script.
+      document.fonts.ready.then(() => setTimeout(() => {
+        const r = document.body.getBoundingClientRect();
+        document.body.dataset.width = String(Math.ceil(r.width));
+        document.body.dataset.height = String(Math.ceil(r.height));
+        document.body.dataset.columns = [...document.querySelectorAll('.column')].map(c => Math.round(c.getBoundingClientRect().height)).join(',');
+      }, 300));
+    })();
+  </script>
+</body>
+</html>

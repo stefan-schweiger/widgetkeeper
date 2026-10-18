@@ -11,6 +11,9 @@ window.mountLocksWidget = function (Homey, { root, frame }) {
   const link = wireFrame(Homey, frame);
 
   const settings = Homey.getSettings() || {};
+  // The capability that opens (unlatches) a lock, if one was picked ("None" is `none`).
+  const pick = settings.openCapability;
+  const openCap = pick && typeof pick.id === 'string' && pick.id !== 'none' ? pick.id : null;
   let deviceIds = [];
   let loaded = false;
 
@@ -23,6 +26,8 @@ window.mountLocksWidget = function (Homey, { root, frame }) {
     view: settings.view,
     allowUnlock: settings.allowUnlock === true,
     onSet: (deviceId, capabilityId, value) => Homey.api('POST', '/set', { deviceId, capabilityId, value }),
+    allowOpen: settings.allowUnlock === true && !!openCap,
+    onOpen: (deviceId, capabilityId) => Homey.api('POST', '/open', { deviceId, capabilityId }),
     onHaptic: () => {
       try { if (Homey.hapticFeedback) Homey.hapticFeedback(); } catch (e) { /* not on every platform */ }
     },
@@ -41,7 +46,8 @@ window.mountLocksWidget = function (Homey, { root, frame }) {
       return;
     }
     try {
-      const state = await tileNames.state(`/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${link.perfParam()}`);
+      const open = openCap ? `&open=${encodeURIComponent(openCap)}` : '';
+      const state = await tileNames.state(`/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${open}${link.perfParam()}`);
       widget.setState(state);
       loaded = true;
     } catch (err) {

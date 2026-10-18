@@ -78,56 +78,56 @@
         "ar": "نمط الألوان"
       },
       "hint": {
-        "en": "Deep shows the colours bright and at full strength.",
-        "nl": "Diep toont de kleuren fel en op volle sterkte.",
-        "de": "Satt zeigt die Farben kräftig und in voller Stärke.",
-        "fr": "Profondes affiche les couleurs vives, à pleine intensité.",
-        "it": "Intensi mostra i colori vivaci e a piena intensità.",
-        "sv": "Djupa visar färgerna klara och i full styrka.",
-        "no": "Dype viser fargene klare og med full styrke.",
-        "es": "Intensos muestra los colores vivos y con toda su intensidad.",
-        "da": "Dybe viser farverne klare og i fuld styrke.",
-        "ru": "«Насыщенные» показывают цвета ярко и в полную силу.",
-        "pl": "Głębokie pokazują kolory jaskrawo i w pełnej mocy.",
-        "ko": "진하게는 색을 선명하고 진하게 표시합니다.",
-        "ar": "«عميقة» تعرض الألوان زاهية وبكامل قوتها."
+        "en": "Vivid shows the colours bright and at full strength.",
+        "nl": "Levendig toont de kleuren fel en op volle sterkte.",
+        "de": "Kräftig zeigt die Farben kräftig und in voller Stärke.",
+        "fr": "Vives affiche les couleurs vives, à pleine intensité.",
+        "it": "Vivaci mostra i colori vivaci e a piena intensità.",
+        "sv": "Livfulla visar färgerna klara och i full styrka.",
+        "no": "Livlige viser fargene klare og med full styrke.",
+        "es": "Vivos muestra los colores vivos y con toda su intensidad.",
+        "da": "Livlige viser farverne klare og i fuld styrke.",
+        "ru": "«Яркие» показывают цвета ярко и в полную силу.",
+        "pl": "Żywe pokazują kolory jaskrawo i w pełnej mocy.",
+        "ko": "선명하게는 색을 선명하고 진하게 표시합니다.",
+        "ar": "«زاهية» تعرض الألوان زاهية وبكامل قوتها."
       },
       "value": "soft",
       "values": [
         {
           "id": "soft",
           "title": {
-            "en": "Default",
-            "nl": "Standaard",
-            "de": "Standard",
-            "fr": "Par défaut",
-            "it": "Predefiniti",
-            "sv": "Standard",
-            "no": "Standard",
-            "es": "Predeterminados",
-            "da": "Standard",
-            "ru": "Обычные",
-            "pl": "Domyślne",
-            "ko": "기본",
-            "ar": "افتراضية"
+            "en": "Muted",
+            "nl": "Gedempt",
+            "de": "Gedämpft",
+            "fr": "Atténuées",
+            "it": "Smorzati",
+            "sv": "Dämpade",
+            "no": "Dempede",
+            "es": "Suaves",
+            "da": "Dæmpede",
+            "ru": "Приглушённые",
+            "pl": "Stonowane",
+            "ko": "차분하게",
+            "ar": "هادئة"
           }
         },
         {
           "id": "deep",
           "title": {
-            "en": "Deep",
-            "nl": "Diep",
-            "de": "Satt",
-            "fr": "Profondes",
-            "it": "Intensi",
-            "sv": "Djupa",
-            "no": "Dype",
-            "es": "Intensos",
-            "da": "Dybe",
-            "ru": "Насыщенные",
-            "pl": "Głębokie",
-            "ko": "진하게",
-            "ar": "عميقة"
+            "en": "Vivid",
+            "nl": "Levendig",
+            "de": "Kräftig",
+            "fr": "Vives",
+            "it": "Vivaci",
+            "sv": "Livfulla",
+            "no": "Livlige",
+            "es": "Vivos",
+            "da": "Livlige",
+            "ru": "Яркие",
+            "pl": "Żywe",
+            "ko": "선명하게",
+            "ar": "زاهية"
           }
         }
       ]
@@ -201,6 +201,82 @@
             "pl": "Paski",
             "ko": "막대",
             "ar": "أشرطة"
+          }
+        }
+      ]
+    },
+    {
+      "id": "columns",
+      "type": "dropdown",
+      "title": {
+        "en": "Tiles per row",
+        "nl": "Tegels per rij",
+        "de": "Kacheln pro Zeile",
+        "fr": "Tuiles par ligne",
+        "it": "Riquadri per riga",
+        "sv": "Rutor per rad",
+        "no": "Fliser per rad",
+        "es": "Mosaicos por fila",
+        "da": "Felter pr. række",
+        "ru": "Плиток в ряду",
+        "pl": "Kafelków w rzędzie",
+        "ko": "행당 타일",
+        "ar": "البلاطات في كل صف"
+      },
+      "value": "3",
+      "values": [
+        {
+          "id": "2",
+          "title": {
+            "en": "2",
+            "nl": "2",
+            "de": "2",
+            "fr": "2",
+            "it": "2",
+            "sv": "2",
+            "no": "2",
+            "es": "2",
+            "da": "2",
+            "ru": "2",
+            "pl": "2",
+            "ko": "2",
+            "ar": "2"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "3",
+            "nl": "3",
+            "de": "3",
+            "fr": "3",
+            "it": "3",
+            "sv": "3",
+            "no": "3",
+            "es": "3",
+            "da": "3",
+            "ru": "3",
+            "pl": "3",
+            "ko": "3",
+            "ar": "3"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "4",
+            "nl": "4",
+            "de": "4",
+            "fr": "4",
+            "it": "4",
+            "sv": "4",
+            "no": "4",
+            "es": "4",
+            "da": "4",
+            "ru": "4",
+            "pl": "4",
+            "ko": "4",
+            "ar": "4"
           }
         }
       ]

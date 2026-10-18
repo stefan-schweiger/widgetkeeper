@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadMount, loadWidget } from './helpers/loadWidget.js';
 
-const IDS = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables', 'roomhealth'] as const;
+const IDS = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables', 'roomhealth', 'valuematrix'] as const;
 
 let win: any;
 beforeAll(() => {
@@ -68,6 +68,12 @@ const CASES: Record<typeof IDS[number], { create: string, state: any, gone: any,
     create: 'createRoomHealthWidget', name: '.rh-name', keys: ['a', 'b'],
     state: ['a', 'b'].map(id => ({ id, name: `Sensor ${id}`, zone: null, measures: { temperature: { capabilityId: 'measure_temperature', value: 21 } } })),
     gone: [{ id: 'a', missing: true }, { id: 'b', name: 'Sensor b', zone: null, measures: { temperature: { capabilityId: 'measure_temperature', value: 21 } } }],
+  },
+  valuematrix: {
+    // Devices without a zone are rows of their own, keyed by the device, so a missing one keeps its row.
+    create: 'createValueMatrixWidget', name: '.vm-name', keys: ['a', 'b'], opts: { columns: [{ capabilityId: 'measure_temperature' }] },
+    state: { columns: [], devices: ['a', 'b'].map(id => ({ id, name: `Sensor ${id}`, zone: null, values: { measure_temperature: 21 } })) },
+    gone: { columns: [], devices: [{ id: 'a', missing: true }, { id: 'b', name: 'Sensor b', zone: null, values: { measure_temperature: 21 } }] },
   },
 };
 
@@ -152,7 +158,7 @@ describe.each(IDS)('tile names fixes: %s', (id) => {
     });
     const Homey = {
       api, on: vi.fn(), ready: vi.fn(), setHeight: vi.fn(), hapticFeedback: vi.fn(),
-      getSettings: () => ({ view: 'list', slot1: { id: c.keys[0] }, slot2: { id: c.keys[1] } }),
+      getSettings: () => ({ view: 'list', slot1: { id: c.keys[0] }, slot2: { id: c.keys[1] }, col1: { id: 'measure_temperature' } }),
       getDeviceIds: () => ['a', 'b'],
       getWidgetInstanceId: () => 'w1',
       __: (key: string) => key,
@@ -175,7 +181,7 @@ describe.each(IDS)('tile names fixes: %s', (id) => {
     });
     const Homey = {
       api, on: vi.fn(), ready: vi.fn(), setHeight: vi.fn(), hapticFeedback: vi.fn(),
-      getSettings: () => ({ renameTiles: true, slot1: { id: 'd1:measure_temperature' } }),
+      getSettings: () => ({ renameTiles: true, slot1: { id: 'd1:measure_temperature' }, col1: { id: 'measure_temperature' } }),
       getDeviceIds: () => ['d1'],
       getWidgetInstanceId: () => { throw new Error('not here'); },
       __: (key: string) => key,

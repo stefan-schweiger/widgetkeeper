@@ -78,7 +78,7 @@ html, body { background: transparent !important; }
 .fb-row.pressing .fb-button { transform: scale(.9); }
 .fb-row.missing .fb-button { background: none; box-shadow: inset 0 0 0 1.5px var(--fb-muted); color: var(--fb-muted); }
 /*
- * Deep (kit.css): the whole row in its colour's darker shade, with the text in --wk-on and the button a lighter circle on it
+ * Vivid (kit.css): the whole row in its colour's darker shade, with the text in --wk-on and the button a lighter circle on it
  * (grey rows and missing flows stay as they are).
  */
 .fb.wk-deep .fb-row { --fb-row: var(--wk-blue); --fb-row-on: var(--wk-on-blue); }

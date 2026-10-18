@@ -36,16 +36,20 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Tap a room to step through its other readings.
 - The comfortable ranges are settings, with defaults from the WHO's guidelines where there are any (18–24 °C, 30–60 % humidity, CO₂ up to 1000 ppm, radon up to 100 Bq/m³ …). A room with only some of the sensors uses what it has.
 
+### New: Value Matrix
+- Any devices against any values in one table: pick the devices and up to six values (temperature, humidity, CO₂, power, battery: any number), and each room (or each device) gets a row with a cell per value. A cell is green (OK) inside the value's range, orange (Warning) outside it and red (Alert) far outside, and striped where a room doesn't have that value. A legend explains the colours.
+- Type each column's range as `18–24`, `<1000` or `>10`. Left empty, temperature, humidity, CO₂, radon, PM2.5, PM10 and VOC use Room Health's usual ranges.
+
 ### Name the tiles
-- Every widget with device tiles has a new setting, *Rename tiles*: turn it on, and each tile shows a text field. Type the name you want, or leave it empty to keep the device's (or room's) own name, then turn the setting off again. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Room Health, Device Values, Sparklines, Locks and Doors, Cameras and Variables have it.
+- Every widget with device tiles has a new setting, *Rename tiles*: turn it on, and each tile shows a text field. Type the name you want, or leave it empty to keep the device's (or room's) own name, then turn the setting off again. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Room Health, Value Matrix, Device Values, Sparklines, Locks and Doors, Cameras and Variables have it.
 - Light Controls and Curtains grouped by room get a name per room tile, so two widgets with a "Living room" group can be called "Sofa lights" and "Living room". Users with several groups in one room asked for it.
 - The names belong to the widget: they stay with the right tiles when devices are renamed or reordered, and every screen showing the dashboard (and a Smart Stack page of it) gets them. Sensor Alarms' *Tile names* setting and Device Values' *Name* settings are gone: type those names on the tiles again.
 
 ### Colour style
-- Every widget with a coloured state has a new setting, *Colour style*: *Default* is the calmer look and *Deep* the stronger one. Where a colour is mixed softly into a tile, such as a tile that's on, an alarm or a coloured note, Deep fills it with Homey's darker shade of the colour, with white text. Lights take a darker shade of their own colour, the charts get a stronger area under their lines, and Weather Forecast has *Deep* as a theme of its own *Colour style* setting (until now called *Colours*).
-- In Device Values, Deep fills percentage fills and the colours a Flow sets. A user found the default yellow looked like mustard and the orange looked brown.
-- Thermostat Presets, Variable Presets, Insights Heatmap, Media and Activity Dots now use Homey's darker shade of their colour by default: the lit button, the heatmap's cells, the play button and the dots are calmer. *Deep* shows them in the full, bright colour as before, and the heatmap's levels further apart.
-- Days Since shows how close a counter is only on its bar by default, in a softer colour, and Room Health's icons and bars are softer too. Deep shows both in full colour, and puts an overdue Days Since row on a solid block.
+- Every widget with a coloured state has a new setting, *Colour style*: *Muted* is the calmer look and *Vivid* the stronger one. Where a colour is mixed softly into a tile, such as a tile that's on, an alarm or a coloured note, Vivid fills it with Homey's darker shade of the colour, with white text. Lights take a darker shade of their own colour, the charts get a stronger area under their lines, and Weather Forecast has *Vivid* as a theme of its own *Colour style* setting (until now called *Colours*).
+- In Device Values, Vivid fills percentage fills and the colours a Flow sets. A user found the default yellow looked like mustard and the orange looked brown.
+- Thermostat Presets, Variable Presets, Insights Heatmap, Media and Activity Dots now use Homey's darker shade of their colour by default: the lit button, the heatmap's cells, the play button and the dots are calmer. *Vivid* shows them in the full, bright colour as before, and the heatmap's levels further apart.
+- Days Since shows how close a counter is only on its bar by default, in a softer colour, and Room Health's icons and bars are softer too. Vivid shows both in full colour, and puts an overdue Days Since row on a solid block.
 - Device Quick Actions, Variables, Curtains, Media and Timers have a new *Colour* setting for what was always blue: a tile that's on, a switch that's on, an open curtain, the play button and what's on, and a running timer.
 
 ### Curtains
@@ -86,6 +90,17 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Thermostat Presets
 - In the settings, each button's mode, temperature and fan setting are indented under its power setting, so it's clear which button they belong to.
+
+### Weather Forecast
+- Fewer colour themes, each clearly different: *Weather background* is now called *Vivid*, and the theme that was called *Vivid* is now *Warm and cold*. *Tinted by temperature* and *Tinted by sky* are gone; a widget that used one now shows *Warm and cold* or *Vivid*.
+
+### Locks and Doors
+- An **Open** button for locks that can pull the latch: pick the capability that does it in the new setting *Open door button* (Homey has no standard one: Matter locks have *open_lock*, the Shelly Loqed app *open*). Each lock with it gets the button while *Allow unlocking and opening* is on. Tap it twice to open the door, so a stray tap can't. Users on the Homey Community asked for it.
+
+### Web dashboards
+- A widget's settings are easier to get an overview of. They were one long list of equal rows (Flow Buttons had 33). Now the dialog shows the widget's preview and what it does on top, then cards: the devices, the title with the general settings, and a card for each button, tile or column. A user found the old list impossible to get an overview of.
+- Numbered groups such as Flow Buttons' eight buttons fold, and each one's header sums up what's set: the flow, the colour and the icon. Settings that only matter while a switch is on fade while it's off.
+- Each setting has a control that fits it: a switch, colour swatches, segments for a short choice, a number with its unit, or a list.
 
 ### Other fixes
 - Variables, Variable Presets, Flow Buttons, Media's buttons, Moods and the Smart Stack no longer say the API key wasn't accepted when Homey was only busy, and a good key saved at such a moment is no longer refused.

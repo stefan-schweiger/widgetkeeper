@@ -65,7 +65,7 @@ html, body { background: transparent !important; }
   background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--lc-tile) 50%, transparent)), var(--lc-tint-bg);
 }
 /*
- * Deep (kit.css): a lit tile is the light's own colour darkened until white text reads on it, solid; several colours
+ * Vivid (kit.css): a lit tile is the light's own colour darkened until white text reads on it, solid; several colours
  * blend their darkened colours the same way (the tint mixes them into black at 55 %).
  */
 .lc.wk-deep .lc-tile.on { --lc-text: #FFFFFF; --lc-muted: var(--wk-on-muted); }

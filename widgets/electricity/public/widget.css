@@ -56,7 +56,7 @@ html, body { margin: 0; }
 .ew .usage-stop { stop-color: var(--ew-usage); }
 /* As thick and opaque as the live line; the dimmer, thinner usage-line is for the trace on the price chart. */
 .ew .usage-line.solo { stroke-width: 2; stroke-opacity: 1; stroke-linecap: round; }
-/* Deep (kit.css, on the widget's root): more colour in the areas under the live, usage and price traces; the lines keep theirs. */
+/* Vivid (kit.css, on the widget's root): more colour in the areas under the live, usage and price traces; the lines keep theirs. */
 .wk-deep .ew :is(.live-stop, .usage-stop):not(.export)[offset="0"], .wk-deep .ew :is(.live-stop, .usage-stop).export[offset="1"] { stop-opacity: .75; }
 .wk-deep .ew :is(.live-stop, .usage-stop):not(.export)[offset="1"], .wk-deep .ew :is(.live-stop, .usage-stop).export[offset="0"] { stop-opacity: .08; }
 .wk-deep .ew .price-stop[offset="0"] { stop-opacity: .45; }

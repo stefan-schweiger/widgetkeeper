@@ -1,7 +1,7 @@
 /*
  * The widgets' shared colours, the stylesheet half of kit.js: every index.html loads it as `../spacer/kit.css`, as it
  * loads the kit. `applyColors()` puts `wk` on a widget root (not :root, so Homey's dark tokens on the frame resolve),
- * `wk-deep` for the Deep colours, and `data-wk-color` for a colour setting.
+ * `wk-deep` for the Vivid colours, and `data-wk-color` for a colour setting.
  *
  * Every colour comes in two sets, both always defined:
  * - bright (`--wk-<name>-bright`): Homey's colour tokens (the fallbacks are the dark-theme values outside Homey). Yellow
@@ -10,9 +10,9 @@
  *   Homey's palette and purple none at all; yellow has no dark shade that still reads as yellow, so it stays, with dark text.
  * `--wk-on-<name>-<set>` is the text or icon on a solid fill of it.
  *
- * `--wk-<name>` is the one the scheme picks for tinted tiles: bright, mixed 22 % into a tile (Default), or the shade as a
- * solid fill (Deep). Widgets whose colours are small and solid already (a lit button, dots, heatmap cells, a play button)
- * use the sets directly the other way round: the shade in Default, bright in Deep.
+ * `--wk-<name>` is the one the scheme picks for tinted tiles: bright, mixed 22 % into a tile (Muted), or the shade as a
+ * solid fill (Vivid). Widgets whose colours are small and solid already (a lit button, dots, heatmap cells, a play button)
+ * use the sets directly the other way round: the shade in Muted, bright in Vivid.
  */
 .wk {
   --wk-blue-bright: var(--homey-color-blue, #2F8DF6);
@@ -53,7 +53,7 @@
   --wk-on-yellow: var(--wk-on-yellow-bright);
   --wk-on-green: var(--wk-on-green-bright);
   --wk-on-purple: var(--wk-on-purple-bright);
-  /* The muted text on a Deep fill. */
+  /* The muted text on a Vivid fill. */
   --wk-on-muted: rgb(255 255 255 / .78);
 }
 .wk.wk-deep {
@@ -96,5 +96,5 @@
   --wk-c: var(--wk-purple); --wk-on: var(--wk-on-purple);
   --wk-c-bright: var(--wk-purple-bright); --wk-on-bright: var(--wk-on-purple-bright); --wk-c-shade: var(--wk-purple-shade); --wk-on-shade: var(--wk-on-purple-shade);
 }
-/* Text on yellow stays dark in Deep; its muted text too. */
+/* Text on yellow stays dark in Vivid; its muted text too. */
 .wk.wk-deep[data-wk-color="yellow"], .wk.wk-deep [data-wk-color="yellow"] { --wk-on-muted: rgb(26 27 33 / .75); }

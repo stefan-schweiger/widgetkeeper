@@ -2,11 +2,11 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Colour style: Default and Deep</title>
+  <title>Colour style: Muted and Vivid</title>
   <!--
-    The Colour style setting (colorStyle): every widget that has it, Default next to Deep, with the real widget code and the
-    showcase's made-up house (showcase-data.js), on the fixed clock. The third column is Deep with another colour where the
-    widget has a colour setting (purple), or Weather's Deep theme. ?mode=light for light mode; ?tokens=homey uses Homey's own
+    The Colour style setting (colorStyle): every widget that has it, Muted next to Vivid, with the real widget code and the
+    showcase's made-up house (showcase-data.js), on the fixed clock. The third column is Vivid with another colour where the
+    widget has a colour setting (purple), or Weather's Vivid theme. ?mode=light for light mode; ?tokens=homey uses Homey's own
     token values (from the Homey's /widgets/css/_homey-variables.css, 2026-10-18) instead of the widgets' fallbacks, so the
     page looks as on the Homey. Serve the repo root (python -m http.server 8765) and open /dev/schemes-preview.html.
   -->
@@ -45,6 +45,7 @@
   <link rel="stylesheet" href="../widgets/sensoralarms/public/widget.css">
   <link rel="stylesheet" href="../widgets/sensordots/public/widget.css">
   <link rel="stylesheet" href="../widgets/roomhealth/public/widget.css">
+  <link rel="stylesheet" href="../widgets/valuematrix/public/widget.css">
   <link rel="stylesheet" href="../widgets/weather/public/widget.css">
   <link rel="stylesheet" href="../widgets/heatmap/public/widget.css">
   <link rel="stylesheet" href="../widgets/values/public/widget.css">
@@ -70,6 +71,7 @@
   <script src="../widgets/sensoralarms/public/widget.js"></script>
   <script src="../widgets/sensordots/public/widget.js"></script>
   <script src="../widgets/roomhealth/public/widget.js"></script>
+  <script src="../widgets/valuematrix/public/widget.js"></script>
   <script src="../widgets/weather/public/widget.js"></script>
   <script src="../widgets/heatmap/public/widget.js"></script>
   <script src="../widgets/cameras/public/widget.js"></script>
@@ -108,24 +110,24 @@
     /* A non-transparent widget's frame: Homey's widget card with its padding. */
     .card { background: #FFFFFF; border-radius: 20px; padding: 16px; box-sizing: border-box; }
     .homey-dark-mode .card { background: #1F2029; }
-    .homey-dark-mode .card.tw-frame, .homey-dark-mode .card.wf-frame, .homey-dark-mode .card.hm-frame, .homey-dark-mode .card.mw-frame { background: #181920; }
+    .homey-dark-mode .card.tw-frame, .homey-dark-mode .card.wf-frame:not(.wf-card-frame), .homey-dark-mode .card.hm-frame, .homey-dark-mode .card.mw-frame { background: #181920; }
     .error { color: #D81C1D; font: 12px/16px monospace; white-space: pre-wrap; }
     .tm-row { animation: none !important; } /* still pictures */
   </style>
 </head>
 <body>
-  <h1>Colour style: Default and Deep</h1>
-  <p class="intro">The Colour style setting (<code>colorStyle</code>) on the real widgets. Deep uses Homey's darker shades as solid fills with
-    white text (kit.css). The last column is Deep with another colour where the widget has a colour setting, or Weather's Deep theme.
+  <h1>Colour style: Muted and Vivid</h1>
+  <p class="intro">The Colour style setting (<code>colorStyle</code>) on the real widgets. Vivid uses Homey's darker shades as solid fills with
+    white text (kit.css). The last column is Vivid with another colour where the widget has a colour setting, or Weather's Vivid theme.
     <code>?mode=light</code> · <code>?tokens=homey</code></p>
   <div class="grid" id="grid"></div>
 
   <script>
     const DAY = 864e5, MIN = 6e4;
     const COLUMNS = [
-      ['Default', {}],
-      ['Deep', { colorStyle: 'deep' }],
-      ['Deep · another colour', { colorStyle: 'deep', color: 'purple' }],
+      ['Muted', {}],
+      ['Vivid', { colorStyle: 'deep' }],
+      ['Vivid · another colour', { colorStyle: 'deep', color: 'purple' }],
     ];
 
     // Device Values: a tile per Flow colour, and percentage fills with an On.
@@ -219,10 +221,23 @@
           sensor('rh3', { id: 'b1', name: 'Bedroom' }, { temperature: 18.2, humidity: 48, co2: 1400 }),
         ] });
       }],
+      ['Value Matrix', 'a humid kitchen, a stuffy bedroom', (el, o) => {
+        const [T, H, C] = ['measure_temperature', 'measure_humidity', 'measure_co2'];
+        const room = (id, zone, values) => ({ id, name: id, zone, values });
+        MOUNT.valuematrix(el, { opts: o, columns: [T, H, C].map(capabilityId => ({ capabilityId })), state: {
+          columns: [{ capabilityId: T, title: 'Temperature', units: '°C', decimals: 1 }, { capabilityId: H, title: 'Humidity', units: '%', decimals: 0 },
+            { capabilityId: C, title: 'CO2', units: 'ppm', decimals: 0 }],
+          devices: [
+            room('vm1', { id: 'z1', name: 'Living room' }, { [T]: 21.4, [H]: 47, [C]: 690 }),
+            room('vm2', { id: 'z2', name: 'Kitchen' }, { [T]: 22.6, [H]: 64 }),
+            room('vm3', { id: 'b1', name: 'Bedroom' }, { [T]: 18.2, [H]: 48, [C]: 1600 }),
+          ],
+        } });
+      }],
       ['Activity Dots', 'the driveway active', (el, o) => MOUNT.sensordots(el, { ...findWidget('sensordots', 1),
         open: null, opts: { ...findWidget('sensordots', 1).opts, ...o } })],
-      ['Weather Forecast', 'Deep is a theme', (el, o) => MOUNT.weather(el, { hours: findWidget('weather').hours,
-        opts: { theme: o.colorStyle === 'deep' ? 'deep' : 'default', density: o.color ? 'detailed' : 'compact' } }), 'wf-frame', true],
+      ['Weather Forecast', 'Vivid is a theme', (el, o) => MOUNT.weather(el, { hours: findWidget('weather').hours,
+        opts: { theme: o.colorStyle === 'deep' ? 'card' : 'default', density: o.color ? 'detailed' : 'compact' } }), 'wf-frame', true],
     ];
 
     const grid = document.getElementById('grid');

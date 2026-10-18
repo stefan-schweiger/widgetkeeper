@@ -17,7 +17,7 @@
 .tw-btn[data-kind="dry"] { --c: var(--tw-dry); }
 .tw-btn[data-kind="fan"] { --c: var(--tw-fan); }
 .tw-btn.active[data-kind="off"] { background: var(--tw-tile-off); }
-/* The lit button in Default (presets.css): Homey's darker shades of heat, cool and auto; dry and fan are their own colours darkened. */
+/* The lit button in Muted (presets.css): Homey's darker shades of heat, cool and auto; dry and fan are their own colours darkened. */
 .tw-btn[data-kind="heat"] { --tw-shade: var(--wk-orange-shade); }
 .tw-btn[data-kind="cool"] { --tw-shade: var(--wk-blue-shade); }
 .tw-btn[data-kind="auto"] { --tw-shade: var(--wk-green-shade); }

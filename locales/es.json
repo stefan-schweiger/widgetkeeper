@@ -76,6 +76,21 @@
     "particles": "Partículas",
     "voc": "COV"
   },
+  "valuematrix": {
+    "selectDevices": "Elige dispositivos en los ajustes del widget.",
+    "selectColumns": "Elige los valores en los ajustes del widget.",
+    "error": "No se pudieron cargar los valores.",
+    "unavailable": "No disponible",
+    "renameFailed": "No se pudo guardar el nombre.",
+    "ok": "OK",
+    "warning": "Aviso",
+    "alert": "Alerta",
+    "noReading": "Sin lectura",
+    "radon": "Radón",
+    "voc": "COV",
+    "none": "Ninguno",
+    "devices": "__count__ dispositivos"
+  },
   "weather": {
     "now": "Ahora",
     "error": "No se pudo cargar la previsión.",
@@ -341,6 +356,8 @@
     "close": "Cerrar",
     "openAction": "Abrir",
     "lockAll": "Cerrar todas",
+    "openDoor": "Abrir puerta",
+    "tapToOpen": "Toca para abrir",
     "renameFailed": "No se pudo guardar el nombre."
   },
   "curtains": {
@@ -518,6 +535,7 @@
       "sensoralarms": "Fichas que se ponen rojas cuando un sensor da la alarma.",
       "sensordots": "Movimiento, puertas y cámaras como una cuadrícula de puntos.",
       "roomhealth": "La temperatura, la humedad y el aire de cada habitación de un vistazo, de amarillo a rojo cuando algo falla.",
+      "valuematrix": "Dispositivos o habitaciones frente a los valores elegidos, en verde, naranja o rojo según su rango.",
       "weather": "Las próximas 36 horas, hora a hora.",
       "heatmap": "Una semana de cualquier valor como mapa de calor día × hora.",
       "cameras": "Imágenes de las cámaras, con vídeo en directo con un toque.",

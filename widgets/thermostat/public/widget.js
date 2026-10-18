@@ -59,7 +59,7 @@
     const numberFmt = new Intl.NumberFormat(opts.locale, { maximumFractionDigits: 1 });
 
     // The header, the buttons and which is lit; the device model below reads its state ({ name, icon, values, caps }).
-    window.WidgetkeeperKit.applyColors(root, { style: opts.colorStyle }); // ../spacer/kit.js: the Deep colours
+    window.WidgetkeeperKit.applyColors(root, { style: opts.colorStyle }); // ../spacer/kit.js: the Vivid colours
     const core = window.WidgetkeeperPresets.create(root, {
       layout: opts.layout,
       onHeight: opts.onHeight,

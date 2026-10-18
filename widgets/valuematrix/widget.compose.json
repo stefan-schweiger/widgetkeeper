@@ -1,0 +1,635 @@
+{
+  "name": {
+    "en": "Value Matrix",
+    "nl": "Waardematrix",
+    "de": "Wertematrix",
+    "fr": "Matrice de valeurs",
+    "it": "Matrice dei valori",
+    "sv": "Värdematris",
+    "no": "Verdimatrise",
+    "es": "Matriz de valores",
+    "da": "Værdimatrix",
+    "ru": "Матрица значений",
+    "pl": "Macierz wartości",
+    "ko": "값 매트릭스",
+    "ar": "مصفوفة القيم"
+  },
+  "height": 260,
+  "transparent": true,
+  "devices": {
+    "type": "global",
+    "singular": false
+  },
+  "settings": [
+    {
+      "id": "renameTiles",
+      "type": "checkbox",
+      "title": {
+        "en": "Rename tiles",
+        "nl": "Tegels hernoemen",
+        "de": "Kacheln umbenennen",
+        "fr": "Renommer les tuiles",
+        "it": "Rinomina riquadri",
+        "sv": "Byt namn på rutor",
+        "no": "Gi nytt navn til fliser",
+        "es": "Renombrar mosaicos",
+        "da": "Omdøb felter",
+        "ru": "Переименовать плитки",
+        "pl": "Zmień nazwy kafelków",
+        "ko": "타일 이름 바꾸기",
+        "ar": "إعادة تسمية المربعات"
+      },
+      "hint": {
+        "en": "To name the tiles: turn this on and save the widget, then leave the dashboard's edit mode. Each tile shows a text field: type its name, or leave it empty to keep the room's name. Then edit the widget again and turn this off.",
+        "nl": "Tegels een naam geven: zet dit aan en sla de widget op, en verlaat dan de bewerkmodus van het dashboard. Elke tegel toont een tekstveld: typ de naam, of laat het leeg om de naam van de ruimte te houden. Bewerk daarna de widget opnieuw en zet dit uit.",
+        "de": "Kacheln benennen: Schalte dies ein, speichere das Widget und verlasse den Bearbeitungsmodus des Dashboards. Jede Kachel zeigt ein Textfeld: Gib den Namen ein oder lass es leer, um den Namen des Raums zu behalten. Bearbeite danach das Widget erneut und schalte dies aus.",
+        "fr": "Pour nommer les tuiles : activez ceci, enregistrez le widget, puis quittez le mode édition du tableau de bord. Chaque tuile affiche un champ de texte : tapez son nom, ou laissez-le vide pour garder le nom de la pièce. Modifiez ensuite le widget à nouveau et désactivez ceci.",
+        "it": "Per dare un nome ai riquadri: attiva questa opzione e salva il widget, poi esci dalla modalità di modifica della dashboard. Ogni riquadro mostra un campo di testo: scrivi il nome, o lascialo vuoto per mantenere il nome della stanza. Poi modifica di nuovo il widget e disattiva questa opzione.",
+        "sv": "Så namnger du rutorna: slå på detta och spara widgeten, och lämna sedan instrumentpanelens redigeringsläge. Varje ruta visar ett textfält: skriv namnet, eller lämna det tomt för att behålla rummets namn. Redigera sedan widgeten igen och slå av detta.",
+        "no": "Slik gir du flisene navn: slå på dette og lagre widgeten, og gå så ut av dashbordets redigeringsmodus. Hver flis viser et tekstfelt: skriv navnet, eller la det stå tomt for å beholde rommets navn. Rediger så widgeten igjen og slå av dette.",
+        "es": "Para poner nombre a los mosaicos: activa esto y guarda el widget, luego sal del modo de edición del panel. Cada mosaico muestra un campo de texto: escribe su nombre, o déjalo vacío para mantener el nombre de la habitación. Después edita el widget de nuevo y desactiva esto.",
+        "da": "Sådan navngiver du felterne: slå dette til og gem widgetten, og forlad så dashboardets redigeringstilstand. Hvert felt viser et tekstfelt: skriv navnet, eller lad det stå tomt for at beholde rummets navn. Redigér derefter widgetten igen, og slå dette fra.",
+        "ru": "Чтобы назвать плитки: включите это и сохраните виджет, затем выйдите из режима редактирования панели. На каждой плитке появится текстовое поле: введите название или оставьте его пустым, чтобы оставить название комнаты. Затем снова откройте настройки виджета и выключите это.",
+        "pl": "Aby nazwać kafelki: włącz to i zapisz widżet, a potem wyjdź z trybu edycji pulpitu. Każdy kafelek pokaże pole tekstowe: wpisz nazwę albo zostaw je puste, aby zachować nazwę pokoju. Potem ponownie edytuj widżet i wyłącz to.",
+        "ko": "타일 이름을 정하려면: 이 옵션을 켜고 위젯을 저장한 뒤 대시보드 편집 모드를 나가세요. 각 타일에 입력란이 나타납니다. 이름을 입력하거나 비워 두면 방 이름이 그대로 쓰입니다. 그런 다음 위젯을 다시 편집해 이 옵션을 끄세요.",
+        "ar": "لتسمية المربعات: شغّل هذا الخيار واحفظ الأداة، ثم اخرج من وضع تحرير لوحة التحكم. يعرض كل مربع حقلًا نصيًا: اكتب اسمه، أو اتركه فارغًا لإبقاء اسم الغرفة. بعد ذلك حرّر الأداة مجددًا وأوقف هذا الخيار."
+      },
+      "value": false
+    },
+    {
+      "id": "colorStyle",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour style",
+        "nl": "Kleurstijl",
+        "de": "Farbstil",
+        "fr": "Style de couleur",
+        "it": "Stile colori",
+        "sv": "Färgstil",
+        "no": "Fargestil",
+        "es": "Estilo de color",
+        "da": "Farvestil",
+        "ru": "Цветовой стиль",
+        "pl": "Styl kolorów",
+        "ko": "색상 스타일",
+        "ar": "نمط الألوان"
+      },
+      "hint": {
+        "en": "Vivid fills coloured tiles with a darker shade of the colour and white text.",
+        "nl": "Levendig vult gekleurde tegels met een donkerdere tint van de kleur en witte tekst.",
+        "de": "Kräftig füllt farbige Kacheln mit einem dunkleren Ton der Farbe und weißem Text.",
+        "fr": "Vives remplit les tuiles colorées d'une nuance plus foncée de la couleur, avec un texte blanc.",
+        "it": "Vivaci riempie i riquadri colorati con una tonalità più scura del colore e testo bianco.",
+        "sv": "Livfulla fyller färgade rutor med en mörkare nyans av färgen och vit text.",
+        "no": "Livlige fyller fargede fliser med en mørkere nyanse av fargen og hvit tekst.",
+        "es": "Vivos rellena los mosaicos de color con un tono más oscuro del color y texto blanco.",
+        "da": "Livlige fylder farvede felter med en mørkere nuance af farven og hvid tekst.",
+        "ru": "«Яркие» заливают цветные плитки более тёмным оттенком цвета с белым текстом.",
+        "pl": "Żywe wypełniają kolorowe kafelki ciemniejszym odcieniem koloru z białym tekstem.",
+        "ko": "선명하게는 색이 있는 타일을 더 어두운 색조로 채우고 글자를 흰색으로 표시합니다.",
+        "ar": "«زاهية» تملأ البلاطات الملوّنة بدرجة أغمق من اللون مع نص أبيض."
+      },
+      "value": "soft",
+      "values": [
+        {
+          "id": "soft",
+          "title": {
+            "en": "Muted",
+            "nl": "Gedempt",
+            "de": "Gedämpft",
+            "fr": "Atténuées",
+            "it": "Smorzati",
+            "sv": "Dämpade",
+            "no": "Dempede",
+            "es": "Suaves",
+            "da": "Dæmpede",
+            "ru": "Приглушённые",
+            "pl": "Stonowane",
+            "ko": "차분하게",
+            "ar": "هادئة"
+          }
+        },
+        {
+          "id": "deep",
+          "title": {
+            "en": "Vivid",
+            "nl": "Levendig",
+            "de": "Kräftig",
+            "fr": "Vives",
+            "it": "Vivaci",
+            "sv": "Livfulla",
+            "no": "Livlige",
+            "es": "Vivos",
+            "da": "Livlige",
+            "ru": "Яркие",
+            "pl": "Żywe",
+            "ko": "선명하게",
+            "ar": "زاهية"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rows",
+      "type": "dropdown",
+      "value": "rooms",
+      "title": {
+        "en": "Rows",
+        "nl": "Rijen",
+        "de": "Zeilen",
+        "fr": "Lignes",
+        "it": "Righe",
+        "sv": "Rader",
+        "no": "Rader",
+        "es": "Filas",
+        "da": "Rækker",
+        "ru": "Строки",
+        "pl": "Wiersze",
+        "ko": "행",
+        "ar": "الصفوف"
+      },
+      "hint": {
+        "en": "Rooms puts a room's devices on one row, each value their average.",
+        "nl": "Ruimtes zet de apparaten van een ruimte op één rij, elke waarde hun gemiddelde.",
+        "de": "Räume fasst die Geräte eines Raums in einer Zeile zusammen, jeder Wert ihr Durchschnitt.",
+        "fr": "Pièces regroupe les appareils d'une pièce sur une ligne, chaque valeur étant leur moyenne.",
+        "it": "Stanze mette i dispositivi di una stanza su una riga, ogni valore la loro media.",
+        "sv": "Rum samlar ett rums enheter på en rad, varje värde deras medelvärde.",
+        "no": "Rom samler et roms enheter på én rad, hver verdi gjennomsnittet deres.",
+        "es": "Habitaciones pone los dispositivos de una habitación en una fila, cada valor su media.",
+        "da": "Rum samler et rums enheder på én række, hver værdi deres gennemsnit.",
+        "ru": "«Комнаты» собирают устройства комнаты в одну строку, каждое значение — их среднее.",
+        "pl": "Pomieszczenia zbierają urządzenia pomieszczenia w jednym wierszu, każda wartość to ich średnia.",
+        "ko": "방을 선택하면 방의 기기를 한 행에 모으고, 각 값은 평균입니다.",
+        "ar": "«الغرف» تضع أجهزة الغرفة في صف واحد، وكل قيمة متوسطها."
+      },
+      "values": [
+        {
+          "id": "rooms",
+          "title": {
+            "en": "Rooms",
+            "nl": "Ruimtes",
+            "de": "Räume",
+            "fr": "Pièces",
+            "it": "Stanze",
+            "sv": "Rum",
+            "no": "Rom",
+            "es": "Habitaciones",
+            "da": "Rum",
+            "ru": "Комнаты",
+            "pl": "Pomieszczenia",
+            "ko": "방",
+            "ar": "الغرف"
+          }
+        },
+        {
+          "id": "devices",
+          "title": {
+            "en": "Devices",
+            "nl": "Apparaten",
+            "de": "Geräte",
+            "fr": "Appareils",
+            "it": "Dispositivi",
+            "sv": "Enheter",
+            "no": "Enheter",
+            "es": "Dispositivos",
+            "da": "Enheder",
+            "ru": "Устройства",
+            "pl": "Urządzenia",
+            "ko": "기기",
+            "ar": "الأجهزة"
+          }
+        }
+      ]
+    },
+    {
+      "id": "showLegend",
+      "type": "checkbox",
+      "value": true,
+      "title": {
+        "en": "Show legend",
+        "nl": "Legenda tonen",
+        "de": "Legende anzeigen",
+        "fr": "Afficher la légende",
+        "it": "Mostra legenda",
+        "sv": "Visa teckenförklaring",
+        "no": "Vis tegnforklaring",
+        "es": "Mostrar leyenda",
+        "da": "Vis signaturforklaring",
+        "ru": "Показывать легенду",
+        "pl": "Pokaż legendę",
+        "ko": "범례 표시",
+        "ar": "إظهار وسيلة الإيضاح"
+      }
+    },
+    {
+      "id": "col1",
+      "type": "autocomplete",
+      "title": {
+        "en": "Column 1: value",
+        "nl": "Kolom 1: waarde",
+        "de": "Spalte 1: Wert",
+        "fr": "Colonne 1 : valeur",
+        "it": "Colonna 1: valore",
+        "sv": "Kolumn 1: värde",
+        "no": "Kolonne 1: verdi",
+        "es": "Columna 1: valor",
+        "da": "Kolonne 1: værdi",
+        "ru": "Столбец 1: значение",
+        "pl": "Kolumna 1: wartość",
+        "ko": "열 1: 값",
+        "ar": "العمود 1: القيمة"
+      },
+      "hint": {
+        "en": "A value the picked devices may have, such as their temperature. A device without it shows a striped cell.",
+        "nl": "Een waarde die de gekozen apparaten kunnen hebben, zoals hun temperatuur. Een apparaat zonder die waarde toont een gestreept vak.",
+        "de": "Ein Wert, den die gewählten Geräte haben können, etwa ihre Temperatur. Ein Gerät ohne ihn zeigt ein gestreiftes Feld.",
+        "fr": "Une valeur que les appareils choisis peuvent avoir, comme leur température. Un appareil qui ne l'a pas affiche une case hachurée.",
+        "it": "Un valore che i dispositivi scelti possono avere, come la temperatura. Un dispositivo che non lo ha mostra una casella a righe.",
+        "sv": "Ett värde som de valda enheterna kan ha, som deras temperatur. En enhet utan det visar en randig ruta.",
+        "no": "En verdi de valgte enhetene kan ha, som temperaturen. En enhet uten den viser en stripete rute.",
+        "es": "Un valor que pueden tener los dispositivos elegidos, como su temperatura. Un dispositivo sin él muestra una casilla rayada.",
+        "da": "En værdi, de valgte enheder kan have, som deres temperatur. En enhed uden den viser et stribet felt.",
+        "ru": "Значение, которое может быть у выбранных устройств, например температура. У устройства без него ячейка заштрихована.",
+        "pl": "Wartość, którą mogą mieć wybrane urządzenia, np. temperatura. Urządzenie bez niej pokazuje zakreskowaną komórkę.",
+        "ko": "선택한 기기가 가질 수 있는 값(예: 온도)입니다. 이 값이 없는 기기는 빗금 친 칸으로 표시됩니다.",
+        "ar": "قيمة قد تكون لدى الأجهزة المختارة، مثل درجة حرارتها. يظهر الجهاز الذي لا يملكها بخانة مخططة."
+      }
+    },
+    {
+      "id": "range1",
+      "type": "text",
+      "value": "",
+      "title": {
+        "en": "  – OK range",
+        "nl": "  – OK-bereik",
+        "de": "  – OK-Bereich",
+        "fr": "  – Plage OK",
+        "it": "  – Intervallo OK",
+        "sv": "  – OK-intervall",
+        "no": "  – OK-område",
+        "es": "  – Rango OK",
+        "da": "  – OK-interval",
+        "ru": "  – Диапазон нормы",
+        "pl": "  – Zakres OK",
+        "ko": "  – 정상 범위",
+        "ar": "  – النطاق الجيد"
+      },
+      "hint": {
+        "en": "In the value's unit: 18–24, <1000 or >10. Inside it a cell is OK (green), outside it a warning (orange), and an alert (red) once it's past by half the range (or half the limit). Empty: the usual range for temperature (°C), humidity, CO₂, radon, PM2.5, PM10 and VOC (ppb), none for other values. – for none.",
+        "nl": "In de eenheid van de waarde: 18–24, <1000 of >10. Daarbinnen is een vak OK (groen), daarbuiten een waarschuwing (oranje), en een alarm (rood) zodra het er een half bereik (of de helft van de grens) voorbij is. Leeg: het gebruikelijke bereik voor temperatuur (°C), luchtvochtigheid, CO₂, radon, PM2.5, PM10 en VOS (ppb), geen voor andere waarden. – voor geen.",
+        "de": "In der Einheit des Werts: 18–24, <1000 oder >10. Innerhalb ist ein Feld OK (grün), außerhalb eine Warnung (orange) und ein Alarm (rot), sobald es um den halben Bereich (oder die halbe Grenze) darüber hinaus liegt. Leer: der übliche Bereich für Temperatur (°C), Luftfeuchte, CO₂, Radon, PM2.5, PM10 und VOC (ppb), keiner für andere Werte. – für keinen.",
+        "fr": "Dans l'unité de la valeur : 18–24, <1000 ou >10. Dedans, une case est OK (vert), dehors en attention (orange), et en alerte (rouge) une fois dépassée de la moitié de la plage (ou de la moitié de la limite). Vide : la plage habituelle pour la température (°C), l'humidité, le CO₂, le radon, les PM2.5, PM10 et COV (ppb), aucune pour les autres valeurs. – pour aucune.",
+        "it": "Nell'unità del valore: 18–24, <1000 o >10. Dentro una casella è OK (verde), fuori un avviso (arancione), e un allarme (rosso) quando lo supera di metà intervallo (o di metà limite). Vuoto: l'intervallo abituale per temperatura (°C), umidità, CO₂, radon, PM2.5, PM10 e COV (ppb), nessuno per gli altri valori. – per nessuno.",
+        "sv": "I värdets enhet: 18–24, <1000 eller >10. Inom det är en ruta OK (grön), utanför en varning (orange), och ett larm (röd) när den ligger ett halvt intervall (eller en halv gräns) utanför. Tomt: det vanliga intervallet för temperatur (°C), luftfuktighet, CO₂, radon, PM2.5, PM10 och VOC (ppb), inget för andra värden. – för inget.",
+        "no": "I verdiens enhet: 18–24, <1000 eller >10. Innenfor er en rute OK (grønn), utenfor en advarsel (oransje), og en alarm (rød) når den er et halvt område (eller en halv grense) utenfor. Tomt: det vanlige området for temperatur (°C), fuktighet, CO₂, radon, PM2.5, PM10 og VOC (ppb), ingen for andre verdier. – for ingen.",
+        "es": "En la unidad del valor: 18–24, <1000 o >10. Dentro, una casilla está OK (verde), fuera es un aviso (naranja), y una alerta (roja) cuando lo supera en medio rango (o en la mitad del límite). Vacío: el rango habitual para temperatura (°C), humedad, CO₂, radón, PM2.5, PM10 y COV (ppb), ninguno para otros valores. – para ninguno.",
+        "da": "I værdiens enhed: 18–24, <1000 eller >10. Inden for er et felt OK (grønt), uden for en advarsel (orange), og en alarm (rødt), når det ligger et halvt interval (eller en halv grænse) udenfor. Tomt: det sædvanlige interval for temperatur (°C), luftfugtighed, CO₂, radon, PM2.5, PM10 og VOC (ppb), intet for andre værdier. – for intet.",
+        "ru": "В единицах значения: 18–24, <1000 или >10. Внутри ячейка в норме (зелёная), снаружи — внимание (оранжевая), а тревога (красная), когда выходит за диапазон на его половину (или на половину предела). Пусто: обычный диапазон для температуры (°C), влажности, CO₂, радона, PM2.5, PM10 и ЛОС (ppb), для других значений никакого. – чтобы без диапазона.",
+        "pl": "W jednostce wartości: 18–24, <1000 lub >10. W zakresie komórka jest OK (zielona), poza nim to ostrzeżenie (pomarańczowa), a alarm (czerwona), gdy wykracza o połowę zakresu (lub połowę limitu). Puste: zwykły zakres dla temperatury (°C), wilgotności, CO₂, radonu, PM2.5, PM10 i LZO (ppb), brak dla innych wartości. – aby nie było zakresu.",
+        "ko": "값의 단위로: 18–24, <1000 또는 >10. 범위 안이면 칸이 정상(초록), 밖이면 주의(주황), 범위의 절반(또는 한계의 절반)만큼 벗어나면 경고(빨강)입니다. 비워 두면 온도(°C), 습도, CO₂, 라돈, PM2.5, PM10, VOC(ppb)는 일반적인 범위를, 다른 값은 범위 없음을 씁니다. 범위를 없애려면 – 를 입력하세요.",
+        "ar": "بوحدة القيمة: 18–24 أو <1000 أو >10. داخله تكون الخانة جيدة (خضراء)، وخارجه تحذيرًا (برتقالية)، وإنذارًا (حمراء) متى تجاوزته بنصف النطاق (أو نصف الحد). فارغ: النطاق المعتاد لدرجة الحرارة (°C) والرطوبة وCO₂ والرادون وPM2.5 وPM10 وVOC (ppb)، ولا نطاق للقيم الأخرى. – لعدم وجود نطاق."
+      }
+    },
+    {
+      "id": "header1",
+      "type": "text",
+      "value": "",
+      "title": {
+        "en": "  – Header",
+        "nl": "  – Kop",
+        "de": "  – Überschrift",
+        "fr": "  – En-tête",
+        "it": "  – Intestazione",
+        "sv": "  – Rubrik",
+        "no": "  – Overskrift",
+        "es": "  – Encabezado",
+        "da": "  – Overskrift",
+        "ru": "  – Заголовок",
+        "pl": "  – Nagłówek",
+        "ko": "  – 머리글",
+        "ar": "  – العنوان"
+      },
+      "hint": {
+        "en": "Empty: the unit, or a short name.",
+        "nl": "Leeg: de eenheid, of een korte naam.",
+        "de": "Leer: die Einheit oder ein kurzer Name.",
+        "fr": "Vide : l'unité, ou un nom court.",
+        "it": "Vuoto: l'unità, o un nome breve.",
+        "sv": "Tomt: enheten, eller ett kort namn.",
+        "no": "Tomt: enheten, eller et kort navn.",
+        "es": "Vacío: la unidad, o un nombre corto.",
+        "da": "Tomt: enheden eller et kort navn.",
+        "ru": "Пусто: единица измерения или короткое название.",
+        "pl": "Puste: jednostka lub krótka nazwa.",
+        "ko": "비워 두면 단위나 짧은 이름을 씁니다.",
+        "ar": "فارغ: الوحدة، أو اسم قصير."
+      }
+    },
+    {
+      "id": "col2",
+      "type": "autocomplete",
+      "title": {
+        "en": "Column 2: value",
+        "nl": "Kolom 2: waarde",
+        "de": "Spalte 2: Wert",
+        "fr": "Colonne 2 : valeur",
+        "it": "Colonna 2: valore",
+        "sv": "Kolumn 2: värde",
+        "no": "Kolonne 2: verdi",
+        "es": "Columna 2: valor",
+        "da": "Kolonne 2: værdi",
+        "ru": "Столбец 2: значение",
+        "pl": "Kolumna 2: wartość",
+        "ko": "열 2: 값",
+        "ar": "العمود 2: القيمة"
+      }
+    },
+    {
+      "id": "range2",
+      "type": "text",
+      "value": "",
+      "title": {
+        "en": "  – OK range",
+        "nl": "  – OK-bereik",
+        "de": "  – OK-Bereich",
+        "fr": "  – Plage OK",
+        "it": "  – Intervallo OK",
+        "sv": "  – OK-intervall",
+        "no": "  – OK-område",
+        "es": "  – Rango OK",
+        "da": "  – OK-interval",
+        "ru": "  – Диапазон нормы",
+        "pl": "  – Zakres OK",
+        "ko": "  – 정상 범위",
+        "ar": "  – النطاق الجيد"
+      }
+    },
+    {
+      "id": "header2",
+      "type": "text",
+      "value": "",
+      "title": {
+        "en": "  – Header",
+        "nl": "  – Kop",
+        "de": "  – Überschrift",
+        "fr": "  – En-tête",
+        "it": "  – Intestazione",
+        "sv": "  – Rubrik",
+        "no": "  – Overskrift",
+        "es": "  – Encabezado",
+        "da": "  – Overskrift",
+        "ru": "  – Заголовок",
+        "pl": "  – Nagłówek",
+        "ko": "  – 머리글",
+        "ar": "  – العنوان"
+      }
+    },
+    {
+      "id": "col3",
+      "type": "autocomplete",
+      "title": {
+        "en": "Column 3: value",
+        "nl": "Kolom 3: waarde",
+        "de": "Spalte 3: Wert",
+        "fr": "Colonne 3 : valeur",
+        "it": "Colonna 3: valore",
+        "sv": "Kolumn 3: värde",
+        "no": "Kolonne 3: verdi",
+        "es": "Columna 3: valor",
+        "da": "Kolonne 3: værdi",
+        "ru": "Столбец 3: значение",
+        "pl": "Kolumna 3: wartość",
+        "ko": "열 3: 값",
+        "ar": "العمود 3: القيمة"
+      }
+    },
+    {
+      "id": "range3",
+      "type": "text",
+      "value": "",
+      "title": {
+        "en": "  – OK range",
+        "nl": "  – OK-bereik",
+        "de": "  – OK-Bereich",
+        "fr": "  – Plage OK",
+        "it": "  – Intervallo OK",
+        "sv": "  – OK-intervall",
+        "no": "  – OK-område",
+        "es": "  – Rango OK",
+        "da": "  – OK-interval",
+        "ru": "  – Диапазон нормы",
+        "pl": "  – Zakres OK",
+        "ko": "  – 정상 범위",
+        "ar": "  – النطاق الجيد"
+      }
+    },
+    {
+      "id": "header3",
+      "type": "text",
+      "value": "",
+      "title": {
+        "en": "  – Header",
+        "nl": "  – Kop",
+        "de": "  – Überschrift",
+        "fr": "  – En-tête",
+        "it": "  – Intestazione",
+        "sv": "  – Rubrik",
+        "no": "  – Overskrift",
+        "es": "  – Encabezado",
+        "da": "  – Overskrift",
+        "ru": "  – Заголовок",
+        "pl": "  – Nagłówek",
+        "ko": "  – 머리글",
+        "ar": "  – العنوان"
+      }
+    },
+    {
+      "id": "col4",
+      "type": "autocomplete",
+      "title": {
+        "en": "Column 4: value",
+        "nl": "Kolom 4: waarde",
+        "de": "Spalte 4: Wert",
+        "fr": "Colonne 4 : valeur",
+        "it": "Colonna 4: valore",
+        "sv": "Kolumn 4: värde",
+        "no": "Kolonne 4: verdi",
+        "es": "Columna 4: valor",
+        "da": "Kolonne 4: værdi",
+        "ru": "Столбец 4: значение",
+        "pl": "Kolumna 4: wartość",
+        "ko": "열 4: 값",
+        "ar": "العمود 4: القيمة"
+      }
+    },
+    {
+      "id": "range4",
+      "type": "text",
+      "value": "",
+      "title": {
+        "en": "  – OK range",
+        "nl": "  – OK-bereik",
+        "de": "  – OK-Bereich",
+        "fr": "  – Plage OK",
+        "it": "  – Intervallo OK",
+        "sv": "  – OK-intervall",
+        "no": "  – OK-område",
+        "es": "  – Rango OK",
+        "da": "  – OK-interval",
+        "ru": "  – Диапазон нормы",
+        "pl": "  – Zakres OK",
+        "ko": "  – 정상 범위",
+        "ar": "  – النطاق الجيد"
+      }
+    },
+    {
+      "id": "header4",
+      "type": "text",
+      "value": "",
+      "title": {
+        "en": "  – Header",
+        "nl": "  – Kop",
+        "de": "  – Überschrift",
+        "fr": "  – En-tête",
+        "it": "  – Intestazione",
+        "sv": "  – Rubrik",
+        "no": "  – Overskrift",
+        "es": "  – Encabezado",
+        "da": "  – Overskrift",
+        "ru": "  – Заголовок",
+        "pl": "  – Nagłówek",
+        "ko": "  – 머리글",
+        "ar": "  – العنوان"
+      }
+    },
+    {
+      "id": "col5",
+      "type": "autocomplete",
+      "title": {
+        "en": "Column 5: value",
+        "nl": "Kolom 5: waarde",
+        "de": "Spalte 5: Wert",
+        "fr": "Colonne 5 : valeur",
+        "it": "Colonna 5: valore",
+        "sv": "Kolumn 5: värde",
+        "no": "Kolonne 5: verdi",
+        "es": "Columna 5: valor",
+        "da": "Kolonne 5: værdi",
+        "ru": "Столбец 5: значение",
+        "pl": "Kolumna 5: wartość",
+        "ko": "열 5: 값",
+        "ar": "العمود 5: القيمة"
+      }
+    },
+    {
+      "id": "range5",
+      "type": "text",
+      "value": "",
+      "title": {
+        "en": "  – OK range",
+        "nl": "  – OK-bereik",
+        "de": "  – OK-Bereich",
+        "fr": "  – Plage OK",
+        "it": "  – Intervallo OK",
+        "sv": "  – OK-intervall",
+        "no": "  – OK-område",
+        "es": "  – Rango OK",
+        "da": "  – OK-interval",
+        "ru": "  – Диапазон нормы",
+        "pl": "  – Zakres OK",
+        "ko": "  – 정상 범위",
+        "ar": "  – النطاق الجيد"
+      }
+    },
+    {
+      "id": "header5",
+      "type": "text",
+      "value": "",
+      "title": {
+        "en": "  – Header",
+        "nl": "  – Kop",
+        "de": "  – Überschrift",
+        "fr": "  – En-tête",
+        "it": "  – Intestazione",
+        "sv": "  – Rubrik",
+        "no": "  – Overskrift",
+        "es": "  – Encabezado",
+        "da": "  – Overskrift",
+        "ru": "  – Заголовок",
+        "pl": "  – Nagłówek",
+        "ko": "  – 머리글",
+        "ar": "  – العنوان"
+      }
+    },
+    {
+      "id": "col6",
+      "type": "autocomplete",
+      "title": {
+        "en": "Column 6: value",
+        "nl": "Kolom 6: waarde",
+        "de": "Spalte 6: Wert",
+        "fr": "Colonne 6 : valeur",
+        "it": "Colonna 6: valore",
+        "sv": "Kolumn 6: värde",
+        "no": "Kolonne 6: verdi",
+        "es": "Columna 6: valor",
+        "da": "Kolonne 6: værdi",
+        "ru": "Столбец 6: значение",
+        "pl": "Kolumna 6: wartość",
+        "ko": "열 6: 값",
+        "ar": "العمود 6: القيمة"
+      }
+    },
+    {
+      "id": "range6",
+      "type": "text",
+      "value": "",
+      "title": {
+        "en": "  – OK range",
+        "nl": "  – OK-bereik",
+        "de": "  – OK-Bereich",
+        "fr": "  – Plage OK",
+        "it": "  – Intervallo OK",
+        "sv": "  – OK-intervall",
+        "no": "  – OK-område",
+        "es": "  – Rango OK",
+        "da": "  – OK-interval",
+        "ru": "  – Диапазон нормы",
+        "pl": "  – Zakres OK",
+        "ko": "  – 정상 범위",
+        "ar": "  – النطاق الجيد"
+      }
+    },
+    {
+      "id": "header6",
+      "type": "text",
+      "value": "",
+      "title": {
+        "en": "  – Header",
+        "nl": "  – Kop",
+        "de": "  – Überschrift",
+        "fr": "  – En-tête",
+        "it": "  – Intestazione",
+        "sv": "  – Rubrik",
+        "no": "  – Overskrift",
+        "es": "  – Encabezado",
+        "da": "  – Overskrift",
+        "ru": "  – Заголовок",
+        "pl": "  – Nagłówek",
+        "ko": "  – 머리글",
+        "ar": "  – العنوان"
+      }
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    },
+    "setName": {
+      "method": "POST",
+      "path": "/names"
+    }
+  }
+}

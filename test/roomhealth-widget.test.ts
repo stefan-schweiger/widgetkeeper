@@ -117,6 +117,28 @@ describe('Room Health widget', () => {
     expect(label(1)).toMatch(/^Bedroom: Stuffy, /);
   });
 
+  it('tones each room by its worst, in three steps, which Vivid fills it with; a fine room only when it is green', () => {
+    const devices = [
+      sensor('a', LIVING, { temperature: 21, humidity: 63 }),
+      sensor('b', BEDROOM, { humidity: 65 }),
+      sensor('c', ['z3', 'Office'], { co2: 1400 }),
+      sensor('d', ['z4', 'Hall'], { temperature: 21 }),
+      sensor('e', ['z5', 'Attic'], { temperature: null }),
+      { id: 'gone', missing: true },
+    ];
+    const tones = (rooms: HTMLElement[]) => rooms.map(r => r.dataset.tone ?? null);
+    expect(tones(widget(devices).rooms())).toEqual(['yellow', 'orange', 'red', null, null, null]);
+    expect(tones(widget(devices, { greenWhenFine: true }).rooms())).toEqual(['yellow', 'orange', 'red', 'green', null, null]);
+  });
+
+  it('puts 3 rooms in a row, or 2 or 4 (`columns`)', () => {
+    const one = [sensor('a', LIVING, { temperature: 21 })];
+    expect(widget(one).root.dataset.columns).toBe('3');
+    expect(widget(one, { columns: '2' }).root.dataset.columns).toBe('2');
+    expect(widget(one, { columns: 4 }).root.dataset.columns).toBe('4');
+    expect(widget(one, { columns: '5' }).root.dataset.columns).toBe('3');
+  });
+
   it('lines the marks up: a column per measure any room has, in a fixed order, absent where a room has none', () => {
     const { marks } = widget([
       sensor('a', LIVING, { co2: 700, temperature: 21 }),

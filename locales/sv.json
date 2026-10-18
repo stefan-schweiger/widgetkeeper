@@ -76,6 +76,21 @@
     "particles": "Partiklar",
     "voc": "VOC"
   },
+  "valuematrix": {
+    "selectDevices": "Välj enheter i widgetinställningarna.",
+    "selectColumns": "Välj värdena i widgetinställningarna.",
+    "error": "Kunde inte läsa in värdena.",
+    "unavailable": "Inte tillgänglig",
+    "renameFailed": "Kunde inte spara namnet.",
+    "ok": "OK",
+    "warning": "Varning",
+    "alert": "Larm",
+    "noReading": "Inget mätvärde",
+    "radon": "Radon",
+    "voc": "VOC",
+    "none": "Ingen",
+    "devices": "__count__ enheter"
+  },
   "weather": {
     "now": "Nu",
     "error": "Kunde inte hämta prognosen.",
@@ -341,6 +356,8 @@
     "close": "Stäng",
     "openAction": "Öppna",
     "lockAll": "Lås alla",
+    "openDoor": "Öppna",
+    "tapToOpen": "Tryck för att öppna",
     "renameFailed": "Kunde inte spara namnet."
   },
   "curtains": {
@@ -518,6 +535,7 @@
       "sensoralarms": "Rutor som blir röda när en sensor larmar.",
       "sensordots": "Rörelse, dörrar och kameror som ett rutnät av prickar.",
       "roomhealth": "Varje rums temperatur, luftfuktighet och luft i en blick, gult till rött när något är fel.",
+      "valuematrix": "Enheter eller rum mot valda värden, gröna, orange eller röda efter sitt intervall.",
       "weather": "De kommande 36 timmarna, timme för timme.",
       "heatmap": "En vecka av ett värde som värmekarta veckodag × timme.",
       "cameras": "Kamerabilder, med livevideo vid ett tryck.",

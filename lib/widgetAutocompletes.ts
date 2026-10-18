@@ -15,6 +15,7 @@ const PRESET_SLOTS = [1, 2, 3, 4];
 const FLOW_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8];
 const MEDIA_BUTTONS = [1, 2, 3, 4];
 const DAYS_SINCE_COUNTERS = [1, 2, 3, 4, 5, 6, 7, 8];
+const MATRIX_COLUMNS = [1, 2, 3, 4, 5, 6];
 
 /**
  * Every autocomplete setting's listener, by widget and setting id. `app.ts` registers them with Homey (the widget
@@ -46,6 +47,9 @@ export function widgetAutocompletes(app: WidgetkeeperApp): Record<string, Record
     add('values', `second${n}`, (query, settings) => app.values.listSecondValues(settings?.[`slot${n}`]?.id, query, n));
     add('sparklines', `slot${n}`, query => app.sparklines.listSlots(query));
   }
+  // Value matrix: each column's capability, from every number capability on the Homey.
+  for (const n of MATRIX_COLUMNS) add('valuematrix', `col${n}`, query => app.valueMatrix.listColumns(query));
+
   // Charts: each chart's value, from Sparklines' list (logged numbers).
   for (const n of [1, 2]) add('charts', `chart${n}`, query => app.sparklines.listSlots(query));
 
@@ -81,6 +85,9 @@ export function widgetAutocompletes(app: WidgetkeeperApp): Record<string, Record
     add('dayssince', `counter${n}`, async query => app.daysSince.listCounters(query, { none: true, create: true }));
     add('dayssince', `icon${n}`, async query => app.flows.listIcons(query, { none: true }));
   }
+
+  // Locks and Doors: the capability that opens (unlatches) a lock, from every lock's on/off capabilities.
+  add('locks', 'openCapability', query => app.locks.listOpenCapabilities(query));
 
   // Smart Stack: the dashboard whose widgets it shows.
   add('stack', 'dashboard', query => app.stack.listDashboards(query));

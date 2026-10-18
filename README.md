@@ -28,6 +28,10 @@ Many motion, contact and vibration sensors at a glance, as dots that change colo
 <a href="#room-health"><b>Room Health</b></a><br>
 Each room's temperature, humidity, CO₂, radon and particles at a glance, as icons or bars that turn yellow to red<br clear="left"></p>
 
+<p><a href="#value-matrix"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/valuematrix-dark.png"><img src="docs/previews/valuematrix-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#value-matrix"><b>Value Matrix</b></a><br>
+Devices or rooms against the values you choose, in one table: green (OK) inside a value's range, orange (Warning) outside it, red (Alert) far outside<br clear="left"></p>
+
 <p><a href="#weather-forecast"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/weather-dark.png"><img src="docs/previews/weather-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#weather-forecast"><b>Weather Forecast</b></a><br>
 The next 36 hours, hour by hour, from MET Norway (yr.no)<br clear="left"></p>
@@ -166,12 +170,21 @@ A room shows whatever its sensors measure; a room with only a thermometer is jud
 
 **Settings:** sensors, [rename tiles](#tile-names), [colour style](#colour-style), icons or bars, green when fine, the comfortable range of each value (one range for every room).
 
+## Value Matrix
+<img src="docs/screenshots/valuematrix.png" alt="Value Matrix on a Homey dashboard: six rooms by temperature, humidity, CO₂ and radon, the kitchen humid and the office's radon far over" width="358">
+
+Any devices against any values, in one table. Pick the devices, then up to six values for the columns (temperature, humidity, CO₂, power, battery: any number a device has). The rows are the devices' Homey rooms, each value the average of the room's devices, or the devices themselves with *Rows: Devices*. A cell is green (OK) inside the column's range, orange (Warning) outside it, and red (Alert) once it's past by half the range (for a limit on one side, half the limit: 1.5 × a highest value). A device or room without that value gets a striped cell. A legend of the three colours is under the table.
+
+Each column has an OK range, typed like `18–24`, `<1000` or `>10` in the value's unit. Left empty, temperature (°C), humidity, CO₂, radon (Bq/m³), PM2.5, PM10 and VOC (ppb) get [Room Health's](#room-health) usual ranges, and other values none (no colour). Type `–` for no range at all. The header is the unit (°C, %) or a short name, unless you type your own.
+
+**Settings:** devices, [rename tiles](#tile-names), [colour style](#colour-style), rooms or devices as rows, show legend, and per column the value, its OK range and its header.
+
 ## Weather Forecast
 <img src="docs/screenshots/weather.png" alt="Weather Forecast on a Homey dashboard" width="358">
 
 The next 36 hours from [MET Norway](https://www.met.no/en) ([yr.no](https://www.yr.no)), hour by hour, with today's and tomorrow's high and low. Swipe sideways to see further ahead.
 
-**Settings:** compact or detailed, one or two rows, 1–3 hours per column, colour theme (one of them is [Deep](#colour-style)).
+**Settings:** compact or detailed, one or two rows, 1–3 hours per column, colour style: Standard, Warm and cold (coloured temperatures) or [Vivid](#colour-style) (the card on a gradient for the current weather).
 
 Weather data from MET Norway, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Icons: [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
 
@@ -194,7 +207,7 @@ Your cameras as a grid of snapshots that refresh every few seconds (cameras with
 
 Half-height tiles that each show one live device value, and if you like a second value of the same device small beside the name, such as a room's humidity next to its temperature. Percentages can fill their tile by level, and the Flow card **Set the tile colour of … to …** colours a tile, such as a fridge going red when it's too warm.
 
-**Settings:** up to six values, each with an optional second value, 3 or 2 per row, compact or pill tiles (pill tiles look like Sensor Alarms'), [colour style](#colour-style) (Deep fills percentage fills and the colours a Flow sets), percentage fill and its limits, [rename tiles](#tile-names).
+**Settings:** up to six values, each with an optional second value, 3 or 2 per row, compact or pill tiles (pill tiles look like Sensor Alarms'), [colour style](#colour-style) (Vivid fills percentage fills and the colours a Flow sets), percentage fill and its limits, [rename tiles](#tile-names).
 
 ## Light Controls
 <img src="docs/clips/lights.webp" alt="Light Controls on a Homey dashboard: a light turned on, dimmed with the bar, and given a colour and a white" width="358">
@@ -259,9 +272,9 @@ Up to four preset buttons, such as *Eggs · 7 min*. A started timer takes their 
 ## Locks and Doors
 <img src="docs/screenshots/locks.png" alt="Locks and Doors on a Homey dashboard" width="358">
 
-Locks, doors, windows and garage doors in one line: *All locked and closed*, or what isn't, on a red tile. Tap it for the list, with **Lock** and **Close** buttons.
+Locks, doors, windows and garage doors in one line: *All locked and closed*, or what isn't, on a red tile. Tap it for the list, with **Lock** and **Close** buttons. A lock that can pull the latch can get an **Open** button too: pick the capability that does it (such as *open_lock* or *open*), and tap it twice to open the door.
 
-**Settings:** devices, one line or the full list, allow unlocking, [colour style](#colour-style), [rename tiles](#tile-names).
+**Settings:** devices, one line or the full list, allow unlocking, the open door button, [colour style](#colour-style), [rename tiles](#tile-names).
 
 ## Curtains
 <img src="docs/clips/curtains.webp" alt="Curtains on a Homey dashboard: an open curtain tapped closed, a closed one tapped open and sent back with a second tap, and a blind dragged most of the way up" width="358">
@@ -346,18 +359,18 @@ Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an
 <img src="docs/showcase/kitchen.png" alt="A kitchen dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
 ## Colour style
-Every widget with a coloured state has a **Colour style** setting: *Default* is the calmer look, *Deep* the stronger one.
+Every widget with a coloured state has a **Colour style** setting: *Muted* is the calmer look, *Vivid* the stronger one.
 
-- Where a colour is mixed softly into a tile (a Quick Actions tile that's on, a Sensor Alarms alarm, a Flow Buttons row, a coloured note, Curtains, Timers, Variables …), Deep fills the tile with Homey's darker shade of the colour, with white text (dark on yellow). Lights take a darker shade of their own colour, and the charts get a stronger area under their lines.
-- Where the colour is already a small solid part (the lit button of Thermostat and Variable Presets, Insights Heatmap's cells, Media's play button and what's on, Activity Dots' dots), Default uses Homey's darker shade and Deep the full, bright colour.
-- Days Since shows the level only on its bars by default, and Deep puts an overdue row on a solid block. Room Health's icons and bars are toned down by default and in full colour in Deep. Weather Forecast has *Deep* among its colour themes.
+- Where a colour is mixed softly into a tile (a Quick Actions tile that's on, a Sensor Alarms alarm, a Flow Buttons row, a coloured note, Curtains, Timers, Variables, Value Matrix's cells …), Vivid fills the tile with Homey's darker shade of the colour, with white text (dark on yellow). Lights take a darker shade of their own colour, and the charts get a stronger area under their lines.
+- Where the colour is already a small solid part (the lit button of Thermostat and Variable Presets, Insights Heatmap's cells, Media's play button and what's on, Activity Dots' dots), Muted uses Homey's darker shade and Vivid the full, bright colour.
+- Days Since shows the level only on its bars by default, and Vivid puts an overdue row on a solid block. Room Health's icons and bars are toned down by default and in full colour in Vivid. Weather Forecast has *Vivid* among its colour styles: the whole card on a gradient for the current weather.
 
 Where a widget lets you pick a colour (Flow Buttons, Device Values' Flow colours, Notes, Charts, Insights Heatmap, Activity Dots, Variable Presets, and now Device Quick Actions, Variables, Curtains, Media and Timers), the colour you pick follows the setting.
 
 ## Tile names
 <img src="docs/clips/rename.webp" alt="Rename tiles: the setting turned on, names typed on two Light Controls tiles, and the setting turned off again with the names kept" width="358">
 
-Give any tile a name of your own, such as *Sofa corner* for a room's lights grouped by room, instead of the device's or room's name. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Room Health, Device Values, Sparklines, Locks and Doors, Cameras and Variables can do this.
+Give any tile a name of your own, such as *Sofa corner* for a room's lights grouped by room, instead of the device's or room's name. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Room Health, Value Matrix, Device Values, Sparklines, Locks and Doors, Cameras and Variables can do this.
 
 1. Edit the dashboard, edit the widget, turn on **Rename tiles** (the first setting) and save the widget.
 2. Leave the dashboard's edit mode. Each tile now shows a text field: type its name, or leave it empty to keep the device's (or room's) own name.

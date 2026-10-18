@@ -6,7 +6,7 @@
   --hm-card: var(--homey-background-color, #1F2029);
   --hm-text: var(--homey-text-color, #EDEEF0);
   --hm-muted: var(--homey-text-color-light, #9C9DA5);
-  --hm-accent: var(--wk-blue-shade); /* kit.css: the colour setting's shade (Default), or the bright colour (Deep) */
+  --hm-accent: var(--wk-blue-shade); /* kit.css: the colour setting's shade (Muted), or the bright colour (Vivid) */
   --hm-empty: color-mix(in srgb, var(--hm-text) 7%, var(--hm-card));
   /* Five steps from "less" to "more": the accent mixed into the empty tile colour. */
   --hm-l0: color-mix(in oklab, var(--hm-accent) 12%, var(--hm-empty));
@@ -26,8 +26,8 @@
 }
 
 /*
- * The `color` setting (data-color; blue is the default): Device Values' Flow colours, from kit.css. Default draws them in
- * Homey's darker shade; Deep in the bright colour, with a steeper ramp so the levels stand further apart.
+ * The `color` setting (data-color; blue is the default): Device Values' Flow colours, from kit.css. Muted draws them in
+ * Homey's darker shade; Vivid in the bright colour, with a steeper ramp so the levels stand further apart.
  */
 .hm[data-color="red"] { --hm-accent: var(--wk-red-shade); }
 .hm[data-color="orange"] { --hm-accent: var(--wk-orange-shade); }

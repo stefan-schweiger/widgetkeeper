@@ -81,7 +81,7 @@ html, body { background: transparent !important; }
 .qa-tile.active { background: color-mix(in srgb, var(--qa-accent) 22%, var(--qa-tile)); }
 .qa-tile.active .qa-icon, .qa-tile.active .qa-action { color: var(--qa-accent-icon); }
 .qa[data-active-style="lighter"] .qa-tile.active { background: var(--qa-lighter); }
-/* Deep (kit.css): a tile that is on is the colour's darker shade, solid, with its text and icons in --wk-on. The lighter tile
+/* Vivid (kit.css): a tile that is on is the colour's darker shade, solid, with its text and icons in --wk-on. The lighter tile
    keeps its grey. */
 .qa.wk-deep:not([data-active-style="lighter"]) .qa-tile.active {
   background: var(--wk-c); --qa-text: var(--wk-on); --qa-muted: var(--wk-on-muted); --qa-accent-icon: var(--wk-on);

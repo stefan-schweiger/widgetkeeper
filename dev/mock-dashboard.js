@@ -1,6 +1,6 @@
 // The widgets of dev/screenshots.html: the real widget code with the made-up home of showcase-data.js ("Solbakken",
 // the showcase dashboards' data, so no real home's names or readings end up in the README), mounted into the elements
-// with the ids w-elec, w-thermo, w-qa, w-sa, w-roomhealth, w-weather, w-heatmap, w-cameras, w-values, w-sparklines, w-charts, w-variables,
+// with the ids w-elec, w-thermo, w-qa, w-sa, w-roomhealth, w-valuematrix, w-weather, w-heatmap, w-cameras, w-values, w-sparklines, w-charts, w-variables,
 // w-varpresets, w-flows, w-price, w-locks, w-clock, w-textline(-note) and w-dayssince. Most go through showcase-mount.js's MOUNT with a
 // showcase entry (`findWidget()`); only the README's own changes are here. Needs the widget scripts,
 // temp/screenshot-icons.js, showcase-data.js and showcase-mount.js loaded first, and the showcase's fixed clock
@@ -52,6 +52,27 @@
     sensor('rh5', zone('z8', "Emma's room"), { temperature: 20.6, humidity: 45, co2: 783 }),
     sensor('rh6', zone('z4', 'Office'), { temperature: 19.4 }),
   ] });
+
+  // Not on a showcase dashboard: the same rooms as a Value Matrix, with CO₂ and radon (one room far over).
+  const T = 'measure_temperature', H = 'measure_humidity', C = 'measure_co2', R = 'measure_radon';
+  const room = (id, z, values) => ({ id, name: id, zone: z, values });
+  MOUNT.valuematrix(el('w-valuematrix'), {
+    columns: [T, H, C, R].map(capabilityId => ({ capabilityId })),
+    state: {
+      columns: [
+        { capabilityId: T, title: 'Temperature', units: '°C', decimals: 1 }, { capabilityId: H, title: 'Humidity', units: '%', decimals: 0 },
+        { capabilityId: C, title: 'CO2', units: 'ppm', decimals: 0 }, { capabilityId: R, title: 'Radon', units: 'Bq/m³', decimals: 0 },
+      ],
+      devices: [
+        room('vm1', zone('z1', 'Living room'), { [T]: 21.4, [H]: 47, [C]: 690, [R]: 48 }),
+        room('vm2', zone('z2', 'Kitchen'), { [T]: 22.6, [H]: 64 }),
+        room('vm3', zone('b1', 'Bedroom'), { [T]: 18.2, [H]: 48, [C]: 1210 }),
+        room('vm4', zone('z7', 'Bathroom'), { [T]: 22.8, [H]: 56 }),
+        room('vm5', zone('z8', "Emma's room"), { [T]: 20.6, [H]: 45, [C]: 783 }),
+        room('vm6', zone('z4', 'Office'), { [T]: 19.4, [R]: 162 }),
+      ],
+    },
+  });
 
   // Not on a showcase dashboard any more (Home's flags made way for Flow Buttons): the README's own four.
   MOUNT.variables(el('w-variables'), { vars: [

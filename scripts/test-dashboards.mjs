@@ -11,7 +11,7 @@
 // It writes the app setting `webDashboards` through the Homey CLI's login (the web dashboards' own API wants the
 // password's session too), so the app's `normalize()` checks it on the next read, as for any saved dashboard.
 // The "Rename tiles" widgets get a name already typed on a tile, in the app setting `tileNames`.
-// Each type also gets a Deep copy of its first plain widget (Colour style), one in purple where it has a colour setting.
+// Each type also gets a Vivid copy of its first plain widget (Colour style), one in purple where it has a colour setting.
 //
 // With --native they're Homey dashboards named `Test · <widget>` (the Homey picks a dashboard's id, so the name is the
 // marker), updated in place on a re-run. Their widget and column ids are derived from the type and position
@@ -95,18 +95,18 @@ const w = (type, title, settings = {}, deviceIds = []) => ({ type, title, settin
 const renaming = (type, title, settings, deviceIds, tileNames) => ({ ...w(type, title, { ...settings, renameTiles: true }, deviceIds), tileNames });
 
 /**
- * Colour style (`colorStyle`): a Deep copy of a type's first plain widget (not renaming, no deleted device), one more in purple
- * where the type has a colour setting, and Weather's Deep theme.
+ * Colour style (`colorStyle`): a Vivid copy of a type's first plain widget (not renaming, no deleted device), one more in purple
+ * where the type has a colour setting, and Weather's Vivid theme.
  */
 function deepVariants(type, widgets) {
   const ids = (widgetDefs[type].settings || []).map(s => s.id);
   const base = widgets.find(x => !x.tileNames && !x.settings?.renameTiles && !x.deviceIds?.includes(MISSING));
   if (!base) return [];
-  if (type === 'weather') return [{ ...base, title: `Deep theme · ${base.title}`, settings: { ...base.settings, theme: 'deep' } }];
+  if (type === 'weather') return [{ ...base, title: `Vivid theme · ${base.title}`, settings: { ...base.settings, theme: 'card' } }];
   if (!ids.includes('colorStyle')) return [];
-  const deep = { ...base, title: `Deep · ${base.title}`, settings: { ...base.settings, colorStyle: 'deep' } };
+  const deep = { ...base, title: `Vivid · ${base.title}`, settings: { ...base.settings, colorStyle: 'deep' } };
   return ids.includes('color')
-    ? [deep, { ...deep, title: `Deep · purple · ${base.title}`, settings: { ...deep.settings, color: 'purple' } }]
+    ? [deep, { ...deep, title: `Vivid · purple · ${base.title}`, settings: { ...deep.settings, color: 'purple' } }]
     : [deep];
 }
 
@@ -232,16 +232,36 @@ const BUILD = {
     ] };
   },
 
+  async valuematrix() {
+    // The columns from the widget's own autocomplete (every number capability on the Homey, by id).
+    const items = await autocomplete('valuematrix', 'col1');
+    const col = id => items.find(i => i.id === id) ?? null;
+    const [temp, hum, co2, radon, power, battery] = ['measure_temperature', 'measure_humidity', 'measure_co2', 'measure_radon', 'measure_power', 'measure_battery'].map(col);
+    const cols = (...list) => Object.fromEntries(list.map((item, i) => [`col${i + 1}`, item]));
+    const climate = where(d => d.class === 'sensor' && (has(d, 'measure_temperature') || has(d, 'measure_humidity') || has(d, 'measure_co2')), 12);
+    const plugs = where(d => has(d, 'measure_power') && cls(d) === 'socket', 6);
+    const batteries = where(d => has(d, 'measure_battery'), 6);
+    const zoneOf = id => devices.find(d => d.id === id)?.zone;
+    return { cols: 3, widgets: [
+      w('valuematrix', 'Rooms · °C, %, CO₂, radon (usual ranges)', cols(temp, hum, co2, radon), climate),
+      w('valuematrix', 'Strict: 21–22 °C, 45–50 %, CO₂ <600 (orange and red)',
+        { ...cols(temp, hum, co2), range1: '21–22', range2: '45-50', range3: '<600' }, climate),
+      w('valuematrix', 'Devices · no legend', { ...cols(temp, hum, co2), rows: 'devices', showLegend: false }, climate.slice(0, 6)),
+      w('valuematrix', 'Power (no range, header "Watt") · battery >30 · deleted device',
+        { ...cols(power, battery), header1: 'Watt', range2: '>30', rows: 'devices' }, [...plugs.slice(0, 3), ...batteries.slice(0, 3), MISSING]),
+      w('valuematrix', 'Six columns', cols(temp, hum, co2, radon, power, battery), climate),
+      w('valuematrix', 'No values picked', {}, climate.slice(0, 3)),
+      renaming('valuematrix', 'Rename tiles', cols(temp, hum), climate.slice(0, 3), climate.length ? { [`zone:${zoneOf(climate[0])}`]: 'Typed room name' } : {}),
+    ] };
+  },
+
   weather: () => ({ cols: 3, widgets: [
     w('weather', 'Defaults (compact, 1 row, 1 h)'),
     w('weather', 'Detailed', { density: 'detailed' }),
     w('weather', 'Compact · 2 rows', { rows: '2' }),
     w('weather', 'Detailed · 2 rows · 3 h', { density: 'detailed', rows: '2', step: '3' }),
-    w('weather', 'Compact · 2 h · vivid', { step: '2', theme: 'vivid' }),
-    w('weather', 'Detailed · temperature', { density: 'detailed', theme: 'temperature' }),
-    w('weather', 'Compact · sky', { theme: 'sky' }),
-    w('weather', 'Detailed · sky · 2 h', { density: 'detailed', theme: 'sky', step: '2' }),
-    w('weather', 'Card · 2 rows', { theme: 'card', rows: '2' }),
+    w('weather', 'Compact · 2 h · warm and cold', { step: '2', theme: 'vivid' }),
+    w('weather', 'Vivid · 2 rows', { theme: 'card', rows: '2' }),
   ] }),
 
   async heatmap() {
@@ -313,12 +333,12 @@ const BUILD = {
       w('values', 'Mixed types · 2 columns', { columns: '2', ...slots('slot', mixed) }),
       w('values', 'Batteries · fill (red < 30, yellow < 50)', { percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
       w('values', 'Brightness (0–1 %) · fill', { percentFill: true, ...slots('slot', dims) }),
-      w('values', 'Batteries · Deep fill (red < 30, yellow < 50)', { colorStyle: 'deep', percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
+      w('values', 'Batteries · Vivid fill (red < 30, yellow < 50)', { colorStyle: 'deep', percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
       w('values', 'Mixed types · pill', { tileStyle: 'pill', ...slots('slot', mixed) }),
-      w('values', 'Batteries · pill · Deep fill · 2 columns', { tileStyle: 'pill', columns: '2', colorStyle: 'deep', percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
+      w('values', 'Batteries · pill · Vivid fill · 2 columns', { tileStyle: 'pill', columns: '2', colorStyle: 'deep', percentFill: true, redBelow: 30, yellowBelow: 50, ...slots('slot', batteries) }),
       w('values', 'Second values · 3 columns', { ...slots('slot', paired), ...slots('second', seconds) }),
       w('values', 'Second values · pill · 2 columns', { tileStyle: 'pill', columns: '2', ...slots('slot', paired), ...slots('second', seconds) }),
-      w('values', 'Second values · Deep fill', { colorStyle: 'deep', percentFill: true, ...slots('slot', paired), ...slots('second', seconds) }),
+      w('values', 'Second values · Vivid fill', { colorStyle: 'deep', percentFill: true, ...slots('slot', paired), ...slots('second', seconds) }),
       // A second value left from another device (Tile 1 changed since): the tile shows only its value.
       w('values', 'Second value of another device: left out', { ...slots('slot', [temps[0]]), ...slots('second', [otherDevice]) }),
       w('values', 'Gaps and a deleted device', { ...slots('slot', [temps[0], null, missing, null, batteries[0]]) }),
@@ -485,15 +505,18 @@ const BUILD = {
     const locks = where(d => has(d, 'locked'));
     const contacts = where(d => has(d, 'alarm_contact') && !has(d, 'locked'));
     const garages = where(d => has(d, 'garagedoor_closed'));
+    // The capability that opens (unlatches) a lock, from the widget's own autocomplete: only when a lock has one.
+    const [openCapability] = pick(await autocomplete('locks', 'openCapability'));
     return { cols: 3, widgets: [
       w('locks', 'Locks · summary', {}, locks),
       w('locks', 'Locks · list · unlock allowed', { view: 'list', allowUnlock: true }, locks),
+      openCapability && w('locks', `Locks · list · Open with ${openCapability.id}`, { view: 'list', allowUnlock: true, openCapability }, locks),
       w('locks', 'Doors and windows · summary', {}, contacts),
       w('locks', 'Everything · list', { view: 'list' }, [...locks, ...garages, ...contacts]),
       w('locks', 'One lock · list', { view: 'list' }, locks.slice(0, 1)),
       w('locks', 'With a deleted device', {}, [...locks, MISSING]),
       renaming('locks', 'Rename tiles (the list shows)', {}, locks, locks[0] ? { [locks[0]]: 'Typed name' } : {}),
-    ] };
+    ].filter(Boolean) };
   },
 
   async curtains() {
@@ -637,7 +660,7 @@ function testName(type) {
   return `Test · ${widgetDefs[type]?.name?.en ?? type}`;
 }
 
-/** Every listed type's test dashboard: the builder's widgets and their Deep copies, numbered (`id`). */
+/** Every listed type's test dashboard: the builder's widgets and their Vivid copies, numbered (`id`). */
 async function buildAll() {
   const out = [];
   for (const type of types) {

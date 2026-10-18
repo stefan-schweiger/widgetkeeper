@@ -12,7 +12,7 @@ import { edge } from './headless.mjs';
 const page = pathToFileURL(resolve('dev/widget-previews.html')).href;
 // The page's frame ids are `<prefix>-dark` and `<prefix>-light`; each goes to widgets/<widget>/preview-<theme>.png.
 const WIDGETS = {
-  elec: 'electricity', thermo: 'thermostat', qa: 'quickactions', sa: 'sensoralarms', sd: 'sensordots', rh: 'roomhealth', weather: 'weather',
+  elec: 'electricity', thermo: 'thermostat', qa: 'quickactions', sa: 'sensoralarms', sd: 'sensordots', rh: 'roomhealth', vm: 'valuematrix', weather: 'weather',
   hm: 'heatmap', cam: 'cameras', val: 'values', lc: 'lights', spark: 'sparklines', chart: 'charts', var: 'variables', vp: 'varpresets', fb: 'flows',
   pb: 'price', tm: 'timers', lk: 'locks', ct: 'curtains', mw: 'media', sk: 'stack', ck: 'clock', sp: 'spacer', tl: 'textline',
   ds: 'dayssince',

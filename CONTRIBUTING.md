@@ -45,7 +45,7 @@ The app's App Store images (`assets/images/small.png`, `large.png` and `xlarge.p
   - Stay on Homey's type scale. CLAUDE.md lists the tokens and the few deliberate exceptions.
 
 ### Previewing widgets in a browser
-`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/sensordots-preview.html`, `dev/roomhealth-preview.html`, `dev/weather-preview.html`, `dev/heatmap-preview.html`, `dev/values-preview.html`, `dev/lights-preview.html`, `dev/sparklines-preview.html`, `dev/variables-preview.html`, `dev/varpresets-preview.html`, `dev/flows-preview.html`, `dev/price-preview.html`, `dev/timers-preview.html`, `dev/locks-preview.html`, `dev/curtains-preview.html`, `dev/media-preview.html`, `dev/cameras-preview.html`, `dev/stack-preview.html`, `dev/clock-preview.html` and `dev/dayssince-preview.html` render the widgets with mock data, outside Homey.
+`dev/preview.html`, `dev/thermostat-preview.html`, `dev/quickactions-preview.html`, `dev/sensoralarms-preview.html`, `dev/sensordots-preview.html`, `dev/roomhealth-preview.html`, `dev/valuematrix-preview.html`, `dev/weather-preview.html`, `dev/heatmap-preview.html`, `dev/values-preview.html`, `dev/lights-preview.html`, `dev/sparklines-preview.html`, `dev/variables-preview.html`, `dev/varpresets-preview.html`, `dev/flows-preview.html`, `dev/price-preview.html`, `dev/timers-preview.html`, `dev/locks-preview.html`, `dev/curtains-preview.html`, `dev/media-preview.html`, `dev/cameras-preview.html`, `dev/stack-preview.html`, `dev/clock-preview.html` and `dev/dayssince-preview.html` render the widgets with mock data, outside Homey.
 1. Serve the repo root, e.g. `python -m http.server 8765`.
 2. Open `/dev/preview.html`.
 3. Optionally add `#live=0.4` or `#price=0.3` to the URL to simulate scrubbing.
@@ -59,6 +59,7 @@ lib/ThermostatService.ts        thermostat state tracking and preset apply
 lib/QuickActionService.ts       quick-action state tracking and triggering
 lib/SensorAlarmService.ts       alarm capability tracking (Sensor Alarms and Activity Dots)
 lib/RoomHealthService.ts        climate and air sensor tracking, with their rooms, for Room Health
+lib/ValueMatrixService.ts       a value per device and column, with their rooms, for Value Matrix
 lib/WeatherService.ts           MET Norway forecast fetching and caching
 lib/HeatmapService.ts           Insights history and on/off recording for the heatmap
 lib/ValueService.ts             capability value tracking for Device Values
@@ -82,6 +83,7 @@ widgets/quickactions/           widget manifest, api.ts, public/ (renderer)
 widgets/sensoralarms/           widget manifest, api.ts, public/ (renderer)
 widgets/sensordots/             widget manifest, api.ts (Sensor Alarms' state), public/ (renderer)
 widgets/roomhealth/             widget manifest, api.ts, public/ (renderer)
+widgets/valuematrix/            widget manifest, api.ts, public/ (renderer)
 widgets/weather/                widget manifest, api.ts, public/ (renderer, vendored MET icons)
 widgets/heatmap/                widget manifest, api.ts, public/ (renderer)
 widgets/values/                 widget manifest, api.ts, public/ (renderer)

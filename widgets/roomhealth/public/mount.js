@@ -21,6 +21,7 @@ window.mountRoomHealthWidget = function (Homey, { root, frame }) {
   const widget = window.createRoomHealthWidget(root, {
     colorStyle: settings.colorStyle,
     layout: settings.layout,
+    columns: settings.columns,
     greenWhenFine: settings.greenWhenFine === true,
     t: (key, tokens) => Homey.__(key, tokens),
     renameTiles: settings.renameTiles === true,

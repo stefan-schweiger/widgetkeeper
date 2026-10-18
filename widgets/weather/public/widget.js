@@ -24,20 +24,23 @@
   const HOT = 28;
 
   /**
-   * Colours a temperature element: a `cold`/`warm` class (with `prefix`) and how far (`--k`, 0-1)
+   * Colours a temperature element: a `cold`/`warm` class and how far (`--k`, 0-1)
    * towards blue or red.
    */
-  function colorTemp(node, r, prefix = '') {
+  function colorTemp(node, r) {
     const warm = r > NEUTRAL;
     const k = warm ? (r - NEUTRAL) / (HOT - NEUTRAL) : (NEUTRAL - r) / (NEUTRAL - COLD);
-    node.classList.add(prefix + (warm ? 'warm' : 'cold'));
+    node.classList.add(warm ? 'warm' : 'cold');
     node.style.setProperty('--k', String(Math.round(Math.min(1, k) * 100) / 100));
   }
 
   // Colour themes (the `theme` setting). They only change colours and backgrounds, in widget.css.
-  const THEMES = ['default', 'vivid', 'temperature', 'sky', 'card', 'deep'];
+  const THEMES = ['default', 'vivid', 'card'];
+  // Themes removed in 1.0.0, read as the closest one left: Tinted by temperature as Warm and cold, Tinted by sky and the
+  // first Vivid (`deep`, never released) as Weather background, which took the name Vivid.
+  const OLD_THEMES = { temperature: 'vivid', sky: 'card', deep: 'card' };
 
-  /** The kind of sky a MET symbol code shows, for the sky-coloured themes (`data-sky`). */
+  /** The kind of sky a MET symbol code shows, for the `card` theme's background (`data-sky`). */
   function skyOf(symbol) {
     if (!symbol) return '';
     if (symbol.includes('thunder')) return 'thunder';
@@ -99,7 +102,8 @@
 
     root.classList.add('wf', compact ? 'wf-compact' : 'wf-detailed');
     if (rows === 2) root.classList.add('wf-paged');
-    const theme = THEMES.includes(opts.theme) ? opts.theme : 'default';
+    const asked = OLD_THEMES[opts.theme] || opts.theme;
+    const theme = THEMES.includes(asked) ? asked : 'default';
     root.classList.add(`wf-theme-${theme}`);
     const frame = theme === 'card' ? opts.frame : null;
     if (frame) frame.classList.add('wf-card-frame');
@@ -241,7 +245,7 @@
     function renderHour(h, i, parent) {
       const date = new Date(h.t);
       const midnight = date.getHours() === 0;
-      const col = el('div', { class: `wf-col${midnight && i > 0 ? ' wf-newday' : ''}`, 'data-t': h.t, 'data-sky': skyOf(h.symbol) || null }, parent);
+      const col = el('div', { class: `wf-col${midnight && i > 0 ? ' wf-newday' : ''}`, 'data-t': h.t }, parent);
       const label = i === 0 ? t('now') : midnight ? weekdayFmt.format(date) : String(date.getHours()).padStart(2, '0');
       el('div', { class: `wf-hour${i === 0 || midnight ? ' strong' : ''}`, dir: 'auto', text: label }, col);
       const iconBox = el('div', { class: 'wf-icon' }, col);
@@ -254,8 +258,6 @@
         const rounded = Math.round(h.temp);
         temp.textContent = `${intFmt.format(rounded === 0 ? 0 : rounded)}°`;
         colorTemp(temp, rounded);
-        // The column's own tint, for the `temperature` theme.
-        colorTemp(col, rounded, 'tint-');
       }
       el('div', { class: 'wf-precip', text: h.precip > 0 ? `${mmFmt.format(h.precip)}${compact ? '' : ' mm'}` : '' }, col);
       const wind = el('div', { class: 'wf-wind' }, col);
