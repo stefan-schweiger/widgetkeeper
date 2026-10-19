@@ -6,8 +6,8 @@
   <title>Widget showcase</title>
   <!--
     Showcase dashboards: the real widgets with the made-up home of showcase-data.js, in three columns on Homey's dark
-    dashboard, on a drawn 16:10 tablet in landscape (a 1280 × 800 screen). `?d=home|energy|security` picks the dashboard
-    (default home). scripts/render-showcase.mjs (`npm run showcase [-- <id>…]`) renders them to docs/showcase/<id>.png
+    dashboard, on a drawn 16:10 tablet in landscape (a 1280 × 800 screen). `?d=home|energy|security|…` picks the dashboard
+    (default home); a dashboard's `colorStyle` sets every widget's Colour style, and `theme: 'light'` shows it in light mode. scripts/render-showcase.mjs (`npm run showcase [-- <id>…]`) renders them to docs/showcase/<id>.png
     on a transparent background; the README shows home.png.
     The clock is fixed (fixed-clock.js replaces Date), so every render is the same.
     Device icons come from Homey's icon library, downloaded by the render scripts to temp/screenshot-icons.js.
@@ -37,6 +37,11 @@
   <link rel="stylesheet" href="../widgets/curtains/public/widget.css">
   <link rel="stylesheet" href="../widgets/clock/public/widget.css">
   <link rel="stylesheet" href="../widgets/textline/public/widget.css">
+  <link rel="stylesheet" href="../widgets/roomhealth/public/widget.css">
+  <link rel="stylesheet" href="../widgets/valuematrix/public/widget.css">
+  <link rel="stylesheet" href="../widgets/varpresets/public/widget.css">
+  <link rel="stylesheet" href="../widgets/charts/public/widget.css">
+  <link rel="stylesheet" href="../widgets/dayssince/public/widget.css">
   <script src="../widgets/spacer/public/kit.js"></script>
   <script src="../widgets/electricity/public/chart.js"></script>
   <script src="../widgets/electricity/public/widget.js"></script>
@@ -60,6 +65,11 @@
   <script src="../widgets/curtains/public/widget.js"></script>
   <script src="../widgets/clock/public/widget.js"></script>
   <script src="../widgets/textline/public/widget.js"></script>
+  <script src="../widgets/roomhealth/public/widget.js"></script>
+  <script src="../widgets/valuematrix/public/widget.js"></script>
+  <script src="../widgets/varpresets/public/widget.js"></script>
+  <script src="../widgets/charts/public/widget.js"></script>
+  <script src="../widgets/dayssince/public/widget.js"></script>
   <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
   <script src="mock-media.js"></script>
   <script src="mock-util.js"></script>
@@ -112,6 +122,15 @@
     /* A non-transparent widget's frame (default widget background, with Homey's widget padding), as in screenshots.html. */
     .card { background: #1F2029; border-radius: 20px; padding: 16px; box-sizing: border-box; }
     .card.tw-frame, .card.wf-frame:not(.wf-card-frame), .card.hm-frame { background: #181920; }
+
+    /* A dashboard in light mode (`theme: 'light'`): Homey's light dashboard, with the light tokens Homey's own
+       stylesheet would give the frames (as dev/preview.css's .light). */
+    html.light-mode { --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+    .light-mode .screen { background: #F4F4FA; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25); }
+    .light-mode .screen::after { background: linear-gradient(115deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 36%, transparent 36.2%); }
+    .light-mode .status, .light-mode .title { color: #1F2029; }
+    .light-mode .status svg { filter: invert(1); }
+    .light-mode .card:not(.wf-card-frame), .light-mode .card.tw-frame, .light-mode .card.hm-frame { background: #FFFFFF; }
   </style>
 </head>
 <body>
@@ -134,10 +153,14 @@
 
   <script>
     // The widgets drawn on Homey's default widget background; the rest are transparent tiles.
-    const FRAME = { electricity: 'card', thermostat: 'card tw-frame', media: 'card mw-frame', weather: 'card wf-frame', heatmap: 'card hm-frame' };
+    const FRAME = {
+      electricity: 'card', charts: 'card', dayssince: 'card', thermostat: 'card tw-frame', varpresets: 'card tw-frame',
+      media: 'card mw-frame', weather: 'card wf-frame', heatmap: 'card hm-frame',
+    };
 
     const id = new URLSearchParams(location.search).get('d') || 'home';
     const board = SHOWCASE[id];
+    if (board.theme === 'light') document.documentElement.classList.replace('homey-dark-mode', 'light-mode');
     document.getElementById('title').textContent = board.title;
     const now = new Date();
     document.getElementById('clock').textContent = now.toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit' });
@@ -153,7 +176,8 @@
           card.append(el);
           col.append(card);
         } else col.append(el);
-        MOUNT[w.type](el, w);
+        // A dashboard's `colorStyle` (Vivid) goes to each widget that doesn't set its own.
+        MOUNT[w.type](el, board.colorStyle ? { ...w, opts: { colorStyle: board.colorStyle, ...w.opts } } : w);
       }
       document.getElementById('columns').append(col);
     }

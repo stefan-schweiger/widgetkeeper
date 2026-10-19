@@ -20,6 +20,7 @@
     "clips": "node scripts/render-clips.mjs",
     "showcase": "node scripts/render-showcase.mjs",
     "web-showcase": "node scripts/render-web-showcase.mjs",
+    "forum-images": "node scripts/render-forum-images.mjs",
     "flow-icons": "node scripts/render-flow-icons.mjs",
     "web-socket": "node scripts/build-web-socket.mjs",
     "diagnostics": "node scripts/diagnostics.mjs",

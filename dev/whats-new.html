@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>What's new so far</title>
+  <title>What's new in 1.0.0</title>
   <!--
-    A poster of what's new so far in 1.0.0 (CHANGELOG.md; it isn't out yet): the real widgets with the made-up home of showcase-data.js, in
+    A poster of what's new in 1.0.0 (CHANGELOG.md; in the test version): the real widgets with the made-up home of showcase-data.js, in
     Homey's dark mode at a phone's widget width (358 px), each with a short caption. scripts/render-whats-new.mjs
     (`npm run whats-new`) renders it to docs/whats-new-1.0.0.png at 2x. The clock is fixed (fixed-clock.js).
     The web dashboards panel shows docs/web/settings.png (`npm run web-showcase -- settings`).
@@ -30,6 +30,7 @@
   <link rel="stylesheet" href="../widgets/charts/public/widget.css">
   <link rel="stylesheet" href="../widgets/textline/public/widget.css">
   <link rel="stylesheet" href="../widgets/dayssince/public/widget.css">
+  <link rel="stylesheet" href="../widgets/shortcuts/public/widget.css">
   <script src="../widgets/spacer/public/kit.js"></script>
   <script src="../widgets/electricity/public/chart.js"></script>
   <script src="../widgets/electricity/public/widget.js"></script>
@@ -49,6 +50,7 @@
   <script src="../widgets/charts/public/widget.js"></script>
   <script src="../widgets/textline/public/widget.js"></script>
   <script src="../widgets/dayssince/public/widget.js"></script>
+  <script src="../widgets/shortcuts/public/widget.js"></script>
   <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
   <script src="mock-media.js"></script>
   <script src="mock-util.js"></script>
@@ -121,9 +123,9 @@
   <header>
     <div class="logo"><svg viewBox="0 0 64 64"><g fill="none" stroke="#FFFFFF" stroke-width="3"><rect x="11.5" y="11.5" width="17" height="17" rx="5"/><rect x="11.5" y="35.5" width="17" height="17" rx="5"/><rect x="35.5" y="35.5" width="17" height="17" rx="5"/></g><path d="M44 11Q44 20 53 20Q44 20 44 29Q44 20 35 20Q44 20 44 11Z" fill="#FFFFFF"/></svg></div>
     <div>
-      <div class="eyebrow">Widgetkeeper 1.0.0 <span>In progress</span></div>
-      <h1>What's new so far</h1>
-      <p>Seven new widgets, names on your tiles, a colour style, a better web editor and more.</p>
+      <div class="eyebrow">Widgetkeeper 1.0.0 <span>In testing</span></div>
+      <h1>What's new in 1.0.0</h1>
+      <p>Eight new widgets, names on your tiles, a colour style, better web dashboards and more.</p>
     </div>
     <div class="chips">
       <span>Price Badge → <b>Energy Price Strip</b></span>
@@ -175,6 +177,12 @@
         <div class="card tw-frame"><div id="w-varpresets"></div></div>
       </section>
       <section class="feat">
+        <span class="tag new">New widget</span>
+        <h2>Dashboard Shortcuts</h2>
+        <p>For web dashboards: your other dashboards as buttons, a menu for each one. The one you're on is ringed.</p>
+        <div id="w-shortcuts"></div>
+      </section>
+      <section class="feat">
         <span class="tag">Light Controls</span>
         <h2>Your room's Moods</h2>
         <p>Tiles blend every colour their lights shine in. The colour button shows the Homey Moods of the light's room; a tap starts one.</p>
@@ -190,7 +198,7 @@
 
     <div class="column">
       <section class="feat">
-        <span class="tag">Ten widgets</span>
+        <span class="tag">Twelve widgets</span>
         <h2>Name the tiles</h2>
         <p>Turn on <i>Rename tiles</i> and type the names right on the tiles. They stay with the right tiles, on every screen.</p>
         <div id="w-rename"></div>
@@ -259,6 +267,8 @@
           <li><b>Cameras:</b> live view tries another stream when one won't play, can stay on until tapped, and a new layout.</li>
           <li><b>Curtains, Quick Actions, Variables, Media, Timers:</b> a colour setting for what was always blue.</li>
           <li><b>Weather Forecast:</b> fewer colour themes, each clearly different: <i>Vivid</i> and <i>Warm and cold</i>.</li>
+          <li><b>Flow Buttons:</b> a Flow card colours a button, such as green while the e-bike charges.</li>
+          <li><b>Curtains:</b> how close to the end counts as open or closed.</li>
           <li><b>Electricity Overview:</b> a deleted power meter shows as unavailable.</li>
           <li><b>API key:</b> no longer called invalid when Homey is only busy.</li>
         </ul>
@@ -269,12 +279,15 @@
   <section class="feat wide">
     <div class="text">
       <span class="tag">Web dashboards</span>
-      <h2>A better settings editor</h2>
-      <p>A widget's settings on a web dashboard were one long list of equal rows: 33 for Flow Buttons. Now they come in cards, with the widget's preview on top.</p>
+      <h2>Better web dashboards</h2>
+      <p>A widget's settings were one long list of equal rows: 33 for Flow Buttons. Now they come in cards, with the widget's preview on top.</p>
       <ul class="more">
         <li><b>Grouped:</b> each button, tile or column gets a card of its own. They fold, and the header sums up what's set.</li>
         <li><b>The right controls:</b> switches, colour swatches, segments for short choices, numbers with their unit.</li>
         <li><b>Pickers:</b> devices by room with a search, and values with their readings.</li>
+        <li><b>Backgrounds:</b> a calm tint per dashboard, and light or dark in one tap, in this browser only.</li>
+        <li><b>Other apps' widgets</b> on your web dashboards, sealed off from the page.</li>
+        <li><b>The front page:</b> drag the dashboards into order.</li>
       </ul>
     </div>
     <img src="../docs/web/settings.png" alt="">
@@ -394,6 +407,13 @@
       for (const [id, colorStyle] of [['w-style-default', undefined], ['w-style-deep', 'deep']]) {
         MOUNT.values(el(id), { opts: { ...batteries.opts, columns: '3', colorStyle }, slots: batteries.slots.slice(0, 3) });
       }
+
+      // Dashboard Shortcuts: four of the showcase's dashboards, on Home.
+      const menu = [['home', 'purple', 'home'], ['energy', 'green', 'bolt'], ['security', 'red', 'shield'], ['climate', 'blue', 'thermometer']];
+      MOUNT.shortcuts(el('w-shortcuts'), {
+        current: 'home', opts: { tiles: menu.map(([, color, icon]) => ({ color, icon })) },
+        dashboards: menu.map(([id]) => ({ id, name: SHOWCASE[id].title })),
+      });
 
       // Media: the large layout.
       MOUNT.media(el('w-media'), { speaker: ['Kitchen', 0], opts: { layout: 'large', buttons: [{ id: 'card:tv', name: 'TV', icon: 'tv' }, { id: 'card:scan', name: 'Scan library' }] } });

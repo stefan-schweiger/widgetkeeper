@@ -41,6 +41,8 @@ const MOUNT = {
     .setState({ language: 'en', weather: w.weather || null }),
   // Days Since: `w.counters` are `{name, icon, amber, red, ago}` (ms since the reset, or null: not started), on the fixed
   // clock; a tap resets at once (so a page can show Undo), as the app would answer.
+  // Dashboard Shortcuts (web dashboards only): `w.dashboards` the tiles' `{id, name}`, `w.current` the one it's on.
+  shortcuts: (el, w) => createShortcutsWidget(el, w.opts || {}).setState({ current: w.current || null, tiles: w.dashboards }),
   dayssince: (el, w) => {
     const counters = w.counters.map(c => ({ key: daysSinceKey(c.name), name: c.name, icon: c.icon || null, amber: c.amber ?? null, red: c.red ?? null }));
     const x = createDaysSinceWidget(el, {

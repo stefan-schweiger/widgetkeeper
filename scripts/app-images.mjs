@@ -100,7 +100,7 @@ async function collage(config) {
  * The background at w×h: a linear gradient through `stops` (evenly spaced) at `angle` degrees like CSS's
  * (0 runs upwards, 90 to the right), with an optional radial `glow` (its centre and radius fractions of the width).
  */
-function background({ stops, angle, glow }, w, h) {
+export function background({ stops, angle, glow }, w, h) {
   const a = angle * Math.PI / 180, dx = Math.sin(a), dy = -Math.cos(a);
   const half = (Math.abs(w * dx) + Math.abs(h * dy)) / 2;
   const line = `x1="${w / 2 - dx * half}" y1="${h / 2 - dy * half}" x2="${w / 2 + dx * half}" y2="${h / 2 + dy * half}"`;

@@ -1,4 +1,4 @@
-// Renders the 1.0.0 poster, what's new so far (docs/whats-new-1.0.0.png), from dev/whats-new.html with headless Edge,
+// Renders the 1.0.0 poster, what's new in 1.0.0 (docs/whats-new-1.0.0.png), from dev/whats-new.html with headless Edge,
 // at 2x. Its web dashboards panel shows docs/web/settings.png, from `npm run web-showcase -- settings`.
 // Usage: `npm run whats-new`.
 import { existsSync, mkdirSync } from 'node:fs';
