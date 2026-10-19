@@ -1,10 +1,12 @@
 import { readFile } from 'node:fs/promises';
 import type Homey from 'homey';
 import { repeatKeys } from './TileNameService.js';
-import { devicesAndZones, matches } from './autocomplete.js';
+import { devicesAndZones, matches, withNone, type AutocompleteItem } from './autocomplete.js';
 import { describeCapability } from './capabilities.js';
 import { driverIconPath, libraryIconUrl } from './deviceIcon.js';
+import { deviceApp } from './MediaService.js';
 import { sparkCaps } from './SparklineService.js';
+import { isReservedKey } from './storedSetting.js';
 import { valueCaps } from './ValueService.js';
 import type { AutocompleteListener, SettingItem } from './widgetAutocompletes.js';
 
@@ -12,24 +14,42 @@ import type { AutocompleteListener, SettingItem } from './widgetAutocompletes.js
 export const WEB_DASHBOARDS_SETTING = 'webDashboards';
 /** The app setting that turns the web dashboards on (`true`); off by default. Set from the app settings page. */
 export const WEB_ENABLED_SETTING = 'webDashboardsEnabled';
+/** The app setting with the front page's own choices (`WebFront`), made in its edit mode. */
+export const WEB_FRONT_SETTING = 'webFront';
 
 const LOCALES_DIR = new URL('../locales/', import.meta.url);
 const LANGUAGES = ['en', 'nl', 'de', 'fr', 'it', 'sv', 'no', 'es', 'da', 'ru', 'pl', 'ko', 'ar'];
 
-const MAX_DASHBOARDS = 30;
+const MAX_DASHBOARDS = 64;
 const MAX_COLUMNS = 6;
 const MAX_WIDGETS = 60; // per dashboard
 const MAX_DEVICES = 100; // per widget
 const MAX_TEXT = 2000;
+const MAX_FOREIGN_SETTINGS = 60; // per widget of another app
 const ID = /^[A-Za-z0-9_-]{1,40}$/;
+/** Another app's widget type: its id on Homey's dashboards (`homey:app:<appId>:<widgetId>`). */
+const FOREIGN = /^homey:app:([A-Za-z0-9._-]{1,100}):([A-Za-z0-9_-]{1,60})$/;
 
 export type WebTheme = 'auto' | 'dark' | 'light';
 
-/** One widget on a web dashboard: its type (the widget id), settings and devices, as Homey keeps a dashboard widget's. */
-export type WebWidget = { id: string, type: string, title: string, settings: Record<string, unknown>, deviceIds: string[] };
+/** A dashboard's backdrop: a tint with a light and a dark shade (the page's CSS), following its theme. */
+export const WEB_BACKGROUNDS = ['default', 'black', 'slate', 'ocean', 'forest', 'plum', 'berry', 'sand'] as const;
+export type WebBackground = typeof WEB_BACKGROUNDS[number];
+
+/**
+ * One widget on a web dashboard: its type (our widget id, or another app's `homey:app:<appId>:<widgetId>`), settings and
+ * devices, as Homey keeps a dashboard widget's. `trusted`: another app's widget the user lets run unsandboxed.
+ */
+export type WebWidget = { id: string, type: string, title: string, settings: Record<string, unknown>, deviceIds: string[], trusted?: true };
+
+/** The device filter the page sends for another app's widget (its `devices.filter`; `app`: only that app's devices). */
+export type ForeignDeviceFilter = { class?: string, capabilities?: string, app?: boolean };
+
+/** The front page's choices: whether it shows the widgets' carousel under the dashboards. */
+export type WebFront = { widgets: boolean };
 
 /** A web dashboard: columns of widgets, top to bottom. */
-export type WebDashboard = { id: string, name: string, theme: WebTheme, columns: WebWidget[][] };
+export type WebDashboard = { id: string, name: string, theme: WebTheme, background: WebBackground, columns: WebWidget[][] };
 
 /** A widget setting as the editor draws it (the manifest's, in Homey's language). */
 export type WebSettingDef = {
@@ -216,6 +236,12 @@ export function passesDeviceFilter(device: any, filter: Record<string, unknown> 
   return true;
 }
 
+/** Another app's widget type (`homey:app:<appId>:<widgetId>`), split; null for ours, a malformed one or our own app's. */
+export function foreignWidget(type: unknown, ownAppId: string): { appId: string, widgetId: string } | null {
+  const m = typeof type === 'string' ? FOREIGN.exec(type) : null;
+  return m && m[1] !== ownAppId ? { appId: m[1], widgetId: m[2] } : null;
+}
+
 /**
  * The web dashboards: our widgets in any browser on the home network, each in a frame of its own (as on a Homey
  * dashboard), laid out by the user on the page itself. This keeps the dashboards (an app setting), checks them
@@ -236,6 +262,10 @@ export default class WebDashboardService {
   /** The manifest's widgets, by id. */
   private get manifestWidgets(): Record<string, any> {
     return (this.homey.manifest as any)?.widgets ?? {};
+  }
+
+  private get ownAppId(): string {
+    return String((this.homey.manifest as any)?.id ?? '');
   }
 
   /** Whether the web dashboards are turned on (the app settings page). Off, every `/web/…` route but the setup refuses. */
@@ -297,6 +327,33 @@ export default class WebDashboardService {
     return dashboard;
   }
 
+  /** The front page's choices (the carousel shows unless turned off). */
+  front(): WebFront {
+    const saved = this.homey.settings.get(WEB_FRONT_SETTING);
+    return { widgets: !(saved && typeof saved === 'object' && saved.widgets === false) };
+  }
+
+  /**
+   * The front page's edit mode: `order` (dashboard ids, first to last: those it doesn't name keep their order after
+   * them) and `widgets` (the carousel), each only when given. Answers the dashboards and the choices as kept.
+   */
+  saveFront(input: unknown): { dashboards: WebDashboard[], front: WebFront } {
+    const body = (input && typeof input === 'object' ? input : {}) as Record<string, unknown>;
+    if (Array.isArray(body.order)) {
+      const ids: unknown[] = body.order;
+      const all = this.list();
+      const rank = new Map<unknown, number>();
+      ids.forEach((id, i) => { if (!rank.has(id)) rank.set(id, i); });
+      const sorted = all
+        .map((d, i) => ({ d, key: rank.has(d.id) ? rank.get(d.id)! : ids.length + i }))
+        .sort((a, b) => a.key - b.key)
+        .map(x => x.d);
+      if (sorted.some((d, i) => d !== all[i])) this.homey.settings.set(WEB_DASHBOARDS_SETTING, sorted);
+    }
+    if (typeof body.widgets === 'boolean') this.homey.settings.set(WEB_FRONT_SETTING, { widgets: body.widgets });
+    return { dashboards: this.list(), front: this.front() };
+  }
+
   remove(id: string) {
     const all = this.list();
     const rest = all.filter(d => d.id !== id);
@@ -332,13 +389,19 @@ export default class WebDashboardService {
     });
   }
 
-  /** The devices a widget's `devices` setting may pick (its manifest filter), by name, with their rooms and icons. */
-  async devices(type: string, query = ''): Promise<WebDevice[]> {
-    const w = this.manifestWidgets[type];
-    if (!w?.devices) throw new Error(`No devices setting: ${type}`);
+  /**
+   * The devices a widget's `devices` setting may pick (its manifest filter), by name, with their rooms and icons. For
+   * another app's widget the page sends its filter (`foreign`), as only the page can read that app's manifest.
+   */
+  async devices(type: string, query = '', foreign: ForeignDeviceFilter = {}): Promise<WebDevice[]> {
+    const other = foreignWidget(type, this.ownAppId);
+    const w = other ? null : this.manifestWidgets[type];
+    if (!other && !w?.devices) throw new Error(`No devices setting: ${type}`);
+    const filter = other ? { class: foreign.class || undefined, capabilities: foreign.capabilities || undefined } : w.devices.filter;
     const [devices, zones] = await devicesAndZones(this.homey);
     return devices
-      .filter(d => passesDeviceFilter(d, w.devices.filter))
+      .filter(d => passesDeviceFilter(d, filter))
+      .filter(d => !other || !foreign.app || deviceApp(d) === `homey:app:${other.appId}`)
       .map(d => webDevice(d, zones))
       .filter(d => matches(query, d.name, d.zone?.name))
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -368,6 +431,39 @@ export default class WebDashboardService {
     const listener = Object.prototype.hasOwnProperty.call(this.autocompletes, type) ? this.autocompletes[type][setting] : undefined;
     if (!listener) throw new Error(`No autocomplete: ${type} ${setting}`);
     return listener(String(query ?? ''), settings && typeof settings === 'object' ? settings : {});
+  }
+
+  /**
+   * Dashboard Shortcuts' state: each picked dashboard's name (`missing` for a deleted one), and `current`, the dashboard
+   * holding the widget instance (`web-<dashboard>-<widget>`, as the page names its frames; both ids may hold `-`, so
+   * it's matched against every Dashboard Shortcuts widget rather than split).
+   */
+  shortcuts(ids: string[], instance?: string): { current: string | null, tiles: ({ id: string, name: string } | { id: string, missing: true })[] } {
+    const all = this.list();
+    const byId = new Map(all.map(d => [d.id, d]));
+    const holder = typeof instance === 'string' && instance.startsWith('web-')
+      ? all.find(d => d.columns.some(col => col.some(w => w.type === 'shortcuts' && instance === `web-${d.id}-${w.id}`)))
+      : undefined;
+    return {
+      current: holder?.id ?? null,
+      tiles: ids.map((id) => {
+        const d = byId.get(id);
+        return d ? { id, name: d.name || this.homey.__('web.untitled') || 'Untitled' } : { id, missing: true as const };
+      }),
+    };
+  }
+
+  /** Dashboard Shortcuts' `dashboardN` autocomplete: `None`, then every web dashboard by name, with its widget count. */
+  dashboardItems(query: string): AutocompleteItem[] {
+    const items = this.list()
+      .map((d) => {
+        const name = d.name || this.homey.__('web.untitled') || 'Untitled';
+        const count = d.columns.reduce((n, c) => n + c.length, 0);
+        return { id: d.id, name, description: this.homey.__('web.widgetCount', { count }) || `${count}` };
+      })
+      .filter(i => matches(query, i.name))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    return withNone(this.homey.__('shortcuts.none') || 'None', query, items);
   }
 
   /** The app's strings (`locales/<lang>.json`) in Homey's language, as Homey gives a widget frame (`Homey.__`). */
@@ -403,6 +499,7 @@ export default class WebDashboardService {
     if (!id) throw new Error('A dashboard needs an id');
     const name = typeof d.name === 'string' ? d.name.trim().slice(0, 60) : '';
     const theme: WebTheme = d.theme === 'dark' || d.theme === 'light' ? d.theme : 'auto';
+    const background: WebBackground = (WEB_BACKGROUNDS as readonly unknown[]).includes(d.background) ? d.background : 'default';
     const columnsIn: unknown[] = Array.isArray(d.columns) ? d.columns.slice(0, MAX_COLUMNS) : [];
     const ids = new Set<string>();
     let count = 0;
@@ -418,7 +515,7 @@ export default class WebDashboardService {
       return widgets;
     });
     if (!columns.length) columns.push([]);
-    return { id, name, theme, columns };
+    return { id, name, theme, background, columns };
   }
 
   private normalizeWidget(input: unknown, ids: Set<string>): WebWidget | null {
@@ -426,10 +523,17 @@ export default class WebDashboardService {
     const w = input as Record<string, any>;
     const def = typeof w.type === 'string' && Object.prototype.hasOwnProperty.call(this.manifestWidgets, w.type)
       ? this.manifestWidgets[w.type] : null;
-    if (!def) return null;
+    const foreign = def ? null : foreignWidget(w.type, this.ownAppId);
+    if (!def && !foreign) return null;
     let id = typeof w.id === 'string' && ID.test(w.id) ? w.id : newId();
     while (ids.has(id)) id = newId();
     ids.add(id);
+    const title = typeof w.title === 'string' ? w.title.trim().slice(0, 60) : '';
+    if (!def) {
+      // Another app's widget: only the page can read its manifest (with its key), so its settings are kept as plain values.
+      const deviceIds = Array.isArray(w.deviceIds) ? deviceIdList(w.deviceIds, MAX_DEVICES) : [];
+      return { id, type: w.type, title, settings: foreignSettings(w.settings), deviceIds, ...(w.trusted === true ? { trusted: true as const } : {}) };
+    }
     const given = w.settings && typeof w.settings === 'object' ? w.settings as Record<string, unknown> : {};
     const settings: Record<string, unknown> = {};
     for (const s of Array.isArray(def.settings) ? def.settings : []) {
@@ -437,10 +541,8 @@ export default class WebDashboardService {
       settings[s.id] = value === undefined ? (s.value ?? null) : value;
     }
     const deviceIds = def.devices && Array.isArray(w.deviceIds)
-      ? [...new Set(w.deviceIds.filter((x: unknown): x is string => typeof x === 'string' && ID.test(x)))]
-        .slice(0, def.devices.singular ? 1 : MAX_DEVICES)
+      ? deviceIdList(w.deviceIds, def.devices.singular ? 1 : MAX_DEVICES)
       : [];
-    const title = typeof w.title === 'string' ? w.title.trim().slice(0, 60) : '';
     return { id, type: w.type, title, settings, deviceIds };
   }
 
@@ -462,22 +564,52 @@ function settingValue(def: any, value: unknown): unknown {
       return typeof value === 'string' ? value.slice(0, MAX_TEXT) : undefined;
     case 'dropdown':
       return (def.values ?? []).some((v: any) => String(v.id) === value) ? value : undefined;
-    case 'autocomplete': {
-      if (value === null) return null;
-      if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
-      // As Homey keeps an autocomplete's choice: the item's own fields (an `id`, or the thermostat's `capabilityId`
-      // and `value`), without the image (Flow Buttons' icons are data URLs).
-      const item: Record<string, unknown> = {};
-      for (const [k, v] of Object.entries(value as Record<string, unknown>).slice(0, 10)) {
-        if (k === 'image' || k.length > 40) continue;
-        if (typeof v === 'string') item[k] = v.slice(0, 200);
-        else if (v === null || typeof v === 'boolean' || (typeof v === 'number' && Number.isFinite(v))) item[k] = v;
-      }
-      return typeof item.name === 'string' ? item : undefined;
-    }
+    case 'autocomplete':
+      return value === null ? null : autocompleteItem(value);
     default:
       return undefined;
   }
+}
+
+/**
+ * An autocomplete's choice as Homey keeps it: the item's own fields (an `id`, or the thermostat's `capabilityId` and
+ * `value`), without the image (Flow Buttons' icons are data URLs); undefined for what isn't one.
+ */
+function autocompleteItem(value: unknown): Record<string, unknown> | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+  const item: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(value as Record<string, unknown>).slice(0, 10)) {
+    if (k === 'image' || k.length > 40 || isReservedKey(k)) continue;
+    if (typeof v === 'string') item[k] = v.slice(0, 200);
+    else if (v === null || typeof v === 'boolean' || (typeof v === 'number' && Number.isFinite(v))) item[k] = v;
+  }
+  return typeof item.name === 'string' ? item : undefined;
+}
+
+/**
+ * Another app's widget settings, without its manifest: at most `MAX_FOREIGN_SETTINGS`, each a plain value (a
+ * checkbox's, number's, text's or dropdown's) or an autocomplete's choice; anything else is dropped.
+ */
+function foreignSettings(input: unknown): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return out;
+  let count = 0;
+  for (const [k, v] of Object.entries(input as Record<string, unknown>)) {
+    if (count >= MAX_FOREIGN_SETTINGS) break;
+    if (k.length > 40 || isReservedKey(k)) continue;
+    const value = v === null || typeof v === 'boolean' || (typeof v === 'number' && Number.isFinite(v)) ? v
+      : typeof v === 'string' ? v.slice(0, MAX_TEXT)
+        : autocompleteItem(v);
+    if (value === undefined) continue;
+    out[k] = value;
+    count += 1;
+  }
+  return out;
+}
+
+/** Device ids, each once, at most `max`. */
+function deviceIdList(list: unknown[], max: number): string[] {
+  return [...new Set(list.filter((x: unknown): x is string => typeof x === 'string' && ID.test(x)))].slice(0, max);
 }
 
 function newId() {

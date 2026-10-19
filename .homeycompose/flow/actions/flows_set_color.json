@@ -1,0 +1,231 @@
+{
+  "id": "flows_set_color",
+  "title": {
+    "en": "Set the Flow Button colour",
+    "nl": "Kleur van de Flowknop instellen",
+    "de": "Farbe der Flow-Taste setzen",
+    "fr": "Définir la couleur du bouton de flow",
+    "it": "Imposta il colore del pulsante del flow",
+    "sv": "Ange flödesknappens färg",
+    "no": "Angi flytknappens farge",
+    "es": "Establecer el color del botón de flujo",
+    "da": "Angiv flowknappens farve",
+    "ru": "Задать цвет кнопки потока",
+    "pl": "Ustaw kolor przycisku Flow",
+    "ko": "플로우 버튼 색상 설정",
+    "ar": "تعيين لون زر التدفق"
+  },
+  "titleFormatted": {
+    "en": "Set the button colour of [[flow]] to [[color]]",
+    "nl": "Stel de knopkleur van [[flow]] in op [[color]]",
+    "de": "Tastenfarbe von [[flow]] auf [[color]] setzen",
+    "fr": "Définir la couleur du bouton de [[flow]] sur [[color]]",
+    "it": "Imposta il colore del pulsante di [[flow]] su [[color]]",
+    "sv": "Ange knappfärgen för [[flow]] till [[color]]",
+    "no": "Angi knappfargen for [[flow]] til [[color]]",
+    "es": "Establecer el color del botón de [[flow]] en [[color]]",
+    "da": "Angiv knapfarven for [[flow]] til [[color]]",
+    "ru": "Задать цвет кнопки [[flow]]: [[color]]",
+    "pl": "Ustaw kolor przycisku [[flow]] na [[color]]",
+    "ko": "[[flow]]의 버튼 색상을 [[color]](으)로 설정",
+    "ar": "تعيين لون زر [[flow]] إلى [[color]]"
+  },
+  "hint": {
+    "en": "Colours the Flow Buttons that start this flow, on every dashboard. Default gives the button its own colour again.",
+    "nl": "Kleurt de Flowknoppen die deze flow starten, op elk dashboard. Standaard geeft de knop weer zijn eigen kleur.",
+    "de": "Färbt die Flow-Tasten, die diesen Flow starten, auf jedem Dashboard. Standard gibt der Taste wieder ihre eigene Farbe.",
+    "fr": "Colore les boutons de flow qui lancent ce flow, sur chaque tableau de bord. Par défaut rend au bouton sa propre couleur.",
+    "it": "Colora i pulsanti dei flow che avviano questo flow, in ogni dashboard. Predefinito ridà al pulsante il suo colore.",
+    "sv": "Färgar de flödesknappar som startar flödet, på alla instrumentpaneler. Standard ger knappen sin egen färg igen.",
+    "no": "Farger flytknappene som starter denne flyten, på alle dashbord. Standard gir knappen sin egen farge igjen.",
+    "es": "Colorea los botones de flujo que inician este flujo, en todos los paneles. Predeterminado devuelve al botón su propio color.",
+    "da": "Farver de flowknapper, der starter flowet, på alle dashboards. Standard giver knappen dens egen farve igen.",
+    "ru": "Окрашивает кнопки потоков, запускающие этот поток, на всех панелях. «По умолчанию» возвращает кнопке её цвет.",
+    "pl": "Koloruje przyciski Flow, które uruchamiają ten flow, na każdym pulpicie. Domyślny przywraca przyciskowi jego kolor.",
+    "ko": "모든 대시보드에서 이 플로우를 시작하는 플로우 버튼의 색상을 바꿉니다. 기본값은 버튼 자체 색상으로 되돌립니다.",
+    "ar": "يلوّن أزرار التدفقات التي تبدأ هذا التدفق في كل لوحة. الافتراضي يعيد للزر لونه الخاص."
+  },
+  "args": [
+    {
+      "type": "autocomplete",
+      "name": "flow",
+      "title": {
+        "en": "Flow",
+        "nl": "Flow",
+        "de": "Flow",
+        "fr": "Flow",
+        "it": "Flow",
+        "sv": "Flöde",
+        "no": "Flyt",
+        "es": "Flujo",
+        "da": "Flow",
+        "ru": "Поток",
+        "pl": "Flow",
+        "ko": "플로우",
+        "ar": "التدفق"
+      },
+      "placeholder": {
+        "en": "Flow",
+        "nl": "Flow",
+        "de": "Flow",
+        "fr": "Flow",
+        "it": "Flow",
+        "sv": "Flöde",
+        "no": "Flyt",
+        "es": "Flujo",
+        "da": "Flow",
+        "ru": "Поток",
+        "pl": "Flow",
+        "ko": "플로우",
+        "ar": "التدفق"
+      }
+    },
+    {
+      "type": "dropdown",
+      "name": "color",
+      "title": {
+        "en": "Colour",
+        "nl": "Kleur",
+        "de": "Farbe",
+        "fr": "Couleur",
+        "it": "Colore",
+        "sv": "Färg",
+        "no": "Farge",
+        "es": "Color",
+        "da": "Farve",
+        "ru": "Цвет",
+        "pl": "Kolor",
+        "ko": "색상",
+        "ar": "اللون"
+      },
+      "values": [
+        {
+          "id": "default",
+          "title": {
+            "en": "Default",
+            "nl": "Standaard",
+            "de": "Standard",
+            "fr": "Par défaut",
+            "it": "Predefinito",
+            "sv": "Standard",
+            "no": "Standard",
+            "es": "Predeterminado",
+            "da": "Standard",
+            "ru": "По умолчанию",
+            "pl": "Domyślny",
+            "ko": "기본값",
+            "ar": "افتراضي"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -3,7 +3,8 @@
  * (Tuesday 6 October 2026, 18:40; fixed-clock.js fixes the clock). The oven is on, the heat pump keeps the house
  * at 21°, the car charged in the cheap night hours and the sun has just set.
  *
- * `SHOWCASE[id]` is one dashboard: `{ title, columns: [[widget, …], …] }`. A widget is `{ type, … }` with the
+ * `SHOWCASE[id]` is one dashboard: `{ title, colorStyle?, theme?, columns: [[widget, …], …] }` (`colorStyle: 'deep'`
+ * shows it in Vivid, `theme: 'light'` in light mode). A widget is `{ type, … }` with the
  * data its `create…Widget` takes (see MOUNT in showcase-mount.js). To add a dashboard, add an entry and render it with
  * `npm run showcase -- <id>`. All data is built from formulas and a seeded random sequence, so every render is the same
  * (the seeded sequence and the weather symbols come from mock-util.js, loaded first).
@@ -123,18 +124,6 @@
     caps: Object.fromEntries(Object.entries(caps).map(([cap, [value, ago]]) => [cap, { value, setable: cap !== 'alarm_contact', lastUpdated: NOW - ago * MIN }])),
   });
   const powerNow = () => { const live = electricity().live; return live[live.length - 1].w; };
-  const heatPower = () => ({
-    name: 'Main meter', icon: icon('inverter'), language: 'en', value: powerNow(),
-    capability: { id: 'measure_power', title: 'Power', type: 'number', units: 'W', decimals: 0 },
-    days: heatDays((t, wd, h, r) => {
-      let w = 0;
-      const car = wd !== 3 && wd !== 5; // Wednesday and Friday the car didn't need charging.
-      for (let k = 0; k < 6; k++) w += houseLoad(t - 25 * MIN + k * 10 * MIN, r, car) / 6;
-      if (h >= 17 && h < 19) w += 700 + r() * 900; // Cooking.
-      if ((wd === 0 || wd === 6) && h >= 10 && h < 13) w += 900 * r(); // Weekend washing and baking.
-      return Math.round(w);
-    }, 7),
-  });
   const heatMotion = () => ({
     name: 'Hallway motion', icon: icon('motion-sensor'), language: 'en', value: true,
     capability: { id: 'alarm_motion', title: 'Motion alarm', type: 'boolean', units: null, decimals: null },
@@ -244,16 +233,6 @@
     opts: { columns, buttons: list.map(([id, , color, iconId]) => ({ id, color, icon: iconId })) },
     flows: list.map(([id, name, , , enabled = true]) => ({ id, name, enabled, triggerable: true, advanced: id.startsWith('advanced:') })),
   });
-  /** A week of a room's temperature: the heating's day and night setpoints, and the sun through the windows. */
-  const heatTemp = (name, base, seed) => ({
-    name, icon: icon('climate'), language: 'en', value: base + 0.4,
-    capability: { id: 'measure_temperature', title: 'Temperature', type: 'number', units: '°C', decimals: 1 },
-    days: heatDays((t, wd, h, r) => {
-      const night = h < 6 || h >= 23 ? -2.2 : 0;
-      const sun = h >= 11 && h < 16 && (wd === 0 || wd === 2 || wd === 6) ? 1.4 * Math.sin(((h - 11) / 5) * Math.PI) : 0;
-      return round(base + night + sun + 0.3 * r(), 1);
-    }, seed),
-  });
   /** A week of daylight in the garden: bright days, a grey Thursday and Friday. */
   const heatLux = () => ({
     name: 'Garden sensor', icon: icon('motion-sensor'), language: 'en', value: 4,
@@ -275,6 +254,47 @@
     { id: 'v7', name: 'Bedside left', icon: icon('light-table'), zone: { id: 'b1', name: 'Bedroom' }, caps: { onoff: lcap(false), dim: lcap(0.2), light_temperature: lcap(1) } },
     { id: 'v8', name: 'Bedside right', icon: icon('light-table'), zone: { id: 'b1', name: 'Bedroom' }, caps: { onoff: lcap(false), dim: lcap(0.2), light_temperature: lcap(1) } },
   ];
+
+  // ---- The indoor climate per room (Room Health, Value Matrix): the Climate dashboard's rooms, the kitchen humid after dinner.
+
+  const zone = (id, name) => ({ id, name });
+  /** A Room Health `/state` entry: a sensor in a room with its readings (`{temperature: 21.4, …}`). */
+  const roomSensor = (id, z, values) => ({
+    id, name: id, zone: z,
+    measures: Object.fromEntries(Object.entries(values).map(([m, v]) => [m, { capabilityId: `measure_${m}`, value: v }])),
+  });
+  const ROOMS = [
+    ['1', zone('z1', 'Living room'), { temperature: 21.4, humidity: 47, co2: 690, radon: 48 }],
+    ['2', zone('z2', 'Kitchen'), { temperature: 22.6, humidity: 64 }],
+    ['3', zone('b1', 'Bedroom'), { temperature: 18.2, humidity: 48, co2: 1210 }],
+    ['4', zone('z7', 'Bathroom'), { temperature: 22.8, humidity: 56 }],
+    ['5', zone('z8', "Emma's room"), { temperature: 20.6, humidity: 45, co2: 783 }],
+    ['6', zone('z4', 'Office'), { temperature: 19.4, radon: 162 }],
+  ];
+  const roomHealth = { type: 'roomhealth', devices: ROOMS.map(([n, z, v]) => roomSensor(`rh${n}`, z, v)) };
+  const T = 'measure_temperature', H = 'measure_humidity', C = 'measure_co2', R = 'measure_radon';
+  const valueMatrix = {
+    type: 'valuematrix',
+    columns: [T, H, C, R].map(capabilityId => ({ capabilityId })),
+    state: {
+      columns: [
+        { capabilityId: T, title: 'Temperature', units: '°C', decimals: 1 }, { capabilityId: H, title: 'Humidity', units: '%', decimals: 0 },
+        { capabilityId: C, title: 'CO2', units: 'ppm', decimals: 0 }, { capabilityId: R, title: 'Radon', units: 'Bq/m³', decimals: 0 },
+      ],
+      devices: ROOMS.map(([n, z, v]) => ({ id: `vm${n}`, name: `vm${n}`, zone: z, values: Object.fromEntries(Object.entries(v).map(([m, x]) => [`measure_${m}`, x])) })),
+    },
+  };
+  /** A Variable Presets widget: a text variable with a button per value, `value` lit. */
+  const modePresets = (name, iconName, values, current) => {
+    const mode = v => ({ id: `string:${JSON.stringify(v)}`, name: v, value: v, type: 'string' });
+    return {
+      type: 'varpresets', opts: { icon: iconName },
+      settings: Object.fromEntries(values.map((v, i) => [`value${i + 1}`, mode(v)])),
+      variable: { id: `vp-${name}`, name, type: 'string', value: current },
+    };
+  };
+
+  const mainMeter = sparkSlot('m1', 'measure_power', 'Main meter', { units: 'W', decimals: 0 }, spark((t, r) => (t > NOW - DAY / 120 ? powerNow() : Math.round(houseLoad(t, r) + (t > NOW - 40 * MIN ? 1500 : 0))), 11));
 
   window.SHOWCASE = {
     home: {
@@ -315,9 +335,11 @@
           { type: 'electricity', settings: { liveWindow: 60, nextLow: '24', smooth: true, separateUsage: true, usageColor: 'purple' }, data: electricity() },
         ],
         [
-          { type: 'heatmap', opts: { period: 'rolling', step: 2, color: 'orange' }, data: heatPower() },
+          // The house's use as bars against the outdoor temperature, a scale each.
+          { type: 'charts', opts: { overlay: true, charts: [{ span: '24h', style: 'bars', color: 'orange', title: 'House' }, { color: 'blue', smooth: true, title: 'Outdoor' }] },
+            charts: [mainMeter, indoorSparks[1]] },
           { type: 'sparklines', slots: [
-            sparkSlot('m1', 'measure_power', 'Main meter', { units: 'W', decimals: 0 }, spark((t, r) => (t > NOW - DAY / 120 ? powerNow() : Math.round(houseLoad(t, r) + (t > NOW - 40 * MIN ? 1500 : 0))), 11)),
+            mainMeter,
             sparkSlot('w1', 'measure_power', 'Heat pump', { units: 'W', decimals: 0 }, spark((t, r) => Math.round(520 + 260 * Math.sin(t / (41 * MIN)) + 40 * r()), 13)),
             sparkSlot('c2', 'measure_power', 'Car charger', { units: 'W', decimals: 0 }, spark(t => (houseLoad(t, null, true) - houseLoad(t, null, false) > 0 ? 3650 : 0), 15)),
             sparkSlot('h1', 'measure_temperature', 'Water heater', { units: '°C', decimals: 0 }, spark((t, r) => {
@@ -355,6 +377,7 @@
 
     security: {
       title: 'Security',
+      colorStyle: 'deep',
       columns: [
         [
           { type: 'cameras', cameras: [
@@ -421,6 +444,7 @@
 
     climate: {
       title: 'Climate',
+      colorStyle: 'deep',
       columns: [
         [
           heatPump,
@@ -436,8 +460,8 @@
           ] },
         ],
         [
-          { type: 'heatmap', opts: { period: 'rolling', step: 2, color: 'red' }, data: heatTemp('Living room', 21.2, 51) },
-          { type: 'sparklines', slots: indoorSparks },
+          roomHealth,
+          valueMatrix,
         ],
         [
           { type: 'weather', opts: { density: 'detailed', theme: 'vivid' }, hours: weatherHours() },
@@ -445,10 +469,7 @@
             ['flow:c1', 'Air out', 'blue', 'fan'], ['flow:c2', 'Eco mode', 'green', 'drop'],
             ['flow:c3', 'Warm bathroom', 'orange', 'flame'], ['advanced:c4', 'Frost guard', 'grey', 'snowflake'],
           ]),
-          { type: 'variables', opts: { columns: '2' }, vars: [
-            { id: 'cv1', name: 'Night setpoint', type: 'number', value: 18.5 },
-            { id: 'cv2', name: 'Heating season', type: 'boolean', value: true },
-          ] },
+          modePresets('Heating', 'flame', ['Comfort', 'Eco', 'Away'], 'Comfort'),
         ],
       ],
     },
@@ -505,6 +526,7 @@
 
     garden: {
       title: 'Garden',
+      theme: 'light',
       columns: [
         [
           { type: 'cameras', cameras: [cam('garden', 'Terrace'), cam('shed', 'Shed'), cam('side', 'Side path'), cam('drive', 'Driveway')] },
@@ -576,7 +598,12 @@
           { type: 'lights', devices: [lights[2], lights[3], lights[0], lights[1]] },
           // The shopping list, typed on a Post-it.
           { type: 'textline', opts: { style: 'postit', seed: 'kitchen', message: 'Milk, eggs, rye bread' } },
-          { type: 'cameras', cameras: [cam('door', 'Hallway')] },
+          { type: 'dayssince', counters: [
+            { name: 'Descale coffee machine', icon: 'coffee', amber: 50, red: 60, ago: 23 * DAY },
+            { name: 'Dishwasher filter', icon: 'washer', amber: 25, red: 30, ago: 27 * DAY },
+            { name: 'Fridge cleaned', icon: 'snowflake', amber: 75, red: 90, ago: 96 * DAY },
+            { name: 'Bins out', icon: 'trash', amber: 6, red: 7, ago: 2 * DAY },
+          ] },
         ],
       ],
     },

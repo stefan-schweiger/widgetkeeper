@@ -204,6 +204,32 @@ describe('ends', () => {
     w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_set', value: 0.99 });
     expect(state('a')).toBe('Open');
   });
+
+  it('takes how close counts as the end from `ends`', () => {
+    const exact = widget([curtain('a', 0.99), curtain('b', 0.01)], { ends: 0 });
+    expect([exact.state('a'), exact.state('b')]).toEqual(['99% open', '1% open']);
+    expect(exact.action('a')).toBe('close'); // the nearer end
+    expect(exact.tile('b').classList.contains('open')).toBe(true);
+    const wide = widget([curtain('c', 0.86), curtain('d', 0.14), curtain('e', 0.84)], { ends: 0.15 });
+    expect([wide.state('c'), wide.state('d'), wide.state('e')]).toEqual(['Open', 'Closed', '84% open']);
+    expect(wide.tile('d').classList.contains('open')).toBe(false);
+    const odd = widget([curtain('f', 0.97)], { ends: Number('x') }); // not a number: 5 %
+    expect(odd.state('f')).toBe('Open');
+  });
+
+  it('still counts a curtain stopping at 99 % as there with exact ends', () => {
+    const { w, tap, state } = widget([curtain('a', 0)], { ends: 0 });
+    tap('a');
+    w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_state', value: 'idle' });
+    w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_set', value: 0.99 });
+    expect(state('a')).toBe('99% open'); // not Opening…
+  });
+
+  it('passes `ends` to curtainAction', () => {
+    const c = { position: 0.08, moving: 0, closed: null, lastDir: 1 };
+    expect(win.curtainAction(c, 'reverse', 0.1)).toBe('open'); // within 10 %: closed
+    expect(win.curtainAction(c, 'reverse')).toBe('close'); // past 5 %: in between, reverses the opening
+  });
 });
 
 describe('invert', () => {

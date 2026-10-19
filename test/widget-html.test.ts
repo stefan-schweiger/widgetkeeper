@@ -57,7 +57,7 @@ describe('copied widget helpers', () => {
     // Deliberately different: Media's and Variables' have no keydown (their rows hold buttons and inputs
     // whose keys would bubble to it), and the stack's is its own design.
     expectSame(['lights', 'curtains'].map(id => source(id, 'onTap'))); // in the widget's closure
-    expectSame(['flows', 'sensordots', 'roomhealth'].map(id => source(id, 'onTap')));
+    expectSame(['flows', 'sensordots', 'roomhealth', 'shortcuts'].map(id => source(id, 'onTap')));
     expectSame(['timers', 'locks', 'dayssince'].map(id => source(id, 'onTap'))); // stops the tap at a button inside a row
   });
 

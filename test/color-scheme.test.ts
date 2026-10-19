@@ -6,7 +6,7 @@ import { KIT, loadMount, loadWidget, type WidgetName } from './helpers/loadWidge
 // The Colour style setting (`colorStyle`: Muted or Vivid, kit.css's palette) and the colour pickers it goes with.
 const SCHEME_WIDGETS: WidgetName[] = ['quickactions', 'sensoralarms', 'locks', 'values', 'lights', 'curtains', 'dayssince', 'textline',
   'timers', 'flows', 'variables', 'varpresets', 'thermostat', 'price', 'heatmap', 'sparklines', 'charts', 'electricity', 'media', 'sensordots', 'roomhealth',
-  'valuematrix'];
+  'valuematrix', 'shortcuts'];
 // Widgets whose fixed state colour became a `color` setting with Colour style.
 const PICKERS: WidgetName[] = ['quickactions', 'variables', 'curtains', 'media', 'timers'];
 

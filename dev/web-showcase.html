@@ -7,7 +7,7 @@
   <!--
     The web dashboards page (settings/dashboard.js) with the made-up home of showcase-data.js, in a drawn desktop
     browser window: the showcase dashboards as web dashboards, their widgets mounted in place of the iframes (the
-    `mountWidget` hook) with the real widget code. `?v=dashboard|front|editor|settings` picks the view (settings: the editor with Flow Buttons' settings dialog open), `&d=<id>` the
+    `mountWidget` hook) with the real widget code. `?v=dashboard|front|editor|settings|light` picks the view (settings: the editor with Flow Buttons' settings dialog open; light: the Kitchen, a light dashboard, in a light browser), `&d=<id>` the
     dashboard (default home). Serve the repo root (the page and mock-web-api.js fetch /app.json and /locales/en.json)
     and open /dev/web-showcase.html; scripts/render-web-showcase.mjs (`npm run web-showcase [-- <view>…]`) renders
     them to docs/web/<view>.png on a transparent background. The clock is fixed (fixed-clock.js), so every render is
@@ -25,6 +25,12 @@
   <link rel="stylesheet" href="../widgets/sensoralarms/public/widget.css">
   <link rel="stylesheet" href="../widgets/sensordots/public/widget.css">
   <link rel="stylesheet" href="../widgets/weather/public/widget.css">
+  <link rel="stylesheet" href="../widgets/roomhealth/public/widget.css">
+  <link rel="stylesheet" href="../widgets/valuematrix/public/widget.css">
+  <link rel="stylesheet" href="../widgets/varpresets/public/widget.css">
+  <link rel="stylesheet" href="../widgets/charts/public/widget.css">
+  <link rel="stylesheet" href="../widgets/dayssince/public/widget.css">
+  <link rel="stylesheet" href="../widgets/shortcuts/public/widget.css">
   <link rel="stylesheet" href="../widgets/heatmap/public/widget.css">
   <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
   <link rel="stylesheet" href="../widgets/values/public/widget.css">
@@ -48,6 +54,12 @@
   <script src="../widgets/sensoralarms/public/widget.js"></script>
   <script src="../widgets/sensordots/public/widget.js"></script>
   <script src="../widgets/weather/public/widget.js"></script>
+  <script src="../widgets/roomhealth/public/widget.js"></script>
+  <script src="../widgets/valuematrix/public/widget.js"></script>
+  <script src="../widgets/varpresets/public/widget.js"></script>
+  <script src="../widgets/charts/public/widget.js"></script>
+  <script src="../widgets/dayssince/public/widget.js"></script>
+  <script src="../widgets/shortcuts/public/widget.js"></script>
   <script src="../widgets/heatmap/public/widget.js"></script>
   <script src="../widgets/cameras/public/widget.js"></script>
   <script src="../widgets/values/public/widget.js"></script>
@@ -75,19 +87,32 @@
       ? { matches: true, media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }
       : realMatchMedia(q));
 
-    // The showcase dashboards as web dashboards; each widget keeps its showcase entry for the mount.
+    // The showcase dashboards as web dashboards, each on a backdrop of its own; each widget keeps its showcase entry
+    // (with the dashboard's colour style) for the mount. Home's first column has Dashboard Shortcuts, as a menu, in
+    // place of the heat pump (Flow Buttons stays third, for the settings view).
+    const BACKGROUND = { home: 'plum', energy: 'forest', security: 'slate', climate: 'ocean', evening: 'berry', garden: 'forest', kitchen: 'sand' };
+    const MENU = [['home', 'purple', 'home'], ['energy', 'green', 'bolt'], ['security', 'red', 'shield'], ['climate', 'blue', 'thermometer']];
+    const shortcuts = {
+      type: 'shortcuts', current: 'home',
+      opts: { columns: '2', tiles: MENU.map(([, color, icon]) => ({ color, icon })) },
+      dashboards: MENU.map(([id]) => ({ id, name: SHOWCASE[id].title })),
+    };
+    const webColumns = (id, board) => (id === 'home'
+      ? board.columns.map((column, c) => (c === 0 ? [shortcuts, ...column.filter(w => w.type !== 'thermostat')] : column))
+      : board.columns);
+    const LIGHT_BOARD = 'kitchen';
     const ENTRY = new Map();
     const BOARDS = Object.entries(SHOWCASE).map(([id, board]) => ({
-      id, name: board.title, theme: 'dark',
-      columns: board.columns.map((column, c) => column.map((w, i) => {
+      id, name: board.title, theme: id === LIGHT_BOARD ? 'light' : 'dark', background: BACKGROUND[id] || 'default',
+      columns: webColumns(id, board).map((column, c) => column.map((w, i) => {
         const wid = `${id}-${c}-${i}`;
-        ENTRY.set(wid, w);
+        ENTRY.set(wid, board.colorStyle ? { ...w, opts: { colorStyle: board.colorStyle, ...w.opts } } : w);
         return { id: wid, type: w.type, title: '', settings: {}, deviceIds: [] };
       })),
     }));
     const params = new URLSearchParams(location.search);
     const VIEW = params.get('v') || 'dashboard';
-    const BOARD = params.get('d') || 'home';
+    const BOARD = VIEW === 'light' ? LIGHT_BOARD : params.get('d') || 'home';
     const HASH = VIEW === 'front' ? '#/' : VIEW === 'editor' || VIEW === 'settings' ? `#/d/${BOARD}/edit` : `#/d/${BOARD}`;
 
     // The settings view: Home's Flow Buttons set up as the showcase draws them (four buttons), and the dialog drawn
@@ -141,6 +166,15 @@
     }
     .address b { color: #E8EAED; font-weight: 400; }
 
+    /* The light view: a light browser, and the light tokens Homey's stylesheet would give the page and its frames. */
+    html:not(.homey-dark-mode) { --homey-background-color: #FFFFFF; --homey-text-color: #1F2029; --homey-text-color-light: #6B6C75; }
+    .window.light { background: #FFFFFF; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12), 0 30px 60px -16px rgba(0, 0, 0, 0.35), 0 10px 20px rgba(0, 0, 0, 0.15); }
+    .light .tabs { background: #DEE1E6; }
+    .light .tab { background: #FFFFFF; color: #1F1F1F; }
+    .light .toolbar { background: #FFFFFF; border-bottom-color: #DADCE0; }
+    .light .address { background: #F1F3F4; color: #5F6368; }
+    .light .address b { color: #1F1F1F; }
+
     /* The page: 1440 × 860, anything taller cut off, like a page you'd scroll. */
     .viewport { position: relative; height: 860px; overflow: hidden; background: var(--wd-bg); }
     .viewport > .wd { min-height: 860px; }
@@ -175,7 +209,7 @@
 
   <script>
     // The widgets drawn on Homey's default widget background get its dark frame, as in showcase.html.
-    const FRAME = { thermostat: 'tw-frame', media: 'mw-frame', weather: 'wf-frame', heatmap: 'hm-frame' };
+    const FRAME = { thermostat: 'tw-frame', varpresets: 'tw-frame', media: 'mw-frame', weather: 'wf-frame', heatmap: 'hm-frame' };
     mountWebDashboards(document.getElementById('app'), {
       mountWidget(w, wrap) {
         const el = document.createElement('div');
@@ -191,6 +225,7 @@
     document.getElementById('favicon').src = document.querySelector('link[rel=icon]')?.href
       || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232A1958'/%3E%3Cg fill='none' stroke='%23fff' stroke-width='3'%3E%3Crect x='11.5' y='11.5' width='17' height='17' rx='5'/%3E%3Crect x='11.5' y='35.5' width='17' height='17' rx='5'/%3E%3Crect x='35.5' y='35.5' width='17' height='17' rx='5'/%3E%3C/g%3E%3Cpath d='M44 11Q44 20 53 20Q44 20 44 29Q44 20 35 20Q44 20 44 11Z' fill='%23fff'/%3E%3C/svg%3E";
     document.getElementById('hash').textContent = HASH === '#/' ? '' : HASH;
+    if (VIEW === 'light') document.querySelector('.window').classList.add('light');
     // The settings view: once the editor is there, open the widget's settings and its first button.
     if (VIEW === 'settings') {
       document.querySelector('.viewport').classList.add('settings');

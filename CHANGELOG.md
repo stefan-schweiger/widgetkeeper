@@ -32,16 +32,20 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Flow cards: *Reset [counter]*, *Set [counter] to [days] days ago*, the trigger *[counter] became overdue* (even with no dashboard open) and the condition *[counter] is overdue*, both also for any counter.
 
 ### New: Room Health
-- The indoor climate of the whole house on one card: pick your temperature, humidity, CO₂, radon, PM2.5, PM10 and VOC sensors, and each Homey room shows its worst value large, its name and an icon or a bar per value, lined up from room to room: grey (or green, if you like) while it's comfortable, yellow to red the further it's outside.
-- Tap a room to step through its other readings.
+- The indoor climate of the whole house on one card: pick your temperature, humidity, CO₂, radon, PM2.5, PM10 and VOC sensors, and each Homey room shows its worst value large, its name and an icon or a bar per value, lined up from room to room: grey while it's comfortable, yellow to red the further it's outside, with the room's tile tinted to match. *Green when fine* tints a room green while everything is comfortable.
+- Tap a room to step through its other readings; the name then says which one it is.
 - The comfortable ranges are settings, with defaults from the WHO's guidelines where there are any (18–24 °C, 30–60 % humidity, CO₂ up to 1000 ppm, radon up to 100 Bq/m³ …). A room with only some of the sensors uses what it has.
+
+### New: Dashboard Shortcuts (web dashboards)
+- Your other web dashboards as buttons, each with a round icon in the colour and icon you pick; a tap opens that dashboard. The one you're on is ringed, so the same widget can go on every dashboard as a menu.
+- Up to eight dashboards in 1 or 2 columns, with *Colour style* and *Rename tiles*. Only web dashboards offer it: on a Homey dashboard there's nothing to link to.
 
 ### New: Value Matrix
 - Any devices against any values in one table: pick the devices and up to six values (temperature, humidity, CO₂, power, battery: any number), and each room (or each device) gets a row with a cell per value. A cell is green (OK) inside the value's range, orange (Warning) outside it and red (Alert) far outside, and striped where a room doesn't have that value. A legend explains the colours.
 - Type each column's range as `18–24`, `<1000` or `>10`. Left empty, temperature, humidity, CO₂, radon, PM2.5, PM10 and VOC use Room Health's usual ranges.
 
 ### Name the tiles
-- Every widget with device tiles has a new setting, *Rename tiles*: turn it on, and each tile shows a text field. Type the name you want, or leave it empty to keep the device's (or room's) own name, then turn the setting off again. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Room Health, Value Matrix, Device Values, Sparklines, Locks and Doors, Cameras and Variables have it.
+- Every widget with device tiles has a new setting, *Rename tiles*: turn it on, and each tile shows a text field. Type the name you want, or leave it empty to keep the device's (or room's) own name, then turn the setting off again. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Room Health, Value Matrix, Device Values, Sparklines, Locks and Doors, Cameras, Variables and Dashboard Shortcuts have it.
 - Light Controls and Curtains grouped by room get a name per room tile, so two widgets with a "Living room" group can be called "Sofa lights" and "Living room". Users with several groups in one room asked for it.
 - The names belong to the widget: they stay with the right tiles when devices are renamed or reordered, and every screen showing the dashboard (and a Smart Stack page of it) gets them. Sensor Alarms' *Tile names* setting and Device Values' *Name* settings are gone: type those names on the tiles again.
 
@@ -55,6 +59,8 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Curtains
 - Blinds that are fully open at 50%, with 0% and 100% both closed: vertical slatted blinds, and blinds that only tilt, such as SwitchBot Blind Tilt (these can now be picked too). A tap opens them to 50% or closes them to the nearer end, and the slider sets how far they're open. The new setting *Blinds are fully open at* chooses: 100%, 50% only for blinds that only tilt (the default), or 50% for all.
 - The tiles are as tall as Light Controls' again (they were 2 pixels taller), so the two line up side by side.
+- A new setting, *Fully open or closed within*, sets how close to the end counts as open or closed (0 to 15 %, 5 % as before), for the tap, the state line and the tile's colour. A user's curtains stopped a few percent short.
+- The hint of *Position 100% means closed* says to leave it off when the device's own invert setting already flips the position, as SwitchBot's does.
 
 ### Electricity Overview and Energy Price Strip
 - 15-minute electricity prices, where Homey Energy has them: the price now is the current quarter's (it was the hour's average), the price chart steps every 15 minutes, and the lowest price is the cheapest quarter. The Energy Price Strip shows a bar per quarter. Markets with hourly prices look as before.
@@ -88,6 +94,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Read only: the rows show each variable's name and value, with a dot and Yes/No instead of a switch, and nothing to tap. No API key is needed. A user wanted the rows for information only.
 - Rows are named like every other widget's tiles, with *Rename tiles*, in place of a name setting per variable. Names given in those settings have to be typed on the rows again on Homey's dashboards, because the Homey app no longer hands them to the widget. Web dashboards keep them, and so does a Variables widget shown on a Smart Stack.
 
+### Flow Buttons
+- A new Flow card, **Set the button colour of [flow] to [colour]**, colours every button that starts that flow, in any Flow Buttons widget, such as green while an e-bike charges; **Default** gives the buttons their own colour again. A user asked for it, to see at a glance that a plug is still charging.
+
 ### Thermostat Presets
 - In the settings, each button's mode, temperature and fan setting are indented under its power setting, so it's clear which button they belong to.
 
@@ -101,6 +110,11 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - A widget's settings are easier to get an overview of. They were one long list of equal rows (Flow Buttons had 33). Now the dialog shows the widget's preview and what it does on top, then cards: the devices, the title with the general settings, and a card for each button, tile or column. A user found the old list impossible to get an overview of.
 - Numbered groups such as Flow Buttons' eight buttons fold, and each one's header sums up what's set: the flow, the colour and the icon. Settings that only matter while a switch is on fade while it's off.
 - Each setting has a control that fits it: a switch, colour swatches, segments for a short choice, a number with its unit, or a list.
+- A background per dashboard, from calm tints (Default, Black or White, Slate, Ocean, Forest, Plum, Berry and Sand), each with a light and a dark shade so the theme still decides. Pick it with the editor's Background button; the front page's cards show it.
+- A sun button in the front page's and a dashboard's bar switches between light and dark, in this browser only.
+- Full screen hides the back link, the title and the pen, so only the dashboard is left.
+- The front page has an edit mode behind the pen: drag the dashboards into order, hide the widgets under them, or forget the browser's key (which used to sit in the bar).
+- Widgets from your other apps can go on web dashboards too: *Add widget* lists them under **Other apps**, with their own settings. They need a browser key with the **Homey** permission. They run sealed off from the page, so they can't read the browser's key; *Trust this widget* runs one that doesn't work that way as it would on a Homey dashboard.
 
 ### Other fixes
 - Variables, Variable Presets, Flow Buttons, Media's buttons, Moods and the Smart Stack no longer say the API key wasn't accepted when Homey was only busy, and a good key saved at such a moment is no longer refused.

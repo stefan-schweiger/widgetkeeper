@@ -1,6 +1,6 @@
 // Renders the web dashboards showcase (docs/web/<view>.png) from dev/web-showcase.html with headless Edge: the web
 // dashboards page with the made-up home's widgets, in a drawn browser window, at 2x on a transparent background.
-// Usage: `npm run web-showcase [-- dashboard front editor settings]` (default: all four).
+// Usage: `npm run web-showcase [-- dashboard front editor settings light]` (default: all five).
 // The page fetches /app.json and /locales/en.json, which a file:// page can't, so the repo root is served over HTTP
 // on 127.0.0.1 while it renders: by a child process, since edge() blocks this one.
 import { spawn } from 'node:child_process';
@@ -26,7 +26,7 @@ if (process.argv[2] === '--serve') {
   });
   server.listen(0, '127.0.0.1', () => console.log(`PORT ${server.address().port}`));
 } else {
-  const VIEWS = ['dashboard', 'front', 'editor', 'settings'];
+  const VIEWS = ['dashboard', 'front', 'editor', 'settings', 'light'];
   const SCALE = 2;
   const only = process.argv.slice(2);
   const bad = only.filter(v => !VIEWS.includes(v));

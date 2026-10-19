@@ -74,7 +74,14 @@
     "stuffy": "خانق",
     "radon": "رادون",
     "particles": "جسيمات",
-    "voc": "VOC"
+    "voc": "VOC",
+    "measureTemperature": "درجة الحرارة",
+    "measureHumidity": "الرطوبة",
+    "measureCo2": "CO₂",
+    "measureRadon": "رادون",
+    "measurePm25": "PM2.5",
+    "measurePm10": "PM10",
+    "measureVoc": "VOC"
   },
   "valuematrix": {
     "selectDevices": "اختر الأجهزة في إعدادات الأداة.",
@@ -303,7 +310,8 @@
       "paw": "حيوان أليف",
       "briefcase": "عمل",
       "gift": "هدية",
-      "sparkles": "لمعان"
+      "sparkles": "لمعان",
+      "dashboard": "لوحة"
     }
   },
   "price": {
@@ -447,6 +455,15 @@
     "pageCount": "عناصر Widgetkeeper: __count__",
     "keyHint": "Widgetkeeper ← تهيئة: مفتاح API بإذن Homey."
   },
+  "shortcuts": {
+    "selectSlots": "اختر اللوحات في إعدادات الأداة.",
+    "error": "تعذّر تحميل اللوحات.",
+    "missing": "اللوحة غير موجودة",
+    "webOnly": "اختصارات اللوحات تعمل على لوحات الويب فقط.",
+    "current": "أنت هنا",
+    "renameFailed": "تعذّر حفظ الاسم.",
+    "none": "لا شيء"
+  },
   "web": {
     "title": "لوحات الويب",
     "keyTitle": "الاتصال بـ Homey",
@@ -473,6 +490,18 @@
     "themeAuto": "تلقائي",
     "themeDark": "داكن",
     "themeLight": "فاتح",
+    "darkLight": "داكن أو فاتح",
+    "background": "الخلفية",
+    "bgDefault": "افتراضي",
+    "bgBlack": "أسود/أبيض",
+    "bgSlate": "أردوازي",
+    "bgOcean": "محيط",
+    "bgForest": "غابة",
+    "bgPlum": "برقوقي",
+    "bgBerry": "توتي",
+    "bgSand": "رملي",
+    "arrangeHint": "اسحب لوحات المعلومات لتغيير ترتيبها.",
+    "showWidgets": "إظهار في الصفحة الرئيسية",
     "deleteDashboard": "حذف اللوحة",
     "tapAgain": "اضغط مرة أخرى للتأكيد",
     "addWidget": "إضافة أداة",
@@ -503,7 +532,6 @@
     "passwordLocked": "محاولات كثيرة جداً. حاول مجدداً بعد __seconds__ ث.",
     "sessionEnded": "تم تسجيل خروجك. ربما تغيّرت كلمة المرور.",
     "yourDashboards": "لوحاتك",
-    "dashboardsText": "افتح واحدة على جهاز لوحي على الحائط أو حاسوب أو تلفاز.",
     "widgetsTitle": "الأدوات",
     "widgetsText": "كل ما يمكنك وضعه على لوحة.",
     "previous": "السابق",
@@ -528,6 +556,12 @@
     "valueOn": "تشغيل",
     "valueOff": "إيقاف",
     "missingValue": "لم يتم العثور على القيمة",
+    "otherApps": "تطبيقات أخرى",
+    "otherAppsKey": "تحتاج أدوات التطبيقات الأخرى في هذا المتصفح إلى مفتاح API بوصول كامل (Homey).",
+    "otherAppsFailed": "تعذّرت قراءة أدوات التطبيقات الأخرى.",
+    "notInstalled": "__name__ غير مثبّت.",
+    "trustTitle": "الوثوق بهذه الأداة",
+    "trustHint": "يشغّلها خارج وضع الحماية، لأداة لا تعمل فيه. يمكن للأداة الموثوقة قراءة مفتاح API لهذا المتصفح.",
     "about": {
       "electricity": "القدرة الحية وأسعار اليوم واستهلاكك في رسوم بيانية.",
       "thermostat": "ثلاثة أزرار مسبقة الضبط لمنظم حرارة أو مكيف.",
@@ -555,7 +589,8 @@
       "textline": "ملاحظة على بلاطة أو ورقة لاصقة، تكتبها بنفسك أو تكتبها Flow.",
       "spacer": "مساحة فارغة لمحاذاة الأدوات في الأعمدة.",
       "dayssince": "الأيام منذ مهمة، بالأحمر عندما يحين وقتها مجددًا.",
-      "stack": "أدوات من لوحة أخرى بالتناوب."
+      "stack": "أدوات من لوحة أخرى بالتناوب.",
+      "shortcuts": "انتقل إلى لوحات الويب الأخرى، بألوانك وأيقوناتك."
     }
   }
 }

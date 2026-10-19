@@ -36,8 +36,9 @@ This file holds what applies across the app. Each widget's notes, and those of t
 | Days Since | `dayssince` | `widgets/dayssince.md` |
 | Spacer | `spacer` | `widgets/spacer.md` |
 | Smart Stack | `stack` | `widgets/stack.md` |
+| Dashboard Shortcuts (web dashboards only) | `shortcuts` | `widgets/shortcuts.md` |
 
-Areas: `tile-names.md` (Rename tiles in ten widgets, `lib/TileNameService.ts`), `web-dashboards.md` (`settings/dashboard.*`, `/web/…` routes, the password) and `renders.md` (the render scripts and their pages in `dev/`).
+Areas: `tile-names.md` (Rename tiles in twelve widgets, `lib/TileNameService.ts`), `web-dashboards.md` (`settings/dashboard.*`, `/web/…` routes, the password) and `renders.md` (the render scripts and their pages in `dev/`).
 
 ## Commands
 - Use the **project-local Homey CLI v4**: `npx homey …` (the global `homey` is an old 3.7.x).
@@ -47,6 +48,7 @@ Areas: `tile-names.md` (Rename tiles in ten widgets, `lib/TileNameService.ts`), 
 - `npm run diagnostics`: see Diagnostics.
 - `npx homey app install`: builds and installs on the active Homey (firmware 13.x). `npx homey app run` (live logs, hot reload) needs Docker Desktop, which usually isn't running.
 - `npm run test-dashboards [-- lights media]` (`--remove` takes them away): one web dashboard per widget type on the active Homey (`Test · <widget>`, id `test-<type>`), each widget titled by what it tests, plus a deleted device/flow/variable and an empty one where it applies. Re-running replaces those and keeps the user's own. It picks devices, flows and variables by capability and class (never by name) through the widgets' own autocompletes, and writes the app setting `webDashboards` directly (the `/web/…` API also wants the password's session). Flow Buttons only gets flows that don't look like security, alarm or lock flows: a tap starts them for real.
+  - `--apps "Widgey,DataVista"` (app names or ids) builds `Test · Other apps` (id `test-apps`) instead: every widget of those apps (from `getAppWidgets()`), a column per app, the manifest's defaults, the first autocomplete filled (a Homey variable where offered, so DataVista's toggle switches no device). Web only.
   - `--native` builds the same as native Homey dashboards (`createDashboard`/`updateDashboard`, `homey.dashboard`, which the CLI's login has): matched by the name `Test · <widget>` (the Homey picks a dashboard's id) and updated in place; widget and column ids derived from the type and position (`stableUuid()`), so a re-run keeps each instance's tile names and timers. Each widget gets the manifest's defaults under its settings. 34 dashboards on the Homey were fine (2026-10-18).
   - It logs in once through the CLI's own code (`homey/lib/api/ApiCommandRuntime.mjs`). Every `homey api raw` logs in through Athom's cloud, and ~30 in a row got `Too many requests` for over half an hour (2026-10-11). `HOMEY_TOKEN` (a personal API key) with `HOMEY_ADDRESS` (`http://<ip>`) skips the cloud.
 - `npm run web-socket`: bundles `socket.io-client` v2 (MIT; what Homey's realtime speaks) into the committed `settings/socket.io.js` with esbuild; a test checks it's the installed version. Not `homey-api`'s browser build: its licence is proprietary.
@@ -58,6 +60,7 @@ Areas: `tile-names.md` (Rename tiles in ten widgets, `lib/TileNameService.ts`), 
   - `npm run clips [-- lights stack]`: the README's animated WebP clips `docs/clips/<id>.webp` from `dev/clips.html`.
   - `npm run showcase [-- home energy …]`: `docs/showcase/<id>.png`, dashboards of real widgets on a drawn tablet (`dev/showcase.html`, the made-up house "Solbakken").
   - `npm run web-showcase [-- dashboard front editor]`: `docs/web/<view>.png`, the web dashboards page in a drawn browser.
+  - `npm run forum-images`: `docs/forum/*.jpg`, the showcase and web images on the brand background for the community post; `npm run whats-new`: the 1.0.0 poster.
 - Dev previews: serve the repo root (`python -m http.server 8765`) and open `dev/<id>-preview.html` (the Electricity Overview's is `dev/preview.html`): mock data, usually dark, light and 300 px cards and a simulated Homey; `?lang=de` for a language (`dev/i18n.js`). They share `dev/preview.css` and `dev/mock-util.js` (load it before `mock-electricity.js`, `mock-weather.js`, `mock-heatmap.js` or `showcase-data.js`).
   - Real data: `preview.html?snap=/temp/real-snapshot.json` (`#live=0.4` / `#price=0.3` simulates a scrub), `weather-preview.html?snap=/temp/met-compact.json` (a MET response), `heatmap-preview.html?snap=/temp/heatmap-lux.json` (from `npm run diagnostics -- --json --heatmap <deviceId>:<capabilityId>`; also `?today=&hour=`).
   - `?open=<id>` opens a dot's or tile's panel (sensordots, lights); `stack-preview.html?act=unlock|timer|flow` presses one 1.5 s in, for a headless screenshot; `media-preview.html` needs `temp/screenshot-icons.js` (from `npm run screenshots`); `cameras-preview.html` uses drawn scenes, so no real camera images go in the repo; `textline-preview.html` has no Google Fonts (the user wants fonts hosted locally only).

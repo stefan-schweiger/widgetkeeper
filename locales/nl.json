@@ -74,7 +74,14 @@
     "stuffy": "Bedompt",
     "radon": "Radon",
     "particles": "Fijnstof",
-    "voc": "VOS"
+    "voc": "VOS",
+    "measureTemperature": "Temperatuur",
+    "measureHumidity": "Vochtigheid",
+    "measureCo2": "CO₂",
+    "measureRadon": "Radon",
+    "measurePm25": "PM2.5",
+    "measurePm10": "PM10",
+    "measureVoc": "VOS"
   },
   "valuematrix": {
     "selectDevices": "Kies apparaten in de widgetinstellingen.",
@@ -303,7 +310,8 @@
       "paw": "Huisdier",
       "briefcase": "Werk",
       "gift": "Cadeau",
-      "sparkles": "Sterretjes"
+      "sparkles": "Sterretjes",
+      "dashboard": "Dashboard"
     }
   },
   "price": {
@@ -447,6 +455,15 @@
     "pageCount": "__count__ Widgetkeeper-widgets",
     "keyHint": "Widgetkeeper → Configureren: een API-sleutel met het recht Homey."
   },
+  "shortcuts": {
+    "selectSlots": "Kies dashboards in de widgetinstellingen.",
+    "error": "Kon de dashboards niet laden.",
+    "missing": "Dashboard niet gevonden",
+    "webOnly": "Dashboardsnelkoppelingen werken alleen op webdashboards.",
+    "current": "Je bent hier",
+    "renameFailed": "Kon de naam niet opslaan.",
+    "none": "Geen"
+  },
   "web": {
     "title": "Webdashboards",
     "keyTitle": "Verbinden met je Homey",
@@ -473,6 +490,18 @@
     "themeAuto": "Automatisch",
     "themeDark": "Donker",
     "themeLight": "Licht",
+    "darkLight": "Donker of licht",
+    "background": "Achtergrond",
+    "bgDefault": "Standaard",
+    "bgBlack": "Zwart/wit",
+    "bgSlate": "Leisteen",
+    "bgOcean": "Oceaan",
+    "bgForest": "Bos",
+    "bgPlum": "Pruim",
+    "bgBerry": "Bes",
+    "bgSand": "Zand",
+    "arrangeHint": "Sleep de dashboards om hun volgorde te wijzigen.",
+    "showWidgets": "Tonen op de voorpagina",
     "deleteDashboard": "Dashboard verwijderen",
     "tapAgain": "Tik nogmaals om te bevestigen",
     "addWidget": "Widget toevoegen",
@@ -503,7 +532,6 @@
     "passwordLocked": "Te veel pogingen. Probeer het over __seconds__ s opnieuw.",
     "sessionEnded": "Je bent uitgelogd. Het wachtwoord is mogelijk gewijzigd.",
     "yourDashboards": "Je dashboards",
-    "dashboardsText": "Open er een op een wandtablet, computer of tv.",
     "widgetsTitle": "Widgets",
     "widgetsText": "Alles wat je op een dashboard kunt zetten.",
     "previous": "Vorige",
@@ -528,6 +556,12 @@
     "valueOn": "Aan",
     "valueOff": "Uit",
     "missingValue": "Waarde niet gevonden",
+    "otherApps": "Andere apps",
+    "otherAppsKey": "Widgets van andere apps hebben in deze browser een API-sleutel met volledige toegang (Homey) nodig.",
+    "otherAppsFailed": "Kon de widgets van andere apps niet lezen.",
+    "notInstalled": "__name__ is niet geïnstalleerd.",
+    "trustTitle": "Deze widget vertrouwen",
+    "trustHint": "Draait hem buiten de sandbox, voor een widget die daarin niet werkt. Een vertrouwde widget kan de API-sleutel van deze browser lezen.",
     "about": {
       "electricity": "Actueel vermogen, de prijzen van de dag en je verbruik in grafieken.",
       "thermostat": "Drie voorkeuzeknoppen voor een thermostaat of airco.",
@@ -555,7 +589,8 @@
       "textline": "Een notitie op een tegel of een Post-it, zelf getypt of door je Flows geschreven.",
       "spacer": "Lege ruimte om widgets in kolommen gelijk te zetten.",
       "dayssince": "Dagen sinds een klusje, rood als het weer tijd is.",
-      "stack": "Widgets van een ander dashboard, om de beurt."
+      "stack": "Widgets van een ander dashboard, om de beurt.",
+      "shortcuts": "Spring naar je andere webdashboards, in je eigen kleuren en iconen."
     }
   }
 }

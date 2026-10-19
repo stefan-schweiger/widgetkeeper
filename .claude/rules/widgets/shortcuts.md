@@ -1,0 +1,19 @@
+---
+paths:
+  - "widgets/shortcuts/**"
+  - "test/shortcuts-*.test.ts"
+  - "dev/shortcuts-preview.html"
+---
+# Dashboard Shortcuts widget (`shortcuts`)
+
+- Links to other **web dashboards** (the user's request, 2026-10-19, with a screenshot): pills, 2 columns by default (1 below 300 px, as Flow Buttons), each a 28 px round icon in its colour with a 20 px glyph from the kit's `icons`, then the dashboard's name (17 regular, one line, an ellipsis). A tap (`onTap()`, the Flow Buttons copy, or Enter/Space) opens that dashboard. Transparent.
+- **Web only:** `deprecated: true` in its manifest (Homey's schema has it for widgets), so Homey's own Add widget leaves it out, while the web editor offers it (`widgetTypes()` doesn't filter deprecated ones). On a Homey dashboard (the instance id isn't `web-…`) it only says `shortcuts.webOnly`, without asking the app. Not a Smart Stack page (`STACK_TYPES`), and `npm run test-dashboards -- --native` leaves it out (every deprecated widget).
+- **Opening a dashboard:** the mount calls `Homey.popup('#/d/<id>')`; the web page's `popup` handler (`dashboardLink()` in `settings/dashboard.js`) takes a same-origin `#/d/<id>` on its own path or the frame's (in case the SDK resolves the URL against the frame) and sets `location.hash`, so the page's `route()` draws it. Not in the editor (`…/edit`), where a tap shouldn't leave it. Any other URL still opens a window. Other apps' frames never navigate.
+- The design's pill (`border-radius: 999px`) is a deliberate exception to the native tiles' 10 px; the tile fill, rim, colours (`blue` default, `red`, `orange`, `yellow`, `green`, `purple`, `grey`; the glyph dark on yellow and green) and Vivid (a solid pill in the shade, `--wk-on` text, the icon 20 % of it; grey and missing pills unchanged) are Flow Buttons'.
+- **The dashboard it's on** keeps its pill, with a 2 px inset ring in its colour (`--sc-ring`; in Vivid the text colour), `aria-current="page"`, no `role="link"`, and a tap does nothing: one widget copied onto every dashboard works as a nav bar.
+- A deleted dashboard: a hollow ring and "Dashboard not found" (Flow Buttons' missing flow). An empty name shows `web.untitled`.
+- Settings (27): `renameTiles`, `columns` (`"2"` default), `colorStyle`, then per tile N = 1…8: `dashboardN` ("Shortcut N: dashboard", autocomplete `WebDashboardService.dashboardItems()`: `None`, then every web dashboard by name, its widget count as the description), `colorN`, `iconN` (Flow Buttons' `listIcons()`; default `dashboard`, a filled glyph added to the kit for it).
+- Names: Rename tiles (`.claude/rules/tile-names.md`), keyed by the dashboard id, so two pills of one dashboard share a name. No `nameN`.
+- `GET /state?ids=&instance=` → `{current, tiles: [{id, name} | {id, missing: true}]}` (`WebDashboardService.shortcuts()`), inside `{state, tileNames}`. `current` is the dashboard holding a Dashboard Shortcuts widget whose `web-<dashboard>-<widget>` is the instance, matched against every one (both ids may hold `-`, so it isn't split). No realtime: a rename shows on the next load (every 5 min, or a frame's reload, which every dashboard change and every navigation does). Reached from the web page through `/web/call` (`WEB_APIS` in `api.ts`).
+- `dev/shortcuts-preview.html` (the user's screenshot, light, Vivid, 300 px, current/deleted/long name, rename mode; a name with "fail" fails), also in `dev/rename-preview.html` and `dev/schemes-preview.html`. `npm run test-dashboards -- shortcuts`: its own dashboard first (marked), then up to seven other test dashboards (never the user's own), rename mode, a deleted one, nothing picked.
+- Not yet tried on the Homey: that Homey's Add widget really hides it, that `Homey.popup` reaches the page with the URL as given, and how the App Store page shows a deprecated widget.

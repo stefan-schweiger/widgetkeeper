@@ -12,6 +12,11 @@
  * `getInitialData` (the widget's settings, devices, strings, dark mode), `api` (through the app's `/web/call`, to
  * the widget's own API), `registerRealtimeListener` (our app's realtime events, from Homey's realtime socket),
  * `ready`/`setHeight` (the frame's height), `popup` and `shortPressHapticFeedback`.
+ *
+ * Other apps' widgets (`homey:app:<appId>:<widgetId>`) run the same way from `/app/<appId>/widgets/<id>/`, but talk to
+ * Homey directly with this page's key: Homey's list of them, their own API, autocompletes, strings and realtime.
+ * Their frames are sandboxed (an opaque origin: they can't read this page's `localStorage`, where the key is) unless
+ * the user trusts one.
  */
 (function () {
   'use strict';
@@ -43,6 +48,18 @@
     themeAuto: 'Automatic',
     themeDark: 'Dark',
     themeLight: 'Light',
+    darkLight: 'Dark or light',
+    background: 'Background',
+    bgDefault: 'Default',
+    bgBlack: 'Black/White',
+    bgSlate: 'Slate',
+    bgOcean: 'Ocean',
+    bgForest: 'Forest',
+    bgPlum: 'Plum',
+    bgBerry: 'Berry',
+    bgSand: 'Sand',
+    arrangeHint: 'Drag the dashboards to change their order.',
+    showWidgets: 'Show on the front page',
     deleteDashboard: 'Delete dashboard',
     tapAgain: 'Tap again to confirm',
     addWidget: 'Add widget',
@@ -73,7 +90,6 @@
     passwordLocked: 'Too many tries. Try again in __seconds__ s.',
     sessionEnded: 'You were signed out. The password may have changed.',
     yourDashboards: 'Your dashboards',
-    dashboardsText: 'Open one on a wall tablet, a computer or a TV.',
     widgetsTitle: 'Widgets',
     widgetsText: 'Everything you can put on a dashboard.',
     previous: 'Previous',
@@ -98,6 +114,12 @@
     valueOn: 'On',
     valueOff: 'Off',
     missingValue: 'Value not found',
+    otherApps: 'Other apps',
+    otherAppsKey: 'Other apps\' widgets need an API key with full access (Homey) in this browser.',
+    otherAppsFailed: 'Could not read other apps\' widgets.',
+    notInstalled: '__name__ isn\'t installed.',
+    trustTitle: 'Trust this widget',
+    trustHint: 'Runs it outside the sandbox, for a widget that doesn\'t work in it. A trusted widget can read this browser\'s API key.',
     about: {
       electricity: 'Live power, the day\'s prices and your usage in charts.',
       thermostat: 'Three preset buttons for a thermostat or an aircon.',
@@ -126,12 +148,15 @@
       spacer: 'Empty space to line up widgets in columns.',
       dayssince: "Days since a chore was done, turning red when it's due.",
       stack: 'Widgets from another dashboard, taking turns.',
+      shortcuts: 'Jump to your other web dashboards, in your colours and icons.',
     },
   };
 
   const KEY_STORAGE = 'widgetkeeper.web.key';
   /** The session token from signing in with the web dashboards password (when one is set), on top of the key. */
   const SESSION_STORAGE = 'widgetkeeper.web.session';
+  /** This browser's own dark or light (the bar's button), over the dashboard's theme; none follows the dashboard. */
+  const THEME_STORAGE = 'widgetkeeper.web.theme';
   const PREFIX = 'CF2_MESSAGE';
   const ACK_TIMEOUT_MS = 10e3;
   /** After a realtime outage this long, the frames reload: they may have missed changes (they re-read every 5 min). */
@@ -209,6 +234,9 @@
   const ICONS = {
     pen: 'M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16v4zM13.5 6.5l4 4',
     fullScreen: 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5',
+    fullScreenExit: 'M9 4v5H4M15 4v5h5M20 15h-5v5M4 15h5v5',
+    moon: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
+    sun: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2.5v2M12 19.5v2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M2.5 12h2M19.5 12h2M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4',
     plus: 'M12 5v14M5 12h14',
     left: 'M15 5l-7 7 7 7',
     right: 'M9 5l7 7-7 7',
@@ -227,6 +255,22 @@
     grey: '#8E8F99', default: null, neutral: null,
   };
 
+  /**
+   * A dashboard's backdrops (`background`; the ids are `WEB_BACKGROUNDS` in lib/WebDashboardService.ts): calm tints,
+   * each [light, dark], so the dashboard's theme still decides and transparent widgets' text stays readable. Default
+   * is the page's own `--wd-bg` (dashboard.css).
+   */
+  const BACKGROUNDS = {
+    default: ['#F4F4FA', '#111217'],
+    black: ['#FFFFFF', '#000000'],
+    slate: ['#E6EBF2', '#141A24'],
+    ocean: ['#E1ECF9', '#0B1A2E'],
+    forest: ['#E4F0E6', '#0F1C14'],
+    plum: ['#EEE6F5', '#1C1226'],
+    berry: ['#F6E6EA', '#24121A'],
+    sand: ['#F3EEE4', '#1F1A13'],
+  };
+
   function icon(name) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
@@ -243,6 +287,34 @@
   /** The app id from this page's path (`/app/<appId>/settings/dashboard.html`). */
   const APP_ID = (location.pathname.match(/\/app\/([^/]+)\//) || [])[1] || 'com.thomassidor.widgetkeeper';
 
+  /** Another app's widget type (`homey:app:<appId>:<widgetId>`, its id on Homey's dashboards), split; null for ours. */
+  function appWidget(type) {
+    const m = /^homey:app:([A-Za-z0-9._-]{1,100}):([A-Za-z0-9_-]{1,60})$/.exec(String(type));
+    return m && m[1] !== APP_ID ? { appId: m[1], widgetId: m[2] } : null;
+  }
+
+  /** What another app's widget frame may do: no `allow-same-origin`, so it can't read this page or its key. */
+  const SANDBOX = 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox';
+
+  /** A text from another app's manifest: a string, or one per language. */
+  function appText(text, language) {
+    if (typeof text === 'string') return text;
+    if (text && typeof text === 'object') return text[language] || text.en || '';
+    return '';
+  }
+
+  /** `settings[device][id]=…`: settings as bracketed query keys, as Homey's autocomplete route reads them. */
+  function bracketQuery(params, value, prefix) {
+    for (const k of Object.keys(value || {})) {
+      const v = value[k];
+      const name = prefix ? `${prefix}[${k}]` : k;
+      if (v == null) continue;
+      if (typeof v === 'object') bracketQuery(params, v, name);
+      else params.append(name, String(v));
+    }
+    return params;
+  }
+
   /**
    * `opts.mountWidget(widget, wrap)`, when given, draws a widget into `wrap` in place of its iframe (the dev renders,
    * `dev/web-showcase.html`, mount the widgets with made-up data; `dashboard.html` never passes it).
@@ -252,7 +324,12 @@
     let session = storageGet(SESSION_STORAGE);
     let setup = null; // `/web/setup`: {appId, homeyId, language, strings, widgets, dashboards}
     let types = new Map(); // widget id → its type (name, settings, devices …)
+    let foreign = new Map(); // another app's widget (`homey:app:<appId>:<id>`) → its type, from Homey's list
+    let foreignState = null; // that list: 'ok', 'noScope' (this key may not read it) or 'failed'
+    const appLocales = new Map(); // app id → Promise of its strings
+    const typeOf = (type) => types.get(type) || foreign.get(type);
     let dashboards = [];
+    let frontPage = { widgets: true }; // the front page's choices (`/web/setup`'s `front`), made in its edit mode
     let current = null; // {dashboard, editing, grid, columns: Map<widget id, {el, sig}>}
     let live = false;
     let socketStarted = false;
@@ -270,18 +347,31 @@
     // ---- The app's API, with the key ------------------------------------------------------------------------
 
     async function request(method, path, body) {
+      const url = session ? `${path}${path.includes('?') ? '&' : '?'}session=${encodeURIComponent(session)}` : path;
+      return fetchJson(method, `/api/app/${APP_ID}${url}`, body, true);
+    }
+
+    /**
+     * Homey's own API (`/api<path>`) with the key: other apps' widget lists, routes, autocompletes and strings. A 403
+     * there is a permission this key lacks (`scope`), not a rejected key.
+     */
+    function homeyRequest(method, path, body) {
+      return fetchJson(method, `/api${path}`, body, false);
+    }
+
+    async function fetchJson(method, url, body, ours) {
       const headers = { Authorization: `Bearer ${key}` };
       if (body !== undefined) headers['Content-Type'] = 'application/json';
-      const url = session ? `${path}${path.includes('?') ? '&' : '?'}session=${encodeURIComponent(session)}` : path;
-      const res = await fetch(`/api/app/${APP_ID}${url}`, {
+      const res = await fetch(url, {
         method, headers, body: body === undefined ? undefined : JSON.stringify(body),
       });
       const text = await res.text();
       let data = null;
       try { data = text ? JSON.parse(text) : null; } catch (e) { data = text; }
-      if (res.status === 401 || res.status === 403) {
+      if (res.status === 401 || (ours && res.status === 403)) {
         throw Object.assign(new Error((data && data.error) || `HTTP ${res.status}`), { unauthorized: true });
       }
+      if (res.status === 403) throw Object.assign(new Error((data && data.error) || `HTTP ${res.status}`), { scope: true });
       if (!res.ok) {
         const err = new Error((data && (data.error || data.message)) || (typeof data === 'string' && data) || `HTTP ${res.status}`);
         // Signed out of the password (it changed, or was set meanwhile): ask for it again.
@@ -307,6 +397,7 @@
       setup = await request('GET', '/web/setup');
       types = new Map((setup.widgets || []).map(w => [w.type, w]));
       dashboards = setup.dashboards || [];
+      frontPage = setup.front || { widgets: true };
       if (setup.language) document.documentElement.lang = setup.language;
       if (setup.disabled || setup.passwordRequired) return; // turned off, or the password first: `route()` says so
       if (!socketStarted) {
@@ -315,12 +406,86 @@
       }
     }
 
+    /**
+     * Other apps' widgets, from Homey's list of every app's (`getAppWidgets()`, which needs `homey.dashboard.readonly`:
+     * only a key with full access). Without it the dashboards still show them; only adding and editing them can't.
+     */
+    async function loadAll() {
+      // Asked at once, read once the setup (with Homey's language) is in.
+      const list = homeyRequest('GET', '/manager/dashboards/appwidget').then(all => ({ all, err: null }), err => ({ all: null, err }));
+      await loadSetup();
+      const { all, err } = await list;
+      foreign = new Map();
+      if (err) {
+        if (err.unauthorized) throw err;
+        foreignState = err.scope ? 'noScope' : 'failed';
+        return;
+      }
+      const language = (setup && setup.language) || 'en';
+      for (const w of Object.values(all || {})) {
+        const at = w && appWidget(w.id);
+        if (at) foreign.set(w.id, foreignType(w, at, language));
+      }
+      foreignState = 'ok';
+    }
+
+    /** Another app's widget as the editor offers it, like ours from `/web/setup` (`widgetTypes()`). */
+    function foreignType(w, at, language) {
+      const settings = (Array.isArray(w.settings) ? w.settings : []).filter(s => s && typeof s.id === 'string' && s.id).map((s) => {
+        const title = appText(s.title, language) || s.id;
+        const units = appText(s.units, language);
+        return {
+          id: s.id,
+          type: s.type,
+          title,
+          // A number's unit goes after its field, from the label's `(…)` (`splitUnit()`).
+          label: s.type === 'number' && units ? `${title} (${units})` : title,
+          hint: appText(s.hint, language) || null,
+          value: s.value === undefined ? null : s.value,
+          min: typeof s.min === 'number' ? s.min : undefined,
+          max: typeof s.max === 'number' ? s.max : undefined,
+          values: Array.isArray(s.values) ? s.values.map(v => ({ id: String(v.id), title: appText(v.title, language) || String(v.id) })) : undefined,
+        };
+      });
+      const filter = (w.devices && w.devices.filter) || {};
+      const anyOf = (v) => (Array.isArray(v) ? v.join('|') : v == null ? '' : String(v));
+      return {
+        type: w.id,
+        app: at,
+        name: appText(w.name, language) || at.widgetId,
+        ownerName: appText(w.ownerName, language) || at.appId,
+        // A number, or a percentage of the width (`'100%'` is square: WidgetBoard's clocks, Network Visualizer).
+        height: typeof w.height === 'number' || (typeof w.height === 'string' && /^\d+(\.\d+)?%$/.test(w.height)) ? w.height : null,
+        transparent: w.transparent === true,
+        devices: w.devices ? { singular: w.devices.singular === true, app: w.devices.type === 'app', class: anyOf(filter.class), capabilities: anyOf(filter.capabilities) } : null,
+        settings,
+        // Other apps' titles don't follow ours (CLAUDE.md, *Widget settings*): one card of them.
+        sections: settings.length ? [{ kind: 'plain', ids: settings.map(s => s.id) }] : [],
+        deprecated: w.deprecated === true,
+      };
+    }
+
+    /** Another app's strings in Homey's language, as Homey gives its widget frames (`Homey.__`); `{}` when they can't be read. */
+    function stringsOf(appId) {
+      let p = appLocales.get(appId);
+      if (!p) {
+        p = homeyRequest('GET', `/manager/apps/app/${encodeURIComponent(appId)}/locale`).then(s => (s && typeof s === 'object' ? s : {}), () => {
+          appLocales.delete(appId); // tried again by the next frame
+          return {};
+        });
+        appLocales.set(appId, p);
+      }
+      return p;
+    }
+
     // ---- Realtime: Homey's socket (socket.io v2), as homey-api connects ------------------------------------
 
     let socketGen = 0;
     let retryMs = 2000;
     let lostAt = null;
     let activeSocket = null;
+    let activeNs = null; // its `/api` namespace, once subscribed
+    const otherApps = new Set(); // the other apps whose events their widgets' frames listen to
     let retryTimer = null;
 
     /** Closes a socket with its connection: closing the root socket alone left the `/api` namespace's open. */
@@ -336,6 +501,7 @@
       retryMs = 2000;
       if (retryTimer) clearTimeout(retryTimer);
       retryTimer = null;
+      activeNs = null;
       if (activeSocket) closeSocket(activeSocket);
       activeSocket = null;
     }
@@ -373,6 +539,7 @@
         if (failed || gen !== socketGen) return;
         failed = true;
         console.warn('Realtime:', why && why.message ? why.message : why);
+        activeNs = null;
         closeSocket(socket);
         setLive(false);
         if (lostAt == null) lostAt = Date.now();
@@ -386,7 +553,7 @@
         const res = await ack(socket, 'handshakeClient', { token: key, homeyId: setup.homeyId });
         const ns = socket.io.socket(res && res.namespace ? res.namespace : '/api');
         const uri = `homey:app:${APP_ID}`;
-        ns.on(uri, (event, data) => dispatch(event, data));
+        ns.on(uri, (event, data) => dispatch(uri, event, data));
         if (!ns.connected) {
           const nsConnected = waitFor(ns, 'connect');
           ns.open();
@@ -397,6 +564,8 @@
         ns.on('disconnect', () => fail('namespace disconnected'));
         if (failed) return;
         if (gen !== socketGen) { closeSocket(socket); return; } // stopped meanwhile
+        activeNs = ns;
+        for (const appId of otherApps) subscribeApp(ns, appId);
         retryMs = 2000;
         setLive(true);
         if (lostAt != null && Date.now() - lostAt > STALE_AFTER_MS) reloadFrames();
@@ -411,8 +580,25 @@
       for (const node of root.querySelectorAll('.wd-live')) /** @type {HTMLElement} */ (node).hidden = on;
     }
 
-    function dispatch(event, data) {
-      for (const fn of listeners.get(event) || []) {
+    /** Another app's realtime events (`homey:app:<appId>`), for its widgets' frames; one that fails just stays quiet. */
+    function subscribeApp(ns, appId) {
+      const uri = `homey:app:${appId}`;
+      ns.on(uri, (event, data) => dispatch(uri, event, data));
+      ack(ns, 'subscribe', uri).catch(err => console.warn(`Realtime ${uri}:`, err && err.message ? err.message : err));
+    }
+
+    /** Subscribes to an app's events once its first widget frame listens (and again on every new socket). */
+    function listenToApp(appId) {
+      if (otherApps.has(appId)) return;
+      otherApps.add(appId);
+      if (activeNs && activeNs.connected) subscribeApp(activeNs, appId);
+    }
+
+    /** Listeners are per app and event (`homey:app:<appId>\n<event>`): two apps may both send `state`. */
+    const listenerKey = (uri, event) => `${uri}\n${event}`;
+
+    function dispatch(uri, event, data) {
+      for (const fn of listeners.get(listenerKey(uri, event)) || []) {
         try { fn(data); } catch (e) { console.error(e); }
       }
     }
@@ -421,7 +607,8 @@
 
     function post(frame, message) {
       const win = frame.iframe.contentWindow;
-      if (win) win.postMessage(PREFIX + hexEncode(JSON.stringify(message)), location.origin);
+      // A sandboxed frame (another app's widget) has an opaque origin, which no target origin but `*` matches.
+      if (win) win.postMessage(PREFIX + hexEncode(JSON.stringify(message)), frame.sandboxed ? '*' : location.origin);
     }
 
     function reply(frame, callbackId, err, result) {
@@ -430,11 +617,26 @@
       post(frame, { type: 'cb', args: [error, result === undefined ? null : result], callbackId });
     }
 
+    /** This browser's own choice from the bar's button (`dark` or `light`), or null. */
+    function ownTheme() {
+      const v = storageGet(THEME_STORAGE);
+      return v === 'dark' || v === 'light' ? v : null;
+    }
+
+    /** Whether a dashboard theme (`auto`, `dark`, `light`) shows dark, without this browser's own choice. */
+    function themeIsDark(theme) {
+      return theme === 'dark' || (theme !== 'light' && !!(darkQuery && darkQuery.matches));
+    }
+
     function isDark() {
-      const theme = current && current.dashboard.theme;
-      if (theme === 'dark') return true;
-      if (theme === 'light') return false;
-      return !!(darkQuery && darkQuery.matches);
+      const own = ownTheme();
+      return own ? own === 'dark' : themeIsDark(current ? current.dashboard.theme : 'auto');
+    }
+
+    /** A backdrop's colour in the page's mode. */
+    function backdrop(background) {
+      const pair = BACKGROUNDS[background] || BACKGROUNDS.default;
+      return pair[isDark() ? 1 : 0];
     }
 
     function setFrameHeight(frame, height) {
@@ -442,26 +644,58 @@
       if (Number.isFinite(h) && h >= 0) frame.iframe.style.height = `${Math.ceil(h)}px`;
     }
 
+    /**
+     * Another app's widget's own request (`Homey.api(method, path, body)`), straight to that widget's API on the
+     * Homey (`/api/app/<appId>/widget/<widgetId>/api<path>`, as Homey's dashboard calls it) with this page's key.
+     * Only below that: a path that leaves it (`..`) is refused, or a sandboxed widget could use the key for anything.
+     */
+    function appApi(app, method, path, qs, body) {
+      const base = `/app/${encodeURIComponent(app.appId)}/widget/${encodeURIComponent(app.widgetId)}/api`;
+      const rel = `${base}${String(path).startsWith('/') ? '' : '/'}${path}`;
+      const url = new URL(`/api${rel}`, location.origin);
+      if (url.pathname !== `/api${rel}` || !url.pathname.startsWith(`/api${base}/`)) return Promise.reject(new Error(`Not a widget route: ${path}`));
+      const withBody = method !== 'GET' && method !== 'DELETE';
+      return homeyRequest(method, `${rel}${qs ? `?${qs}` : ''}`, withBody ? (body == null ? {} : body) : undefined);
+    }
+
+    /**
+     * The dashboard id a widget's `popup(url)` links to (`#/d/<id>`, Dashboard Shortcuts), or null. The SDK may hand the
+     * URL on as given or resolved against the frame, so a link to this page or to the frame's own document counts.
+     */
+    function dashboardLink(url, frame) {
+      let u;
+      try { u = new URL(url, location.href); } catch (e) { return null; }
+      const m = u.hash.match(/^#\/d\/([A-Za-z0-9_-]+)$/);
+      if (!m || u.origin !== location.origin) return null;
+      const own = [location.pathname, new URL(frame.iframe.src, location.href).pathname];
+      return own.includes(u.pathname) ? m[1] : null;
+    }
+
     function handle(frame, msg) {
       const id = msg.callbackId;
       const w = frame.widget;
-      const def = types.get(w.type);
+      const def = typeOf(w.type);
       switch (msg.event) {
-        case 'getInitialData':
+        case 'getInitialData': {
           // A new document in the frame (it reloads when it's moved): the old one's listeners and pending answers go.
           dropListeners(frame);
-          frame.gen++;
-          reply(frame, id, null, {
-            settings: clone(w.settings || {}),
-            deviceIds: (w.deviceIds || []).slice(),
-            transparent: !!(def && def.transparent),
-            locales: (setup && setup.strings) || {},
-            language: (setup && setup.language) || 'en',
-            devmode: false,
-            fontScale: 1,
-            isDarkMode: isDark(),
+          const gen = ++frame.gen;
+          const strings = frame.app ? stringsOf(frame.app.appId) : Promise.resolve((setup && setup.strings) || {});
+          strings.then((locales) => {
+            if (frame.gen !== gen) return;
+            reply(frame, id, null, {
+              settings: clone(w.settings || {}),
+              deviceIds: (w.deviceIds || []).slice(),
+              transparent: !!(def && def.transparent),
+              locales,
+              language: (setup && setup.language) || 'en',
+              devmode: false,
+              fontScale: 1,
+              isDarkMode: isDark(),
+            });
           });
           break;
+        }
         case 'ready':
           if (msg.data && msg.data.height != null) setFrameHeight(frame, msg.data.height);
           reply(frame, id, null, null);
@@ -477,7 +711,8 @@
           new URLSearchParams(qs || '').forEach((v, k) => { query[k] = v; });
           // The page's key goes along: a route that acts with the app's stored key checks that this key may too.
           const gen = frame.gen;
-          request('POST', '/web/call', { type: w.type, method: String(data.method || 'GET').toUpperCase(), path, query, body: data.body == null ? {} : data.body, key })
+          const method = String(data.method || 'GET').toUpperCase();
+          (frame.app ? appApi(frame.app, method, path, qs, data.body) : request('POST', '/web/call', { type: w.type, method, path, query, body: data.body == null ? {} : data.body, key }))
             .then(result => { if (frame.gen === gen) reply(frame, id, null, result); }, (err) => {
               if (frame.gen === gen) reply(frame, id, err);
               // A rejected key, or the dashboards turned off, is the page's to handle, as for its own requests.
@@ -486,17 +721,26 @@
           break;
         }
         case 'registerRealtimeListener': {
-          const event = String(msg.data || '');
+          const event = listenerKey(`homey:app:${frame.app ? frame.app.appId : APP_ID}`, String(msg.data || ''));
+          if (frame.app) listenToApp(frame.app.appId);
           const fn = (data) => post(frame, { type: 'cb', args: [data], callbackId: id });
           frame.subs.set(id, { event, fn });
           if (!listeners.has(event)) listeners.set(event, new Set());
           listeners.get(event).add(fn);
           break;
         }
-        case 'popup':
-          if (msg.data && typeof msg.data.url === 'string') window.open(msg.data.url, '_blank', 'noopener');
+        case 'popup': {
+          const url = msg.data && typeof msg.data.url === 'string' ? msg.data.url : null;
+          const dashboard = url && !frame.app ? dashboardLink(url, frame) : null;
+          // Dashboard Shortcuts: another dashboard opens here (not from the editor, where a tap shouldn't leave it).
+          if (dashboard) {
+            if (!/\/edit$/.test(location.hash)) location.hash = `#/d/${dashboard}`;
+          } else if (url) {
+            window.open(url, '_blank', 'noopener');
+          }
           reply(frame, id, null, null);
           break;
+        }
         case 'shortPressHapticFeedback':
           try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) { /* not on every browser */ }
           reply(frame, id, null, null);
@@ -572,14 +816,41 @@
       sweepFrames();
     }
 
-    function applyTheme(theme) {
-      const dark = theme === 'dark' || (theme !== 'light' && !!(darkQuery && darkQuery.matches));
-      document.documentElement.classList.toggle('homey-dark-mode', dark);
+    /** The page's mode (this browser's own choice, else the theme) and the dashboard's backdrop (none: the page's). */
+    function applyTheme(theme, background) {
+      const html = document.documentElement;
+      const own = ownTheme();
+      const dark = own ? own === 'dark' : themeIsDark(theme);
+      html.classList.toggle('homey-dark-mode', dark);
+      const pair = background && background !== 'default' && BACKGROUNDS[background];
+      if (pair) html.style.setProperty('--wd-bg', pair[dark ? 1 : 0]);
+      else html.style.removeProperty('--wd-bg');
+    }
+
+    /** The bar's dark/light button: this browser only; back to following the theme when that shows the same. */
+    function themeButton() {
+      const b = button('wd-icon', '', () => {
+        const dark = !isDark();
+        storageSet(THEME_STORAGE, dark === themeIsDark(current ? current.dashboard.theme : 'auto') ? null : (dark ? 'dark' : 'light'));
+        route(); // redraws the bar and the frames (their signature has the mode), or the front page's previews
+      }, t('darkLight'));
+      b.append(icon(isDark() ? 'sun' : 'moon'));
+      return b;
+    }
+
+    // Full screen: the dashboard's bar keeps only the exit button, the dark/light one and the live note (dashboard.css).
+    for (const type of ['fullscreenchange', 'webkitfullscreenchange']) {
+      document.addEventListener(type, () => {
+        const page = /** @type {any} */ (document);
+        const full = !!(page.fullscreenElement || page.webkitFullscreenElement);
+        document.documentElement.classList.toggle('wd-full', full);
+        for (const b of root.querySelectorAll('.wd-full-toggle')) b.replaceChildren(icon(full ? 'fullScreenExit' : 'fullScreen'));
+      });
     }
 
     if (darkQuery && darkQuery.addEventListener) {
       darkQuery.addEventListener('change', () => {
-        if (current && current.dashboard.theme !== 'auto') return;
+        if (ownTheme() || (current && current.dashboard.theme !== 'auto')) return;
         applyTheme(current ? current.dashboard.theme : 'auto');
         reloadFrames(); // a frame's dark mode is set when it starts
       });
@@ -608,7 +879,7 @@
         key = value;
         go.disabled = true;
         try {
-          await loadSetup();
+          await loadAll();
           storageSet(KEY_STORAGE, key);
           route();
         } catch (err) {
@@ -699,17 +970,27 @@
       return note;
     }
 
-    /** A widget type's short description (`web.about.<type>`). */
+    /** A widget type's short description (`web.about.<type>`); another app's widget's is its app's name. */
     function about(type) {
+      const other = foreign.get(type);
+      if (other) return other.ownerName;
       const strings = setup && setup.strings && setup.strings.web;
       const own = strings && strings.about && strings.about[type];
       return (typeof own === 'string' && own) || DEFAULT_STRINGS.about[type] || '';
     }
 
+    /** Where the Homey serves a widget's files (`index.html`, the previews): ours beside this page, another app's under it. */
+    function widgetFolder(type) {
+      const app = appWidget(type);
+      return app
+        ? `/app/${encodeURIComponent(app.appId)}/widgets/${encodeURIComponent(app.widgetId)}`
+        : `../widgets/${encodeURIComponent(type)}`;
+    }
+
     /** A widget type's own preview (as Homey's widget picker shows it), served beside its files, in the page's theme. */
     function preview(type, className) {
       const img = el('img', className);
-      img.src = `../widgets/${encodeURIComponent(type)}/preview-${isDark() ? 'dark' : 'light'}.png`;
+      img.src = `${widgetFolder(type)}/preview-${isDark() ? 'dark' : 'light'}.png`;
       img.alt = '';
       img.loading = 'lazy';
       img.decoding = 'async';
@@ -717,18 +998,39 @@
       return img;
     }
 
-    /** The front page: the dashboards as cards with a miniature of their columns, then a carousel of the widgets. */
-    function renderList() {
+    /**
+     * The front page: the dashboards as cards with a miniature of their columns, then a carousel of the widgets.
+     * `editing` (`#/edit`, the pen in its bar): the cards are dragged into order, the carousel can be turned off, and
+     * Forget the key is there (a user wanted it out of the way).
+     */
+    function renderList(editing = false) {
       clearRoot();
       applyTheme('auto');
-      const page = el('div', 'wd-home');
+      const page = el('div', `wd-home${editing ? ' arranging' : ''}`);
 
       const head = el('div', 'wd-section-head');
       const titles = el('div', 'wd-section-titles');
-      titles.append(el('h1', 'wd-h1', t('yourDashboards')), el('p', 'wd-muted', t('dashboardsText')));
+      titles.append(el('h1', 'wd-h1', t('yourDashboards')));
+      if (editing) titles.append(el('p', 'wd-muted', t('arrangeHint')));
       head.append(titles);
       const grid = el('div', 'wd-dashboards');
-      for (const d of dashboards) grid.append(dashboardCard(d));
+      for (const d of dashboards) grid.append(dashboardCard(d, editing));
+      if (editing) {
+        arrangeCards(grid);
+        page.append(head, grid);
+        if (types.size) page.append(widgetCarousel(true));
+        const forget = button('wd-btn quiet', t('forgetKey'), async () => {
+          forget.disabled = true;
+          if (session) await request('POST', '/web/logout', {}).catch(() => {});
+          storageSet(KEY_STORAGE, null);
+          storageSet(SESSION_STORAGE, null);
+          location.reload();
+        });
+        const done = el('a', 'wd-btn primary', t('done'));
+        done.href = '#/';
+        root.append(bar(brand(), el('span', 'wd-spacer'), forget, done), page);
+        return;
+      }
       const add = button('wd-dash wd-dash-new', '', async () => {
         add.disabled = true;
         try {
@@ -745,22 +1047,109 @@
       add.append(plus, el('span', 'wd-dash-new-text', t('newDashboard')));
       grid.append(add);
       page.append(head, grid);
-      if (types.size) page.append(widgetCarousel());
+      if (types.size && frontPage.widgets) page.append(widgetCarousel());
 
-      const forget = button('wd-btn quiet', t('forgetKey'), async () => {
-        forget.disabled = true;
-        if (session) await request('POST', '/web/logout', {}).catch(() => {});
-        storageSet(KEY_STORAGE, null);
-        storageSet(SESSION_STORAGE, null);
-        location.reload();
-      });
-      root.append(bar(brand(), el('span', 'wd-spacer'), liveNote(), forget), page);
+      const edit = el('a', 'wd-icon');
+      edit.href = '#/edit';
+      edit.title = t('edit');
+      edit.setAttribute('aria-label', t('edit'));
+      edit.append(icon('pen'));
+      root.append(bar(brand(), el('span', 'wd-spacer'), liveNote(), themeButton(), edit), page);
     }
 
-    /** A dashboard's card: a miniature of its columns (each widget as its preview), its name and widget count. */
-    function dashboardCard(d) {
+    /** Saves the front page's choices (`order`, `widgets`) after the saves already queued; keeps what the app answers. */
+    function saveFront(change) {
+      saving = saving.then(async () => {
+        try {
+          const res = await request('PUT', '/web/front', change);
+          if (res && Array.isArray(res.dashboards)) dashboards = res.dashboards;
+          if (res && res.front) frontPage = res.front;
+        } catch (err) {
+          failed(err);
+        }
+      });
+    }
+
+    /**
+     * The front page's edit mode: a card is dragged (pointer events, so by touch too; the grid holds the capture, as
+     * the card itself moves) and the others make room at once; arrow keys move a focused one. Escape puts them back.
+     */
+    function arrangeCards(grid) {
+      const cards = () => [...grid.querySelectorAll('.wd-dash[data-id]')];
+      const order = () => cards().map(c => /** @type {HTMLElement} */ (c).dataset.id);
+      let move = null; // {card, pointerId, x0, y0, active, before: the order when it started}
+      const finish = (keep) => {
+        if (!move) return;
+        const { card, active, before } = move;
+        move = null;
+        if (!active) return;
+        card.classList.remove('lifted');
+        root.classList.remove('dragging');
+        const now = order();
+        if (!keep) {
+          for (const id of before) grid.append(cards().find(c => /** @type {HTMLElement} */ (c).dataset.id === id));
+        } else if (now.join() !== before.join()) {
+          saveFront({ order: now });
+        }
+      };
+      grid.addEventListener('pointerdown', (e) => {
+        const card = /** @type {Element} */ (e.target).closest('.wd-dash[data-id]');
+        if (move || !card || e.button !== 0) return;
+        move = { card, pointerId: e.pointerId, x0: e.clientX, y0: e.clientY, active: false, before: order() };
+        try { grid.setPointerCapture(e.pointerId); } catch (err) { /* moves still come while over the grid */ }
+        e.preventDefault();
+      });
+      grid.addEventListener('pointermove', (e) => {
+        if (!move || e.pointerId !== move.pointerId) return;
+        if (!move.active) {
+          if (Math.hypot(e.clientX - move.x0, e.clientY - move.y0) < DRAG_SLOP) return;
+          move.active = true;
+          move.card.classList.add('lifted');
+          root.classList.add('dragging');
+        }
+        const h = window.innerHeight;
+        if (e.clientY < EDGE_PX) window.scrollBy(0, -16);
+        else if (e.clientY > h - EDGE_PX) window.scrollBy(0, 16);
+        const all = cards();
+        const over = all.find((c) => {
+          if (c === move.card) return false;
+          const r = c.getBoundingClientRect();
+          return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+        });
+        if (!over) return;
+        const after = all.indexOf(over) > all.indexOf(move.card);
+        grid.insertBefore(move.card, after ? over.nextSibling : over);
+      });
+      grid.addEventListener('pointerup', (e) => { if (move && e.pointerId === move.pointerId) finish(true); });
+      grid.addEventListener('pointercancel', () => finish(false));
+      grid.addEventListener('lostpointercapture', () => finish(true));
+      grid.addEventListener('keydown', (e) => {
+        const card = /** @type {HTMLElement} */ (e.target);
+        const step = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
+        if (!step || !card.matches('.wd-dash[data-id]')) return;
+        e.preventDefault();
+        const all = cards();
+        const other = all[all.indexOf(card) + step];
+        if (!other) return;
+        grid.insertBefore(card, step > 0 ? other.nextSibling : other);
+        card.focus();
+        saveFront({ order: order() });
+      });
+      window.addEventListener('keydown', function escape(e) {
+        if (!grid.isConnected) { window.removeEventListener('keydown', escape); return; }
+        if (e.key === 'Escape' && move) finish(false);
+      });
+    }
+
+    /**
+     * A dashboard's card: a miniature of its columns (each widget as its preview), its name and widget count. While
+     * the front page is edited it opens nothing: it's dragged (a grip in place of the pen).
+     */
+    function dashboardCard(d, editing = false) {
       const card = el('div', 'wd-dash');
+      card.dataset.id = d.id;
       const art = el('div', 'wd-dash-art');
+      if (d.background && d.background !== 'default') art.style.setProperty('--wd-bg', backdrop(d.background));
       const columns = d.columns.length ? d.columns : [[]];
       for (const column of columns) {
         const col = el('div', 'wd-dash-col');
@@ -769,11 +1158,20 @@
         art.append(col);
       }
       const link = el('a', 'wd-dash-link');
-      link.href = `#/d/${d.id}`;
+      if (!editing) link.href = `#/d/${d.id}`;
       const count = d.columns.reduce((n, c) => n + c.length, 0);
       const info = el('span', 'wd-dash-info');
       info.append(el('span', 'wd-dash-name', d.name || t('untitled')), el('span', 'wd-muted', t('widgetCount', { count })));
       link.append(info);
+      if (editing) {
+        card.tabIndex = 0;
+        card.setAttribute('aria-roledescription', t('drag'));
+        card.setAttribute('aria-label', d.name || t('untitled'));
+        const grip = el('span', 'wd-icon wd-dash-edit');
+        grip.append(icon('grip'));
+        card.append(art, link, grip);
+        return card;
+      }
       const edit = el('a', 'wd-icon wd-dash-edit');
       edit.href = `#/d/${d.id}/edit`;
       edit.title = t('edit');
@@ -788,7 +1186,7 @@
      * moves on by itself every 5 s, except while the pointer or focus is on it, for 15 s after a touch, while the page
      * is hidden, and not at all with reduced motion.
      */
-    function widgetCarousel() {
+    function widgetCarousel(editing = false) {
       // One widget at a time in a small card under the dashboards (a user found a row of large previews took the
       // attention away from them): its preview, name and description, ‹ › and a count. It moves on every 6 s, but not
       // while the mouse or focus is on it, for 15 s after a tap, while the page is hidden, or with reduced motion.
@@ -796,6 +1194,20 @@
       section.setAttribute('aria-label', t('widgetsTitle'));
       const head = el('div', 'wd-carousel-head');
       head.append(el('h2', 'wd-carousel-title', t('widgetsTitle')), el('span', 'wd-muted wd-carousel-text', t('widgetsText')));
+      if (editing) {
+        const label = el('label', 'wd-carousel-show');
+        const box = el('input', 'wd-switch');
+        box.type = 'checkbox';
+        box.setAttribute('role', 'switch');
+        box.checked = frontPage.widgets;
+        section.classList.toggle('off', !box.checked);
+        box.addEventListener('change', () => {
+          section.classList.toggle('off', !box.checked);
+          saveFront({ widgets: box.checked });
+        });
+        label.append(el('span', null, t('showWidgets')), box);
+        head.append(label);
+      }
       const sorted = [...types.values()].sort((a, b) => a.name.localeCompare(b.name));
 
       const card = el('article', 'wd-spot');
@@ -858,12 +1270,12 @@
     }
 
     /** The widget ids' frame signature: a change (settings, devices, title, theme) reloads that frame. */
-    const signature = (w) => JSON.stringify([w.type, w.title, w.settings, w.deviceIds, isDark()]);
+    const signature = (w) => JSON.stringify([w.type, w.title, w.settings, w.deviceIds, w.trusted === true, isDark()]);
 
     function renderDashboard(dashboard, editing) {
       clearRoot();
       setTitle(dashboard);
-      applyTheme(dashboard.theme);
+      applyTheme(dashboard.theme, dashboard.background);
       current = { dashboard: clone(dashboard), editing, widgets: new Map(), grid: el('main', 'wd-grid') };
       root.classList.toggle('editing', editing);
       root.append(editing ? editBar() : viewBar(), current.grid);
@@ -872,26 +1284,26 @@
 
     function viewBar() {
       const d = current.dashboard;
-      const back = el('a', 'wd-btn quiet', '‹');
+      const back = el('a', 'wd-btn quiet wd-back', '‹');
       back.href = '#/';
       back.title = t('dashboards');
       back.setAttribute('aria-label', t('dashboards'));
-      const items = [back, el('span', 'wd-bar-title', d.name || t('untitled')), el('span', 'wd-spacer'), liveNote()];
+      const items = [back, el('span', 'wd-bar-title', d.name || t('untitled')), el('span', 'wd-spacer'), liveNote(), themeButton()];
       // Safari on an iPad only has the webkit-prefixed calls.
       const doc = /** @type {any} */ (document.documentElement);
       const page = /** @type {any} */ (document);
       if (doc.requestFullscreen || doc.webkitRequestFullscreen) {
-        const full = button('wd-icon', '', () => {
+        const full = button('wd-icon wd-full-toggle', '', () => {
           if (page.fullscreenElement || page.webkitFullscreenElement) {
             (page.exitFullscreen || page.webkitExitFullscreen).call(page);
           } else {
             (doc.requestFullscreen || doc.webkitRequestFullscreen).call(doc);
           }
         }, t('fullScreen'));
-        full.append(icon('fullScreen'));
+        full.append(icon(page.fullscreenElement || page.webkitFullscreenElement ? 'fullScreenExit' : 'fullScreen'));
         items.push(full);
       }
-      const edit = el('a', 'wd-icon');
+      const edit = el('a', 'wd-icon wd-bar-edit');
       edit.href = `#/d/${d.id}/edit`;
       edit.title = t('edit');
       edit.setAttribute('aria-label', t('edit'));
@@ -928,10 +1340,55 @@
       theme.value = d.theme;
       theme.addEventListener('change', () => {
         current.dashboard.theme = theme.value;
-        applyTheme(theme.value);
+        storageSet(THEME_STORAGE, null); // this browser's own dark or light would hide the choice
+        applyTheme(theme.value, current.dashboard.background);
         persist();
         syncGrid();
+        drawBackground();
       });
+
+      // The backdrop: a button with the current one's swatch, opening the palette under it.
+      const bgPick = el('span', 'wd-bgpick');
+      const bgButton = button('wd-btn small', '', () => (pop.hidden ? openPalette() : closePalette()), t('background'));
+      bgButton.setAttribute('aria-haspopup', 'true');
+      bgButton.setAttribute('aria-expanded', 'false');
+      const pop = el('div', 'wd-bgpop');
+      pop.hidden = true;
+      bgPick.append(bgButton, pop);
+      const backgrounds = Object.keys(BACKGROUNDS).map(id => ({ id, title: t(`bg${id[0].toUpperCase()}${id.slice(1)}`) }));
+      function drawBackground() {
+        bgButton.replaceChildren(swatch(backdrop(current.dashboard.background), 'small'), t('background'));
+        // Each swatch shows both its shades (the dark tints alone look alike): the theme picks one.
+        const colours = Object.fromEntries(backgrounds.map(b => [b.id, `linear-gradient(135deg, ${BACKGROUNDS[b.id][0]} 50%, ${BACKGROUNDS[b.id][1]} 50%)`]));
+        pop.replaceChildren(choiceGroup(null, backgrounds, current.dashboard.background || 'default', (id) => {
+          current.dashboard.background = id;
+          applyTheme(current.dashboard.theme, id);
+          persist();
+          drawBackground();
+          closePalette();
+          bgButton.focus();
+        }, true, colours));
+      }
+      const outside = (e) => { if (!bgPick.contains(/** @type {Node} */ (e.target))) closePalette(); };
+      const escape = (e) => { if (e.key === 'Escape') { closePalette(); bgButton.focus(); } };
+      function openPalette() {
+        pop.hidden = false;
+        pop.style.left = '';
+        const over = pop.getBoundingClientRect().right - (document.documentElement.clientWidth - 8);
+        if (over > 0) pop.style.left = `${-over}px`; // kept inside a narrow window
+        bgButton.setAttribute('aria-expanded', 'true');
+        document.addEventListener('pointerdown', outside, true);
+        document.addEventListener('keydown', escape, true);
+        const on = pop.querySelector('.on');
+        if (on) /** @type {HTMLElement} */ (on).focus();
+      }
+      function closePalette() {
+        pop.hidden = true;
+        bgButton.setAttribute('aria-expanded', 'false');
+        document.removeEventListener('pointerdown', outside, true);
+        document.removeEventListener('keydown', escape, true);
+      }
+      drawBackground();
 
       const remove = confirmButton('wd-btn danger', t('deleteDashboard'), async () => {
         // After the saves already queued, and no save of it after (a name field's change can fire on the way).
@@ -950,7 +1407,7 @@
 
       const done = el('a', 'wd-btn primary', t('done'));
       done.href = `#/d/${d.id}`;
-      return bar(name, cols, theme, el('span', 'wd-spacer'), remove, done);
+      return bar(name, cols, theme, bgPick, el('span', 'wd-spacer'), remove, done);
     }
 
     function setColumns(n) {
@@ -1015,15 +1472,18 @@
     }
 
     function widgetElement(w) {
-      const def = types.get(w.type);
+      const app = appWidget(w.type);
+      // Another app's widget still shows when this key can't read Homey's list (its defaults then: a card, no height).
+      const def = typeOf(w.type) || (app && foreignState !== 'ok' ? { name: app.widgetId, height: null, transparent: false } : null);
       const node = el('article', 'wd-widget');
       node.dataset.id = w.id;
       if (current.editing) node.append(dragHandle(el('div', 'wd-tools')));
       if (w.title) node.append(el('h2', 'wd-title', w.title));
       if (!def) {
-        node.append(el('p', 'wd-error', w.type));
+        node.append(el('p', 'wd-error', app ? t('notInstalled', { name: app.appId }) : w.type));
         return node;
       }
+      if (app && opts.mountWidget) return node; // the dev renders draw only ours
       const wrap = el('div', def.transparent ? 'wd-frame' : 'wd-frame card');
       if (opts.mountWidget) {
         node.append(wrap);
@@ -1032,16 +1492,21 @@
       }
       const iframe = document.createElement('iframe');
       iframe.title = w.title || def.name;
-      iframe.style.height = `${def.height || 120}px`;
+      // A percentage height keeps that share of the width until the widget sets its own (`ready`/`setHeight`).
+      if (typeof def.height === 'string') iframe.style.aspectRatio = `100 / ${parseFloat(def.height)}`;
+      else iframe.style.height = `${def.height || 120}px`;
       iframe.setAttribute('allow', 'autoplay; fullscreen');
       // A frame far below the window loads when it's scrolled near, so the ones on screen get the Homey to themselves.
       iframe.loading = 'lazy';
       // The dashboard and widget ids: a Timers widget keeps its own timer, a Media widget its speaker choice.
       const instance = `web-${current.dashboard.id}-${w.id}`;
-      iframe.src = `../widgets/${encodeURIComponent(w.type)}/index.html?widgetInstanceId=${encodeURIComponent(instance)}`;
+      // Another app's widget is sandboxed (no `allow-same-origin`: it can't read the key) unless the user trusts it.
+      const sandboxed = !!app && w.trusted !== true;
+      if (sandboxed) iframe.setAttribute('sandbox', SANDBOX);
+      iframe.src = `${widgetFolder(w.type)}/index.html?widgetInstanceId=${encodeURIComponent(instance)}`;
       wrap.append(iframe);
       node.append(wrap);
-      frames.add({ widget: clone(w), iframe, subs: new Map(), gen: 0 });
+      frames.add({ widget: clone(w), iframe, subs: new Map(), gen: 0, app, sandboxed });
       return node;
     }
 
@@ -1049,7 +1514,7 @@
     function setTools(node, w, c, i, n) {
       const tools = node.querySelector(':scope > .wd-tools');
       if (!tools) return;
-      const def = types.get(w.type);
+      const def = typeOf(w.type);
       const cols = current.dashboard.columns.length;
       tools.textContent = '';
       const grip = el('span', 'wd-grip', '⠿');
@@ -1057,7 +1522,7 @@
       grip.setAttribute('aria-hidden', 'true');
       tools.append(
         grip,
-        el('span', 'wd-tools-name', (def && def.name) || w.type),
+        el('span', 'wd-tools-name', (def && def.name) || (appWidget(w.type) || { widgetId: w.type }).widgetId),
         el('span', 'wd-spacer'),
         button('wd-tool', '⚙', () => editWidget(w.id), t('settings')),
         button('wd-tool', '↑', () => move(w.id, 0, -1), t('moveUp')),
@@ -1143,7 +1608,7 @@
 
     function beginDrag() {
       const at = find(drag.id);
-      const def = at && types.get(at.widget.type);
+      const def = at && typeOf(at.widget.type);
       drag.active = true;
       root.classList.add('dragging');
       drag.node.classList.add('lifted');
@@ -1291,8 +1756,26 @@
       const { d, body } = dialog(t('chooseWidget'));
       d.classList.add('wide');
       const list = el('div', 'wd-types');
-      const sorted = [...types.values()].sort((a, b) => a.name.localeCompare(b.name));
-      for (const def of sorted) {
+      for (const def of [...types.values()].sort((a, b) => a.name.localeCompare(b.name))) list.append(typeButton(def));
+      body.append(list);
+      // Then other apps' widgets, by app (only what Homey still offers: not a deprecated one).
+      const others = [...foreign.values()].filter(f => !f.deprecated)
+        .sort((a, b) => a.ownerName.localeCompare(b.ownerName) || a.name.localeCompare(b.name));
+      if (others.length || foreignState !== 'ok') {
+        const head = el('div', 'wd-types-head');
+        head.append(el('h3', 'wd-h2', t('otherApps')));
+        if (foreignState === 'noScope') head.append(el('p', 'wd-muted', t('otherAppsKey')));
+        else if (foreignState === 'failed') head.append(el('p', 'wd-error', t('otherAppsFailed')));
+        body.append(head);
+      }
+      if (others.length) {
+        const more = el('div', 'wd-types');
+        for (const def of others) more.append(typeButton(def));
+        body.append(more);
+      }
+      d.showModal();
+
+      function typeButton(def) {
         const b = button('wd-type', '', () => {
           d.close();
           const settings = {};
@@ -1306,10 +1789,8 @@
         const text = el('span', 'wd-type-text');
         text.append(el('span', 'wd-type-name', def.name), el('span', 'wd-type-about', about(def.type)));
         b.append(preview(def.type, 'wd-type-preview'), text);
-        list.append(b);
+        return b;
       }
-      body.append(list);
-      d.showModal();
     }
 
     /**
@@ -1321,9 +1802,10 @@
       const at = find(id);
       if (!at) return;
       const w = at.widget;
-      const def = types.get(w.type);
+      const def = typeOf(w.type);
       if (!def) return;
       const draft = { title: w.title || '', settings: clone(w.settings || {}), deviceIds: (w.deviceIds || []).slice() };
+      const trust = { settings: { trusted: w.trusted === true } }; // another app's widget: run it unsandboxed
       for (const s of def.settings) if (!(s.id in draft.settings)) draft.settings[s.id] = clone(s.value);
       const { d, body } = dialog(def.name, def.type);
       d.classList.add('wd-settings');
@@ -1400,6 +1882,11 @@
         general.append(titleRow);
         body.insertBefore(general, body.querySelector(':scope > .wd-set-card:not(.wd-set-devices)') || null);
       }
+      if (def.app) {
+        const c = card();
+        c.append(settingRow(def, { id: 'trusted', type: 'checkbox', title: t('trustTitle'), hint: t('trustHint') }, trust, () => {}, uid()));
+        body.append(c);
+      }
 
       /** A numbered group (`Button 1`): a header that folds it, with what its values are; its rows under it. */
       function groupCard(sec, open) {
@@ -1468,6 +1955,8 @@
             now.widget.title = draft.title.trim();
             now.widget.settings = draft.settings;
             now.widget.deviceIds = draft.deviceIds;
+            if (trust.settings.trusted === true) now.widget.trusted = true;
+            else delete now.widget.trusted;
             persist();
             syncGrid();
           }
@@ -1590,7 +2079,8 @@
     }
 
     /** A short dropdown as one row of choices (`1 | 2`, `Standard | Compact`), or a colour's as swatches. */
-    function choiceGroup(s, values, value, set, swatches) {
+    /** @param {Record<string, string | null>} [colours] a swatch's colour per value (the widgets' palette) */
+    function choiceGroup(s, values, value, set, swatches, colours = SWATCHES) {
       const group = el('div', swatches ? 'wd-swatches' : 'wd-seg');
       group.setAttribute('role', 'radiogroup');
       const name = el('span', 'wd-swatch-name');
@@ -1611,7 +2101,7 @@
         if (swatches) {
           b.title = v.title;
           b.setAttribute('aria-label', v.title);
-          b.append(swatch(SWATCHES[v.id]));
+          b.append(swatch(colours[v.id]));
         }
         group.append(b);
       }
@@ -1660,7 +2150,9 @@
       const list = el('div', 'wd-devlist');
       const hint = el('p', 'wd-hint', t('dragToOrder'));
       let byId = null; // id → device, once loaded
-      const loading = request('GET', `/web/devices?type=${encodeURIComponent(def.type)}`).then((items) => {
+      // Another app's widget sends its filter: only this page can read that app's manifest.
+      const filter = def.app ? `&class=${encodeURIComponent(def.devices.class)}&capabilities=${encodeURIComponent(def.devices.capabilities)}${def.devices.app ? '&app=1' : ''}` : '';
+      const loading = request('GET', `/web/devices?type=${encodeURIComponent(def.type)}${filter}`).then((items) => {
         byId = new Map((items || []).map(d => [d.id, d]));
         draw();
         return items || [];
@@ -2090,8 +2582,11 @@
       const load = async () => {
         const mine = ++seq;
         try {
-          // The page's key goes along: the Smart Stack's dashboards are read with the app's stored key.
-          const items = await request('POST', '/web/autocomplete', { type: def.type, setting: s.id, query: search.value, settings: draft.settings, key });
+          // The page's key goes along: the Smart Stack's dashboards are read with the app's stored key. Another app's
+          // autocomplete is Homey's to ask that app (it needs a key with full access, as Homey's list of them does).
+          const items = def.app
+            ? await homeyRequest('GET', `/manager/dashboards/appwidget/${encodeURIComponent(def.type)}/autocomplete?${bracketQuery(new URLSearchParams({ settingId: s.id, query: search.value }), draft.settings, 'settings')}`)
+            : await request('POST', '/web/autocomplete', { type: def.type, setting: s.id, query: search.value, settings: draft.settings, key });
           if (mine !== seq) return;
           list.textContent = '';
           if (!items || !items.length) list.append(el('p', 'wd-hint', t('nothingFound')));
@@ -2150,6 +2645,7 @@
       if (!setup) { start(); return; }
       if (setup.disabled) { renderOff(); return; }
       if (setup.passwordRequired) { renderPassword(); return; }
+      if (location.hash === '#/edit') { renderList(true); return; }
       const m = location.hash.match(/^#\/d\/([A-Za-z0-9_-]+)(\/edit)?$/);
       if (!m) { renderList(); return; }
       const dashboard = dashboards.find(d => d.id === m[1]);
@@ -2160,7 +2656,7 @@
     async function start() {
       if (!key) { renderKey(); return; }
       try {
-        await loadSetup();
+        await loadAll();
         route();
       } catch (err) {
         if (err.unauthorized) {

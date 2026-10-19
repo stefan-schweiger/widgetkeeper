@@ -76,6 +76,14 @@ html, body { background: transparent !important; }
 .fb-row[data-color="purple"] .fb-button { --fb-color: var(--fb-c-purple); }
 .fb-row[data-color="grey"] .fb-button { --fb-color: var(--fb-neutral); color: var(--fb-text); }
 .fb-row.pressing .fb-button { transform: scale(.9); }
+/* A colour set by a Flow (.flow-color, a user's request): in Muted the row is also tinted, as Device Values' tiles are. */
+.fb-row.flow-color { --fb-tint: var(--fb-c-blue); }
+.fb-row.flow-color[data-color="red"] { --fb-tint: var(--fb-c-red); }
+.fb-row.flow-color[data-color="orange"] { --fb-tint: var(--fb-c-orange); }
+.fb-row.flow-color[data-color="yellow"] { --fb-tint: var(--fb-c-yellow); }
+.fb-row.flow-color[data-color="green"] { --fb-tint: var(--fb-c-green); }
+.fb-row.flow-color[data-color="purple"] { --fb-tint: var(--fb-c-purple); }
+.fb:not(.wk-deep) .fb-row.flow-color:not(.missing) { background: color-mix(in srgb, var(--fb-tint) 22%, var(--fb-tile)); }
 .fb-row.missing .fb-button { background: none; box-shadow: inset 0 0 0 1.5px var(--fb-muted); color: var(--fb-muted); }
 /*
  * Vivid (kit.css): the whole row in its colour's darker shade, with the text in --wk-on and the button a lighter circle on it

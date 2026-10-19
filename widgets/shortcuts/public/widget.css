@@ -1,0 +1,138 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/shortcuts-preview.html).
+ * The pill is the user's design (a fully round tile); its round icon, colours and Vivid copy Flow Buttons'
+ * (widgets/flows/public/widget.css).
+ */
+.sc {
+  --sc-tile: var(--homey-background-color, #FFFFFF);
+  --sc-text: var(--homey-text-color, #EDEEF0);
+  --sc-muted: var(--homey-text-color-light, #9C9DA5);
+  --sc-neutral: color-mix(in srgb, var(--sc-text) 8%, var(--sc-tile)); /* the grey icon: Flow Buttons' */
+  /* The colour setting (data-color on .sc-row): Flow Buttons' colours. */
+  --sc-c-blue: var(--wk-blue); /* kit.css's palette */
+  --sc-c-red: var(--wk-red);
+  --sc-c-orange: var(--wk-orange);
+  --sc-c-yellow: var(--wk-yellow);
+  --sc-c-green: var(--wk-green);
+  --sc-c-purple: var(--wk-purple);
+  --sc-on-color: #FFFFFF; /* the glyph on a coloured icon */
+  --sc-on-light: #1A1B21; /* the glyph on yellow and green, which are too light for white */
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --sc-fs-small: var(--homey-font-size-small, 14px); --sc-lh-small: var(--homey-line-height-small, 20px);
+  --sc-fs: var(--homey-font-size-default, 17px); --sc-lh: var(--homey-line-height-default, 24px);
+  --sc-regular: var(--homey-font-weight-regular, 400);
+}
+/* Dark mode: each pill is a native device tile's colour, darker than the default widget background. */
+.homey-dark-mode .sc, .sc.homey-dark-mode { --sc-tile: #181920; --sc-neutral: #2E3039; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+/* Transparent, but Homey paints body light until .homey-dark-mode arrives (see Quick Actions). */
+html, body { background: transparent !important; }
+
+.sc { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; color: var(--sc-text);
+  container: sc / inline-size; }
+.sc * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
+.sc [dir="auto"] { text-align: left; }
+
+.sc-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--homey-su-3, 12px); }
+.sc[data-columns="2"] .sc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Two columns need room for a name beside the icon; a narrow widget (300 px) gets one. */
+@container sc (max-width: 299px) {
+  .sc[data-columns="2"] .sc-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* A pill (44 px): the round icon, then the name. */
+.sc-row {
+  --sc-color: var(--sc-c-blue);
+  --sc-ring: var(--sc-color); /* the current dashboard's ring */
+  position: relative; color: var(--sc-text); outline: none;
+  background: var(--sc-tile); border-radius: 999px; padding: 8px 16px 8px 8px; min-width: 0; min-height: 44px;
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+  transition: transform .1s;
+}
+.sc-row[data-color="red"] { --sc-color: var(--sc-c-red); }
+.sc-row[data-color="orange"] { --sc-color: var(--sc-c-orange); }
+.sc-row[data-color="yellow"] { --sc-color: var(--sc-c-yellow); }
+.sc-row[data-color="green"] { --sc-color: var(--sc-c-green); }
+.sc-row[data-color="purple"] { --sc-color: var(--sc-c-purple); }
+.sc-row[data-color="grey"] { --sc-color: var(--sc-neutral); --sc-ring: var(--sc-muted); }
+/* The native tiles' 1px rim, brightest along the top. */
+.homey-dark-mode .sc-row::after, .sc.homey-dark-mode .sc-row::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.sc-row:focus-visible { box-shadow: 0 0 0 2px var(--sc-c-blue); }
+.sc-row.pressing { transform: scale(.98); }
+/* The dashboard it's on: a ring in its colour, and no tap. */
+.sc-row.current { cursor: default; box-shadow: inset 0 0 0 2px var(--sc-ring); }
+.sc-row.missing { cursor: default; }
+.sc-row.missing > * { opacity: .5; }
+
+/* The round icon: 28 px, in the pill's colour, with a 20 px glyph. */
+.sc-icon {
+  position: relative; flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--sc-color); color: var(--sc-on-color);
+  display: flex; align-items: center; justify-content: center; transition: transform .1s;
+}
+.sc-row[data-color="yellow"] .sc-icon, .sc-row[data-color="green"] .sc-icon { color: var(--sc-on-light); }
+.sc-row[data-color="grey"] .sc-icon { color: var(--sc-text); }
+.sc-row.pressing .sc-icon { transform: scale(.9); }
+.sc-row.missing .sc-icon { background: none; box-shadow: inset 0 0 0 1.5px var(--sc-muted); color: var(--sc-muted); }
+/*
+ * Vivid (kit.css): the whole pill in its colour's darker shade, with the text in --wk-on and the icon a lighter circle on it
+ * (grey pills and missing dashboards stay as they are).
+ */
+.sc.wk-deep .sc-row { --sc-row: var(--wk-blue); --sc-row-on: var(--wk-on-blue); }
+.sc.wk-deep .sc-row[data-color="red"] { --sc-row: var(--wk-red); --sc-row-on: var(--wk-on-red); }
+.sc.wk-deep .sc-row[data-color="orange"] { --sc-row: var(--wk-orange); --sc-row-on: var(--wk-on-orange); }
+.sc.wk-deep .sc-row[data-color="yellow"] { --sc-row: var(--wk-yellow); --sc-row-on: var(--wk-on-yellow); --wk-on-muted: rgb(26 27 33 / .75); }
+.sc.wk-deep .sc-row[data-color="green"] { --sc-row: var(--wk-green); --sc-row-on: var(--wk-on-green); }
+.sc.wk-deep .sc-row[data-color="purple"] { --sc-row: var(--wk-purple); --sc-row-on: var(--wk-on-purple); }
+.sc.wk-deep .sc-row:not([data-color="grey"]):not(.missing) {
+  background: var(--sc-row); --sc-text: var(--sc-row-on); --sc-muted: var(--wk-on-muted); --sc-ring: var(--sc-row-on);
+}
+.sc.wk-deep .sc-row:not([data-color="grey"]):not(.missing) .sc-icon {
+  background: color-mix(in srgb, var(--sc-row-on) 20%, transparent); color: var(--sc-row-on);
+}
+
+.sc-glyph { width: var(--homey-icon-size-medium, 20px); height: var(--homey-icon-size-medium, 20px); fill: none;
+  stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sc-glyph .filled { fill: currentColor; stroke: none; }
+
+.sc-name {
+  /* 17 regular, like the user's design; one line, then an ellipsis. */
+  flex: 1 1 auto; min-width: 0;
+  font-size: var(--sc-fs); line-height: var(--sc-lh); font-weight: var(--sc-regular);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Rename tiles: a text field in place of the name, so the pill does nothing but take the name. */
+.sc.renaming .sc-row { cursor: default; }
+.sc.renaming .sc-row:not(.missing) .sc-name { display: none; }
+.sc-row.missing .wk-rename { display: none; }
+.sc .wk-rename {
+  flex: 1 1 auto; width: 100%; min-width: 0; height: 28px; margin: 0; padding: 0 10px;
+  font: inherit; font-size: var(--sc-fs-small); color: var(--sc-text);
+  background: color-mix(in srgb, var(--sc-text) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--sc-text) 24%, transparent); border-radius: 999px; outline: none;
+  user-select: text; -webkit-user-select: text;
+}
+.sc .wk-rename::placeholder { color: var(--sc-muted); opacity: 1; }
+.sc .wk-rename:focus { border-color: var(--sc-color); }
+
+.sc-message { font-size: var(--sc-fs-small); line-height: var(--sc-lh-small); color: var(--sc-muted); }
+.sc-message.error { color: var(--sc-c-red); }
+
+.sc-row.shake { animation: sc-shake .35s; }
+@keyframes sc-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc-row.shake { animation: none; }
+}

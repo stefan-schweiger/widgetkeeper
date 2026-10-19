@@ -92,6 +92,10 @@
       "method": "PUT",
       "path": "/web/dashboards"
     },
+    "putWebFront": {
+      "method": "PUT",
+      "path": "/web/front"
+    },
     "deleteWebDashboard": {
       "method": "DELETE",
       "path": "/web/dashboards/:id"

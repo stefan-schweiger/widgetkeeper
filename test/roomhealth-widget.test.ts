@@ -158,11 +158,6 @@ describe('Room Health widget', () => {
     expect(bars.rooms()[0].querySelector('.rh-mark svg')).toBeNull();
   });
 
-  it('Green when fine is a class on the root, for the CSS', () => {
-    expect(widget([sensor('a', LIVING, { temperature: 21 })]).root.classList.contains('rh-green')).toBe(false);
-    expect(widget([sensor('a', LIVING, { temperature: 21 })], { greenWhenFine: true }).root.classList.contains('rh-green')).toBe(true);
-  });
-
   it('a missing sensor is a muted room named Unavailable, without marks', () => {
     const { rooms, text, value, marks, label } = widget([sensor('a', ['z9', 'Office'], { temperature: 19.2 }), { id: 'x', missing: true }]);
     expect(rooms()[1].classList.contains('missing')).toBe(true);
@@ -211,8 +206,8 @@ describe('Room Health widget', () => {
     expect(style(1).getPropertyValue('--rh-unit-w')).toMatch(/^calc\(var\(--rh-fs-small\) \* [\d.]+ \+ 2px\)$/);
   });
 
-  it("a tap steps the value through the room's other readings, back to the usual one past the last or after 6 s", () => {
-    const { rooms, value } = widget([
+  it("a tap steps the value through the room's other readings, with the reading's name for the room's, back to the usual one past the last or after 6 s", () => {
+    const { rooms, value, text } = widget([
       sensor('a', LIVING, { temperature: 21.4, humidity: 45, co2: 720 }),
       sensor('b', BEDROOM, { temperature: 19, co2: 1400 }),
     ]);
@@ -221,11 +216,14 @@ describe('Room Health widget', () => {
     expect(value(0)).toBe(`${num(45)}%`);
     expect(rooms()[0].classList.contains('picking')).toBe(true);
     expect(picked()).toEqual(['humidity']);
+    expect(text('.rh-name', 0)).toBe('Humidity');
     rooms()[0].click();
     expect(value(0)).toBe(`${num(720)} ppm`);
+    expect(text('.rh-name', 0)).toBe('CO₂');
     rooms()[0].click();
     expect(value(0)).toBe(`${num(21.4, 1)}°`);
     expect(rooms()[0].classList.contains('picking')).toBe(false);
+    expect(text('.rh-name', 0)).toBe('Living room');
     // The bedroom shows its CO₂ (off), so a tap goes on from there, round to the temperature.
     rooms()[1].click();
     expect(value(1)).toBe(`${num(19, 1)}°`);
@@ -234,6 +232,7 @@ describe('Room Health widget', () => {
     vi.advanceTimersByTime(1);
     expect(value(1)).toBe(`${num(1400)} ppm`);
     expect(picked(1)).toEqual([]);
+    expect(text('.rh-name', 1)).toBe('Bedroom');
   });
 
   it('a tap on a missing sensor or on a room with one reading does nothing', () => {

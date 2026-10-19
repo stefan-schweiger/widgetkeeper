@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="../widgets/locks/public/widget.css">
   <link rel="stylesheet" href="../widgets/cameras/public/widget.css">
   <link rel="stylesheet" href="../widgets/variables/public/widget.css">
+  <link rel="stylesheet" href="../widgets/shortcuts/public/widget.css">
   <script src="../widgets/spacer/public/kit.js"></script>
   <script src="../widgets/lights/public/widget.js"></script>
   <script src="../widgets/curtains/public/widget.js"></script>
@@ -28,6 +29,7 @@
   <script src="../widgets/locks/public/widget.js"></script>
   <script src="../widgets/cameras/public/widget.js"></script>
   <script src="../widgets/variables/public/widget.js"></script>
+  <script src="../widgets/shortcuts/public/widget.js"></script>
   <script src="i18n.js"></script>
   <link rel="stylesheet" href="preview.css">
   <style>
@@ -42,7 +44,7 @@
   <!-- Every widget with device tiles in rename mode (the `renameTiles` setting): a field per tile, the own name as
        its placeholder. Typed names save after 300 ms (a name with "fail" in it fails, to show the shake). -->
   <script>
-    const WIDGETS = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'roomhealth', 'valuematrix', 'values', 'sparklines', 'locks', 'cameras', 'variables'];
+    const WIDGETS = ['lights', 'curtains', 'quickactions', 'sensoralarms', 'roomhealth', 'valuematrix', 'values', 'sparklines', 'locks', 'cameras', 'variables', 'shortcuts'];
     const cap = (value) => ({ value, setable: true, lastUpdated: Date.now() - 3600e3 });
     const living = { id: 'z1', name: 'Living room' };
     const kitchen = { id: 'z2', name: 'Kitchen' };
@@ -130,6 +132,11 @@
           { id: 'v3', name: 'Message', type: 'string', value: 'Back at six' },
           { id: 'v4', missing: true },
         ],
+      },
+      shortcuts: {
+        create: 'createShortcutsWidget', names: { lights: 'Lamps' },
+        opts: { tiles: [{ id: 'house', icon: 'home' }, { id: 'lights', color: 'yellow', icon: 'bulb' }, { id: 'garden', color: 'green', icon: 'leaf' }, { id: 'gone' }] },
+        state: { current: 'house', tiles: [{ id: 'house', name: 'Solbakken' }, { id: 'lights', name: 'Lights' }, { id: 'garden', name: 'Garden' }, { id: 'gone', missing: true }] },
       },
     };
     const row = document.createElement('div');

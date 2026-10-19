@@ -1,0 +1,1701 @@
+{
+  "name": {
+    "en": "Dashboard Shortcuts",
+    "nl": "Dashboardsnelkoppelingen",
+    "de": "Dashboard-Verknüpfungen",
+    "fr": "Raccourcis de tableaux de bord",
+    "it": "Scorciatoie dashboard",
+    "sv": "Genvägar till instrumentpaneler",
+    "no": "Dashbordsnarveier",
+    "es": "Accesos a paneles",
+    "da": "Dashboardgenveje",
+    "ru": "Ярлыки панелей",
+    "pl": "Skróty do pulpitów",
+    "ko": "대시보드 바로가기",
+    "ar": "اختصارات اللوحات"
+  },
+  "deprecated": true,
+  "height": 100,
+  "transparent": true,
+  "settings": [
+    {
+      "id": "renameTiles",
+      "type": "checkbox",
+      "title": {
+        "en": "Rename tiles",
+        "nl": "Tegels hernoemen",
+        "de": "Kacheln umbenennen",
+        "fr": "Renommer les tuiles",
+        "it": "Rinomina riquadri",
+        "sv": "Byt namn på rutor",
+        "no": "Gi nytt navn til fliser",
+        "es": "Renombrar mosaicos",
+        "da": "Omdøb felter",
+        "ru": "Переименовать плитки",
+        "pl": "Zmień nazwy kafelków",
+        "ko": "타일 이름 바꾸기",
+        "ar": "إعادة تسمية المربعات"
+      },
+      "hint": {
+        "en": "To name the tiles: turn this on and save the widget, then leave the dashboard's edit mode. Each tile shows a text field: type its name, or leave it empty to keep the dashboard's name. Then edit the widget again and turn this off.",
+        "nl": "Tegels een naam geven: zet dit aan en sla de widget op, en verlaat dan de bewerkmodus van het dashboard. Elke tegel toont een tekstveld: typ de naam, of laat het leeg om de naam van het dashboard te houden. Bewerk daarna de widget opnieuw en zet dit uit.",
+        "de": "Kacheln benennen: Schalte dies ein, speichere das Widget und verlasse den Bearbeitungsmodus des Dashboards. Jede Kachel zeigt ein Textfeld: Gib den Namen ein oder lass es leer, um den Namen des Dashboards zu behalten. Bearbeite danach das Widget erneut und schalte dies aus.",
+        "fr": "Pour nommer les tuiles : activez ceci, enregistrez le widget, puis quittez le mode édition du tableau de bord. Chaque tuile affiche un champ de texte : tapez son nom, ou laissez-le vide pour garder le nom du tableau de bord. Modifiez ensuite le widget à nouveau et désactivez ceci.",
+        "it": "Per dare un nome ai riquadri: attiva questa opzione e salva il widget, poi esci dalla modalità di modifica della dashboard. Ogni riquadro mostra un campo di testo: scrivi il nome, o lascialo vuoto per mantenere il nome della dashboard. Poi modifica di nuovo il widget e disattiva questa opzione.",
+        "sv": "Så namnger du rutorna: slå på detta och spara widgeten, och lämna sedan instrumentpanelens redigeringsläge. Varje ruta visar ett textfält: skriv namnet, eller lämna det tomt för att behålla instrumentpanelens namn. Redigera sedan widgeten igen och slå av detta.",
+        "no": "Slik gir du flisene navn: slå på dette og lagre widgeten, og gå så ut av dashbordets redigeringsmodus. Hver flis viser et tekstfelt: skriv navnet, eller la det stå tomt for å beholde dashbordets navn. Rediger så widgeten igjen og slå av dette.",
+        "es": "Para poner nombre a los mosaicos: activa esto y guarda el widget, luego sal del modo de edición del panel. Cada mosaico muestra un campo de texto: escribe su nombre, o déjalo vacío para mantener el nombre del panel. Después edita el widget de nuevo y desactiva esto.",
+        "da": "Sådan navngiver du felterne: slå dette til og gem widgetten, og forlad så dashboardets redigeringstilstand. Hvert felt viser et tekstfelt: skriv navnet, eller lad det stå tomt for at beholde dashboardets navn. Redigér derefter widgetten igen, og slå dette fra.",
+        "ru": "Чтобы назвать плитки: включите это и сохраните виджет, затем выйдите из режима редактирования панели. На каждой плитке появится текстовое поле: введите название или оставьте его пустым, чтобы оставить название панели. Затем снова откройте настройки виджета и выключите это.",
+        "pl": "Aby nazwać kafelki: włącz to i zapisz widżet, a potem wyjdź z trybu edycji pulpitu. Każdy kafelek pokaże pole tekstowe: wpisz nazwę albo zostaw je puste, aby zachować nazwę pulpitu. Potem ponownie edytuj widżet i wyłącz to.",
+        "ko": "타일 이름을 정하려면: 이 옵션을 켜고 위젯을 저장한 뒤 대시보드 편집 모드를 나가세요. 각 타일에 입력란이 나타납니다. 이름을 입력하거나 비워 두면 대시보드 이름이 그대로 쓰입니다. 그런 다음 위젯을 다시 편집해 이 옵션을 끄세요.",
+        "ar": "لتسمية المربعات: شغّل هذا الخيار واحفظ الأداة، ثم اخرج من وضع تحرير لوحة التحكم. يعرض كل مربع حقلًا نصيًا: اكتب اسمه، أو اتركه فارغًا لإبقاء اسم اللوحة. بعد ذلك حرّر الأداة مجددًا وأوقف هذا الخيار."
+      },
+      "value": false
+    },
+    {
+      "id": "columns",
+      "type": "dropdown",
+      "title": {
+        "en": "Columns",
+        "nl": "Kolommen",
+        "de": "Spalten",
+        "fr": "Colonnes",
+        "it": "Colonne",
+        "sv": "Kolumner",
+        "no": "Kolonner",
+        "es": "Columnas",
+        "da": "Kolonner",
+        "ru": "Столбцы",
+        "pl": "Kolumny",
+        "ko": "열",
+        "ar": "الأعمدة"
+      },
+      "value": "2",
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "1",
+            "nl": "1",
+            "de": "1",
+            "fr": "1",
+            "it": "1",
+            "sv": "1",
+            "no": "1",
+            "es": "1",
+            "da": "1",
+            "ru": "1",
+            "pl": "1",
+            "ko": "1",
+            "ar": "1"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "2",
+            "nl": "2",
+            "de": "2",
+            "fr": "2",
+            "it": "2",
+            "sv": "2",
+            "no": "2",
+            "es": "2",
+            "da": "2",
+            "ru": "2",
+            "pl": "2",
+            "ko": "2",
+            "ar": "2"
+          }
+        }
+      ]
+    },
+    {
+      "id": "colorStyle",
+      "type": "dropdown",
+      "title": {
+        "en": "Colour style",
+        "nl": "Kleurstijl",
+        "de": "Farbstil",
+        "fr": "Style de couleur",
+        "it": "Stile colori",
+        "sv": "Färgstil",
+        "no": "Fargestil",
+        "es": "Estilo de color",
+        "da": "Farvestil",
+        "ru": "Цветовой стиль",
+        "pl": "Styl kolorów",
+        "ko": "색상 스타일",
+        "ar": "نمط الألوان"
+      },
+      "hint": {
+        "en": "Vivid fills coloured tiles with a darker shade of the colour and white text.",
+        "nl": "Levendig vult gekleurde tegels met een donkerdere tint van de kleur en witte tekst.",
+        "de": "Kräftig füllt farbige Kacheln mit einem dunkleren Ton der Farbe und weißem Text.",
+        "fr": "Vives remplit les tuiles colorées d'une nuance plus foncée de la couleur, avec un texte blanc.",
+        "it": "Vivaci riempie i riquadri colorati con una tonalità più scura del colore e testo bianco.",
+        "sv": "Livfulla fyller färgade rutor med en mörkare nyans av färgen och vit text.",
+        "no": "Livlige fyller fargede fliser med en mørkere nyanse av fargen og hvit tekst.",
+        "es": "Vivos rellena los mosaicos de color con un tono más oscuro del color y texto blanco.",
+        "da": "Livlige fylder farvede felter med en mørkere nuance af farven og hvid tekst.",
+        "ru": "«Яркие» заливают цветные плитки более тёмным оттенком цвета с белым текстом.",
+        "pl": "Żywe wypełniają kolorowe kafelki ciemniejszym odcieniem koloru z białym tekstem.",
+        "ko": "선명하게는 색이 있는 타일을 더 어두운 색조로 채우고 글자를 흰색으로 표시합니다.",
+        "ar": "«زاهية» تملأ البلاطات الملوّنة بدرجة أغمق من اللون مع نص أبيض."
+      },
+      "value": "soft",
+      "values": [
+        {
+          "id": "soft",
+          "title": {
+            "en": "Muted",
+            "nl": "Gedempt",
+            "de": "Gedämpft",
+            "fr": "Atténuées",
+            "it": "Smorzati",
+            "sv": "Dämpade",
+            "no": "Dempede",
+            "es": "Suaves",
+            "da": "Dæmpede",
+            "ru": "Приглушённые",
+            "pl": "Stonowane",
+            "ko": "차분하게",
+            "ar": "هادئة"
+          }
+        },
+        {
+          "id": "deep",
+          "title": {
+            "en": "Vivid",
+            "nl": "Levendig",
+            "de": "Kräftig",
+            "fr": "Vives",
+            "it": "Vivaci",
+            "sv": "Livfulla",
+            "no": "Livlige",
+            "es": "Vivos",
+            "da": "Livlige",
+            "ru": "Яркие",
+            "pl": "Żywe",
+            "ko": "선명하게",
+            "ar": "زاهية"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dashboard1",
+      "type": "autocomplete",
+      "title": {
+        "en": "Shortcut 1: dashboard",
+        "nl": "Snelkoppeling 1: dashboard",
+        "de": "Verknüpfung 1: Dashboard",
+        "fr": "Raccourci 1: tableau de bord",
+        "it": "Scorciatoia 1: dashboard",
+        "sv": "Genväg 1: instrumentpanel",
+        "no": "Snarvei 1: dashbord",
+        "es": "Acceso directo 1: panel",
+        "da": "Genvej 1: dashboard",
+        "ru": "Ярлык 1: панель",
+        "pl": "Skrót 1: pulpit",
+        "ko": "바로가기 1: 대시보드",
+        "ar": "الاختصار 1: لوحة"
+      },
+      "hint": {
+        "en": "Your web dashboards. A tap on the tile opens it; the dashboard the widget is on is marked.",
+        "nl": "Je webdashboards. Een tik op de tegel opent het; het dashboard waarop de widget staat, is gemarkeerd.",
+        "de": "Deine Web-Dashboards. Ein Tipp auf die Kachel öffnet es; das Dashboard, auf dem das Widget liegt, ist markiert.",
+        "fr": "Vos tableaux de bord web. Un appui sur la tuile l'ouvre ; celui où se trouve le widget est mis en évidence.",
+        "it": "Le tue dashboard web. Un tocco sul riquadro la apre; quella in cui si trova il widget è evidenziata.",
+        "sv": "Dina webbinstrumentpaneler. Ett tryck på rutan öppnar den; panelen som widgeten ligger på är markerad.",
+        "no": "Dine nettdashbord. Et trykk på flisen åpner det; dashbordet widgeten ligger på, er markert.",
+        "es": "Tus paneles web. Un toque en el mosaico lo abre; el panel donde está el widget aparece marcado.",
+        "da": "Dine webdashboards. Et tryk på feltet åbner det; dashboardet, som widgetten ligger på, er markeret.",
+        "ru": "Ваши веб-панели. Касание плитки открывает панель; панель, на которой стоит виджет, отмечена.",
+        "pl": "Twoje pulpity webowe. Dotknięcie kafelka otwiera pulpit; ten, na którym jest widżet, jest zaznaczony.",
+        "ko": "웹 대시보드입니다. 타일을 탭하면 열리고, 위젯이 있는 대시보드는 표시됩니다.",
+        "ar": "لوحاتك على الويب. لمسة على المربع تفتحها؛ واللوحة التي توجد عليها الأداة مميَّزة."
+      }
+    },
+    {
+      "id": "color1",
+      "type": "dropdown",
+      "title": {
+        "en": "  – Colour",
+        "nl": "  – Kleur",
+        "de": "  – Farbe",
+        "fr": "  – Couleur",
+        "it": "  – Colore",
+        "sv": "  – Färg",
+        "no": "  – Farge",
+        "es": "  – Color",
+        "da": "  – Farve",
+        "ru": "  – Цвет",
+        "pl": "  – Kolor",
+        "ko": "  – 색상",
+        "ar": "  – اللون"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon1",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "dashboard2",
+      "type": "autocomplete",
+      "title": {
+        "en": "Shortcut 2: dashboard",
+        "nl": "Snelkoppeling 2: dashboard",
+        "de": "Verknüpfung 2: Dashboard",
+        "fr": "Raccourci 2: tableau de bord",
+        "it": "Scorciatoia 2: dashboard",
+        "sv": "Genväg 2: instrumentpanel",
+        "no": "Snarvei 2: dashbord",
+        "es": "Acceso directo 2: panel",
+        "da": "Genvej 2: dashboard",
+        "ru": "Ярлык 2: панель",
+        "pl": "Skrót 2: pulpit",
+        "ko": "바로가기 2: 대시보드",
+        "ar": "الاختصار 2: لوحة"
+      }
+    },
+    {
+      "id": "color2",
+      "type": "dropdown",
+      "title": {
+        "en": "  – Colour",
+        "nl": "  – Kleur",
+        "de": "  – Farbe",
+        "fr": "  – Couleur",
+        "it": "  – Colore",
+        "sv": "  – Färg",
+        "no": "  – Farge",
+        "es": "  – Color",
+        "da": "  – Farve",
+        "ru": "  – Цвет",
+        "pl": "  – Kolor",
+        "ko": "  – 색상",
+        "ar": "  – اللون"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon2",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "dashboard3",
+      "type": "autocomplete",
+      "title": {
+        "en": "Shortcut 3: dashboard",
+        "nl": "Snelkoppeling 3: dashboard",
+        "de": "Verknüpfung 3: Dashboard",
+        "fr": "Raccourci 3: tableau de bord",
+        "it": "Scorciatoia 3: dashboard",
+        "sv": "Genväg 3: instrumentpanel",
+        "no": "Snarvei 3: dashbord",
+        "es": "Acceso directo 3: panel",
+        "da": "Genvej 3: dashboard",
+        "ru": "Ярлык 3: панель",
+        "pl": "Skrót 3: pulpit",
+        "ko": "바로가기 3: 대시보드",
+        "ar": "الاختصار 3: لوحة"
+      }
+    },
+    {
+      "id": "color3",
+      "type": "dropdown",
+      "title": {
+        "en": "  – Colour",
+        "nl": "  – Kleur",
+        "de": "  – Farbe",
+        "fr": "  – Couleur",
+        "it": "  – Colore",
+        "sv": "  – Färg",
+        "no": "  – Farge",
+        "es": "  – Color",
+        "da": "  – Farve",
+        "ru": "  – Цвет",
+        "pl": "  – Kolor",
+        "ko": "  – 색상",
+        "ar": "  – اللون"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon3",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "dashboard4",
+      "type": "autocomplete",
+      "title": {
+        "en": "Shortcut 4: dashboard",
+        "nl": "Snelkoppeling 4: dashboard",
+        "de": "Verknüpfung 4: Dashboard",
+        "fr": "Raccourci 4: tableau de bord",
+        "it": "Scorciatoia 4: dashboard",
+        "sv": "Genväg 4: instrumentpanel",
+        "no": "Snarvei 4: dashbord",
+        "es": "Acceso directo 4: panel",
+        "da": "Genvej 4: dashboard",
+        "ru": "Ярлык 4: панель",
+        "pl": "Skrót 4: pulpit",
+        "ko": "바로가기 4: 대시보드",
+        "ar": "الاختصار 4: لوحة"
+      }
+    },
+    {
+      "id": "color4",
+      "type": "dropdown",
+      "title": {
+        "en": "  – Colour",
+        "nl": "  – Kleur",
+        "de": "  – Farbe",
+        "fr": "  – Couleur",
+        "it": "  – Colore",
+        "sv": "  – Färg",
+        "no": "  – Farge",
+        "es": "  – Color",
+        "da": "  – Farve",
+        "ru": "  – Цвет",
+        "pl": "  – Kolor",
+        "ko": "  – 색상",
+        "ar": "  – اللون"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon4",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "dashboard5",
+      "type": "autocomplete",
+      "title": {
+        "en": "Shortcut 5: dashboard",
+        "nl": "Snelkoppeling 5: dashboard",
+        "de": "Verknüpfung 5: Dashboard",
+        "fr": "Raccourci 5: tableau de bord",
+        "it": "Scorciatoia 5: dashboard",
+        "sv": "Genväg 5: instrumentpanel",
+        "no": "Snarvei 5: dashbord",
+        "es": "Acceso directo 5: panel",
+        "da": "Genvej 5: dashboard",
+        "ru": "Ярлык 5: панель",
+        "pl": "Skrót 5: pulpit",
+        "ko": "바로가기 5: 대시보드",
+        "ar": "الاختصار 5: لوحة"
+      }
+    },
+    {
+      "id": "color5",
+      "type": "dropdown",
+      "title": {
+        "en": "  – Colour",
+        "nl": "  – Kleur",
+        "de": "  – Farbe",
+        "fr": "  – Couleur",
+        "it": "  – Colore",
+        "sv": "  – Färg",
+        "no": "  – Farge",
+        "es": "  – Color",
+        "da": "  – Farve",
+        "ru": "  – Цвет",
+        "pl": "  – Kolor",
+        "ko": "  – 색상",
+        "ar": "  – اللون"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon5",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "dashboard6",
+      "type": "autocomplete",
+      "title": {
+        "en": "Shortcut 6: dashboard",
+        "nl": "Snelkoppeling 6: dashboard",
+        "de": "Verknüpfung 6: Dashboard",
+        "fr": "Raccourci 6: tableau de bord",
+        "it": "Scorciatoia 6: dashboard",
+        "sv": "Genväg 6: instrumentpanel",
+        "no": "Snarvei 6: dashbord",
+        "es": "Acceso directo 6: panel",
+        "da": "Genvej 6: dashboard",
+        "ru": "Ярлык 6: панель",
+        "pl": "Skrót 6: pulpit",
+        "ko": "바로가기 6: 대시보드",
+        "ar": "الاختصار 6: لوحة"
+      }
+    },
+    {
+      "id": "color6",
+      "type": "dropdown",
+      "title": {
+        "en": "  – Colour",
+        "nl": "  – Kleur",
+        "de": "  – Farbe",
+        "fr": "  – Couleur",
+        "it": "  – Colore",
+        "sv": "  – Färg",
+        "no": "  – Farge",
+        "es": "  – Color",
+        "da": "  – Farve",
+        "ru": "  – Цвет",
+        "pl": "  – Kolor",
+        "ko": "  – 색상",
+        "ar": "  – اللون"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon6",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "dashboard7",
+      "type": "autocomplete",
+      "title": {
+        "en": "Shortcut 7: dashboard",
+        "nl": "Snelkoppeling 7: dashboard",
+        "de": "Verknüpfung 7: Dashboard",
+        "fr": "Raccourci 7: tableau de bord",
+        "it": "Scorciatoia 7: dashboard",
+        "sv": "Genväg 7: instrumentpanel",
+        "no": "Snarvei 7: dashbord",
+        "es": "Acceso directo 7: panel",
+        "da": "Genvej 7: dashboard",
+        "ru": "Ярлык 7: панель",
+        "pl": "Skrót 7: pulpit",
+        "ko": "바로가기 7: 대시보드",
+        "ar": "الاختصار 7: لوحة"
+      }
+    },
+    {
+      "id": "color7",
+      "type": "dropdown",
+      "title": {
+        "en": "  – Colour",
+        "nl": "  – Kleur",
+        "de": "  – Farbe",
+        "fr": "  – Couleur",
+        "it": "  – Colore",
+        "sv": "  – Färg",
+        "no": "  – Farge",
+        "es": "  – Color",
+        "da": "  – Farve",
+        "ru": "  – Цвет",
+        "pl": "  – Kolor",
+        "ko": "  – 색상",
+        "ar": "  – اللون"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon7",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "dashboard8",
+      "type": "autocomplete",
+      "title": {
+        "en": "Shortcut 8: dashboard",
+        "nl": "Snelkoppeling 8: dashboard",
+        "de": "Verknüpfung 8: Dashboard",
+        "fr": "Raccourci 8: tableau de bord",
+        "it": "Scorciatoia 8: dashboard",
+        "sv": "Genväg 8: instrumentpanel",
+        "no": "Snarvei 8: dashbord",
+        "es": "Acceso directo 8: panel",
+        "da": "Genvej 8: dashboard",
+        "ru": "Ярлык 8: панель",
+        "pl": "Skrót 8: pulpit",
+        "ko": "바로가기 8: 대시보드",
+        "ar": "الاختصار 8: لوحة"
+      }
+    },
+    {
+      "id": "color8",
+      "type": "dropdown",
+      "title": {
+        "en": "  – Colour",
+        "nl": "  – Kleur",
+        "de": "  – Farbe",
+        "fr": "  – Couleur",
+        "it": "  – Colore",
+        "sv": "  – Färg",
+        "no": "  – Farge",
+        "es": "  – Color",
+        "da": "  – Farve",
+        "ru": "  – Цвет",
+        "pl": "  – Kolor",
+        "ko": "  – 색상",
+        "ar": "  – اللون"
+      },
+      "value": "blue",
+      "values": [
+        {
+          "id": "blue",
+          "title": {
+            "en": "Blue",
+            "nl": "Blauw",
+            "de": "Blau",
+            "fr": "Bleu",
+            "it": "Blu",
+            "sv": "Blå",
+            "no": "Blå",
+            "es": "Azul",
+            "da": "Blå",
+            "ru": "Синий",
+            "pl": "Niebieski",
+            "ko": "파랑",
+            "ar": "أزرق"
+          }
+        },
+        {
+          "id": "red",
+          "title": {
+            "en": "Red",
+            "nl": "Rood",
+            "de": "Rot",
+            "fr": "Rouge",
+            "it": "Rosso",
+            "sv": "Röd",
+            "no": "Rød",
+            "es": "Rojo",
+            "da": "Rød",
+            "ru": "Красный",
+            "pl": "Czerwony",
+            "ko": "빨강",
+            "ar": "أحمر"
+          }
+        },
+        {
+          "id": "orange",
+          "title": {
+            "en": "Orange",
+            "nl": "Oranje",
+            "de": "Orange",
+            "fr": "Orange",
+            "it": "Arancione",
+            "sv": "Orange",
+            "no": "Oransje",
+            "es": "Naranja",
+            "da": "Orange",
+            "ru": "Оранжевый",
+            "pl": "Pomarańczowy",
+            "ko": "주황",
+            "ar": "برتقالي"
+          }
+        },
+        {
+          "id": "yellow",
+          "title": {
+            "en": "Yellow",
+            "nl": "Geel",
+            "de": "Gelb",
+            "fr": "Jaune",
+            "it": "Giallo",
+            "sv": "Gul",
+            "no": "Gul",
+            "es": "Amarillo",
+            "da": "Gul",
+            "ru": "Жёлтый",
+            "pl": "Żółty",
+            "ko": "노랑",
+            "ar": "أصفر"
+          }
+        },
+        {
+          "id": "green",
+          "title": {
+            "en": "Green",
+            "nl": "Groen",
+            "de": "Grün",
+            "fr": "Vert",
+            "it": "Verde",
+            "sv": "Grön",
+            "no": "Grønn",
+            "es": "Verde",
+            "da": "Grøn",
+            "ru": "Зелёный",
+            "pl": "Zielony",
+            "ko": "초록",
+            "ar": "أخضر"
+          }
+        },
+        {
+          "id": "purple",
+          "title": {
+            "en": "Purple",
+            "nl": "Paars",
+            "de": "Lila",
+            "fr": "Violet",
+            "it": "Viola",
+            "sv": "Lila",
+            "no": "Lilla",
+            "es": "Morado",
+            "da": "Lilla",
+            "ru": "Фиолетовый",
+            "pl": "Fioletowy",
+            "ko": "보라",
+            "ar": "بنفسجي"
+          }
+        },
+        {
+          "id": "grey",
+          "title": {
+            "en": "Grey",
+            "nl": "Grijs",
+            "de": "Grau",
+            "fr": "Gris",
+            "it": "Grigio",
+            "sv": "Grå",
+            "no": "Grå",
+            "es": "Gris",
+            "da": "Grå",
+            "ru": "Серый",
+            "pl": "Szary",
+            "ko": "회색",
+            "ar": "رمادي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "icon8",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    },
+    "setName": {
+      "method": "POST",
+      "path": "/names"
+    }
+  }
+}

@@ -74,7 +74,14 @@
     "stuffy": "Duszno",
     "radon": "Radon",
     "particles": "Pyły",
-    "voc": "LZO"
+    "voc": "LZO",
+    "measureTemperature": "Temperatura",
+    "measureHumidity": "Wilgotność",
+    "measureCo2": "CO₂",
+    "measureRadon": "Radon",
+    "measurePm25": "PM2.5",
+    "measurePm10": "PM10",
+    "measureVoc": "LZO"
   },
   "valuematrix": {
     "selectDevices": "Wybierz urządzenia w ustawieniach widżetu.",
@@ -303,7 +310,8 @@
       "paw": "Zwierzę",
       "briefcase": "Praca",
       "gift": "Prezent",
-      "sparkles": "Iskry"
+      "sparkles": "Iskry",
+      "dashboard": "Pulpit"
     }
   },
   "price": {
@@ -447,6 +455,15 @@
     "pageCount": "Widżety Widgetkeeper: __count__",
     "keyHint": "Widgetkeeper → Konfiguruj: klucz API z uprawnieniem Homey."
   },
+  "shortcuts": {
+    "selectSlots": "Wybierz pulpity w ustawieniach widżetu.",
+    "error": "Nie udało się wczytać pulpitów.",
+    "missing": "Nie znaleziono pulpitu",
+    "webOnly": "Skróty do pulpitów działają tylko na pulpitach webowych.",
+    "current": "Jesteś tutaj",
+    "renameFailed": "Nie udało się zapisać nazwy.",
+    "none": "Brak"
+  },
   "web": {
     "title": "Pulpity webowe",
     "keyTitle": "Połącz z Homey",
@@ -473,6 +490,18 @@
     "themeAuto": "Automatyczny",
     "themeDark": "Ciemny",
     "themeLight": "Jasny",
+    "darkLight": "Ciemny lub jasny",
+    "background": "Tło",
+    "bgDefault": "Domyślne",
+    "bgBlack": "Czarne/białe",
+    "bgSlate": "Łupek",
+    "bgOcean": "Ocean",
+    "bgForest": "Las",
+    "bgPlum": "Śliwka",
+    "bgBerry": "Jagoda",
+    "bgSand": "Piasek",
+    "arrangeHint": "Przeciągnij pulpity, aby zmienić ich kolejność.",
+    "showWidgets": "Pokaż na stronie głównej",
     "deleteDashboard": "Usuń pulpit",
     "tapAgain": "Stuknij ponownie, aby potwierdzić",
     "addWidget": "Dodaj widżet",
@@ -503,7 +532,6 @@
     "passwordLocked": "Za dużo prób. Spróbuj za __seconds__ s.",
     "sessionEnded": "Wylogowano. Hasło mogło się zmienić.",
     "yourDashboards": "Twoje pulpity",
-    "dashboardsText": "Otwórz jeden na tablecie na ścianie, komputerze lub telewizorze.",
     "widgetsTitle": "Widżety",
     "widgetsText": "Wszystko, co możesz umieścić na pulpicie.",
     "previous": "Poprzedni",
@@ -528,6 +556,12 @@
     "valueOn": "Wł.",
     "valueOff": "Wył.",
     "missingValue": "Nie znaleziono wartości",
+    "otherApps": "Inne aplikacje",
+    "otherAppsKey": "Widżety innych aplikacji wymagają w tej przeglądarce klucza API z pełnym dostępem (Homey).",
+    "otherAppsFailed": "Nie udało się odczytać widżetów innych aplikacji.",
+    "notInstalled": "__name__ nie jest zainstalowana.",
+    "trustTitle": "Ufaj temu widżetowi",
+    "trustHint": "Uruchamia go poza piaskownicą, dla widżetu, który w niej nie działa. Zaufany widżet może odczytać klucz API tej przeglądarki.",
     "about": {
       "electricity": "Moc na żywo, ceny dnia i Twoje zużycie na wykresach.",
       "thermostat": "Trzy przyciski ustawień dla termostatu lub klimatyzatora.",
@@ -555,7 +589,8 @@
       "textline": "Notatka na kafelku albo karteczce, wpisana przez Ciebie lub przez Twoje Flow.",
       "spacer": "Pusta przestrzeń do wyrównania widżetów w kolumnach.",
       "dayssince": "Dni od ostatniego zadania, czerwone, gdy znów czas.",
-      "stack": "Widżety z innego pulpitu, na zmianę."
+      "stack": "Widżety z innego pulpitu, na zmianę.",
+      "shortcuts": "Przechodź do innych pulpitów webowych, w Twoich kolorach i ikonach."
     }
   }
 }

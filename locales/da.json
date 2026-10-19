@@ -74,7 +74,14 @@
     "stuffy": "Indelukket",
     "radon": "Radon",
     "particles": "Partikler",
-    "voc": "VOC"
+    "voc": "VOC",
+    "measureTemperature": "Temperatur",
+    "measureHumidity": "Fugtighed",
+    "measureCo2": "CO₂",
+    "measureRadon": "Radon",
+    "measurePm25": "PM2.5",
+    "measurePm10": "PM10",
+    "measureVoc": "VOC"
   },
   "valuematrix": {
     "selectDevices": "Vælg enheder i widgetindstillingerne.",
@@ -303,7 +310,8 @@
       "paw": "Kæledyr",
       "briefcase": "Arbejde",
       "gift": "Gave",
-      "sparkles": "Glimmer"
+      "sparkles": "Glimmer",
+      "dashboard": "Dashboard"
     }
   },
   "price": {
@@ -447,6 +455,15 @@
     "pageCount": "__count__ Widgetkeeper-widgets",
     "keyHint": "Widgetkeeper → Konfigurer: en API-nøgle med tilladelsen Homey."
   },
+  "shortcuts": {
+    "selectSlots": "Vælg dashboards i widgetindstillingerne.",
+    "error": "Kunne ikke indlæse dashboardene.",
+    "missing": "Dashboard ikke fundet",
+    "webOnly": "Dashboardgenveje virker kun på webdashboards.",
+    "current": "Du er her",
+    "renameFailed": "Kunne ikke gemme navnet.",
+    "none": "Ingen"
+  },
   "web": {
     "title": "Webdashboards",
     "keyTitle": "Forbind til din Homey",
@@ -473,6 +490,18 @@
     "themeAuto": "Automatisk",
     "themeDark": "Mørkt",
     "themeLight": "Lyst",
+    "darkLight": "Mørkt eller lyst",
+    "background": "Baggrund",
+    "bgDefault": "Standard",
+    "bgBlack": "Sort/hvid",
+    "bgSlate": "Skifer",
+    "bgOcean": "Hav",
+    "bgForest": "Skov",
+    "bgPlum": "Blomme",
+    "bgBerry": "Bær",
+    "bgSand": "Sand",
+    "arrangeHint": "Træk dashboardene for at ændre deres rækkefølge.",
+    "showWidgets": "Vis på forsiden",
     "deleteDashboard": "Slet dashboard",
     "tapAgain": "Tryk igen for at bekræfte",
     "addWidget": "Tilføj widget",
@@ -503,7 +532,6 @@
     "passwordLocked": "For mange forsøg. Prøv igen om __seconds__ s.",
     "sessionEnded": "Du blev logget ud. Adgangskoden er måske ændret.",
     "yourDashboards": "Dine dashboards",
-    "dashboardsText": "Åbn et på en vægtablet, en computer eller et tv.",
     "widgetsTitle": "Widgets",
     "widgetsText": "Alt, du kan sætte på et dashboard.",
     "previous": "Forrige",
@@ -528,6 +556,12 @@
     "valueOn": "Til",
     "valueOff": "Fra",
     "missingValue": "Værdien blev ikke fundet",
+    "otherApps": "Andre apps",
+    "otherAppsKey": "Andre apps' widgets kræver en API-nøgle med fuld adgang (Homey) i denne browser.",
+    "otherAppsFailed": "Kunne ikke læse andre apps' widgets.",
+    "notInstalled": "__name__ er ikke installeret.",
+    "trustTitle": "Stol på denne widget",
+    "trustHint": "Kører den uden for sandkassen, til en widget der ikke virker i den. En widget, du stoler på, kan læse denne browsers API-nøgle.",
     "about": {
       "electricity": "Effekt lige nu, dagens priser og dit forbrug i grafer.",
       "thermostat": "Tre forvalgsknapper til en termostat eller et aircondition-anlæg.",
@@ -555,7 +589,8 @@
       "textline": "En note på et felt eller en Post-it-seddel, skrevet ind eller skrevet af dine Flows.",
       "spacer": "Tom plads til at flugte widgets i kolonner.",
       "dayssince": "Dage siden en opgave, rød når det er tid igen.",
-      "stack": "Widgets fra et andet dashboard, på skift."
+      "stack": "Widgets fra et andet dashboard, på skift.",
+      "shortcuts": "Hop til dine andre webdashboards, i dine farver og ikoner."
     }
   }
 }

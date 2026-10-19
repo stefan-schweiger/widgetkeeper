@@ -74,7 +74,14 @@
     "stuffy": "Stuffy",
     "radon": "Radon",
     "particles": "Particles",
-    "voc": "VOCs"
+    "voc": "VOCs",
+    "measureTemperature": "Temperature",
+    "measureHumidity": "Humidity",
+    "measureCo2": "CO₂",
+    "measureRadon": "Radon",
+    "measurePm25": "PM2.5",
+    "measurePm10": "PM10",
+    "measureVoc": "VOC"
   },
   "valuematrix": {
     "selectDevices": "Select devices in the widget settings.",
@@ -303,7 +310,8 @@
       "paw": "Pet",
       "briefcase": "Work",
       "gift": "Gift",
-      "sparkles": "Sparkles"
+      "sparkles": "Sparkles",
+      "dashboard": "Dashboard"
     }
   },
   "price": {
@@ -447,6 +455,15 @@
     "pageCount": "__count__ Widgetkeeper widgets",
     "keyHint": "Widgetkeeper → Configure: an API key with the Homey permission."
   },
+  "shortcuts": {
+    "selectSlots": "Pick dashboards in the widget settings.",
+    "error": "Could not load the dashboards.",
+    "missing": "Dashboard not found",
+    "webOnly": "Dashboard Shortcuts only work on web dashboards.",
+    "current": "You are here",
+    "renameFailed": "Could not save the name.",
+    "none": "None"
+  },
   "web": {
     "title": "Web Dashboards",
     "keyTitle": "Connect to your Homey",
@@ -473,6 +490,18 @@
     "themeAuto": "Automatic",
     "themeDark": "Dark",
     "themeLight": "Light",
+    "darkLight": "Dark or light",
+    "background": "Background",
+    "bgDefault": "Default",
+    "bgBlack": "Black/White",
+    "bgSlate": "Slate",
+    "bgOcean": "Ocean",
+    "bgForest": "Forest",
+    "bgPlum": "Plum",
+    "bgBerry": "Berry",
+    "bgSand": "Sand",
+    "arrangeHint": "Drag the dashboards to change their order.",
+    "showWidgets": "Show on the front page",
     "deleteDashboard": "Delete dashboard",
     "tapAgain": "Tap again to confirm",
     "addWidget": "Add widget",
@@ -503,7 +532,6 @@
     "passwordLocked": "Too many tries. Try again in __seconds__ s.",
     "sessionEnded": "You were signed out. The password may have changed.",
     "yourDashboards": "Your dashboards",
-    "dashboardsText": "Open one on a wall tablet, a computer or a TV.",
     "widgetsTitle": "Widgets",
     "widgetsText": "Everything you can put on a dashboard.",
     "previous": "Previous",
@@ -528,6 +556,12 @@
     "valueOn": "On",
     "valueOff": "Off",
     "missingValue": "Value not found",
+    "otherApps": "Other apps",
+    "otherAppsKey": "Other apps' widgets need an API key with full access (Homey) in this browser.",
+    "otherAppsFailed": "Could not read other apps' widgets.",
+    "notInstalled": "__name__ isn't installed.",
+    "trustTitle": "Trust this widget",
+    "trustHint": "Runs it outside the sandbox, for a widget that doesn't work in it. A trusted widget can read this browser's API key.",
     "about": {
       "electricity": "Live power, the day's prices and your usage in charts.",
       "thermostat": "Three preset buttons for a thermostat or an aircon.",
@@ -555,7 +589,8 @@
       "textline": "A note on a tile or a Post-it, typed in or written by your Flows.",
       "spacer": "Empty space to line up widgets in columns.",
       "dayssince": "Days since a chore was done, turning red when it's due.",
-      "stack": "Widgets from another dashboard, taking turns."
+      "stack": "Widgets from another dashboard, taking turns.",
+      "shortcuts": "Jump to your other web dashboards, in your colours and icons."
     }
   }
 }

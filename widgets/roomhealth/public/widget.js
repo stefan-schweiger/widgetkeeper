@@ -1,7 +1,7 @@
 /*
  * Room Health: the indoor climate per room. The picked sensors are grouped by their Homey zone, and each room is a cell:
  * its worst value large (else the temperature), its name, and a row of marks, one per measure (temperature, humidity,
- * CO₂, radon, PM2.5, PM10, VOC): bars or icons, lined up across the rooms, grey (or green) inside the comfortable range
+ * CO₂, radon, PM2.5, PM10, VOC): bars or icons, lined up across the rooms, grey inside the comfortable range
  * and yellow to red further out. A tap steps the large value through the room's other readings.
  * Plain browser JS (served as-is).
  */
@@ -24,6 +24,13 @@
     radon: 'Radon',
     particles: 'Particles',
     voc: 'VOCs',
+    measureTemperature: 'Temperature',
+    measureHumidity: 'Humidity',
+    measureCo2: 'CO₂',
+    measureRadon: 'Radon',
+    measurePm25: 'PM2.5',
+    measurePm10: 'PM10',
+    measureVoc: 'VOC',
   };
 
   const TAP_SLOP = 10; // px a touch may move and still count as a tap
@@ -31,6 +38,11 @@
 
   /** The measures, in the marks' order, a tap's, and a tie's. */
   const MEASURES = ['temperature', 'humidity', 'co2', 'radon', 'pm25', 'pm10', 'voc'];
+  /** Each measure's name, which a tapped room shows in place of its own with the reading. */
+  const MEASURE_NAMES = {
+    temperature: 'measureTemperature', humidity: 'measureHumidity', co2: 'measureCo2', radon: 'measureRadon',
+    pm25: 'measurePm25', pm10: 'measurePm10', voc: 'measureVoc',
+  };
   /** Each measure's unit (the app sends every value in it). Temperature and humidity are written without a space. */
   const UNITS = { temperature: '°C', humidity: '%', co2: 'ppm', radon: 'Bq/m³', pm25: 'μg/m³', pm10: 'μg/m³', voc: 'ppb' };
   /** The comfortable ranges' settings and defaults: temperature and humidity have both ends, the rest an upper limit. */
@@ -55,15 +67,19 @@
     pm10: { high: 'particles' },
     voc: { high: 'voc' },
   };
-  /** Each measure's icon (the Icons layout), on the kit's 24 px grid with its 2 px round stroke. */
+  /**
+   * Each measure's icon (the Icons layout), on the kit's 24 px grid with its 2 px round stroke, and `box`, its ink with
+   * the stroke (`[x, y, width]`, 24 high, centred on the ink): the viewBox, so each starts flush with the text, the gaps
+   * between them are even and they share one midline (in the full 24 px box the thermometer sat 8 px in, the cloud high).
+   */
   const ICONS = {
-    temperature: icons.thermometer.d,
-    humidity: icons.drop.d,
-    co2: 'M6.5 17.5h11a4 4 0 0 0 .3-7.99A5.5 5.5 0 0 0 7.1 8.53 4.5 4.5 0 0 0 6.5 17.5z',
-    radon: 'M12 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM4.93 4.93A10 4 45 1 1 19.07 19.07 10 4 45 1 1 4.93 4.93zM4.93 19.07A10 4 -45 1 1 19.07 4.93 10 4 -45 1 1 4.93 19.07z',
-    pm25: 'M6 5.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM13 4a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM18.5 8.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM9.5 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM5 16.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM14.5 14.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM11 19a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM18.5 18.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2z',
-    pm10: 'M8 4.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM16.5 9a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM8.5 14.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z',
-    voc: 'M9.5 3h5M10.5 3v6.2L5 18.5A1.7 1.7 0 0 0 6.5 21h11a1.7 1.7 0 0 0 1.5-2.5L13.5 9.2V3M7.4 15h9.2',
+    temperature: { box: [7, 0.36, 10], d: icons.thermometer.d },
+    humidity: { box: [5, 0, 14], d: icons.drop.d },
+    co2: { box: [1.5, -0.9, 21], d: 'M6.5 17.5h11a4 4 0 0 0 .3-7.99A5.5 5.5 0 0 0 7.1 8.53 4.5 4.5 0 0 0 6.5 17.5z' },
+    radon: { box: [3.33, 0, 17.33], d: 'M12 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM4.93 4.93A10 4 45 1 1 19.07 19.07 10 4 45 1 1 4.93 4.93zM4.93 19.07A10 4 -45 1 1 19.07 4.93 10 4 -45 1 1 4.93 19.07z' },
+    pm25: { box: [3, 0.5, 17.5], d: 'M6 5.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM13 4a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM18.5 8.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM9.5 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM5 16.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM14.5 14.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM11 19a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM18.5 18.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2z' },
+    pm10: { box: [4.5, 0, 15.5], d: 'M8 4.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM16.5 9a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM8.5 14.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z' },
+    voc: { box: [3.8, 0, 16.4], d: 'M9.5 3h5M10.5 3v6.2L5 18.5A1.7 1.7 0 0 0 6.5 21h11a1.7 1.7 0 0 0 1.5-2.5L13.5 9.2V3M7.4 15h9.2' },
   };
 
   /**
@@ -217,7 +233,6 @@
     let pickTimer = null;
 
     root.classList.add('rh', `rh-${layout}`);
-    root.classList.toggle('rh-green', opts.greenWhenFine === true);
     root.dataset.columns = ['2', '4'].includes(String(opts.columns)) ? String(opts.columns) : '3';
     applyColors(root, { style: opts.colorStyle });
     const typed = tileNames(opts, () => render(), (key) => {
@@ -342,8 +357,10 @@
         for (const m of columns) {
           const mark = el('span', { class: 'rh-mark', 'data-measure': m }, cell.marks);
           if (layout !== 'icons') continue;
-          const svg = el('svg', { viewBox: '0 0 24 24' }, mark, SVG_NS);
-          el('path', { d: ICONS[m] }, svg, SVG_NS);
+          const [x, y, w] = ICONS[m].box;
+          const svg = el('svg', { viewBox: `${x} ${y} ${w} 24` }, mark, SVG_NS);
+          svg.style.setProperty('--rh-iw', String(w));
+          el('path', { d: ICONS[m].d }, svg, SVG_NS);
         }
       }
       for (const mark of cell.marks.children) {
@@ -366,6 +383,8 @@
       if (pick && !rooms.some(r => r.key === pick.key && readable(r).includes(pick.measure))) pick = null;
       const columns = MEASURES.filter(m => rooms.some(r => !r.missing && m in r.values));
       grid.style.setProperty('--rh-n', String(columns.length));
+      // The icons' widths together (in 24ths of an icon), so the CSS shrinks them all alike when they don't fit.
+      grid.style.setProperty('--rh-ink', String(columns.reduce((w, m) => w + ICONS[m].box[2], 0)));
       const keys = new Set(rooms.map(r => r.key));
       for (const [key, cell] of cells) {
         if (!keys.has(key)) { cell.node.remove(); cells.delete(key); }
@@ -381,7 +400,8 @@
         const picked = !!pick && pick.key === room.key;
         cell.node.classList.toggle('missing', missing);
         cell.node.classList.toggle('picking', picked);
-        cell.name.textContent = roomName(room);
+        // A tapped reading's name in place of the room's, so it's clear what the value is.
+        cell.name.textContent = picked ? t(MEASURE_NAMES[pick.measure]) : roomName(room);
         if (typed.renaming && !missing) {
           const field = typed.field(room.key, room.name);
           if (field.previousSibling !== cell.name) cell.name.after(field);

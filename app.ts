@@ -90,6 +90,7 @@ export default class WidgetkeeperApp extends Homey.App {
     this.values = new ValueService(this.homey, log, debug);
     this.values.start();
     this.registerValueFlows();
+    this.registerFlowButtonFlows();
     this.lights = new LightService(this.homey, log, debug);
     this.lights.start();
     this.sparklines = new SparklineService(this.homey, this.values, log, debug);
@@ -189,6 +190,15 @@ export default class WidgetkeeperApp extends Homey.App {
     card.registerArgumentAutocompleteListener('slot', query => this.values.listColorSlots(query));
     card.registerRunListener(async (args: { slot?: { id?: string }, color: string }) => {
       this.values.setColor(args.slot?.id ?? '', args.color);
+    });
+  }
+
+  /** The Flow card that colours the Flow Buttons starting one flow. */
+  private registerFlowButtonFlows() {
+    const card = this.homey.flow.getActionCard('flows_set_color');
+    card.registerArgumentAutocompleteListener('flow', query => this.flows.listColorFlows(query));
+    card.registerRunListener(async (args: { flow?: { id?: string }, color: string }) => {
+      this.flows.setColor(args.flow?.id ?? '', args.color);
     });
   }
 
