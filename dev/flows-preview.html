@@ -24,6 +24,9 @@
   <div class="col"><span>358 px · light · 2 columns</span><div class="dash light" style="width:358px"><div id="w4"></div></div></div>
   <div class="col"><span>300 px · dark · 2 columns</span><div class="dash homey-dark-mode" style="width:300px"><div id="w5"></div></div></div>
   <div class="col"><span>358 px · dark · every icon</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px · dark · colours from a Flow</span><div class="dash homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
+  <div class="col"><span>358 px · light · colours from a Flow</span><div class="dash light" style="width:358px"><div id="w9"></div></div></div>
+  <div class="col"><span>358 px · dark · Vivid · colours from a Flow</span><div class="dash homey-dark-mode" style="width:358px"><div id="w10"></div></div></div>
   <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
 
   <script>
@@ -64,6 +67,15 @@
     const colors = ['blue', 'red', 'orange', 'yellow', 'green', 'purple', 'grey'];
     const all = Object.keys(WidgetkeeperKit.icons).map((icon, i) => ({ id: `flow:i${i}`, icon, color: colors[i % colors.length] }));
     mount('w6', { columns: '2' }, all, all.map(b => ({ id: b.id, name: b.icon, enabled: true, triggerable: true, advanced: false })));
+    // The Flow card's colours (the e-bike charging, a user's example): rows tinted in Muted, solid in Vivid.
+    const COLORED = [
+      { id: 'flow:c1', color: 'blue', icon: 'bolt', name: 'Charge the e-bike', flowColor: 'green' },
+      { id: 'flow:c2', color: 'purple', icon: 'moon', name: 'Good night', flowColor: 'red' },
+      { id: 'flow:c3', color: 'grey', icon: 'power', name: 'Everything off', flowColor: 'yellow' },
+      { id: 'flow:c4', color: 'green', icon: 'home', name: 'Holiday mode' },
+    ];
+    const coloredFlows = COLORED.map(b => ({ id: b.id, name: b.name, enabled: true, triggerable: true, advanced: false, ...(b.flowColor ? { color: b.flowColor } : {}) }));
+    for (const [id, colorStyle] of [['w8'], ['w9'], ['w10', 'deep']]) mount(id, { colorStyle }, COLORED, coloredFlows);
     const empty = createFlowsWidget(document.getElementById('w7'), { t: devT });
     empty.setMessage(empty.t('selectSlots'));
   </script>

@@ -74,7 +74,14 @@
     "stuffy": "Cargado",
     "radon": "Radón",
     "particles": "Partículas",
-    "voc": "COV"
+    "voc": "COV",
+    "measureTemperature": "Temperatura",
+    "measureHumidity": "Humedad",
+    "measureCo2": "CO₂",
+    "measureRadon": "Radón",
+    "measurePm25": "PM2.5",
+    "measurePm10": "PM10",
+    "measureVoc": "COV"
   },
   "valuematrix": {
     "selectDevices": "Elige dispositivos en los ajustes del widget.",
@@ -303,7 +310,8 @@
       "paw": "Mascota",
       "briefcase": "Trabajo",
       "gift": "Regalo",
-      "sparkles": "Destellos"
+      "sparkles": "Destellos",
+      "dashboard": "Panel"
     }
   },
   "price": {
@@ -447,6 +455,15 @@
     "pageCount": "__count__ widgets de Widgetkeeper",
     "keyHint": "Widgetkeeper → Configurar: una clave API con el permiso Homey."
   },
+  "shortcuts": {
+    "selectSlots": "Elige paneles en los ajustes del widget.",
+    "error": "No se pudieron cargar los paneles.",
+    "missing": "Panel no encontrado",
+    "webOnly": "Los accesos a paneles solo funcionan en paneles web.",
+    "current": "Estás aquí",
+    "renameFailed": "No se pudo guardar el nombre.",
+    "none": "Ninguna"
+  },
   "web": {
     "title": "Paneles web",
     "keyTitle": "Conéctate a tu Homey",
@@ -473,6 +490,18 @@
     "themeAuto": "Automático",
     "themeDark": "Oscuro",
     "themeLight": "Claro",
+    "darkLight": "Oscuro o claro",
+    "background": "Fondo",
+    "bgDefault": "Predeterminado",
+    "bgBlack": "Negro/blanco",
+    "bgSlate": "Pizarra",
+    "bgOcean": "Océano",
+    "bgForest": "Bosque",
+    "bgPlum": "Ciruela",
+    "bgBerry": "Baya",
+    "bgSand": "Arena",
+    "arrangeHint": "Arrastra los paneles para cambiar su orden.",
+    "showWidgets": "Mostrar en la portada",
     "deleteDashboard": "Eliminar panel",
     "tapAgain": "Toca otra vez para confirmar",
     "addWidget": "Añadir widget",
@@ -503,7 +532,6 @@
     "passwordLocked": "Demasiados intentos. Vuelve a probar en __seconds__ s.",
     "sessionEnded": "Se cerró tu sesión. Puede que la contraseña haya cambiado.",
     "yourDashboards": "Tus paneles",
-    "dashboardsText": "Abre uno en una tableta de pared, un ordenador o una TV.",
     "widgetsTitle": "Widgets",
     "widgetsText": "Todo lo que puedes poner en un panel.",
     "previous": "Anterior",
@@ -561,7 +589,8 @@
       "textline": "Una nota en un mosaico o un Post-it, escrita por ti o por tus Flows.",
       "spacer": "Espacio vacío para alinear widgets en columnas.",
       "dayssince": "Los días desde una tarea, en rojo cuando vuelve a tocar.",
-      "stack": "Widgets de otro panel, por turnos."
+      "stack": "Widgets de otro panel, por turnos.",
+      "shortcuts": "Salta a tus otros paneles web, con tus colores e iconos."
     }
   }
 }

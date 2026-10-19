@@ -74,7 +74,14 @@
     "stuffy": "Innestengt",
     "radon": "Radon",
     "particles": "Partikler",
-    "voc": "VOC"
+    "voc": "VOC",
+    "measureTemperature": "Temperatur",
+    "measureHumidity": "Fuktighet",
+    "measureCo2": "CO₂",
+    "measureRadon": "Radon",
+    "measurePm25": "PM2.5",
+    "measurePm10": "PM10",
+    "measureVoc": "VOC"
   },
   "valuematrix": {
     "selectDevices": "Velg enheter i widgetinnstillingene.",
@@ -303,7 +310,8 @@
       "paw": "Kjæledyr",
       "briefcase": "Jobb",
       "gift": "Gave",
-      "sparkles": "Glitter"
+      "sparkles": "Glitter",
+      "dashboard": "Dashbord"
     }
   },
   "price": {
@@ -447,6 +455,15 @@
     "pageCount": "__count__ Widgetkeeper-widgeter",
     "keyHint": "Widgetkeeper → Konfigurer: en API-nøkkel med tillatelsen Homey."
   },
+  "shortcuts": {
+    "selectSlots": "Velg dashbord i widgetinnstillingene.",
+    "error": "Kunne ikke laste inn dashbordene.",
+    "missing": "Fant ikke dashbordet",
+    "webOnly": "Dashbordsnarveier virker bare på nettdashbord.",
+    "current": "Du er her",
+    "renameFailed": "Kunne ikke lagre navnet.",
+    "none": "Ingen"
+  },
   "web": {
     "title": "Nettdashbord",
     "keyTitle": "Koble til Homey",
@@ -473,6 +490,18 @@
     "themeAuto": "Automatisk",
     "themeDark": "Mørkt",
     "themeLight": "Lyst",
+    "darkLight": "Mørkt eller lyst",
+    "background": "Bakgrunn",
+    "bgDefault": "Standard",
+    "bgBlack": "Svart/hvit",
+    "bgSlate": "Skifer",
+    "bgOcean": "Hav",
+    "bgForest": "Skog",
+    "bgPlum": "Plomme",
+    "bgBerry": "Bær",
+    "bgSand": "Sand",
+    "arrangeHint": "Dra dashbordene for å endre rekkefølgen.",
+    "showWidgets": "Vis på forsiden",
     "deleteDashboard": "Slett dashbordet",
     "tapAgain": "Trykk igjen for å bekrefte",
     "addWidget": "Legg til widget",
@@ -503,7 +532,6 @@
     "passwordLocked": "For mange forsøk. Prøv igjen om __seconds__ s.",
     "sessionEnded": "Du ble logget ut. Passordet kan være endret.",
     "yourDashboards": "Dine dashbord",
-    "dashboardsText": "Åpne et på et veggnettbrett, en datamaskin eller en TV.",
     "widgetsTitle": "Widgeter",
     "widgetsText": "Alt du kan legge på et dashbord.",
     "previous": "Forrige",
@@ -561,7 +589,8 @@
       "textline": "Et notat på en flis eller en Post-it-lapp, skrevet inn eller skrevet av Flowene dine.",
       "spacer": "Tomt rom for å linje opp widgeter i kolonner.",
       "dayssince": "Dager siden en oppgave, rød når det er på tide igjen.",
-      "stack": "Widgeter fra et annet dashbord, etter tur."
+      "stack": "Widgeter fra et annet dashbord, etter tur.",
+      "shortcuts": "Hopp til de andre nettdashbordene dine, i dine farger og ikoner."
     }
   }
 }

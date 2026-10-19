@@ -67,6 +67,7 @@ interface Window {
   createVarPresetsWidget: (root: HTMLElement, opts?: object) => any;
   varPresetsFromSettings: (settings: Record<string, any>) => { value: boolean | number | string, type: string, label: string }[];
   createFlowsWidget:(root: HTMLElement, opts?: object) => any;
+  createShortcutsWidget:(root: HTMLElement, opts?: object) => any;
   createPriceWidget: (root: HTMLElement, opts?: object) => any;
   electricityPriceLevel: (price: number | null, prices: (number | null)[]) => 'low' | 'medium' | 'high' | null;
   createTimersWidget: (root: HTMLElement, opts?: object) => any;
@@ -99,6 +100,7 @@ interface Window {
   mountCurtainsWidget: MountWidget;
   mountElectricityWidget: MountWidget;
   mountFlowsWidget: MountWidget;
+  mountShortcutsWidget: MountWidget;
   mountHeatmapWidget: MountWidget;
   mountLightsWidget: MountWidget;
   mountLocksWidget: MountWidget;

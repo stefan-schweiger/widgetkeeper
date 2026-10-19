@@ -9,7 +9,7 @@
   --rh-blue: var(--homey-color-blue, #0091EA);
   --rh-track: color-mix(in srgb, var(--rh-text) 12%, var(--rh-tile)); /* a bar without a reading */
   --rh-line: var(--homey-line-color-light, color-mix(in srgb, var(--rh-text) 8%, transparent)); /* between the rooms */
-  /* The marks: grey (or green) inside the comfortable range, then yellow to red (`--k`, 0–1) further out. */
+  /* The marks: grey inside the comfortable range, then yellow to red (`--k`, 0–1) further out. */
   --rh-fine: var(--rh-muted);
   --rh-green: var(--homey-color-green, #71D51B);
   --rh-yellow: #F5C518;
@@ -19,7 +19,7 @@
   --rh-red-text: #D93B37;
   --rh-fs-small: var(--homey-font-size-small, 14px);
   --rh-fs-value: var(--homey-font-size-large, 20px);
-  --rh-medium: var(--homey-font-weight-medium, 500);
+  --rh-regular: var(--homey-font-weight-regular, 400);
   --rh-bold: var(--homey-font-weight-bold, 700);
   --rh-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
   --rh-icon: var(--homey-icon-size-medium, 20px);
@@ -27,8 +27,6 @@
   --rh-arc-mix: 60%;
 }
 .rh.wk-deep { --rh-arc-mix: 100%; }
-/* Green when fine (`greenWhenFine`). */
-.rh.rh-green { --rh-fine: color-mix(in oklab, var(--rh-green) var(--rh-arc-mix), var(--rh-track)); }
 /* Dark mode: Homey's native device tiles, as Device Quick Actions. */
 .homey-dark-mode .rh, .rh.homey-dark-mode {
   --rh-tile: #181920; --rh-track: #2B2C36;
@@ -54,6 +52,10 @@ html, body { background: transparent !important; }
   content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
 }
+/* Muted, dark: the tile lit a little from the top, so a house where all is fine isn't flat. */
+.homey-dark-mode .rh:not(.wk-deep) .rh-tile, .rh.homey-dark-mode:not(.wk-deep) .rh-tile {
+  background: linear-gradient(180deg, color-mix(in srgb, #FFFFFF 3%, var(--rh-tile)), var(--rh-tile) 70%);
+}
 /* Lines between the rooms: each draws its right and bottom one, and the grid reaches 1px past the tile, which clips the outer ones. */
 .rh-grid { display: grid; grid-template-columns: repeat(var(--rh-cols, 3), minmax(0, 1fr)); margin: 0 -1px -1px 0; }
 .rh[data-columns="2"] { --rh-cols: 2; }
@@ -70,6 +72,15 @@ html, body { background: transparent !important; }
 .rh-room:focus-visible { box-shadow: inset 0 0 0 2px var(--rh-blue); }
 /* Four to a row: less padding, so the marks keep their room. */
 .rh[data-columns="4"] .rh-room { --rh-pad: 10px; }
+/*
+ * Muted: a room with a problem washed faintly in its worst's colour (`data-tone`), so it's found without reading, and
+ * a fine one in green with `greenWhenFine`. An image, so the pressed and picking background colour still shows through.
+ */
+.rh:not(.wk-deep) .rh-room[data-tone="yellow"] { --rh-wash: color-mix(in srgb, var(--rh-yellow) 9%, transparent); }
+.rh:not(.wk-deep) .rh-room[data-tone="orange"] { --rh-wash: color-mix(in srgb, color-mix(in oklab, var(--rh-red) 50%, var(--rh-yellow)) 10%, transparent); }
+.rh:not(.wk-deep) .rh-room[data-tone="red"] { --rh-wash: color-mix(in srgb, var(--rh-red) 11%, transparent); }
+.rh:not(.wk-deep) .rh-room[data-tone="green"] { --rh-wash: color-mix(in srgb, var(--rh-green) 8%, transparent); }
+.rh:not(.wk-deep) .rh-room[data-tone] { background-image: linear-gradient(var(--rh-wash), var(--rh-wash)); }
 /* Pressed, or a tap brought up another reading. */
 .rh-room.pressing, .rh-room.picking { background: color-mix(in srgb, var(--rh-text) 7%, transparent); }
 
@@ -89,31 +100,38 @@ html, body { background: transparent !important; }
 .rh-value[data-level="off"] { color: color-mix(in oklab, var(--rh-red-text) calc(var(--k, 1) * 100%), var(--rh-yellow-text)); }
 .rh-room.missing .rh-value, .rh-room.missing .rh-name { color: var(--rh-muted); }
 
-/* The name (14 medium). */
+/* The name (14 regular, muted, so the value leads). */
 .rh-name {
-  max-width: 100%; font-size: var(--rh-fs-small); line-height: var(--homey-line-height-small, 20px); font-weight: var(--rh-medium);
+  max-width: 100%; font-size: var(--rh-fs-small); line-height: var(--homey-line-height-small, 20px); font-weight: var(--rh-regular);
+  color: var(--rh-muted);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
 /* The marks: one per measure any room has, so they line up from room to room. */
 .rh-marks { display: grid; margin-top: var(--homey-su-3, 12px); }
 .rh-bars .rh-marks { grid-template-columns: repeat(var(--rh-n, 1), minmax(0, 20px)); gap: var(--homey-su-1, 4px); }
-.rh-icons .rh-marks { grid-template-columns: repeat(var(--rh-n, 1), minmax(0, 28px)); height: var(--rh-icon); }
+/*
+ * Icons: each as wide as its ink (`--rh-iw`, in 24ths), 0.35 of an icon apart (7px at 20), the icons and gaps shrunk
+ * alike when the row doesn't fit (`--rh-ink`, their widths together; a gap is 8.4 24ths).
+ */
+.rh-icons .rh-marks {
+  --rh-isz: min(var(--rh-icon), calc(100cqi * 24 / (var(--rh-ink, 24) + (var(--rh-n, 1) - 1) * 8.4)));
+  display: flex; gap: calc(var(--rh-isz) * .35); align-items: center; height: var(--rh-icon);
+}
 .rh-mark { transition: opacity .2s, background-color .3s, color .3s; }
 .rh-room.picking .rh-mark:not(.picked) { opacity: .35; }
 
 /* Bars: the track without a reading or without the measure. */
 .rh-bars .rh-mark { height: 6px; border-radius: 3px; background: var(--rh-track); }
 .rh-bars .rh-mark[data-level="good"] { background: color-mix(in srgb, var(--rh-fine) 55%, var(--rh-track)); }
-.rh-bars.rh-green .rh-mark[data-level="good"] { background: var(--rh-fine); }
 .rh-bars .rh-mark[data-level="off"] {
   background: color-mix(in oklab, color-mix(in oklab, var(--rh-red) calc(var(--k, 1) * 100%), var(--rh-yellow)) var(--rh-arc-mix), var(--rh-track));
 }
 
 /* Icons: none for a measure the room hasn't, faint without a reading. */
-.rh-icons .rh-mark { display: flex; color: var(--rh-fine); }
+.rh-icons .rh-mark { display: flex; flex: 0 0 auto; color: var(--rh-fine); }
 .rh-icons .rh-mark svg {
-  width: min(var(--rh-icon), calc(100% - 2px)); height: var(--rh-icon); flex: 0 0 auto; overflow: visible;
+  width: calc(var(--rh-isz) * var(--rh-iw, 24) / 24); height: var(--rh-isz); flex: 0 0 auto; overflow: visible;
   fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 .rh-icons .rh-mark[data-level="absent"] { visibility: hidden; }

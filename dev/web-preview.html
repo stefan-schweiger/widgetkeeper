@@ -69,7 +69,7 @@
       const W = (type, settings = {}, deviceIds = []) => ({ id: Math.random().toString(36).slice(2, 10), type, title: '', settings, deviceIds });
       const dashboards = [
         { id: 'home', name: 'Home', theme: 'auto', columns: [[W('electricity'), W('price')], [W('lights', {}, ['d1', 'd2', 'd5', 'd8']), W('thermostat')], [W('weather'), W('timers'), W('locks')]] },
-        { id: 'kitchen', name: 'Kitchen tablet', theme: 'dark', columns: [[W('timers'), W('media')], [W('flows'), W('sensordots'), W('values', { slot1: { id: 't1:measure_temperature', name: 'Living room thermostat · Temperature', description: 'Living room · °C' } })]] },
+        { id: 'kitchen', name: 'Kitchen tablet', theme: 'dark', background: 'ocean', columns: [[W('timers'), W('media')], [W('flows'), W('sensordots'), W('values', { slot1: { id: 't1:measure_temperature', name: 'Living room thermostat · Temperature', description: 'Living room · °C' } })]] },
         { id: 'hall', name: 'Hallway', theme: 'auto', columns: [[W('locks'), W('cameras'), W('sensoralarms')]] },
         { id: 'new', name: 'Spare room', theme: 'auto', columns: [[], [], []] },
       ];

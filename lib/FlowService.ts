@@ -5,11 +5,16 @@ import { FLOW_ICON_IMAGES } from './flowIconImages.js';
 import PersonalApiKey from './PersonalApiKey.js';
 import { sharedCache } from './sharedCache.js';
 import Timings from './Timings.js';
+import { TILE_COLORS, type TileColor } from './ValueService.js';
 
 /** How long a read of every flow is reused: renames and enabling show on the widget's next refresh. */
 const CACHE_MS = 60e3;
 /** The settings' autocomplete reads fresher (a flow made a moment ago should be there), but not per keystroke. */
 const AUTOCOMPLETE_CACHE_MS = 5e3;
+
+export const FLOWS_COLOR_EVENT = 'flows:color';
+/** The app setting holding the button colours set by Flows: `{ '<kind>:<flow id>': colour }`. */
+export const FLOW_COLORS_SETTING = 'flowColors';
 
 /** A slot's id: `flow:<id>` for a standard Flow, `advanced:<id>` for an Advanced Flow. */
 export type FlowKind = 'flow' | 'advanced';
@@ -24,6 +29,8 @@ export type FlowInfo = {
    */
   triggerable: boolean,
   advanced: boolean,
+  /** A colour set by the Flow card, which wins over the button's own. */
+  color?: TileColor,
 };
 
 export type FlowEntry = FlowInfo | { id: string, missing: true };
@@ -78,6 +85,11 @@ export default class FlowService {
     return withNone(this.homey.__('flows.none') || 'None', query, items);
   }
 
+  /** The Flow card's flow argument: the settings' list without `None`. */
+  async listColorFlows(query: string): Promise<AutocompleteItem[]> {
+    return (await this.listFlows(query)).filter(i => i.id !== 'none');
+  }
+
   /**
    * The built-in icons, by their names in Homey's language and in its alphabetical order, each with a preview of
    * the button (`iconImage()`). The widget draws them (`ICONS` in widget.js). With `none` (the media widget's
@@ -98,13 +110,39 @@ export default class FlowService {
   async getState(ids: string[]): Promise<FlowEntry[]> {
     const tm = new Timings();
     const { flows } = await tm.time('flows', () => this.read(CACHE_MS));
+    const colors = this.colors();
     this.debug(`Flows state for ${ids.length} ids: ${tm.summary()}`);
     return ids.map(id => {
       const f = flows.get(id);
       if (!f) return { id, missing: true as const };
       const { folder, ...info } = f;
-      return info;
+      const color = colors[id];
+      return color ? { ...info, color } : info;
     });
+  }
+  // ---------------------------------------------------------------- button colours (Flow)
+
+  /** The colours set by Flows, per slot id. Kept in an app setting, so they survive restarts. */
+  private colors(): Record<string, TileColor> {
+    const v = this.homey.settings.get(FLOW_COLORS_SETTING);
+    return v && typeof v === 'object' ? v : {};
+  }
+
+  /**
+   * The Flow card "Set the button colour of … to …": every button starting that flow takes the colour (a Flow can't
+   * address a widget instance). `default` removes it, so the buttons have their own colour again.
+   */
+  setColor(id: string, color: string) {
+    if (!parseFlowId(id)) throw new Error(`Not a flow: ${id}`);
+    const next = color === 'default' ? null : (TILE_COLORS as readonly string[]).includes(color) ? color as TileColor : undefined;
+    if (next === undefined) throw new Error(`Unknown colour: ${color}`);
+    const colors = { ...this.colors() };
+    if ((colors[id] ?? null) === next) return; // the buttons have it already
+    if (next) colors[id] = next;
+    else delete colors[id];
+    this.homey.settings.set(FLOW_COLORS_SETTING, colors);
+    this.homey.api.realtime(FLOWS_COLOR_EVENT, { id, color: next });
+    this.debug(`Button colour of ${id} set to ${color}`);
   }
 
   /** Starts a flow through the user's API key (a KeyError says why it can't). */
@@ -132,6 +170,7 @@ export default class FlowService {
       apiKey: this.key.has(),
       triggered: this.triggered,
       lastTriggerError: this.lastTriggerError,
+      colors: Object.keys(this.colors()).length,
     };
   }
 

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard shortcuts widget preview</title>
+  <link rel="stylesheet" href="../widgets/spacer/public/kit.css">
+  <link rel="stylesheet" href="../widgets/shortcuts/public/widget.css">
+  <script src="../widgets/spacer/public/kit.js"></script>
+  <script src="../widgets/shortcuts/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <link rel="stylesheet" href="preview.css">
+  <style>
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .homey-dark-mode.dash { background: #121318; padding: 12px; border-radius: 12px; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>390 px · dark · 2 columns (the user's screenshot)</span><div class="dash homey-dark-mode" style="width:390px"><div id="w1"></div></div></div>
+  <div class="col"><span>390 px · light · 2 columns</span><div class="dash light" style="width:390px"><div id="w2"></div></div></div>
+  <div class="col"><span>390 px · dark · Vivid</span><div class="dash homey-dark-mode" style="width:390px"><div id="w3"></div></div></div>
+  <div class="col"><span>390 px · light · Vivid</span><div class="dash light" style="width:390px"><div id="w4"></div></div></div>
+  <div class="col"><span>300 px · dark · 2 columns (falls back to 1)</span><div class="dash homey-dark-mode" style="width:300px"><div id="w5"></div></div></div>
+  <div class="col"><span>390 px · dark · 1 column · current, deleted, long name</span><div class="dash homey-dark-mode" style="width:390px"><div id="w6"></div></div></div>
+  <div class="col"><span>390 px · dark · Rename tiles ("…fail" fails)</span><div class="dash homey-dark-mode" style="width:390px"><div id="w7"></div></div></div>
+  <div class="col"><span>390 px · light · Rename tiles</span><div class="dash light" style="width:390px"><div id="w8"></div></div></div>
+  <div class="col"><span>390 px · nothing picked</span><div class="dash homey-dark-mode" style="width:390px"><div id="w9"></div></div></div>
+  <div class="col"><span>390 px · on a Homey dashboard</span><div class="dash homey-dark-mode" style="width:390px"><div id="w10"></div></div></div>
+
+  <script>
+    // Made-up dashboards of Solbakken; a tap only logs. ?open shows where a tap would go.
+    const SCREENSHOT = [{ id: 'lights' }, { id: 'house' }, { id: 'sensors' }];
+    const NAMES = { lights: 'Lights', house: 'Solbakken', sensors: 'Sensors', climate: 'Climate', kitchen: 'Kitchen', garden: 'Garden', cameras: 'Cameras', energy: 'Energy' };
+    const COLORED = [
+      { id: 'house', color: 'blue', icon: 'home' },
+      { id: 'lights', color: 'yellow', icon: 'bulb' },
+      { id: 'climate', color: 'orange', icon: 'thermometer' },
+      { id: 'garden', color: 'green', icon: 'leaf' },
+      { id: 'cameras', color: 'red', icon: 'camera' },
+      { id: 'energy', color: 'purple', icon: 'bolt' },
+      { id: 'kitchen', color: 'grey', icon: 'utensils' },
+    ];
+    const state = (tiles, current = null) => ({ current, tiles: tiles.map(t => (NAMES[t.id] ? { id: t.id, name: NAMES[t.id] } : { id: t.id, missing: true })) });
+    function mount(id, tiles, opts = {}, current = null) {
+      const w = createShortcutsWidget(document.getElementById(id), {
+        t: devT, tiles, ...opts,
+        onOpen: dashboard => console.log(`open #/d/${dashboard}`),
+        onRename: (key, name) => new Promise((resolve, reject) => setTimeout(() => (/fail/i.test(name) ? reject(new Error('Simulated failure')) : resolve()), 400)),
+      });
+      w.setState(state(tiles, current));
+      return w;
+    }
+    mount('w1', SCREENSHOT);
+    mount('w2', COLORED, {}, 'house');
+    mount('w3', COLORED, { colorStyle: 'deep' }, 'house');
+    mount('w4', COLORED, { colorStyle: 'deep' }, 'lights');
+    mount('w5', COLORED.slice(0, 4), {}, 'house');
+    NAMES.long = 'The guest room and the annexe across the garden';
+    mount('w6', [{ id: 'house' }, { id: 'long', color: 'purple', icon: 'bed' }, { id: 'gone', color: 'red' }, { id: 'garden', color: 'green', icon: 'leaf' }], { columns: '1' }, 'house');
+    mount('w7', COLORED.slice(0, 4), { renameTiles: true }).setNames({ lights: 'Lamps' });
+    mount('w8', COLORED.slice(0, 4), { renameTiles: true });
+    const empty = createShortcutsWidget(document.getElementById('w9'), { t: devT });
+    empty.setMessage(empty.t('selectSlots'));
+    const homey = createShortcutsWidget(document.getElementById('w10'), { t: devT });
+    homey.setMessage(homey.t('webOnly'));
+  </script>
+</body>
+</html>

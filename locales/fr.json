@@ -74,7 +74,14 @@
     "stuffy": "Air confiné",
     "radon": "Radon",
     "particles": "Particules",
-    "voc": "COV"
+    "voc": "COV",
+    "measureTemperature": "Température",
+    "measureHumidity": "Humidité",
+    "measureCo2": "CO₂",
+    "measureRadon": "Radon",
+    "measurePm25": "PM2.5",
+    "measurePm10": "PM10",
+    "measureVoc": "COV"
   },
   "valuematrix": {
     "selectDevices": "Choisissez des appareils dans les réglages.",
@@ -303,7 +310,8 @@
       "paw": "Animal",
       "briefcase": "Travail",
       "gift": "Cadeau",
-      "sparkles": "Étincelles"
+      "sparkles": "Étincelles",
+      "dashboard": "Tableau de bord"
     }
   },
   "price": {
@@ -447,6 +455,15 @@
     "pageCount": "__count__ widgets Widgetkeeper",
     "keyHint": "Widgetkeeper → Configurer : une clé API avec le droit Homey."
   },
+  "shortcuts": {
+    "selectSlots": "Choisissez des tableaux de bord dans les réglages du widget.",
+    "error": "Impossible de charger les tableaux de bord.",
+    "missing": "Tableau de bord introuvable",
+    "webOnly": "Les raccourcis ne fonctionnent que sur les tableaux de bord web.",
+    "current": "Vous êtes ici",
+    "renameFailed": "Impossible d'enregistrer le nom.",
+    "none": "Aucune"
+  },
   "web": {
     "title": "Tableaux de bord web",
     "keyTitle": "Se connecter à votre Homey",
@@ -473,6 +490,18 @@
     "themeAuto": "Automatique",
     "themeDark": "Sombre",
     "themeLight": "Clair",
+    "darkLight": "Sombre ou clair",
+    "background": "Arrière-plan",
+    "bgDefault": "Par défaut",
+    "bgBlack": "Noir/blanc",
+    "bgSlate": "Ardoise",
+    "bgOcean": "Océan",
+    "bgForest": "Forêt",
+    "bgPlum": "Prune",
+    "bgBerry": "Baie",
+    "bgSand": "Sable",
+    "arrangeHint": "Faites glisser les tableaux de bord pour changer leur ordre.",
+    "showWidgets": "Afficher sur la page d'accueil",
     "deleteDashboard": "Supprimer le tableau de bord",
     "tapAgain": "Touchez encore pour confirmer",
     "addWidget": "Ajouter un widget",
@@ -503,7 +532,6 @@
     "passwordLocked": "Trop d'essais. Réessayez dans __seconds__ s.",
     "sessionEnded": "Vous avez été déconnecté. Le mot de passe a peut-être changé.",
     "yourDashboards": "Vos tableaux de bord",
-    "dashboardsText": "Ouvrez-en un sur une tablette murale, un ordinateur ou une TV.",
     "widgetsTitle": "Widgets",
     "widgetsText": "Tout ce que vous pouvez mettre sur un tableau de bord.",
     "previous": "Précédent",
@@ -561,7 +589,8 @@
       "textline": "Une note sur une tuile ou un Post-it, saisie par vous ou écrite par vos Flows.",
       "spacer": "Un espace vide pour aligner les widgets en colonnes.",
       "dayssince": "Les jours depuis une tâche, en rouge quand c'est à refaire.",
-      "stack": "Les widgets d'un autre tableau de bord, à tour de rôle."
+      "stack": "Les widgets d'un autre tableau de bord, à tour de rôle.",
+      "shortcuts": "Passez à vos autres tableaux de bord web, avec vos couleurs et icônes."
     }
   }
 }

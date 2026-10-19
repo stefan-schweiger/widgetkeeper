@@ -6,6 +6,7 @@ paths:
   - "lib/FlowService.ts"
   - "lib/flowIconImages.ts"
   - "scripts/render-flow-icons.mjs"
+  - ".homeycompose/flow/actions/flows_*.json"
 ---
 # Flow Buttons widget (`flows`)
 
@@ -19,3 +20,4 @@ paths:
 - `GET /state?ids=` (`{id, name, enabled, triggerable, advanced}` or missing), `POST /trigger {id}` (`{ok: true}` or `{ok: false, reason}`). No realtime: one read of all flows is shared for 60 s (the autocomplete's for 5 s), and widgets refetch every 5 min. Diagnostics' `flows`: counts and the last error, never names.
 - `dev/flows-preview.html` (`Broken flow` fails).
 - Colour style (`colorStyle`, Muted/Vivid; CLAUDE.md *Widget styling*, `kit.css`): after `columns`. `--fb-c-*` are the palette's. Vivid: each row is its colour's shade, solid, with the text in its `--wk-on-<colour>`, the round button 20 % of that and the spinner in it; grey rows and missing flows are unchanged.
+- Colour from a Flow (wk-070, a user's request: a button showing that an e-bike is still charging, driven by the plug): the action card `flows_set_color` ("Set the button colour of [[flow]] to [[color]]"; `flow` autocompletes `listColorFlows()`, `listFlows()` without `None`; `color` is Device Values' card's list, `default` (reset) and `TILE_COLORS`, no grey). A Flow can't address a widget instance, so the colour belongs to the flow: every button starting it, in any Flow Buttons widget. `setColor()` keeps it in the app setting `flowColors` (`{'<kind>:<id>': colour}`) and sends `flows:color {id, color | null}` (the widget's only realtime event; the stack and web dashboards pass it on as any other); `/state` entries carry `color` (never a missing flow's). The widget puts it on `data-color` in place of `colorN` (`pushColor()`), so the button and Vivid's solid row follow it, and `.flow-color` also tints the row 22 % in Muted, as Device Values' tiles (the user's choice over the button alone). In Vivid it looks just as a `colorN`. Diagnostics' `flows.colors`: a count. `dev/flows-preview.html` has Flow-coloured rows; not yet run from a Flow on the real Homey.

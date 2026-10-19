@@ -9,6 +9,7 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
   const loc = (text) => (text && typeof text === 'object' ? text[lang] || text.en : text) || '';
 
   let manifest = null;
+  let front = { widgets: true };
   let strings = null;
   const ready = Promise.all([
     fetch('/app.json').then(r => r.json()).then((m) => { manifest = m; }),
@@ -92,7 +93,7 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
           sections,
         };
       });
-      return { appId: 'com.thomassidor.widgetkeeper', homeyId: 'preview', language: lang, strings, widgets, dashboards };
+      return { appId: 'com.thomassidor.widgetkeeper', homeyId: 'preview', language: lang, strings, widgets, dashboards, front };
     }
     if (p === '/web/devices') {
       // Another app's widget sends its filter (the made-up app has no devices of its own, so `app=1` is left out).
@@ -117,8 +118,14 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
     }
     if (p === '/web/dashboards' && method === 'PUT') {
       const saved = { ...body, id: body.id || Math.random().toString(36).slice(2, 10) };
-      dashboards = dashboards.filter(d => d.id !== saved.id).concat(saved);
+      const i = dashboards.findIndex(d => d.id === saved.id);
+      if (i >= 0) dashboards[i] = saved; else dashboards.push(saved);
       return saved;
+    }
+    if (p === '/web/front' && method === 'PUT') {
+      if (Array.isArray(body.order)) dashboards.sort((a, b) => body.order.indexOf(a.id) - body.order.indexOf(b.id));
+      if (typeof body.widgets === 'boolean') front = { widgets: body.widgets };
+      return { dashboards, front };
     }
     if (p.startsWith('/web/dashboards/') && method === 'DELETE') {
       dashboards = dashboards.filter(d => d.id !== p.split('/').pop());

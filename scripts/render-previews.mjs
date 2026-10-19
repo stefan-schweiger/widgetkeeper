@@ -15,7 +15,7 @@ const WIDGETS = {
   elec: 'electricity', thermo: 'thermostat', qa: 'quickactions', sa: 'sensoralarms', sd: 'sensordots', rh: 'roomhealth', vm: 'valuematrix', weather: 'weather',
   hm: 'heatmap', cam: 'cameras', val: 'values', lc: 'lights', spark: 'sparklines', chart: 'charts', var: 'variables', vp: 'varpresets', fb: 'flows',
   pb: 'price', tm: 'timers', lk: 'locks', ct: 'curtains', mw: 'media', sk: 'stack', ck: 'clock', sp: 'spacer', tl: 'textline',
-  ds: 'dayssince',
+  ds: 'dayssince', sc: 'shortcuts',
 };
 const OUT = Object.fromEntries(Object.entries(WIDGETS).flatMap(([prefix, widget]) =>
   ['dark', 'light'].map(theme => [`${prefix}-${theme}`, { widget, theme, out: `widgets/${widget}/preview-${theme}.png` }])));

@@ -3,12 +3,16 @@ import type WidgetkeeperApp from './app.js';
 import { scopesAllow, type KeyUse } from './lib/PersonalApiKey.js';
 import { autocompleteKeyUse, callWidgetRoute, routeKeyUse, type WidgetApis } from './lib/widgetRoutes.js';
 import dayssince from './widgets/dayssince/api.js';
+import shortcuts from './widgets/shortcuts/api.js';
 import stack, { PAGE_APIS } from './widgets/stack/api.js';
 
 type Homey = App['homey'];
 
-/** Every widget's API, by widget id, for the web dashboards' frames (the Smart Stack's included, and Days Since, which isn't a stack page). */
-const WEB_APIS: WidgetApis = { ...PAGE_APIS, stack, dayssince };
+/**
+ * Every widget's API, by widget id, for the web dashboards' frames (the Smart Stack's included, and Days Since and Dashboard
+ * Shortcuts, which aren't stack pages).
+ */
+const WEB_APIS: WidgetApis = { ...PAGE_APIS, stack, dayssince, shortcuts };
 
 /** Why the web page's own key (`key`) may not do what the app's stored key would do here, or null when it may. */
 async function pageKeyProblem(app: WidgetkeeperApp, key: unknown, use: KeyUse): Promise<'keyInvalid' | 'keyScope' | null> {
@@ -85,6 +89,7 @@ export default {
       strings,
       widgets: app.web.widgetTypes(language),
       dashboards: app.web.list(),
+      front: app.web.front(),
     };
   },
 
@@ -130,6 +135,13 @@ export default {
     const app = homey.app as WidgetkeeperApp;
     assertWebSession(app, query);
     return app.web.save(body);
+  },
+
+  /** The front page's edit mode: `{order?: dashboard ids, widgets?: boolean}` (the carousel). */
+  async putWebFront({ homey, query, body }: { homey: Homey, query?: Record<string, string>, body: unknown }) {
+    const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
+    return app.web.saveFront(body);
   },
 
   async deleteWebDashboard({ homey, query, params }: { homey: Homey, query?: Record<string, string>, params: Record<string, string> }) {

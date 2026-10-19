@@ -54,6 +54,34 @@ describe('render', () => {
   });
 });
 
+describe('colour from a Flow', () => {
+  it("wins over the button's own colour, on every button starting that flow", () => {
+    const { rows } = widget([flow('flow:1', 'Charge bike', { color: 'green' }), flow('flow:2', 'B'), flow('flow:1', 'Again', { color: 'green' })], {
+      buttons: [{ id: 'flow:1', color: 'purple' }, { id: 'flow:2', color: 'red' }, { id: 'flow:1', color: 'grey' }],
+    });
+    expect(rows().map(r => r.dataset.color)).toEqual(['green', 'red', 'green']);
+    expect(rows().map(r => r.classList.contains('flow-color'))).toEqual([true, false, true]);
+  });
+
+  it("changes live, and null gives the buttons their own colour again", () => {
+    const { w, rows } = widget([flow('flow:1', 'A'), flow('flow:2', 'B')], { buttons: [{ id: 'flow:1', color: 'purple' }, { id: 'flow:2' }] });
+    w.pushColor({ id: 'flow:1', color: 'orange' });
+    expect(rows().map(r => r.dataset.color)).toEqual(['orange', 'blue']);
+    expect(rows()[0].classList.contains('flow-color')).toBe(true);
+    w.pushColor({ id: 'flow:1', color: null });
+    expect(rows().map(r => r.dataset.color)).toEqual(['purple', 'blue']);
+    expect(rows()[0].classList.contains('flow-color')).toBe(false);
+  });
+
+  it('ignores a colour the card has not (grey, unknown) and a missing flow', () => {
+    const { w, rows } = widget([{ id: 'flow:1', missing: true }, flow('flow:2', 'B')], { buttons: [{ id: 'flow:1' }, { id: 'flow:2', color: 'red' }] });
+    w.pushColor({ id: 'flow:1', color: 'green' });
+    w.pushColor({ id: 'flow:2', color: 'grey' });
+    expect(rows().map(r => r.dataset.color)).toEqual(['blue', 'red']);
+    expect(rows().some(r => r.classList.contains('flow-color'))).toBe(false);
+  });
+});
+
 describe('start', () => {
   it('starts the flow on a tap, with a spinner, then a check mark', async () => {
     const { row, onTrigger, onHaptic } = widget([flow('flow:1', 'Good night')]);

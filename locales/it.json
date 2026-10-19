@@ -74,7 +74,14 @@
     "stuffy": "Aria viziata",
     "radon": "Radon",
     "particles": "Polveri",
-    "voc": "COV"
+    "voc": "COV",
+    "measureTemperature": "Temperatura",
+    "measureHumidity": "Umidità",
+    "measureCo2": "CO₂",
+    "measureRadon": "Radon",
+    "measurePm25": "PM2.5",
+    "measurePm10": "PM10",
+    "measureVoc": "COV"
   },
   "valuematrix": {
     "selectDevices": "Scegli i dispositivi nelle impostazioni del widget.",
@@ -303,7 +310,8 @@
       "paw": "Animale",
       "briefcase": "Lavoro",
       "gift": "Regalo",
-      "sparkles": "Scintille"
+      "sparkles": "Scintille",
+      "dashboard": "Dashboard"
     }
   },
   "price": {
@@ -447,6 +455,15 @@
     "pageCount": "__count__ widget di Widgetkeeper",
     "keyHint": "Widgetkeeper → Configura: una chiave API con il permesso Homey."
   },
+  "shortcuts": {
+    "selectSlots": "Scegli le dashboard nelle impostazioni del widget.",
+    "error": "Impossibile caricare le dashboard.",
+    "missing": "Dashboard non trovata",
+    "webOnly": "Le scorciatoie funzionano solo sulle dashboard web.",
+    "current": "Sei qui",
+    "renameFailed": "Impossibile salvare il nome.",
+    "none": "Nessuna"
+  },
   "web": {
     "title": "Dashboard web",
     "keyTitle": "Connettiti al tuo Homey",
@@ -473,6 +490,18 @@
     "themeAuto": "Automatico",
     "themeDark": "Scuro",
     "themeLight": "Chiaro",
+    "darkLight": "Scuro o chiaro",
+    "background": "Sfondo",
+    "bgDefault": "Predefinito",
+    "bgBlack": "Nero/bianco",
+    "bgSlate": "Ardesia",
+    "bgOcean": "Oceano",
+    "bgForest": "Foresta",
+    "bgPlum": "Prugna",
+    "bgBerry": "Bacca",
+    "bgSand": "Sabbia",
+    "arrangeHint": "Trascina le dashboard per cambiarne l'ordine.",
+    "showWidgets": "Mostra nella pagina iniziale",
     "deleteDashboard": "Elimina dashboard",
     "tapAgain": "Tocca di nuovo per confermare",
     "addWidget": "Aggiungi widget",
@@ -503,7 +532,6 @@
     "passwordLocked": "Troppi tentativi. Riprova tra __seconds__ s.",
     "sessionEnded": "Sei stato disconnesso. La password potrebbe essere cambiata.",
     "yourDashboards": "Le tue dashboard",
-    "dashboardsText": "Aprine una su un tablet a parete, un computer o una TV.",
     "widgetsTitle": "Widget",
     "widgetsText": "Tutto ciò che puoi mettere in una dashboard.",
     "previous": "Precedente",
@@ -561,7 +589,8 @@
       "textline": "Una nota su un riquadro o un Post-it, scritta da te o dai tuoi Flow.",
       "spacer": "Spazio vuoto per allineare i widget nelle colonne.",
       "dayssince": "I giorni da una faccenda, in rosso quando è di nuovo ora.",
-      "stack": "Widget di un'altra dashboard, a turno."
+      "stack": "Widget di un'altra dashboard, a turno.",
+      "shortcuts": "Passa alle altre dashboard web, nei tuoi colori e icone."
     }
   }
 }

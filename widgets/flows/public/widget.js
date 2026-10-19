@@ -24,6 +24,8 @@
   };
 
   const COLORS = ['blue', 'red', 'orange', 'yellow', 'green', 'purple', 'grey'];
+  /** The colours the Flow card can set (Device Values' `TILE_COLORS`): no grey. */
+  const FLOW_COLORS = COLORS.filter(c => c !== 'grey');
 
   /** The button icons (the kit's): the ids are the `icon` setting's. */
   const ICONS = window.WidgetkeeperKit.icons;
@@ -115,7 +117,8 @@
       id: b && b.id, color: colorOf(b && b.color), icon: iconOf(b && b.icon), name: b && b.name,
     }));
 
-    let flows = []; // [{ id, name, enabled, triggerable, advanced } | { id, missing }], one per button
+    let flows = []; // [{ id, name, enabled, triggerable, advanced, color? } | { id, missing }], one per button
+    const flowColors = new Map(); // flow id → a colour set by the Flow card, which wins over the button's own
     const busy = new Map(); // button index → 'running' | 'done'
     let messageText = null;
     let messageTimer = null;
@@ -130,7 +133,16 @@
 
     function setState(list) {
       flows = (Array.isArray(list) ? list : []).map((f, i) => withName(f, buttons[i] && buttons[i].name));
+      flowColors.clear();
+      for (const f of flows) if (f && FLOW_COLORS.includes(f.color)) flowColors.set(f.id, f.color);
       messageText = null;
+      render();
+    }
+
+    /** A Flow set (`color`) or reset (null) the colour of the buttons starting `id`. */
+    function pushColor({ id, color }) {
+      if (FLOW_COLORS.includes(color)) flowColors.set(id, color);
+      else flowColors.delete(id);
       render();
     }
 
@@ -216,7 +228,9 @@
           r.icon = icon;
           r.button.replaceChildren(glyph(icon === 'check' ? CHECK : ICONS[icon], 'fb-glyph'));
         }
-        r.row.dataset.color = look.color;
+        const flowColor = f.missing ? null : flowColors.get(f.id) || null;
+        r.row.dataset.color = flowColor || look.color;
+        r.row.classList.toggle('flow-color', !!flowColor);
         r.row.classList.toggle('missing', !!f.missing);
         r.row.classList.toggle('unavailable', !f.missing && (!f.enabled || !f.triggerable));
         r.row.classList.toggle('running', state === 'running');
@@ -235,7 +249,7 @@
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    return { setState, setMessage, render, t };
+    return { setState, pushColor, setMessage, render, t };
   }
 
   window.createFlowsWidget = createFlowsWidget;

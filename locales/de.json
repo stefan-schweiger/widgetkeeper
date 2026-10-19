@@ -74,7 +74,14 @@
     "stuffy": "Stickig",
     "radon": "Radon",
     "particles": "Feinstaub",
-    "voc": "VOC"
+    "voc": "VOC",
+    "measureTemperature": "Temperatur",
+    "measureHumidity": "Luftfeuchte",
+    "measureCo2": "CO₂",
+    "measureRadon": "Radon",
+    "measurePm25": "PM2.5",
+    "measurePm10": "PM10",
+    "measureVoc": "VOC"
   },
   "valuematrix": {
     "selectDevices": "Wähle Geräte in den Widget-Einstellungen.",
@@ -303,7 +310,8 @@
       "paw": "Haustier",
       "briefcase": "Arbeit",
       "gift": "Geschenk",
-      "sparkles": "Funkeln"
+      "sparkles": "Funkeln",
+      "dashboard": "Dashboard"
     }
   },
   "price": {
@@ -447,6 +455,15 @@
     "pageCount": "__count__ Widgetkeeper-Widgets",
     "keyHint": "Widgetkeeper → Konfigurieren: ein API-Schlüssel mit dem Recht Homey."
   },
+  "shortcuts": {
+    "selectSlots": "Wähle Dashboards in den Widget-Einstellungen.",
+    "error": "Die Dashboards konnten nicht geladen werden.",
+    "missing": "Dashboard nicht gefunden",
+    "webOnly": "Dashboard-Verknüpfungen funktionieren nur auf Web-Dashboards.",
+    "current": "Du bist hier",
+    "renameFailed": "Der Name konnte nicht gespeichert werden.",
+    "none": "Keine"
+  },
   "web": {
     "title": "Web-Dashboards",
     "keyTitle": "Mit deinem Homey verbinden",
@@ -473,6 +490,18 @@
     "themeAuto": "Automatisch",
     "themeDark": "Dunkel",
     "themeLight": "Hell",
+    "darkLight": "Dunkel oder hell",
+    "background": "Hintergrund",
+    "bgDefault": "Standard",
+    "bgBlack": "Schwarz/Weiß",
+    "bgSlate": "Schiefer",
+    "bgOcean": "Ozean",
+    "bgForest": "Wald",
+    "bgPlum": "Pflaume",
+    "bgBerry": "Beere",
+    "bgSand": "Sand",
+    "arrangeHint": "Ziehe die Dashboards, um ihre Reihenfolge zu ändern.",
+    "showWidgets": "Auf der Startseite zeigen",
     "deleteDashboard": "Dashboard löschen",
     "tapAgain": "Zum Bestätigen erneut tippen",
     "addWidget": "Widget hinzufügen",
@@ -503,7 +532,6 @@
     "passwordLocked": "Zu viele Versuche. Versuche es in __seconds__ s erneut.",
     "sessionEnded": "Du wurdest abgemeldet. Das Passwort wurde vielleicht geändert.",
     "yourDashboards": "Deine Dashboards",
-    "dashboardsText": "Öffne eins auf einem Wandtablet, Computer oder Fernseher.",
     "widgetsTitle": "Widgets",
     "widgetsText": "Alles, was du auf ein Dashboard setzen kannst.",
     "previous": "Zurück",
@@ -561,7 +589,8 @@
       "textline": "Eine Notiz als Kachel oder Haftnotiz, selbst eingegeben oder von deinen Flows geschrieben.",
       "spacer": "Leerer Platz, um Widgets in Spalten auszurichten.",
       "dayssince": "Tage seit einer Aufgabe, rot, sobald sie wieder fällig ist.",
-      "stack": "Widgets von einem anderen Dashboard, abwechselnd."
+      "stack": "Widgets von einem anderen Dashboard, abwechselnd.",
+      "shortcuts": "Zu deinen anderen Web-Dashboards springen, in deinen Farben und Symbolen."
     }
   }
 }

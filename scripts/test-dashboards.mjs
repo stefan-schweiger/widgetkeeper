@@ -7,6 +7,7 @@
 //   npm run test-dashboards -- lights media only those
 //   npm run test-dashboards -- --remove     removes the test dashboards
 //   npm run test-dashboards -- --native …   the same as native Homey dashboards (the Homey app's), instead of web ones
+//   npm run test-dashboards -- --apps "Widgey,Sun Times"   other apps' widgets instead: `Test · Other apps`, id `test-apps`
 //
 // It writes the app setting `webDashboards` through the Homey CLI's login (the web dashboards' own API wants the
 // password's session too), so the app's `normalize()` checks it on the next read, as for any saved dashboard.
@@ -16,6 +17,10 @@
 // With --native they're Homey dashboards named `Test · <widget>` (the Homey picks a dashboard's id, so the name is the
 // marker), updated in place on a re-run. Their widget and column ids are derived from the type and position
 // (`stableUuid()`), so a re-run keeps each widget's instance: its typed tile names, a running timer, Media's speaker.
+//
+// With --apps (app names as the Homey shows them, or app ids, comma-separated) it's one web dashboard of every widget
+// those apps have, a column per app, each with its manifest's defaults and its first autocomplete setting filled
+// (a Homey variable where there is one, so a toggle switches no device).
 
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -33,7 +38,7 @@ const TILE_NAMES = `/api/manager/apps/app/${APP_ID}/setting/tileNames`;
 const PREFIX = 'test-';
 const MISSING = 'missing-device-0000'; // a device id that doesn't exist: the widgets' missing state
 
-const { values: opts, positionals } = parseArgs({ options: { remove: { type: 'boolean' }, native: { type: 'boolean' } }, allowPositionals: true });
+const { values: opts, positionals } = parseArgs({ options: { remove: { type: 'boolean' }, native: { type: 'boolean' }, apps: { type: 'string' } }, allowPositionals: true });
 
 // One login through the Homey CLI's own code, reused for every request: `homey api raw` logs in anew each time, and
 // Homey answers a burst of logins with `Too many requests` for minutes.
@@ -485,6 +490,25 @@ const BUILD = {
     ] };
   },
 
+  async shortcuts() {
+    // Its own test dashboard first (marked, as it's on it), then the other test dashboards: the user's own aren't linked.
+    const self = { id: `${PREFIX}shortcuts`, name: testName('shortcuts') };
+    const boards = pick(await autocomplete('shortcuts', 'dashboard1'), i => i.id.startsWith(PREFIX) && i.id !== self.id, 7);
+    const icon = id => ({ id, name: EN.flows.icons[id] ?? id });
+    const colours = ['blue', 'red', 'orange', 'yellow', 'green', 'purple', 'grey'];
+    const icons = ['bulb', 'thermometer', 'lock', 'camera', 'music', 'home', 'sparkles'];
+    const tile = (n, dashboard, extra = {}) => ({ [`dashboard${n}`]: dashboard, ...Object.fromEntries(Object.entries(extra).map(([k, v]) => [`${k}${n}`, v])) });
+    const all = Object.assign(tile(1, self), ...boards.map((d, i) => tile(i + 2, d, { color: colours[i], icon: icon(icons[i]) })));
+    const other = boards[0] ?? self;
+    return { cols: 2, widgets: [
+      w('shortcuts', 'Defaults (2 columns) · this dashboard marked · every colour', all),
+      w('shortcuts', '1 column', { columns: '1', ...all }),
+      renaming('shortcuts', 'Rename tiles · one typed', { ...tile(1, self), ...tile(2, other) }, [], { [other.id]: 'Renamed dashboard' }),
+      w('shortcuts', 'Gap and a deleted dashboard', { ...tile(1, other), ...tile(3, { id: 'missing-dashboard-0000', name: 'Deleted dashboard' }) }),
+      w('shortcuts', 'Nothing picked'),
+    ] };
+  },
+
   price: () => ({ cols: 3, widgets: [
     w('price', 'Defaults (12 h)'),
     w('price', '24 h', { hours: '24' }),
@@ -527,6 +551,8 @@ const BUILD = {
       w('curtains', `Defaults${note}`, {}, set),
       w('curtains', `Reverse of last move · inverted${note}`, { between: 'reverse', invert: true }, set),
       w('curtains', `No state line${note}`, { showState: false }, set),
+      w('curtains', `Exact ends (0%)${note}`, { ends: '0' }, set),
+      w('curtains', `Wide ends (15%)${note}`, { ends: '15' }, set),
       w('curtains', `Open at 100%, also tilt-only blinds${note}`, { openAt: 'end' }, set),
       w('curtains', `Open at 50% (vertical blinds)${note}`, { openAt: 'middle' }, set),
       w('curtains', `Grouped by room${note}`, { groupByZone: true }, set),
@@ -649,7 +675,11 @@ const BUILD = {
 
 // ---------------------------------------------------------------- write
 
-const types = positionals.length ? positionals : Object.keys(widgetDefs);
+if (opts.apps && (opts.native || positionals.length)) throw new Error('--apps builds a web dashboard of its own: no --native or widget types with it');
+/** Widgets Homey's own dashboards don't offer (deprecated there): left out with --native. */
+const WEB_ONLY = Object.keys(widgetDefs).filter(t => widgetDefs[t].deprecated === true);
+if (opts.native && positionals.some(t => WEB_ONLY.includes(t))) throw new Error(`Web dashboards only: ${positionals.filter(t => WEB_ONLY.includes(t)).join(', ')}`);
+const types = (opts.apps ? [] : positionals.length ? positionals : Object.keys(widgetDefs)).filter(t => !opts.native || !WEB_ONLY.includes(t));
 for (const t of types) if (!BUILD[t]) throw new Error(`Unknown widget type: ${t} (known: ${Object.keys(BUILD).join(', ')})`);
 const missingBuilders = Object.keys(widgetDefs).filter(t => !BUILD[t]);
 if (missingBuilders.length) console.warn(`No test dashboard for: ${missingBuilders.join(', ')}`);
@@ -658,6 +688,52 @@ const replacing = type => types.includes(type) || (opts.remove && !positionals.l
 
 function testName(type) {
   return `Test · ${widgetDefs[type]?.name?.en ?? type}`;
+}
+
+// ---------------------------------------------------------------- other apps' widgets
+
+/** Preferred autocomplete items, by setting id (a widget's own): DataVista's line chart gets temperature and humidity. */
+const APP_PICKS = {
+  datasource1: i => /:measure_temperature$/.test(i.id),
+  datasource2: i => /:measure_humidity$/.test(i.id),
+};
+
+/** Another app's autocomplete items (Homey's `homey:app:<appId>:<widgetId>` id), as the page asks for them. */
+async function appAutocomplete(id, settingId) {
+  const items = await homeyApi('GET', `/api/manager/dashboards/appwidget/${encodeURIComponent(id)}/autocomplete?${new URLSearchParams({ settingId, query: '' })}`);
+  return (Array.isArray(items) ? items : []).map(({ image, ...item }) => item);
+}
+
+/** `Test · Other apps`: every widget of the apps `--apps` names, a column per app, in the order given. */
+async function buildApps() {
+  const all = Object.values(await homeyApi('GET', '/api/manager/dashboards/appwidget') ?? {})
+    .filter(x => !x.deprecated && !x.id.startsWith(`homey:app:${APP_ID}:`));
+  const appOf = x => x.id.split(':')[2];
+  const names = opts.apps.split(',').map(n => n.trim().toLowerCase()).filter(Boolean);
+  const apps = names.map(n => {
+    const found = all.filter(x => x.ownerName?.toLowerCase() === n || appOf(x).toLowerCase() === n);
+    if (!found.length) throw new Error(`No widgets from an app called ${n} (apps with widgets: ${[...new Set(all.map(x => x.ownerName))].join(', ')})`);
+    return found;
+  });
+  const placed = [];
+  for (const [col, widgets] of apps.entries()) {
+    for (const def of widgets) {
+      const settings = Object.fromEntries((def.settings ?? []).filter(s => s.value !== undefined).map(s => [s.id, s.value]));
+      const autos = (def.settings ?? []).filter(s => s.type === 'autocomplete');
+      const filled = [];
+      for (const s of autos.filter((s, i) => i === 0 || APP_PICKS[s.id])) {
+        const items = await appAutocomplete(def.id, s.id);
+        const item = (APP_PICKS[s.id] && items.find(APP_PICKS[s.id])) ?? (i => i && (items.find(x => x.type === 'variable') ?? i))(items[0]);
+        if (item) { settings[s.id] = item; filled.push(item.name); }
+      }
+      // Widgey's WiFi QR code is empty without a network: a made-up one.
+      if (def.settings?.some(s => s.id === 'ssid')) Object.assign(settings, { ssid: 'Test network', password: 'not-a-real-password' });
+      const title = `${def.ownerName} · ${def.name}${filled.length ? ` · ${filled.join(', ')}` : autos.length ? ' · nothing to pick' : ''}`;
+      placed.push({ id: `apps-${placed.length + 1}`, col, type: def.id, title: title.slice(0, 60), settings, deviceIds: [] });
+      console.log(`  ${def.id}${filled.length ? ` (${filled.join(', ')})` : ''}`);
+    }
+  }
+  return { type: 'apps', name: 'Test · Other apps', cols: apps.length, placed };
 }
 
 /** Every listed type's test dashboard: the builder's widgets and their Vivid copies, numbered (`id`). */
@@ -693,14 +769,19 @@ async function writeWeb(built) {
   const dashboards = built.map(({ type, name, cols, placed }) => {
     for (const { id, tileNames } of placed) if (tileNames) typed[`web-${PREFIX}${type}-${id}`] = tileNames;
     console.log(`${name}: ${placed.length} widgets`);
-    return { id: PREFIX + type, name, theme: 'auto', columns: columns(placed.map(({ tileNames, ...x }) => x), cols) };
+    const widgets = placed.map(({ tileNames, col, ...x }) => x);
+    // Other apps' widgets come with their column; the rest are spread across.
+    const laid = placed.some(x => x.col !== undefined)
+      ? Array.from({ length: cols }, (_, i) => widgets.filter((x, j) => placed[j].col === i))
+      : columns(widgets, cols);
+    return { id: PREFIX + type, name, theme: 'auto', columns: laid };
   });
   // The user's dashboards first, as they were; then the test ones in the manifest's order.
-  const order = Object.keys(widgetDefs).map(t => PREFIX + t);
+  const order = [...Object.keys(widgetDefs), 'apps'].map(t => PREFIX + t);
   const tests = [...current.filter(d => d.id.startsWith(PREFIX) && !replace.has(d.id)), ...dashboards]
     .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
   const next = [...current.filter(d => !d.id.startsWith(PREFIX)), ...tests];
-  if (next.length > 30) throw new Error(`That would make ${next.length} web dashboards; at most 30`);
+  if (next.length > 64) throw new Error(`That would make ${next.length} web dashboards; at most 64`);
   await homeyApi('PUT', SETTING, { value: next });
   await writeTileNames(instance => [...replace].some(id => instance.startsWith(`web-${id}-`)), typed);
   console.log(`${opts.remove ? 'Removed' : 'Saved'}; ${next.length} web dashboards on the Homey now.`);
@@ -759,6 +840,6 @@ async function writeNative(built) {
   console.log(`${opts.remove ? 'Removed' : 'Saved'}; ${count} Homey dashboards now.`);
 }
 
-const built = opts.remove ? [] : await buildAll();
+const built = opts.remove ? [] : opts.apps ? [await buildApps()] : await buildAll();
 await (opts.native ? writeNative(built) : writeWeb(built));
 await disposeHomeyApiClient(client);

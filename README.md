@@ -249,7 +249,7 @@ One Logic variable with two to four buttons, each setting it to a value you pick
 ## Flow Buttons
 <img src="docs/screenshots/flows.png" alt="Flow Buttons on a Homey dashboard" width="358">
 
-Flows and Advanced Flows as rows with a round button in your colour and icon. Tap a row to start the flow. Needs an [API key](#api-key) with **Start Flows**.
+Flows and Advanced Flows as rows with a round button in your colour and icon. Tap a row to start the flow. Needs an [API key](#api-key) with **Start Flows**. The Flow card **Set the button colour of … to …** colours the buttons that start a flow, such as green while an e-bike charges; **Default** gives them their own colour again.
 
 **Settings:** up to eight flows, each with a colour, an icon and an optional name; 1 or 2 columns; [colour style](#colour-style).
 
@@ -281,7 +281,7 @@ Locks, doors, windows and garage doors in one line: *All locked and closed*, or 
 
 Curtains and blinds as tiles: tap to open or close (the corner label says which), or use the slider for anything between. A tap while it moves sends it back.
 
-**Settings:** devices, what a tap does halfway, inverted position, state line, group by room, colour, [colour style](#colour-style), [rename tiles](#tile-names).
+**Settings:** devices, what a tap does halfway, inverted position (leave it off when the device's own invert setting already flips it), how close to the end counts as open or closed, state line, group by room, colour, [colour style](#colour-style), [rename tiles](#tile-names).
 
 ## Media
 <img src="docs/clips/media.webp" alt="Media on a Homey dashboard: the volume turned up, the next track, mute, the TV as the source from behind ⋯, and a switch to another speaker" width="358">
@@ -336,6 +336,12 @@ Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an
 **Editing:** move widgets by dragging or with the arrows, change their settings, add and remove them.
 <img src="docs/web/editor.png" alt="A web dashboard being edited in a browser window" width="100%">
 
+<a name="dashboard-shortcuts"></a>
+<p><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/shortcuts-dark.png"><img src="docs/previews/shortcuts-light.png" alt="" width="120" align="left"></picture>
+<b>Dashboard Shortcuts</b> (web dashboards only): your other web dashboards as buttons, each with a round icon in the colour and icon you pick; a tap opens that dashboard. The one you're on is ringed, so the same widget can go on every dashboard as a menu. Give the buttons their own names with <a href="#tile-names">Rename tiles</a>.<br clear="left"></p>
+
+**Settings:** up to eight dashboards, each with a colour and an icon; 1 or 2 columns; [colour style](#colour-style); [rename tiles](#tile-names).
+
 ## Dashboard examples
 **Home**
 <img src="docs/showcase/home.png" alt="A home dashboard with Widgetkeeper widgets on a tablet" width="100%">
@@ -370,7 +376,7 @@ Where a widget lets you pick a colour (Flow Buttons, Device Values' Flow colours
 ## Tile names
 <img src="docs/clips/rename.webp" alt="Rename tiles: the setting turned on, names typed on two Light Controls tiles, and the setting turned off again with the names kept" width="358">
 
-Give any tile a name of your own, such as *Sofa corner* for a room's lights grouped by room, instead of the device's or room's name. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Room Health, Value Matrix, Device Values, Sparklines, Locks and Doors, Cameras and Variables can do this.
+Give any tile a name of your own, such as *Sofa corner* for a room's lights grouped by room, instead of the device's or room's name. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Room Health, Value Matrix, Device Values, Sparklines, Locks and Doors, Cameras, Variables and (on web dashboards) Dashboard Shortcuts can do this.
 
 1. Edit the dashboard, edit the widget, turn on **Rename tiles** (the first setting) and save the widget.
 2. Leave the dashboard's edit mode. Each tile now shows a text field: type its name, or leave it empty to keep the device's (or room's) own name.

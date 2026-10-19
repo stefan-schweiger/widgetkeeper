@@ -20,6 +20,7 @@
 <body>
   <div class="col"><span>358 px (phone) · dark · icons</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
   <div class="col"><span>358 px · dark · bars</span><div class="dash homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
+  <div class="col"><span>358 px · dark · icons, green when fine</span><div class="dash homey-dark-mode" style="width:358px"><div id="w14"></div></div></div>
   <div class="col"><span>358 px · light · icons, green when fine</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
   <div class="col"><span>358 px · dark · bars, green when fine, Vivid</span><div class="dash homey-dark-mode" style="width:358px"><div id="w9"></div></div></div>
   <div class="col"><span>358 px · dark · icons, Vivid</span><div class="dash homey-dark-mode" style="width:358px"><div id="w10"></div></div></div>
@@ -60,6 +61,7 @@
     const widgets = [
       make('w1', house()),
       make('w8', house(), { layout: 'bars' }),
+      make('w14', house(), { greenWhenFine: true }),
       make('w2', house(), { greenWhenFine: true }),
       make('w9', house(), { layout: 'bars', greenWhenFine: true, colorStyle: 'deep' }),
       make('w10', house(), { colorStyle: 'deep' }),

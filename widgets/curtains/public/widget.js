@@ -10,7 +10,11 @@
   const OPTIMISTIC_MS = 10e3; // how long a changed tile shows its new value while waiting for the device
   const PENDING_MS = 60e3; // a curtain sent somewhere counts as moving until it gets there, at most this long
   // A position this close to 0 or 1 counts as closed or open: some curtains stop at 1 % and 99 % (a user's SwitchBots).
+  // The default of the `ends` setting (0–15 %).
   const END = 0.05;
+  const MAX_END = 0.15;
+  // A curtain sent somewhere is there this close to it, whatever `ends` says.
+  const ARRIVE = 0.05;
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
 
   const DEFAULT_STRINGS = {
@@ -52,11 +56,12 @@
    * `c.position` is 0–1 or null (unknown), `c.moving` 1 (opening), -1 (closing) or 0, `c.closed` a boolean
    * or null, `c.lastDir` the last direction it moved (1, -1 or 0).
    * `rule` decides for a curtain in between: `nearer` (the default) goes to the nearer end, `reverse`
-   * reverses its last move, like a one-button remote.
+   * reverses its last move, like a one-button remote. `end`: how close to 0 or 1 counts as closed or open.
    * @param {{position: number | null, moving: number, closed: boolean | null, lastDir: number, canMove?: boolean}} c
    * @param {string} [rule]
+   * @param {number} [end]
    */
-  function curtainAction(c, rule) {
+  function curtainAction(c, rule, end = END) {
     if (c.canMove === false) return null;
     if (c.moving) return c.moving > 0 ? 'close' : 'open';
     const p = c.position;
@@ -65,8 +70,8 @@
       if (c.closed === false) return 'close';
       return c.lastDir > 0 ? 'close' : 'open';
     }
-    if (p >= 1 - END) return 'close';
-    if (p <= END) return 'open';
+    if (p >= 1 - end) return 'close';
+    if (p <= end) return 'open';
     if (rule === 'reverse' && c.lastDir) return c.lastDir > 0 ? 'close' : 'open';
     return p > 0.5 ? 'close' : 'open';
   }
@@ -83,7 +88,8 @@
    * @param {{ colorStyle?: string, color?: string, t?: (key: string, tokens?: object) => string,
    *   onSet?: (deviceId: string, change: {action?: string, position?: number}) => Promise<any>,
    *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
-   *   onHeight?: (h: number) => void, groupByZone?: boolean, between?: string, invert?: boolean, openAt?: string, showState?: boolean }} opts
+   *   onHeight?: (h: number) => void, groupByZone?: boolean, between?: string, invert?: boolean, openAt?: string, showState?: boolean,
+   *   ends?: number }} opts
    */
   function createCurtainsWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -92,6 +98,8 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
     const rule = opts.between === 'reverse' ? 'reverse' : 'nearer';
+    /** How close to the end counts as open or closed (`ends`, 0–0.15; 0.05 when unset). */
+    const end = typeof opts.ends === 'number' && Number.isFinite(opts.ends) ? Math.min(MAX_END, Math.max(0, opts.ends)) : END;
     /**
      * Homey's position is 1 = open, but some drivers (SwitchBot's curtains) report 0 = open and 1 = closed; the
      * `invert` setting flips it. The widget works in open-ness (1 = open): `toOpen()` and `fromOpen()` turn a
@@ -197,7 +205,7 @@
         // There: the move is done, and the motor state hoped for on the tap no longer counts. (A SwitchBot tilt
         // reports null on its way.)
         const p = pending.get(deviceId);
-        if (p && typeof value === 'number' && Math.abs(toOpen(d, value) - p.value) <= END) {
+        if (p && typeof value === 'number' && Math.abs(toOpen(d, value) - p.value) <= ARRIVE) {
           pending.delete(deviceId);
           optimistic.delete(`${deviceId}:windowcoverings_state`);
         }
@@ -239,8 +247,8 @@
       let moving = motor === 'up' ? 1 : motor === 'down' ? -1 : 0;
       const p = pending.get(d.id);
       if (p && Date.now() >= p.until) pending.delete(d.id);
-      else if (p && !moving && !(position != null && Math.abs(position - p.value) <= END)) moving = p.dir;
-      const closed = typeof closedValue === 'boolean' ? closedValue : position != null ? position <= END : null;
+      else if (p && !moving && !(position != null && Math.abs(position - p.value) <= ARRIVE)) moving = p.dir;
+      const closed = typeof closedValue === 'boolean' ? closedValue : position != null ? position <= end : null;
       return {
         position,
         moving,
@@ -271,8 +279,8 @@
     function stateText(v) {
       if (v.moving) return t(v.moving > 0 ? 'opening' : 'closing');
       if (v.position != null) {
-        if (v.position >= 1 - END) return t('isOpen');
-        if (v.position <= END) return t('isClosed');
+        if (v.position >= 1 - end) return t('isOpen');
+        if (v.position <= end) return t('isClosed');
         return t('percentOpen', { percent: Math.round(v.position * 100) });
       }
       if (v.closed != null) return t(v.closed ? 'isClosed' : 'isOpen');
@@ -317,7 +325,7 @@
     function tap(id) {
       const item = itemOf(id);
       if (!item || names.renaming) return;
-      const action = curtainAction(itemView(item), rule);
+      const action = curtainAction(itemView(item), rule, end);
       if (!action) return;
       const changes = [];
       for (const d of item.members) {
@@ -350,7 +358,7 @@
       for (const d of item.members) {
         if (!canPosition(d)) continue;
         const from = view(d).position;
-        if (from != null && Math.abs(from - value) <= END / 2) continue;
+        if (from != null && Math.abs(from - value) <= ARRIVE / 2) continue;
         expectMove(d, value, from != null && value < from ? -1 : 1);
         changes.push(d);
       }
@@ -566,12 +574,12 @@
         const v = itemView(item);
         const drag = drags.get(item.id);
         const x = drag != null ? drag : v.position != null ? v.position : 0;
-        const action = curtainAction(v, rule);
+        const action = curtainAction(v, rule, end);
         const hasPosition = item.members.some(canPosition);
         const openness = v.position != null ? v.position : v.closed === true ? 0 : v.closed === false ? 1 : 0.5;
 
         tile.tile.classList.remove('missing');
-        tile.tile.classList.toggle('open', v.closed === false || (v.position != null && v.position > END));
+        tile.tile.classList.toggle('open', v.closed === false || (v.position != null && v.position > end));
         tile.tile.classList.toggle('moving', !!v.moving);
         tile.tile.classList.toggle('no-position', !hasPosition);
         const name = names.name(item.id, item.name);

@@ -13,6 +13,7 @@ const VALUE_SLOTS = [1, 2, 3, 4, 5, 6];
 const VARIABLE_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const PRESET_SLOTS = [1, 2, 3, 4];
 const FLOW_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8];
+const SHORTCUT_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8];
 const MEDIA_BUTTONS = [1, 2, 3, 4];
 const DAYS_SINCE_COUNTERS = [1, 2, 3, 4, 5, 6, 7, 8];
 const MATRIX_COLUMNS = [1, 2, 3, 4, 5, 6];
@@ -67,6 +68,12 @@ export function widgetAutocompletes(app: WidgetkeeperApp): Record<string, Record
   for (const n of FLOW_SLOTS) {
     add('flows', `flow${n}`, query => app.flows.listFlows(query));
     add('flows', `icon${n}`, async query => app.flows.listIcons(query));
+  }
+
+  // Dashboard Shortcuts: each tile's web dashboard and icon.
+  for (const n of SHORTCUT_SLOTS) {
+    add('shortcuts', `dashboard${n}`, async query => app.web.dashboardItems(query));
+    add('shortcuts', `icon${n}`, async query => app.flows.listIcons(query));
   }
 
   // Notes: a text variable to show, and the tile's icon.

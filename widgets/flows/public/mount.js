@@ -62,6 +62,11 @@ window.mountFlowsWidget = function (Homey, { root, frame }) {
     ready();
   }
 
+  // A Flow set (or reset) the colour of a flow's buttons.
+  Homey.on('flows:color', (data) => {
+    if (data) widget.pushColor(data);
+  });
+
   setInterval(load, REFRESH_MS);
   load();
 };

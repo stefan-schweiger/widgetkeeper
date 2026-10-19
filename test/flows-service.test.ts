@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
-import FlowService, { FLOW_ICONS, parseFlowId } from '../lib/FlowService.js';
+import FlowService, { FLOW_COLORS_SETTING, FLOW_ICONS, FLOWS_COLOR_EVENT, parseFlowId } from '../lib/FlowService.js';
 import { FLOW_ICON_IMAGES } from '../lib/flowIconImages.js';
 import { FLOW_ICON_PATHS } from './helpers/flowIcons.js';
 import { API_KEY_SETTING } from '../lib/PersonalApiKey.js';
@@ -159,5 +159,50 @@ describe('trigger', () => {
     const { service, keyApi: api } = withKey();
     await expect(service.trigger('none')).rejects.toThrow();
     expect(api.flow.triggerFlow).not.toHaveBeenCalled();
+  });
+});
+
+describe('setColor (the Flow card)', () => {
+  it('stores the colour, sends it over realtime and serves it with the state', async () => {
+    const { service, homey } = setup();
+    service.setColor('flow:f1', 'green');
+    expect(homey.settings.get(FLOW_COLORS_SETTING)).toEqual({ 'flow:f1': 'green' });
+    expect(homey.api.realtime).toHaveBeenCalledWith(FLOWS_COLOR_EVENT, { id: 'flow:f1', color: 'green' });
+    const [f1, a1] = await service.getState(['flow:f1', 'advanced:a1']);
+    expect(f1).toMatchObject({ name: 'Good night', color: 'green' });
+    expect(a1).not.toHaveProperty('color');
+    expect(service.describe()).toMatchObject({ colors: 1 });
+  });
+
+  it('keeps the colours for a new service (an app restart), but not on a deleted flow', async () => {
+    const { service, homey } = setup();
+    service.setColor('flow:f1', 'red');
+    service.setColor('flow:gone', 'red');
+    expect(await new FlowService(homey, () => {}).getState(['flow:f1', 'flow:gone'])).toEqual([
+      expect.objectContaining({ color: 'red' }),
+      { id: 'flow:gone', missing: true },
+    ]);
+  });
+
+  it('removes the colour with default, and sends nothing when it is unchanged', async () => {
+    const { service, homey } = setup();
+    service.setColor('advanced:a1', 'purple');
+    service.setColor('advanced:a1', 'purple');
+    expect(homey.api.realtime).toHaveBeenCalledTimes(1);
+    service.setColor('advanced:a1', 'default');
+    expect(homey.settings.get(FLOW_COLORS_SETTING)).toEqual({});
+    expect(homey.api.realtime).toHaveBeenLastCalledWith(FLOWS_COLOR_EVENT, { id: 'advanced:a1', color: null });
+    expect((await service.getState(['advanced:a1']))[0]).not.toHaveProperty('color');
+  });
+
+  it('rejects an unknown colour or an id that is no flow', () => {
+    const { service } = setup();
+    expect(() => service.setColor('flow:f1', 'grey')).toThrow();
+    expect(() => service.setColor('none', 'red')).toThrow();
+  });
+
+  it("lists the flows without the settings' None", async () => {
+    const { service } = setup();
+    expect((await service.listColorFlows('')).map(i => i.id)).toEqual(['flow:f3', 'flow:f1', 'advanced:a1']);
   });
 });

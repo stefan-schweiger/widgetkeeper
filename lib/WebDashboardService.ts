@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import type Homey from 'homey';
 import { repeatKeys } from './TileNameService.js';
-import { devicesAndZones, matches } from './autocomplete.js';
+import { devicesAndZones, matches, withNone, type AutocompleteItem } from './autocomplete.js';
 import { describeCapability } from './capabilities.js';
 import { driverIconPath, libraryIconUrl } from './deviceIcon.js';
 import { deviceApp } from './MediaService.js';
@@ -14,11 +14,13 @@ import type { AutocompleteListener, SettingItem } from './widgetAutocompletes.js
 export const WEB_DASHBOARDS_SETTING = 'webDashboards';
 /** The app setting that turns the web dashboards on (`true`); off by default. Set from the app settings page. */
 export const WEB_ENABLED_SETTING = 'webDashboardsEnabled';
+/** The app setting with the front page's own choices (`WebFront`), made in its edit mode. */
+export const WEB_FRONT_SETTING = 'webFront';
 
 const LOCALES_DIR = new URL('../locales/', import.meta.url);
 const LANGUAGES = ['en', 'nl', 'de', 'fr', 'it', 'sv', 'no', 'es', 'da', 'ru', 'pl', 'ko', 'ar'];
 
-const MAX_DASHBOARDS = 30;
+const MAX_DASHBOARDS = 64;
 const MAX_COLUMNS = 6;
 const MAX_WIDGETS = 60; // per dashboard
 const MAX_DEVICES = 100; // per widget
@@ -30,6 +32,10 @@ const FOREIGN = /^homey:app:([A-Za-z0-9._-]{1,100}):([A-Za-z0-9_-]{1,60})$/;
 
 export type WebTheme = 'auto' | 'dark' | 'light';
 
+/** A dashboard's backdrop: a tint with a light and a dark shade (the page's CSS), following its theme. */
+export const WEB_BACKGROUNDS = ['default', 'black', 'slate', 'ocean', 'forest', 'plum', 'berry', 'sand'] as const;
+export type WebBackground = typeof WEB_BACKGROUNDS[number];
+
 /**
  * One widget on a web dashboard: its type (our widget id, or another app's `homey:app:<appId>:<widgetId>`), settings and
  * devices, as Homey keeps a dashboard widget's. `trusted`: another app's widget the user lets run unsandboxed.
@@ -39,8 +45,11 @@ export type WebWidget = { id: string, type: string, title: string, settings: Rec
 /** The device filter the page sends for another app's widget (its `devices.filter`; `app`: only that app's devices). */
 export type ForeignDeviceFilter = { class?: string, capabilities?: string, app?: boolean };
 
+/** The front page's choices: whether it shows the widgets' carousel under the dashboards. */
+export type WebFront = { widgets: boolean };
+
 /** A web dashboard: columns of widgets, top to bottom. */
-export type WebDashboard = { id: string, name: string, theme: WebTheme, columns: WebWidget[][] };
+export type WebDashboard = { id: string, name: string, theme: WebTheme, background: WebBackground, columns: WebWidget[][] };
 
 /** A widget setting as the editor draws it (the manifest's, in Homey's language). */
 export type WebSettingDef = {
@@ -318,6 +327,33 @@ export default class WebDashboardService {
     return dashboard;
   }
 
+  /** The front page's choices (the carousel shows unless turned off). */
+  front(): WebFront {
+    const saved = this.homey.settings.get(WEB_FRONT_SETTING);
+    return { widgets: !(saved && typeof saved === 'object' && saved.widgets === false) };
+  }
+
+  /**
+   * The front page's edit mode: `order` (dashboard ids, first to last: those it doesn't name keep their order after
+   * them) and `widgets` (the carousel), each only when given. Answers the dashboards and the choices as kept.
+   */
+  saveFront(input: unknown): { dashboards: WebDashboard[], front: WebFront } {
+    const body = (input && typeof input === 'object' ? input : {}) as Record<string, unknown>;
+    if (Array.isArray(body.order)) {
+      const ids: unknown[] = body.order;
+      const all = this.list();
+      const rank = new Map<unknown, number>();
+      ids.forEach((id, i) => { if (!rank.has(id)) rank.set(id, i); });
+      const sorted = all
+        .map((d, i) => ({ d, key: rank.has(d.id) ? rank.get(d.id)! : ids.length + i }))
+        .sort((a, b) => a.key - b.key)
+        .map(x => x.d);
+      if (sorted.some((d, i) => d !== all[i])) this.homey.settings.set(WEB_DASHBOARDS_SETTING, sorted);
+    }
+    if (typeof body.widgets === 'boolean') this.homey.settings.set(WEB_FRONT_SETTING, { widgets: body.widgets });
+    return { dashboards: this.list(), front: this.front() };
+  }
+
   remove(id: string) {
     const all = this.list();
     const rest = all.filter(d => d.id !== id);
@@ -397,6 +433,39 @@ export default class WebDashboardService {
     return listener(String(query ?? ''), settings && typeof settings === 'object' ? settings : {});
   }
 
+  /**
+   * Dashboard Shortcuts' state: each picked dashboard's name (`missing` for a deleted one), and `current`, the dashboard
+   * holding the widget instance (`web-<dashboard>-<widget>`, as the page names its frames; both ids may hold `-`, so
+   * it's matched against every Dashboard Shortcuts widget rather than split).
+   */
+  shortcuts(ids: string[], instance?: string): { current: string | null, tiles: ({ id: string, name: string } | { id: string, missing: true })[] } {
+    const all = this.list();
+    const byId = new Map(all.map(d => [d.id, d]));
+    const holder = typeof instance === 'string' && instance.startsWith('web-')
+      ? all.find(d => d.columns.some(col => col.some(w => w.type === 'shortcuts' && instance === `web-${d.id}-${w.id}`)))
+      : undefined;
+    return {
+      current: holder?.id ?? null,
+      tiles: ids.map((id) => {
+        const d = byId.get(id);
+        return d ? { id, name: d.name || this.homey.__('web.untitled') || 'Untitled' } : { id, missing: true as const };
+      }),
+    };
+  }
+
+  /** Dashboard Shortcuts' `dashboardN` autocomplete: `None`, then every web dashboard by name, with its widget count. */
+  dashboardItems(query: string): AutocompleteItem[] {
+    const items = this.list()
+      .map((d) => {
+        const name = d.name || this.homey.__('web.untitled') || 'Untitled';
+        const count = d.columns.reduce((n, c) => n + c.length, 0);
+        return { id: d.id, name, description: this.homey.__('web.widgetCount', { count }) || `${count}` };
+      })
+      .filter(i => matches(query, i.name))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    return withNone(this.homey.__('shortcuts.none') || 'None', query, items);
+  }
+
   /** The app's strings (`locales/<lang>.json`) in Homey's language, as Homey gives a widget frame (`Homey.__`). */
   appStrings(language = this.homey.i18n.getLanguage()): Promise<Record<string, unknown>> {
     const lang = LANGUAGES.includes(language) ? language : 'en';
@@ -430,6 +499,7 @@ export default class WebDashboardService {
     if (!id) throw new Error('A dashboard needs an id');
     const name = typeof d.name === 'string' ? d.name.trim().slice(0, 60) : '';
     const theme: WebTheme = d.theme === 'dark' || d.theme === 'light' ? d.theme : 'auto';
+    const background: WebBackground = (WEB_BACKGROUNDS as readonly unknown[]).includes(d.background) ? d.background : 'default';
     const columnsIn: unknown[] = Array.isArray(d.columns) ? d.columns.slice(0, MAX_COLUMNS) : [];
     const ids = new Set<string>();
     let count = 0;
@@ -445,7 +515,7 @@ export default class WebDashboardService {
       return widgets;
     });
     if (!columns.length) columns.push([]);
-    return { id, name, theme, columns };
+    return { id, name, theme, background, columns };
   }
 
   private normalizeWidget(input: unknown, ids: Set<string>): WebWidget | null {

@@ -74,7 +74,14 @@
     "stuffy": "Instängt",
     "radon": "Radon",
     "particles": "Partiklar",
-    "voc": "VOC"
+    "voc": "VOC",
+    "measureTemperature": "Temperatur",
+    "measureHumidity": "Fuktighet",
+    "measureCo2": "CO₂",
+    "measureRadon": "Radon",
+    "measurePm25": "PM2.5",
+    "measurePm10": "PM10",
+    "measureVoc": "VOC"
   },
   "valuematrix": {
     "selectDevices": "Välj enheter i widgetinställningarna.",
@@ -303,7 +310,8 @@
       "paw": "Husdjur",
       "briefcase": "Jobb",
       "gift": "Present",
-      "sparkles": "Glitter"
+      "sparkles": "Glitter",
+      "dashboard": "Instrumentpanel"
     }
   },
   "price": {
@@ -447,6 +455,15 @@
     "pageCount": "__count__ Widgetkeeper-widgetar",
     "keyHint": "Widgetkeeper → Konfigurera: en API-nyckel med behörigheten Homey."
   },
+  "shortcuts": {
+    "selectSlots": "Välj instrumentpaneler i widgetinställningarna.",
+    "error": "Kunde inte läsa in instrumentpanelerna.",
+    "missing": "Instrumentpanelen hittades inte",
+    "webOnly": "Genvägarna fungerar bara på webbinstrumentpaneler.",
+    "current": "Du är här",
+    "renameFailed": "Kunde inte spara namnet.",
+    "none": "Ingen"
+  },
   "web": {
     "title": "Webbinstrumentpaneler",
     "keyTitle": "Anslut till din Homey",
@@ -473,6 +490,18 @@
     "themeAuto": "Automatiskt",
     "themeDark": "Mörkt",
     "themeLight": "Ljust",
+    "darkLight": "Mörkt eller ljust",
+    "background": "Bakgrund",
+    "bgDefault": "Standard",
+    "bgBlack": "Svart/vit",
+    "bgSlate": "Skiffer",
+    "bgOcean": "Hav",
+    "bgForest": "Skog",
+    "bgPlum": "Plommon",
+    "bgBerry": "Bär",
+    "bgSand": "Sand",
+    "arrangeHint": "Dra instrumentpanelerna för att ändra ordningen.",
+    "showWidgets": "Visa på startsidan",
     "deleteDashboard": "Ta bort instrumentpanelen",
     "tapAgain": "Tryck igen för att bekräfta",
     "addWidget": "Lägg till widget",
@@ -503,7 +532,6 @@
     "passwordLocked": "För många försök. Försök igen om __seconds__ s.",
     "sessionEnded": "Du loggades ut. Lösenordet kan ha ändrats.",
     "yourDashboards": "Dina instrumentpaneler",
-    "dashboardsText": "Öppna en på en vägghängd surfplatta, en dator eller en tv.",
     "widgetsTitle": "Widgets",
     "widgetsText": "Allt du kan lägga på en instrumentpanel.",
     "previous": "Föregående",
@@ -561,7 +589,8 @@
       "textline": "En anteckning på en ruta eller en Post-it-lapp, inskriven eller skriven av dina Flows.",
       "spacer": "Tomt utrymme för att linjera widgetar i kolumner.",
       "dayssince": "Dagar sedan en syssla, röd när det är dags igen.",
-      "stack": "Widgets från en annan instrumentpanel, turvis."
+      "stack": "Widgets från en annan instrumentpanel, turvis.",
+      "shortcuts": "Hoppa till dina andra webbinstrumentpaneler, i dina färger och ikoner."
     }
   }
 }

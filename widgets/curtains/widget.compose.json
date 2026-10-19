@@ -151,21 +151,148 @@
         "ar": "الموضع 100% يعني مغلقة"
       },
       "hint": {
-        "en": "Turn on for curtains that report 0% when open and 100% when closed, such as SwitchBot. Applies to every curtain in this widget.",
-        "nl": "Zet aan voor gordijnen die 0% melden als ze open zijn en 100% als ze dicht zijn, zoals SwitchBot. Geldt voor alle gordijnen in deze widget.",
-        "de": "Für Vorhänge einschalten, die offen 0 % und geschlossen 100 % melden, etwa SwitchBot. Gilt für alle Vorhänge in diesem Widget.",
-        "fr": "À activer pour les rideaux qui indiquent 0 % ouverts et 100 % fermés, comme SwitchBot. S'applique à tous les rideaux de ce widget.",
-        "it": "Attiva per le tende che riportano 0% quando sono aperte e 100% quando sono chiuse, come SwitchBot. Vale per tutte le tende di questo widget.",
-        "sv": "Slå på för gardiner som rapporterar 0 % när de är öppna och 100 % när de är stängda, som SwitchBot. Gäller alla gardiner i den här widgeten.",
-        "no": "Slå på for gardiner som melder 0 % når de er åpne og 100 % når de er lukket, som SwitchBot. Gjelder alle gardiner i denne widgeten.",
-        "es": "Actívalo para cortinas que indican 0 % abiertas y 100 % cerradas, como SwitchBot. Se aplica a todas las cortinas de este widget.",
-        "da": "Slå til for gardiner, der melder 0 %, når de er åbne, og 100 %, når de er lukkede, som SwitchBot. Gælder alle gardiner i denne widget.",
-        "ru": "Включите для штор, которые сообщают 0 % в открытом положении и 100 % в закрытом, например SwitchBot. Действует для всех штор в этом виджете.",
-        "pl": "Włącz dla zasłon, które zgłaszają 0% po otwarciu i 100% po zamknięciu, np. SwitchBot. Dotyczy wszystkich zasłon w tym widżecie.",
-        "ko": "SwitchBot처럼 열렸을 때 0%, 닫혔을 때 100%로 보고하는 커튼이라면 켜세요. 이 위젯의 모든 커튼에 적용됩니다.",
-        "ar": "فعّله للستائر التي تُبلغ 0% عندما تكون مفتوحة و100% عندما تكون مغلقة، مثل SwitchBot. ينطبق على كل الستائر في هذه الأداة."
+        "en": "Turn on for curtains that report 0% when open and 100% when closed. Leave it off when the device's own invert setting already does that (a change there shows after the next move). Applies to every curtain in this widget.",
+        "nl": "Zet aan voor gordijnen die 0% melden als ze open zijn en 100% als ze dicht zijn. Laat uit als de eigen omkeerinstelling van het apparaat dat al doet (een wijziging daar is pas na de volgende beweging te zien). Geldt voor alle gordijnen in deze widget.",
+        "de": "Für Vorhänge einschalten, die offen 0 % und geschlossen 100 % melden. Aus lassen, wenn die eigene Umkehr-Einstellung des Geräts das schon tut (eine Änderung dort zeigt sich nach der nächsten Fahrt). Gilt für alle Vorhänge in diesem Widget.",
+        "fr": "À activer pour les rideaux qui indiquent 0 % ouverts et 100 % fermés. Laissez désactivé si le réglage d'inversion de l'appareil le fait déjà (un changement de ce réglage apparaît après le prochain mouvement). S'applique à tous les rideaux de ce widget.",
+        "it": "Attiva per le tende che riportano 0% quando sono aperte e 100% quando sono chiuse. Lascia disattivato se l'impostazione di inversione del dispositivo lo fa già (una modifica lì si vede dopo il movimento successivo). Vale per tutte le tende di questo widget.",
+        "sv": "Slå på för gardiner som rapporterar 0 % när de är öppna och 100 % när de är stängda. Låt vara av om enhetens egen inställning för att invertera redan gör det (en ändring där syns efter nästa rörelse). Gäller alla gardiner i den här widgeten.",
+        "no": "Slå på for gardiner som melder 0 % når de er åpne og 100 % når de er lukket. La det være av hvis enhetens egen invertering allerede gjør det (en endring der vises etter neste bevegelse). Gjelder alle gardiner i denne widgeten.",
+        "es": "Actívalo para cortinas que indican 0 % abiertas y 100 % cerradas. Déjalo desactivado si el ajuste de inversión del propio dispositivo ya lo hace (un cambio allí se ve tras el siguiente movimiento). Se aplica a todas las cortinas de este widget.",
+        "da": "Slå til for gardiner, der melder 0 %, når de er åbne, og 100 %, når de er lukkede. Lad det være fra, hvis enhedens egen indstilling for at invertere allerede gør det (en ændring dér ses efter næste bevægelse). Gælder alle gardiner i denne widget.",
+        "ru": "Включите для штор, которые сообщают 0 % в открытом положении и 100 % в закрытом. Не включайте, если это уже делает собственная настройка инверсии устройства (её изменение видно после следующего движения). Действует для всех штор в этом виджете.",
+        "pl": "Włącz dla zasłon, które zgłaszają 0% po otwarciu i 100% po zamknięciu. Zostaw wyłączone, jeśli robi to już własne ustawienie odwrócenia w urządzeniu (jego zmiana będzie widoczna po następnym ruchu). Dotyczy wszystkich zasłon w tym widżecie.",
+        "ko": "열렸을 때 0%, 닫혔을 때 100%로 보고하는 커튼이라면 켜세요. 기기 자체의 반전 설정이 이미 그렇게 한다면 끈 채로 두세요(그 설정을 바꾸면 다음 움직임 후에 반영됩니다). 이 위젯의 모든 커튼에 적용됩니다.",
+        "ar": "فعّله للستائر التي تُبلغ 0% عندما تكون مفتوحة و100% عندما تكون مغلقة. اتركه متوقفًا إذا كان إعداد العكس في الجهاز نفسه يفعل ذلك (يظهر تغييره بعد الحركة التالية). ينطبق على كل الستائر في هذه الأداة."
       },
       "value": false
+    },
+    {
+      "id": "ends",
+      "type": "dropdown",
+      "title": {
+        "en": "Fully open or closed within",
+        "nl": "Volledig open of dicht binnen",
+        "de": "Ganz offen oder zu innerhalb von",
+        "fr": "Tout ouvert ou fermé à moins de",
+        "it": "Del tutto aperta o chiusa entro",
+        "sv": "Helt öppen eller stängd inom",
+        "no": "Helt åpen eller lukket innenfor",
+        "es": "Del todo abierta o cerrada a menos de",
+        "da": "Helt åben eller lukket inden for",
+        "ru": "Полностью открыта или закрыта в пределах",
+        "pl": "W pełni otwarta lub zamknięta w granicach",
+        "ko": "완전히 열림 또는 닫힘으로 보는 범위",
+        "ar": "مفتوحة أو مغلقة بالكامل ضمن"
+      },
+      "hint": {
+        "en": "Some curtains stop at 1% or 99%. This close to the end, the tile says Open or Closed and a tap moves it the other way.",
+        "nl": "Sommige gordijnen stoppen op 1% of 99%. Zo dicht bij het uiteinde zegt de tegel Open of Dicht en beweegt een tik het de andere kant op.",
+        "de": "Manche Vorhänge halten bei 1 % oder 99 %. So nah am Ende zeigt die Kachel Offen oder Geschlossen, und ein Tippen fährt ihn in die andere Richtung.",
+        "fr": "Certains rideaux s'arrêtent à 1 % ou 99 %. Aussi près de l'extrémité, la tuile indique Ouvert ou Fermé et un appui le déplace dans l'autre sens.",
+        "it": "Alcune tende si fermano all'1% o al 99%. Così vicino all'estremo, il riquadro dice Aperta o Chiusa e un tocco la muove nell'altro senso.",
+        "sv": "Vissa gardiner stannar vid 1 % eller 99 %. Så nära änden visar rutan Öppen eller Stängd och ett tryck flyttar den åt andra hållet.",
+        "no": "Noen gardiner stopper på 1 % eller 99 %. Så nær enden viser flisen Åpen eller Lukket, og et trykk flytter den den andre veien.",
+        "es": "Algunas cortinas se paran al 1 % o al 99 %. Así de cerca del extremo, el mosaico dice Abierta o Cerrada y un toque la mueve hacia el otro lado.",
+        "da": "Nogle gardiner stopper ved 1 % eller 99 %. Så tæt på enden viser feltet Åben eller Lukket, og et tryk kører det den anden vej.",
+        "ru": "Некоторые шторы останавливаются на 1 % или 99 %. Так близко к краю плитка показывает «Открыта» или «Закрыта», а касание двигает штору в другую сторону.",
+        "pl": "Niektóre zasłony zatrzymują się na 1% lub 99%. Tak blisko końca kafelek pokazuje Otwarta lub Zamknięta, a dotknięcie porusza ją w drugą stronę.",
+        "ko": "일부 커튼은 1%나 99%에서 멈춥니다. 끝에서 이만큼 가까우면 타일에 열림 또는 닫힘으로 표시되고, 탭하면 반대쪽으로 움직입니다.",
+        "ar": "تتوقف بعض الستائر عند 1% أو 99%. عند هذا القرب من الطرف، تعرض البلاطة مفتوحة أو مغلقة ويحرّكها النقر في الاتجاه الآخر."
+      },
+      "value": "5",
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "0% (exactly at the end)",
+            "nl": "0% (precies aan het uiteinde)",
+            "de": "0 % (genau am Ende)",
+            "fr": "0 % (exactement à l'extrémité)",
+            "it": "0% (esattamente all'estremo)",
+            "sv": "0 % (exakt vid änden)",
+            "no": "0 % (nøyaktig ved enden)",
+            "es": "0 % (justo en el extremo)",
+            "da": "0 % (præcis ved enden)",
+            "ru": "0 % (точно у края)",
+            "pl": "0% (dokładnie na końcu)",
+            "ko": "0% (정확히 끝에서)",
+            "ar": "0% (عند الطرف تمامًا)"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "2%",
+            "nl": "2%",
+            "de": "2 %",
+            "fr": "2 %",
+            "it": "2%",
+            "sv": "2 %",
+            "no": "2 %",
+            "es": "2 %",
+            "da": "2 %",
+            "ru": "2 %",
+            "pl": "2%",
+            "ko": "2%",
+            "ar": "2%"
+          }
+        },
+        {
+          "id": "5",
+          "title": {
+            "en": "5%",
+            "nl": "5%",
+            "de": "5 %",
+            "fr": "5 %",
+            "it": "5%",
+            "sv": "5 %",
+            "no": "5 %",
+            "es": "5 %",
+            "da": "5 %",
+            "ru": "5 %",
+            "pl": "5%",
+            "ko": "5%",
+            "ar": "5%"
+          }
+        },
+        {
+          "id": "10",
+          "title": {
+            "en": "10%",
+            "nl": "10%",
+            "de": "10 %",
+            "fr": "10 %",
+            "it": "10%",
+            "sv": "10 %",
+            "no": "10 %",
+            "es": "10 %",
+            "da": "10 %",
+            "ru": "10 %",
+            "pl": "10%",
+            "ko": "10%",
+            "ar": "10%"
+          }
+        },
+        {
+          "id": "15",
+          "title": {
+            "en": "15%",
+            "nl": "15%",
+            "de": "15 %",
+            "fr": "15 %",
+            "it": "15%",
+            "sv": "15 %",
+            "no": "15 %",
+            "es": "15 %",
+            "da": "15 %",
+            "ru": "15 %",
+            "pl": "15%",
+            "ko": "15%",
+            "ar": "15%"
+          }
+        }
+      ]
     },
     {
       "id": "openAt",

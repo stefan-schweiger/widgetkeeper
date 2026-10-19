@@ -4,7 +4,7 @@ import { loadWidget } from './helpers/loadWidget.js';
 
 let win: any;
 beforeAll(() => {
-  for (const id of ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables', 'roomhealth', 'valuematrix'] as const) win = loadWidget(id);
+  for (const id of ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables', 'roomhealth', 'valuematrix', 'shortcuts'] as const) win = loadWidget(id);
 });
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-15T12:00:00Z')); });
 afterEach(() => { vi.useRealTimers(); document.body.innerHTML = ''; });
@@ -77,6 +77,11 @@ const CASES: Record<string, { create: string, state: any, keys: string[], own: s
     // A row per room: the key is the zone's.
     state: { columns: [], devices: [['a', 'z1', 'Living room'], ['b', 'z2', 'Kitchen']].map(([id, zone, room]) => ({ id, name: `Sensor ${id}`, zone: { id: zone, name: room }, values: { measure_temperature: 21 } })) },
     keys: ['zone:z1', 'zone:z2'], own: ['Living room', 'Kitchen'],
+  },
+  shortcuts: {
+    create: 'createShortcutsWidget', act: 'onOpen', tile: '.sc-row', name: '.sc-name', opts: { tiles: [{ id: 'a' }, { id: 'b' }] },
+    // A pill per web dashboard: the key is the dashboard's id.
+    state: { current: null, tiles: [{ id: 'a', name: 'Lights' }, { id: 'b', name: 'Sensors' }] }, keys: ['a', 'b'], own: ['Lights', 'Sensors'],
   },
 };
 

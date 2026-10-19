@@ -48,6 +48,18 @@
     themeAuto: 'Automatic',
     themeDark: 'Dark',
     themeLight: 'Light',
+    darkLight: 'Dark or light',
+    background: 'Background',
+    bgDefault: 'Default',
+    bgBlack: 'Black/White',
+    bgSlate: 'Slate',
+    bgOcean: 'Ocean',
+    bgForest: 'Forest',
+    bgPlum: 'Plum',
+    bgBerry: 'Berry',
+    bgSand: 'Sand',
+    arrangeHint: 'Drag the dashboards to change their order.',
+    showWidgets: 'Show on the front page',
     deleteDashboard: 'Delete dashboard',
     tapAgain: 'Tap again to confirm',
     addWidget: 'Add widget',
@@ -78,7 +90,6 @@
     passwordLocked: 'Too many tries. Try again in __seconds__ s.',
     sessionEnded: 'You were signed out. The password may have changed.',
     yourDashboards: 'Your dashboards',
-    dashboardsText: 'Open one on a wall tablet, a computer or a TV.',
     widgetsTitle: 'Widgets',
     widgetsText: 'Everything you can put on a dashboard.',
     previous: 'Previous',
@@ -137,12 +148,15 @@
       spacer: 'Empty space to line up widgets in columns.',
       dayssince: "Days since a chore was done, turning red when it's due.",
       stack: 'Widgets from another dashboard, taking turns.',
+      shortcuts: 'Jump to your other web dashboards, in your colours and icons.',
     },
   };
 
   const KEY_STORAGE = 'widgetkeeper.web.key';
   /** The session token from signing in with the web dashboards password (when one is set), on top of the key. */
   const SESSION_STORAGE = 'widgetkeeper.web.session';
+  /** This browser's own dark or light (the bar's button), over the dashboard's theme; none follows the dashboard. */
+  const THEME_STORAGE = 'widgetkeeper.web.theme';
   const PREFIX = 'CF2_MESSAGE';
   const ACK_TIMEOUT_MS = 10e3;
   /** After a realtime outage this long, the frames reload: they may have missed changes (they re-read every 5 min). */
@@ -220,6 +234,9 @@
   const ICONS = {
     pen: 'M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16v4zM13.5 6.5l4 4',
     fullScreen: 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5',
+    fullScreenExit: 'M9 4v5H4M15 4v5h5M20 15h-5v5M4 15h5v5',
+    moon: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
+    sun: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2.5v2M12 19.5v2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M2.5 12h2M19.5 12h2M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4',
     plus: 'M12 5v14M5 12h14',
     left: 'M15 5l-7 7 7 7',
     right: 'M9 5l7 7-7 7',
@@ -236,6 +253,22 @@
   const SWATCHES = {
     ...Object.fromEntries(window.WidgetkeeperKit.COLORS.map(c => [c, `var(--wk-${c}-bright)`])),
     grey: '#8E8F99', default: null, neutral: null,
+  };
+
+  /**
+   * A dashboard's backdrops (`background`; the ids are `WEB_BACKGROUNDS` in lib/WebDashboardService.ts): calm tints,
+   * each [light, dark], so the dashboard's theme still decides and transparent widgets' text stays readable. Default
+   * is the page's own `--wd-bg` (dashboard.css).
+   */
+  const BACKGROUNDS = {
+    default: ['#F4F4FA', '#111217'],
+    black: ['#FFFFFF', '#000000'],
+    slate: ['#E6EBF2', '#141A24'],
+    ocean: ['#E1ECF9', '#0B1A2E'],
+    forest: ['#E4F0E6', '#0F1C14'],
+    plum: ['#EEE6F5', '#1C1226'],
+    berry: ['#F6E6EA', '#24121A'],
+    sand: ['#F3EEE4', '#1F1A13'],
   };
 
   function icon(name) {
@@ -296,6 +329,7 @@
     const appLocales = new Map(); // app id → Promise of its strings
     const typeOf = (type) => types.get(type) || foreign.get(type);
     let dashboards = [];
+    let frontPage = { widgets: true }; // the front page's choices (`/web/setup`'s `front`), made in its edit mode
     let current = null; // {dashboard, editing, grid, columns: Map<widget id, {el, sig}>}
     let live = false;
     let socketStarted = false;
@@ -363,6 +397,7 @@
       setup = await request('GET', '/web/setup');
       types = new Map((setup.widgets || []).map(w => [w.type, w]));
       dashboards = setup.dashboards || [];
+      frontPage = setup.front || { widgets: true };
       if (setup.language) document.documentElement.lang = setup.language;
       if (setup.disabled || setup.passwordRequired) return; // turned off, or the password first: `route()` says so
       if (!socketStarted) {
@@ -419,7 +454,8 @@
         app: at,
         name: appText(w.name, language) || at.widgetId,
         ownerName: appText(w.ownerName, language) || at.appId,
-        height: typeof w.height === 'number' ? w.height : null,
+        // A number, or a percentage of the width (`'100%'` is square: WidgetBoard's clocks, Network Visualizer).
+        height: typeof w.height === 'number' || (typeof w.height === 'string' && /^\d+(\.\d+)?%$/.test(w.height)) ? w.height : null,
         transparent: w.transparent === true,
         devices: w.devices ? { singular: w.devices.singular === true, app: w.devices.type === 'app', class: anyOf(filter.class), capabilities: anyOf(filter.capabilities) } : null,
         settings,
@@ -581,11 +617,26 @@
       post(frame, { type: 'cb', args: [error, result === undefined ? null : result], callbackId });
     }
 
+    /** This browser's own choice from the bar's button (`dark` or `light`), or null. */
+    function ownTheme() {
+      const v = storageGet(THEME_STORAGE);
+      return v === 'dark' || v === 'light' ? v : null;
+    }
+
+    /** Whether a dashboard theme (`auto`, `dark`, `light`) shows dark, without this browser's own choice. */
+    function themeIsDark(theme) {
+      return theme === 'dark' || (theme !== 'light' && !!(darkQuery && darkQuery.matches));
+    }
+
     function isDark() {
-      const theme = current && current.dashboard.theme;
-      if (theme === 'dark') return true;
-      if (theme === 'light') return false;
-      return !!(darkQuery && darkQuery.matches);
+      const own = ownTheme();
+      return own ? own === 'dark' : themeIsDark(current ? current.dashboard.theme : 'auto');
+    }
+
+    /** A backdrop's colour in the page's mode. */
+    function backdrop(background) {
+      const pair = BACKGROUNDS[background] || BACKGROUNDS.default;
+      return pair[isDark() ? 1 : 0];
     }
 
     function setFrameHeight(frame, height) {
@@ -605,6 +656,19 @@
       if (url.pathname !== `/api${rel}` || !url.pathname.startsWith(`/api${base}/`)) return Promise.reject(new Error(`Not a widget route: ${path}`));
       const withBody = method !== 'GET' && method !== 'DELETE';
       return homeyRequest(method, `${rel}${qs ? `?${qs}` : ''}`, withBody ? (body == null ? {} : body) : undefined);
+    }
+
+    /**
+     * The dashboard id a widget's `popup(url)` links to (`#/d/<id>`, Dashboard Shortcuts), or null. The SDK may hand the
+     * URL on as given or resolved against the frame, so a link to this page or to the frame's own document counts.
+     */
+    function dashboardLink(url, frame) {
+      let u;
+      try { u = new URL(url, location.href); } catch (e) { return null; }
+      const m = u.hash.match(/^#\/d\/([A-Za-z0-9_-]+)$/);
+      if (!m || u.origin !== location.origin) return null;
+      const own = [location.pathname, new URL(frame.iframe.src, location.href).pathname];
+      return own.includes(u.pathname) ? m[1] : null;
     }
 
     function handle(frame, msg) {
@@ -665,10 +729,18 @@
           listeners.get(event).add(fn);
           break;
         }
-        case 'popup':
-          if (msg.data && typeof msg.data.url === 'string') window.open(msg.data.url, '_blank', 'noopener');
+        case 'popup': {
+          const url = msg.data && typeof msg.data.url === 'string' ? msg.data.url : null;
+          const dashboard = url && !frame.app ? dashboardLink(url, frame) : null;
+          // Dashboard Shortcuts: another dashboard opens here (not from the editor, where a tap shouldn't leave it).
+          if (dashboard) {
+            if (!/\/edit$/.test(location.hash)) location.hash = `#/d/${dashboard}`;
+          } else if (url) {
+            window.open(url, '_blank', 'noopener');
+          }
           reply(frame, id, null, null);
           break;
+        }
         case 'shortPressHapticFeedback':
           try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) { /* not on every browser */ }
           reply(frame, id, null, null);
@@ -744,14 +816,41 @@
       sweepFrames();
     }
 
-    function applyTheme(theme) {
-      const dark = theme === 'dark' || (theme !== 'light' && !!(darkQuery && darkQuery.matches));
-      document.documentElement.classList.toggle('homey-dark-mode', dark);
+    /** The page's mode (this browser's own choice, else the theme) and the dashboard's backdrop (none: the page's). */
+    function applyTheme(theme, background) {
+      const html = document.documentElement;
+      const own = ownTheme();
+      const dark = own ? own === 'dark' : themeIsDark(theme);
+      html.classList.toggle('homey-dark-mode', dark);
+      const pair = background && background !== 'default' && BACKGROUNDS[background];
+      if (pair) html.style.setProperty('--wd-bg', pair[dark ? 1 : 0]);
+      else html.style.removeProperty('--wd-bg');
+    }
+
+    /** The bar's dark/light button: this browser only; back to following the theme when that shows the same. */
+    function themeButton() {
+      const b = button('wd-icon', '', () => {
+        const dark = !isDark();
+        storageSet(THEME_STORAGE, dark === themeIsDark(current ? current.dashboard.theme : 'auto') ? null : (dark ? 'dark' : 'light'));
+        route(); // redraws the bar and the frames (their signature has the mode), or the front page's previews
+      }, t('darkLight'));
+      b.append(icon(isDark() ? 'sun' : 'moon'));
+      return b;
+    }
+
+    // Full screen: the dashboard's bar keeps only the exit button, the dark/light one and the live note (dashboard.css).
+    for (const type of ['fullscreenchange', 'webkitfullscreenchange']) {
+      document.addEventListener(type, () => {
+        const page = /** @type {any} */ (document);
+        const full = !!(page.fullscreenElement || page.webkitFullscreenElement);
+        document.documentElement.classList.toggle('wd-full', full);
+        for (const b of root.querySelectorAll('.wd-full-toggle')) b.replaceChildren(icon(full ? 'fullScreenExit' : 'fullScreen'));
+      });
     }
 
     if (darkQuery && darkQuery.addEventListener) {
       darkQuery.addEventListener('change', () => {
-        if (current && current.dashboard.theme !== 'auto') return;
+        if (ownTheme() || (current && current.dashboard.theme !== 'auto')) return;
         applyTheme(current ? current.dashboard.theme : 'auto');
         reloadFrames(); // a frame's dark mode is set when it starts
       });
@@ -899,18 +998,39 @@
       return img;
     }
 
-    /** The front page: the dashboards as cards with a miniature of their columns, then a carousel of the widgets. */
-    function renderList() {
+    /**
+     * The front page: the dashboards as cards with a miniature of their columns, then a carousel of the widgets.
+     * `editing` (`#/edit`, the pen in its bar): the cards are dragged into order, the carousel can be turned off, and
+     * Forget the key is there (a user wanted it out of the way).
+     */
+    function renderList(editing = false) {
       clearRoot();
       applyTheme('auto');
-      const page = el('div', 'wd-home');
+      const page = el('div', `wd-home${editing ? ' arranging' : ''}`);
 
       const head = el('div', 'wd-section-head');
       const titles = el('div', 'wd-section-titles');
-      titles.append(el('h1', 'wd-h1', t('yourDashboards')), el('p', 'wd-muted', t('dashboardsText')));
+      titles.append(el('h1', 'wd-h1', t('yourDashboards')));
+      if (editing) titles.append(el('p', 'wd-muted', t('arrangeHint')));
       head.append(titles);
       const grid = el('div', 'wd-dashboards');
-      for (const d of dashboards) grid.append(dashboardCard(d));
+      for (const d of dashboards) grid.append(dashboardCard(d, editing));
+      if (editing) {
+        arrangeCards(grid);
+        page.append(head, grid);
+        if (types.size) page.append(widgetCarousel(true));
+        const forget = button('wd-btn quiet', t('forgetKey'), async () => {
+          forget.disabled = true;
+          if (session) await request('POST', '/web/logout', {}).catch(() => {});
+          storageSet(KEY_STORAGE, null);
+          storageSet(SESSION_STORAGE, null);
+          location.reload();
+        });
+        const done = el('a', 'wd-btn primary', t('done'));
+        done.href = '#/';
+        root.append(bar(brand(), el('span', 'wd-spacer'), forget, done), page);
+        return;
+      }
       const add = button('wd-dash wd-dash-new', '', async () => {
         add.disabled = true;
         try {
@@ -927,22 +1047,109 @@
       add.append(plus, el('span', 'wd-dash-new-text', t('newDashboard')));
       grid.append(add);
       page.append(head, grid);
-      if (types.size) page.append(widgetCarousel());
+      if (types.size && frontPage.widgets) page.append(widgetCarousel());
 
-      const forget = button('wd-btn quiet', t('forgetKey'), async () => {
-        forget.disabled = true;
-        if (session) await request('POST', '/web/logout', {}).catch(() => {});
-        storageSet(KEY_STORAGE, null);
-        storageSet(SESSION_STORAGE, null);
-        location.reload();
-      });
-      root.append(bar(brand(), el('span', 'wd-spacer'), liveNote(), forget), page);
+      const edit = el('a', 'wd-icon');
+      edit.href = '#/edit';
+      edit.title = t('edit');
+      edit.setAttribute('aria-label', t('edit'));
+      edit.append(icon('pen'));
+      root.append(bar(brand(), el('span', 'wd-spacer'), liveNote(), themeButton(), edit), page);
     }
 
-    /** A dashboard's card: a miniature of its columns (each widget as its preview), its name and widget count. */
-    function dashboardCard(d) {
+    /** Saves the front page's choices (`order`, `widgets`) after the saves already queued; keeps what the app answers. */
+    function saveFront(change) {
+      saving = saving.then(async () => {
+        try {
+          const res = await request('PUT', '/web/front', change);
+          if (res && Array.isArray(res.dashboards)) dashboards = res.dashboards;
+          if (res && res.front) frontPage = res.front;
+        } catch (err) {
+          failed(err);
+        }
+      });
+    }
+
+    /**
+     * The front page's edit mode: a card is dragged (pointer events, so by touch too; the grid holds the capture, as
+     * the card itself moves) and the others make room at once; arrow keys move a focused one. Escape puts them back.
+     */
+    function arrangeCards(grid) {
+      const cards = () => [...grid.querySelectorAll('.wd-dash[data-id]')];
+      const order = () => cards().map(c => /** @type {HTMLElement} */ (c).dataset.id);
+      let move = null; // {card, pointerId, x0, y0, active, before: the order when it started}
+      const finish = (keep) => {
+        if (!move) return;
+        const { card, active, before } = move;
+        move = null;
+        if (!active) return;
+        card.classList.remove('lifted');
+        root.classList.remove('dragging');
+        const now = order();
+        if (!keep) {
+          for (const id of before) grid.append(cards().find(c => /** @type {HTMLElement} */ (c).dataset.id === id));
+        } else if (now.join() !== before.join()) {
+          saveFront({ order: now });
+        }
+      };
+      grid.addEventListener('pointerdown', (e) => {
+        const card = /** @type {Element} */ (e.target).closest('.wd-dash[data-id]');
+        if (move || !card || e.button !== 0) return;
+        move = { card, pointerId: e.pointerId, x0: e.clientX, y0: e.clientY, active: false, before: order() };
+        try { grid.setPointerCapture(e.pointerId); } catch (err) { /* moves still come while over the grid */ }
+        e.preventDefault();
+      });
+      grid.addEventListener('pointermove', (e) => {
+        if (!move || e.pointerId !== move.pointerId) return;
+        if (!move.active) {
+          if (Math.hypot(e.clientX - move.x0, e.clientY - move.y0) < DRAG_SLOP) return;
+          move.active = true;
+          move.card.classList.add('lifted');
+          root.classList.add('dragging');
+        }
+        const h = window.innerHeight;
+        if (e.clientY < EDGE_PX) window.scrollBy(0, -16);
+        else if (e.clientY > h - EDGE_PX) window.scrollBy(0, 16);
+        const all = cards();
+        const over = all.find((c) => {
+          if (c === move.card) return false;
+          const r = c.getBoundingClientRect();
+          return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+        });
+        if (!over) return;
+        const after = all.indexOf(over) > all.indexOf(move.card);
+        grid.insertBefore(move.card, after ? over.nextSibling : over);
+      });
+      grid.addEventListener('pointerup', (e) => { if (move && e.pointerId === move.pointerId) finish(true); });
+      grid.addEventListener('pointercancel', () => finish(false));
+      grid.addEventListener('lostpointercapture', () => finish(true));
+      grid.addEventListener('keydown', (e) => {
+        const card = /** @type {HTMLElement} */ (e.target);
+        const step = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
+        if (!step || !card.matches('.wd-dash[data-id]')) return;
+        e.preventDefault();
+        const all = cards();
+        const other = all[all.indexOf(card) + step];
+        if (!other) return;
+        grid.insertBefore(card, step > 0 ? other.nextSibling : other);
+        card.focus();
+        saveFront({ order: order() });
+      });
+      window.addEventListener('keydown', function escape(e) {
+        if (!grid.isConnected) { window.removeEventListener('keydown', escape); return; }
+        if (e.key === 'Escape' && move) finish(false);
+      });
+    }
+
+    /**
+     * A dashboard's card: a miniature of its columns (each widget as its preview), its name and widget count. While
+     * the front page is edited it opens nothing: it's dragged (a grip in place of the pen).
+     */
+    function dashboardCard(d, editing = false) {
       const card = el('div', 'wd-dash');
+      card.dataset.id = d.id;
       const art = el('div', 'wd-dash-art');
+      if (d.background && d.background !== 'default') art.style.setProperty('--wd-bg', backdrop(d.background));
       const columns = d.columns.length ? d.columns : [[]];
       for (const column of columns) {
         const col = el('div', 'wd-dash-col');
@@ -951,11 +1158,20 @@
         art.append(col);
       }
       const link = el('a', 'wd-dash-link');
-      link.href = `#/d/${d.id}`;
+      if (!editing) link.href = `#/d/${d.id}`;
       const count = d.columns.reduce((n, c) => n + c.length, 0);
       const info = el('span', 'wd-dash-info');
       info.append(el('span', 'wd-dash-name', d.name || t('untitled')), el('span', 'wd-muted', t('widgetCount', { count })));
       link.append(info);
+      if (editing) {
+        card.tabIndex = 0;
+        card.setAttribute('aria-roledescription', t('drag'));
+        card.setAttribute('aria-label', d.name || t('untitled'));
+        const grip = el('span', 'wd-icon wd-dash-edit');
+        grip.append(icon('grip'));
+        card.append(art, link, grip);
+        return card;
+      }
       const edit = el('a', 'wd-icon wd-dash-edit');
       edit.href = `#/d/${d.id}/edit`;
       edit.title = t('edit');
@@ -970,7 +1186,7 @@
      * moves on by itself every 5 s, except while the pointer or focus is on it, for 15 s after a touch, while the page
      * is hidden, and not at all with reduced motion.
      */
-    function widgetCarousel() {
+    function widgetCarousel(editing = false) {
       // One widget at a time in a small card under the dashboards (a user found a row of large previews took the
       // attention away from them): its preview, name and description, ‹ › and a count. It moves on every 6 s, but not
       // while the mouse or focus is on it, for 15 s after a tap, while the page is hidden, or with reduced motion.
@@ -978,6 +1194,20 @@
       section.setAttribute('aria-label', t('widgetsTitle'));
       const head = el('div', 'wd-carousel-head');
       head.append(el('h2', 'wd-carousel-title', t('widgetsTitle')), el('span', 'wd-muted wd-carousel-text', t('widgetsText')));
+      if (editing) {
+        const label = el('label', 'wd-carousel-show');
+        const box = el('input', 'wd-switch');
+        box.type = 'checkbox';
+        box.setAttribute('role', 'switch');
+        box.checked = frontPage.widgets;
+        section.classList.toggle('off', !box.checked);
+        box.addEventListener('change', () => {
+          section.classList.toggle('off', !box.checked);
+          saveFront({ widgets: box.checked });
+        });
+        label.append(el('span', null, t('showWidgets')), box);
+        head.append(label);
+      }
       const sorted = [...types.values()].sort((a, b) => a.name.localeCompare(b.name));
 
       const card = el('article', 'wd-spot');
@@ -1045,7 +1275,7 @@
     function renderDashboard(dashboard, editing) {
       clearRoot();
       setTitle(dashboard);
-      applyTheme(dashboard.theme);
+      applyTheme(dashboard.theme, dashboard.background);
       current = { dashboard: clone(dashboard), editing, widgets: new Map(), grid: el('main', 'wd-grid') };
       root.classList.toggle('editing', editing);
       root.append(editing ? editBar() : viewBar(), current.grid);
@@ -1054,26 +1284,26 @@
 
     function viewBar() {
       const d = current.dashboard;
-      const back = el('a', 'wd-btn quiet', '‹');
+      const back = el('a', 'wd-btn quiet wd-back', '‹');
       back.href = '#/';
       back.title = t('dashboards');
       back.setAttribute('aria-label', t('dashboards'));
-      const items = [back, el('span', 'wd-bar-title', d.name || t('untitled')), el('span', 'wd-spacer'), liveNote()];
+      const items = [back, el('span', 'wd-bar-title', d.name || t('untitled')), el('span', 'wd-spacer'), liveNote(), themeButton()];
       // Safari on an iPad only has the webkit-prefixed calls.
       const doc = /** @type {any} */ (document.documentElement);
       const page = /** @type {any} */ (document);
       if (doc.requestFullscreen || doc.webkitRequestFullscreen) {
-        const full = button('wd-icon', '', () => {
+        const full = button('wd-icon wd-full-toggle', '', () => {
           if (page.fullscreenElement || page.webkitFullscreenElement) {
             (page.exitFullscreen || page.webkitExitFullscreen).call(page);
           } else {
             (doc.requestFullscreen || doc.webkitRequestFullscreen).call(doc);
           }
         }, t('fullScreen'));
-        full.append(icon('fullScreen'));
+        full.append(icon(page.fullscreenElement || page.webkitFullscreenElement ? 'fullScreenExit' : 'fullScreen'));
         items.push(full);
       }
-      const edit = el('a', 'wd-icon');
+      const edit = el('a', 'wd-icon wd-bar-edit');
       edit.href = `#/d/${d.id}/edit`;
       edit.title = t('edit');
       edit.setAttribute('aria-label', t('edit'));
@@ -1110,10 +1340,55 @@
       theme.value = d.theme;
       theme.addEventListener('change', () => {
         current.dashboard.theme = theme.value;
-        applyTheme(theme.value);
+        storageSet(THEME_STORAGE, null); // this browser's own dark or light would hide the choice
+        applyTheme(theme.value, current.dashboard.background);
         persist();
         syncGrid();
+        drawBackground();
       });
+
+      // The backdrop: a button with the current one's swatch, opening the palette under it.
+      const bgPick = el('span', 'wd-bgpick');
+      const bgButton = button('wd-btn small', '', () => (pop.hidden ? openPalette() : closePalette()), t('background'));
+      bgButton.setAttribute('aria-haspopup', 'true');
+      bgButton.setAttribute('aria-expanded', 'false');
+      const pop = el('div', 'wd-bgpop');
+      pop.hidden = true;
+      bgPick.append(bgButton, pop);
+      const backgrounds = Object.keys(BACKGROUNDS).map(id => ({ id, title: t(`bg${id[0].toUpperCase()}${id.slice(1)}`) }));
+      function drawBackground() {
+        bgButton.replaceChildren(swatch(backdrop(current.dashboard.background), 'small'), t('background'));
+        // Each swatch shows both its shades (the dark tints alone look alike): the theme picks one.
+        const colours = Object.fromEntries(backgrounds.map(b => [b.id, `linear-gradient(135deg, ${BACKGROUNDS[b.id][0]} 50%, ${BACKGROUNDS[b.id][1]} 50%)`]));
+        pop.replaceChildren(choiceGroup(null, backgrounds, current.dashboard.background || 'default', (id) => {
+          current.dashboard.background = id;
+          applyTheme(current.dashboard.theme, id);
+          persist();
+          drawBackground();
+          closePalette();
+          bgButton.focus();
+        }, true, colours));
+      }
+      const outside = (e) => { if (!bgPick.contains(/** @type {Node} */ (e.target))) closePalette(); };
+      const escape = (e) => { if (e.key === 'Escape') { closePalette(); bgButton.focus(); } };
+      function openPalette() {
+        pop.hidden = false;
+        pop.style.left = '';
+        const over = pop.getBoundingClientRect().right - (document.documentElement.clientWidth - 8);
+        if (over > 0) pop.style.left = `${-over}px`; // kept inside a narrow window
+        bgButton.setAttribute('aria-expanded', 'true');
+        document.addEventListener('pointerdown', outside, true);
+        document.addEventListener('keydown', escape, true);
+        const on = pop.querySelector('.on');
+        if (on) /** @type {HTMLElement} */ (on).focus();
+      }
+      function closePalette() {
+        pop.hidden = true;
+        bgButton.setAttribute('aria-expanded', 'false');
+        document.removeEventListener('pointerdown', outside, true);
+        document.removeEventListener('keydown', escape, true);
+      }
+      drawBackground();
 
       const remove = confirmButton('wd-btn danger', t('deleteDashboard'), async () => {
         // After the saves already queued, and no save of it after (a name field's change can fire on the way).
@@ -1132,7 +1407,7 @@
 
       const done = el('a', 'wd-btn primary', t('done'));
       done.href = `#/d/${d.id}`;
-      return bar(name, cols, theme, el('span', 'wd-spacer'), remove, done);
+      return bar(name, cols, theme, bgPick, el('span', 'wd-spacer'), remove, done);
     }
 
     function setColumns(n) {
@@ -1217,7 +1492,9 @@
       }
       const iframe = document.createElement('iframe');
       iframe.title = w.title || def.name;
-      iframe.style.height = `${def.height || 120}px`;
+      // A percentage height keeps that share of the width until the widget sets its own (`ready`/`setHeight`).
+      if (typeof def.height === 'string') iframe.style.aspectRatio = `100 / ${parseFloat(def.height)}`;
+      else iframe.style.height = `${def.height || 120}px`;
       iframe.setAttribute('allow', 'autoplay; fullscreen');
       // A frame far below the window loads when it's scrolled near, so the ones on screen get the Homey to themselves.
       iframe.loading = 'lazy';
@@ -1802,7 +2079,8 @@
     }
 
     /** A short dropdown as one row of choices (`1 | 2`, `Standard | Compact`), or a colour's as swatches. */
-    function choiceGroup(s, values, value, set, swatches) {
+    /** @param {Record<string, string | null>} [colours] a swatch's colour per value (the widgets' palette) */
+    function choiceGroup(s, values, value, set, swatches, colours = SWATCHES) {
       const group = el('div', swatches ? 'wd-swatches' : 'wd-seg');
       group.setAttribute('role', 'radiogroup');
       const name = el('span', 'wd-swatch-name');
@@ -1823,7 +2101,7 @@
         if (swatches) {
           b.title = v.title;
           b.setAttribute('aria-label', v.title);
-          b.append(swatch(SWATCHES[v.id]));
+          b.append(swatch(colours[v.id]));
         }
         group.append(b);
       }
@@ -2367,6 +2645,7 @@
       if (!setup) { start(); return; }
       if (setup.disabled) { renderOff(); return; }
       if (setup.passwordRequired) { renderPassword(); return; }
+      if (location.hash === '#/edit') { renderList(true); return; }
       const m = location.hash.match(/^#\/d\/([A-Za-z0-9_-]+)(\/edit)?$/);
       if (!m) { renderList(); return; }
       const dashboard = dashboards.find(d => d.id === m[1]);

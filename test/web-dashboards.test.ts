@@ -37,6 +37,7 @@ describe('web dashboards: storage', () => {
     expect(saved.id).toMatch(/^[a-z0-9]+$/);
     expect(saved.name).toBe('Kitchen');
     expect(saved.theme).toBe('auto');
+    expect(saved.background).toBe('default');
     expect(saved.columns[0]).toHaveLength(1); // the unknown type is dropped
     const timers = saved.columns[0][0];
     expect(timers.settings.minutes1).toBe(3);
@@ -50,6 +51,13 @@ describe('web dashboards: storage', () => {
     expect(lights.settings.groupByZone).toBe(true);
     expect(homey.settings.get(WEB_DASHBOARDS_SETTING)).toEqual([saved]);
     expect(web.list()).toEqual([saved]);
+  });
+
+  it('keeps a known background and drops an unknown one', () => {
+    const { web } = setup();
+    expect(web.save({ name: 'A', background: 'ocean', columns: [[]] }).background).toBe('ocean');
+    expect(web.save({ name: 'B', background: 'neon', columns: [[]] }).background).toBe('default');
+    expect(web.save({ name: 'C', background: '__proto__', columns: [[]] }).background).toBe('default');
   });
 
   it("keeps an autocomplete choice's own fields, without the image", () => {
@@ -212,6 +220,58 @@ describe('web dashboards: the old Variables names', () => {
     expect(web.oldVariableNames()).toEqual([{ instance: 'web-d1-w1', names: { a: 'Guests', 'a#2': 'Again' } }]);
     // The dashboards as read no longer have them.
     expect(web.list()[0].columns[0][0].settings.name1).toBeUndefined();
+  });
+});
+
+describe('web dashboards: Dashboard Shortcuts', () => {
+  const saved = [
+    { id: 'home-1', name: 'Home', columns: [[{ id: 'w-1', type: 'shortcuts', settings: {} }, { id: 'w2', type: 'clock', settings: {} }]] },
+    { id: 'home', name: '', columns: [[{ id: '1-w-1', type: 'shortcuts', settings: {} }]] },
+    { id: 'lights', name: 'Lights', columns: [[]] },
+  ];
+
+  it("names each picked dashboard (missing when deleted) and finds the one holding the widget, ids with '-' and all", () => {
+    const { web, homey } = setup();
+    homey.settings.set(WEB_DASHBOARDS_SETTING, saved);
+    // `web-home-1-w-1` could split as home + 1-w-1 too: only Home has a shortcuts widget w-1.
+    expect(web.shortcuts(['lights', 'gone', 'home'], 'web-home-1-w-1')).toEqual({
+      current: 'home-1',
+      tiles: [{ id: 'lights', name: 'Lights' }, { id: 'gone', missing: true }, { id: 'home', name: 'Untitled' }],
+    });
+    expect(web.shortcuts(['lights'], 'web-home-1-w2').current).toBeNull(); // the clock, not a shortcuts widget
+    expect(web.shortcuts(['lights'], 'a-homey-dashboard-widget').current).toBeNull();
+    expect(web.shortcuts([], undefined)).toEqual({ current: null, tiles: [] });
+  });
+
+  it('answers through its widget route with the typed names, as a frame asks', async () => {
+    const { web, homey } = setup();
+    homey.settings.set(WEB_DASHBOARDS_SETTING, saved);
+    homey.app.tileNames = { get: () => ({ names: { lights: 'Lamps' } }) };
+    await expect(api.postWebCall({ homey, body: { type: 'shortcuts', method: 'GET', path: '/state', query: { ids: 'lights', instance: 'web-home-w' }, body: {} } }))
+      .resolves.toEqual({ state: { current: null, tiles: [{ id: 'lights', name: 'Lights' }] }, tileNames: { lights: 'Lamps' } });
+    expect(web.widgetTypes().map(t => t.type)).toContain('shortcuts'); // offered on the web though Homey hides it
+  });
+
+  it('lists the dashboards for its settings: None, then by name, with their widget counts', () => {
+    const { web, homey } = setup();
+    homey.settings.set(WEB_DASHBOARDS_SETTING, saved);
+    expect(web.dashboardItems('')).toEqual([
+      { id: 'none', name: 'None' },
+      { id: 'home-1', name: 'Home', description: '2' },
+      { id: 'lights', name: 'Lights', description: '0' },
+      { id: 'home', name: 'Untitled', description: '1' },
+    ]);
+    expect(web.dashboardItems('lig').map(i => i.id)).toEqual(['lights']);
+  });
+
+  it('is hidden from Homey\'s own dashboards (deprecated), and its autocompletes are the dashboards and the icons', async () => {
+    expect(app.widgets.shortcuts.deprecated).toBe(true);
+    const app2 = { web: { dashboardItems: vi.fn(() => []) }, flows: { listIcons: vi.fn(() => []) } };
+    const table = widgetAutocompletes(app2 as any);
+    await table.shortcuts.dashboard3('x', {});
+    await table.shortcuts.icon8('y', {});
+    expect(app2.web.dashboardItems).toHaveBeenCalledWith('x');
+    expect(app2.flows.listIcons).toHaveBeenCalledWith('y');
   });
 });
 
@@ -437,6 +497,22 @@ describe('web dashboards: the routes that act with the stored key', () => {
   });
 });
 
+describe('web dashboards: the front page', () => {
+  it('reorders the dashboards and keeps whether the widgets show', async () => {
+    const { homey, web } = setup();
+    const [a, b, c] = ['A', 'B', 'C'].map(name => web.save({ name, columns: [[]] }));
+    expect(web.front()).toEqual({ widgets: true });
+    // Ids it doesn't name keep their order after the named ones; unknown and repeated ids are ignored.
+    const res = await api.putWebFront({ homey, body: { order: [c.id, 'nope', a.id, c.id] } });
+    expect(res.dashboards.map(d => d.name)).toEqual(['C', 'A', 'B']);
+    expect(web.list().map(d => d.id)).toEqual([c.id, a.id, b.id]);
+    expect(res.front).toEqual({ widgets: true });
+    expect((await api.putWebFront({ homey, body: { widgets: false } })).front).toEqual({ widgets: false });
+    expect(web.list().map(d => d.id)).toEqual([c.id, a.id, b.id]); // no order: left as it is
+    expect(web.front()).toEqual({ widgets: false });
+  });
+});
+
 describe('web dashboards: turned off', () => {
   it('is off by default: the setup only says so, and every other route refuses', async () => {
     const { homey, web } = setup({}, false);
@@ -447,6 +523,7 @@ describe('web dashboards: turned off', () => {
     expect((res as any).strings.web.off).toBeTruthy();
     await expect(api.postWebCall({ homey, body: { type: 'timers', method: 'GET', path: '/state' } })).rejects.toThrow(/turned off/);
     await expect(api.putWebDashboard({ homey, body: { name: 'x' } })).rejects.toThrow(/turned off/);
+    await expect(api.putWebFront({ homey, body: { widgets: false } })).rejects.toThrow(/turned off/);
     await expect(api.getWebDevices({ homey, query: { type: 'lights' } })).rejects.toThrow(/turned off/);
     expect(web.describe()).toMatchObject({ enabled: false, dashboards: 1 });
     homey.settings.set(WEB_ENABLED_SETTING, true);

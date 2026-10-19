@@ -52,6 +52,7 @@
   <link rel="stylesheet" href="../widgets/variables/public/widget.css">
   <link rel="stylesheet" href="../widgets/varpresets/public/widget.css">
   <link rel="stylesheet" href="../widgets/flows/public/widget.css">
+  <link rel="stylesheet" href="../widgets/shortcuts/public/widget.css">
   <link rel="stylesheet" href="../widgets/price/public/widget.css">
   <link rel="stylesheet" href="../widgets/timers/public/widget.css">
   <link rel="stylesheet" href="../widgets/locks/public/widget.css">
@@ -79,6 +80,7 @@
   <script src="../widgets/variables/public/widget.js"></script>
   <script src="../widgets/varpresets/public/widget.js"></script>
   <script src="../widgets/flows/public/widget.js"></script>
+  <script src="../widgets/shortcuts/public/widget.js"></script>
   <script src="../widgets/price/public/widget.js"></script>
   <script src="../widgets/timers/public/widget.js"></script>
   <script src="../widgets/locks/public/widget.js"></script>
@@ -183,6 +185,12 @@
         opts: { columns: '2', ...o, buttons: flowRows.map(([color, , icon], i) => ({ id: `flow:${i}`, color, icon })) },
         flows: flowRows.map(([, name], i) => ({ id: `flow:${i}`, name, enabled: true, triggerable: true, advanced: false })),
       })],
+      ['Dashboard Shortcuts', 'each colour, the first current', (el, o) => {
+        const tiles = [['blue', 'Solbakken', 'home'], ['yellow', 'Lights', 'bulb'], ['orange', 'Climate', 'thermometer'], ['green', 'Garden', 'leaf'],
+          ['red', 'Cameras', 'camera'], ['purple', 'Energy', 'bolt'], ['grey', 'Kitchen', 'utensils']];
+        createShortcutsWidget(el, { ...o, tiles: tiles.map(([color, , icon], i) => ({ id: `d${i}`, color, icon })) })
+          .setState({ current: 'd0', tiles: tiles.map(([, name], i) => ({ id: `d${i}`, name })) });
+      }],
       ['Variables', 'a flag on; read only', (el, o) => {
         const vars = [
           { id: 'f1', name: 'Away mode', type: 'boolean', value: false },

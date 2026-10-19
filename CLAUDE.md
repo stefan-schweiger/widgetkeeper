@@ -36,8 +36,9 @@ This file holds what applies across the app. Each widget's notes, and those of t
 | Days Since | `dayssince` | `widgets/dayssince.md` |
 | Spacer | `spacer` | `widgets/spacer.md` |
 | Smart Stack | `stack` | `widgets/stack.md` |
+| Dashboard Shortcuts (web dashboards only) | `shortcuts` | `widgets/shortcuts.md` |
 
-Areas: `tile-names.md` (Rename tiles in ten widgets, `lib/TileNameService.ts`), `web-dashboards.md` (`settings/dashboard.*`, `/web/…` routes, the password) and `renders.md` (the render scripts and their pages in `dev/`).
+Areas: `tile-names.md` (Rename tiles in twelve widgets, `lib/TileNameService.ts`), `web-dashboards.md` (`settings/dashboard.*`, `/web/…` routes, the password) and `renders.md` (the render scripts and their pages in `dev/`).
 
 ## Commands
 - Use the **project-local Homey CLI v4**: `npx homey …` (the global `homey` is an old 3.7.x).
@@ -47,6 +48,7 @@ Areas: `tile-names.md` (Rename tiles in ten widgets, `lib/TileNameService.ts`), 
 - `npm run diagnostics`: see Diagnostics.
 - `npx homey app install`: builds and installs on the active Homey (firmware 13.x). `npx homey app run` (live logs, hot reload) needs Docker Desktop, which usually isn't running.
 - `npm run test-dashboards [-- lights media]` (`--remove` takes them away): one web dashboard per widget type on the active Homey (`Test · <widget>`, id `test-<type>`), each widget titled by what it tests, plus a deleted device/flow/variable and an empty one where it applies. Re-running replaces those and keeps the user's own. It picks devices, flows and variables by capability and class (never by name) through the widgets' own autocompletes, and writes the app setting `webDashboards` directly (the `/web/…` API also wants the password's session). Flow Buttons only gets flows that don't look like security, alarm or lock flows: a tap starts them for real.
+  - `--apps "Widgey,DataVista"` (app names or ids) builds `Test · Other apps` (id `test-apps`) instead: every widget of those apps (from `getAppWidgets()`), a column per app, the manifest's defaults, the first autocomplete filled (a Homey variable where offered, so DataVista's toggle switches no device). Web only.
   - `--native` builds the same as native Homey dashboards (`createDashboard`/`updateDashboard`, `homey.dashboard`, which the CLI's login has): matched by the name `Test · <widget>` (the Homey picks a dashboard's id) and updated in place; widget and column ids derived from the type and position (`stableUuid()`), so a re-run keeps each instance's tile names and timers. Each widget gets the manifest's defaults under its settings. 34 dashboards on the Homey were fine (2026-10-18).
   - It logs in once through the CLI's own code (`homey/lib/api/ApiCommandRuntime.mjs`). Every `homey api raw` logs in through Athom's cloud, and ~30 in a row got `Too many requests` for over half an hour (2026-10-11). `HOMEY_TOKEN` (a personal API key) with `HOMEY_ADDRESS` (`http://<ip>`) skips the cloud.
 - `npm run web-socket`: bundles `socket.io-client` v2 (MIT; what Homey's realtime speaks) into the committed `settings/socket.io.js` with esbuild; a test checks it's the installed version. Not `homey-api`'s browser build: its licence is proprietary.
