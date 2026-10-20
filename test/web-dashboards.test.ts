@@ -618,12 +618,25 @@ describe('web dashboards: backup and restore', () => {
     expect(homey.settings.get(WEB_FRONT_SETTING)).toBe(null);
   });
 
-  it('works while the web dashboards are off, and keeps at most 64', async () => {
-    const { homey, web } = setup({}, false);
+  it('keeps at most 64', async () => {
+    const { homey, web } = setup();
     const dashboards = Array.from({ length: 70 }, (_, i) => ({ id: `d${i}`, name: `D${i}`, columns: [[]] }));
     await expect(api.putWebBackup({ homey, body: { format: WEB_BACKUP_FORMAT, version: 1, dashboards } })).resolves.toEqual({ dashboards: 64, widgets: 0 });
     expect((await api.getWebBackup({ homey })).dashboards).toHaveLength(64);
     expect(web.list()[63].id).toBe('d63');
+  });
+
+  it('is for the web dashboards page: refused while they are off, and needs the session while a password is set', async () => {
+    const off = setup({}, false);
+    await expect(api.getWebBackup({ homey: off.homey })).rejects.toThrow(/turned off/);
+    await expect(api.putWebBackup({ homey: off.homey, body: off.web.backup() })).rejects.toThrow(/turned off/);
+    const { homey, web } = setup();
+    web.save({ name: 'Hall', columns: [[]] });
+    await homey.app.webPassword.setPassword('correct horse');
+    await expect(api.getWebBackup({ homey })).rejects.toThrow(/password required/);
+    await expect(api.putWebBackup({ homey, body: web.backup() })).rejects.toThrow(/password required/);
+    const { token } = await homey.app.webPassword.login('correct horse');
+    expect((await api.getWebBackup({ homey, query: { session: token } })).dashboards).toHaveLength(1);
   });
 });
 

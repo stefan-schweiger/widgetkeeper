@@ -157,18 +157,17 @@ export default {
     return app.web.duplicate(params?.id || '');
   },
 
-  /**
-   * Used by the app settings page: every web dashboard as one file (`WebBackup`). Like the password, it needs no
-   * session, and works while the web dashboards are off (they're kept).
-   */
-  async getWebBackup({ homey }: { homey: Homey }) {
+  /** The front page's edit mode: every web dashboard as one file (`WebBackup`). */
+  async getWebBackup({ homey, query }: { homey: Homey, query?: Record<string, string> }) {
     const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
     return app.web.backup();
   },
 
-  /** Used by the app settings page: replaces every web dashboard with a backup's; answers `{dashboards, widgets}`. */
-  async putWebBackup({ homey, body }: { homey: Homey, body: unknown }) {
+  /** The front page's edit mode: replaces every web dashboard with a backup's; answers `{dashboards, widgets}`. */
+  async putWebBackup({ homey, query, body }: { homey: Homey, query?: Record<string, string>, body: unknown }) {
     const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
     return app.web.restore(body);
   },
 

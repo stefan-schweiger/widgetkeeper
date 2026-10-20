@@ -5,8 +5,13 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ## 1.0.1
 
 ### Web dashboards
-- **Backup:** the app settings page saves every web dashboard in one file (the layouts, the widgets and their settings, the front page and the names typed on tiles), and restores such a file, replacing all web dashboards after a second tap.
+- **Backup:** under Settings in the front page's edit mode, save every web dashboard in one file (the layouts, the widgets and their settings, the front page and the names typed on tiles), and restore such a file, replacing all web dashboards after a second tap.
 - **Duplicate:** in the front page's edit mode, each dashboard has a copy button. The copy comes right after the original, with the names typed on its tiles.
+- **Delete** a dashboard from the front page's edit mode too, with a second tap.
+- The front page's edit mode has **Settings** in its bar, with the backup and Forget the key.
+
+### Curtains
+- Curtains that stop at exactly 0 % or 100 % no longer stay on *Opening…* or *Closing…* (and blue) when their motor doesn't report that it stopped. Two users' curtains did.
 
 ## 1.0.0
 

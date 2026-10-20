@@ -127,6 +127,14 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
       if (typeof body.widgets === 'boolean') front = { widgets: body.widgets };
       return { dashboards, front };
     }
+    if (p === '/web/backup' && method === 'GET') {
+      return { format: 'widgetkeeper-web-dashboards', version: 1, app: '1.0.1', exportedAt: new Date().toISOString(), dashboards, front, tileNames: {} };
+    }
+    if (p === '/web/backup' && method === 'PUT') {
+      dashboards = body.dashboards;
+      front = { widgets: !(body.front && body.front.widgets === false) };
+      return { dashboards: dashboards.length, widgets: dashboards.reduce((n, d) => n + d.columns.flat().length, 0) };
+    }
     const copy = p.match(/^\/web\/dashboards\/([^/]+)\/copy$/);
     if (copy && method === 'POST') {
       const i = dashboards.findIndex(d => d.id === decodeURIComponent(copy[1]));

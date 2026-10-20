@@ -63,6 +63,17 @@
     duplicate: 'Duplicate',
     copyName: '__name__ (copy)',
     tooManyDashboards: 'At most __max__ dashboards.',
+    pageSettings: 'Settings',
+    thisBrowser: 'This browser',
+    forgetKeyText: 'Signs this browser out: it asks for an API key again.',
+    backupTitle: 'Backup',
+    backupText: 'Every dashboard in one file: the layouts, the widgets and their settings, this page\'s order and the names typed on tiles. Restoring one replaces all your dashboards.',
+    backupDownload: 'Download backup',
+    backupRestore: 'Restore backup',
+    backupSummary: '__dashboards__ dashboards, __widgets__ widgets, saved __date__.',
+    backupConfirm: 'Tap again to replace your dashboards',
+    backupRestored: 'Restored: __dashboards__ dashboards, __widgets__ widgets.',
+    backupInvalid: 'This file is not a Widgetkeeper web dashboards backup.',
     deleteDashboard: 'Delete dashboard',
     tapAgain: 'Tap again to confirm',
     addWidget: 'Add widget',
@@ -195,20 +206,30 @@
     return b;
   }
 
-  /** A button that needs a second tap within 3 s (no browser dialog, which would block a wall tablet). */
+  /**
+   * A button that needs a second tap within 3 s (no browser dialog, which would block a wall tablet). `text` may be an
+   * icon (an element): it stays, and only the button's class and label say it's armed.
+   */
   function confirmButton(className, text, onConfirm, confirmText, label) {
     let armed = 0;
-    const b = button(className, text, () => {
+    const iconOnly = typeof text !== 'string';
+    const say = (words) => {
+      if (!iconOnly) { b.textContent = words; return; }
+      b.title = words;
+      b.setAttribute('aria-label', words);
+    };
+    const b = button(className, iconOnly ? '' : text, () => {
       if (Date.now() - armed < CONFIRM_MS) { onConfirm(); return; }
       armed = Date.now();
       b.classList.add('armed');
-      b.textContent = confirmText;
+      say(confirmText);
       setTimeout(() => {
         if (!b.isConnected) return;
         b.classList.remove('armed');
-        b.textContent = text;
+        say(iconOnly ? label : text);
       }, CONFIRM_MS);
     }, label);
+    if (iconOnly) b.append(text);
     return b;
   }
 
@@ -249,6 +270,8 @@
     grip: 'M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01',
     close: 'M6 6l12 12M18 6L6 18',
     down: 'M6 9l6 6 6-6',
+    sliders: 'M4 6h9M17 6h3M15 4v4M4 12h3M11 12h9M9 10v4M4 18h11M19 18h1M17 16v4',
+    trash: 'M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3',
     copy: 'M10 9h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2zM16 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2',
   };
 
@@ -1025,16 +1048,11 @@
         arrangeCards(grid);
         page.append(head, grid);
         if (types.size) page.append(widgetCarousel(true));
-        const forget = button('wd-btn quiet', t('forgetKey'), async () => {
-          forget.disabled = true;
-          if (session) await request('POST', '/web/logout', {}).catch(() => {});
-          storageSet(KEY_STORAGE, null);
-          storageSet(SESSION_STORAGE, null);
-          location.reload();
-        });
+        const settings = button('wd-btn quiet', '', () => pageSettings(), t('pageSettings'));
+        settings.append(icon('sliders'), el('span', 'wd-bar-label', t('pageSettings')));
         const done = el('a', 'wd-btn primary', t('done'));
         done.href = '#/';
-        root.append(bar(brand(), el('span', 'wd-spacer'), forget, done), page);
+        root.append(bar(brand(), el('span', 'wd-spacer'), settings, done), page);
         return;
       }
       const add = button('wd-dash wd-dash-new', '', async () => {
@@ -1071,6 +1089,133 @@
           if (res && Array.isArray(res.dashboards)) dashboards = res.dashboards;
           if (res && res.front) frontPage = res.front;
         } catch (err) {
+          failed(err);
+        }
+      });
+    }
+
+    /** The front page's edit mode: Settings in its bar, a dialog with the backup and Forget the key (this browser's). */
+    function pageSettings() {
+      const { d, body } = dialog(t('pageSettings'));
+      d.classList.add('wd-page-settings');
+      const browser = el('section', 'wd-page-section');
+      const forget = button('wd-btn', t('forgetKey'), async () => {
+        forget.disabled = true;
+        if (session) await request('POST', '/web/logout', {}).catch(() => {});
+        storageSet(KEY_STORAGE, null);
+        storageSet(SESSION_STORAGE, null);
+        location.reload();
+      });
+      const row = el('div', 'wd-row');
+      row.append(forget);
+      browser.append(el('h3', 'wd-h2', t('thisBrowser')), el('p', 'wd-muted', t('forgetKeyText')), row);
+      body.append(backupSection(), browser);
+      d.showModal();
+    }
+
+    /**
+     * The Settings dialog's backup: every dashboard as one file (`GET /web/backup`: the dashboards, the front page's
+     * choices and their widgets' tile names), and a restore from one, which replaces them all after a second tap. Here,
+     * not on the app settings page: my.homey.app runs that in a frame sandboxed without downloads (2026-10-20).
+     */
+    function backupSection() {
+      const section = el('section', 'wd-page-section');
+      const status = el('p', 'wd-muted wd-backup-status');
+      status.setAttribute('role', 'status');
+      const file = el('input');
+      file.type = 'file';
+      file.accept = '.json,application/json';
+      file.hidden = true;
+      let pending = null; // read from a file, until the second tap
+      let timer = 0;
+      const disarm = (clear) => {
+        clearTimeout(timer);
+        pending = null;
+        restore.textContent = t('backupRestore');
+        restore.classList.remove('armed');
+        if (clear) status.textContent = '';
+      };
+      const busy = (on) => { download.disabled = on; restore.disabled = on; };
+      const download = button('wd-btn', t('backupDownload'), async () => {
+        disarm(true);
+        busy(true);
+        try {
+          const backup = await request('GET', '/web/backup');
+          const d = new Date();
+          const pad = n => String(n).padStart(2, '0');
+          const url = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' }));
+          const a = el('a');
+          a.href = url;
+          a.download = `widgetkeeper-web-dashboards-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}.json`;
+          document.body.append(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 60e3);
+        } catch (err) {
+          failed(err);
+        }
+        busy(false);
+      });
+      const restore = button('wd-btn', t('backupRestore'), () => {
+        if (!pending) { file.value = ''; file.click(); return; }
+        const backup = pending;
+        disarm(false);
+        busy(true);
+        saving = saving.then(async () => {
+          try {
+            const res = await request('PUT', '/web/backup', backup);
+            await loadSetup(); // the dashboards and the front page's choices as restored
+            if (location.hash === '#/edit') renderList(true); // behind the dialog
+            busy(false);
+            status.textContent = t('backupRestored', { dashboards: res.dashboards, widgets: res.widgets });
+          } catch (err) {
+            busy(false);
+            if (/Not a Widgetkeeper backup/.test(String(err && err.message))) status.textContent = t('backupInvalid');
+            else failed(err);
+          }
+        });
+      });
+      file.addEventListener('change', async () => {
+        const chosen = file.files && file.files[0];
+        if (!chosen) return;
+        let backup = null;
+        try { backup = JSON.parse(await chosen.text()); } catch (e) { backup = null; }
+        if (!backup || backup.format !== 'widgetkeeper-web-dashboards' || !Array.isArray(backup.dashboards)) {
+          disarm(false);
+          status.textContent = t('backupInvalid');
+          return;
+        }
+        const widgets = backup.dashboards.reduce((n, d) => n + (d && Array.isArray(d.columns)
+          ? d.columns.reduce((m, c) => m + (Array.isArray(c) ? c.length : 0), 0) : 0), 0);
+        const date = new Date(backup.exportedAt);
+        status.textContent = t('backupSummary', {
+          dashboards: backup.dashboards.length, widgets, date: Number.isNaN(date.getTime()) ? '?' : date.toLocaleString(),
+        });
+        pending = backup;
+        restore.textContent = t('backupConfirm');
+        restore.classList.add('armed');
+        clearTimeout(timer);
+        timer = setTimeout(() => { if (section.isConnected) disarm(true); }, 10e3);
+      });
+      const row = el('div', 'wd-row wd-backup-row');
+      row.append(download, restore);
+      section.append(el('h3', 'wd-h2', t('backupTitle')), el('p', 'wd-muted', t('backupText')), row, status, file);
+      return section;
+    }
+
+    /**
+     * Deletes a dashboard after the saves already queued, and no save of it after (a name field's change can fire on the
+     * way); then `done()`.
+     */
+    function deleteDashboard(id, done) {
+      deleted.add(id);
+      saving = saving.then(async () => {
+        try {
+          await request('DELETE', `/web/dashboards/${encodeURIComponent(id)}`);
+          dashboards = dashboards.filter(x => x.id !== id);
+          done();
+        } catch (err) {
+          deleted.delete(id);
           failed(err);
         }
       });
@@ -1177,7 +1322,8 @@
 
     /**
      * A dashboard's card: a miniature of its columns (each widget as its preview), its name and widget count. While
-     * the front page is edited it opens nothing: it's dragged (a grip in place of the pen), and it has Duplicate.
+     * the front page is edited it opens nothing: it's dragged (a grip in place of the pen), and it has Duplicate and Delete
+     * (a second tap).
      */
     function dashboardCard(d, editing = false) {
       const card = el('div', 'wd-dash');
@@ -1206,7 +1352,10 @@
         const copy = button('wd-icon wd-dash-copy', '', () => duplicate(d.id), t('duplicate'));
         copy.append(icon('copy'));
         copy.disabled = dashboards.length >= MAX_DASHBOARDS;
-        card.append(art, link, copy, grip);
+        const remove = confirmButton('wd-icon wd-dash-delete', icon('trash'), () => deleteDashboard(d.id, () => {
+          if (location.hash === '#/edit') renderList(true);
+        }), t('tapAgain'), t('deleteDashboard'));
+        card.append(art, link, remove, copy, grip);
         return card;
       }
       const edit = el('a', 'wd-icon wd-dash-edit');
@@ -1427,20 +1576,7 @@
       }
       drawBackground();
 
-      const remove = confirmButton('wd-btn danger', t('deleteDashboard'), async () => {
-        // After the saves already queued, and no save of it after (a name field's change can fire on the way).
-        deleted.add(d.id);
-        saving = saving.then(async () => {
-          try {
-            await request('DELETE', `/web/dashboards/${encodeURIComponent(d.id)}`);
-            dashboards = dashboards.filter(x => x.id !== d.id);
-            location.hash = '#/';
-          } catch (err) {
-            deleted.delete(d.id);
-            failed(err);
-          }
-        });
-      }, t('tapAgain'));
+      const remove = confirmButton('wd-btn danger', t('deleteDashboard'), () => deleteDashboard(d.id, () => { location.hash = '#/'; }), t('tapAgain'));
 
       const done = el('a', 'wd-btn primary', t('done'));
       done.href = `#/d/${d.id}`;

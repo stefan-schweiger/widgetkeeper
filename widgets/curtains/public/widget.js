@@ -245,6 +245,9 @@
       const motor = motorSaysDirection(d) ? shown(d, 'windowcoverings_state') : null;
       const closedValue = d.caps.windowcoverings_closed ? shown(d, 'windowcoverings_closed') : null;
       let moving = motor === 'up' ? 1 : motor === 'down' ? -1 : 0;
+      // At an end, the motor's up/down is a leftover: some drivers never report idle there, or report down at 0 %
+      // and up at 100 % at rest (wk-071). A move sent from here still shows, through `pending`.
+      if (moving && position != null && (position <= end || position >= 1 - end)) moving = 0;
       const p = pending.get(d.id);
       if (p && Date.now() >= p.until) pending.delete(d.id);
       else if (p && !moving && !(position != null && Math.abs(position - p.value) <= ARRIVE)) moving = p.dir;

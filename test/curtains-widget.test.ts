@@ -232,6 +232,69 @@ describe('ends', () => {
   });
 });
 
+describe('at the ends (wk-071)', () => {
+  const push = (w: any, id: string, capabilityId: string, value: unknown) => w.pushChange({ deviceId: id, capabilityId, value });
+  const motorAt = (id: string, position: number, motor: string) => curtain(id, position, { windowcoverings_state: cap(motor) });
+
+  it('stops moving at the end though the motor never reports idle', () => {
+    const { w, tap, state, action, tile } = widget([curtain('a', 0.7), curtain('b', 0.3)]);
+    tap('a');
+    push(w, 'a', 'windowcoverings_state', 'down');
+    push(w, 'a', 'windowcoverings_set', 0);
+    expect(state('a')).toBe('Closed');
+    expect(action('a')).toBe('open');
+    expect(tile('a').classList.contains('moving')).toBe(false);
+    expect(tile('a').classList.contains('open')).toBe(false);
+    tap('b');
+    push(w, 'b', 'windowcoverings_state', 'up');
+    push(w, 'b', 'windowcoverings_set', 1);
+    expect(state('b')).toBe('Open');
+    expect(action('b')).toBe('close');
+    expect(tile('b').classList.contains('moving')).toBe(false);
+  });
+
+  it('reads a motor resting on down at 0 % and up at 100 % as stopped, also with exact ends', () => {
+    for (const ends of [0, undefined]) {
+      const { state, tile } = widget([motorAt('a', 0, 'down'), motorAt('b', 1, 'up')], { ends });
+      expect([state('a'), state('b')]).toEqual(['Closed', 'Open']);
+      expect(tile('a').classList.contains('moving')).toBe(false);
+      expect(tile('b').classList.contains('moving')).toBe(false);
+    }
+  });
+
+  it('ignores the motor at either end of an inverted curtain, whichever way it says', () => {
+    const { state } = widget([motorAt('a', 1, 'down'), motorAt('b', 1, 'up'), motorAt('c', 0, 'up'), motorAt('d', 0, 'down')], { invert: true });
+    expect([state('a'), state('b'), state('c'), state('d')]).toEqual(['Closed', 'Closed', 'Open', 'Open']);
+  });
+
+  it('counts 1 % and 99 % as the end for the motor too, and the motor in between', () => {
+    const near = widget([motorAt('a', 0.01, 'down'), motorAt('b', 0.99, 'up')]);
+    expect([near.state('a'), near.state('b')]).toEqual(['Closed', 'Open']);
+    const exact = widget([motorAt('c', 0.99, 'up')], { ends: 0 });
+    expect(exact.state('c')).toBe('Opening…');
+  });
+
+  it('shows a move from the widget away from an end at once', () => {
+    const { w, tap, state, onSet } = widget([motorAt('a', 0, 'down')]);
+    tap('a');
+    expect(onSet).toHaveBeenCalledWith('a', { position: 1 });
+    expect(state('a')).toBe('Opening…');
+    push(w, 'a', 'windowcoverings_state', 'up');
+    push(w, 'a', 'windowcoverings_set', 0.3);
+    expect(state('a')).toBe('Opening…');
+    push(w, 'a', 'windowcoverings_set', 1);
+    expect(state('a')).toBe('Open');
+  });
+
+  it('shows a move started elsewhere once the curtain leaves the end', () => {
+    const { w, state } = widget([curtain('a', 0)]);
+    push(w, 'a', 'windowcoverings_state', 'up');
+    expect(state('a')).toBe('Closed');
+    push(w, 'a', 'windowcoverings_set', 0.2);
+    expect(state('a')).toBe('Opening…');
+  });
+});
+
 describe('invert', () => {
   it('reads position 0 as open and 1 as closed, and sends it that way', () => {
     const { tap, barAt, onSet, action, state, tile } = widget([curtain('a', 0), curtain('b', 0.99), curtain('c', 0.3)], { invert: true });

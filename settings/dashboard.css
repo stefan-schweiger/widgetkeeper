@@ -156,12 +156,26 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .arranging .wd-dash-edit { pointer-events: none; }
 .arranging .wd-dash-edit svg { stroke-width: 3; }
 .wd-dash-copy { position: absolute; right: 50px; bottom: 14px; z-index: 1; }
-.arranging .wd-dash-link { padding-right: 92px; }
+.wd-dash-delete { position: absolute; right: 90px; bottom: 14px; z-index: 1; }
+.wd-dash-delete:hover { color: var(--wd-red); }
+.wd-dash-delete.armed, .wd-dash-delete.armed:hover { color: #FFFFFF; background: var(--wd-red); } /* tap again to delete */
+.arranging .wd-dash-link { padding-right: 132px; }
 .wd-dash-copy:disabled { opacity: .4; cursor: default; }
 /* A copy just made: its ring fades out. */
 .wd-dash.fresh { animation: wd-fresh 1.6s ease-out; }
 @keyframes wd-fresh { from { box-shadow: 0 0 0 4px var(--wd-accent), 0 10px 28px rgba(0, 0, 0, .18); } }
 .arranging .wd-dash.lifted { z-index: 2; transform: scale(1.02); box-shadow: 0 0 0 2px var(--wd-accent), 0 14px 32px rgba(0, 0, 0, .3); transition: none; }
+/* The edit mode's Settings dialog: the backup, then this browser's key. */
+.wd-page-settings .wd-dialog-head .wd-h2 { font-size: 20px; line-height: 28px; } /* above its sections' 17 px heads */
+.wd-page-settings .wd-dialog-head { padding-top: 16px; padding-bottom: 4px; }
+.wd-page-settings .wd-dialog-body { padding-top: 16px; padding-bottom: 20px; }
+.wd-page-section { display: flex; flex-direction: column; gap: 8px; }
+.wd-page-section + .wd-page-section { padding-top: 16px; border-top: 1px solid var(--wd-line); }
+.wd-page-section .wd-row { flex-wrap: wrap; margin-top: 4px; }
+.wd-backup-row .wd-btn.armed { color: #FFFFFF; background: var(--wd-red); } /* tap again to replace the dashboards */
+.wd-backup-status:empty { display: none; }
+.wd-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+@media (max-width: 480px) { .wd-bar-label { display: none; } } /* the icon alone on a phone */
 .wd-carousel-show { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; font-size: 14px; line-height: 20px; color: var(--wd-muted); cursor: pointer; }
 .wd-carousel.off .wd-spot { opacity: .4; }
 
