@@ -160,7 +160,14 @@
     "webPasswordSaved": "Mot de passe enregistré. Les navigateurs déjà connectés doivent se reconnecter.",
     "webPasswordRemoved": "Mot de passe supprimé.",
     "webPasswordTooShort": "Utilisez au moins __min__ caractères.",
-    "webPasswordTooLong": "Utilisez au plus __max__ caractères."
+    "webPasswordTooLong": "Utilisez au plus __max__ caractères.",
+    "webBackupHelp": "Sauvegardez tous les tableaux de bord web dans un fichier : la disposition, les widgets et leurs réglages, la page d’accueil et les noms des tuiles. Restaurer une sauvegarde remplace tous vos tableaux de bord web.",
+    "webBackupDownload": "Télécharger la sauvegarde",
+    "webBackupRestore": "Restaurer une sauvegarde",
+    "webBackupSummary": "__dashboards__ tableaux de bord, __widgets__ widgets, enregistrés le __date__.",
+    "webBackupConfirm": "Touchez encore pour remplacer vos tableaux de bord",
+    "webBackupRestored": "Restauré : __dashboards__ tableaux de bord, __widgets__ widgets.",
+    "webBackupInvalid": "Ce fichier n’est pas une sauvegarde des tableaux de bord web de Widgetkeeper."
   },
   "heatmap": {
     "selectDevice": "Choisissez un appareil et une valeur dans les réglages du widget.",
@@ -502,6 +509,9 @@
     "bgSand": "Sable",
     "arrangeHint": "Faites glisser les tableaux de bord pour changer leur ordre.",
     "showWidgets": "Afficher sur la page d'accueil",
+    "duplicate": "Dupliquer",
+    "copyName": "__name__ (copie)",
+    "tooManyDashboards": "__max__ tableaux de bord au maximum.",
     "deleteDashboard": "Supprimer le tableau de bord",
     "tapAgain": "Touchez encore pour confirmer",
     "addWidget": "Ajouter un widget",

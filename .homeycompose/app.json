@@ -100,6 +100,18 @@
       "method": "DELETE",
       "path": "/web/dashboards/:id"
     },
+    "postWebDashboardCopy": {
+      "method": "POST",
+      "path": "/web/dashboards/:id/copy"
+    },
+    "getWebBackup": {
+      "method": "GET",
+      "path": "/web/backup"
+    },
+    "putWebBackup": {
+      "method": "PUT",
+      "path": "/web/backup"
+    },
     "postWebCall": {
       "method": "POST",
       "path": "/web/call"

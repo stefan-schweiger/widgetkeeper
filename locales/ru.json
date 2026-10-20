@@ -160,7 +160,14 @@
     "webPasswordSaved": "Пароль сохранён. Ранее вошедшие браузеры должны войти снова.",
     "webPasswordRemoved": "Пароль удалён.",
     "webPasswordTooShort": "Не менее __min__ символов.",
-    "webPasswordTooLong": "Не более __max__ символов."
+    "webPasswordTooLong": "Не более __max__ символов.",
+    "webBackupHelp": "Сохраните все веб-панели в один файл: раскладку, виджеты и их настройки, главную страницу и имена плиток. Восстановление копии заменяет все ваши веб-панели.",
+    "webBackupDownload": "Скачать копию",
+    "webBackupRestore": "Восстановить копию",
+    "webBackupSummary": "Панелей: __dashboards__, виджетов: __widgets__, сохранено __date__.",
+    "webBackupConfirm": "Нажмите ещё раз, чтобы заменить панели",
+    "webBackupRestored": "Восстановлено. Панелей: __dashboards__, виджетов: __widgets__.",
+    "webBackupInvalid": "Этот файл не является копией веб-панелей Widgetkeeper."
   },
   "heatmap": {
     "selectDevice": "Выберите устройство и значение в настройках виджета.",
@@ -502,6 +509,9 @@
     "bgSand": "Песок",
     "arrangeHint": "Перетаскивайте панели, чтобы изменить их порядок.",
     "showWidgets": "Показывать на главной",
+    "duplicate": "Дублировать",
+    "copyName": "__name__ (копия)",
+    "tooManyDashboards": "Не больше __max__ панелей.",
     "deleteDashboard": "Удалить панель",
     "tapAgain": "Нажмите ещё раз для подтверждения",
     "addWidget": "Добавить виджет",

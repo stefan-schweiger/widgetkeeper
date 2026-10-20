@@ -9,6 +9,7 @@
     .status { min-height: 1.4em; margin-top: 8px; }
     .status:empty { display: none; }
     #webUrl { display: block; margin-top: 12px; word-break: break-all; }
+    .backup-help { margin-top: var(--homey-su-6, 24px); }
     #report {
       display: block; width: 100%; box-sizing: border-box; height: 50vh; margin-top: 12px;
       font: 11px/1.4 ui-monospace, Menlo, Consolas, monospace; white-space: pre; overflow: auto; resize: vertical;
@@ -81,6 +82,15 @@
       </div>
       <p class="homey-form-help status" id="pwStatus" role="status"></p>
     </div>
+    <!-- A backup of every web dashboard as one file, and a restore from one (kept while they're off, so always shown). -->
+    <p class="homey-form-help backup-help" data-i18n="webBackupHelp"></p>
+    <div class="row">
+      <button class="homey-button-secondary-shadow" id="backupDownload" data-i18n="webBackupDownload">Download backup</button>
+      <button class="homey-button-secondary-shadow" id="backupShare" data-i18n="share" hidden>Share</button>
+      <button class="homey-button-secondary-shadow" id="backupRestore" data-i18n="webBackupRestore">Restore backup</button>
+    </div>
+    <input id="backupFile" type="file" accept=".json,application/json" hidden>
+    <p class="homey-form-help status" id="backupStatus" role="status"></p>
   </fieldset>
 
   <fieldset class="homey-form-fieldset">
@@ -275,6 +285,99 @@
       pwSave.addEventListener('click', () => { if (webPassword.value) savePassword(webPassword.value); });
       pwRemove.addEventListener('click', () => savePassword(''));
       showPasswordState();
+
+      // ---- Web dashboards backup: every dashboard (with the front page and the tile names) as one file, and a restore
+      // from one, which replaces them all after a second tap. The Homey app's web view may not download a file: Share there. ----
+      const backupStatus = $('backupStatus');
+      const backupFile = $('backupFile');
+      const backupRestore = $('backupRestore');
+      const backupShare = $('backupShare');
+      const backupButtons = [$('backupDownload'), backupShare, backupRestore];
+      let pendingBackup = null; // read from a file, until the second tap
+      let pendingTimer = 0;
+      const setBackupBusy = (on) => { for (const b of backupButtons) b.disabled = on; };
+      const pad = n => String(n).padStart(2, '0');
+      function backupFileName() {
+        const d = new Date();
+        return `widgetkeeper-web-dashboards-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}.json`;
+      }
+      function readBackup() {
+        return new Promise((resolve, reject) => {
+          Homey.api('GET', '/web/backup', null, (err, res) => (err ? reject(err) : resolve(JSON.stringify(res, null, 2))));
+        });
+      }
+      function disarm(clear) {
+        clearTimeout(pendingTimer);
+        pendingBackup = null;
+        backupRestore.textContent = t('webBackupRestore');
+        if (clear) backupStatus.textContent = '';
+      }
+      async function exportBackup(share) {
+        disarm(true);
+        setBackupBusy(true);
+        try {
+          const text = await readBackup();
+          if (share) {
+            const file = new File([text], backupFileName(), { type: 'application/json' });
+            await navigator.share({ files: [file], title: backupFileName() });
+          } else {
+            const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = backupFileName();
+            document.body.append(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 60e3);
+          }
+        } catch (err) {
+          if (!err || err.name !== 'AbortError') backupStatus.textContent = (err && err.message) || String(err);
+        }
+        setBackupBusy(false);
+      }
+      $('backupDownload').addEventListener('click', () => exportBackup(false));
+      try {
+        if (navigator.canShare && navigator.canShare({ files: [new File(['{}'], 'backup.json', { type: 'application/json' })] })) {
+          backupShare.hidden = false;
+          backupShare.addEventListener('click', () => exportBackup(true));
+        }
+      } catch (e) { /* no file sharing here */ }
+      backupRestore.addEventListener('click', () => {
+        if (!pendingBackup) { backupFile.value = ''; backupFile.click(); return; }
+        const backup = pendingBackup;
+        disarm(false);
+        setBackupBusy(true);
+        Homey.api('PUT', '/web/backup', backup, (err, res) => {
+          setBackupBusy(false);
+          if (err) {
+            const message = err.message || String(err);
+            backupStatus.textContent = /Not a Widgetkeeper backup/.test(message) ? t('webBackupInvalid') : message;
+            return;
+          }
+          backupStatus.textContent = t('webBackupRestored', { dashboards: res.dashboards, widgets: res.widgets });
+        });
+      });
+      backupFile.addEventListener('change', async () => {
+        const file = backupFile.files && backupFile.files[0];
+        if (!file) return;
+        let backup = null;
+        try { backup = JSON.parse(await file.text()); } catch (e) { backup = null; }
+        if (!backup || backup.format !== 'widgetkeeper-web-dashboards' || !Array.isArray(backup.dashboards)) {
+          disarm(false);
+          backupStatus.textContent = t('webBackupInvalid');
+          return;
+        }
+        const widgets = backup.dashboards.reduce((n, d) => n + (d && Array.isArray(d.columns)
+          ? d.columns.reduce((m, c) => m + (Array.isArray(c) ? c.length : 0), 0) : 0), 0);
+        const date = new Date(backup.exportedAt);
+        backupStatus.textContent = t('webBackupSummary', {
+          dashboards: backup.dashboards.length, widgets, date: Number.isNaN(date.getTime()) ? '?' : date.toLocaleString(),
+        });
+        pendingBackup = backup;
+        backupRestore.textContent = t('webBackupConfirm');
+        clearTimeout(pendingTimer);
+        pendingTimer = setTimeout(() => disarm(true), 10e3);
+      });
 
       // ---- Diagnostics ----
       const select = $('device');

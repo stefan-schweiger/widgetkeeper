@@ -160,7 +160,14 @@
     "webPasswordSaved": "Hasło zapisane. Zalogowane przeglądarki muszą zalogować się ponownie.",
     "webPasswordRemoved": "Hasło usunięte.",
     "webPasswordTooShort": "Użyj co najmniej __min__ znaków.",
-    "webPasswordTooLong": "Użyj najwyżej __max__ znaków."
+    "webPasswordTooLong": "Użyj najwyżej __max__ znaków.",
+    "webBackupHelp": "Zapisz wszystkie pulpity webowe w jednym pliku: układ, widżety i ich ustawienia, stronę główną i nazwy kafelków. Przywrócenie kopii zastępuje wszystkie twoje pulpity webowe.",
+    "webBackupDownload": "Pobierz kopię",
+    "webBackupRestore": "Przywróć kopię",
+    "webBackupSummary": "Pulpity: __dashboards__, widżety: __widgets__, zapisano __date__.",
+    "webBackupConfirm": "Stuknij ponownie, aby zastąpić pulpity",
+    "webBackupRestored": "Przywrócono. Pulpity: __dashboards__, widżety: __widgets__.",
+    "webBackupInvalid": "Ten plik nie jest kopią pulpitów webowych Widgetkeeper."
   },
   "heatmap": {
     "selectDevice": "Wybierz urządzenie i wartość w ustawieniach widżetu.",
@@ -502,6 +509,9 @@
     "bgSand": "Piasek",
     "arrangeHint": "Przeciągnij pulpity, aby zmienić ich kolejność.",
     "showWidgets": "Pokaż na stronie głównej",
+    "duplicate": "Duplikuj",
+    "copyName": "__name__ (kopia)",
+    "tooManyDashboards": "Najwyżej __max__ pulpitów.",
     "deleteDashboard": "Usuń pulpit",
     "tapAgain": "Stuknij ponownie, aby potwierdzić",
     "addWidget": "Dodaj widżet",

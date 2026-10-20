@@ -354,7 +354,7 @@ Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an
 ### Your dashboards
 <img src="docs/web/front.png" alt="The web dashboards front page in a browser window: seven dashboards as cards, and the widgets you can add" width="100%">
 
-The front page shows every dashboard as a card with a miniature of its widgets, then the widgets you can add, one at a time. The pen at the top puts it in edit mode: drag the dashboards into the order you like, hide the widgets, or forget this browser's key.
+The front page shows every dashboard as a card with a miniature of its widgets, then the widgets you can add, one at a time. The pen at the top puts it in edit mode: drag the dashboards into the order you like, duplicate one (the copy comes right after it, with the names typed on its tiles), hide the widgets, or forget this browser's key.
 
 ### Building a dashboard
 <img src="docs/web/editor.png" alt="A web dashboard being edited in a browser window" width="100%">
@@ -374,6 +374,9 @@ The front page shows every dashboard as a card with a miniature of its widgets, 
 
 ### Password
 On top of the API key, you can set a password for the web dashboards under **Apps → Widgetkeeper → Configure**. Every browser then asks for it once. Setting, changing or removing it signs every browser out, and wrong passwords in a row lock the sign-in for a while.
+
+### Backup
+Under **Apps → Widgetkeeper → Configure**, **Download backup** saves every web dashboard in one file: the layouts, the widgets and their settings, the front page's order and the names typed on tiles. **Restore backup** reads such a file back and, after a second tap, replaces all your web dashboards with it. Notes' texts and Days Since's counters aren't in it, as Homey's own dashboards share them. In the Homey phone app, **Share** sends the file on where downloading doesn't work; the Homey web app in a browser downloads and restores it.
 
 ### Web dashboards' key
 Each browser connects with a key of its own, which stays in that browser:

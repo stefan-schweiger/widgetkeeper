@@ -160,7 +160,14 @@
     "webPasswordSaved": "Adgangskoden er gemt. Browsere, der var logget ind, skal logge ind igen.",
     "webPasswordRemoved": "Adgangskoden er fjernet.",
     "webPasswordTooShort": "Brug mindst __min__ tegn.",
-    "webPasswordTooLong": "Brug højst __max__ tegn."
+    "webPasswordTooLong": "Brug højst __max__ tegn.",
+    "webBackupHelp": "Tag en sikkerhedskopi af alle webdashboards i én fil: layoutet, widgets og deres indstillinger, forsiden og navnene på fliser. Gendannes en sikkerhedskopi, erstatter den alle dine webdashboards.",
+    "webBackupDownload": "Hent sikkerhedskopi",
+    "webBackupRestore": "Gendan sikkerhedskopi",
+    "webBackupSummary": "__dashboards__ dashboards, __widgets__ widgets, gemt __date__.",
+    "webBackupConfirm": "Tryk igen for at erstatte dine dashboards",
+    "webBackupRestored": "Gendannet: __dashboards__ dashboards, __widgets__ widgets.",
+    "webBackupInvalid": "Filen er ikke en sikkerhedskopi af Widgetkeepers webdashboards."
   },
   "heatmap": {
     "selectDevice": "Vælg en enhed og en værdi i widgettens indstillinger.",
@@ -502,6 +509,9 @@
     "bgSand": "Sand",
     "arrangeHint": "Træk dashboardene for at ændre deres rækkefølge.",
     "showWidgets": "Vis på forsiden",
+    "duplicate": "Dupliker",
+    "copyName": "__name__ (kopi)",
+    "tooManyDashboards": "Højst __max__ dashboards.",
     "deleteDashboard": "Slet dashboard",
     "tapAgain": "Tryk igen for at bekræfte",
     "addWidget": "Tilføj widget",

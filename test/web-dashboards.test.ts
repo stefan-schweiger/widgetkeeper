@@ -2,7 +2,8 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
 import PersonalApiKey from '../lib/PersonalApiKey.js';
-import WebDashboardService, { passesDeviceFilter, WEB_DASHBOARDS_SETTING, WEB_ENABLED_SETTING } from '../lib/WebDashboardService.js';
+import TileNameService, { TILE_NAMES_EVENT, TILE_NAMES_SETTING } from '../lib/TileNameService.js';
+import WebDashboardService, { passesDeviceFilter, WEB_BACKUP_FORMAT, WEB_DASHBOARDS_SETTING, WEB_ENABLED_SETTING, WEB_FRONT_SETTING } from '../lib/WebDashboardService.js';
 import { widgetAutocompletes } from '../lib/widgetAutocompletes.js';
 import { routeKeyUse } from '../lib/widgetRoutes.js';
 import WebPassword from '../lib/WebPassword.js';
@@ -17,9 +18,10 @@ function setup(autocompletes = {}, enabled = true) {
   homey.manifest = { ...homey.manifest, widgets: app.widgets };
   if (enabled) homey.settings.set(WEB_ENABLED_SETTING, true);
   const log = vi.fn();
-  const web = new WebDashboardService(homey, log, autocompletes);
-  homey.app = { web, webPassword: new WebPassword(homey, log), log, debug: vi.fn() };
-  return { homey, web, log };
+  const tileNames = new TileNameService(homey);
+  const web = new WebDashboardService(homey, log, autocompletes, tileNames);
+  homey.app = { web, tileNames, webPassword: new WebPassword(homey, log), log, debug: vi.fn() };
+  return { homey, web, log, tileNames };
 }
 
 describe('web dashboards: storage', () => {
@@ -510,6 +512,118 @@ describe('web dashboards: the front page', () => {
     expect((await api.putWebFront({ homey, body: { widgets: false } })).front).toEqual({ widgets: false });
     expect(web.list().map(d => d.id)).toEqual([c.id, a.id, b.id]); // no order: left as it is
     expect(web.front()).toEqual({ widgets: false });
+  });
+});
+
+describe('web dashboards: duplicate', () => {
+  it('copies a dashboard right after it, with the tile names of its widgets', async () => {
+    const { homey, web, tileNames } = setup();
+    const a = web.save({ name: 'Hall', theme: 'dark', background: 'ocean', columns: [[{ id: 'w1', type: 'lights', deviceIds: ['d1'], settings: { renameTiles: true } }], [{ id: 'w2', type: 'timers' }]] });
+    const b = web.save({ name: 'Kitchen', columns: [[]] });
+    tileNames.set(`web-${a.id}-w1`, 'd1', 'Porch');
+    const res = await api.postWebDashboardCopy({ homey, params: { id: a.id } });
+    expect(res.dashboard.id).not.toBe(a.id);
+    expect(res.dashboard).toEqual({ ...a, id: res.dashboard.id, name: 'Hall (copy)' }); // homey.__ is undefined here: the English fallback
+    expect(web.list().map(d => d.id)).toEqual([a.id, res.dashboard.id, b.id]);
+    expect(res.dashboards).toEqual(web.list());
+    expect(tileNames.get(`web-${res.dashboard.id}-w1`).names).toEqual({ d1: 'Porch' });
+    expect(homey.api.realtime).toHaveBeenLastCalledWith(TILE_NAMES_EVENT, { instance: `web-${res.dashboard.id}-w1`, names: { d1: 'Porch' } });
+    tileNames.set(`web-${res.dashboard.id}-w1`, 'd1', 'Front door'); // the copy's names are its own
+    expect(tileNames.get(`web-${a.id}-w1`).names).toEqual({ d1: 'Porch' });
+    expect(tileNames.get(`web-${res.dashboard.id}-w2`).names).toEqual({});
+  });
+
+  it("names the copy in Homey's language, and refuses an unknown dashboard and a 65th", () => {
+    const { homey, web } = setup();
+    homey.__ = (key: string, tokens?: Record<string, string>) => (key === 'web.copyName' ? `${tokens!.name} (kopi)` : key === 'web.untitled' ? 'Dashboard' : undefined);
+    const a = web.save({ name: '', columns: [[]] });
+    expect(web.duplicate(a.id).dashboard.name).toBe('Dashboard (kopi)');
+    expect(() => web.duplicate('nope')).toThrow(/No such dashboard/);
+    for (let i = web.list().length; i < 64; i++) web.save({ name: `D${i}`, columns: [[]] });
+    expect(() => web.duplicate(a.id)).toThrow(/At most 64/);
+  });
+
+  it('needs the session while a password is set', async () => {
+    const { homey, web } = setup();
+    const a = web.save({ name: 'Hall', columns: [[]] });
+    await homey.app.webPassword.setPassword('correct horse');
+    await expect(api.postWebDashboardCopy({ homey, params: { id: a.id } })).rejects.toThrow(/password required/);
+    const { token } = await homey.app.webPassword.login('correct horse');
+    await expect(api.postWebDashboardCopy({ homey, query: { session: token }, params: { id: a.id } })).resolves.toHaveProperty('dashboard');
+  });
+});
+
+describe('web dashboards: backup and restore', () => {
+  it('backs up the dashboards, the front page and their tile names, and restores them as they were', async () => {
+    const { homey, web, tileNames } = setup();
+    const a = web.save({ name: 'Hall', columns: [[{ id: 'w1', type: 'lights', deviceIds: ['d1'] }]] });
+    const b = web.save({ name: 'Kitchen', background: 'sand', columns: [[{ id: 'w1', type: 'timers' }], []] });
+    web.saveFront({ order: [b.id, a.id], widgets: false });
+    tileNames.set(`web-${a.id}-w1`, 'd1', 'Porch');
+    tileNames.set('native-widget', 'd1', 'Mine'); // a Homey dashboard widget's: not in the backup
+    tileNames.set('web-gone-w1', 'd1', 'Old'); // a deleted web dashboard's: not in it either
+    const backup = JSON.parse(JSON.stringify(await api.getWebBackup({ homey })));
+    expect(backup).toMatchObject({ format: WEB_BACKUP_FORMAT, version: 1, app: '0.3.0', front: { widgets: false } });
+    expect(backup.dashboards.map((d: any) => d.name)).toEqual(['Kitchen', 'Hall']);
+    expect(backup.tileNames).toEqual({ [`web-${a.id}-w1`]: { d1: 'Porch' } });
+    expect(Number.isNaN(Date.parse(backup.exportedAt))).toBe(false);
+
+    // Everything changes, then the backup puts it back: the old web names go, a Homey dashboard's stay.
+    web.remove(a.id);
+    web.save({ name: 'New', columns: [[]] });
+    web.saveFront({ widgets: true });
+    tileNames.set(`web-${b.id}-w1`, 'x', 'Later');
+    await expect(api.putWebBackup({ homey, body: backup })).resolves.toEqual({ dashboards: 2, widgets: 2 });
+    expect(web.list()).toEqual(backup.dashboards);
+    expect(web.front()).toEqual({ widgets: false });
+    expect(tileNames.get(`web-${a.id}-w1`).names).toEqual({ d1: 'Porch' });
+    expect(tileNames.get(`web-${b.id}-w1`).names).toEqual({});
+    expect(tileNames.get('web-gone-w1').names).toEqual({});
+    expect(tileNames.get('native-widget').names).toEqual({ d1: 'Mine' });
+    expect(homey.api.realtime).toHaveBeenCalledWith(TILE_NAMES_EVENT, { instance: `web-${b.id}-w1`, names: {} });
+    expect(homey.api.realtime).toHaveBeenCalledWith(TILE_NAMES_EVENT, { instance: `web-${a.id}-w1`, names: { d1: 'Porch' } });
+  });
+
+  it('checks a restored dashboard as a saved one, and gives a repeated id a new one without the names', () => {
+    const { homey, web, tileNames } = setup();
+    const res = web.restore({
+      format: WEB_BACKUP_FORMAT,
+      version: 1,
+      dashboards: [
+        { id: 'one', name: 'First', columns: [[{ id: 'w1', type: 'nope' }, { id: 'w2', type: 'timers', settings: { bogus: 1 } }]] },
+        { id: 'one', name: 'Second', columns: [[{ id: 'w2', type: 'timers' }]] },
+        'not a dashboard',
+      ],
+      tileNames: JSON.parse('{"web-one-w2": {"a": "  Tea  ", "b": 1}, "native": {"a": "No"}, "__proto__": {"a": "No"}}'),
+    });
+    expect(res).toEqual({ dashboards: 2, widgets: 2 });
+    const [first, second] = web.list();
+    expect(first.id).toBe('one');
+    expect(first.columns[0].map(w => w.type)).toEqual(['timers']);
+    expect(first.columns[0][0].settings).not.toHaveProperty('bogus');
+    expect(second.id).not.toBe('one');
+    expect(second.name).toBe('Second');
+    expect(web.front()).toEqual({ widgets: true }); // none in the file: the default
+    expect(homey.settings.get(TILE_NAMES_SETTING)).toEqual({ 'web-one-w2': { names: { a: 'Tea' }, updatedAt: expect.any(Number) } });
+    expect(tileNames.get(`web-${second.id}-w2`).names).toEqual({});
+  });
+
+  it('refuses a file that is not a backup, and changes nothing', async () => {
+    const { homey, web } = setup();
+    const a = web.save({ name: 'Hall', columns: [[]] });
+    for (const body of [null, {}, { format: 'other', version: 1, dashboards: [] }, { format: WEB_BACKUP_FORMAT, version: 2, dashboards: [] }, { format: WEB_BACKUP_FORMAT, version: 1 }]) {
+      await expect(api.putWebBackup({ homey, body })).rejects.toThrow(/Not a Widgetkeeper backup/);
+    }
+    expect(web.list()).toEqual([a]);
+    expect(homey.settings.get(WEB_FRONT_SETTING)).toBe(null);
+  });
+
+  it('works while the web dashboards are off, and keeps at most 64', async () => {
+    const { homey, web } = setup({}, false);
+    const dashboards = Array.from({ length: 70 }, (_, i) => ({ id: `d${i}`, name: `D${i}`, columns: [[]] }));
+    await expect(api.putWebBackup({ homey, body: { format: WEB_BACKUP_FORMAT, version: 1, dashboards } })).resolves.toEqual({ dashboards: 64, widgets: 0 });
+    expect((await api.getWebBackup({ homey })).dashboards).toHaveLength(64);
+    expect(web.list()[63].id).toBe('d63');
   });
 });
 

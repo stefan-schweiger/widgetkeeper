@@ -160,7 +160,14 @@
     "webPasswordSaved": "Password saved. Browsers signed in before must sign in again.",
     "webPasswordRemoved": "Password removed.",
     "webPasswordTooShort": "Use at least __min__ characters.",
-    "webPasswordTooLong": "Use at most __max__ characters."
+    "webPasswordTooLong": "Use at most __max__ characters.",
+    "webBackupHelp": "Back up every web dashboard as one file: the layouts, the widgets and their settings, the front page and the names typed on tiles. Restoring a backup replaces all your web dashboards.",
+    "webBackupDownload": "Download backup",
+    "webBackupRestore": "Restore backup",
+    "webBackupSummary": "__dashboards__ dashboards, __widgets__ widgets, saved __date__.",
+    "webBackupConfirm": "Tap again to replace your dashboards",
+    "webBackupRestored": "Restored: __dashboards__ dashboards, __widgets__ widgets.",
+    "webBackupInvalid": "This file is not a Widgetkeeper web dashboards backup."
   },
   "heatmap": {
     "selectDevice": "Select a device and a value in the widget settings.",
@@ -502,6 +509,9 @@
     "bgSand": "Sand",
     "arrangeHint": "Drag the dashboards to change their order.",
     "showWidgets": "Show on the front page",
+    "duplicate": "Duplicate",
+    "copyName": "__name__ (copy)",
+    "tooManyDashboards": "At most __max__ dashboards.",
     "deleteDashboard": "Delete dashboard",
     "tapAgain": "Tap again to confirm",
     "addWidget": "Add widget",

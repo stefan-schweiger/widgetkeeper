@@ -115,7 +115,7 @@ export default class WidgetkeeperApp extends Homey.App {
     this.registerDaysSinceFlows();
     this.daysSince.start();
     this.tileNames = new TileNameService(this.homey, debug);
-    this.web = new WebDashboardService(this.homey, log, widgetAutocompletes(this));
+    this.web = new WebDashboardService(this.homey, log, widgetAutocompletes(this), this.tileNames);
     this.adoptOldTileNames();
     this.webPassword = new WebPassword(this.homey, log);
     this.registerAutocompletes();

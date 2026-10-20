@@ -2,6 +2,12 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 1.0.1
+
+### Web dashboards
+- **Backup:** the app settings page saves every web dashboard in one file (the layouts, the widgets and their settings, the front page and the names typed on tiles), and restores such a file, replacing all web dashboards after a second tap.
+- **Duplicate:** in the front page's edit mode, each dashboard has a copy button. The copy comes right after the original, with the names typed on its tiles.
+
 ## 1.0.0
 
 ### New names

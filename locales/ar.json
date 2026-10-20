@@ -160,7 +160,14 @@
     "webPasswordSaved": "تم حفظ كلمة المرور. يجب على المتصفحات المسجّلة إعادة تسجيل الدخول.",
     "webPasswordRemoved": "تمت إزالة كلمة المرور.",
     "webPasswordTooShort": "استخدم __min__ أحرف على الأقل.",
-    "webPasswordTooLong": "استخدم __max__ حرفًا على الأكثر."
+    "webPasswordTooLong": "استخدم __max__ حرفًا على الأكثر.",
+    "webBackupHelp": "احفظ نسخة من كل لوحات الويب في ملف واحد: التخطيط والأدوات وإعداداتها والصفحة الرئيسية والأسماء المكتوبة على المربعات. استعادة نسخة تستبدل كل لوحات الويب لديك.",
+    "webBackupDownload": "تنزيل النسخة",
+    "webBackupRestore": "استعادة نسخة",
+    "webBackupSummary": "اللوحات: __dashboards__، الأدوات: __widgets__، حُفظت __date__.",
+    "webBackupConfirm": "اضغط مرة أخرى لاستبدال لوحاتك",
+    "webBackupRestored": "تمت الاستعادة. اللوحات: __dashboards__، الأدوات: __widgets__.",
+    "webBackupInvalid": "هذا الملف ليس نسخة من لوحات الويب في Widgetkeeper."
   },
   "heatmap": {
     "selectDevice": "اختر جهازًا وقيمة في إعدادات الأداة.",
@@ -502,6 +509,9 @@
     "bgSand": "رملي",
     "arrangeHint": "اسحب لوحات المعلومات لتغيير ترتيبها.",
     "showWidgets": "إظهار في الصفحة الرئيسية",
+    "duplicate": "تكرار",
+    "copyName": "__name__ (نسخة)",
+    "tooManyDashboards": "__max__ لوحة على الأكثر.",
     "deleteDashboard": "حذف اللوحة",
     "tapAgain": "اضغط مرة أخرى للتأكيد",
     "addWidget": "إضافة أداة",

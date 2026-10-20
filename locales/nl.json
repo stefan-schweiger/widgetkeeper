@@ -160,7 +160,14 @@
     "webPasswordSaved": "Wachtwoord opgeslagen. Eerder ingelogde browsers moeten opnieuw inloggen.",
     "webPasswordRemoved": "Wachtwoord verwijderd.",
     "webPasswordTooShort": "Gebruik minstens __min__ tekens.",
-    "webPasswordTooLong": "Gebruik hoogstens __max__ tekens."
+    "webPasswordTooLong": "Gebruik hoogstens __max__ tekens.",
+    "webBackupHelp": "Maak een back-up van alle webdashboards in één bestand: de indeling, de widgets en hun instellingen, de startpagina en de namen op tegels. Een back-up terugzetten vervangt al je webdashboards.",
+    "webBackupDownload": "Back-up downloaden",
+    "webBackupRestore": "Back-up terugzetten",
+    "webBackupSummary": "__dashboards__ dashboards, __widgets__ widgets, opgeslagen __date__.",
+    "webBackupConfirm": "Tik nogmaals om je dashboards te vervangen",
+    "webBackupRestored": "Teruggezet: __dashboards__ dashboards, __widgets__ widgets.",
+    "webBackupInvalid": "Dit bestand is geen back-up van Widgetkeeper-webdashboards."
   },
   "heatmap": {
     "selectDevice": "Kies een apparaat en een waarde in de widgetinstellingen.",
@@ -502,6 +509,9 @@
     "bgSand": "Zand",
     "arrangeHint": "Sleep de dashboards om hun volgorde te wijzigen.",
     "showWidgets": "Tonen op de voorpagina",
+    "duplicate": "Dupliceren",
+    "copyName": "__name__ (kopie)",
+    "tooManyDashboards": "Hoogstens __max__ dashboards.",
     "deleteDashboard": "Dashboard verwijderen",
     "tapAgain": "Tik nogmaals om te bevestigen",
     "addWidget": "Widget toevoegen",

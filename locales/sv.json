@@ -160,7 +160,14 @@
     "webPasswordSaved": "Lösenordet sparat. Inloggade webbläsare måste logga in igen.",
     "webPasswordRemoved": "Lösenordet borttaget.",
     "webPasswordTooShort": "Använd minst __min__ tecken.",
-    "webPasswordTooLong": "Använd högst __max__ tecken."
+    "webPasswordTooLong": "Använd högst __max__ tecken.",
+    "webBackupHelp": "Säkerhetskopiera alla webbinstrumentpaneler i en fil: layouten, widgetarna och deras inställningar, startsidan och namnen på brickor. Att återställa en säkerhetskopia ersätter alla dina webbinstrumentpaneler.",
+    "webBackupDownload": "Ladda ner säkerhetskopia",
+    "webBackupRestore": "Återställ säkerhetskopia",
+    "webBackupSummary": "__dashboards__ instrumentpaneler, __widgets__ widgets, sparad __date__.",
+    "webBackupConfirm": "Tryck igen för att ersätta dina instrumentpaneler",
+    "webBackupRestored": "Återställt: __dashboards__ instrumentpaneler, __widgets__ widgets.",
+    "webBackupInvalid": "Filen är ingen säkerhetskopia av Widgetkeepers webbinstrumentpaneler."
   },
   "heatmap": {
     "selectDevice": "Välj en enhet och ett värde i widgetens inställningar.",
@@ -502,6 +509,9 @@
     "bgSand": "Sand",
     "arrangeHint": "Dra instrumentpanelerna för att ändra ordningen.",
     "showWidgets": "Visa på startsidan",
+    "duplicate": "Duplicera",
+    "copyName": "__name__ (kopia)",
+    "tooManyDashboards": "Högst __max__ instrumentpaneler.",
     "deleteDashboard": "Ta bort instrumentpanelen",
     "tapAgain": "Tryck igen för att bekräfta",
     "addWidget": "Lägg till widget",

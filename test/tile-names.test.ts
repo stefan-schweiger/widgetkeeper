@@ -98,6 +98,24 @@ describe('TileNameService', () => {
     expect(await withTileNames(homey as any, { deviceIds: 'd1' }, Promise.resolve([{ id: 'd1' }]))).toEqual([{ id: 'd1' }]);
   });
 
+  it("copies an instance's names, lists those of the instances asked for, and replaces them in one write", () => {
+    const { service, homey } = setup();
+    service.set('web-a-w1', 'd1', 'Porch');
+    service.set('web-b-w1', 'd1', 'Hall');
+    service.set('native', 'd1', 'Mine');
+    service.copy('web-a-w1', 'web-c-w1');
+    service.copy('web-empty-w1', 'web-d-w1'); // nothing to copy
+    expect(service.get('web-c-w1').names).toEqual({ d1: 'Porch' });
+    expect(service.entries(id => id.startsWith('web-'))).toEqual({ 'web-a-w1': { d1: 'Porch' }, 'web-b-w1': { d1: 'Hall' }, 'web-c-w1': { d1: 'Porch' } });
+    const writes = homey.settings.set.mock.calls.length;
+    service.replace(id => id.startsWith('web-'), { 'web-a-w1': { d1: ' Door ', d2: '' }, 'native': { d1: 'Not mine' }, 'web-x': 'nope' });
+    expect(homey.settings.set.mock.calls.length).toBe(writes + 1);
+    expect(service.entries(() => true)).toEqual({ 'web-a-w1': { d1: 'Door' }, 'native': { d1: 'Mine' } });
+    expect(homey.api.realtime).toHaveBeenCalledWith(TILE_NAMES_EVENT, { instance: 'web-b-w1', names: {} });
+    expect(homey.api.realtime).toHaveBeenCalledWith(TILE_NAMES_EVENT, { instance: 'web-a-w1', names: { d1: 'Door' } });
+    expect(() => service.copy('', 'x')).toThrow(/Missing instance/);
+  });
+
   it('is in the api of every widget with device tiles', () => {
     const manifest = JSON.parse(readFileSync('app.json', 'utf8'));
     for (const id of ['lights', 'curtains', 'quickactions', 'sensoralarms', 'values', 'sparklines', 'locks', 'cameras', 'variables', 'roomhealth', 'valuematrix', 'shortcuts']) {

@@ -122,6 +122,49 @@ export default class TileNameService {
     return { instance: id, names };
   }
 
+  /** Gives `to` a copy of `from`'s names (a duplicated web dashboard's widgets); nothing when `from` has none. */
+  copy(from: unknown, to: unknown) {
+    const [a, b] = [instanceId(from), instanceId(to)];
+    const all = this.all();
+    if (!has(all, a) || !Object.keys(all[a].names).length) return;
+    this.store(all, b, { ...all[a].names }, false);
+  }
+
+  /** The names of the instances `keep` accepts (a web dashboards backup), names only. */
+  entries(keep: (instance: string) => boolean): Record<string, Record<string, string>> {
+    const out: Record<string, Record<string, string>> = {};
+    for (const [id, entry] of Object.entries(this.all())) {
+      if (keep(id) && Object.keys(entry.names).length) out[id] = { ...entry.names };
+    }
+    return out;
+  }
+
+  /**
+   * Replaces the names of every instance `keep` accepts with `given` (`{[instance]: names}`, a restored web dashboards
+   * backup; checked as `set()` checks a name), in one write, and sends each changed instance's names over realtime.
+   */
+  replace(keep: (instance: string) => boolean, given: unknown) {
+    const all = this.all();
+    const changed = new Set(Object.keys(all).filter(keep));
+    for (const id of changed) delete all[id];
+    const now = Date.now();
+    for (const id of isObject(given) ? Object.keys(given) : []) {
+      if (!id || id.length > MAX_KEY || isReservedKey(id) || !keep(id)) continue;
+      const names: Record<string, string> = {};
+      for (const [k, v] of Object.entries(readNames((given as Record<string, unknown>)[id]))) {
+        const value = v.trim().slice(0, MAX_NAME);
+        if (value && k.length <= MAX_KEY && Object.keys(names).length < MAX_KEYS) names[k] = value;
+      }
+      if (!Object.keys(names).length) continue;
+      all[id] = { names, updatedAt: now };
+      changed.add(id);
+    }
+    this.trim(all);
+    this.homey.settings.set(TILE_NAMES_SETTING, all);
+    for (const id of changed) this.homey.api.realtime(TILE_NAMES_EVENT, { instance: id, names: has(all, id) ? all[id].names : {} });
+    this.debug(`Tile names replaced: ${changed.size} instances`);
+  }
+
   /**
    * Saves an instance's names (an instance without any is forgotten, unless it took over its settings' names: that
    * stays known), keeping the 300 renamed most recently, and sends them over realtime unless `send` is false.
@@ -130,13 +173,18 @@ export default class TileNameService {
     if (Object.keys(names).length || adopted) {
       all[id] = { names, updatedAt: Date.now() };
       if (adopted) all[id].adopted = true;
-      const ids = Object.keys(all).sort((a, b) => all[a].updatedAt - all[b].updatedAt);
-      for (const old of ids.slice(0, Math.max(0, ids.length - MAX_INSTANCES))) delete all[old];
+      this.trim(all);
     } else {
       delete all[id];
     }
     this.homey.settings.set(TILE_NAMES_SETTING, all);
     if (send) this.homey.api.realtime(TILE_NAMES_EVENT, { instance: id, names });
+  }
+
+  /** Keeps the `MAX_INSTANCES` renamed most recently. */
+  private trim(all: Record<string, TileNames>) {
+    const ids = Object.keys(all).sort((a, b) => all[a].updatedAt - all[b].updatedAt);
+    for (const old of ids.slice(0, Math.max(0, ids.length - MAX_INSTANCES))) delete all[old];
   }
 
   /** For the diagnostics report: counts only, never the names. */

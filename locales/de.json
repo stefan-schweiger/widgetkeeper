@@ -160,7 +160,14 @@
     "webPasswordSaved": "Passwort gespeichert. Bereits angemeldete Browser müssen sich neu anmelden.",
     "webPasswordRemoved": "Passwort entfernt.",
     "webPasswordTooShort": "Mindestens __min__ Zeichen verwenden.",
-    "webPasswordTooLong": "Höchstens __max__ Zeichen verwenden."
+    "webPasswordTooLong": "Höchstens __max__ Zeichen verwenden.",
+    "webBackupHelp": "Sichere alle Web-Dashboards in einer Datei: das Layout, die Widgets mit ihren Einstellungen, die Startseite und die Namen auf Kacheln. Eine Wiederherstellung ersetzt alle deine Web-Dashboards.",
+    "webBackupDownload": "Sicherung herunterladen",
+    "webBackupRestore": "Sicherung wiederherstellen",
+    "webBackupSummary": "__dashboards__ Dashboards, __widgets__ Widgets, gesichert __date__.",
+    "webBackupConfirm": "Erneut tippen, um deine Dashboards zu ersetzen",
+    "webBackupRestored": "Wiederhergestellt: __dashboards__ Dashboards, __widgets__ Widgets.",
+    "webBackupInvalid": "Diese Datei ist keine Sicherung der Widgetkeeper-Web-Dashboards."
   },
   "heatmap": {
     "selectDevice": "Wähle ein Gerät und einen Wert in den Widget-Einstellungen.",
@@ -502,6 +509,9 @@
     "bgSand": "Sand",
     "arrangeHint": "Ziehe die Dashboards, um ihre Reihenfolge zu ändern.",
     "showWidgets": "Auf der Startseite zeigen",
+    "duplicate": "Duplizieren",
+    "copyName": "__name__ (Kopie)",
+    "tooManyDashboards": "Höchstens __max__ Dashboards.",
     "deleteDashboard": "Dashboard löschen",
     "tapAgain": "Zum Bestätigen erneut tippen",
     "addWidget": "Widget hinzufügen",

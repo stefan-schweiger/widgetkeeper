@@ -160,7 +160,14 @@
     "webPasswordSaved": "Password salvata. I browser già connessi devono accedere di nuovo.",
     "webPasswordRemoved": "Password rimossa.",
     "webPasswordTooShort": "Usa almeno __min__ caratteri.",
-    "webPasswordTooLong": "Usa al massimo __max__ caratteri."
+    "webPasswordTooLong": "Usa al massimo __max__ caratteri.",
+    "webBackupHelp": "Salva tutte le dashboard web in un unico file: la disposizione, i widget e le loro impostazioni, la pagina iniziale e i nomi dei riquadri. Ripristinare un backup sostituisce tutte le tue dashboard web.",
+    "webBackupDownload": "Scarica backup",
+    "webBackupRestore": "Ripristina backup",
+    "webBackupSummary": "__dashboards__ dashboard, __widgets__ widget, salvato il __date__.",
+    "webBackupConfirm": "Tocca di nuovo per sostituire le dashboard",
+    "webBackupRestored": "Ripristinato: __dashboards__ dashboard, __widgets__ widget.",
+    "webBackupInvalid": "Questo file non è un backup delle dashboard web di Widgetkeeper."
   },
   "heatmap": {
     "selectDevice": "Scegli un dispositivo e un valore nelle impostazioni del widget.",
@@ -502,6 +509,9 @@
     "bgSand": "Sabbia",
     "arrangeHint": "Trascina le dashboard per cambiarne l'ordine.",
     "showWidgets": "Mostra nella pagina iniziale",
+    "duplicate": "Duplica",
+    "copyName": "__name__ (copia)",
+    "tooManyDashboards": "Al massimo __max__ dashboard.",
     "deleteDashboard": "Elimina dashboard",
     "tapAgain": "Tocca di nuovo per confermare",
     "addWidget": "Aggiungi widget",

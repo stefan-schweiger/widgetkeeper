@@ -150,6 +150,28 @@ export default {
     return app.web.remove(params?.id || '');
   },
 
+  /** The front page's edit mode: copies a dashboard right after it; answers `{dashboard, dashboards}`. */
+  async postWebDashboardCopy({ homey, query, params }: { homey: Homey, query?: Record<string, string>, params: Record<string, string> }) {
+    const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
+    return app.web.duplicate(params?.id || '');
+  },
+
+  /**
+   * Used by the app settings page: every web dashboard as one file (`WebBackup`). Like the password, it needs no
+   * session, and works while the web dashboards are off (they're kept).
+   */
+  async getWebBackup({ homey }: { homey: Homey }) {
+    const app = homey.app as WidgetkeeperApp;
+    return app.web.backup();
+  },
+
+  /** Used by the app settings page: replaces every web dashboard with a backup's; answers `{dashboards, widgets}`. */
+  async putWebBackup({ homey, body }: { homey: Homey, body: unknown }) {
+    const app = homey.app as WidgetkeeperApp;
+    return app.web.restore(body);
+  },
+
   /**
    * `{type, method, path, query, body, key}`: a web dashboard widget's own request (`Homey.api(method, path, body)`
    * in its frame), handed to that widget's API as if it came from a Homey dashboard. A route that acts with the

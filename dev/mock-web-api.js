@@ -127,6 +127,15 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
       if (typeof body.widgets === 'boolean') front = { widgets: body.widgets };
       return { dashboards, front };
     }
+    const copy = p.match(/^\/web\/dashboards\/([^/]+)\/copy$/);
+    if (copy && method === 'POST') {
+      const i = dashboards.findIndex(d => d.id === decodeURIComponent(copy[1]));
+      if (i < 0) throw new Error('No such dashboard');
+      if (dashboards.length >= 64) throw new Error('At most 64 dashboards');
+      const dashboard = { ...JSON.parse(JSON.stringify(dashboards[i])), id: Math.random().toString(36).slice(2, 10), name: `${dashboards[i].name || 'Dashboard'} (copy)` };
+      dashboards.splice(i + 1, 0, dashboard);
+      return { dashboard, dashboards };
+    }
     if (p.startsWith('/web/dashboards/') && method === 'DELETE') {
       dashboards = dashboards.filter(d => d.id !== p.split('/').pop());
       return { removed: true };

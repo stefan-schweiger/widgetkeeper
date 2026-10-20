@@ -160,7 +160,14 @@
     "webPasswordSaved": "Contraseña guardada. Los navegadores con sesión iniciada deben volver a entrar.",
     "webPasswordRemoved": "Contraseña quitada.",
     "webPasswordTooShort": "Usa al menos __min__ caracteres.",
-    "webPasswordTooLong": "Usa como máximo __max__ caracteres."
+    "webPasswordTooLong": "Usa como máximo __max__ caracteres.",
+    "webBackupHelp": "Guarda todos los paneles web en un solo archivo: la distribución, los widgets y sus ajustes, la página de inicio y los nombres de los mosaicos. Restaurar una copia reemplaza todos tus paneles web.",
+    "webBackupDownload": "Descargar copia",
+    "webBackupRestore": "Restaurar copia",
+    "webBackupSummary": "__dashboards__ paneles, __widgets__ widgets, guardada el __date__.",
+    "webBackupConfirm": "Toca otra vez para reemplazar tus paneles",
+    "webBackupRestored": "Restaurado: __dashboards__ paneles, __widgets__ widgets.",
+    "webBackupInvalid": "Este archivo no es una copia de los paneles web de Widgetkeeper."
   },
   "heatmap": {
     "selectDevice": "Elige un dispositivo y un valor en los ajustes del widget.",
@@ -502,6 +509,9 @@
     "bgSand": "Arena",
     "arrangeHint": "Arrastra los paneles para cambiar su orden.",
     "showWidgets": "Mostrar en la portada",
+    "duplicate": "Duplicar",
+    "copyName": "__name__ (copia)",
+    "tooManyDashboards": "Como máximo __max__ paneles.",
     "deleteDashboard": "Eliminar panel",
     "tapAgain": "Toca otra vez para confirmar",
     "addWidget": "Añadir widget",

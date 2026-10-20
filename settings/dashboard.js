@@ -60,6 +60,9 @@
     bgSand: 'Sand',
     arrangeHint: 'Drag the dashboards to change their order.',
     showWidgets: 'Show on the front page',
+    duplicate: 'Duplicate',
+    copyName: '__name__ (copy)',
+    tooManyDashboards: 'At most __max__ dashboards.',
     deleteDashboard: 'Delete dashboard',
     tapAgain: 'Tap again to confirm',
     addWidget: 'Add widget',
@@ -166,6 +169,8 @@
   const DRAG_SLOP = 6;
   /** Near the window's top or bottom edge, a drag scrolls the page. */
   const EDGE_PX = 64;
+  /** The most dashboards the app keeps (`MAX_DASHBOARDS` in lib/WebDashboardService.ts). */
+  const MAX_DASHBOARDS = 64;
 
   function storageGet(key) {
     try { return localStorage.getItem(key); } catch (e) { return null; }
@@ -244,6 +249,7 @@
     grip: 'M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01',
     close: 'M6 6l12 12M18 6L6 18',
     down: 'M6 9l6 6 6-6',
+    copy: 'M10 9h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2zM16 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2',
   };
 
   /**
@@ -1071,6 +1077,33 @@
     }
 
     /**
+     * The front page's edit mode: copies a dashboard (after the saves already queued); the app puts the copy right after
+     * it, with the widgets' tile names. The copy is then shown, focused and marked for a moment.
+     */
+    function duplicate(id) {
+      const tooMany = () => toast(t('tooManyDashboards', { max: MAX_DASHBOARDS }));
+      if (dashboards.length >= MAX_DASHBOARDS) { tooMany(); return; }
+      for (const b of root.querySelectorAll('.wd-dash-copy')) /** @type {HTMLButtonElement} */ (b).disabled = true;
+      saving = saving.then(async () => {
+        try {
+          const res = await request('POST', `/web/dashboards/${encodeURIComponent(id)}/copy`, {});
+          if (res && Array.isArray(res.dashboards)) dashboards = res.dashboards;
+          if (location.hash !== '#/edit' || !res || !res.dashboard) return;
+          renderList(true);
+          const card = /** @type {HTMLElement} */ (root.querySelector(`.wd-dash[data-id="${res.dashboard.id}"]`));
+          if (!card) return;
+          card.classList.add('fresh');
+          card.addEventListener('animationend', () => card.classList.remove('fresh'), { once: true });
+          card.focus({ preventScroll: true });
+          card.scrollIntoView({ block: 'nearest' });
+        } catch (err) {
+          if (/At most/.test(String(err && err.message))) tooMany(); else failed(err);
+          if (location.hash === '#/edit') renderList(true);
+        }
+      });
+    }
+
+    /**
      * The front page's edit mode: a card is dragged (pointer events, so by touch too; the grid holds the capture, as
      * the card itself moves) and the others make room at once; arrow keys move a focused one. Escape puts them back.
      */
@@ -1094,7 +1127,8 @@
       };
       grid.addEventListener('pointerdown', (e) => {
         const card = /** @type {Element} */ (e.target).closest('.wd-dash[data-id]');
-        if (move || !card || e.button !== 0) return;
+        // A card's own button (Duplicate) is pressed, not dragged: the grid's capture would take its click.
+        if (move || !card || e.button !== 0 || /** @type {Element} */ (e.target).closest('button')) return;
         move = { card, pointerId: e.pointerId, x0: e.clientX, y0: e.clientY, active: false, before: order() };
         try { grid.setPointerCapture(e.pointerId); } catch (err) { /* moves still come while over the grid */ }
         e.preventDefault();
@@ -1143,7 +1177,7 @@
 
     /**
      * A dashboard's card: a miniature of its columns (each widget as its preview), its name and widget count. While
-     * the front page is edited it opens nothing: it's dragged (a grip in place of the pen).
+     * the front page is edited it opens nothing: it's dragged (a grip in place of the pen), and it has Duplicate.
      */
     function dashboardCard(d, editing = false) {
       const card = el('div', 'wd-dash');
@@ -1169,7 +1203,10 @@
         card.setAttribute('aria-label', d.name || t('untitled'));
         const grip = el('span', 'wd-icon wd-dash-edit');
         grip.append(icon('grip'));
-        card.append(art, link, grip);
+        const copy = button('wd-icon wd-dash-copy', '', () => duplicate(d.id), t('duplicate'));
+        copy.append(icon('copy'));
+        copy.disabled = dashboards.length >= MAX_DASHBOARDS;
+        card.append(art, link, copy, grip);
         return card;
       }
       const edit = el('a', 'wd-icon wd-dash-edit');

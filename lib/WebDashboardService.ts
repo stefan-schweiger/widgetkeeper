@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import type Homey from 'homey';
-import { repeatKeys } from './TileNameService.js';
+import { repeatKeys, type default as TileNameService } from './TileNameService.js';
 import { devicesAndZones, matches, withNone, type AutocompleteItem } from './autocomplete.js';
 import { describeCapability } from './capabilities.js';
 import { driverIconPath, libraryIconUrl } from './deviceIcon.js';
@@ -50,6 +50,24 @@ export type WebFront = { widgets: boolean };
 
 /** A web dashboard: columns of widgets, top to bottom. */
 export type WebDashboard = { id: string, name: string, theme: WebTheme, background: WebBackground, columns: WebWidget[][] };
+
+/** What a web dashboards backup file is (`format`, `version`), as the app settings page downloads it. */
+export const WEB_BACKUP_FORMAT = 'widgetkeeper-web-dashboards';
+const WEB_BACKUP_VERSION = 1;
+
+/**
+ * A backup of every web dashboard: the dashboards, the front page's choices and the tile names typed on their widgets (by
+ * widget instance, `web-<dashboard>-<widget>`). Not Notes' texts or Days Since's counters: Homey's own dashboards share those.
+ */
+export type WebBackup = {
+  format: typeof WEB_BACKUP_FORMAT,
+  version: typeof WEB_BACKUP_VERSION,
+  app: string,
+  exportedAt: string,
+  dashboards: WebDashboard[],
+  front: WebFront,
+  tileNames: Record<string, Record<string, string>>,
+};
 
 /** A widget setting as the editor draws it (the manifest's, in Homey's language). */
 export type WebSettingDef = {
@@ -257,6 +275,8 @@ export default class WebDashboardService {
     private log: (...args: any[]) => void,
     /** Every autocomplete setting's listener (`widgetAutocompletes()`), also registered with Homey by `app.ts`. */
     readonly autocompletes: Record<string, Record<string, AutocompleteListener>>,
+    /** The tile names, which a duplicate, a backup and a restore take along. */
+    private tileNames?: TileNameService,
   ) {}
 
   /** The manifest's widgets, by id. */
@@ -352,6 +372,70 @@ export default class WebDashboardService {
     }
     if (typeof body.widgets === 'boolean') this.homey.settings.set(WEB_FRONT_SETTING, { widgets: body.widgets });
     return { dashboards: this.list(), front: this.front() };
+  }
+
+  /**
+   * Copies a dashboard, named `<name> (copy)`, right after it. Its widgets keep their ids (unique per dashboard only) and
+   * their tile names; running timers stay with the original.
+   */
+  duplicate(id: string): { dashboard: WebDashboard, dashboards: WebDashboard[] } {
+    const all = this.list();
+    const i = all.findIndex(d => d.id === id);
+    if (i < 0) throw new Error('No such dashboard');
+    if (all.length >= MAX_DASHBOARDS) throw new Error(`At most ${MAX_DASHBOARDS} dashboards`);
+    const from = all[i];
+    let copyId = newId();
+    while (all.some(d => d.id === copyId)) copyId = newId();
+    const original = from.name || this.homey.__('web.untitled') || 'Untitled';
+    const name = this.homey.__('web.copyName', { name: original }) || `${original} (copy)`;
+    const dashboard = this.normalize({ ...from, id: copyId, name });
+    all.splice(i + 1, 0, dashboard);
+    this.homey.settings.set(WEB_DASHBOARDS_SETTING, all);
+    for (const w of dashboard.columns.flat()) this.tileNames?.copy(`web-${from.id}-${w.id}`, `web-${dashboard.id}-${w.id}`);
+    return { dashboard, dashboards: all };
+  }
+
+  /** Every web dashboard as one file (`WebBackup`), for the app settings page. */
+  backup(): WebBackup {
+    const dashboards = this.list();
+    const instances = instanceIds(dashboards);
+    return {
+      format: WEB_BACKUP_FORMAT,
+      version: WEB_BACKUP_VERSION,
+      app: String((this.homey.manifest as any)?.version ?? ''),
+      exportedAt: new Date().toISOString(),
+      dashboards,
+      front: this.front(),
+      tileNames: this.tileNames?.entries(id => instances.has(id)) ?? {},
+    };
+  }
+
+  /**
+   * Replaces every web dashboard with a backup's (`backup()`), each checked as a saved one is, ids kept, so the tile
+   * names and Dashboard Shortcuts' choices match again. The tile names of every web widget are replaced too. Answers the counts.
+   */
+  restore(input: unknown): { dashboards: number, widgets: number } {
+    const b = (input && typeof input === 'object' ? input : {}) as Record<string, any>;
+    if (b.format !== WEB_BACKUP_FORMAT || b.version !== WEB_BACKUP_VERSION || !Array.isArray(b.dashboards)) {
+      throw new Error('Not a Widgetkeeper backup');
+    }
+    const dashboards: WebDashboard[] = [];
+    for (const d of b.dashboards) {
+      if (dashboards.length >= MAX_DASHBOARDS) break;
+      if (!d || typeof d !== 'object') continue;
+      const dashboard = this.normalize(d, true);
+      while (dashboards.some(x => x.id === dashboard.id)) dashboard.id = newId(); // its names stay with the first
+      dashboards.push(dashboard);
+    }
+    this.homey.settings.set(WEB_DASHBOARDS_SETTING, dashboards);
+    this.homey.settings.set(WEB_FRONT_SETTING, { widgets: !(b.front && typeof b.front === 'object' && b.front.widgets === false) });
+    const instances = instanceIds(dashboards);
+    const given = b.tileNames && typeof b.tileNames === 'object' && !Array.isArray(b.tileNames) ? b.tileNames : {};
+    const names = Object.fromEntries(Object.keys(given).filter(id => instances.has(id)).map(id => [id, given[id]]));
+    this.tileNames?.replace(id => id.startsWith('web-'), names);
+    const widgets = dashboards.reduce((n, d) => n + d.columns.reduce((m, c) => m + c.length, 0), 0);
+    this.log(`Web dashboards: restored ${dashboards.length} dashboards, ${widgets} widgets`);
+    return { dashboards: dashboards.length, widgets };
   }
 
   remove(id: string) {
@@ -605,6 +689,11 @@ function foreignSettings(input: unknown): Record<string, unknown> {
     count += 1;
   }
   return out;
+}
+
+/** The dashboards' widget instances, as the page names their frames (`web-<dashboard>-<widget>`). */
+function instanceIds(dashboards: WebDashboard[]): Set<string> {
+  return new Set(dashboards.flatMap(d => d.columns.flat().map(w => `web-${d.id}-${w.id}`)));
 }
 
 /** Device ids, each once, at most `max`. */
