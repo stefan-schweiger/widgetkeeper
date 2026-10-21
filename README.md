@@ -372,6 +372,9 @@ The front page shows every dashboard as a card with a miniature of its widgets, 
 ### Widgets from other apps
 *Add widget* also lists your other apps' widgets under **Other apps**, with their own settings. They need **Homey** in the browser's key, as Homey only lists them with that. They run sealed off from the page, so their code can't read the page or the key stored in the browser. A widget that doesn't work that way can be trusted in its settings (*Trust this widget*); it then runs as on a Homey dashboard and could read the key.
 
+### Away from home
+Turn on **Remote access** under **Apps → Widgetkeeper → Configure** to use the web dashboards anywhere. Below it is a second address, `https://<your Homey's id>.connect.athom.com/app/com.thomassidor.widgetkeeper/settings/dashboard.html`, which goes through Homey's cloud as the Homey app does. Each address is its own site to a browser, so it asks for the API key again there. Anyone who has that address still needs a key, but a [password](#password) is worth setting too. With Remote access off, the page opened through the cloud only says so.
+
 ### Password
 On top of the API key, you can set a password for the web dashboards under **Apps → Widgetkeeper → Configure**. Every browser then asks for it once. Setting, changing or removing it signs every browser out, and wrong passwords in a row lock the sign-in for a while.
 

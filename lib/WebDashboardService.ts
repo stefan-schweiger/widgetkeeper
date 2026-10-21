@@ -14,6 +14,12 @@ import type { AutocompleteListener, SettingItem } from './widgetAutocompletes.js
 export const WEB_DASHBOARDS_SETTING = 'webDashboards';
 /** The app setting that turns the web dashboards on (`true`); off by default. Set from the app settings page. */
 export const WEB_ENABLED_SETTING = 'webDashboardsEnabled';
+/**
+ * The app setting that lets the page work away from home (`true`), through Homey's cloud relay
+ * (`https://<homeyId>.connect.athom.com`); off by default. Homey doesn't tell a route which address a request came in
+ * on, so the page says it (`?away=1`, `isAway()`): the key still guards everything, this keeps the dashboards home.
+ */
+export const WEB_REMOTE_SETTING = 'webRemoteAccess';
 /** The app setting with the front page's own choices (`WebFront`), made in its edit mode. */
 export const WEB_FRONT_SETTING = 'webFront';
 
@@ -294,8 +300,15 @@ export default class WebDashboardService {
     return this.homey.settings.get(WEB_ENABLED_SETTING) === true;
   }
 
-  assertEnabled() {
+  /** Whether the page may work away from home, through Homey's cloud (the app settings page's Remote access). */
+  get remote(): boolean {
+    return this.homey.settings.get(WEB_REMOTE_SETTING) === true;
+  }
+
+  /** Refuses while turned off, or away from home (`away`, the page's `?away=1`) without remote access. */
+  assertEnabled(away = false) {
     if (!this.enabled) throw new Error('Web dashboards are turned off');
+    if (away && !this.remote) throw new Error('Web dashboards are turned off away from home');
   }
 
   list(): WebDashboard[] {
@@ -586,6 +599,7 @@ export default class WebDashboardService {
     const all = this.list();
     return {
       enabled: this.enabled,
+      remote: this.remote,
       dashboards: all.length,
       widgets: all.reduce((n, d) => n + d.columns.reduce((m, c) => m + c.length, 0), 0),
     };

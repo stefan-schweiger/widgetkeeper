@@ -22,6 +22,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Web dashboards
 - **Backup:** choose which dashboards to download, and which to restore from a file. A restore replaces only the dashboards you tick; the others stay as they are.
 - In the front page's edit mode, the icons on a dashboard's card sit on the widget count's line, so long names aren't cut off.
+- **Remote access:** use the web dashboards away from home, through Homey's cloud. Turn it on under *Apps → Widgetkeeper → Configure*, which then shows the address. Off by default.
 
 ## 1.0.1
 

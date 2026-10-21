@@ -8,7 +8,10 @@
     .row > * { flex: 1 1 auto; }
     .status { min-height: 1.4em; margin-top: 8px; }
     .status:empty { display: none; }
-    #webUrl { display: block; margin-top: 12px; word-break: break-all; }
+    .web-address { margin-top: var(--homey-su-4, 16px); }
+    .web-address-label { margin: 0; font-weight: var(--homey-font-weight-medium, 500); }
+    .web-url { display: block; margin-top: 4px; word-break: break-all; }
+    .web-remote { margin-top: var(--homey-su-6, 24px); }
     .backup-help { margin-top: var(--homey-su-6, 24px); }
     #report {
       display: block; width: 100%; box-sizing: border-box; height: 50vh; margin-top: 12px;
@@ -64,10 +67,28 @@
       <span class="homey-form-checkbox-text" data-i18n="webEnable">Turn on web dashboards</span>
     </label>
     <div id="webOn" hidden>
-      <a id="webUrl" target="_blank" rel="noopener"></a>
-      <div class="row">
-        <button class="homey-button-primary-shadow" id="webOpen" data-i18n="webOpen">Open</button>
-        <button class="homey-button-secondary-shadow" id="webCopy" data-i18n="copy">Copy</button>
+      <!-- The page's two addresses: on the home network, and away from home through Homey's cloud. -->
+      <div class="web-address" data-address="url">
+        <p class="web-address-label" data-i18n="webAddressHome">On your home network</p>
+        <a class="web-url" target="_blank" rel="noopener"></a>
+        <div class="row">
+          <button class="homey-button-primary-shadow" data-act="open" data-i18n="webOpen">Open</button>
+          <button class="homey-button-secondary-shadow" data-act="copy" data-i18n="copy">Copy</button>
+        </div>
+      </div>
+      <label class="homey-form-checkbox web-remote">
+        <input class="homey-form-checkbox-input" id="webRemote" type="checkbox" disabled>
+        <span class="homey-form-checkbox-checkmark"></span>
+        <span class="homey-form-checkbox-text" data-i18n="webRemoteEnable">Allow remote access</span>
+      </label>
+      <p class="homey-form-help" data-i18n="webRemoteHelp"></p>
+      <div class="web-address" data-address="remoteUrl" hidden>
+        <p class="web-address-label" data-i18n="webAddressAway">Away from home</p>
+        <a class="web-url" target="_blank" rel="noopener"></a>
+        <div class="row">
+          <button class="homey-button-primary-shadow" data-act="open" data-i18n="webOpen">Open</button>
+          <button class="homey-button-secondary-shadow" data-act="copy" data-i18n="copy">Copy</button>
+        </div>
       </div>
       <p class="homey-form-help status" id="webStatus" role="status"></p>
       <!-- Optional: a password browsers sign in with instead of a personal API key. -->
@@ -190,19 +211,33 @@
       varRemove.addEventListener('click', () => saveKey(''));
       showKeyState();
 
-      // ---- Web dashboards: on or off (the app setting), and the page's address on the home network (this settings
-      // page may be served through the cloud). ----
+      // ---- Web dashboards: on or off (the app setting), and the page's addresses on the home network and through
+      // Homey's cloud (this settings page may be served through the cloud). ----
       const webEnabled = $('webEnabled');
-      const webUrl = $('webUrl');
+      const webRemote = $('webRemote');
       const webStatus = $('webStatus');
+      const webAddresses = [...document.querySelectorAll('.web-address')];
+      let webLoaded = false;
+      // Each address once it's known; the one through the cloud only with Remote access on.
+      function showAddresses() {
+        for (const block of webAddresses) {
+          const known = !!block.querySelector('.web-url').textContent;
+          block.hidden = !known || (block.dataset.address === 'remoteUrl' && !webRemote.checked);
+        }
+      }
       function showWeb(on) {
         webEnabled.checked = on;
         $('webOn').hidden = !on;
-        if (on && !webUrl.textContent) {
+        if (on && !webLoaded) {
+          webLoaded = true;
           Homey.api('GET', '/web/address', null, (err, res) => {
-            if (err || !res || !res.url) return;
-            webUrl.href = res.url;
-            webUrl.textContent = res.url;
+            if (err || !res) { webLoaded = false; return; }
+            for (const block of webAddresses) {
+              const url = res[block.dataset.address];
+              const link = block.querySelector('.web-url');
+              if (url) { link.href = url; link.textContent = url; }
+            }
+            showAddresses();
           });
         }
       }
@@ -210,33 +245,46 @@
         webEnabled.disabled = false;
         showWeb(!err && value === true);
       });
-      webEnabled.addEventListener('change', () => {
-        const on = webEnabled.checked;
-        webEnabled.disabled = true;
-        webStatus.textContent = '';
-        Homey.set('webDashboardsEnabled', on, (err) => {
-          webEnabled.disabled = false;
-          if (err) { webStatus.textContent = err.message || String(err); showWeb(!on); return; }
-          showWeb(on);
-        });
+      Homey.get('webRemoteAccess', (err, value) => {
+        webRemote.disabled = false;
+        webRemote.checked = !err && value === true;
+        showAddresses();
       });
-      $('webOpen').addEventListener('click', () => {
-        if (!webUrl.textContent) return;
-        if (typeof Homey.openURL === 'function') Homey.openURL(webUrl.href); else window.open(webUrl.href, '_blank');
-      });
-      $('webCopy').addEventListener('click', async () => {
-        if (!webUrl.textContent) return;
-        if (await copyText(webUrl.href)) {
-          webStatus.textContent = t('copied');
-        } else {
-          // Not copied: the address selected, to copy by hand.
-          const range = document.createRange();
-          range.selectNodeContents(webUrl);
-          const sel = window.getSelection();
-          if (sel) { sel.removeAllRanges(); sel.addRange(range); }
+      // A checkbox for an app setting: saved at once, put back if saving fails.
+      function wireSwitch(box, setting, after) {
+        box.addEventListener('change', () => {
+          const on = box.checked;
+          box.disabled = true;
           webStatus.textContent = '';
-        }
-      });
+          Homey.set(setting, on, (err) => {
+            box.disabled = false;
+            if (err) { webStatus.textContent = err.message || String(err); after(!on); return; }
+            after(on);
+          });
+        });
+      }
+      wireSwitch(webEnabled, 'webDashboardsEnabled', showWeb);
+      wireSwitch(webRemote, 'webRemoteAccess', (on) => { webRemote.checked = on; showAddresses(); });
+      for (const block of webAddresses) {
+        const link = block.querySelector('.web-url');
+        block.querySelector('[data-act="open"]').addEventListener('click', () => {
+          if (!link.textContent) return;
+          if (typeof Homey.openURL === 'function') Homey.openURL(link.href); else window.open(link.href, '_blank');
+        });
+        block.querySelector('[data-act="copy"]').addEventListener('click', async () => {
+          if (!link.textContent) return;
+          if (await copyText(link.href)) {
+            webStatus.textContent = t('copied');
+          } else {
+            // Not copied: the address selected, to copy by hand.
+            const range = document.createRange();
+            range.selectNodeContents(link);
+            const sel = window.getSelection();
+            if (sel) { sel.removeAllRanges(); sel.addRange(range); }
+            webStatus.textContent = '';
+          }
+        });
+      }
 
       // ---- The web dashboards' password: checked and hashed by the app, never sent back. ----
       const webPassword = $('webPassword');

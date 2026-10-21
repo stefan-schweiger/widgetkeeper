@@ -22,12 +22,17 @@ async function pageKeyProblem(app: WidgetkeeperApp, key: unknown, use: KeyUse): 
   return scopesAllow(scopes, use) ? null : 'keyScope';
 }
 
+/** The page opened through Homey's cloud says so on every request (`?away=1`); see `WEB_REMOTE_SETTING`. */
+function isAway(query: Record<string, string> | undefined) {
+  return query?.away === '1';
+}
+
 /**
  * While the web dashboards have a password (`WebPassword`), their routes only answer a browser that also signed in
  * with it: its session token is `?session=` on every request, on top of the personal API key Homey checks.
  */
 function assertWebSession(app: WidgetkeeperApp, query: Record<string, string> | undefined) {
-  app.web.assertEnabled();
+  app.web.assertEnabled(isAway(query));
   if (app.webPassword.isSet && !app.webPassword.check(query?.session)) throw new Error('Web dashboards password required');
 }
 
@@ -77,6 +82,10 @@ export default {
     const language = homey.i18n.getLanguage();
     // Turned off: only what the page needs to say so.
     if (!app.web.enabled) return { appId: homey.manifest.id, disabled: true, language, strings: await app.web.appStrings(language) };
+    // Away from home without remote access: the same, and why.
+    if (isAway(query) && !app.web.remote) {
+      return { appId: homey.manifest.id, disabled: true, away: true, language, strings: await app.web.appStrings(language) };
+    }
     // A password set and this browser not signed in with it: only what the page needs to ask for it.
     if (app.webPassword.isSet && !app.webPassword.check(query?.session)) {
       return { appId: homey.manifest.id, passwordRequired: true, language, strings: await app.web.appStrings(language) };
@@ -94,10 +103,15 @@ export default {
     };
   },
 
-  /** Used by the app settings page: the web dashboards page's address on the home network (shown while they're on). */
+  /**
+   * Used by the app settings page: the web dashboards page's address on the home network, and away from home through
+   * Homey's cloud relay (`https://<homeyId>.connect.athom.com`, which serves the page and relays the API and socket;
+   * the SDK has no getter for it). Shown while they're on.
+   */
   async getWebAddress({ homey }: { homey: Homey }) {
-    const address = await homey.cloud.getLocalAddress();
-    return { url: `http://${address.replace(/:80$/, '')}/app/${homey.manifest.id}/settings/dashboard.html` };
+    const [address, homeyId] = await Promise.all([homey.cloud.getLocalAddress(), homey.cloud.getHomeyId()]);
+    const page = `/app/${homey.manifest.id}/settings/dashboard.html`;
+    return { url: `http://${address.replace(/:80$/, '')}${page}`, remoteUrl: `https://${homeyId}.connect.athom.com${page}` };
   },
 
   /**
@@ -209,9 +223,9 @@ export default {
    * The web dashboards page, with its API key: signs the browser in with the password (`{password}` →
    * `{ok: true, token}` or `{ok: false, reason: notSet|wrong|locked, retryAfter}`).
    */
-  async postWebLogin({ homey, body }: { homey: Homey, body: { password?: unknown } }) {
+  async postWebLogin({ homey, query, body }: { homey: Homey, query?: Record<string, string>, body: { password?: unknown } }) {
     const app = homey.app as WidgetkeeperApp;
-    app.web.assertEnabled();
+    app.web.assertEnabled(isAway(query));
     return app.webPassword.login(body?.password);
   },
 

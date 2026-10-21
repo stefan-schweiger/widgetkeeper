@@ -33,6 +33,7 @@
     loadFailed: 'Could not reach Widgetkeeper on your Homey.',
     retry: 'Try again',
     off: 'Web dashboards are turned off. Turn them on in the Widgetkeeper app settings in the Homey app.',
+    offAway: 'Remote access is turned off. Turn it on in the Widgetkeeper app settings in the Homey app, or open this page on your home network.',
     newDashboard: 'New dashboard',
     untitled: 'Dashboard',
     widgetCount: '__count__ widgets',
@@ -320,6 +321,8 @@
 
   /** The app id from this page's path (`/app/<appId>/settings/dashboard.html`). */
   const APP_ID = (location.pathname.match(/\/app\/([^/]+)\//) || [])[1] || 'com.thomassidor.widgetkeeper';
+  /** Opened away from home, through Homey's cloud relay: the app only answers then with Remote access on. */
+  const AWAY = /\.connect\.athom\.com$/i.test(location.hostname);
 
   /** Another app's widget type (`homey:app:<appId>:<widgetId>`, its id on Homey's dashboards), split; null for ours. */
   function appWidget(type) {
@@ -381,7 +384,10 @@
     // ---- The app's API, with the key ------------------------------------------------------------------------
 
     async function request(method, path, body) {
-      const url = session ? `${path}${path.includes('?') ? '&' : '?'}session=${encodeURIComponent(session)}` : path;
+      const params = [];
+      if (session) params.push(`session=${encodeURIComponent(session)}`);
+      if (AWAY) params.push('away=1');
+      const url = params.length ? `${path}${path.includes('?') ? '&' : '?'}${params.join('&')}` : path;
       return fetchJson(method, `/api/app/${APP_ID}${url}`, body, true);
     }
 
@@ -978,7 +984,7 @@
       applyTheme('auto');
       root.append(centered(
         el('h1', 'wd-h1', t('title')),
-        el('p', 'wd-muted', t('off')),
+        el('p', 'wd-muted', t(setup && setup.away ? 'offAway' : 'off')),
         button('wd-btn', t('retry'), () => start()),
       ));
     }
