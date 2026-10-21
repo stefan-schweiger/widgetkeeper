@@ -67,13 +67,18 @@
     thisBrowser: 'This browser',
     forgetKeyText: 'Signs this browser out: it asks for an API key again.',
     backupTitle: 'Backup',
-    backupText: 'Every dashboard in one file: the layouts, the widgets and their settings, this page\'s order and the names typed on tiles. Restoring one replaces all your dashboards.',
+    backupText: 'The dashboards you choose in one file: their layouts, widgets, settings and the names typed on tiles. A restore brings back the ones you tick and leaves the others.',
     backupDownload: 'Download backup',
     backupRestore: 'Restore backup',
     backupSummary: '__dashboards__ dashboards, __widgets__ widgets, saved __date__.',
-    backupConfirm: 'Tap again to replace your dashboards',
+    backupConfirm: 'Tap again to restore',
     backupRestored: 'Restored: __dashboards__ dashboards, __widgets__ widgets.',
     backupInvalid: 'This file is not a Widgetkeeper web dashboards backup.',
+    backupDownloadCount: 'Download __count__',
+    backupRestoreCount: 'Restore __count__',
+    backupReplaces: 'Replaces yours',
+    backupNew: 'New',
+    backupTooMany: 'At most 64 dashboards: untick __count__ new ones',
     deleteDashboard: 'Delete dashboard',
     tapAgain: 'Tap again to confirm',
     addWidget: 'Add widget',
@@ -1114,9 +1119,11 @@
     }
 
     /**
-     * The Settings dialog's backup: every dashboard as one file (`GET /web/backup`: the dashboards, the front page's
-     * choices and their widgets' tile names), and a restore from one, which replaces them all after a second tap. Here,
-     * not on the app settings page: my.homey.app runs that in a frame sandboxed without downloads (2026-10-20).
+     * The Settings dialog's backup: the dashboards the user ticks as one file (`GET /web/backup?ids=`: the dashboards, the
+     * front page's choices and their widgets' tile names), and a restore of the ones ticked in such a file, which replaces
+     * those with the same id and adds the rest after a second tap; the others stay. Each opens a list in place of the
+     * buttons (`backupChecklist()`). Here, not on the app settings page: my.homey.app runs that in a frame sandboxed
+     * without downloads (2026-10-20).
      */
     function backupSection() {
       const section = el('section', 'wd-page-section');
@@ -1126,81 +1133,209 @@
       file.type = 'file';
       file.accept = '.json,application/json';
       file.hidden = true;
-      let pending = null; // read from a file, until the second tap
-      let timer = 0;
-      const disarm = (clear) => {
-        clearTimeout(timer);
-        pending = null;
-        restore.textContent = t('backupRestore');
-        restore.classList.remove('armed');
-        if (clear) status.textContent = '';
+      const row = el('div', 'wd-row wd-backup-row');
+      let open = null; // the list shown in place of the buttons, under the file's summary
+      const show = (list) => {
+        if (open) open.remove();
+        open = list;
+        row.hidden = !!list;
+        if (list) status.after(list);
       };
-      const busy = (on) => { download.disabled = on; restore.disabled = on; };
-      const download = button('wd-btn', t('backupDownload'), async () => {
-        disarm(true);
-        busy(true);
-        try {
-          const backup = await request('GET', '/web/backup');
-          const d = new Date();
-          const pad = n => String(n).padStart(2, '0');
-          const url = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' }));
-          const a = el('a');
-          a.href = url;
-          a.download = `widgetkeeper-web-dashboards-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}.json`;
-          document.body.append(a);
-          a.click();
-          a.remove();
-          setTimeout(() => URL.revokeObjectURL(url), 60e3);
-        } catch (err) {
-          failed(err);
-        }
-        busy(false);
+      const widgetsOf = d => (d && Array.isArray(d.columns)
+        ? d.columns.reduce((m, c) => m + (Array.isArray(c) ? c.length : 0), 0) : 0);
+      const download = button('wd-btn', t('backupDownload'), () => {
+        status.textContent = '';
+        const all = dashboards.slice();
+        show(backupChecklist({
+          items: all.map(d => ({ name: d.name, widgets: widgetsOf(d) })),
+          action: count => t('backupDownloadCount', { count }),
+          onCancel: () => show(null),
+          onDone: async (chosen, list) => {
+            list.busy(true);
+            try {
+              const picked = chosen.map(i => all[i]);
+              const backup = await request('GET', `/web/backup?ids=${picked.map(d => encodeURIComponent(d.id)).join(',')}`);
+              saveFile(backup, picked.length === 1 ? (picked[0].name || t('untitled')) : '');
+              show(null);
+            } catch (err) {
+              list.busy(false);
+              failed(err);
+            }
+          },
+        }));
       });
       const restore = button('wd-btn', t('backupRestore'), () => {
-        if (!pending) { file.value = ''; file.click(); return; }
-        const backup = pending;
-        disarm(false);
-        busy(true);
-        saving = saving.then(async () => {
-          try {
-            const res = await request('PUT', '/web/backup', backup);
-            await loadSetup(); // the dashboards and the front page's choices as restored
-            if (location.hash === '#/edit') renderList(true); // behind the dialog
-            busy(false);
-            status.textContent = t('backupRestored', { dashboards: res.dashboards, widgets: res.widgets });
-          } catch (err) {
-            busy(false);
-            if (/Not a Widgetkeeper backup/.test(String(err && err.message))) status.textContent = t('backupInvalid');
-            else failed(err);
-          }
-        });
+        show(null);
+        status.textContent = '';
+        file.value = '';
+        file.click();
       });
       file.addEventListener('change', async () => {
-        const chosen = file.files && file.files[0];
-        if (!chosen) return;
+        const chosenFile = file.files && file.files[0];
+        if (!chosenFile) return;
         let backup = null;
-        try { backup = JSON.parse(await chosen.text()); } catch (e) { backup = null; }
+        try { backup = JSON.parse(await chosenFile.text()); } catch (e) { backup = null; }
         if (!backup || backup.format !== 'widgetkeeper-web-dashboards' || !Array.isArray(backup.dashboards)) {
-          disarm(false);
+          show(null);
           status.textContent = t('backupInvalid');
           return;
         }
-        const widgets = backup.dashboards.reduce((n, d) => n + (d && Array.isArray(d.columns)
-          ? d.columns.reduce((m, c) => m + (Array.isArray(c) ? c.length : 0), 0) : 0), 0);
+        const inFile = backup.dashboards.filter(d => d && typeof d === 'object');
+        const widgets = inFile.reduce((n, d) => n + widgetsOf(d), 0);
         const date = new Date(backup.exportedAt);
         status.textContent = t('backupSummary', {
-          dashboards: backup.dashboards.length, widgets, date: Number.isNaN(date.getTime()) ? '?' : date.toLocaleString(),
+          dashboards: inFile.length, widgets, date: Number.isNaN(date.getTime()) ? '?' : date.toLocaleString(),
         });
-        pending = backup;
-        restore.textContent = t('backupConfirm');
-        restore.classList.add('armed');
-        clearTimeout(timer);
-        timer = setTimeout(() => { if (section.isConnected) disarm(true); }, 10e3);
+        const stored = new Set(dashboards.map(d => d.id));
+        show(backupChecklist({
+          items: inFile.map(d => ({
+            name: typeof d.name === 'string' ? d.name : '', widgets: widgetsOf(d),
+            tag: t(stored.has(d.id) ? 'backupReplaces' : 'backupNew'),
+          })),
+          action: count => t('backupRestoreCount', { count }),
+          confirm: true,
+          // A new dashboard (or a repeated id, which gets a new one) needs room under 64.
+          problem: (chosen) => {
+            const seen = new Set();
+            let added = 0;
+            for (const i of chosen) {
+              const id = inFile[i].id;
+              if (seen.has(id) || !stored.has(id)) added++;
+              seen.add(id);
+            }
+            const over = added - (MAX_DASHBOARDS - dashboards.length);
+            return over > 0 ? t('backupTooMany', { count: over }) : '';
+          },
+          onCancel: () => { show(null); status.textContent = ''; },
+          onDone: (chosen, list) => {
+            list.busy(true);
+            const body = {
+              format: backup.format, version: backup.version, app: backup.app, exportedAt: backup.exportedAt,
+              front: backup.front, tileNames: backup.tileNames,
+              dashboards: chosen.map(i => inFile[i]), complete: chosen.length === inFile.length,
+            };
+            saving = saving.then(async () => {
+              try {
+                const res = await request('PUT', '/web/backup', body);
+                await loadSetup(); // the dashboards and the front page's choices as restored
+                if (location.hash === '#/edit') renderList(true); // behind the dialog
+                show(null);
+                status.textContent = t('backupRestored', { dashboards: res.dashboards, widgets: res.widgets });
+              } catch (err) {
+                list.busy(false);
+                if (/Not a Widgetkeeper backup/.test(String(err && err.message))) {
+                  show(null);
+                  status.textContent = t('backupInvalid');
+                } else {
+                  failed(err);
+                }
+              }
+            });
+          },
+        }));
       });
-      const row = el('div', 'wd-row wd-backup-row');
       row.append(download, restore);
       section.append(el('h3', 'wd-h2', t('backupTitle')), el('p', 'wd-muted', t('backupText')), row, status, file);
       return section;
+    }
+
+    /** Downloads a backup as `widgetkeeper-web-dashboards-<date>.json`, or `widgetkeeper-web-<name>-<date>.json` for one. */
+    function saveFile(backup, name) {
+      const d = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      // What a file name can't hold goes; spaces become dashes.
+      const safe = name.replace(/[\\/:*?"<>|\u0000-\u001F]+/g, ' ').trim().replace(/\s+/g, '-').slice(0, 40);
+      const url = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' }));
+      const a = el('a');
+      a.href = url;
+      a.download = `widgetkeeper-web-${safe || 'dashboards'}-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}.json`;
+      document.body.append(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60e3);
+    }
+
+    /**
+     * The backup's list of dashboards (`items`: `{name, widgets, tag?}`), every one ticked: the count with Select all or
+     * Clear all, a checkbox per dashboard, then `action(count)`'s button and Cancel. The button is disabled while none is
+     * ticked or `problem(chosen)` says why (shown under the list); with `confirm` it asks for a second tap within 10 s
+     * (`backupConfirm`). `onDone(chosen, list)` gets the ticked items' indexes in order; `list.busy(on)` disables it.
+     * @param {{items: {name: string, widgets: number, tag?: string}[], action: (count: number) => string, confirm?: boolean,
+     *   problem?: (chosen: number[]) => string, onDone: (chosen: number[], list: {busy: (on: boolean) => void}) => void,
+     *   onCancel: () => void}} opts
+     */
+    function backupChecklist({ items, action, confirm = false, problem = () => '', onDone, onCancel }) {
+      const box = el('div', 'wd-backup-pick');
+      const chosen = new Set(items.map((_, i) => i));
+      const ordered = () => items.map((_, i) => i).filter(i => chosen.has(i));
+      const head = el('div', 'wd-backup-head');
+      const count = el('span', 'wd-muted');
+      const toggle = button('wd-btn quiet small', '', () => {
+        const all = chosen.size === items.length;
+        boxes.forEach((input, i) => {
+          input.checked = !all;
+          if (all) chosen.delete(i); else chosen.add(i);
+        });
+        draw();
+      });
+      head.append(count, toggle);
+      const list = el('div', 'wd-backup-list');
+      const boxes = items.map((item, i) => {
+        const label = el('label', 'wd-backup-item');
+        const input = el('input');
+        input.type = 'checkbox';
+        input.checked = true;
+        input.addEventListener('change', () => {
+          if (input.checked) chosen.add(i); else chosen.delete(i);
+          draw();
+        });
+        const text = el('span', 'wd-backup-item-text');
+        const name = el('span', 'wd-backup-item-name', item.name || t('untitled'));
+        name.dir = 'auto';
+        text.append(name, el('span', 'wd-muted', t('widgetCount', { count: item.widgets })));
+        label.append(input, text);
+        if (item.tag) label.append(el('span', 'wd-backup-tag', item.tag));
+        list.append(label);
+        return input;
+      });
+      const note = el('p', 'wd-backup-note');
+      note.setAttribute('role', 'status');
+      let armed = false;
+      let timer = 0;
+      let busy = false;
+      const go = button('wd-btn primary', '', () => {
+        if (confirm && !armed) {
+          armed = true;
+          go.classList.add('armed');
+          go.textContent = t('backupConfirm');
+          timer = setTimeout(() => { if (box.isConnected) draw(); }, 10e3);
+          return;
+        }
+        draw();
+        onDone(ordered(), handle);
+      });
+      const cancel = button('wd-btn', t('cancel'), onCancel);
+      const foot = el('div', 'wd-row wd-backup-foot');
+      foot.append(go, cancel);
+      /** The count, the toggle's words and what may be pressed; disarms the button. */
+      function draw() {
+        clearTimeout(timer);
+        armed = false;
+        go.classList.remove('armed');
+        const why = problem(ordered());
+        count.textContent = t('chosenCount', { count: chosen.size });
+        toggle.textContent = t(chosen.size === items.length ? 'clearAll' : 'selectAll');
+        toggle.disabled = busy || !items.length;
+        note.textContent = why;
+        go.textContent = action(chosen.size);
+        go.disabled = busy || !chosen.size || !!why;
+        cancel.disabled = busy;
+        for (const input of boxes) input.disabled = busy;
+      }
+      const handle = { busy(on) { busy = on; draw(); } };
+      box.append(head, list, note, foot);
+      draw();
+      return box;
     }
 
     /**
@@ -1341,7 +1476,7 @@
       if (!editing) link.href = `#/d/${d.id}`;
       const count = d.columns.reduce((n, c) => n + c.length, 0);
       const info = el('span', 'wd-dash-info');
-      info.append(el('span', 'wd-dash-name', d.name || t('untitled')), el('span', 'wd-muted', t('widgetCount', { count })));
+      info.append(el('span', 'wd-dash-name', d.name || t('untitled')), el('span', 'wd-muted wd-dash-count', t('widgetCount', { count })));
       link.append(info);
       if (editing) {
         card.tabIndex = 0;

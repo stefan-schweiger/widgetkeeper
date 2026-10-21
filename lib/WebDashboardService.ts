@@ -51,13 +51,14 @@ export type WebFront = { widgets: boolean };
 /** A web dashboard: columns of widgets, top to bottom. */
 export type WebDashboard = { id: string, name: string, theme: WebTheme, background: WebBackground, columns: WebWidget[][] };
 
-/** What a web dashboards backup file is (`format`, `version`), as the app settings page downloads it. */
+/** What a web dashboards backup file is (`format`, `version`), as the web dashboards page downloads it. */
 export const WEB_BACKUP_FORMAT = 'widgetkeeper-web-dashboards';
 const WEB_BACKUP_VERSION = 1;
 
 /**
- * A backup of every web dashboard: the dashboards, the front page's choices and the tile names typed on their widgets (by
- * widget instance, `web-<dashboard>-<widget>`). Not Notes' texts or Days Since's counters: Homey's own dashboards share those.
+ * A backup of web dashboards (every one, or those the user chose): the dashboards, the front page's choices and the tile
+ * names typed on their widgets (by widget instance, `web-<dashboard>-<widget>`). Not Notes' texts or Days Since's
+ * counters: Homey's own dashboards share those.
  */
 export type WebBackup = {
   format: typeof WEB_BACKUP_FORMAT,
@@ -395,9 +396,9 @@ export default class WebDashboardService {
     return { dashboard, dashboards: all };
   }
 
-  /** Every web dashboard as one file (`WebBackup`), for the app settings page. */
-  backup(): WebBackup {
-    const dashboards = this.list();
+  /** The web dashboards as one file (`WebBackup`): every one, or only those `ids` names (in their stored order). */
+  backup(ids?: string[]): WebBackup {
+    const dashboards = ids ? this.list().filter(d => ids.includes(d.id)) : this.list();
     const instances = instanceIds(dashboards);
     return {
       format: WEB_BACKUP_FORMAT,
@@ -411,31 +412,49 @@ export default class WebDashboardService {
   }
 
   /**
-   * Replaces every web dashboard with a backup's (`backup()`), each checked as a saved one is, ids kept, so the tile
-   * names and Dashboard Shortcuts' choices match again. The tile names of every web widget are replaced too. Answers the counts.
+   * Restores a backup's dashboards (`backup()`, or the ones the page let through), each checked as a saved one is, ids
+   * kept, so the tile names and Dashboard Shortcuts' choices match again: one with a stored id replaces that dashboard
+   * in place, a new one goes at the end while there's room (at most 64; the rest are skipped). The other dashboards stay
+   * as they are. The restored dashboards' tile names are the file's; the front page's choices only when `complete`
+   * (the page sent every dashboard in the file). Answers the counts.
    */
-  restore(input: unknown): { dashboards: number, widgets: number } {
+  restore(input: unknown): { dashboards: number, widgets: number, skipped: number } {
     const b = (input && typeof input === 'object' ? input : {}) as Record<string, any>;
     if (b.format !== WEB_BACKUP_FORMAT || b.version !== WEB_BACKUP_VERSION || !Array.isArray(b.dashboards)) {
       throw new Error('Not a Widgetkeeper backup');
     }
-    const dashboards: WebDashboard[] = [];
+    const all = this.list();
+    const restored: WebDashboard[] = [];
+    const replaced: WebDashboard[] = [];
+    let skipped = 0;
     for (const d of b.dashboards) {
-      if (dashboards.length >= MAX_DASHBOARDS) break;
       if (!d || typeof d !== 'object') continue;
       const dashboard = this.normalize(d, true);
-      while (dashboards.some(x => x.id === dashboard.id)) dashboard.id = newId(); // its names stay with the first
-      dashboards.push(dashboard);
+      while (restored.some(x => x.id === dashboard.id)) dashboard.id = newId(); // its names stay with the first
+      const i = all.findIndex(x => x.id === dashboard.id);
+      if (i >= 0) {
+        replaced.push(all[i]);
+        all[i] = dashboard;
+      } else if (all.length < MAX_DASHBOARDS) {
+        all.push(dashboard);
+      } else {
+        skipped++;
+        continue;
+      }
+      restored.push(dashboard);
     }
-    this.homey.settings.set(WEB_DASHBOARDS_SETTING, dashboards);
-    this.homey.settings.set(WEB_FRONT_SETTING, { widgets: !(b.front && typeof b.front === 'object' && b.front.widgets === false) });
-    const instances = instanceIds(dashboards);
+    this.homey.settings.set(WEB_DASHBOARDS_SETTING, all);
+    if (b.complete === true) {
+      this.homey.settings.set(WEB_FRONT_SETTING, { widgets: !(b.front && typeof b.front === 'object' && b.front.widgets === false) });
+    }
+    const instances = instanceIds(restored);
+    const before = instanceIds(replaced);
     const given = b.tileNames && typeof b.tileNames === 'object' && !Array.isArray(b.tileNames) ? b.tileNames : {};
     const names = Object.fromEntries(Object.keys(given).filter(id => instances.has(id)).map(id => [id, given[id]]));
-    this.tileNames?.replace(id => id.startsWith('web-'), names);
-    const widgets = dashboards.reduce((n, d) => n + d.columns.reduce((m, c) => m + c.length, 0), 0);
-    this.log(`Web dashboards: restored ${dashboards.length} dashboards, ${widgets} widgets`);
-    return { dashboards: dashboards.length, widgets };
+    if (restored.length) this.tileNames?.replace(id => instances.has(id) || before.has(id), names);
+    const widgets = restored.reduce((n, d) => n + d.columns.reduce((m, c) => m + c.length, 0), 0);
+    this.log(`Web dashboards: restored ${restored.length} dashboards (${replaced.length} replaced), ${widgets} widgets, ${skipped} skipped`);
+    return { dashboards: restored.length, widgets, skipped };
   }
 
   remove(id: string) {

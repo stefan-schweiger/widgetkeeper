@@ -376,7 +376,7 @@ The front page shows every dashboard as a card with a miniature of its widgets, 
 On top of the API key, you can set a password for the web dashboards under **Apps → Widgetkeeper → Configure**. Every browser then asks for it once. Setting, changing or removing it signs every browser out, and wrong passwords in a row lock the sign-in for a while.
 
 ### Backup
-Under **Settings** in the front page's edit mode (the pen), **Download backup** saves every web dashboard in one file: the layouts, the widgets and their settings, the front page's order and the names typed on tiles. **Restore backup** reads such a file back and, after a second tap, replaces all your web dashboards with it. Notes' texts and Days Since's counters aren't in it, as Homey's own dashboards share them.
+Under **Settings** in the front page's edit mode (the pen), **Download backup** saves the web dashboards you tick (all of them, or just one) in one file: the layouts, the widgets and their settings and the names typed on tiles. **Restore backup** reads such a file and lists its dashboards; after a second tap, the ones you tick replace those they were saved from (or come back, if you deleted them), and every other dashboard stays as it is. Notes' texts and Days Since's counters aren't in it, as Homey's own dashboards share them.
 
 ### Web dashboards' key
 Each browser connects with a key of its own, which stays in that browser:

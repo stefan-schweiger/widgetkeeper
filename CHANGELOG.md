@@ -16,6 +16,10 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Curtains
 - Curtains reversed in the device's own settings no longer show a blue tile when closed.
 
+### Web dashboards
+- **Backup:** choose which dashboards to download, and which to restore from a file. A restore replaces only the dashboards you tick; the others stay as they are.
+- In the front page's edit mode, the icons on a dashboard's card sit on the widget count's line, so long names aren't cut off.
+
 ## 1.0.1
 
 ### Web dashboards

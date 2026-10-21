@@ -128,12 +128,23 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
       return { dashboards, front };
     }
     if (p === '/web/backup' && method === 'GET') {
-      return { format: 'widgetkeeper-web-dashboards', version: 1, app: '1.0.1', exportedAt: new Date().toISOString(), dashboards, front, tileNames: {} };
+      const ids = q.has('ids') ? q.get('ids').split(',').filter(Boolean) : null;
+      const chosen = ids ? dashboards.filter(d => ids.includes(d.id)) : dashboards;
+      return { format: 'widgetkeeper-web-dashboards', version: 1, app: '1.0.2', exportedAt: new Date().toISOString(), dashboards: chosen, front, tileNames: {} };
     }
     if (p === '/web/backup' && method === 'PUT') {
-      dashboards = body.dashboards;
-      front = { widgets: !(body.front && body.front.widgets === false) };
-      return { dashboards: dashboards.length, widgets: dashboards.reduce((n, d) => n + d.columns.flat().length, 0) };
+      // As the app: a stored id is replaced in place, a new one added while there's room; the others stay.
+      let restored = 0, widgets = 0, skipped = 0;
+      for (const d of body.dashboards) {
+        const i = dashboards.findIndex(x => x.id === d.id);
+        if (i >= 0) dashboards[i] = d;
+        else if (dashboards.length < 64) dashboards.push(d);
+        else { skipped++; continue; }
+        restored++;
+        widgets += d.columns.flat().length;
+      }
+      if (body.complete === true) front = { widgets: !(body.front && body.front.widgets === false) };
+      return { dashboards: restored, widgets, skipped };
     }
     const copy = p.match(/^\/web\/dashboards\/([^/]+)\/copy$/);
     if (copy && method === 'POST') {

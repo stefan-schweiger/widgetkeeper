@@ -1,6 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from './app.js';
 import { scopesAllow, type KeyUse } from './lib/PersonalApiKey.js';
+import { idList } from './lib/widgetApi.js';
 import { autocompleteKeyUse, callWidgetRoute, routeKeyUse, type WidgetApis } from './lib/widgetRoutes.js';
 import dayssince from './widgets/dayssince/api.js';
 import shortcuts from './widgets/shortcuts/api.js';
@@ -157,14 +158,14 @@ export default {
     return app.web.duplicate(params?.id || '');
   },
 
-  /** The front page's edit mode: every web dashboard as one file (`WebBackup`). */
+  /** The front page's edit mode: the web dashboards as one file (`WebBackup`), every one or those `?ids=a,b` names. */
   async getWebBackup({ homey, query }: { homey: Homey, query?: Record<string, string> }) {
     const app = homey.app as WidgetkeeperApp;
     assertWebSession(app, query);
-    return app.web.backup();
+    return app.web.backup(query?.ids === undefined ? undefined : idList(query.ids));
   },
 
-  /** The front page's edit mode: replaces every web dashboard with a backup's; answers `{dashboards, widgets}`. */
+  /** The front page's edit mode: restores a backup's dashboards, keeping the others; answers `{dashboards, widgets, skipped}`. */
   async putWebBackup({ homey, query, body }: { homey: Homey, query?: Record<string, string>, body: unknown }) {
     const app = homey.app as WidgetkeeperApp;
     assertWebSession(app, query);
