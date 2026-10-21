@@ -297,6 +297,7 @@ const BUILD = {
       motion && w('heatmap', 'Motion (boolean) · week · orange', { ...motion, color: 'orange' }),
       contact && w('heatmap', 'Contact (boolean) · 10 days · green · no scale', { ...contact, period: '10', color: 'green', showScale: false }),
       temp && w('heatmap', 'No scale, no legend', { ...temp, showScale: false, showLegend: false }),
+      temp && w('heatmap', 'Own title "Utility room"', { ...temp, title: 'Utility room' }),
       w('heatmap', 'Nothing picked'),
     ].filter(Boolean);
     return { cols: 3, widgets: out };

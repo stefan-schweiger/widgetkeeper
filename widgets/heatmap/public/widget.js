@@ -81,7 +81,7 @@
    * @param {HTMLElement} root
    * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string,
    *   period?: string, step?: number, color?: string, showScale?: boolean, showLegend?: boolean,
-   *   onHeight?: (h: number) => void }} opts
+   *   onHeight?: (h: number) => void, title?: string }} opts `title` replaces the device's name.
    */
   function createHeatmapWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -95,6 +95,7 @@
     const showScale = opts.showScale !== false;
     const showLegend = opts.showLegend !== false;
     const color = COLORS.includes(opts.color) ? opts.color : 'blue';
+    const title = typeof opts.title === 'string' ? opts.title.trim() : '';
 
     let data = null;
     let messageText = null;
@@ -153,7 +154,7 @@
     }
 
     function render() {
-      nameEl.textContent = data ? data.name : '';
+      nameEl.textContent = data ? title || data.name : '';
       nameEl.style.display = data ? '' : 'none';
       const sub = messageText || (data ? data.capability.title : '');
       subEl.textContent = sub;

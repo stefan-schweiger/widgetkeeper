@@ -23,6 +23,7 @@ window.mountHeatmapWidget = function (Homey, { root, frame }) {
     color: settings.color,
     showScale: settings.showScale !== false,
     showLegend: settings.showLegend !== false,
+    title: settings.title, // empty or missing: the device's name
     // The widget reports its own height; Homey needs the body's, which adds the widget padding.
     onHeight: link.setHeight,
   });

@@ -216,7 +216,7 @@ Flows and Advanced Flows as rows with a round button in your colour and icon. Ta
 
 A week of one Insights value as a grid of days and hours: numbers such as light or temperature, or how much of each hour a sensor was on.
 
-**Settings:** device and value, this week or the last 3–14 days, hours per column, colour, [colour style](#colour-style), scale, legend.
+**Settings:** device and value, a title in place of the device's name, this week or the last 3–14 days, hours per column, colour, [colour style](#colour-style), scale, legend.
 
 ## Light Controls
 <img src="docs/clips/lights.webp" alt="Light Controls on a Homey dashboard: a light turned on, dimmed with the bar, and given a colour and a white" width="358">

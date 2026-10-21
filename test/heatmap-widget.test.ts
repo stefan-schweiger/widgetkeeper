@@ -150,6 +150,23 @@ describe('settings', () => {
   });
 });
 
+describe('title', () => {
+  const name = (root: HTMLElement) => root.querySelector('.hm-name')!.textContent;
+
+  it('replaces the device name, and an empty one keeps it', () => {
+    expect(name(widget(history(() => 1), { title: '  Utility room  ' }).root)).toBe('Utility room');
+    expect(name(widget(history(() => 1), { title: '   ' }).root)).toBe('Hue motion sensor');
+    expect(name(widget(history(() => 1)).root)).toBe('Hue motion sensor');
+  });
+
+  it('stays through a refresh and a transient message', () => {
+    const { w, root } = widget(history(() => 1), { title: 'Hallway' });
+    w.setData(history(() => 2));
+    w.setMessage('Could not load the history.', true);
+    expect(name(root)).toBe('Hallway');
+  });
+});
+
 describe('messages', () => {
   it('a message replaces the heatmap; a transient one keeps it', () => {
     const { w, root } = widget(history(() => 1));
