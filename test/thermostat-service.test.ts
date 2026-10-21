@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeDevice, FakeDeviceOptions, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
 import ThermostatService, { STATE_EVENT } from '../lib/ThermostatService.js';
+import ValueService from '../lib/ValueService.js';
+import { thermostatState } from '../widgets/thermostat/api.js';
 
 vi.mock('homey-api', () => homeyApiMock);
 
@@ -302,5 +304,35 @@ describe('state tracking', () => {
     await vi.advanceTimersByTimeAsync(2 * 60e3);
     expect(device.listenerCount('onoff')).toBe(0);
     await service.stop();
+  });
+});
+
+describe('the sensor beside the name (/state)', () => {
+  const sensor = () => fakeDevice({ id: 'room', name: 'Living room', caps: { measure_temperature: { value: 21.4, units: '°C', setable: false } } });
+  function app(devices = [aircon(), sensor()]) {
+    const homey = fakeHomey(fakeApi({ devices }));
+    return { thermostat: new ThermostatService(homey, () => {}), values: new ValueService(homey, () => {}) } as any;
+  }
+
+  it('adds the slot Device Values tracks', async () => {
+    const state: any = await thermostatState(app(), 'dev1', 'room:measure_temperature');
+    expect(state.name).toBe('Aircon');
+    expect(state.sensor).toMatchObject({ deviceId: 'room', capabilityId: 'measure_temperature', value: 21.4, capability: { units: '°C' } });
+  });
+
+  it('leaves out a sensor that is not set, not a slot or can no longer be read', async () => {
+    const a = app();
+    expect(await thermostatState(a, 'dev1')).not.toHaveProperty('sensor');
+    expect(await thermostatState(a, 'dev1', 'none')).not.toHaveProperty('sensor');
+    expect(await thermostatState(a, 'dev1', 'gone:measure_temperature')).not.toHaveProperty('sensor');
+    expect(await thermostatState(a, 'dev1', 'room:measure_humidity')).not.toHaveProperty('sensor');
+  });
+
+  it('keeps a deleted thermostat missing', async () => {
+    const devices = [aircon(), sensor()];
+    const a = app(devices);
+    await thermostatState(a, 'dev1', 'room:measure_temperature');
+    devices.splice(0, 1);
+    expect(await thermostatState(a, 'dev1', 'room:measure_temperature')).toEqual({ missing: true });
   });
 });

@@ -67,6 +67,11 @@ html, body { margin: 0; }
 .tw-sub { font-size: var(--tw-fs-small); line-height: var(--tw-lh-small); font-weight: var(--tw-regular); color: var(--tw-muted); }
 .tw-header.message-only .tw-sub, .tw-sub.error { white-space: normal; }
 .tw-sub.error { color: var(--homey-color-red, #F25F5C); }
+/* A value at the right end (the `aside` hook: the thermostat's sensor), kept whole while the name is ellipsized. */
+.tw-aside {
+  margin-left: auto; flex-shrink: 0; white-space: nowrap;
+  font-size: var(--tw-fs-default); line-height: var(--tw-lh-default); font-weight: var(--tw-bold);
+}
 
 /* Segmented buttons */
 /* As many columns as buttons (`--tw-count`, set by presets.js). */
@@ -130,6 +135,7 @@ html, body { margin: 0; }
 .tw-compact .tw-sub { flex: 1 1 0; min-width: 0; }
 .tw-compact .tw-header.has-sub .tw-sub::before { content: '\00a0·\00a0'; }
 .tw-compact .tw-sub.error, .tw-compact .tw-header.message-only .tw-sub { flex-basis: 100%; }
+.tw-compact .tw-aside { font-size: var(--tw-fs-small); line-height: var(--tw-lh-small); }
 
 .tw-compact .tw-btn { height: 44px; padding: 0 8px; flex-direction: row; gap: 6px; }
 .tw-compact .tw-big { flex-shrink: 0; }

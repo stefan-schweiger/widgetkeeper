@@ -52,6 +52,40 @@
       }
     },
     {
+      "id": "sensor",
+      "type": "autocomplete",
+      "title": {
+        "en": "Value beside the name",
+        "nl": "Waarde naast de naam",
+        "de": "Wert neben dem Namen",
+        "fr": "Valeur à côté du nom",
+        "it": "Valore accanto al nome",
+        "sv": "Värde bredvid namnet",
+        "no": "Verdi ved siden av navnet",
+        "es": "Valor junto al nombre",
+        "da": "Værdi ved siden af navnet",
+        "ru": "Значение рядом с названием",
+        "pl": "Wartość obok nazwy",
+        "ko": "이름 옆 값",
+        "ar": "قيمة بجانب الاسم"
+      },
+      "hint": {
+        "en": "Optional: a value shown at the top right, such as the room temperature or this device’s target temperature.",
+        "nl": "Optioneel: een waarde rechtsboven, zoals de kamertemperatuur of de doeltemperatuur van dit apparaat.",
+        "de": "Optional: ein Wert oben rechts, etwa die Raumtemperatur oder die Zieltemperatur dieses Geräts.",
+        "fr": "Facultatif : une valeur en haut à droite, comme la température de la pièce ou la consigne de cet appareil.",
+        "it": "Facoltativo: un valore in alto a destra, come la temperatura della stanza o quella impostata su questo dispositivo.",
+        "sv": "Valfritt: ett värde uppe till höger, till exempel rumstemperaturen eller enhetens måltemperatur.",
+        "no": "Valgfritt: en verdi øverst til høyre, for eksempel romtemperaturen eller enhetens måltemperatur.",
+        "es": "Opcional: un valor arriba a la derecha, como la temperatura de la habitación o la temperatura objetivo de este dispositivo.",
+        "da": "Valgfrit: en værdi øverst til højre, fx rumtemperaturen eller enhedens måltemperatur.",
+        "ru": "Необязательно: значение справа вверху, например температура в комнате или целевая температура этого устройства.",
+        "pl": "Opcjonalnie: wartość w prawym górnym rogu, np. temperatura w pokoju lub temperatura docelowa tego urządzenia.",
+        "ko": "선택 사항: 오른쪽 위에 표시할 값입니다(예: 실내 온도 또는 이 기기의 목표 온도).",
+        "ar": "اختياري: قيمة تظهر أعلى اليمين، مثل حرارة الغرفة أو درجة الحرارة المستهدفة لهذا الجهاز."
+      }
+    },
+    {
       "id": "layout",
       "type": "dropdown",
       "title": {

@@ -12,6 +12,8 @@ window.mountThermostatWidget = function (Homey, { root, frame }) {
 
   const settings = Homey.getSettings() || {};
   const deviceId = (settings.device && settings.device.id) || null;
+  // The value beside the name: a Device Values slot `<deviceId>:<capabilityId>` (`None`'s id has no colon).
+  const sensor = settings.sensor && String(settings.sensor.id || '').includes(':') ? settings.sensor.id : null;
   let loaded = false;
 
   const widget = window.createThermostatWidget(root, {
@@ -37,7 +39,8 @@ window.mountThermostatWidget = function (Homey, { root, frame }) {
       return;
     }
     try {
-      const state = await Homey.api('GET', `/state?deviceId=${encodeURIComponent(deviceId)}${link.perfParam()}`);
+      const sensorParam = sensor ? `&sensor=${encodeURIComponent(sensor)}` : '';
+      const state = await Homey.api('GET', `/state?deviceId=${encodeURIComponent(deviceId)}${sensorParam}${link.perfParam()}`);
       loaded = !state.missing; // a deleted device: the buttons go, the next error is persistent too
       if (state.missing) widget.setMessage(widget.t('error'));
       else widget.setState(state);
@@ -51,6 +54,10 @@ window.mountThermostatWidget = function (Homey, { root, frame }) {
 
   Homey.on('thermostat:state', (data) => {
     if (data && data.deviceId === deviceId) widget.pushChange(data);
+  });
+  // The sensor is tracked by Device Values' service, which sends its changes as `values:state`.
+  Homey.on('values:state', (data) => {
+    if (sensor && data && `${data.deviceId}:${data.capabilityId}` === sensor) widget.pushSensor(data.value);
   });
 
   setInterval(load, REFRESH_MS);

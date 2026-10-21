@@ -142,6 +142,9 @@ const BUILD = {
 
   async thermostat() {
     const devs = await autocomplete('thermostat', 'device');
+    // The value beside the name: a room temperature from the widget's own autocomplete, and a deleted device's.
+    const sensor = pick(await autocomplete('thermostat', 'sensor'), i => i.id.endsWith(':measure_temperature'), 1);
+    const missingSensor = { id: `${MISSING}:measure_temperature`, name: 'Deleted device · Temperature' };
     const out = [];
     for (const device of devs.slice(0, 2)) {
       const s = { device: device.id };
@@ -161,6 +164,8 @@ const BUILD = {
         w('thermostat', 'Off · mode + temp · mode + temp + extra', presets),
         w('thermostat', 'Compact, same presets', { ...presets, layout: 'compact' }),
         w('thermostat', 'Temperatures only, power kept', { device, b1Power: 'keep', b1Temp: temp(2), b2Power: 'keep', b2Temp: temp(4), b3Power: 'keep', b3Temp: temp(6) }),
+        w('thermostat', 'Value beside the name (a temperature)', { ...presets, sensor: sensor[0] ?? null }),
+        w('thermostat', 'Compact · value beside the name of a deleted device', { ...presets, layout: 'compact', sensor: missingSensor }),
         w('thermostat', 'Compact · differ only in extra', { device, layout: 'compact', b1Power: 'on', b1Mode: mode(0), b1Temp: temp(4), b2Power: 'on', b2Mode: mode(0), b2Temp: temp(4), b2Extra: extra, b3Power: 'on', b3Mode: mode(2) }),
       );
     }

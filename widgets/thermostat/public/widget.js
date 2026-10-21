@@ -1,8 +1,9 @@
 /*
  * Thermostat Presets: a header with the device and three preset buttons. A button is
  * highlighted while the device's state matches its preset; when none matches, the header says
- * what the device is currently doing. The header, buttons and highlighting are the shared presets
- * module (presets.js, which Variable Presets loads too); this is the device model and its text.
+ * what the device is currently doing. A chosen sensor value (`state.sensor`) can sit at the header's right end. The
+ * header, buttons and highlighting are the shared presets module (presets.js, which Variable Presets loads too); this is
+ * the device model and its text.
  * Plain browser JS (served as-is).
  */
 (function () {
@@ -69,12 +70,22 @@
       apply: opts.onApply ? p => opts.onApply(deviceValues(p)) : null,
       failed: err => `${t('applyFailed')} ${(err && err.message) || ''}`.trim(),
       current: () => currentText(),
+      // The sensor beside the name: `{capability, value}` from Device Values' tracking (the kit's formatting).
+      aside: state => (state.sensor ? window.WidgetkeeperKit.formatValue(state.sensor.capability, state.sensor.value, t) : ''),
     });
 
     function pushChange({ capabilityId, value }) {
       const state = core.getState();
       if (!state) return;
       state.values[capabilityId] = value;
+      core.render();
+    }
+
+    /** A realtime value of the sensor beside the name. */
+    function pushSensor(value) {
+      const state = core.getState();
+      if (!state || !state.sensor) return;
+      state.sensor.value = value;
       core.render();
     }
 
@@ -205,7 +216,7 @@
       return parts.length ? t('currently', { state: parts.join(' · ') }) : '';
     }
 
-    return { setButtons: core.setButtons, setState: core.setState, pushChange, setMessage: core.setMessage, render: core.render, t };
+    return { setButtons: core.setButtons, setState: core.setState, pushChange, pushSensor, setMessage: core.setMessage, render: core.render, t };
   }
 
   /** Turns the flat widget settings into three presets of capability values. */

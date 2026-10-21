@@ -16,10 +16,10 @@
    * @param {{ text: (preset: any, state: any) => { big: string, mode?: string | null, kind?: string, extras?: string[] },
    *   matches: (preset: any, state: any) => boolean, usable?: (preset: any, state: any) => boolean,
    *   apply?: ((preset: any, state: any) => Promise<any>) | null, failed: (err: any) => string,
-   *   current: (state: any, presets: any[]) => string, layout?: string, fallbackIcon?: boolean,
-   *   onHeight?: (h: number) => void }} hooks `state` has the header's `name` and `icon` (a URL for the mask);
-   *   the rest is the widget's own. A preset that isn't `usable` is a disabled button. Without an icon the box shows a
-   *   rounded square, or nothing with `fallbackIcon: false`.
+   *   current: (state: any, presets: any[]) => string, aside?: (state: any) => string, layout?: string,
+   *   fallbackIcon?: boolean, onHeight?: (h: number) => void }} hooks `state` has the header's `name` and `icon` (a URL
+   *   for the mask); the rest is the widget's own. A preset that isn't `usable` is a disabled button. Without an icon the
+   *   box shows a rounded square, or nothing with `fallbackIcon: false`. `aside` is a value at the header's right end.
    */
   function createPresets(root, hooks) {
     const usable = (p, s) => !hooks.usable || hooks.usable(p, s);
@@ -38,6 +38,8 @@
     const titles = el('div', { class: 'tw-titles' }, header);
     const nameEl = el('div', { class: 'tw-name', dir: 'auto' }, titles);
     const subEl = el('div', { class: 'tw-sub', dir: 'auto' }, titles);
+    // Only with the hook, so a widget without it keeps its markup.
+    const asideEl = hooks.aside ? el('div', { class: 'tw-aside', dir: 'auto' }, header) : null;
     const row = el('div', { class: 'tw-row' }, root);
     let tiles = [];
 
@@ -121,6 +123,11 @@
       subEl.classList.toggle('error', !!errorText && !!state);
       header.classList.toggle('has-sub', !!sub && !errorText);
       header.classList.toggle('message-only', !state);
+      if (asideEl) {
+        const aside = state ? hooks.aside(state) : '';
+        asideEl.textContent = aside;
+        asideEl.style.display = aside ? '' : 'none';
+      }
 
       row.style.display = state || !errorText ? '' : 'none';
       tiles.forEach((b, i) => {

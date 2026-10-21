@@ -29,6 +29,8 @@
   <div class="col"><span>Compact · 400 px · changed elsewhere (none active)</span><div class="card tw-frame homey-dark-mode" style="width:400px"><div id="c2"></div></div></div>
   <div class="col"><span>Compact · 400 px · light · fan only</span><div class="card light" style="width:400px"><div id="c3"></div></div></div>
   <div class="col"><span>Compact · 300 px · none active · no icon</span><div class="card tw-frame homey-dark-mode" style="width:300px"><div id="c4"></div></div></div>
+  <div class="col"><span>352 px · sensor beside the name (ticks)</span><div class="card tw-frame homey-dark-mode" style="width:352px"><div id="s1"></div></div></div>
+  <div class="col"><span>Compact · 300 px · sensor beside the name</span><div class="card tw-frame homey-dark-mode" style="width:300px"><div id="s2"></div></div></div>
   <div class="col"><span>Compact · 400 px · no device</span><div class="card tw-frame homey-dark-mode" style="width:400px"><div id="c5"></div></div></div>
 
   <script>
@@ -57,8 +59,11 @@
       ['c2', settings, ICON, { onoff: true, target_temperature: 23, thermostat_mode: 'cool', fan_speed: 'auto' }, 'compact'],
       ['c3', fanSettings, ICON, { onoff: true, target_temperature: 23, thermostat_mode: 'cool', fan_speed: 'slow' }, 'compact'],
       ['c4', coolSettings, null, { onoff: true, target_temperature: 23, thermostat_mode: 'heat', fan_speed: 'auto' }, 'compact'],
+      ['s1', settings, ICON, { onoff: true, target_temperature: 21, thermostat_mode: 'heat', fan_speed: 'slow' }, undefined, 21.4],
+      ['s2', settings, ICON, { onoff: true, target_temperature: 23, thermostat_mode: 'cool', fan_speed: 'auto' }, 'compact', 22.8],
     ];
-    for (const [id, s, icon, values, layout] of cases) {
+    const TEMP = { type: 'number', title: 'Temperature', units: '°C', decimals: 1 };
+    for (const [id, s, icon, values, layout, sensor] of cases) {
       let w;
       w = createThermostatWidget(document.getElementById(id), {
         locale: 'da-DK',
@@ -68,7 +73,10 @@
         onApply: (vals) => new Promise(r => setTimeout(() => { for (const v of vals) w.pushChange(v); r(); }, 600)),
       });
       w.setButtons(thermostatPresetsFromSettings(s));
-      w.setState({ name: 'Heat pump | Living room', icon, values: { ...values }, caps });
+      w.setState({ name: 'Heat pump | Living room', icon, values: { ...values }, caps,
+        ...(sensor != null ? { sensor: { deviceId: 'room', capabilityId: 'measure_temperature', capability: TEMP, value: sensor } } : {}) });
+      // A made-up room sensor, as `values:state` would send it.
+      if (id === 's1') { let v = sensor; setInterval(() => { v = Math.round((v + 0.1) * 10) / 10; w.pushSensor(v); }, 2000); }
     }
     const empty = createThermostatWidget(document.getElementById('w6'), { t: devT });
     empty.setButtons(thermostatPresetsFromSettings(settings));

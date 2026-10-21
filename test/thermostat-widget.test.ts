@@ -274,3 +274,37 @@ describe('layout', () => {
     expect(header.classList.contains('has-sub')).toBe(false);
   });
 });
+
+describe('the sensor beside the name', () => {
+  const settings = { b1Power: 'off', b2Mode: heat, b3Mode: cool };
+  const withSensor = (value: unknown = 21) => ({ ...aircon(), sensor: { deviceId: 'room', capabilityId: 'measure_temperature', capability: { type: 'number', units: '°C', decimals: 1 }, value } });
+  const aside = (root: HTMLElement) => {
+    const el = root.querySelector<HTMLElement>('.tw-aside')!;
+    return el.style.display === 'none' ? null : el.textContent;
+  };
+
+  it('shows the value at the end of the header, in both layouts', () => {
+    expect(aside(widget(settings, withSensor()).root)).toBe('21°C');
+    const { root } = widget(settings, withSensor(), undefined, 'compact');
+    expect(root.querySelector('.tw-header')!.lastElementChild!.className).toBe('tw-aside');
+    expect(aside(root)).toBe('21°C');
+  });
+
+  it('follows realtime values', () => {
+    const { w, root } = widget(settings, withSensor());
+    w.pushSensor(22);
+    expect(aside(root)).toBe('22°C');
+    w.pushSensor(null);
+    expect(aside(root)).toBe('–');
+  });
+
+  it('is hidden without a sensor, a state or with only a message', () => {
+    const { w, root } = widget(settings);
+    expect(aside(root)).toBeNull();
+    w.pushSensor(20); // no sensor in the state: ignored
+    expect(aside(root)).toBeNull();
+    w.setState(withSensor());
+    w.setMessage('Could not load the thermostat.');
+    expect(aside(root)).toBeNull();
+  });
+});

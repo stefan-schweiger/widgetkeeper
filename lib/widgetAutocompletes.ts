@@ -28,8 +28,9 @@ export function widgetAutocompletes(app: WidgetkeeperApp): Record<string, Record
     (table[widget] ??= {})[setting] = fn;
   };
 
-  // Thermostat: the device, then per-button options read from it.
+  // Thermostat: the device, the value beside its name (Device Values' pairs), then per-button options read from the device.
   add('thermostat', 'device', query => app.thermostat.listDevices(query));
+  add('thermostat', 'sensor', query => app.values.listSlots(query));
   for (const n of [1, 2, 3]) {
     add('thermostat', `b${n}Temp`, (query, settings) => app.thermostat.listTemperatures(settings?.device?.id, query));
     for (const field of ['Mode', 'Extra']) {
