@@ -20,6 +20,7 @@ window.mountThermostatWidget = function (Homey, { root, frame }) {
     colorStyle: settings.colorStyle,
     t: (key, tokens) => Homey.__(key, tokens),
     layout: settings.layout, // missing on widgets placed before the setting: standard
+    title: settings.title, // empty or missing: the device's name
     onApply: (values) => Homey.api('POST', '/apply', {
       deviceId, values: values.map(({ capabilityId, value }) => ({ capabilityId, value })),
     }),

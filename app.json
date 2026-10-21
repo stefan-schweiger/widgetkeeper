@@ -15474,6 +15474,41 @@
           }
         },
         {
+          "id": "title",
+          "type": "text",
+          "title": {
+            "en": "Title",
+            "nl": "Titel",
+            "de": "Titel",
+            "fr": "Titre",
+            "it": "Titolo",
+            "sv": "Rubrik",
+            "no": "Tittel",
+            "es": "Título",
+            "da": "Titel",
+            "ru": "Заголовок",
+            "pl": "Tytuł",
+            "ko": "제목",
+            "ar": "العنوان"
+          },
+          "hint": {
+            "en": "Shown in place of the device’s name. Leave empty for the name.",
+            "nl": "Getoond in plaats van de naam van het apparaat. Laat leeg voor de naam.",
+            "de": "Wird statt des Gerätenamens angezeigt. Leer lassen für den Namen.",
+            "fr": "Affiché à la place du nom de l’appareil. Laissez vide pour le nom.",
+            "it": "Mostrato al posto del nome del dispositivo. Lascia vuoto per il nome.",
+            "sv": "Visas i stället för enhetens namn. Lämna tomt för namnet.",
+            "no": "Vises i stedet for enhetens navn. La stå tomt for navnet.",
+            "es": "Se muestra en lugar del nombre del dispositivo. Déjalo vacío para el nombre.",
+            "da": "Vises i stedet for enhedens navn. Lad den være tom for navnet.",
+            "ru": "Показывается вместо имени устройства. Оставьте пустым для имени.",
+            "pl": "Wyświetlany zamiast nazwy urządzenia. Zostaw puste, aby była nazwa.",
+            "ko": "기기 이름 대신 표시됩니다. 비워 두면 이름이 표시됩니다.",
+            "ar": "يظهر بدل اسم الجهاز. اتركه فارغًا لإظهار الاسم."
+          },
+          "value": ""
+        },
+        {
           "id": "sensor",
           "type": "autocomplete",
           "title": {

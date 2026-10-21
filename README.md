@@ -298,7 +298,7 @@ Device Values' tiles with a small live chart of each value and its highest and l
 
 Three one-tap presets for a thermostat, heat pump or air conditioner, such as *Off*, *Heat 21°* and *Heat 24° · Fan level 5*. The matching preset lights up.
 
-**Settings:** the device, a value to show beside its name (any device value, such as the room temperature), compact layout, [colour style](#colour-style), and per button: power, mode, temperature and one extra option such as the fan speed.
+**Settings:** the device, a title in place of its name, a value to show beside it (any device value, such as the room temperature), compact layout, [colour style](#colour-style), and per button: power, mode, temperature and one extra option such as the fan speed.
 
 ## Timers
 <img src="docs/clips/timers.webp" alt="Timers on a Homey dashboard: a pizza timer started from its preset, given a minute more, paused and resumed, then run out in red and dismissed" width="358">

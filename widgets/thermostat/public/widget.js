@@ -49,7 +49,7 @@
    * @param {HTMLElement} root
    * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string,
    *   onApply?: (values: {capabilityId: string, value: any}[]) => Promise<any>,
-   *   onHeight?: (h: number) => void, layout?: string }} opts
+   *   onHeight?: (h: number) => void, layout?: string, title?: string }} opts `title` replaces the device's name.
    */
   function createThermostatWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -58,6 +58,7 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
     const numberFmt = new Intl.NumberFormat(opts.locale, { maximumFractionDigits: 1 });
+    const title = typeof opts.title === 'string' ? opts.title.trim() : '';
 
     // The header, the buttons and which is lit; the device model below reads its state ({ name, icon, values, caps }).
     window.WidgetkeeperKit.applyColors(root, { style: opts.colorStyle }); // ../spacer/kit.js: the Vivid colours
@@ -73,6 +74,11 @@
       // The sensor beside the name: `{capability, value}` from Device Values' tracking (the kit's formatting).
       aside: state => (state.sensor ? window.WidgetkeeperKit.formatValue(state.sensor.capability, state.sensor.value, t) : ''),
     });
+
+    /** The device's state, named by the `title` setting when there is one. */
+    function setState(state) {
+      core.setState(title && state ? { ...state, name: title } : state);
+    }
 
     function pushChange({ capabilityId, value }) {
       const state = core.getState();
@@ -216,7 +222,7 @@
       return parts.length ? t('currently', { state: parts.join(' · ') }) : '';
     }
 
-    return { setButtons: core.setButtons, setState: core.setState, pushChange, pushSensor, setMessage: core.setMessage, render: core.render, t };
+    return { setButtons: core.setButtons, setState, pushChange, pushSensor, setMessage: core.setMessage, render: core.render, t };
   }
 
   /** Turns the flat widget settings into three presets of capability values. */

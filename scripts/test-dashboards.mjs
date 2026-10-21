@@ -165,6 +165,7 @@ const BUILD = {
         w('thermostat', 'Compact, same presets', { ...presets, layout: 'compact' }),
         w('thermostat', 'Temperatures only, power kept', { device, b1Power: 'keep', b1Temp: temp(2), b2Power: 'keep', b2Temp: temp(4), b3Power: 'keep', b3Temp: temp(6) }),
         w('thermostat', 'Value beside the name (a temperature)', { ...presets, sensor: sensor[0] ?? null }),
+        w('thermostat', 'Own title "Living room" · value beside it', { ...presets, title: 'Living room', sensor: sensor[0] ?? null }),
         w('thermostat', 'Compact · value beside the name of a deleted device', { ...presets, layout: 'compact', sensor: missingSensor }),
         w('thermostat', 'Compact · differ only in extra', { device, layout: 'compact', b1Power: 'on', b1Mode: mode(0), b1Temp: temp(4), b2Power: 'on', b2Mode: mode(0), b2Temp: temp(4), b2Extra: extra, b3Power: 'on', b3Mode: mode(2) }),
       );

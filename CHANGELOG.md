@@ -5,6 +5,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ## 1.0.2
 
 ### Thermostat Presets
+- **Title:** show your own name in place of the device's.
 - **Value beside the name:** pick any device value, such as the room temperature or the aircon's own target temperature, to show live at the top right of the widget.
 
 ### Curtains

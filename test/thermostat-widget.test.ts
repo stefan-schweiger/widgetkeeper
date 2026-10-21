@@ -43,10 +43,10 @@ function noOnoff(mode = 'cool') {
   return s;
 }
 
-function widget(settings: Record<string, unknown>, state: any = aircon(), onApply = vi.fn(async () => {}), layout?: string) {
+function widget(settings: Record<string, unknown>, state: any = aircon(), onApply = vi.fn(async () => {}), layout?: string, title?: string) {
   const root = document.createElement('div');
   document.body.append(root);
-  const w = win.createThermostatWidget(root, { locale: 'en', onApply, layout });
+  const w = win.createThermostatWidget(root, { locale: 'en', onApply, layout, title });
   w.setButtons(win.thermostatPresetsFromSettings(settings));
   if (state) w.setState(state);
   const buttons = () => [...root.querySelectorAll<HTMLButtonElement>('.tw-btn')].map(b => ({
@@ -338,5 +338,23 @@ describe('mount: the sensor beside the name', () => {
     const { api } = mount({ id: 'none', name: 'None' });
     await vi.waitFor(() => expect(api).toHaveBeenCalled());
     expect(api.mock.calls[0][1]).not.toContain('sensor=');
+  });
+});
+
+describe('title', () => {
+  const settings = { b1Power: 'off', b2Mode: heat, b3Mode: cool };
+  const name = (root: HTMLElement) => root.querySelector('.tw-name')!.textContent;
+
+  it('replaces the device name, and an empty one keeps it', () => {
+    expect(name(widget(settings, aircon(), undefined, undefined, '  Living room  ').root)).toBe('Living room');
+    expect(name(widget(settings, aircon(), undefined, undefined, '   ').root)).toBe('Aircon');
+    expect(name(widget(settings).root)).toBe('Aircon');
+  });
+
+  it('stays through a refresh and realtime changes', () => {
+    const { w, root } = widget(settings, aircon(), undefined, 'compact', 'Upstairs');
+    w.setState(aircon({ thermostat_mode: 'heat' }));
+    w.pushChange({ capabilityId: 'target_temperature', value: 22 });
+    expect(name(root)).toBe('Upstairs');
   });
 });
