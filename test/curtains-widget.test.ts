@@ -80,6 +80,25 @@ describe('render', () => {
     expect(tile('d').classList.contains('no-position')).toBe(true);
   });
 
+  it('takes open or closed from the position over windowcoverings_closed (wk-074)', () => {
+    // A driver's own invert setting can flip the position but leave windowcoverings_closed as it was.
+    const { action, state, tile } = widget([
+      curtain('a', 0, { windowcoverings_closed: cap(false) }),
+      curtain('b', 1, { windowcoverings_closed: cap(true) }),
+      plain('d', false),
+    ]);
+    expect(tile('a').classList.contains('open')).toBe(false);
+    expect(state('a')).toBe('Closed');
+    expect(action('a')).toBe('open');
+    expect(tile('b').classList.contains('open')).toBe(true);
+    expect(state('b')).toBe('Open');
+    // Without a position, windowcoverings_closed still decides.
+    expect(tile('d').classList.contains('open')).toBe(true);
+    const inverted = widget([curtain('c', 1, { windowcoverings_closed: cap(false) })], { invert: true });
+    expect(inverted.tile('c').classList.contains('open')).toBe(false);
+    expect(inverted.state('c')).toBe('Closed');
+  });
+
   it('follows the motor: the other way while it moves', () => {
     const { w, action, state, tile } = widget([curtain('a', 0.3)]);
     w.pushChange({ deviceId: 'a', capabilityId: 'windowcoverings_state', value: 'up' });

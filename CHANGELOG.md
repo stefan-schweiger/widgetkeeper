@@ -2,6 +2,11 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 1.0.2
+
+### Curtains
+- Curtains reversed in the device's own settings no longer show a blue tile when closed.
+
 ## 1.0.1
 
 ### Web dashboards

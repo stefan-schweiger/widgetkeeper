@@ -251,7 +251,9 @@
       const p = pending.get(d.id);
       if (p && Date.now() >= p.until) pending.delete(d.id);
       else if (p && !moving && !(position != null && Math.abs(position - p.value) <= ARRIVE)) moving = p.dir;
-      const closed = typeof closedValue === 'boolean' ? closedValue : position != null ? position <= end : null;
+      // The position wins, as for the state text and the icon: a driver's own invert setting can flip it but leave
+      // windowcoverings_closed as it was (wk-074).
+      const closed = position != null ? position <= end : typeof closedValue === 'boolean' ? closedValue : null;
       return {
         position,
         moving,
