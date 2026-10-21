@@ -417,6 +417,7 @@
     "close": "Lukk",
     "speakers": "Høyttalere",
     "switchSpeaker": "Bytt høyttaler",
+    "switchLayout": "Bytt oppsett",
     "speakersError": "Kunne ikke laste inn høyttalerne.",
     "loading": "Laster…",
     "noKey": "Legg til en API-nøkkel i appinnstillingene for å bruke knappen.",

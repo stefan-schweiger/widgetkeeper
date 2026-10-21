@@ -66,6 +66,9 @@ html, body { margin: 0; }
 .mw-art-glyph svg, .mw-glyph svg { width: 100%; height: 100%; display: block; }
 /* On TV or line-in: Homey's blue, so it reads as a state, not as "nothing". */
 .mw-art.external { background: color-mix(in srgb, var(--mw-accent) 22%, var(--mw-card)); color: var(--mw-text); }
+/* With `layoutTap` the art switches the layout (wk-077). */
+.mw-art.tap { cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform .1s; }
+.mw-art.tap.pressing { transform: scale(.97); }
 
 .mw-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 /* ⋯ in the top right corner opens the overlay; tinted while a button there is lit (the TV source). */

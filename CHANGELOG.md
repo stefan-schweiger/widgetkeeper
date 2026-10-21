@@ -18,6 +18,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Media
 - With the volume as − and +, shuffle and repeat stay next to play when the widget is wide enough, and move to the ⋯ menu only when the row has no room.
+- **Tap the album art** to switch between the Large and Compact layouts. Each screen remembers its choice, and *Tap the album art to switch layout* turns it off.
 
 ### Web dashboards
 - **Backup:** choose which dashboards to download, and which to restore from a file. A restore replaces only the dashboards you tick; the others stay as they are.

@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { readFileSync } from 'node:fs';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { loadWidget } from './helpers/loadWidget.js';
+import { loadMount, loadWidget } from './helpers/loadWidget.js';
 
 let win: any;
 beforeAll(() => { win = loadWidget('media'); });
@@ -453,5 +453,93 @@ describe('large layout', () => {
     await vi.advanceTimersByTimeAsync(0);
     document.querySelector<HTMLElement>('.mw-spk')!.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
     expect(onSwitch).toHaveBeenCalledWith('b');
+  });
+});
+
+describe('switching layout (wk-077)', () => {
+  it('switches between Large and Compact in place with a tap on the album art', () => {
+    const onLayout = vi.fn();
+    const { root, q, click } = widget(speaker(), { layout: 'compact', layoutTap: true, onLayout });
+    expect(q('.mw-art').getAttribute('role')).toBe('button');
+    expect(q('.mw-art').getAttribute('aria-label')).toBe('Switch layout');
+    click('.mw-art');
+    expect(root.classList.contains('mw-large')).toBe(true);
+    expect(q('.mw-main').firstElementChild).toBe(q('.mw-art'));
+    expect(onLayout).toHaveBeenLastCalledWith('large');
+    click('.mw-art');
+    expect(root.classList.contains('mw-large')).toBe(false);
+    expect(q('.mw-now').firstElementChild).toBe(q('.mw-art'));
+    expect(onLayout).toHaveBeenLastCalledWith('compact');
+  });
+
+  it('leaves the art alone without layoutTap', () => {
+    const onLayout = vi.fn();
+    const { root, q, click } = widget(speaker(), { layout: 'large', onLayout });
+    expect(q('.mw-art').hasAttribute('role')).toBe(false);
+    click('.mw-art');
+    expect(root.classList.contains('mw-large')).toBe(true);
+    expect(onLayout).not.toHaveBeenCalled();
+  });
+});
+
+describe('mount: the layout remembered on this screen', () => {
+  const KEY = 'widgetkeeper.media.layout.w1';
+  beforeAll(() => { loadMount('media'); });
+  afterEach(() => { localStorage.clear(); });
+
+  async function mount(settings: object) {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const Homey = {
+      api: vi.fn(async () => speaker()),
+      on: vi.fn(), ready: vi.fn(), setHeight: vi.fn(), hapticFeedback: vi.fn(),
+      getSettings: () => ({ device: { id: 'k' }, ...settings }),
+      getDeviceIds: () => [], getWidgetInstanceId: () => 'w1', __: (key: string) => key,
+    };
+    win.mountMediaWidget(Homey, { root, frame: root });
+    await vi.advanceTimersByTimeAsync(0);
+    const art = root.querySelector<HTMLElement>('.mw-art')!;
+    const tap = () => art.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+    return { root, art, tap };
+  }
+
+  it("starts with the stored layout and forgets it at the setting's", async () => {
+    localStorage.setItem(KEY, 'large');
+    const { root, tap } = await mount({ layout: 'compact' });
+    expect(root.classList.contains('mw-large')).toBe(true);
+    tap();
+    expect(root.classList.contains('mw-large')).toBe(false);
+    expect(localStorage.getItem(KEY)).toBeNull();
+    tap();
+    expect(localStorage.getItem(KEY)).toBe('large');
+  });
+
+  it('is on for a widget placed before the setting existed', async () => {
+    const { art } = await mount({ layout: 'large' });
+    expect(art.getAttribute('role')).toBe('button');
+  });
+
+  it("keeps the setting's layout with the tap turned off", async () => {
+    localStorage.setItem(KEY, 'large');
+    const { root, art, tap } = await mount({ layout: 'compact', layoutTap: false });
+    expect(root.classList.contains('mw-large')).toBe(false);
+    expect(art.hasAttribute('role')).toBe(false);
+    tap();
+    expect(root.classList.contains('mw-large')).toBe(false);
+    expect(localStorage.getItem(KEY)).toBe('large');
+  });
+
+  it("mounts with the setting's layout when storage throws", async () => {
+    const get = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('blocked'); });
+    const set = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('blocked'); });
+    try {
+      const { root, tap } = await mount({ layout: 'large' });
+      expect(root.classList.contains('mw-large')).toBe(true);
+      tap();
+      expect(root.classList.contains('mw-large')).toBe(false);
+    } finally {
+      get.mockRestore();
+      set.mockRestore();
+    }
   });
 });

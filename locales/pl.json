@@ -417,6 +417,7 @@
     "close": "Zamknij",
     "speakers": "Głośniki",
     "switchSpeaker": "Zmień głośnik",
+    "switchLayout": "Zmień układ",
     "speakersError": "Nie udało się wczytać głośników.",
     "loading": "Wczytywanie…",
     "noKey": "Aby użyć przycisku, dodaj klucz API w ustawieniach aplikacji.",

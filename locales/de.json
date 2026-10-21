@@ -417,6 +417,7 @@
     "close": "Schließen",
     "speakers": "Lautsprecher",
     "switchSpeaker": "Lautsprecher wechseln",
+    "switchLayout": "Layout wechseln",
     "speakersError": "Lautsprecher konnten nicht geladen werden.",
     "loading": "Wird geladen…",
     "noKey": "Um diesen Button zu nutzen, füge in den App-Einstellungen einen API-Schlüssel hinzu.",

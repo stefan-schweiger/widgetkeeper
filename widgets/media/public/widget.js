@@ -7,7 +7,8 @@
  * card says so instead of greying out: mute and the volume are what matter there. With `canSwitch`, a tap on the
  * speaker's name (its device icon, the name and a ⌄) lists every speaker, and picking one switches the card to it.
  * `layout: 'large'` puts the album art above everything at the full width, with bigger text and buttons below it
- * (the same parts; only their order and the CSS differ).
+ * (the same parts; only their order and the CSS differ). With `layoutTap`, a tap on the album art switches between
+ * the two in place (wk-077), and `onLayout` hears the new one.
  * Plain browser JS (served as-is).
  */
 (function () {
@@ -50,6 +51,7 @@
     close: 'Close',
     speakers: 'Speakers',
     switchSpeaker: 'Switch speaker',
+    switchLayout: 'Switch layout',
     speakersError: 'Could not load the speakers.',
     loading: 'Loading…',
     noKey: 'To use this button, add an API key in the app settings.',
@@ -171,7 +173,8 @@
    *   onReport?: (text: string) => void, onHaptic?: () => void, onHeight?: (h: number) => void,
    *   buttons?: {id: string, name: string, icon?: string | null}[], volumeStep?: number, maxVolume?: number, showShuffle?: boolean,
    *   volumeLayout?: 'line' | 'buttons', layout?: 'compact' | 'large', showProgress?: boolean, now?: () => number,
-   *   canSwitch?: boolean, onListSpeakers?: () => Promise<any[]>, onSwitch?: (id: string) => void }} opts
+   *   canSwitch?: boolean, onListSpeakers?: () => Promise<any[]>, onSwitch?: (id: string) => void,
+   *   layoutTap?: boolean, onLayout?: (layout: 'compact' | 'large') => void }} opts
    */
   function createMediaWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -218,7 +221,7 @@
     applyColors(root, { style: opts.colorStyle, color: opts.color, fallback: 'blue' });
     root.classList.toggle('mw-volume-buttons', volumeButtons);
     /** The album art at the full width above the rest (wk-046), instead of beside the track. */
-    const large = opts.layout === 'large';
+    let large = opts.layout === 'large';
     root.classList.toggle('mw-large', large);
     const card = el('div', { class: 'mw-card' }, root);
     // The main view and the overlay share one grid cell, so the card is as tall as the taller of the two and
@@ -574,8 +577,27 @@
     onTap(speakersClose, (e) => { e.stopPropagation(); setSpeakers(false); });
     onTap(speakersPanel, () => setSpeakers(false));
     onTap(closeBtn, (e) => { e.stopPropagation(); setPanel(false); });
+    // A tap on the album art switches between Large and Compact (the mount remembers it on this screen).
+    if (opts.layoutTap) {
+      artBox.classList.add('tap');
+      artBox.setAttribute('role', 'button');
+      artBox.setAttribute('aria-label', t('switchLayout'));
+      onTap(artBox, () => {
+        haptic();
+        setLayout(large ? 'compact' : 'large');
+        if (opts.onLayout) opts.onLayout(large ? 'large' : 'compact');
+      });
+    }
     // A tap on the overlay outside its buttons closes it, as Activity Dots' overlay.
     onTap(panel, () => setPanel(false));
+
+    /** Large puts the art box first in the card at the full width, Compact beside the track, as at the start. */
+    function setLayout(layout) {
+      large = layout === 'large';
+      root.classList.toggle('mw-large', large);
+      (large ? main : nowPlaying).prepend(artBox);
+      render();
+    }
 
     /** Opens or closes the speaker list, reading it again each time (the last read shows meanwhile). */
     async function setSpeakers(open) {
@@ -982,7 +1004,7 @@
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    return { setState, pushChange, pushArt, setMessage, render, t, setPanel, setSpeakers };
+    return { setState, pushChange, pushArt, setMessage, render, t, setPanel, setSpeakers, setLayout };
   }
 
   window.createMediaWidget = createMediaWidget;

@@ -417,6 +417,7 @@
     "close": "Luk",
     "speakers": "Højttalere",
     "switchSpeaker": "Skift højttaler",
+    "switchLayout": "Skift layout",
     "speakersError": "Kunne ikke hente højttalerne.",
     "loading": "Henter…",
     "noKey": "Tilføj en API-nøgle i app-indstillingerne for at bruge knappen.",

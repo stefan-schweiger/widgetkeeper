@@ -417,6 +417,7 @@
     "close": "Sluiten",
     "speakers": "Speakers",
     "switchSpeaker": "Speaker wisselen",
+    "switchLayout": "Indeling wisselen",
     "speakersError": "Kan de speakers niet laden.",
     "loading": "Laden…",
     "noKey": "Voeg een API-sleutel toe in de app-instellingen om deze knop te gebruiken.",

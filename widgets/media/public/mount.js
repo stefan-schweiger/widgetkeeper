@@ -25,6 +25,19 @@ window.mountMediaWidget = function (Homey, { root, frame }) {
     },
   };
   let deviceId = defaultId && canSwitch ? store.get() || defaultId : defaultId;
+  // The layout in the settings is the start; with `layoutTap` a tap on the album art switches it, and this screen
+  // remembers that the same way (wk-077).
+  const defaultLayout = settings.layout === 'large' ? 'large' : 'compact';
+  const layoutTap = settings.layoutTap !== false;
+  const layoutKey = `widgetkeeper.media.layout.${instanceId}`;
+  const layoutStore = {
+    get() { try { return localStorage.getItem(layoutKey); } catch (e) { return null; } },
+    set(layout) {
+      try { if (layout !== defaultLayout) localStorage.setItem(layoutKey, layout); else localStorage.removeItem(layoutKey); } catch (e) { /* no storage */ }
+    },
+  };
+  const stored = layoutTap ? layoutStore.get() : null;
+  const layout = stored === 'large' || stored === 'compact' ? stored : defaultLayout;
   let loadSeq = 0;
   const maxVolume = Number(settings.maxVolume);
   let loaded = false;
@@ -46,7 +59,9 @@ window.mountMediaWidget = function (Homey, { root, frame }) {
       load();
     },
     volumeLayout: settings.volumeLayout === 'buttons' ? 'buttons' : 'line',
-    layout: settings.layout === 'large' ? 'large' : 'compact',
+    layout,
+    layoutTap,
+    onLayout: layoutStore.set,
     onSet: (capabilityId, value) => Homey.api('POST', '/set', {
       deviceId, capabilityId, value, maxVolume: maxVolume > 0 && maxVolume < 100 ? maxVolume / 100 : 1,
     }),

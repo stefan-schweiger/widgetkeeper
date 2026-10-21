@@ -417,6 +417,7 @@
     "close": "Cerrar",
     "speakers": "Altavoces",
     "switchSpeaker": "Cambiar de altavoz",
+    "switchLayout": "Cambiar diseño",
     "speakersError": "No se pudieron cargar los altavoces.",
     "loading": "Cargando…",
     "noKey": "Para usar este botón, añade una clave API en los ajustes de la app.",

@@ -417,6 +417,7 @@
     "close": "Stäng",
     "speakers": "Högtalare",
     "switchSpeaker": "Byt högtalare",
+    "switchLayout": "Byt layout",
     "speakersError": "Kunde inte läsa in högtalarna.",
     "loading": "Läser in…",
     "noKey": "Lägg till en API-nyckel i appinställningarna för att använda knappen.",

@@ -235,9 +235,9 @@ Locks, doors, windows and garage doors in one line: *All locked and closed*, or 
 ## Media
 <img src="docs/clips/media.webp" alt="Media on a Homey dashboard: the volume turned up, the next track, mute, the TV as the source from behind ⋯, and a switch to another speaker" width="358">
 
-One speaker as a card: album art, the track, play controls, mute, and a volume that moves on every tap but never overshoots or passes your maximum. Shows TV and line-in instead of old album art. Tap the name to switch speaker. Up to four buttons behind ⋯ run the speaker's own actions (such as *Set source to TV*), its app's (such as Sonos (LocalAPI)'s *Scan the music library*) or flows; they need an [API key](#api-key), with **Flows** for the actions and **Start Flows** for flows. A large layout puts the album art across the whole widget, with bigger text and buttons below it.
+One speaker as a card: album art, the track, play controls, mute, and a volume that moves on every tap but never overshoots or passes your maximum. Shows TV and line-in instead of old album art. Tap the name to switch speaker. Up to four buttons behind ⋯ run the speaker's own actions (such as *Set source to TV*), its app's (such as Sonos (LocalAPI)'s *Scan the music library*) or flows; they need an [API key](#api-key), with **Flows** for the actions and **Start Flows** for flows. A large layout puts the album art across the whole widget, with bigger text and buttons below it; tap the album art to switch between the two (each screen remembers its choice).
 
-**Settings:** layout (compact or large), colour, [colour style](#colour-style), speaker, speaker switching, volume as a bar or buttons, volume step and maximum, progress, shuffle and repeat, four buttons with an icon and a name.
+**Settings:** layout (compact or large), tap the album art to switch layout, colour, [colour style](#colour-style), speaker, speaker switching, volume as a bar or buttons, volume step and maximum, progress, shuffle and repeat, four buttons with an icon and a name.
 
 ## Notes
 <img src="docs/screenshots/textline.png" alt="Notes on a Homey dashboard: a blue tile and a yellow Post-it note" width="358">

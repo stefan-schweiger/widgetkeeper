@@ -417,6 +417,7 @@
     "close": "Chiudi",
     "speakers": "Altoparlanti",
     "switchSpeaker": "Cambia altoparlante",
+    "switchLayout": "Cambia layout",
     "speakersError": "Impossibile caricare gli altoparlanti.",
     "loading": "Caricamento…",
     "noKey": "Per usare questo pulsante, aggiungi una chiave API nelle impostazioni dell’app.",

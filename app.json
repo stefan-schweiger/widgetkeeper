@@ -9345,6 +9345,41 @@
           }
         },
         {
+          "id": "layoutTap",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Tap the album art to switch layout",
+            "nl": "Tik op de albumhoes wisselt de indeling",
+            "de": "Tippen aufs Cover wechselt das Layout",
+            "fr": "Toucher la pochette change la disposition",
+            "it": "Tocca la copertina per cambiare layout",
+            "sv": "Tryck på omslaget för att byta layout",
+            "no": "Trykk på albumbildet for å bytte oppsett",
+            "es": "Tocar la portada cambia el diseño",
+            "da": "Tryk på albumcoveret for at skifte layout",
+            "ru": "Нажатие на обложку меняет макет",
+            "pl": "Dotknij okładki, by zmienić układ",
+            "ko": "앨범 아트를 탭해 레이아웃 전환",
+            "ar": "انقر على الغلاف لتبديل التخطيط"
+          },
+          "hint": {
+            "en": "A tap on the album art switches between Large and Compact. Each screen remembers its choice.",
+            "nl": "Een tik op de albumhoes wisselt tussen Groot en Compact. Elk scherm onthoudt de keuze.",
+            "de": "Ein Tippen auf das Albumcover wechselt zwischen Groß und Kompakt. Jeder Bildschirm merkt sich die Wahl.",
+            "fr": "Toucher la pochette bascule entre Grande et Compacte. Chaque écran retient son choix.",
+            "it": "Toccare la copertina passa da Grande a Compatto e viceversa. Ogni schermo ricorda la scelta.",
+            "sv": "Ett tryck på skivomslaget växlar mellan Stor och Kompakt. Varje skärm minns valet.",
+            "no": "Et trykk på albumbildet bytter mellom Stor og Kompakt. Hver skjerm husker valget.",
+            "es": "Tocar la portada cambia entre Grande y Compacto. Cada pantalla recuerda su elección.",
+            "da": "Et tryk på albumcoveret skifter mellem Stor og Kompakt. Hver skærm husker valget.",
+            "ru": "Нажатие на обложку переключает между «Крупный» и «Компактный». Каждый экран запоминает выбор.",
+            "pl": "Dotknięcie okładki przełącza między układem Duży i Kompaktowy. Każdy ekran pamięta wybór.",
+            "ko": "앨범 아트를 탭하면 크게와 컴팩트가 전환됩니다. 화면마다 선택을 기억합니다.",
+            "ar": "النقر على غلاف الألبوم يبدّل بين كبير ومضغوط. تتذكر كل شاشة اختيارها."
+          }
+        },
+        {
           "id": "color",
           "type": "dropdown",
           "title": {

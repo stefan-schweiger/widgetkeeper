@@ -417,6 +417,7 @@
     "close": "Fermer",
     "speakers": "Enceintes",
     "switchSpeaker": "Changer d’enceinte",
+    "switchLayout": "Changer de disposition",
     "speakersError": "Impossible de charger les enceintes.",
     "loading": "Chargement…",
     "noKey": "Pour utiliser ce bouton, ajoutez une clé API dans les réglages de l’app.",
