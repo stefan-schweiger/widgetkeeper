@@ -253,13 +253,13 @@
       b.appendChild(glyph(name));
       return b;
     };
-    // With the volume as buttons the row has no room for shuffle and repeat: they go in the overlay.
-    const shuffleInPanel = volumeButtons;
-    const shuffleBtn = opts.showShuffle && !shuffleInPanel ? control('shuffle', 'shuffle', 'mw-small') : null;
+    // With the volume as buttons shuffle and repeat are in the row and in the overlay, and widget.css shows them in
+    // the row only when it's wide enough (wk-076; a 300 px widget has no room for them).
+    const shuffleBtn = opts.showShuffle ? control('shuffle', 'shuffle', 'mw-small') : null;
     const prevBtn = control('previous', 'previous', 'mw-transport');
     const playBtn = control('play', 'play', 'mw-transport mw-play');
     const nextBtn = control('next', 'next', 'mw-transport');
-    const repeatBtn = opts.showShuffle && !shuffleInPanel ? control('repeat', 'repeat', 'mw-small') : null;
+    const repeatBtn = opts.showShuffle ? control('repeat', 'repeat', 'mw-small') : null;
     if (repeatBtn) el('span', { class: 'mw-badge', text: '1' }, repeatBtn);
     el('span', { class: 'mw-spacer' }, controls);
     const downBtn = el('button', { type: 'button', class: 'mw-btn mw-step', 'aria-label': t('volumeDown') });
@@ -297,8 +297,8 @@
       if (name === 'repeat') el('span', { class: 'mw-badge', text: '1' }, chip);
       return chip;
     };
-    const shuffleChip = opts.showShuffle && shuffleInPanel ? toggleChip('shuffle') : null;
-    const repeatChip = opts.showShuffle && shuffleInPanel ? toggleChip('repeat') : null;
+    const shuffleChip = opts.showShuffle && volumeButtons ? toggleChip('shuffle') : null;
+    const repeatChip = opts.showShuffle && volumeButtons ? toggleChip('repeat') : null;
     const closeBtn = el('button', { type: 'button', class: 'mw-btn mw-close', 'aria-label': t('close') }, panel);
     closeBtn.appendChild(glyph('close'));
     // The speaker list: in the same grid cell, but only laid out while open, so a long list grows the card then.
@@ -944,8 +944,11 @@
           repeatChip.classList.toggle('one', r === 'track');
         }
       }
-      const panelItems = ok ? buttons.filter(buttonAvailable).length
+      const panelButtons = ok ? buttons.filter(buttonAvailable).length : 0;
+      const panelItems = ok ? panelButtons
         + (shuffleChip && has('speaker_shuffle') ? 1 : 0) + (repeatChip && has('speaker_repeat') ? 1 : 0) : 0;
+      // Only shuffle and repeat in it: widget.css hides ⋯ while they fit in the row.
+      moreBtn.classList.toggle('mw-toggles-only', panelItems > 0 && !panelButtons);
       if (panelOpen && !panelItems) {
         panelOpen = false;
         if (panelTimer) clearTimeout(panelTimer);

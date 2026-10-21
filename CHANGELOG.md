@@ -16,6 +16,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Curtains
 - Curtains reversed in the device's own settings no longer show a blue tile when closed.
 
+### Media
+- With the volume as − and +, shuffle and repeat stay next to play when the widget is wide enough, and move to the ⋯ menu only when the row has no room.
+
 ### Web dashboards
 - **Backup:** choose which dashboards to download, and which to restore from a file. A restore replaces only the dashboards you tick; the others stay as they are.
 - In the front page's edit mode, the icons on a dashboard's card sit on the widget count's line, so long names aren't cut off.

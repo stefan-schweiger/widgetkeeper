@@ -9655,19 +9655,19 @@
             }
           ],
           "hint": {
-            "en": "With − and +, the volume shows as a ring around mute, and shuffle and repeat move to the ⋯ menu.",
-            "nl": "Met − en + toont een ring rond dempen het volume, en shuffle en herhalen staan in het ⋯-menu.",
-            "de": "Mit − und + zeigt ein Ring um Stumm die Lautstärke; Zufall und Wiederholen stehen im ⋯-Menü.",
-            "fr": "Avec − et +, un anneau autour de sourdine montre le volume ; aléatoire et répétition passent dans le menu ⋯.",
-            "it": "Con − e +, un anello attorno a muto mostra il volume; casuale e ripeti vanno nel menu ⋯.",
-            "sv": "Med − och + visar en ring runt ljud av volymen, och blanda och upprepa flyttas till ⋯-menyn.",
-            "no": "Med − og + viser en ring rundt demp volumet, og tilfeldig og gjenta flyttes til ⋯-menyen.",
-            "es": "Con − y +, un anillo alrededor de silencio muestra el volumen; aleatorio y repetir pasan al menú ⋯.",
-            "da": "Med − og + viser en ring om lyd fra lydstyrken, og bland og gentag flytter til ⋯-menuen.",
-            "ru": "С − и + громкость показывает кольцо вокруг кнопки звука, а перемешивание и повтор уходят в меню ⋯.",
-            "pl": "Przy − i + głośność pokazuje pierścień wokół wyciszenia, a losowo i powtarzanie trafiają do menu ⋯.",
-            "ko": "− 및 + 사용 시 음소거 버튼의 링이 볼륨을 표시하고, 셔플과 반복은 ⋯ 메뉴로 이동합니다.",
-            "ar": "مع − و+ تظهر حلقة حول زر الكتم مستوى الصوت، وينتقل التشغيل العشوائي والتكرار إلى قائمة ⋯."
+            "en": "With − and +, the volume shows as a ring around mute, and shuffle and repeat move to the ⋯ menu when the row has no room.",
+            "nl": "Met − en + toont een ring rond dempen het volume, en shuffle en herhalen staan in het ⋯-menu als de rij geen ruimte heeft.",
+            "de": "Mit − und + zeigt ein Ring um Stumm die Lautstärke; Zufall und Wiederholen stehen im ⋯-Menü, wenn die Zeile keinen Platz hat.",
+            "fr": "Avec − et +, un anneau autour de sourdine montre le volume ; aléatoire et répétition passent dans le menu ⋯ si la ligne manque de place.",
+            "it": "Con − e +, un anello attorno a muto mostra il volume; casuale e ripeti vanno nel menu ⋯ se la riga non ha spazio.",
+            "sv": "Med − och + visar en ring runt ljud av volymen, och blanda och upprepa flyttas till ⋯-menyn när raden saknar plats.",
+            "no": "Med − og + viser en ring rundt demp volumet, og tilfeldig og gjenta flyttes til ⋯-menyen når raden mangler plass.",
+            "es": "Con − y +, un anillo alrededor de silencio muestra el volumen; aleatorio y repetir pasan al menú ⋯ si la fila no tiene espacio.",
+            "da": "Med − og + viser en ring om lyd fra lydstyrken, og bland og gentag flytter til ⋯-menuen, når rækken mangler plads.",
+            "ru": "С − и + громкость показывает кольцо вокруг кнопки звука, а перемешивание и повтор уходят в меню ⋯, если в строке нет места.",
+            "pl": "Przy − i + głośność pokazuje pierścień wokół wyciszenia, a losowo i powtarzanie trafiają do menu ⋯, gdy w wierszu brak miejsca.",
+            "ko": "− 및 + 사용 시 음소거 버튼의 링이 볼륨을 표시하고, 줄에 공간이 없으면 셔플과 반복은 ⋯ 메뉴로 이동합니다.",
+            "ar": "مع − و+ تظهر حلقة حول زر الكتم مستوى الصوت، وينتقل التشغيل العشوائي والتكرار إلى قائمة ⋯ عندما لا يتسع السطر."
           }
         },
         {

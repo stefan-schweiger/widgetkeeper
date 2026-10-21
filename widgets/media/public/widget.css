@@ -161,7 +161,15 @@ button.mw-who.pressing { opacity: .6; }
 .mw-bar.dragging .mw-knob, .mw-bar.dragging .mw-fill { transition: none; }
 
 /* The volume as buttons: − mute + next to the transport, which fits 300 px (268 of content) with 4 px gaps.
-   Mute carries the level as a ring (to `maxVolume`), since there's no bar. */
+   Mute carries the level as a ring (to `maxVolume`), since there's no bar. Shuffle and repeat join the row from
+   344 px of content (36 + 40 + 44 + 40 + 36 + 36 + 44 + 36 and eight gaps; Large below), and are in the ⋯ overlay
+   while it's narrower (wk-076). */
+.mw-volume-buttons { container: mw / inline-size; }
+.mw-volume-buttons .mw-controls .mw-small { display: none; }
+@container mw (min-width: 344px) {
+  .mw-volume-buttons:not(.mw-large) .mw-controls .mw-small { display: inline-flex; }
+  .mw-volume-buttons:not(.mw-large) :is(.mw-chip.mw-toggle, .mw-more.mw-toggles-only) { display: none; }
+}
 .mw-volume-buttons .mw-controls { gap: var(--homey-su, 4px); }
 .mw-volume-buttons .mw-transport:not(.mw-play) { width: 40px; height: 40px; }
 .mw-mute.ring::before {
@@ -286,6 +294,11 @@ button.mw-who.pressing { opacity: .6; }
 .mw-large.mw-volume-buttons .mw-controls { gap: var(--homey-su, 4px); }
 .mw-large.mw-volume-buttons .mw-transport:not(.mw-play) { width: 52px; height: 52px; }
 .mw-large.mw-volume-buttons .mw-step { width: 40px; height: 40px; }
+/* Shuffle and repeat in the row from 396 px: 36 + 52 + 56 + 52 + 36 + 40 + 52 + 40 and eight 4 px gaps. */
+@container mw (min-width: 396px) {
+  .mw-large.mw-volume-buttons .mw-controls .mw-small { display: inline-flex; }
+  .mw-large.mw-volume-buttons :is(.mw-chip.mw-toggle, .mw-more.mw-toggles-only) { display: none; }
+}
 /* The overlay's pills and the speaker list, a size up too. */
 .mw-large .mw-chip { height: 44px; padding: 0 18px; border-radius: 22px; font-size: var(--mw-fs-default); line-height: var(--mw-lh-default); }
 .mw-large .mw-chip .mw-glyph { width: 20px; height: 20px; }

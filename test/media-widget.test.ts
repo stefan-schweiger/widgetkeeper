@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { readFileSync } from 'node:fs';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadWidget } from './helpers/loadWidget.js';
 
@@ -221,12 +222,31 @@ describe('volume as buttons', () => {
     expect(onSet.mock.calls).toEqual([['volume_set', 0.35]]);
   });
 
-  it('moves shuffle and repeat into the overlay', () => {
+  it('puts shuffle and repeat in the row and in the overlay, for the CSS to pick by width', () => {
     const { root, q, onSet } = widget(speaker(), { volumeLayout: 'buttons', showShuffle: true });
-    expect(q('.mw-controls').querySelector('[data-control="shuffle"]')).toBeNull();
+    const row = [...q('.mw-controls').querySelectorAll('.mw-btn')].map(b => b.getAttribute('aria-label'));
+    expect(row).toEqual(['Shuffle', 'Previous', 'Pause', 'Next', 'Repeat', 'Volume down', 'Mute', 'Volume up']);
+    expect(root.querySelectorAll('.mw-panel .mw-toggle')).toHaveLength(2);
     expect(q('.mw-more').style.display).toBe('');
-    root.querySelector<HTMLElement>('.mw-panel [data-control="shuffle"]')!.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
-    expect(onSet).toHaveBeenCalledWith('speaker_shuffle', true);
+    // Only the two toggles in the overlay: ⋯ is marked so the CSS hides it while they're in the row.
+    expect(q('.mw-more').classList.contains('mw-toggles-only')).toBe(true);
+    q('.mw-controls [data-control="shuffle"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+    expect(onSet).toHaveBeenLastCalledWith('speaker_shuffle', true);
+    q('.mw-panel [data-control="repeat"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+    expect(onSet).toHaveBeenLastCalledWith('speaker_repeat', 'playlist');
+  });
+
+  it('keeps ⋯ unmarked when the overlay has buttons too', () => {
+    const { q } = widget(speaker(), { volumeLayout: 'buttons', showShuffle: true, buttons: [{ id: 'flow:f1', name: 'Movie time' }] });
+    expect(q('.mw-more').classList.contains('mw-toggles-only')).toBe(false);
+  });
+
+  it('shows shuffle and repeat in the row only from 344 px (Large: 396)', () => {
+    const css = readFileSync('widgets/media/public/widget.css', 'utf8');
+    expect(css).toMatch(/\.mw-volume-buttons \{ container: mw \/ inline-size; \}/);
+    expect(css).toMatch(/\.mw-volume-buttons \.mw-controls \.mw-small \{ display: none; \}/);
+    expect(css).toMatch(/@container mw \(min-width: 344px\) \{\s*\.mw-volume-buttons:not\(\.mw-large\) \.mw-controls \.mw-small/);
+    expect(css).toMatch(/@container mw \(min-width: 396px\) \{\s*\.mw-large\.mw-volume-buttons \.mw-controls \.mw-small/);
   });
 
   it('keeps shuffle and repeat in the row with the volume line', () => {
