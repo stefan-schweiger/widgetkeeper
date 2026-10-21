@@ -1,9 +1,9 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { loadWidget } from './helpers/loadWidget.js';
+import { loadMount, loadWidget } from './helpers/loadWidget.js';
 
 let win: any;
-beforeAll(() => { win = loadWidget('thermostat'); });
+beforeAll(() => { win = loadWidget('thermostat'); loadMount('thermostat'); });
 
 const MODE = { title: 'Mode', units: null, values: [{ id: 'heat', title: 'Heat' }, { id: 'cool', title: 'Cool' }, { id: 'off', title: 'Off' }] };
 const FAN = { title: 'Fan speed', units: null, values: [{ id: 'auto', title: 'Auto' }, { id: 'low', title: 'Low' }, { id: 'high', title: 'High' }] };
@@ -306,5 +306,37 @@ describe('the sensor beside the name', () => {
     w.setState(withSensor());
     w.setMessage('Could not load the thermostat.');
     expect(aside(root)).toBeNull();
+  });
+});
+
+describe('mount: the sensor beside the name', () => {
+  const SENSOR = { type: 'number', title: 'Temperature', units: '°C', decimals: 1 };
+  function mount(sensor: unknown) {
+    const listeners: Record<string, (data: any) => void> = {};
+    const api = vi.fn(async (_method: string, _path: string) => ({ ...aircon(), sensor: { deviceId: 'room', capabilityId: 'measure_temperature', capability: SENSOR, value: 21 } }));
+    const Homey = {
+      api, on: (event: string, fn: (data: any) => void) => { listeners[event] = fn; }, ready: vi.fn(), setHeight: vi.fn(),
+      getSettings: () => ({ device: { id: 'dev1' }, sensor, b1Power: 'off' }), getDeviceIds: () => [], getWidgetInstanceId: () => 'w1',
+      __: (key: string) => key,
+    };
+    const root = document.createElement('div');
+    document.body.append(root);
+    win.mountThermostatWidget(Homey, { root, frame: root });
+    return { api, listeners, root };
+  }
+
+  it('asks /state for the slot and follows its values:state', async () => {
+    const { api, listeners, root } = mount({ id: 'room:measure_temperature', name: 'Living room · Temperature' });
+    await vi.waitFor(() => expect(root.querySelector('.tw-aside')!.textContent).toBe('21°C'));
+    expect(api.mock.calls[0][1]).toContain('&sensor=room%3Ameasure_temperature');
+    listeners['values:state']({ deviceId: 'other', capabilityId: 'measure_temperature', value: 30 });
+    listeners['values:state']({ deviceId: 'room', capabilityId: 'measure_temperature', value: 22 });
+    expect(root.querySelector('.tw-aside')!.textContent).toBe('22°C');
+  });
+
+  it('sends no sensor for None', async () => {
+    const { api } = mount({ id: 'none', name: 'None' });
+    await vi.waitFor(() => expect(api).toHaveBeenCalled());
+    expect(api.mock.calls[0][1]).not.toContain('sensor=');
   });
 });
