@@ -25,6 +25,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - In the front page's edit mode, the icons on a dashboard's card sit on the widget count's line, so long names aren't cut off.
 - **Remote access:** use the web dashboards away from home, through Homey's cloud. Turn it on under *Apps → Widgetkeeper → Configure*, which then shows the address. Off by default.
 
+### Value Matrix
+- Empty cells have a finer, evenly spaced hatching.
+
 ## 1.0.1
 
 ### Web dashboards
