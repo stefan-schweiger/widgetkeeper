@@ -25,7 +25,11 @@
     "applyFailed": "Impossibile modificare il termostato.",
     "on": "Acceso",
     "currently": "Attualmente __state__",
-    "currentlyOff": "Attualmente spento"
+    "currentlyOff": "Attualmente spento",
+    "setpoint": "Impostato a __temp__",
+    "power": "Accensione",
+    "controls": "Mostra i comandi",
+    "close": "Chiudi"
   },
   "quickactions": {
     "selectDevices": "Scegli i dispositivi nelle impostazioni.",

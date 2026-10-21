@@ -25,7 +25,11 @@
     "applyFailed": "تعذّر تغيير منظم الحرارة.",
     "on": "تشغيل",
     "currently": "حاليًا __state__",
-    "currentlyOff": "متوقف حاليًا"
+    "currentlyOff": "متوقف حاليًا",
+    "setpoint": "مضبوط على __temp__",
+    "power": "التشغيل",
+    "controls": "إظهار عناصر التحكم",
+    "close": "إغلاق"
   },
   "quickactions": {
     "selectDevices": "اختر الأجهزة في إعدادات الأداة.",

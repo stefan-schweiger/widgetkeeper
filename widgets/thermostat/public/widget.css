@@ -21,3 +21,43 @@
 .tw-btn[data-kind="heat"] { --tw-shade: var(--wk-orange-shade); }
 .tw-btn[data-kind="cool"] { --tw-shade: var(--wk-blue-shade); }
 .tw-btn[data-kind="auto"] { --tw-shade: var(--wk-green-shade); }
+
+/*
+ * The controls panel (widget.js), in the widget's place while open: the name and a close ✕ on top, then a row per
+ * setting, each a label over a 40 px segmented control in the preset buttons' look (`.tw-btn.tw-seg`, so a lit value
+ * takes the mode colours and the Muted/Vivid rules).
+ */
+.tw-controls { display: none; }
+.tw.tw-open > .tw-header, .tw.tw-open > .tw-row { display: none; }
+.tw.tw-open > .tw-controls { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); min-width: 0; }
+.tw-ctl-top { display: flex; align-items: center; gap: var(--homey-su-2, 8px); min-height: 32px; }
+.tw-ctl-name {
+  flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: var(--tw-fs-small); line-height: var(--tw-lh-small); font-weight: var(--tw-bold);
+}
+/* A ✕ drawn from two bars, in a 32 px hit area at the top right. */
+.tw-close {
+  appearance: none; border: 0; margin: 0 -6px 0 0; padding: 0; width: 32px; height: 32px; flex-shrink: 0;
+  background: none; position: relative; cursor: pointer; border-radius: 50%; -webkit-tap-highlight-color: transparent;
+}
+.tw-close::before, .tw-close::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: var(--homey-icon-size-regular, 16px); height: 2px;
+  border-radius: 1px; background: var(--tw-text); transform: translate(-50%, -50%) rotate(45deg);
+}
+.tw-close::after { transform: translate(-50%, -50%) rotate(-45deg); }
+.tw-close:active { background: var(--tw-tile); }
+.tw-close:focus-visible { outline: 2px solid var(--tw-other); outline-offset: 0; }
+.tw-ctl-row { display: flex; flex-direction: column; gap: var(--homey-su-1, 4px); min-width: 0; }
+.tw-ctl-label {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: var(--tw-fs-aux); line-height: var(--tw-lh-aux); color: var(--tw-muted);
+}
+.tw-btn.tw-seg { height: 40px; padding: 0 6px; }
+.tw-ctl-step { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr); }
+.tw-ctl-value {
+  display: flex; align-items: center; justify-content: center; min-width: 0; padding: 0 6px;
+  background: var(--tw-tile); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: var(--tw-fs-default); line-height: var(--tw-lh-default); font-weight: var(--tw-bold);
+}
+.tw-ctl-msg { font-size: var(--tw-fs-small); line-height: var(--tw-lh-small); color: var(--homey-color-red, #F25F5C); }
+.tw-ctl-row.shake { animation: tw-shake .35s; }

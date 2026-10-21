@@ -15,6 +15,10 @@ type CapInfo = {
   title: string,
   units: string | null,
   values: { id: string, title: string }[] | null, // enum capabilities only
+  setable: boolean, // the controls panel offers only these
+  min: number | null, // a number's range and step (the panel's target temperature)
+  max: number | null,
+  step: number | null,
 };
 
 type ThermostatState = {
@@ -48,9 +52,10 @@ export function isThermostat(device: any): boolean {
 }
 
 function capInfo(cap: any, id: string): CapInfo {
-  const { title, units } = describeCapability(cap, id);
+  const { title, units, min, max } = describeCapability(cap, id);
+  const step = typeof cap?.step === 'number' && cap.step > 0 ? cap.step : null;
   // Any values list, not only an enum's: describeCapability() keeps them for `type: 'enum'` alone.
-  return { title, units, values: capabilityValues(cap) };
+  return { title, units, values: capabilityValues(cap), setable: cap?.setable !== false, min, max, step };
 }
 
 /** The capabilities and values of the ones a shortcut can set, read into the entry. */

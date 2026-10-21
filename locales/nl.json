@@ -25,7 +25,11 @@
     "applyFailed": "Kan de thermostaat niet aanpassen.",
     "on": "Aan",
     "currently": "Nu __state__",
-    "currentlyOff": "Nu uit"
+    "currentlyOff": "Nu uit",
+    "setpoint": "Ingesteld op __temp__",
+    "power": "Aan/uit",
+    "controls": "Bediening tonen",
+    "close": "Sluiten"
   },
   "quickactions": {
     "selectDevices": "Kies apparaten in de widgetinstellingen.",

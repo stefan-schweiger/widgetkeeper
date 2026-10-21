@@ -25,7 +25,11 @@
     "applyFailed": "Das Thermostat konnte nicht geändert werden.",
     "on": "Ein",
     "currently": "Aktuell __state__",
-    "currentlyOff": "Aktuell aus"
+    "currentlyOff": "Aktuell aus",
+    "setpoint": "Eingestellt auf __temp__",
+    "power": "Ein/Aus",
+    "controls": "Steuerung anzeigen",
+    "close": "Schließen"
   },
   "quickactions": {
     "selectDevices": "Wähle Geräte in den Widget-Einstellungen.",

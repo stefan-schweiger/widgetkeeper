@@ -286,7 +286,7 @@ describe('the sensor beside the name', () => {
   it('shows the value at the end of the header, in both layouts', () => {
     expect(aside(widget(settings, withSensor()).root)).toBe('21°C');
     const { root } = widget(settings, withSensor(), undefined, 'compact');
-    expect(root.querySelector('.tw-header')!.lastElementChild!.className).toBe('tw-aside');
+    expect([...root.querySelector('.tw-header')!.children].map(c => c.className)).toEqual(['tw-device-icon fallback', 'tw-titles', 'tw-aside', 'tw-chevron']);
     expect(aside(root)).toBe('21°C');
   });
 
@@ -356,5 +356,154 @@ describe('title', () => {
     w.setState(aircon({ thermostat_mode: 'heat' }));
     w.pushChange({ capabilityId: 'target_temperature', value: 22 });
     expect(name(root)).toBe('Upstairs');
+  });
+});
+
+describe('the setpoint under the name', () => {
+  const modes = { b1Power: 'off', b2Mode: heat, b3Mode: cool };
+
+  it('shows the device setpoint while a lit preset sets no temperature', () => {
+    expect(widget(modes, aircon({ thermostat_mode: 'cool', target_temperature: 23 })).sub()).toBe('Set to 23°');
+    expect(widget(modes, aircon({ thermostat_mode: 'cool', target_temperature: 23 }), undefined, 'compact').sub()).toBe('Set to 23°');
+  });
+
+  it('is left out when the lit preset sets the temperature, or the device is off', () => {
+    expect(widget({ b1Mode: heat, b1Temp: t21 }, aircon({ thermostat_mode: 'heat', target_temperature: 21 })).sub()).toBeNull();
+    expect(widget(modes, aircon({ onoff: false })).sub()).toBeNull();
+  });
+});
+
+describe('the controls panel', () => {
+  const settings = { b1Power: 'off', b2Mode: heat, b3Mode: cool };
+  const SWING = { title: 'Swing', units: null, values: ['off', '1', '2', '3', '4', 'auto'].map(id => ({ id, title: id === 'off' ? 'Off' : id === 'auto' ? 'Auto' : `Position ${id}` })) };
+  const device = (values: Record<string, unknown> = {}) => aircon(values, {
+    target_temperature: { title: 'Target temperature', units: '°C', values: null, setable: true, min: 16, max: 30, step: 0.5 },
+    measure_temperature: { title: 'Temperature', units: '°C', values: null, setable: false },
+    swing: SWING,
+    display: { title: 'Display', units: null, values: [{ id: 'on', title: 'On' }], setable: false },
+  });
+
+  function opened(state = device(), onApply: any = vi.fn(async () => {})) {
+    vi.useFakeTimers();
+    const ui = widget(settings, state, onApply);
+    (ui.root.querySelector('.tw-header') as HTMLElement).click();
+    const rows = () => [...ui.root.querySelectorAll<HTMLElement>('.tw-ctl-row')];
+    const row = (label: string) => rows().find(r => r.querySelector('.tw-ctl-label')!.textContent === label)!;
+    const buttons = (label: string) => [...row(label).querySelectorAll<HTMLButtonElement>('button')];
+    const lit = (label: string) => buttons(label).filter(b => b.classList.contains('active')).map(b => b.textContent);
+    const value = (label: string) => row(label).querySelector('.tw-ctl-value')!.textContent;
+    const isOpen = () => ui.root.classList.contains('tw-open');
+    return { ...ui, rows, row, buttons, lit, value, isOpen };
+  }
+
+  it('makes the header a button with a chevron; a presets widget without the hook has neither', () => {
+    const { root } = widget(settings);
+    const header = root.querySelector('.tw-header')!;
+    expect(header.getAttribute('role')).toBe('button');
+    expect(header.getAttribute('aria-label')).toBe('Show the controls');
+    expect(header.querySelector('.tw-chevron')).not.toBeNull();
+    const plain = document.createElement('div');
+    win.WidgetkeeperPresets.create(plain, { text: () => ({ big: '' }), matches: () => false, failed: () => '', current: () => '' });
+    expect(plain.querySelector('.tw-header')!.hasAttribute('role')).toBe(false);
+    expect(plain.querySelector('.tw-chevron')).toBeNull();
+  });
+
+  it('opens in the widget’s place with a row per settable setting, the mode first among the enums', () => {
+    const { rows, isOpen, root } = opened();
+    expect(isOpen()).toBe(true);
+    expect(root.querySelector('.tw-ctl-name')!.textContent).toBe('Aircon');
+    expect(rows().map(r => r.querySelector('.tw-ctl-label')!.textContent)).toEqual(['Power', 'Target temperature', 'Mode', 'Fan speed', 'Swing']);
+  });
+
+  it('shows the values, the mode in its colour', () => {
+    const { lit, value, buttons } = opened(device({ thermostat_mode: 'heat', fan_speed: 'low', swing: '2', target_temperature: 21.5 }));
+    expect(lit('Power')).toEqual(['On']);
+    expect(lit('Mode')).toEqual(['Heat']);
+    expect(buttons('Mode').find(b => b.textContent === 'Heat')!.dataset.kind).toBe('heat');
+    expect(lit('Fan speed')).toEqual(['Low']);
+    expect(value('Target temperature')).toBe('21.5°');
+    expect(value('Swing')).toBe('Position 2'); // more than four values: a stepper
+  });
+
+  it('closes with ✕, Escape or after 30 s untouched', async () => {
+    const a = opened();
+    a.root.querySelector<HTMLButtonElement>('.tw-close')!.click();
+    expect(a.isOpen()).toBe(false);
+    const b = opened();
+    b.root.querySelector('.tw-controls')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(b.isOpen()).toBe(false);
+    const c = opened();
+    await vi.advanceTimersByTimeAsync(29e3);
+    expect(c.isOpen()).toBe(true);
+    await vi.advanceTimersByTimeAsync(1e3);
+    expect(c.isOpen()).toBe(false);
+  });
+
+  it('sends a segment at once, one value', () => {
+    const { buttons, onApply, lit } = opened();
+    buttons('Fan speed').find(b => b.textContent === 'High')!.click();
+    expect(sent(onApply)).toEqual(['fan_speed=high']);
+    expect(lit('Fan speed')).toEqual(['High']); // shown while the device hasn't reported it
+  });
+
+  it('steps the temperature by its step and sends the taps together', async () => {
+    const { buttons, onApply, value } = opened(device({ target_temperature: 23 }));
+    const [, plus] = buttons('Target temperature');
+    plus.click();
+    plus.click();
+    expect(value('Target temperature')).toBe('24°');
+    await vi.advanceTimersByTimeAsync(699);
+    expect(onApply).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1);
+    expect(sent(onApply)).toEqual(['target_temperature=24']);
+    expect(onApply).toHaveBeenCalledTimes(1);
+  });
+
+  it('stops at the range', () => {
+    const { buttons, value } = opened(device({ target_temperature: 29.5 }));
+    const [minus, plus] = buttons('Target temperature');
+    plus.click();
+    expect(value('Target temperature')).toBe('30°');
+    expect(plus.disabled).toBe(true);
+    expect(minus.disabled).toBe(false);
+  });
+
+  it('steps through an enum with many values, wrapping round', async () => {
+    const { buttons, onApply, value } = opened(device({ swing: 'auto' }));
+    buttons('Swing')[1].click();
+    expect(value('Swing')).toBe('Off');
+    await vi.advanceTimersByTimeAsync(700);
+    expect(sent(onApply)).toEqual(['swing=off']);
+  });
+
+  it('follows realtime changes while open', () => {
+    const { w, value } = opened(device({ target_temperature: 22 }));
+    w.pushChange({ capabilityId: 'target_temperature', value: 25 });
+    expect(value('Target temperature')).toBe('25°');
+  });
+
+  it('shows a failure and goes back to the device value', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const onApply = vi.fn(async () => { throw new Error('Busy'); });
+    const { buttons, lit, root } = opened(device({ fan_speed: 'auto' }), onApply);
+    buttons('Fan speed').find(b => b.textContent === 'High')!.click();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(lit('Fan speed')).toEqual(['Auto']);
+    const msg = root.querySelector<HTMLElement>('.tw-ctl-msg')!;
+    expect(msg.textContent).toBe('Could not change the thermostat. Busy');
+    expect(msg.style.display).toBe('');
+    await vi.advanceTimersByTimeAsync(8000);
+    expect(msg.style.display).toBe('none');
+  });
+
+  it('has no panel without onApply, and closes when the device is gone', () => {
+    const root = document.createElement('div');
+    const w = win.createThermostatWidget(root, { locale: 'en' });
+    w.setButtons(win.thermostatPresetsFromSettings(settings));
+    w.setState(aircon());
+    expect(root.querySelector('.tw-header')!.hasAttribute('role')).toBe(false);
+    const a = opened();
+    a.w.setMessage('Could not load the thermostat.');
+    expect(a.isOpen()).toBe(false);
   });
 });

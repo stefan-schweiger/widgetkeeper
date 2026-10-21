@@ -25,7 +25,11 @@
     "applyFailed": "Kunne ikke endre termostaten.",
     "on": "På",
     "currently": "Nå __state__",
-    "currentlyOff": "Nå av"
+    "currentlyOff": "Nå av",
+    "setpoint": "Satt til __temp__",
+    "power": "Av/på",
+    "controls": "Vis kontrollene",
+    "close": "Lukk"
   },
   "quickactions": {
     "selectDevices": "Velg enheter i widgetinnstillingene.",

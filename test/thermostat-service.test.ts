@@ -246,7 +246,13 @@ describe('state tracking', () => {
     expect(state.name).toBe('Aircon');
     expect(state.icon).toBeNull();
     expect(Object.keys(state.values).sort()).toEqual(['fan_speed', 'measure_temperature', 'onoff', 'target_temperature', 'thermostat_mode']);
-    expect(state.caps.fan_speed).toEqual({ title: 'Fan speed', units: null, values: [{ id: 'auto', title: 'Auto' }, { id: 'low', title: 'Low' }, { id: 'high', title: 'High' }] });
+    expect(state.caps.fan_speed).toEqual({
+      title: 'Fan speed', units: null, values: [{ id: 'auto', title: 'Auto' }, { id: 'low', title: 'Low' }, { id: 'high', title: 'High' }],
+      setable: true, min: null, max: null, step: null,
+    });
+    // The controls panel's setpoint range, and what it may not set.
+    expect(state.caps.target_temperature).toMatchObject({ setable: true, min: 16, max: 30, step: 0.5, units: '°C' });
+    expect(state.caps.measure_temperature.setable).toBe(false);
   });
 
   it('sends changes over realtime and keeps the state current', async () => {

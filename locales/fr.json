@@ -25,7 +25,11 @@
     "applyFailed": "Impossible de modifier le thermostat.",
     "on": "Marche",
     "currently": "Actuellement __state__",
-    "currentlyOff": "Actuellement éteint"
+    "currentlyOff": "Actuellement éteint",
+    "setpoint": "Réglé sur __temp__",
+    "power": "Marche/arrêt",
+    "controls": "Afficher les commandes",
+    "close": "Fermer"
   },
   "quickactions": {
     "selectDevices": "Choisissez des appareils dans les réglages.",

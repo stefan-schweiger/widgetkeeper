@@ -25,7 +25,11 @@
     "applyFailed": "Could not change the thermostat.",
     "on": "On",
     "currently": "Currently __state__",
-    "currentlyOff": "Currently off"
+    "currentlyOff": "Currently off",
+    "setpoint": "Set to __temp__",
+    "power": "Power",
+    "controls": "Show the controls",
+    "close": "Close"
   },
   "quickactions": {
     "selectDevices": "Select devices in the widget settings.",

@@ -25,7 +25,11 @@
     "applyFailed": "No se pudo cambiar el termostato.",
     "on": "Encendido",
     "currently": "Ahora __state__",
-    "currentlyOff": "Ahora apagado"
+    "currentlyOff": "Ahora apagado",
+    "setpoint": "Fijado en __temp__",
+    "power": "Encendido",
+    "controls": "Mostrar los controles",
+    "close": "Cerrar"
   },
   "quickactions": {
     "selectDevices": "Elige dispositivos en los ajustes del widget.",

@@ -73,6 +73,16 @@ html, body { margin: 0; }
   font-size: var(--tw-fs-default); line-height: var(--tw-lh-default); font-weight: var(--tw-bold);
 }
 
+/* A header that opens something (the `onHeader` hook: the thermostat's controls), with a chevron after the titles. */
+.tw-header[role="button"] { -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+.tw-header.tw-tappable { cursor: pointer; }
+.tw-header:focus-visible { outline: 2px solid var(--tw-other); outline-offset: 2px; border-radius: var(--tw-radius-small); }
+.tw-chevron {
+  flex-shrink: 0; width: 8px; height: 8px; margin-left: -4px; transform: rotate(45deg);
+  border-top: 2px solid var(--tw-muted); border-right: 2px solid var(--tw-muted);
+}
+.tw-header:not(.tw-tappable) .tw-chevron { display: none; }
+
 /* Segmented buttons */
 /* As many columns as buttons (`--tw-count`, set by presets.js). */
 .tw-row { display: grid; grid-template-columns: repeat(var(--tw-count, 3), minmax(0, 1fr)); gap: 2px; }

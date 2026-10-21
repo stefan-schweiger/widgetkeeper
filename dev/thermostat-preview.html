@@ -31,13 +31,26 @@
   <div class="col"><span>Compact · 300 px · none active · no icon</span><div class="card tw-frame homey-dark-mode" style="width:300px"><div id="c4"></div></div></div>
   <div class="col"><span>352 px · sensor beside the name (ticks)</span><div class="card tw-frame homey-dark-mode" style="width:352px"><div id="s1"></div></div></div>
   <div class="col"><span>Compact · 300 px · sensor beside the name</span><div class="card tw-frame homey-dark-mode" style="width:300px"><div id="s2"></div></div></div>
+  <div class="col"><span>352 px · mode-only presets, heat lit: the setpoint under the name</span><div class="card tw-frame homey-dark-mode" style="width:352px"><div id="p1"></div></div></div>
+  <div class="col"><span>352 px · the controls panel (tap the name; ?open=p2 opens it)</span><div class="card tw-frame homey-dark-mode" style="width:352px"><div id="p2"></div></div></div>
+  <div class="col"><span>Compact · 300 px · light · the controls panel</span><div class="card light" style="width:300px"><div id="p3"></div></div></div>
   <div class="col"><span>Compact · 400 px · no device</span><div class="card tw-frame homey-dark-mode" style="width:400px"><div id="c5"></div></div></div>
 
   <script>
     const ICON = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><rect x="4" y="4" width="28" height="28" rx="5" fill="none" stroke="#000" stroke-width="2.5"/><text x="18" y="22.5" font-family="Roboto,Arial" font-weight="700" font-size="11" text-anchor="middle">21</text></svg>');
     const FAN = { title: 'Fan speed', units: null, values: [{ id: 'auto', title: 'Auto' }, { id: 'slow', title: 'Slow' }, { id: 'fast', title: 'Fast' }] };
     const MODE = { title: 'Thermostat mode', units: null, values: [{ id: 'auto', title: 'Auto' }, { id: 'heat', title: 'Heat' }, { id: 'cool', title: 'Cool' }, { id: 'off', title: 'Off' }] };
-    const caps = { onoff: { title: 'Turned on' }, target_temperature: { title: 'Target temperature', units: '°C' }, thermostat_mode: MODE, fan_speed: FAN };
+    const caps = { onoff: { title: 'Turned on' }, target_temperature: { title: 'Target temperature', units: '°C', min: 16, max: 30, step: 0.5 }, thermostat_mode: MODE, fan_speed: FAN };
+    // The controls panel's device: a fan with six speeds (a stepper) and a swing with three (segments).
+    const SWING = { title: 'Swing', units: null, values: [{ id: 'off', title: 'Off' }, { id: 'vertical', title: 'Vertical' }, { id: 'both', title: 'Both' }] };
+    const FAN6 = { title: 'Fan speed', units: null, values: ['auto', '1', '2', '3', '4', '5'].map(id => ({ id, title: id === 'auto' ? 'Auto' : `Level ${id}` })) };
+    const panelCaps = { ...caps, fan_speed: FAN6, swing: SWING, measure_temperature: { title: 'Temperature', units: '°C', setable: false } };
+    const modeOnly = {
+      b1Power: 'off',
+      b2Power: 'on', b2Mode: { capabilityId: 'thermostat_mode', value: 'cool' },
+      b3Power: 'on', b3Mode: { capabilityId: 'thermostat_mode', value: 'heat' },
+    };
+    const OPEN = new URLSearchParams(location.search).get('open');
     const settings = {
       b1Power: 'off',
       b2Power: 'on', b2Temp: { capabilityId: 'target_temperature', value: 21 }, b2Mode: { capabilityId: 'thermostat_mode', value: 'heat' }, b2Extra: { capabilityId: 'fan_speed', value: 'slow' },
@@ -61,9 +74,12 @@
       ['c4', coolSettings, null, { onoff: true, target_temperature: 23, thermostat_mode: 'heat', fan_speed: 'auto' }, 'compact'],
       ['s1', settings, ICON, { onoff: true, target_temperature: 21, thermostat_mode: 'heat', fan_speed: 'slow' }, undefined, 21.4],
       ['s2', settings, ICON, { onoff: true, target_temperature: 23, thermostat_mode: 'cool', fan_speed: 'auto' }, 'compact', 22.8],
+      ['p1', modeOnly, ICON, { onoff: true, target_temperature: 21.5, thermostat_mode: 'heat', fan_speed: 'auto' }],
+      ['p2', modeOnly, ICON, { onoff: true, target_temperature: 21.5, thermostat_mode: 'heat', fan_speed: '3', swing: 'vertical', measure_temperature: 20.4 }, undefined, null, panelCaps],
+      ['p3', modeOnly, ICON, { onoff: true, target_temperature: 23, thermostat_mode: 'cool', fan_speed: 'auto', swing: 'off', measure_temperature: 24.1 }, 'compact', null, panelCaps],
     ];
     const TEMP = { type: 'number', title: 'Temperature', units: '°C', decimals: 1 };
-    for (const [id, s, icon, values, layout, sensor] of cases) {
+    for (const [id, s, icon, values, layout, sensor, ownCaps] of cases) {
       let w;
       w = createThermostatWidget(document.getElementById(id), {
         locale: 'da-DK',
@@ -73,10 +89,11 @@
         onApply: (vals) => new Promise(r => setTimeout(() => { for (const v of vals) w.pushChange(v); r(); }, 600)),
       });
       w.setButtons(thermostatPresetsFromSettings(s));
-      w.setState({ name: 'Heat pump | Living room', icon, values: { ...values }, caps,
+      w.setState({ name: 'Heat pump | Living room', icon, values: { ...values }, caps: ownCaps || caps,
         ...(sensor != null ? { sensor: { deviceId: 'room', capabilityId: 'measure_temperature', capability: TEMP, value: sensor } } : {}) });
       // A made-up room sensor, as `values:state` would send it.
       if (id === 's1') { let v = sensor; setInterval(() => { v = Math.round((v + 0.1) * 10) / 10; w.pushSensor(v); }, 2000); }
+      if (OPEN && OPEN.split(',').includes(id)) w.openPanel();
     }
     const empty = createThermostatWidget(document.getElementById('w6'), { t: devT });
     empty.setButtons(thermostatPresetsFromSettings(settings));

@@ -25,7 +25,11 @@
     "applyFailed": "Не удалось изменить термостат.",
     "on": "Вкл",
     "currently": "Сейчас: __state__",
-    "currentlyOff": "Сейчас выключен"
+    "currentlyOff": "Сейчас выключен",
+    "setpoint": "Установлено __temp__",
+    "power": "Питание",
+    "controls": "Показать управление",
+    "close": "Закрыть"
   },
   "quickactions": {
     "selectDevices": "Выберите устройства в настройках виджета.",

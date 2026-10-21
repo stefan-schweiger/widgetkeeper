@@ -16,10 +16,13 @@
    * @param {{ text: (preset: any, state: any) => { big: string, mode?: string | null, kind?: string, extras?: string[] },
    *   matches: (preset: any, state: any) => boolean, usable?: (preset: any, state: any) => boolean,
    *   apply?: ((preset: any, state: any) => Promise<any>) | null, failed: (err: any) => string,
-   *   current: (state: any, presets: any[]) => string, aside?: (state: any) => string, layout?: string,
+   *   current: (state: any, presets: any[]) => string, lit?: (state: any, active: number[]) => string,
+   *   aside?: (state: any) => string, onHeader?: (() => void) | null, headerLabel?: string, layout?: string,
    *   fallbackIcon?: boolean, onHeight?: (h: number) => void }} hooks `state` has the header's `name` and `icon` (a URL
    *   for the mask); the rest is the widget's own. A preset that isn't `usable` is a disabled button. Without an icon the
-   *   box shows a rounded square, or nothing with `fallbackIcon: false`. `aside` is a value at the header's right end.
+   *   box shows a rounded square, or nothing with `fallbackIcon: false`. `current` is the subtitle while nothing is lit,
+   *   `lit` while something is. `aside` is a value at the header's right end. `onHeader` makes the header a button
+   *   (`headerLabel` its label) with a chevron, tapped once the state is there.
    */
   function createPresets(root, hooks) {
     const usable = (p, s) => !hooks.usable || hooks.usable(p, s);
@@ -40,6 +43,17 @@
     const subEl = el('div', { class: 'tw-sub', dir: 'auto' }, titles);
     // Only with the hook, so a widget without it keeps its markup.
     const asideEl = hooks.aside ? el('div', { class: 'tw-aside', dir: 'auto' }, header) : null;
+    if (hooks.onHeader) {
+      el('div', { class: 'tw-chevron', 'aria-hidden': 'true' }, header);
+      header.setAttribute('role', 'button');
+      header.tabIndex = 0;
+      if (hooks.headerLabel) header.setAttribute('aria-label', hooks.headerLabel);
+      const open = () => { if (state) hooks.onHeader(); };
+      header.addEventListener('click', open);
+      header.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+      });
+    }
     const row = el('div', { class: 'tw-row' }, root);
     let tiles = [];
 
@@ -117,12 +131,13 @@
       iconBox.style.display = state && (icon || hooks.fallbackIcon !== false) ? '' : 'none';
       nameEl.textContent = state ? state.name : '';
       nameEl.style.display = state ? '' : 'none';
-      const sub = errorText || (state && !active.size ? hooks.current(state, presets) : '');
+      const sub = errorText || (!state ? '' : !active.size ? hooks.current(state, presets) : hooks.lit ? hooks.lit(state, [...active]) : '');
       subEl.textContent = sub;
       subEl.style.display = sub ? '' : 'none';
       subEl.classList.toggle('error', !!errorText && !!state);
       header.classList.toggle('has-sub', !!sub && !errorText);
       header.classList.toggle('message-only', !state);
+      if (hooks.onHeader) header.classList.toggle('tw-tappable', !!state);
       if (asideEl) {
         const aside = state ? hooks.aside(state) : '';
         asideEl.textContent = aside;
@@ -141,11 +156,16 @@
         b.disabled = !state || !usable(presets[i], state);
       });
 
+      refreshHeight();
+    }
+
+    /** Reports the root's height when it changed (also for a widget's own content, like the thermostat's panel). */
+    function refreshHeight() {
       const h = Math.ceil(root.getBoundingClientRect().height);
       if (h && h !== lastHeight) { lastHeight = h; if (hooks.onHeight) hooks.onHeight(h); }
     }
 
-    return { setButtons, setState, setMessage, render, getState: () => state, presets: () => presets };
+    return { setButtons, setState, setMessage, render, refreshHeight, getState: () => state, presets: () => presets };
   }
 
   window.WidgetkeeperPresets = { create: createPresets };

@@ -25,7 +25,11 @@
     "applyFailed": "온도 조절기를 변경할 수 없습니다.",
     "on": "켜짐",
     "currently": "현재 __state__",
-    "currentlyOff": "현재 꺼짐"
+    "currentlyOff": "현재 꺼짐",
+    "setpoint": "설정 __temp__",
+    "power": "전원",
+    "controls": "컨트롤 표시",
+    "close": "닫기"
   },
   "quickactions": {
     "selectDevices": "위젯 설정에서 기기를 선택하세요.",

@@ -25,7 +25,11 @@
     "applyFailed": "Nie można zmienić ustawień termostatu.",
     "on": "Wł.",
     "currently": "Teraz: __state__",
-    "currentlyOff": "Teraz wyłączony"
+    "currentlyOff": "Teraz wyłączony",
+    "setpoint": "Ustawiono __temp__",
+    "power": "Zasilanie",
+    "controls": "Pokaż sterowanie",
+    "close": "Zamknij"
   },
   "quickactions": {
     "selectDevices": "Wybierz urządzenia w ustawieniach widżetu.",

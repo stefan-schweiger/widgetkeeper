@@ -5,6 +5,8 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ## 1.0.2
 
 ### Thermostat Presets
+- **Controls:** tap the name for power, the target temperature (− and +) and every mode, fan or swing setting of the device, in the widget's place. A ✕ goes back, and it closes by itself after 30 seconds.
+- A lit preset without a temperature (such as *Heat*) shows the device's setpoint under the name: *Set to 21°*.
 - **Title:** show your own name in place of the device's.
 - **Value beside the name:** pick any device value, such as the room temperature or the aircon's own target temperature, to show live at the top right of the widget.
 
