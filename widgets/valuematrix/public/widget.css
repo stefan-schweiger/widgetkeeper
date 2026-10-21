@@ -88,9 +88,13 @@ html, body { background: transparent !important; }
 /* The labels' 12 px (no token), for six columns on a 300 px card. */
 @container (max-width: 39px) { .vm-num { font-size: 12px; } }
 .vm-cell[data-level="none"] .vm-num { color: var(--vm-muted); font-weight: var(--vm-medium); }
-/* A value the row hasn't: stripes of the track. */
+/*
+ * A value the row hasn't: thin lines of the track. An 8 px tile repeated (a mask, so the track's colour follows the
+ * mode), so every line is drawn alike; a repeating gradient's stripes fell between pixels and looked uneven.
+ */
 .vm-cell[data-level="absent"] {
-  background: repeating-linear-gradient(135deg, var(--vm-track) 0 4px, transparent 4px 8px);
+  --vm-hatch: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M-2 2l4-4M0 8l8-8M6 10l4-4' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E");
+  -webkit-mask: var(--vm-hatch) 0 0 / 8px 8px; mask: var(--vm-hatch) 0 0 / 8px 8px;
 }
 
 /* The levels, on the cells and the legend's swatches: green (OK) inside the range, orange (Warning) outside, red (Alert) far outside. */
