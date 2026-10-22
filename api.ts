@@ -100,6 +100,7 @@ export default {
       widgets: app.web.widgetTypes(language),
       dashboards: app.web.list(),
       front: app.web.front(),
+      popups: app.popups.all(),
     };
   },
 
@@ -234,5 +235,52 @@ export default {
     const app = homey.app as WidgetkeeperApp;
     app.webPassword.logout(query?.session);
     return null;
+  },
+
+  /** The web dashboards page: the open popups (after a reconnect, so a screen that was offline catches up). */
+  async getWebPopups({ homey, query }: { homey: Homey, query?: Record<string, string> }) {
+    const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
+    return app.popups.all();
+  },
+
+  /** The web dashboards page: a popup's picture, `{type, data}` (a camera's is read again on every call). */
+  async getWebPopupImage({ homey, query, params }: { homey: Homey, query?: Record<string, string>, params: Record<string, string> }) {
+    const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
+    return app.popups.image(params.id);
+  },
+
+  /** The web dashboards page: the answer to a question (`{answer: true|false}`); the first one from any screen wins. */
+  async postWebPopupAnswer({ homey, query, params, body }: {
+    homey: Homey, query?: Record<string, string>, params: Record<string, string>, body: { answer?: unknown },
+  }) {
+    const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
+    return app.popups.answer(params.id, body?.answer);
+  },
+
+  /**
+   * The prompt page a Popups widget opens in the phone app's in-app browser (`settings/popup.html`), which has no login:
+   * public, so only the popup's token (`{t}`, in the body) lets it read the popup, its picture or answer it.
+   */
+  async postPopup({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { t?: unknown } }) {
+    const app = homey.app as WidgetkeeperApp;
+    const popup = app.popups.page(params.id, body?.t);
+    const language = homey.i18n.getLanguage();
+    const strings = await app.web.appStrings(language);
+    return { ...popup, language, strings: (strings as any)?.popups ?? {} };
+  },
+
+  async postPopupImage({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { t?: unknown } }) {
+    const app = homey.app as WidgetkeeperApp;
+    if (typeof body?.t !== 'string') throw new Error('Not found');
+    return app.popups.image(params.id, body.t);
+  },
+
+  async postPopupAnswer({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { t?: unknown, answer?: unknown } }) {
+    const app = homey.app as WidgetkeeperApp;
+    if (typeof body?.t !== 'string') throw new Error('Not found');
+    return app.popups.answer(params.id, body.answer, body.t);
   },
 };

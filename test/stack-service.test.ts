@@ -64,10 +64,10 @@ describe('dashboardPages', () => {
     expect(dashboardPages(null, APP)).toEqual([]);
   });
 
-  it('knows every widget of the app but the stack, the spacer, Days Since and Dashboard Shortcuts', () => {
+  it('knows every widget of the app but the stack, the spacer, Days Since, Dashboard Shortcuts and Popups', () => {
     const app = JSON.parse(readFileSync('app.json', 'utf8'));
-    // Dashboard Shortcuts is web only (deprecated on Homey's dashboards), so a stack never meets it.
-    expect([...STACK_TYPES].sort()).toEqual(Object.keys(app.widgets).filter(id => !['stack', 'spacer', 'dayssince', 'shortcuts'].includes(id)).sort());
+    // Dashboard Shortcuts is web only (deprecated on Homey's dashboards), so a stack never meets it; Popups draws nothing.
+    expect([...STACK_TYPES].sort()).toEqual(Object.keys(app.widgets).filter(id => !['stack', 'spacer', 'dayssince', 'shortcuts', 'popups'].includes(id)).sort());
     // The widget's own list (TYPES in widget.js) must match too, both ways.
     const js = readFileSync('widgets/stack/public/widget.js', 'utf8');
     const types = js.match(/const TYPES = \{([\s\S]*?)\};/)![1];

@@ -1,0 +1,2 @@
+/* The Popups widget draws nothing: it only opens Flows' popups in the phone app's in-app browser. */
+#root { height: 0; overflow: hidden; }

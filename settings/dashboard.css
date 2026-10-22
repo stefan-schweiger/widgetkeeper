@@ -332,6 +332,26 @@ textarea.wd-input { width: 100%; resize: vertical; }
 /* The previews are 1024 px squares with the drawing in the middle: shown 5:4 (the middle 80 %) on the dashboard's
    backdrop. */
 .wd-type-preview { display: block; width: 100%; aspect-ratio: 5 / 4; object-fit: cover; background: var(--wd-bg); }
+/* A Flow's popup (wk-084): the picture, the text large enough to read across a room, then Yes/No or a bar running
+   down to the end. Sizes: Homey's 24 bold, 20 medium on the buttons, 14 for the status. */
+.wd-dialog.wd-popup { width: min(640px, calc(100vw - 32px)); }
+.wd-popup::backdrop { background: rgba(0, 0, 0, .6); }
+.wd-popup:not(.ask) { cursor: pointer; }
+.wd-popup-box { display: flex; flex-direction: column; gap: 16px; padding: 24px; }
+.wd-popup-picture { display: flex; justify-content: center; border-radius: var(--wd-radius); background: var(--wd-raised); overflow: hidden; }
+.wd-popup-picture img { display: block; width: 100%; max-height: 60vh; object-fit: contain; }
+.wd-popup-picture.loading, .wd-popup-picture.failed { aspect-ratio: 16 / 9; align-items: center; }
+.wd-popup-picture.loading img, .wd-popup-picture.failed img { display: none; }
+.wd-popup-text {
+  margin: 0; font-size: var(--homey-font-size-xlarge, 24px); line-height: var(--homey-line-height-xlarge, 32px); font-weight: 700;
+  text-align: center; white-space: pre-line; overflow-wrap: anywhere;
+}
+.wd-popup-actions { display: flex; gap: 12px; }
+.wd-popup-actions .wd-btn { flex: 1 1 0; min-height: 56px; border-radius: 28px; font-size: 20px; line-height: 28px; font-weight: 500; }
+.wd-popup-status { margin: 0; color: var(--wd-muted); font-size: 14px; line-height: 20px; text-align: center; }
+.wd-popup-status:empty { display: none; }
+.wd-popup-bar { height: 4px; border-radius: 2px; background: var(--wd-raised); overflow: hidden; }
+.wd-popup-bar span { display: block; height: 100%; background: var(--wd-accent); transform-origin: left center; }
 .wd-dialog.wide { width: min(920px, calc(100vw - 32px)); }
 .wd-dialog.wide .wd-types { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 @media (max-width: 860px) { .wd-dialog.wide .wd-types { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } }

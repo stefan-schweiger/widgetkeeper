@@ -4,7 +4,9 @@
 // `mockWebApi({lang, dashboards, zones, devices, readings})`: the dashboards, and for the device and value pickers a
 // made-up house (`zones`: id → [name, parent id]; `devices`: {id, name, zone, class, capabilities, icon};
 // `readings`: capability → {title, type, units, …, value (or a function of the device)}).
-function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], readings = {} } = {}) {
+// `popups`: the open popups (wk-084), as `/web/popups` lists them; their pictures are a drawn front door, never a real
+// camera image, and one with `elsewhere` answers as if another screen had been first.
+function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], readings = {}, popups = [] } = {}) {
   try { localStorage.setItem('widgetkeeper.web.key', 'preview'); } catch (e) { /* private mode */ }
   const loc = (text) => (text && typeof text === 'object' ? text[lang] || text.en : text) || '';
 
@@ -93,7 +95,28 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
           sections,
         };
       });
-      return { appId: 'com.thomassidor.widgetkeeper', homeyId: 'preview', language: lang, strings, widgets, dashboards, front };
+      return {
+        appId: 'com.thomassidor.widgetkeeper', homeyId: 'preview', language: lang, strings, widgets, dashboards, front,
+        popups: { popups, now: Date.now() },
+      };
+    }
+    if (p === '/web/popups') return { popups, now: Date.now() };
+    const popupImage = p.match(/^\/web\/popups\/([^/]+)\/image$/);
+    if (popupImage) {
+      // A drawn front door; a camera's lamp changes with every read, so the refresh shows.
+      const lamp = popups.find(x => x.id === popupImage[1])?.picture?.source === 'camera' ? (Date.now() / 3000 | 0) % 2 : 0;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360"><rect width="640" height="360" fill="#2B3A4A"/>`
+        + '<rect y="250" width="640" height="110" fill="#3D4A3A"/><rect x="250" y="70" width="140" height="210" rx="6" fill="#6B3E26"/>'
+        + '<circle cx="365" cy="180" r="7" fill="#E8C66A"/><rect x="230" y="60" width="180" height="14" fill="#1C2733"/>'
+        + `<circle cx="450" cy="110" r="16" fill="${lamp ? '#FFE9A8' : '#E8C66A'}"/></svg>`;
+      return { type: 'image/svg+xml', data: btoa(svg) };
+    }
+    const popupAnswer = p.match(/^\/web\/popups\/([^/]+)\/answer$/);
+    if (popupAnswer) {
+      const popup = popups.find(x => x.id === popupAnswer[1]);
+      popups = popups.filter(x => x.id !== popupAnswer[1]);
+      if (popup && popup.elsewhere) return { ok: false, reason: 'closed', answer: true };
+      return popup ? { ok: true, answer: body.answer === true } : { ok: false, reason: 'closed', answer: null };
     }
     if (p === '/web/devices') {
       // Another app's widget sends its filter (the made-up app has no devices of its own, so `app=1` is left out).

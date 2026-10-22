@@ -7,6 +7,7 @@ import WebDashboardService, { passesDeviceFilter, WEB_BACKUP_FORMAT, WEB_DASHBOA
 import { widgetAutocompletes } from '../lib/widgetAutocompletes.js';
 import { routeKeyUse } from '../lib/widgetRoutes.js';
 import WebPassword from '../lib/WebPassword.js';
+import PopupService from '../lib/PopupService.js';
 import api from '../api.js';
 
 vi.mock('homey-api', () => homeyApiMock);
@@ -20,7 +21,8 @@ function setup(autocompletes = {}, enabled = true) {
   const log = vi.fn();
   const tileNames = new TileNameService(homey);
   const web = new WebDashboardService(homey, log, autocompletes, tileNames);
-  homey.app = { web, tileNames, webPassword: new WebPassword(homey, log), log, debug: vi.fn() };
+  const popups = new PopupService(homey, { cameras: {} as any, web }, log);
+  homey.app = { web, tileNames, webPassword: new WebPassword(homey, log), popups, log, debug: vi.fn() };
   return { homey, web, log, tileNames };
 }
 
@@ -290,7 +292,8 @@ describe('web dashboards: what the editor needs', () => {
     expect(barMin.values!.map(v => v.id)).toEqual(['0', '1']);
     expect(types.find(t => t.type === 'electricity')!.devices).toEqual({ singular: true });
     expect(types.find(t => t.type === 'timers')!.devices).toBeNull();
-    expect(types).toHaveLength(Object.keys(app.widgets).length);
+    // Every widget but Popups, which only opens Homey's in-app browser (the page draws popups itself).
+    expect(types.map(t => t.type).sort()).toEqual(Object.keys(app.widgets).filter(id => id !== 'popups').sort());
   });
 
   it("groups the settings by their titles: a group's head, the rows under it, and numbered slots", () => {
@@ -756,7 +759,7 @@ describe('web dashboards page', () => {
 
   it('describes every widget type on the front page', () => {
     const en = JSON.parse(readFileSync('locales/en.json', 'utf8'));
-    expect(Object.keys(en.web.about).sort()).toEqual(Object.keys(app.widgets).sort());
+    expect(Object.keys(en.web.about).sort()).toEqual(Object.keys(app.widgets).filter(id => id !== 'popups').sort());
   });
 
   it("loads the kit from where the Homey serves it (a widget's public folder is /app/<appId>/widgets/<id>/)", () => {

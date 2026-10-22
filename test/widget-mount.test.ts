@@ -47,6 +47,7 @@ describe('widget mount.js', () => {
     expect(() => win[mountName(id)](Homey, { root, frame })).not.toThrow();
     await vi.advanceTimersByTimeAsync(2000);
     expect(Homey.ready).toHaveBeenCalledTimes(1);
-    expect(root.childElementCount).toBeGreaterThan(0);
+    // Popups draws nothing: it only opens Flows' popups in the in-app browser.
+    if (id !== 'popups') expect(root.childElementCount).toBeGreaterThan(0);
   });
 });
