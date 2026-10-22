@@ -2,6 +2,12 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 1.1.0
+
+### Popups (new)
+- **Flow cards:** show a message for a number of seconds or minutes, or ask Yes or No, in front of everything on a web dashboard or on the phones and tablets with a Popups widget. The first answer from any screen closes the question everywhere and goes back to the Flow as the tags Answer and Answered (no answer in time). A picture can come along: a camera, refreshed while it's open, a picture address, or an image tag such as a doorbell's snapshot. A third card closes them early.
+- **Popups widget:** on a Homey dashboard it shows nothing itself, and opens the popups sent to its screen name in the Homey app's built-in browser, as a widget can't draw over the dashboard.
+
 ## 1.0.3
 
 ### Web dashboards
