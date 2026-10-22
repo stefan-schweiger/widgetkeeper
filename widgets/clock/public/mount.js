@@ -18,6 +18,7 @@ window.mountClockWidget = function (Homey, { root, frame }) {
 
   const widget = window.createClockWidget(root, {
     showWeather,
+    timeFormat: settings.timeFormat,
     onHeight: link.setHeight,
   });
 

@@ -81,6 +81,16 @@ describe('dots', () => {
     const { cell } = widget([door(true)]);
     expect(cell('door').getAttribute('aria-label')).toBe(`Back door: Open since ${time('2026-10-08T18:32:00')}`);
   });
+
+  it('shows the time in 12 or 24 hours as the setting says (wk-085)', () => {
+    const label = (opts: object) => {
+      const root = document.createElement('div');
+      win.createSensorDotsWidget(root, { locale: 'en-GB', ...opts }).setState([door(true)]);
+      return root.querySelector('.sd-cell[data-device="door"]')!.getAttribute('aria-label');
+    };
+    expect(label({ timeFormat: '12' })).toBe('Back door: Open since 6:32 pm');
+    expect(label({ locale: 'en-US', timeFormat: '24' })).toBe('Back door: Open since 18:32');
+  });
 });
 
 describe('overlay', () => {

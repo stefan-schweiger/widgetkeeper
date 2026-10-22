@@ -35,6 +35,16 @@ describe('time and date', () => {
     expect(widget(null, { locale: 'en-GB' }).text('.ck-time')).toBe('18:40');
   });
 
+  it('takes 24 or 12 hours from the setting over the locale (wk-085), automatic otherwise', () => {
+    expect(widget(null, { locale: 'en-US', timeFormat: '24' }).text('.ck-time')).toBe('18:40');
+    expect(widget(null, { locale: 'en-GB', timeFormat: '12' }).text('.ck-time')).toBe('6:40 pm');
+    expect(widget(null, { locale: 'da-DK', timeFormat: '12' }).text('.ck-time')).toBe('6.40 PM');
+    expect(widget(null, { locale: 'en-US', timeFormat: 'auto' }).text('.ck-time')).toBe('6:40 PM');
+    expect(widget(null, { locale: 'en-US', timeFormat: 'x' }).text('.ck-time')).toBe('6:40 PM');
+    vi.setSystemTime(new Date('2026-10-06T07:05:00+02:00'));
+    expect(widget(null, { locale: 'en-US', timeFormat: '24' }).text('.ck-time')).toBe('07:05');
+  });
+
   it('falls back to English before the app answers, and for an unknown language', () => {
     expect(widget(null, { locale: 'en-GB' }).text('.ck-date')).toBe('Tuesday 6 October');
     expect(widget({ language: '!!', weather: null }, { locale: 'en-GB' }).text('.ck-date')).toBe('Tuesday 6 October');

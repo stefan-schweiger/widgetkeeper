@@ -72,7 +72,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string, title?: string,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string, timeFormat?: string, title?: string,
    *   idleColor?: string, activeColor?: string, onHeight?: (h: number) => void }} opts
    */
   function createSensorDotsWidget(root, opts = {}) {
@@ -173,7 +173,7 @@
       }
       const times = from.map(a => a.lastUpdated).filter(x => typeof x === 'number');
       if (!times.length) return text;
-      return `${text} ${t('since', { time: formatSince(Math.max(...times), Date.now(), language, opts.locale) })}`;
+      return `${text} ${t('since', { time: formatSince(Math.max(...times), Date.now(), language, opts.locale, opts.timeFormat) })}`;
     }
 
     function toggle(id) {

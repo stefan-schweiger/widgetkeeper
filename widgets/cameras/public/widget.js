@@ -9,7 +9,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, timeFormatter } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const TAP_SLOP = 10; // px a finger may move and still count as a tap
@@ -93,7 +93,7 @@
    *   api?: (method: string, path: string, body?: object) => Promise<any>,
    *   report?: (text: string, warn?: boolean) => void, onHeight?: (h: number) => void,
    *   now?: () => number, renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
-   *   liveFor?: string, layout?: string }} opts
+   *   liveFor?: string, layout?: string, timeFormat?: string }} opts
    */
   function createCamerasWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -349,7 +349,7 @@
       const every = d && !('missing' in d) && !d.image ? grabMs : refreshMs;
       const stale = tile.loadedAt > 0 && now() - tile.loadedAt > 2 * every + 5000;
       tile.badge.textContent = stale
-        ? new Date(tile.loadedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        ? timeFormatter(undefined, opts.timeFormat, '2-digit').format(new Date(tile.loadedAt)) : '';
       tile.badge.style.display = stale ? '' : 'none';
     }
 

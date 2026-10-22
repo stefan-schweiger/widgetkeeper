@@ -41,6 +41,12 @@ describe('summary', () => {
     expect(tile().dataset.level).toBe('secure');
   });
 
+  it('shows the time in 12 or 24 hours as the setting says (wk-085)', () => {
+    expect(widget([back()], { timeFormat: '12' }).sub()).toBe('Since 6:12 pm');
+    expect(widget([back()], { locale: 'en-US', timeFormat: '24' }).sub()).toBe('Since 18:12');
+    expect(widget([back()], { locale: 'en-US' }).sub()).toBe('Since 6:12 PM');
+  });
+
   it('names what kind of devices are secure', () => {
     expect(widget([back()]).title()).toBe('All locked');
     expect(widget([garage(), window_()]).title()).toBe('All closed');

@@ -128,14 +128,14 @@ The next 36 hours, hour by hour, from MET Norway (yr.no)<br clear="left"></p>
 
 Motion, contact, vibration and camera sensors as a grid of dots that light up while active. Tap a dot for its name and since when, such as *Garage · Open since 18:17*.
 
-**Settings:** sensors, title, idle and active colours, [colour style](#colour-style).
+**Settings:** sensors, title, idle and active colours, [colour style](#colour-style), time format (automatic, 24-hour or 12-hour).
 
 ## Cameras
 <img src="docs/screenshots/cameras.png" alt="Cameras on a Homey dashboard" width="358">
 
 Your cameras as a grid of snapshots that refresh every few seconds (cameras with only a video stream show a still from it). Tap one to watch it live.
 
-**Settings:** cameras, layout (the large camera at the top or the bottom, or one per row), refresh interval, how long live view stays on (30 seconds to 5 minutes, or until you tap it again), [rename tiles](#tile-names).
+**Settings:** cameras, layout (the large camera at the top or the bottom, or one per row), refresh interval, how long live view stays on (30 seconds to 5 minutes, or until you tap it again), time format (automatic, 24-hour or 12-hour), [rename tiles](#tile-names).
 
 ## Charts
 <img src="docs/screenshots/charts.png" alt="Charts on a Homey dashboard: the outdoor temperature as a line, and the power use as bars" width="358">
@@ -147,9 +147,9 @@ One chart, two stacked, or two values on one chart (each with its own scale), of
 ## Clock
 <img src="docs/screenshots/clock.png" alt="Clock on a Homey dashboard" width="358">
 
-The time and the date in one tile, with the weather now and today's high and low from [MET Norway](https://www.met.no/en), the Weather Forecast's data. The time follows your phone or tablet (24 or 12 hours), the date Homey's language.
+The time and the date in one tile, with the weather now and today's high and low from [MET Norway](https://www.met.no/en), the Weather Forecast's data. The time follows your phone, tablet or browser (24 or 12 hours) unless you pick one, the date Homey's language.
 
-**Settings:** show the weather.
+**Settings:** show the weather, time format (automatic, 24-hour or 12-hour).
 
 ## Curtains
 <img src="docs/clips/curtains.webp" alt="Curtains on a Homey dashboard: an open curtain tapped closed, a closed one tapped open and sent back with a second tap, and a blind dragged most of the way up" width="358">
@@ -230,7 +230,7 @@ Six lights in the space of three of Homey's light cards. Tap a tile to switch it
 
 Locks, doors, windows and garage doors in one line: *All locked and closed*, or what isn't, on a red tile. Tap it for the list, with **Lock** and **Close** buttons. A lock that can pull the latch can get an **Open** button too: pick the capability that does it (such as *open_lock* or *open*), and tap it twice to open the door.
 
-**Settings:** devices, one line or the full list, allow unlocking, the open door button, [colour style](#colour-style), [rename tiles](#tile-names).
+**Settings:** devices, one line or the full list, allow unlocking, the open door button, [colour style](#colour-style), time format (automatic, 24-hour or 12-hour), [rename tiles](#tile-names).
 
 ## Media
 <img src="docs/clips/media.webp" alt="Media on a Homey dashboard: the volume turned up, the next track, mute, the TV as the source from behind ⋯, and a switch to another speaker" width="358">

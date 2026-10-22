@@ -49,7 +49,8 @@ interface Window {
     el: (tag: string, attrs?: object | null, parent?: Element | null, ns?: string) => any,
     setMask: (node: HTMLElement, url: string | null | undefined, name: string) => void,
     tileNames: (opts: any, render: () => void, failed: (key: string) => void) => any,
-    formatSince: (ms: number, now: number, language?: string, locale?: string) => string,
+    timeFormatter: (locale?: string, timeFormat?: unknown, hour?: 'numeric' | '2-digit' | '2-digit-24') => Intl.DateTimeFormat,
+    formatSince: (ms: number, now: number, language?: string, locale?: string, timeFormat?: unknown) => string,
     baseTitle: (title: unknown) => string,
     lowestSlot: (slots: any[], from: number, hours: number) => number,
     wireFrame: (Homey: any, frame: HTMLElement) => {

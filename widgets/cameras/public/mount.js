@@ -24,6 +24,7 @@ window.mountCamerasWidget = function (Homey, { root, frame }) {
     onRename: (key, name) => tileNames.rename(key, name),
     refreshMs: snapshotMs,
     liveFor: settings.liveFor,
+    timeFormat: settings.timeFormat,
     layout: settings.layout,
     api:(method, path, body) => Homey.api(method, path, body),
     report: (text, warn) => { Homey.api('POST', '/report', { text, warn: !!warn }).catch(() => {}); },

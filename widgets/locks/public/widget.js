@@ -128,7 +128,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string, view?: string,
+   * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string, timeFormat?: string, view?: string,
    *   allowUnlock?: boolean, onSet?: (deviceId: string, capabilityId: string, value: boolean) => Promise<any>,
    *   allowOpen?: boolean, onOpen?: (deviceId: string, capabilityId: string) => Promise<any>,
    *   onHaptic?: () => void, onHeight?: (h: number) => void,
@@ -329,7 +329,7 @@
       const times = list.map(c => c.lastUpdated).filter(x => typeof x === 'number');
       return times.length ? Math.max(...times) : null;
     };
-    const sinceText = (ms, key) => (ms == null ? '' : t(key, { time: formatSince(ms, Date.now(), language, opts.locale) }));
+    const sinceText = (ms, key) => (ms == null ? '' : t(key, { time: formatSince(ms, Date.now(), language, opts.locale, opts.timeFormat) }));
 
     /** The summary line: `{level, title, sub}`. */
     function summaryOf() {

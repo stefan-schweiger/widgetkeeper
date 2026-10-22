@@ -1,10 +1,11 @@
 /*
  * Clock: the time and the date, and optionally the weather now (MET's icon and the temperature) with today's high
- * and low. The time follows the screen's locale (24 or 12 hours), the date Homey's language.
+ * and low. The time follows the screen's locale (24 or 12 hours, unless the `timeFormat` setting says), the date
+ * Homey's language.
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, timeFormatter } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const MINUTE = 60e3;
@@ -17,7 +18,7 @@
 
   /**
    * @param {HTMLElement} root
-   * @param {{ locale?: string, showWeather?: boolean, iconBase?: string, now?: () => number,
+   * @param {{ locale?: string, timeFormat?: string, showWeather?: boolean, iconBase?: string, now?: () => number,
    *   onHeight?: (h: number) => void }} opts
    */
   function createClockWidget(root, opts = {}) {
@@ -31,17 +32,13 @@
     let tickTimer = null;
     let iconSymbol;
 
-    let timeFormat = null;
     const dateFormats = {};
-    /** Hours and minutes in the screen's locale, which picks 24 or 12 hours; 24 hours always with two digits (`07:05`). */
+    /**
+     * Hours and minutes in the screen's locale, which picks 24 or 12 hours unless the `timeFormat` setting says;
+     * 24 hours always with two digits (`07:05`).
+     */
     function formatTime(ms) {
-      if (!timeFormat) {
-        const o = /** @type {Intl.DateTimeFormatOptions} */ ({ hour: 'numeric', minute: '2-digit' });
-        let locale = opts.locale || undefined;
-        try { timeFormat = new Intl.DateTimeFormat(locale, o); } catch { locale = 'en'; timeFormat = new Intl.DateTimeFormat(locale, o); }
-        if (timeFormat.resolvedOptions().hour12 === false) timeFormat = new Intl.DateTimeFormat(locale, { ...o, hour: '2-digit' });
-      }
-      return timeFormat.format(new Date(ms));
+      return timeFormatter(opts.locale, opts.timeFormat, '2-digit-24').format(new Date(ms));
     }
     /** The screen's region (`DK` from `da-DK`), or null. */
     function region() {

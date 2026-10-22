@@ -169,10 +169,34 @@
     };
   }
 
-  /** The time today, the weekday and time within 6 days, else the date (times in `locale`, names in `language`). */
-  function formatSince(ms, now, language, locale) {
+  const timeFormats = new Map();
+  /**
+   * Hours and minutes in `locale` (else the screen's), which picks 24 or 12 hours unless the widget's `timeFormat`
+   * setting (`24`, `12`; `auto` or anything else leaves it) says. `hour` is Intl's (`numeric` by default), or
+   * `2-digit-24`: two digits in 24 hours only (the Clock's `07:05`).
+   */
+  function timeFormatter(locale, timeFormat, hour = 'numeric') {
+    const id = `${locale || ''}|${timeFormat}|${hour}`;
+    if (!timeFormats.has(id)) {
+      const o = /** @type {Intl.DateTimeFormatOptions} */ ({ hour: hour === '2-digit-24' ? 'numeric' : hour, minute: '2-digit' });
+      if (timeFormat === '24') o.hourCycle = 'h23';
+      else if (timeFormat === '12') o.hour12 = true;
+      let tag = locale || undefined;
+      let f;
+      try { f = new Intl.DateTimeFormat(tag, o); } catch { tag = 'en'; f = new Intl.DateTimeFormat(tag, o); }
+      if (hour === '2-digit-24' && f.resolvedOptions().hour12 === false) f = new Intl.DateTimeFormat(tag, { ...o, hour: '2-digit' });
+      timeFormats.set(id, f);
+    }
+    return timeFormats.get(id);
+  }
+
+  /**
+   * The time today, the weekday and time within 6 days, else the date (times in `locale` and `timeFormat`, as
+   * `timeFormatter()`; names in `language`).
+   */
+  function formatSince(ms, now, language, locale, timeFormat) {
     const at = new Date(ms);
-    const time = at.toLocaleTimeString(locale || [], { hour: 'numeric', minute: '2-digit' });
+    const time = timeFormatter(locale, timeFormat).format(at);
     const midnight = new Date(now);
     midnight.setHours(0, 0, 0, 0);
     if (ms >= midnight.getTime()) return time;
@@ -343,5 +367,5 @@
     return scheme;
   }
 
-  window.WidgetkeeperKit = { icons: ICONS, TIGHT_UNITS, KEY_PROBLEMS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, formatSince, baseTitle, lowestSlot, wireFrame, getDeviceIds, wireTileNames, colorStyle, applyColors };
+  window.WidgetkeeperKit = { icons: ICONS, TIGHT_UNITS, KEY_PROBLEMS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, timeFormatter, formatSince, baseTitle, lowestSlot, wireFrame, getDeviceIds, wireTileNames, colorStyle, applyColors };
 })();

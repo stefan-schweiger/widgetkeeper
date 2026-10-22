@@ -606,7 +606,8 @@ const BUILD = {
     w('clock', 'Defaults (weather)'),
     w('clock', 'No weather', { showWeather: false }),
     w('clock', ''), // no title
-    w('clock', 'No weather', { showWeather: false }),
+    w('clock', '24-hour', { timeFormat: '24' }),
+    w('clock', '12-hour', { timeFormat: '12' }),
   ] }),
 
   // Notes: typed messages, `Test …` notes only a Flow card writes to (until one does, they show the typed message),

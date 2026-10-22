@@ -7,6 +7,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Light Controls
 - **Widen the last tile:** with an odd number of tiles, the last one fills the row, such as a room's lights grouped into one tile.
 
+### Clock, Locks and Doors, Activity Dots, Cameras
+- **Time format:** show times in 24 or 12 hours, whatever the language of the phone or browser. Automatic (the default) follows that language, as before.
+
 ## 1.0.2
 
 ### Thermostat Presets
