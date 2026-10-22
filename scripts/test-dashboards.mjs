@@ -610,18 +610,18 @@ const BUILD = {
     w('clock', '12-hour', { timeFormat: '12' }),
   ] }),
 
-  // Web Page: Buienradar's rain radar at the Homey's location (the README's recipe), a page that may be tapped, and
+  // Web Page: a 550 × 512 map gadget at the Homey's location, a page that may be tapped, and
   // the messages. No page here starts anything: a tap at most follows a link inside the frame.
   webpage: () => {
-    const radar = zoom => `https://gadgets.buienradar.nl/gadget/zoommap/?lat={lat}&lng={lon}&overname=2&zoom=${zoom}&naam=Home&size=3&voor=1`;
+    const gadget = zoom => `https://gadgets.buienradar.nl/gadget/zoommap/?lat={lat}&lng={lon}&overname=2&zoom=${zoom}&naam=Home&size=3&voor=1`;
     const size = { pageWidth: 550, pageHeight: 512 };
     return { cols: 3, widgets: [
       w('webpage', 'Defaults (no address)'),
-      w('webpage', 'Buienradar · 550 × 512 · four zoom buttons', {
-        url: radar(8), ...size, refresh: 15,
-        b1Name: 'Land', b1Url: radar(6), b2Name: 'Provincie', b2Url: radar(8), b3Name: 'Regio', b3Url: radar(11), b4Name: 'Stad', b4Url: radar(13),
+      w('webpage', 'Map gadget · 550 × 512 · four zoom buttons', {
+        url: gadget(8), ...size, refresh: 15,
+        b1Name: 'Country', b1Url: gadget(6), b2Name: 'Province', b2Url: gadget(8), b3Name: 'Region', b3Url: gadget(11), b4Name: 'City', b4Url: gadget(13),
       }),
-      w('webpage', 'Buienradar · unscaled (page width 0)', { url: radar(8), pageHeight: 512 }),
+      w('webpage', 'Map gadget · unscaled (page width 0)', { url: gadget(8), pageHeight: 512 }),
       w('webpage', 'example.com · may be tapped', { url: 'https://example.com', pageHeight: 240, interactive: true }),
       w('webpage', 'javascript: address (refused)', { url: 'javascript:alert(1)' }),
     ] };

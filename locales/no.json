@@ -637,7 +637,7 @@
       "dayssince": "Dager siden en oppgave, rød når det er på tide igjen.",
       "stack": "Widgeter fra et annet dashbord, etter tur.",
       "shortcuts": "Hopp til de andre nettdashbordene dine, i dine farger og ikoner.",
-      "webpage": "Hvilken som helst nettside, skalert for å fylle widgeten, som en regnradar."
+      "webpage": "Hvilken som helst nettside, skalert for å fylle widgeten."
     }
   }
 }

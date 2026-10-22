@@ -637,7 +637,7 @@
       "dayssince": "Dagar sedan en syssla, röd när det är dags igen.",
       "stack": "Widgets från en annan instrumentpanel, turvis.",
       "shortcuts": "Hoppa till dina andra webbinstrumentpaneler, i dina färger och ikoner.",
-      "webpage": "Vilken webbsida som helst, skalad för att fylla widgeten, som en regnradar."
+      "webpage": "Vilken webbsida som helst, skalad för att fylla widgeten."
     }
   }
 }

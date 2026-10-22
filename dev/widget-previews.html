@@ -607,32 +607,39 @@ function clock(t, theme) {
   </div>`;
 }
 
-// Web Page: a page scaled to fill the card edge to edge (a drawn rain map: land, a coastline, a town's dot and rain
-// bands, no real map), over the row of buttons that switch between its addresses, the second one lit.
+// Web Page: a page scaled to fill the card edge to edge, as a neutral wireframe (a header with a logo and links, a
+// picture placeholder, a heading and lines of text), over the row of buttons that switch between its addresses, the
+// second one lit.
 function webPage(t, theme) {
   const dark = theme === 'dark';
   const card = dark ? '#181920' : '#FFFFFF';
   const shadow = dark ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
-  const land = dark ? '#2F4A34' : '#B9D9A8', sea = dark ? '#1D3550' : '#9CC6E8', border = dark ? '#5E7A57' : '#8DB07B';
+  const page = dark ? '#23242D' : '#F5F6F8', line = dark ? 'rgba(237,238,240,.12)' : 'rgba(31,32,41,.08)';
+  const text = dark ? 'rgba(237,238,240,.9)' : 'rgba(31,32,41,.85)', muted = dark ? 'rgba(237,238,240,.35)' : 'rgba(31,32,41,.25)';
+  const block = dark ? 'rgba(237,238,240,.08)' : 'rgba(31,32,41,.06)', glyph = dark ? 'rgba(237,238,240,.3)' : 'rgba(31,32,41,.22)';
   const tile = `color-mix(in srgb, ${t.fg} 7%, ${card})`, lit = `color-mix(in srgb, ${t.fg} 24%, ${card})`;
-  const map = `<svg width="800" height="560" viewBox="0 0 800 560">
-      <rect width="800" height="560" fill="${land}"/>
-      <path d="M0 0H330C300 60 340 110 290 170S180 230 150 300 60 360 0 380Z" fill="${sea}"/>
-      <path d="M430 0C450 120 520 160 500 260S600 380 560 560M500 260C600 250 700 300 800 280" fill="none" stroke="${border}" stroke-width="4" stroke-dasharray="14 10"/>
-      <g opacity="${dark ? 0.85 : 0.75}">
-        <path d="M120 470C150 380 260 340 360 330S560 260 640 160 790 120 800 110V250C740 300 660 330 600 380S420 470 330 500 160 540 120 470Z" fill="#4FA3F7"/>
-        <path d="M300 430C360 390 450 380 520 330S640 250 700 230C680 300 600 340 540 380S400 450 300 430Z" fill="#1F6FD1"/>
-        <ellipse cx="560" cy="320" rx="46" ry="26" transform="rotate(-28 560 320)" fill="#F5C518"/>
-      </g>
-      <circle cx="430" cy="390" r="12" fill="${dark ? '#EDEEF0' : '#1F2029'}"/>
-      <rect x="0" y="500" width="800" height="60" fill="rgba(0,0,0,.35)"/>
-      <rect x="32" y="520" width="150" height="20" rx="10" fill="rgba(255,255,255,.85)"/>
-      <rect x="640" y="520" width="128" height="20" rx="10" fill="rgba(255,255,255,.85)"/>
+  const bar = (x, y, w, h, fill) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${h / 2}" fill="${fill}"/>`;
+  // A picture icon: a frame with a small sun and a hill, in the placeholder's middle.
+  const picture = `<g transform="translate(400 230)" fill="none" stroke="${glyph}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">
+        <rect x="-60" y="-46" width="120" height="92" rx="14"/><circle cx="24" cy="-14" r="10"/><path d="M-60 34l38-36 30 28 18-16 32 30"/>
+      </g>`;
+  const site = `<svg width="800" height="560" viewBox="0 0 800 560">
+      <rect width="800" height="560" fill="${page}"/>
+      <rect x="48" y="28" width="40" height="40" rx="10" fill="${BLUE}"/>
+      ${bar(104, 36, 150, 24, text)}
+      ${bar(500, 38, 70, 20, muted)}${bar(590, 38, 70, 20, muted)}${bar(680, 38, 72, 20, muted)}
+      <rect x="0" y="94" width="800" height="2" fill="${line}"/>
+      <rect x="48" y="120" width="704" height="220" rx="20" fill="${block}"/>
+      ${picture}
+      ${bar(48, 372, 420, 34, text)}
+      ${bar(48, 430, 704, 20, muted)}
+      ${bar(48, 466, 660, 20, muted)}
+      ${bar(48, 502, 500, 20, muted)}
     </svg>`;
   const radius = i => (i === 0 ? '36px 10px 10px 36px' : i === 3 ? '10px 36px 36px 10px' : '10px');
   const btn = (w, i) => `<div style="flex:1;height:112px;border-radius:${radius(i)};background:${i === 1 ? lit : tile};display:flex;align-items:center;justify-content:center">${pill(w, 30, t.fg, i === 1 ? '' : 'opacity:.7')}</div>`;
   return `<div style="width:800px;border-radius:48px;overflow:hidden;background:${card};box-shadow:${shadow}">
-    ${map}
+    ${site}
     <div style="display:flex;gap:6px;padding:24px">${[96, 120, 90, 80].map(btn).join('')}</div>
   </div>`;
 }

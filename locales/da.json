@@ -637,7 +637,7 @@
       "dayssince": "Dage siden en opgave, rød når det er tid igen.",
       "stack": "Widgets fra et andet dashboard, på skift.",
       "shortcuts": "Hop til dine andre webdashboards, i dine farver og ikoner.",
-      "webpage": "Enhver webside, skaleret så den fylder widgeten, som en regnradar."
+      "webpage": "Enhver webside, skaleret så den fylder widgeten."
     }
   }
 }

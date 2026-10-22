@@ -637,7 +637,7 @@
       "dayssince": "Los días desde una tarea, en rojo cuando vuelve a tocar.",
       "stack": "Widgets de otro panel, por turnos.",
       "shortcuts": "Salta a tus otros paneles web, con tus colores e iconos.",
-      "webpage": "Cualquier página web, escalada para llenar el widget, como un radar de lluvia."
+      "webpage": "Cualquier página web, escalada para llenar el widget."
     }
   }
 }

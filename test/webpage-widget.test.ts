@@ -16,7 +16,7 @@ describe('webPageAddress', () => {
   it('takes http and https addresses, adding https:// when there is no scheme', () => {
     expect(win.webPageAddress('https://example.com/a?b=1')).toEqual({ url: 'https://example.com/a?b=1' });
     expect(win.webPageAddress('  http://192.168.1.5:8080/x ')).toEqual({ url: 'http://192.168.1.5:8080/x' });
-    expect(win.webPageAddress('example.com/radar')).toEqual({ url: 'https://example.com/radar' });
+    expect(win.webPageAddress('example.com/map')).toEqual({ url: 'https://example.com/map' });
   });
 
   it('refuses an empty address and any other scheme', () => {
@@ -27,8 +27,8 @@ describe('webPageAddress', () => {
   });
 
   it("fills {lat} and {lon} in from Homey's location, and needs one for them", () => {
-    const raw = 'https://gadgets.buienradar.nl/gadget/zoommap/?lat={lat}&lng={lon}&zoom=8&size=3';
-    expect(win.webPageAddress(raw, HOME).url).toBe('https://gadgets.buienradar.nl/gadget/zoommap/?lat=52.21&lng=5.97&zoom=8&size=3');
+    const raw = 'https://maps.example/gadget/?lat={lat}&lng={lon}&zoom=8&size=3';
+    expect(win.webPageAddress(raw, HOME).url).toBe('https://maps.example/gadget/?lat=52.21&lng=5.97&zoom=8&size=3');
     expect(win.webPageAddress(raw, null)).toEqual({ error: 'noLocation' });
     expect(win.webPageAddress(raw, { lat: NaN, lon: 1 })).toEqual({ error: 'noLocation' });
   });

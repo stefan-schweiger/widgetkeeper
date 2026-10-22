@@ -1,6 +1,6 @@
 /*
  * Web Page: a page the user picks, in a frame, drawn at a set width and scaled to fill the widget (a gadget with
- * fixed pixel sizes, such as Buienradar's rain radar, then fills it at any size without borders), optionally with a
+ * fixed pixel sizes, such as a map gadget, then fills it at any size without borders), optionally with a
  * row of buttons that switch between addresses (a map's zoom levels). Links never open (the sandbox has no popups or
  * top navigation), and unless the page may be tapped a layer over it takes the taps. Plain browser JS (served as-is).
  */
