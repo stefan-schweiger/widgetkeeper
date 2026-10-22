@@ -364,6 +364,7 @@ The front page shows every dashboard as a card with a miniature of its widgets, 
 - **Look:** light, dark or automatic, and a background per dashboard from calm tints (Default, Black or White, Slate, Ocean, Forest, Plum, Berry, Sand), each with a light and a dark shade. The sun button in the bar switches between light and dark in this browser only.
 - **Full screen:** the corner button gives the whole screen to the dashboard, for a wall tablet.
 - **Keep screen on:** turn it on in the front page's **Settings** (under the pen) to stop this tablet, phone or computer from sleeping while the page is open. Browsers only offer this properly over HTTPS, as through the [away from home](#away-from-home) address; on the home address the page plays a silent, invisible video instead, which works on iPads and iPhones but not in every browser. Where it doesn't, turn off sleep in the device's own settings.
+- **Dim:** the slider in the same **Settings** darkens the whole page in this browser, as if the screen were turned down, up to 80 %. Handy for a wall tablet at night.
 - **A menu:** put [Dashboard Shortcuts](#dashboard-shortcuts) on every dashboard to jump between them.
 
 <img src="docs/web/light.png" alt="A light web dashboard, the Kitchen on the Sand background, in a browser window" width="100%">

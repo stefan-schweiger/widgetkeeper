@@ -6,6 +6,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Web dashboards
 - **Keep screen on:** a switch in the front page's Settings keeps this browser's screen from sleeping while the page is open, for a wall tablet. It uses the browser's screen lock where it has one (over HTTPS, such as the away from home address), and a silent video elsewhere.
+- **Dim:** a slider in the front page's Settings darkens the whole page in this browser, as if the screen were turned down, for a wall tablet at night.
 
 ### Light Controls
 - **Widen the last tile:** with an odd number of tiles, the last one fills the row, such as a room's lights grouped into one tile.

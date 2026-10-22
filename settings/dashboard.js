@@ -71,6 +71,9 @@
     keepAwakeLock: 'The screen stays on while this page is open.',
     keepAwakeVideo: 'Uses a silent video to keep the screen on. If it still sleeps, turn off sleep in the device\'s settings.',
     keepAwakeNone: 'This browser can\'t keep the screen on.',
+    dim: 'Dim',
+    dimOff: 'Off',
+    dimText: 'Darkens the whole page, as if the screen were turned down.',
     backupTitle: 'Backup',
     backupText: 'The dashboards you choose in one file: their layouts, widgets, settings and the names typed on tiles. A restore brings back the ones you tick and leaves the others.',
     backupDownload: 'Download backup',
@@ -183,6 +186,10 @@
   const THEME_STORAGE = 'widgetkeeper.web.theme';
   /** Keep screen on (`'1'`), this browser's choice in Settings; absent lets the screen sleep. */
   const AWAKE_STORAGE = 'widgetkeeper.web.awake';
+  /** Dim, this browser's choice in Settings: a percentage (5 … `MAX_DIM`); absent is off. */
+  const DIM_STORAGE = 'widgetkeeper.web.dim';
+  /** The most the page dims: never black, so the bar's pen and Settings stay findable. */
+  const MAX_DIM = 80;
   const PREFIX = 'CF2_MESSAGE';
   const ACK_TIMEOUT_MS = 10e3;
   /** After a realtime outage this long, the frames reload: they may have missed changes (they re-read every 5 min). */
@@ -443,6 +450,29 @@
       },
     };
   })();
+
+  /** This browser's Dim (0 is off), in steps of 5. */
+  function dimLevel() {
+    const v = Math.round(Number(storageGet(DIM_STORAGE)) / 5) * 5;
+    return Number.isFinite(v) ? Math.min(MAX_DIM, Math.max(0, v)) : 0;
+  }
+
+  /**
+   * Dims the page as if the screen were turned down: a black layer over everything, the widgets' frames included, that
+   * lets taps through. Outside the page's root, so a redraw keeps it; the dialogs are in the top layer, above it.
+   */
+  let dimLayer = null;
+  function applyDim(level) {
+    if (!dimLayer) {
+      if (!level) return;
+      dimLayer = document.createElement('div');
+      dimLayer.className = 'wd-dim';
+      dimLayer.setAttribute('aria-hidden', 'true');
+      document.body.append(dimLayer);
+    }
+    dimLayer.hidden = !level;
+    dimLayer.style.opacity = String(level / 100);
+  }
 
   /**
    * `opts.mountWidget(widget, wrap)`, when given, draws a widget into `wrap` in place of its iframe (the dev renders,
@@ -1197,7 +1227,7 @@
       });
     }
 
-    /** The front page's edit mode: Settings in its bar, a dialog with the backup, then this browser's Keep screen on and Forget the key. */
+    /** The front page's edit mode: Settings in its bar, a dialog with the backup, then this browser's Keep screen on, Dim and Forget the key. */
     function pageSettings() {
       const { d, body } = dialog(t('pageSettings'));
       d.classList.add('wd-page-settings');
@@ -1209,11 +1239,19 @@
         storageSet(SESSION_STORAGE, null);
         location.reload();
       });
-      const row = el('div', 'wd-row');
-      row.append(forget);
-      const awake = el('label', 'wd-awake-row');
+      // This browser's settings as the editor's rows: the label and a hint on the left, the control on the right.
+      const setRow = (label, hint, control, id) => {
+        const row = el('div', 'wd-set-row inline');
+        const head = el('div', 'wd-set-text');
+        const l = el(id ? 'label' : 'span', 'wd-set-label', label);
+        if (id) l.htmlFor = id;
+        head.append(l, el('p', 'wd-hint', hint));
+        row.append(head, control);
+        return row;
+      };
       const box = el('input', 'wd-switch');
       box.type = 'checkbox';
+      box.id = 'wd-keep-awake';
       box.setAttribute('role', 'switch');
       box.checked = keepAwake.on;
       box.disabled = keepAwake.how === 'none';
@@ -1221,10 +1259,35 @@
         storageSet(AWAKE_STORAGE, box.checked ? '1' : null);
         keepAwake.set(box.checked); // in the tap, so a video may start
       });
-      awake.append(el('span', null, t('keepAwake')), box);
       const how = { lock: 'keepAwakeLock', video: 'keepAwakeVideo', none: 'keepAwakeNone' }[keepAwake.how];
-      browser.append(el('h3', 'wd-h2', t('thisBrowser')), awake, el('p', 'wd-muted', t(how)),
-        el('p', 'wd-muted', t('forgetKeyText')), row);
+      const awake = setRow(t('keepAwake'), t(how), box, box.id);
+      awake.classList.add('switch');
+      // Dim: the page behind the dialog darkens while the slider moves; stored when it's let go. The slider spans the row.
+      const slider = el('input', 'wd-dim-slider');
+      slider.id = 'wd-dim-level';
+      slider.type = 'range';
+      slider.min = '0';
+      slider.max = String(MAX_DIM);
+      slider.step = '5';
+      slider.value = String(dimLevel());
+      const amount = el('span', 'wd-dim-value');
+      const show = () => {
+        const level = Number(slider.value);
+        amount.textContent = level ? `${level} %` : t('dimOff');
+        applyDim(level);
+      };
+      slider.addEventListener('input', show);
+      slider.addEventListener('change', () => {
+        show();
+        storageSet(DIM_STORAGE, Number(slider.value) ? slider.value : null);
+      });
+      show();
+      const dim = setRow(t('dim'), t('dimText'), amount, slider.id);
+      dim.classList.add('wd-dim-row');
+      dim.append(slider);
+      const card = el('div', 'wd-set-card');
+      card.append(awake, dim, setRow(t('keyPlaceholder'), t('forgetKeyText'), forget));
+      browser.append(el('h3', 'wd-h2', t('thisBrowser')), card);
       body.append(backupSection(), browser);
       d.showModal();
     }
@@ -3093,6 +3156,7 @@
       route();
     });
     keepAwake.set(storageGet(AWAKE_STORAGE) === '1');
+    applyDim(dimLevel());
     start();
   };
 })();
