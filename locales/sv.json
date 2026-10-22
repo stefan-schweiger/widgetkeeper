@@ -474,6 +474,13 @@
     "renameFailed": "Kunde inte spara namnet.",
     "none": "Ingen"
   },
+  "webpage": {
+    "noAddress": "Skriv sidans adress i widgetinställningarna.",
+    "badAddress": "Adressen kan inte visas: den måste börja med https:// eller http://.",
+    "noLocation": "Ange Homeys plats för att använda {lat} och {lon}.",
+    "locationError": "Kunde inte läsa Homeys plats.",
+    "button": "Knapp __n__"
+  },
   "web": {
     "title": "Webbinstrumentpaneler",
     "keyTitle": "Anslut till din Homey",
@@ -629,7 +636,8 @@
       "spacer": "Tomt utrymme för att linjera widgetar i kolumner.",
       "dayssince": "Dagar sedan en syssla, röd när det är dags igen.",
       "stack": "Widgets från en annan instrumentpanel, turvis.",
-      "shortcuts": "Hoppa till dina andra webbinstrumentpaneler, i dina färger och ikoner."
+      "shortcuts": "Hoppa till dina andra webbinstrumentpaneler, i dina färger och ikoner.",
+      "webpage": "Vilken webbsida som helst, skalad för att fylla widgeten, som en regnradar."
     }
   }
 }

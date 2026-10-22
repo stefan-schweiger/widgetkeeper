@@ -474,6 +474,13 @@
     "renameFailed": "Der Name konnte nicht gespeichert werden.",
     "none": "Keine"
   },
+  "webpage": {
+    "noAddress": "Gib die Adresse der Seite in den Widget-Einstellungen ein.",
+    "badAddress": "Diese Adresse kann nicht angezeigt werden: Sie muss mit https:// oder http:// beginnen.",
+    "noLocation": "Lege den Standort des Homey fest, um {lat} und {lon} zu verwenden.",
+    "locationError": "Der Standort des Homey konnte nicht gelesen werden.",
+    "button": "Button __n__"
+  },
   "web": {
     "title": "Web-Dashboards",
     "keyTitle": "Mit deinem Homey verbinden",
@@ -629,7 +636,8 @@
       "spacer": "Leerer Platz, um Widgets in Spalten auszurichten.",
       "dayssince": "Tage seit einer Aufgabe, rot, sobald sie wieder fällig ist.",
       "stack": "Widgets von einem anderen Dashboard, abwechselnd.",
-      "shortcuts": "Zu deinen anderen Web-Dashboards springen, in deinen Farben und Symbolen."
+      "shortcuts": "Zu deinen anderen Web-Dashboards springen, in deinen Farben und Symbolen.",
+      "webpage": "Jede Webseite, skaliert auf die Größe des Widgets, etwa ein Regenradar."
     }
   }
 }

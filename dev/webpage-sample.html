@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sample gadget</title>
+  <!--
+    A made-up stand-in for a fixed-size gadget such as Buienradar's rain radar (no real map or data): a 550 × 512 box on
+    a white page, the whole box a link that opens a new window, as the real one is. dev/webpage-preview.html shows it in
+    the Web Page widget. `?zoom=6|8|11|13` changes the drawing and the label.
+  -->
+  <style>
+    html, body { margin: 0; background: #FFFFFF; font-family: Arial, sans-serif; }
+    a { display: block; width: 550px; height: 512px; position: relative; overflow: hidden; background: #3E7B3A; color: #FFFFFF; text-decoration: none; }
+    svg { position: absolute; inset: 0; }
+    .rain { animation: drift 6s linear infinite alternate; }
+    @keyframes drift { to { transform: translate(40px, -20px); } }
+    .time { position: absolute; left: 10px; top: 10px; font-size: 20px; text-shadow: 1px 1px 2px #000; }
+    .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 40px; background: rgba(0, 0, 0, .45); display: flex; align-items: center; justify-content: space-between; padding: 0 10px; font-size: 15px; }
+  </style>
+</head>
+<body>
+  <a href="https://example.com/" target="_blank">
+    <svg width="550" height="512" viewBox="0 0 550 512">
+      <path id="sea" d="M0 0H230C200 50 240 90 200 140S120 190 100 250 40 300 0 320Z" fill="#1E3E8C"/>
+      <path d="M300 0C320 100 360 140 345 220S410 330 390 512M345 220C410 212 480 250 550 236" fill="none" stroke="#E3D25A" stroke-width="2"/>
+      <g class="rain" opacity=".8">
+        <path d="M60 430C90 350 180 310 260 300S390 240 450 150 540 110 550 100V220C500 260 440 290 400 330S280 410 220 430 90 480 60 430Z" fill="#5AB1F5"/>
+        <path d="M200 390C250 350 320 340 370 300S450 230 500 210C480 270 420 310 370 340S280 400 200 390Z" fill="#2160C4"/>
+      </g>
+      <circle cx="290" cy="350" r="5" fill="#FFFFFF"/>
+      <text id="town" x="300" y="345" font-size="18" fill="#FFFFFF" font-weight="bold" style="text-shadow:1px 1px 2px #000">Solbakken</text>
+    </svg>
+    <div class="time">18:40</div>
+    <div class="bar"><b>Rain map</b><span id="zoom"></span></div>
+  </a>
+  <script>
+    const zoom = new URLSearchParams(location.search).get('zoom') || '8';
+    const names = { 6: 'Country', 8: 'Province', 11: 'Region', 13: 'City' };
+    document.getElementById('zoom').textContent = `zoom ${zoom} · ${names[zoom] || ''}`;
+    const s = { 6: 0.6, 8: 1, 11: 1.6, 13: 2.4 }[zoom] || 1;
+    document.querySelector('svg').style.transform = `scale(${s})`;
+    document.querySelector('svg').style.transformOrigin = '290px 350px';
+  </script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+{
+  "name": {
+    "en": "Web Page",
+    "nl": "Webpagina",
+    "de": "Webseite",
+    "fr": "Page web",
+    "it": "Pagina web",
+    "sv": "Webbsida",
+    "no": "Nettside",
+    "es": "Página web",
+    "da": "Webside",
+    "ru": "Веб-страница",
+    "pl": "Strona WWW",
+    "ko": "웹 페이지",
+    "ar": "صفحة ويب"
+  },
+  "height": 320,
+  "settings": [
+    {
+      "id": "url",
+      "type": "text",
+      "title": {
+        "en": "Address",
+        "nl": "Adres",
+        "de": "Adresse",
+        "fr": "Adresse",
+        "it": "Indirizzo",
+        "sv": "Adress",
+        "no": "Adresse",
+        "es": "Dirección",
+        "da": "Adresse",
+        "ru": "Адрес",
+        "pl": "Adres",
+        "ko": "주소",
+        "ar": "العنوان"
+      },
+      "hint": {
+        "en": "The page to show, starting with https://. {lat} and {lon} become the Homey's location. Some sites don't allow being shown inside another page.",
+        "nl": "De pagina om te tonen, beginnend met https://. {lat} en {lon} worden de locatie van de Homey. Sommige sites staan niet toe dat ze in een andere pagina worden getoond.",
+        "de": "Die anzuzeigende Seite, beginnend mit https://. {lat} und {lon} werden zum Standort des Homey. Manche Seiten lassen sich nicht in einer anderen Seite anzeigen.",
+        "fr": "La page à afficher, commençant par https://. {lat} et {lon} deviennent l'emplacement du Homey. Certains sites refusent d'être affichés dans une autre page.",
+        "it": "La pagina da mostrare, che inizia con https://. {lat} e {lon} diventano la posizione dell'Homey. Alcuni siti non si lasciano mostrare dentro un'altra pagina.",
+        "sv": "Sidan som ska visas, som börjar med https://. {lat} och {lon} blir Homeys plats. Vissa webbplatser tillåter inte att visas i en annan sida.",
+        "no": "Siden som skal vises, som starter med https://. {lat} og {lon} blir Homeys plassering. Noen nettsteder tillater ikke å bli vist i en annen side.",
+        "es": "La página que se muestra, empezando por https://. {lat} y {lon} se convierten en la ubicación del Homey. Algunos sitios no permiten mostrarse dentro de otra página.",
+        "da": "Siden, der skal vises, som starter med https://. {lat} og {lon} bliver Homeys placering. Nogle sider tillader ikke at blive vist i en anden side.",
+        "ru": "Страница для показа, начиная с https://. {lat} и {lon} заменяются местоположением Homey. Некоторые сайты не разрешают показывать себя внутри другой страницы.",
+        "pl": "Strona do wyświetlenia, zaczynająca się od https://. {lat} i {lon} zastępuje lokalizacja Homey. Niektóre strony nie pozwalają na wyświetlanie w innej stronie.",
+        "ko": "https://로 시작하는 표시할 페이지입니다. {lat}와 {lon}은 Homey의 위치로 바뀝니다. 일부 사이트는 다른 페이지 안에 표시되는 것을 허용하지 않습니다.",
+        "ar": "الصفحة المراد عرضها، وتبدأ بـ https://. يُستبدل {lat} و{lon} بموقع Homey. بعض المواقع لا تسمح بعرضها داخل صفحة أخرى."
+      },
+      "value": ""
+    },
+    {
+      "id": "pageWidth",
+      "type": "number",
+      "title": {
+        "en": "Page width (pixels)",
+        "nl": "Paginabreedte (pixels)",
+        "de": "Seitenbreite (Pixel)",
+        "fr": "Largeur de la page (pixels)",
+        "it": "Larghezza pagina (pixel)",
+        "sv": "Sidbredd (pixlar)",
+        "no": "Sidebredde (piksler)",
+        "es": "Ancho de página (píxeles)",
+        "da": "Sidebredde (pixels)",
+        "ru": "Ширина страницы (пиксели)",
+        "pl": "Szerokość strony (piksele)",
+        "ko": "페이지 너비(픽셀)",
+        "ar": "عرض الصفحة (بكسل)"
+      },
+      "hint": {
+        "en": "The page is drawn this wide, then scaled to fill the widget. 0 uses the widget's own width. Buienradar's large map is 550 × 512.",
+        "nl": "De pagina wordt zo breed getekend en dan geschaald om de widget te vullen. 0 gebruikt de breedte van de widget zelf. De grote kaart van Buienradar is 550 × 512.",
+        "de": "Die Seite wird so breit gezeichnet und dann skaliert, bis sie das Widget füllt. 0 nimmt die Breite des Widgets selbst. Die große Karte von Buienradar ist 550 × 512.",
+        "fr": "La page est dessinée à cette largeur, puis mise à l'échelle pour remplir le widget. 0 utilise la largeur du widget. La grande carte de Buienradar fait 550 × 512.",
+        "it": "La pagina viene disegnata con questa larghezza, poi scalata per riempire il widget. 0 usa la larghezza del widget. La mappa grande di Buienradar è 550 × 512.",
+        "sv": "Sidan ritas så här bred och skalas sedan för att fylla widgeten. 0 använder widgetens egen bredd. Buienradars stora karta är 550 × 512.",
+        "no": "Siden tegnes så bred og skaleres så for å fylle widgeten. 0 bruker widgetens egen bredde. Buienradars store kart er 550 × 512.",
+        "es": "La página se dibuja con este ancho y luego se escala para llenar el widget. 0 usa el ancho del propio widget. El mapa grande de Buienradar es de 550 × 512.",
+        "da": "Siden tegnes så bred og skaleres så, så den fylder widgeten. 0 bruger widgetens egen bredde. Buienradars store kort er 550 × 512.",
+        "ru": "Страница рисуется такой ширины, а затем масштабируется, чтобы заполнить виджет. 0 — ширина самого виджета. Большая карта Buienradar — 550 × 512.",
+        "pl": "Strona jest rysowana w tej szerokości, a potem skalowana, by wypełnić widżet. 0 używa szerokości widżetu. Duża mapa Buienradar ma 550 × 512.",
+        "ko": "페이지를 이 너비로 그린 뒤 위젯을 채우도록 확대·축소합니다. 0이면 위젯 자체의 너비를 씁니다. Buienradar의 큰 지도는 550 × 512입니다.",
+        "ar": "تُرسم الصفحة بهذا العرض ثم تُكبَّر أو تُصغَّر لتملأ الأداة. 0 يستخدم عرض الأداة نفسها. خريطة Buienradar الكبيرة 550 × 512."
+      },
+      "value": 0,
+      "min": 0,
+      "max": 4000
+    },
+    {
+      "id": "pageHeight",
+      "type": "number",
+      "title": {
+        "en": "Page height (pixels)",
+        "nl": "Paginahoogte (pixels)",
+        "de": "Seitenhöhe (Pixel)",
+        "fr": "Hauteur de la page (pixels)",
+        "it": "Altezza pagina (pixel)",
+        "sv": "Sidhöjd (pixlar)",
+        "no": "Sidehøyde (piksler)",
+        "es": "Alto de página (píxeles)",
+        "da": "Sidehøjde (pixels)",
+        "ru": "Высота страницы (пиксели)",
+        "pl": "Wysokość strony (piksele)",
+        "ko": "페이지 높이(픽셀)",
+        "ar": "ارتفاع الصفحة (بكسل)"
+      },
+      "hint": {
+        "en": "The page's height at that width. The widget takes the same shape, so the page fills it without borders.",
+        "nl": "De hoogte van de pagina bij die breedte. De widget krijgt dezelfde vorm, zodat de pagina hem zonder randen vult.",
+        "de": "Die Höhe der Seite bei dieser Breite. Das Widget bekommt dieselbe Form, sodass die Seite es ohne Ränder füllt.",
+        "fr": "La hauteur de la page à cette largeur. Le widget prend la même forme, pour que la page le remplisse sans bordures.",
+        "it": "L'altezza della pagina a quella larghezza. Il widget prende la stessa forma, così la pagina lo riempie senza bordi.",
+        "sv": "Sidans höjd vid den bredden. Widgeten får samma form, så sidan fyller den utan kanter.",
+        "no": "Sidens høyde ved den bredden. Widgeten får samme form, så siden fyller den uten kanter.",
+        "es": "La altura de la página con ese ancho. El widget toma la misma forma, así la página lo llena sin bordes.",
+        "da": "Sidens højde ved den bredde. Widgeten får samme form, så siden fylder den uden kanter.",
+        "ru": "Высота страницы при этой ширине. Виджет принимает ту же форму, поэтому страница заполняет его без полей.",
+        "pl": "Wysokość strony przy tej szerokości. Widżet ma ten sam kształt, więc strona wypełnia go bez ramek.",
+        "ko": "그 너비에서 페이지의 높이입니다. 위젯이 같은 비율이 되어 페이지가 여백 없이 채웁니다.",
+        "ar": "ارتفاع الصفحة بذلك العرض. تأخذ الأداة الشكل نفسه، فتملؤها الصفحة بلا حواف."
+      },
+      "value": 320,
+      "min": 20,
+      "max": 4000
+    },
+    {
+      "id": "interactive",
+      "type": "checkbox",
+      "title": {
+        "en": "Let the page be tapped",
+        "nl": "Tikken op de pagina toestaan",
+        "de": "Tippen auf die Seite erlauben",
+        "fr": "Autoriser les appuis sur la page",
+        "it": "Consenti i tocchi sulla pagina",
+        "sv": "Tillåt tryck på sidan",
+        "no": "Tillat trykk på siden",
+        "es": "Permitir tocar la página",
+        "da": "Tillad tryk på siden",
+        "ru": "Разрешить нажатия на странице",
+        "pl": "Pozwól dotykać strony",
+        "ko": "페이지 탭 허용",
+        "ar": "السماح بالنقر على الصفحة"
+      },
+      "hint": {
+        "en": "Off, taps are ignored and a swipe scrolls the dashboard. Links never open other pages.",
+        "nl": "Uit worden tikken genegeerd en scrolt vegen het dashboard. Links openen nooit andere pagina's.",
+        "de": "Aus werden Tipps ignoriert und Wischen scrollt das Dashboard. Links öffnen nie andere Seiten.",
+        "fr": "Désactivé, les appuis sont ignorés et un glissement fait défiler le tableau de bord. Les liens n'ouvrent jamais d'autres pages.",
+        "it": "Disattivato, i tocchi vengono ignorati e uno scorrimento fa scorrere la dashboard. I link non aprono mai altre pagine.",
+        "sv": "Av ignoreras tryck och ett svep rullar instrumentpanelen. Länkar öppnar aldrig andra sidor.",
+        "no": "Av ignoreres trykk, og et sveip ruller dashbordet. Lenker åpner aldri andre sider.",
+        "es": "Desactivado, los toques se ignoran y deslizar desplaza el panel. Los enlaces nunca abren otras páginas.",
+        "da": "Fra ignoreres tryk, og et swipe ruller dashboardet. Links åbner aldrig andre sider.",
+        "ru": "Если выключено, нажатия игнорируются, а свайп прокручивает панель. Ссылки никогда не открывают другие страницы.",
+        "pl": "Wyłączone: dotknięcia są ignorowane, a przesunięcie przewija pulpit. Linki nigdy nie otwierają innych stron.",
+        "ko": "끄면 탭은 무시되고 스와이프하면 대시보드가 스크롤됩니다. 링크는 다른 페이지를 열지 않습니다.",
+        "ar": "عند الإيقاف تُتجاهل النقرات ويمرّر السحب لوحة المعلومات. لا تفتح الروابط صفحات أخرى أبدًا."
+      },
+      "value": false
+    },
+    {
+      "id": "refresh",
+      "type": "number",
+      "title": {
+        "en": "Reload every (minutes)",
+        "nl": "Herladen elke (minuten)",
+        "de": "Neu laden alle (Minuten)",
+        "fr": "Recharger toutes les (minutes)",
+        "it": "Ricarica ogni (minuti)",
+        "sv": "Ladda om var (minuter)",
+        "no": "Last inn på nytt hvert (minutter)",
+        "es": "Recargar cada (minutos)",
+        "da": "Genindlæs hvert (minutter)",
+        "ru": "Перезагружать каждые (минуты)",
+        "pl": "Odświeżaj co (minuty)",
+        "ko": "새로 고침 간격(분)",
+        "ar": "إعادة التحميل كل (دقائق)"
+      },
+      "hint": {
+        "en": "0 never reloads. A page with live data, like a rain radar, may need it on a screen that's always on.",
+        "nl": "0 herlaadt nooit. Een pagina met live gegevens, zoals een buienradar, heeft het misschien nodig op een scherm dat altijd aan staat.",
+        "de": "0 lädt nie neu. Eine Seite mit Live-Daten, etwa ein Regenradar, braucht es vielleicht auf einem Bildschirm, der immer an ist.",
+        "fr": "0 ne recharge jamais. Une page aux données en direct, comme un radar de pluie, peut en avoir besoin sur un écran toujours allumé.",
+        "it": "0 non ricarica mai. Una pagina con dati in tempo reale, come un radar della pioggia, può averne bisogno su uno schermo sempre acceso.",
+        "sv": "0 laddar aldrig om. En sida med livedata, som en regnradar, kan behöva det på en skärm som alltid är på.",
+        "no": "0 laster aldri inn på nytt. En side med sanntidsdata, som en regnradar, kan trenge det på en skjerm som alltid er på.",
+        "es": "0 nunca recarga. Una página con datos en directo, como un radar de lluvia, puede necesitarlo en una pantalla siempre encendida.",
+        "da": "0 genindlæser aldrig. En side med live-data, som en regnradar, kan have brug for det på en skærm, der altid er tændt.",
+        "ru": "0 — никогда. Странице с живыми данными, например радару осадков, это может понадобиться на постоянно включённом экране.",
+        "pl": "0 nigdy nie odświeża. Strona z danymi na żywo, jak radar opadów, może tego potrzebować na zawsze włączonym ekranie.",
+        "ko": "0이면 새로 고치지 않습니다. 강수 레이더처럼 실시간 데이터를 보여 주는 페이지는 항상 켜진 화면에서 필요할 수 있습니다.",
+        "ar": "0 لا يعيد التحميل أبدًا. قد تحتاجه صفحة ذات بيانات مباشرة، مثل رادار المطر، على شاشة تبقى مضاءة دائمًا."
+      },
+      "value": 0,
+      "min": 0,
+      "max": 1440
+    },
+    {
+      "id": "b1Name",
+      "type": "text",
+      "title": {
+        "en": "Button 1: name",
+        "nl": "Knop 1: naam",
+        "de": "Button 1: Name",
+        "fr": "Bouton 1: nom",
+        "it": "Pulsante 1: nome",
+        "sv": "Knapp 1: namn",
+        "no": "Knapp 1: navn",
+        "es": "Botón 1: nombre",
+        "da": "Knap 1: navn",
+        "ru": "Кнопка 1: название",
+        "pl": "Przycisk 1: nazwa",
+        "ko": "버튼 1: 이름",
+        "ar": "الزر 1: الاسم"
+      },
+      "hint": {
+        "en": "Optional. With two or more buttons, a row under the page switches between their addresses, such as a map's zoom levels. The widget opens on the Address above.",
+        "nl": "Optioneel. Met twee of meer knoppen wisselt een rij onder de pagina tussen hun adressen, zoals de zoomniveaus van een kaart. De widget opent op het Adres hierboven.",
+        "de": "Optional. Ab zwei Buttons wechselt eine Reihe unter der Seite zwischen ihren Adressen, etwa den Zoomstufen einer Karte. Das Widget öffnet mit der Adresse oben.",
+        "fr": "Facultatif. À partir de deux boutons, une rangée sous la page passe d'une adresse à l'autre, comme les niveaux de zoom d'une carte. Le widget s'ouvre sur l'Adresse ci-dessus.",
+        "it": "Facoltativo. Con due o più pulsanti, una riga sotto la pagina passa da un indirizzo all'altro, come i livelli di zoom di una mappa. Il widget si apre sull'Indirizzo qui sopra.",
+        "sv": "Valfritt. Med två eller fler knappar växlar en rad under sidan mellan deras adresser, som en kartas zoomnivåer. Widgeten öppnas på Adress ovan.",
+        "no": "Valgfritt. Med to eller flere knapper bytter en rad under siden mellom adressene deres, som et karts zoomnivåer. Widgeten åpner på Adresse over.",
+        "es": "Opcional. Con dos o más botones, una fila bajo la página cambia entre sus direcciones, como los niveles de zoom de un mapa. El widget se abre en la Dirección de arriba.",
+        "da": "Valgfrit. Med to eller flere knapper skifter en række under siden mellem deres adresser, som et korts zoomniveauer. Widgeten åbner på Adresse ovenfor.",
+        "ru": "Необязательно. При двух и более кнопках ряд под страницей переключает их адреса, например уровни масштаба карты. Виджет открывается на Адресе выше.",
+        "pl": "Opcjonalnie. Przy dwóch lub więcej przyciskach rząd pod stroną przełącza ich adresy, np. poziomy powiększenia mapy. Widżet otwiera się na Adresie powyżej.",
+        "ko": "선택 사항입니다. 버튼이 두 개 이상이면 페이지 아래의 줄이 지도의 확대 수준처럼 각 주소로 전환합니다. 위젯은 위의 주소로 열립니다.",
+        "ar": "اختياري. مع زرّين أو أكثر، يبدّل صفّ أسفل الصفحة بين عناوينها، مثل مستويات تكبير خريطة. تفتح الأداة على العنوان أعلاه."
+      },
+      "value": ""
+    },
+    {
+      "id": "b1Url",
+      "type": "text",
+      "title": {
+        "en": "  – Address",
+        "nl": "  – Adres",
+        "de": "  – Adresse",
+        "fr": "  – Adresse",
+        "it": "  – Indirizzo",
+        "sv": "  – Adress",
+        "no": "  – Adresse",
+        "es": "  – Dirección",
+        "da": "  – Adresse",
+        "ru": "  – Адрес",
+        "pl": "  – Adres",
+        "ko": "  – 주소",
+        "ar": "  – العنوان"
+      },
+      "value": ""
+    },
+    {
+      "id": "b2Name",
+      "type": "text",
+      "title": {
+        "en": "Button 2: name",
+        "nl": "Knop 2: naam",
+        "de": "Button 2: Name",
+        "fr": "Bouton 2: nom",
+        "it": "Pulsante 2: nome",
+        "sv": "Knapp 2: namn",
+        "no": "Knapp 2: navn",
+        "es": "Botón 2: nombre",
+        "da": "Knap 2: navn",
+        "ru": "Кнопка 2: название",
+        "pl": "Przycisk 2: nazwa",
+        "ko": "버튼 2: 이름",
+        "ar": "الزر 2: الاسم"
+      },
+      "value": ""
+    },
+    {
+      "id": "b2Url",
+      "type": "text",
+      "title": {
+        "en": "  – Address",
+        "nl": "  – Adres",
+        "de": "  – Adresse",
+        "fr": "  – Adresse",
+        "it": "  – Indirizzo",
+        "sv": "  – Adress",
+        "no": "  – Adresse",
+        "es": "  – Dirección",
+        "da": "  – Adresse",
+        "ru": "  – Адрес",
+        "pl": "  – Adres",
+        "ko": "  – 주소",
+        "ar": "  – العنوان"
+      },
+      "value": ""
+    },
+    {
+      "id": "b3Name",
+      "type": "text",
+      "title": {
+        "en": "Button 3: name",
+        "nl": "Knop 3: naam",
+        "de": "Button 3: Name",
+        "fr": "Bouton 3: nom",
+        "it": "Pulsante 3: nome",
+        "sv": "Knapp 3: namn",
+        "no": "Knapp 3: navn",
+        "es": "Botón 3: nombre",
+        "da": "Knap 3: navn",
+        "ru": "Кнопка 3: название",
+        "pl": "Przycisk 3: nazwa",
+        "ko": "버튼 3: 이름",
+        "ar": "الزر 3: الاسم"
+      },
+      "value": ""
+    },
+    {
+      "id": "b3Url",
+      "type": "text",
+      "title": {
+        "en": "  – Address",
+        "nl": "  – Adres",
+        "de": "  – Adresse",
+        "fr": "  – Adresse",
+        "it": "  – Indirizzo",
+        "sv": "  – Adress",
+        "no": "  – Adresse",
+        "es": "  – Dirección",
+        "da": "  – Adresse",
+        "ru": "  – Адрес",
+        "pl": "  – Adres",
+        "ko": "  – 주소",
+        "ar": "  – العنوان"
+      },
+      "value": ""
+    },
+    {
+      "id": "b4Name",
+      "type": "text",
+      "title": {
+        "en": "Button 4: name",
+        "nl": "Knop 4: naam",
+        "de": "Button 4: Name",
+        "fr": "Bouton 4: nom",
+        "it": "Pulsante 4: nome",
+        "sv": "Knapp 4: namn",
+        "no": "Knapp 4: navn",
+        "es": "Botón 4: nombre",
+        "da": "Knap 4: navn",
+        "ru": "Кнопка 4: название",
+        "pl": "Przycisk 4: nazwa",
+        "ko": "버튼 4: 이름",
+        "ar": "الزر 4: الاسم"
+      },
+      "value": ""
+    },
+    {
+      "id": "b4Url",
+      "type": "text",
+      "title": {
+        "en": "  – Address",
+        "nl": "  – Adres",
+        "de": "  – Adresse",
+        "fr": "  – Adresse",
+        "it": "  – Indirizzo",
+        "sv": "  – Adress",
+        "no": "  – Adresse",
+        "es": "  – Dirección",
+        "da": "  – Adresse",
+        "ru": "  – Адрес",
+        "pl": "  – Adres",
+        "ko": "  – 주소",
+        "ar": "  – العنوان"
+      },
+      "value": ""
+    }
+  ],
+  "api": {
+    "getLocation": {
+      "method": "GET",
+      "path": "/location"
+    }
+  }
+}

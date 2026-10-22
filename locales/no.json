@@ -474,6 +474,13 @@
     "renameFailed": "Kunne ikke lagre navnet.",
     "none": "Ingen"
   },
+  "webpage": {
+    "noAddress": "Skriv inn sidens adresse i widgetinnstillingene.",
+    "badAddress": "Denne adressen kan ikke vises: den må starte med https:// eller http://.",
+    "noLocation": "Angi Homeys plassering for å bruke {lat} og {lon}.",
+    "locationError": "Kunne ikke lese Homeys plassering.",
+    "button": "Knapp __n__"
+  },
   "web": {
     "title": "Nettdashbord",
     "keyTitle": "Koble til Homey",
@@ -629,7 +636,8 @@
       "spacer": "Tomt rom for å linje opp widgeter i kolonner.",
       "dayssince": "Dager siden en oppgave, rød når det er på tide igjen.",
       "stack": "Widgeter fra et annet dashbord, etter tur.",
-      "shortcuts": "Hopp til de andre nettdashbordene dine, i dine farger og ikoner."
+      "shortcuts": "Hopp til de andre nettdashbordene dine, i dine farger og ikoner.",
+      "webpage": "Hvilken som helst nettside, skalert for å fylle widgeten, som en regnradar."
     }
   }
 }

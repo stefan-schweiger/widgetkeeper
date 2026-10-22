@@ -474,6 +474,13 @@
     "renameFailed": "No se pudo guardar el nombre.",
     "none": "Ninguna"
   },
+  "webpage": {
+    "noAddress": "Escribe la dirección de la página en los ajustes del widget.",
+    "badAddress": "Esta dirección no se puede mostrar: debe empezar por https:// o http://.",
+    "noLocation": "Configura la ubicación del Homey para usar {lat} y {lon}.",
+    "locationError": "No se pudo leer la ubicación del Homey.",
+    "button": "Botón __n__"
+  },
   "web": {
     "title": "Paneles web",
     "keyTitle": "Conéctate a tu Homey",
@@ -629,7 +636,8 @@
       "spacer": "Espacio vacío para alinear widgets en columnas.",
       "dayssince": "Los días desde una tarea, en rojo cuando vuelve a tocar.",
       "stack": "Widgets de otro panel, por turnos.",
-      "shortcuts": "Salta a tus otros paneles web, con tus colores e iconos."
+      "shortcuts": "Salta a tus otros paneles web, con tus colores e iconos.",
+      "webpage": "Cualquier página web, escalada para llenar el widget, como un radar de lluvia."
     }
   }
 }

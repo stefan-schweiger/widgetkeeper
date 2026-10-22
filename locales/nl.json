@@ -474,6 +474,13 @@
     "renameFailed": "Kon de naam niet opslaan.",
     "none": "Geen"
   },
+  "webpage": {
+    "noAddress": "Typ het adres van de pagina in de widgetinstellingen.",
+    "badAddress": "Dit adres kan niet worden getoond: het moet beginnen met https:// of http://.",
+    "noLocation": "Stel de locatie van de Homey in om {lat} en {lon} te gebruiken.",
+    "locationError": "Kon de locatie van de Homey niet lezen.",
+    "button": "Knop __n__"
+  },
   "web": {
     "title": "Webdashboards",
     "keyTitle": "Verbinden met je Homey",
@@ -629,7 +636,8 @@
       "spacer": "Lege ruimte om widgets in kolommen gelijk te zetten.",
       "dayssince": "Dagen sinds een klusje, rood als het weer tijd is.",
       "stack": "Widgets van een ander dashboard, om de beurt.",
-      "shortcuts": "Spring naar je andere webdashboards, in je eigen kleuren en iconen."
+      "shortcuts": "Spring naar je andere webdashboards, in je eigen kleuren en iconen.",
+      "webpage": "Elke webpagina, geschaald om de widget te vullen, zoals een buienradar."
     }
   }
 }

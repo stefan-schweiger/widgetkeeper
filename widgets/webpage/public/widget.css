@@ -1,0 +1,61 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/webpage-preview.html).
+ * The button row is Thermostat Presets' segmented row (widgets/thermostat/public/presets.css), one line high.
+ */
+.wp {
+  --wp-card: var(--homey-background-color, #1F2029);
+  --wp-text: var(--homey-text-color, #EDEEF0);
+  --wp-muted: var(--homey-text-color-light, #9C9DA5);
+  --wp-tile: color-mix(in srgb, var(--wp-text) 7%, var(--wp-card));
+  --wp-lit: color-mix(in srgb, var(--wp-text) 24%, var(--wp-card));
+  /* Homey's type scale: only these size/line-height pairs are used natively. */
+  --wp-fs-small: var(--homey-font-size-small, 14px); --wp-lh-small: var(--homey-line-height-small, 20px);
+  --wp-fs-default: var(--homey-font-size-default, 17px); --wp-lh-default: var(--homey-line-height-default, 24px);
+  --wp-regular: var(--homey-font-weight-regular, 400);
+  --wp-medium: var(--homey-font-weight-medium, 500);
+  --wp-radius: var(--homey-border-radius-default, 14px);
+  --wp-radius-small: var(--homey-border-radius-small, 3px);
+}
+/* Dark mode: the frame looks like a native device tile, darker than the default widget background. */
+.homey-dark-mode .wp, .wp.homey-dark-mode { --wp-card: #181920; }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+
+.wp { min-width: 0; color: var(--wp-text); background: var(--wp-card); }
+.wp * { box-sizing: border-box; }
+/* Text is dir="auto" so RTL sentences get their punctuation right; the layout itself stays LTR. */
+.wp [dir="auto"] { text-align: left; }
+
+/* The page: drawn at its own size from the top left and scaled to the widget's width; the box clips the rest. */
+.wp-page { position: relative; overflow: hidden; }
+.wp-frame { position: absolute; top: 0; left: 0; border: 0; display: block; transform-origin: 0 0; background: transparent; }
+/* Over the page while it may not be tapped: taps stop here, and a drag scrolls the dashboard. */
+.wp-shield { position: absolute; inset: 0; z-index: 1; }
+
+.wp-message {
+  display: none; padding: var(--homey-su-4, 16px);
+  font-size: var(--wp-fs-small); line-height: var(--wp-lh-small); font-weight: var(--wp-regular); color: var(--wp-muted);
+}
+.wp-has-message .wp-message { display: block; }
+.wp-has-message .wp-page { display: none; }
+
+.wp-row { display: none; grid-template-columns: repeat(var(--wp-count, 2), minmax(0, 1fr)); gap: 2px; padding: var(--homey-su-2, 8px); }
+.wp-has-row .wp-row { display: grid; }
+.wp-has-message .wp-row { display: none; }
+.wp-btn {
+  appearance: none; border: 0; margin: 0; font: inherit; color: var(--wp-text);
+  background: var(--wp-tile); border-radius: var(--wp-radius-small); height: 44px; padding: 0 8px; min-width: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--wp-fs-small); line-height: var(--wp-lh-small); font-weight: var(--wp-medium);
+  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+  transition: background-color .15s, transform .1s;
+}
+.wp-btn:first-child { border-radius: var(--wp-radius) var(--wp-radius-small) var(--wp-radius-small) var(--wp-radius); }
+.wp-btn:last-child { border-radius: var(--wp-radius-small) var(--wp-radius) var(--wp-radius) var(--wp-radius-small); }
+.wp-btn:active, .wp-btn.pressing { transform: scale(.97); }
+/* The page shown: a raised segment, not a state colour. */
+.wp-btn.active { background: var(--wp-lit); }
+.wp-btn > span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

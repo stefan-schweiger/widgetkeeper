@@ -474,6 +474,13 @@
     "renameFailed": "이름을 저장하지 못했습니다.",
     "none": "없음"
   },
+  "webpage": {
+    "noAddress": "위젯 설정에 페이지 주소를 입력하세요.",
+    "badAddress": "이 주소는 표시할 수 없습니다. https:// 또는 http://로 시작해야 합니다.",
+    "noLocation": "{lat}와 {lon}을 쓰려면 Homey의 위치를 설정하세요.",
+    "locationError": "Homey의 위치를 읽을 수 없습니다.",
+    "button": "버튼 __n__"
+  },
   "web": {
     "title": "웹 대시보드",
     "keyTitle": "Homey에 연결",
@@ -629,7 +636,8 @@
       "spacer": "열마다 위젯을 맞추는 빈 공간.",
       "dayssince": "집안일 후 지난 일수, 다시 할 때가 되면 빨간색으로.",
       "stack": "다른 대시보드의 위젯을 번갈아.",
-      "shortcuts": "내 색상과 아이콘으로 다른 웹 대시보드로 이동."
+      "shortcuts": "내 색상과 아이콘으로 다른 웹 대시보드로 이동.",
+      "webpage": "강수 레이더처럼 위젯을 채우도록 맞춘 모든 웹 페이지."
     }
   }
 }

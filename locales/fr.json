@@ -474,6 +474,13 @@
     "renameFailed": "Impossible d'enregistrer le nom.",
     "none": "Aucune"
   },
+  "webpage": {
+    "noAddress": "Saisissez l'adresse de la page dans les réglages du widget.",
+    "badAddress": "Cette adresse ne peut pas être affichée : elle doit commencer par https:// ou http://.",
+    "noLocation": "Définissez l'emplacement du Homey pour utiliser {lat} et {lon}.",
+    "locationError": "Impossible de lire l'emplacement du Homey.",
+    "button": "Bouton __n__"
+  },
   "web": {
     "title": "Tableaux de bord web",
     "keyTitle": "Se connecter à votre Homey",
@@ -629,7 +636,8 @@
       "spacer": "Un espace vide pour aligner les widgets en colonnes.",
       "dayssince": "Les jours depuis une tâche, en rouge quand c'est à refaire.",
       "stack": "Les widgets d'un autre tableau de bord, à tour de rôle.",
-      "shortcuts": "Passez à vos autres tableaux de bord web, avec vos couleurs et icônes."
+      "shortcuts": "Passez à vos autres tableaux de bord web, avec vos couleurs et icônes.",
+      "webpage": "N'importe quelle page web, mise à l'échelle du widget, comme un radar de pluie."
     }
   }
 }

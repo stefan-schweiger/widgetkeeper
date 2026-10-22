@@ -99,6 +99,9 @@ interface Window {
   daysSinceProgress: (counter: { amber: number | null, red: number | null }, resetAt: number | null, now: number) => { fill: number, left: number | null, over: number | null } | null;
   createSpacerWidget: (root: HTMLElement, opts?: { height?: unknown }) => { height: number };
   spacerHeight: (value: unknown) => number;
+  createWebPageWidget: (root: HTMLElement, opts?: object) => any;
+  webPageAddress: (raw: unknown, loc?: { lat: number, lon: number } | null) => { url?: string, error?: string };
+  webPageBox: (width: number, pageWidth: number, pageHeight: number) => { width: number, height: number, scale: number, boxHeight: number };
   mediaSource: (caps: object) => 'tv' | 'lineIn' | null;
   mediaButtonsFromSettings: (settings: object) => { id: string, name: string, icon: string | null }[];
   sparkPath: (points: [number, number][], from: number, to: number, w: number, h: number) => { line: string, area: string, dot: { x: number, y: number }, min: number, max: number } | null;
@@ -116,6 +119,7 @@ interface Window {
   mountClockWidget: MountWidget;
   mountTextLineWidget: MountWidget;
   mountSpacerWidget: MountWidget;
+  mountWebPageWidget: MountWidget;
   mountDaysSinceWidget: MountWidget;
   mountPriceWidget: MountWidget;
   mountQuickActionsWidget: MountWidget;

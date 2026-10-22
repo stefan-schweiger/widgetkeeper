@@ -121,6 +121,10 @@ Compact rows to switch variables on and off or change a number or text, with the
 <a href="#weather-forecast"><b>Weather Forecast</b></a><br>
 The next 36 hours, hour by hour, from MET Norway (yr.no)<br clear="left"></p>
 
+<p><a href="#web-page"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/webpage-dark.png"><img src="docs/previews/webpage-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#web-page"><b>Web Page</b></a><br>
+Any web page, such as a rain radar, scaled to fill the widget, with buttons to switch between addresses<br clear="left"></p>
+
 <a name="sensor-dots"></a>
 
 ## Activity Dots
@@ -340,6 +344,13 @@ The next 36 hours from [MET Norway](https://www.met.no/en) ([yr.no](https://www.
 **Settings:** compact or detailed, one or two rows, 1–3 hours per column, colour style: Standard, Warm and cold (coloured temperatures) or [Vivid](#colour-style) (the card on a gradient for the current weather).
 
 Weather data from MET Norway, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Icons: [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
+
+## Web Page
+A web page you pick, drawn at the width and height you set and scaled to fill the widget, so a gadget made for a fixed size fills it on a phone and a tablet alike, without borders. Links on the page never open, and unless you let the page be tapped, taps are ignored and a swipe scrolls the dashboard. With two to four buttons, a row under the page switches between their addresses; the widget always opens on the first address. `{lat}` and `{lon}` in an address become the Homey's location. Some sites don't allow being shown inside another page, and then it stays empty. You're responsible for following the terms of the site you show.
+
+**A rain radar from Buienradar:** make the radar on [Buienradar's gadget page](https://gadgets.buienradar.nl/gadget/zoommap) in the large size (550 × 512), copy the address from its code, and set the page width to 550 and the height to 512. For the country, province, region and city buttons, use the same address with `zoom=6`, `8`, `11` and `13`, for example `https://gadgets.buienradar.nl/gadget/zoommap/?lat={lat}&lng={lon}&overname=2&zoom=8&naam=Home&size=3&voor=1`. The gadget's address has no region, so its rain is Buienradar's radar for the Netherlands and Belgium even where its map shows elsewhere in Europe. A reload every 15 minutes keeps it current on a screen that's always on.
+
+**Settings:** address, page width and height, let the page be tapped, reload every, up to four buttons (a name and an address).
 
 ## Web dashboards
 <img src="docs/web/dashboard.png" alt="A web dashboard with Widgetkeeper widgets in a browser window, with Dashboard Shortcuts at the top as a menu" width="100%">

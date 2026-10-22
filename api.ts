@@ -6,14 +6,15 @@ import { autocompleteKeyUse, callWidgetRoute, routeKeyUse, type WidgetApis } fro
 import dayssince from './widgets/dayssince/api.js';
 import shortcuts from './widgets/shortcuts/api.js';
 import stack, { PAGE_APIS } from './widgets/stack/api.js';
+import webpage from './widgets/webpage/api.js';
 
 type Homey = App['homey'];
 
 /**
- * Every widget's API, by widget id, for the web dashboards' frames (the Smart Stack's included, and Days Since and Dashboard
- * Shortcuts, which aren't stack pages).
+ * Every widget's API, by widget id, for the web dashboards' frames (the Smart Stack's included, and Days Since, Dashboard
+ * Shortcuts and Web Page, which aren't stack pages).
  */
-const WEB_APIS: WidgetApis = { ...PAGE_APIS, stack, dayssince, shortcuts };
+export const WEB_APIS: WidgetApis = { ...PAGE_APIS, stack, dayssince, shortcuts, webpage };
 
 /** Why the web page's own key (`key`) may not do what the app's stored key would do here, or null when it may. */
 async function pageKeyProblem(app: WidgetkeeperApp, key: unknown, use: KeyUse): Promise<'keyInvalid' | 'keyScope' | null> {

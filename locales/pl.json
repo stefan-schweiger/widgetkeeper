@@ -474,6 +474,13 @@
     "renameFailed": "Nie udało się zapisać nazwy.",
     "none": "Brak"
   },
+  "webpage": {
+    "noAddress": "Wpisz adres strony w ustawieniach widżetu.",
+    "badAddress": "Tego adresu nie można wyświetlić: musi zaczynać się od https:// lub http://.",
+    "noLocation": "Ustaw lokalizację Homey, aby używać {lat} i {lon}.",
+    "locationError": "Nie udało się odczytać lokalizacji Homey.",
+    "button": "Przycisk __n__"
+  },
   "web": {
     "title": "Pulpity webowe",
     "keyTitle": "Połącz z Homey",
@@ -629,7 +636,8 @@
       "spacer": "Pusta przestrzeń do wyrównania widżetów w kolumnach.",
       "dayssince": "Dni od ostatniego zadania, czerwone, gdy znów czas.",
       "stack": "Widżety z innego pulpitu, na zmianę.",
-      "shortcuts": "Przechodź do innych pulpitów webowych, w Twoich kolorach i ikonach."
+      "shortcuts": "Przechodź do innych pulpitów webowych, w Twoich kolorach i ikonach.",
+      "webpage": "Dowolna strona WWW, przeskalowana, by wypełnić widżet, np. radar opadów."
     }
   }
 }

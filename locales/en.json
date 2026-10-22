@@ -474,6 +474,13 @@
     "renameFailed": "Could not save the name.",
     "none": "None"
   },
+  "webpage": {
+    "noAddress": "Type the page's address in the widget settings.",
+    "badAddress": "This address can't be shown: it must start with https:// or http://.",
+    "noLocation": "Set the Homey's location to use {lat} and {lon}.",
+    "locationError": "Could not read the Homey's location.",
+    "button": "Button __n__"
+  },
   "web": {
     "title": "Web Dashboards",
     "keyTitle": "Connect to your Homey",
@@ -629,7 +636,8 @@
       "spacer": "Empty space to line up widgets in columns.",
       "dayssince": "Days since a chore was done, turning red when it's due.",
       "stack": "Widgets from another dashboard, taking turns.",
-      "shortcuts": "Jump to your other web dashboards, in your colours and icons."
+      "shortcuts": "Jump to your other web dashboards, in your colours and icons.",
+      "webpage": "Any web page, scaled to fill the widget, such as a rain radar."
     }
   }
 }

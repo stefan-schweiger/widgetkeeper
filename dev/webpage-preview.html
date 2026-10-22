@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web Page widget preview</title>
+  <link rel="stylesheet" href="../widgets/spacer/public/kit.css">
+  <link rel="stylesheet" href="../widgets/webpage/public/widget.css">
+  <script src="../widgets/spacer/public/kit.js"></script>
+  <script src="../widgets/webpage/public/widget.js"></script>
+  <link rel="stylesheet" href="preview.css">
+  <style>
+    /* Homey's frame clips the widget with its radius. */
+    .dash { border-radius: 10px; overflow: hidden; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark · 550 × 512, four buttons</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · light · the same</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>300 px · dark · no buttons</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
+  <div class="col"><span>620 px (tablet) · dark · may be tapped (the link still doesn't open)</span><div class="dash homey-dark-mode" style="width:620px"><div id="w4"></div></div></div>
+  <div class="col"><span>358 px · dark · page width 0 (unscaled: the gadget's white border)</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · dark · no address</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px · dark · a javascript: address</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
+  <div class="col"><span>358 px · dark · {lat}, no location</span><div class="dash homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
+
+  <script>
+    // `?lang=de` would need dev/i18n.js; the widget's English fallbacks are used here.
+    const SAMPLE = new URL('webpage-sample.html', location.href).href;
+    const at = zoom => `${SAMPLE}?zoom=${zoom}`;
+    const BUTTONS = [
+      { name: 'Country', url: at(6) }, { name: 'Province', url: at(8) }, { name: 'Region', url: at(11) }, { name: 'City', url: at(13) },
+    ];
+    const SIZE = { pageWidth: 550, pageHeight: 512 };
+    const mount = (id, opts) => createWebPageWidget(document.getElementById(id), opts);
+    mount('w1', { url: at(8), ...SIZE, buttons: BUTTONS });
+    mount('w2', { url: at(8), ...SIZE, buttons: BUTTONS });
+    mount('w3', { url: at(11), ...SIZE });
+    mount('w4', { url: at(8), ...SIZE, buttons: BUTTONS, interactive: true });
+    mount('w5', { url: at(8), pageWidth: 0, pageHeight: 512 });
+    mount('w6', {});
+    mount('w7', { url: 'javascript:alert(1)' });
+    mount('w8', { url: `${SAMPLE}?lat={lat}` }).setLocation({ noLocation: true });
+  </script>
+</body>
+</html>

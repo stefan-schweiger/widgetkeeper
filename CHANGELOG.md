@@ -4,6 +4,11 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ## 1.1.0
 
+### New: Web Page
+- Any web page on the dashboard, such as a rain radar. A user asked for Buienradar's radar map: in a plain web widget its fixed size left white borders on a phone and cut off the bottom on a tablet, and a tap opened the website.
+- The page is drawn at the width and height you set, then scaled to fill the widget at any size, without borders. Links never open, and taps are ignored unless you let the page be tapped, so a swipe still scrolls the dashboard.
+- Up to four buttons under the page switch between addresses, such as a map's country, province, region and city views. `{lat}` and `{lon}` in an address become the Homey's location. It can reload every few minutes, for a screen that's always on.
+
 ### Web dashboards
 - **Wide widgets:** a widget can span two or more columns, such as a floor plan, a camera or a chart. Drag the handle on its right edge in edit mode, or set its Width in its settings. Each column it covers keeps its own widgets above and below it. Kept in duplicates and backups.
 

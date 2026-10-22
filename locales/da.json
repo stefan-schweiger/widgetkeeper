@@ -474,6 +474,13 @@
     "renameFailed": "Kunne ikke gemme navnet.",
     "none": "Ingen"
   },
+  "webpage": {
+    "noAddress": "Skriv sidens adresse i widgetindstillingerne.",
+    "badAddress": "Adressen kan ikke vises: den skal starte med https:// eller http://.",
+    "noLocation": "Angiv Homeys placering for at bruge {lat} og {lon}.",
+    "locationError": "Kunne ikke læse Homeys placering.",
+    "button": "Knap __n__"
+  },
   "web": {
     "title": "Webdashboards",
     "keyTitle": "Forbind til din Homey",
@@ -629,7 +636,8 @@
       "spacer": "Tom plads til at flugte widgets i kolonner.",
       "dayssince": "Dage siden en opgave, rød når det er tid igen.",
       "stack": "Widgets fra et andet dashboard, på skift.",
-      "shortcuts": "Hop til dine andre webdashboards, i dine farver og ikoner."
+      "shortcuts": "Hop til dine andre webdashboards, i dine farver og ikoner.",
+      "webpage": "Enhver webside, skaleret så den fylder widgeten, som en regnradar."
     }
   }
 }

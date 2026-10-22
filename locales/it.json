@@ -474,6 +474,13 @@
     "renameFailed": "Impossibile salvare il nome.",
     "none": "Nessuna"
   },
+  "webpage": {
+    "noAddress": "Scrivi l'indirizzo della pagina nelle impostazioni del widget.",
+    "badAddress": "Questo indirizzo non può essere mostrato: deve iniziare con https:// o http://.",
+    "noLocation": "Imposta la posizione dell'Homey per usare {lat} e {lon}.",
+    "locationError": "Impossibile leggere la posizione dell'Homey.",
+    "button": "Pulsante __n__"
+  },
   "web": {
     "title": "Dashboard web",
     "keyTitle": "Connettiti al tuo Homey",
@@ -629,7 +636,8 @@
       "spacer": "Spazio vuoto per allineare i widget nelle colonne.",
       "dayssince": "I giorni da una faccenda, in rosso quando è di nuovo ora.",
       "stack": "Widget di un'altra dashboard, a turno.",
-      "shortcuts": "Passa alle altre dashboard web, nei tuoi colori e icone."
+      "shortcuts": "Passa alle altre dashboard web, nei tuoi colori e icone.",
+      "webpage": "Qualsiasi pagina web, scalata per riempire il widget, come un radar della pioggia."
     }
   }
 }
