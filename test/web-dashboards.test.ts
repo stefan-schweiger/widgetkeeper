@@ -111,6 +111,36 @@ describe('web dashboards: storage', () => {
     expect(web.describe()).toEqual({ enabled: true, remote: false, dashboards: 1, widgets: 0 });
   });
 
+  it("keeps a wide widget's span within the columns and its place in each column it covers", () => {
+    const { web } = setup();
+    const saved = web.save({
+      columns: [
+        [{ id: 'a', type: 'cameras', span: 2.2, at: [1] }, { id: 'b', type: 'timers', span: 9, at: ['x', -4, 99] }],
+        [{ id: 'c', type: 'clock' }, { id: 'd', type: 'clock' }],
+        [{ id: 'e', type: 'price', span: 3, at: [0, 0] }],
+      ],
+    });
+    const [[a, b], [c], [e]] = saved.columns;
+    expect(a).toMatchObject({ span: 2, at: [1] });
+    expect(b).toMatchObject({ span: 3, at: [1, 0] }); // three columns at most; a bad index is its own, a large one the end
+    expect(c).not.toHaveProperty('span');
+    expect(e).not.toHaveProperty('span'); // the last column: nothing to its right
+    expect(e).not.toHaveProperty('at');
+    expect(web.save({ columns: [[{ type: 'clock', span: 3 }], [], []] }).columns[0][0]).toMatchObject({ span: 3, at: [0, 0] });
+    expect(web.save({ columns: [[{ type: 'clock', span: 1, at: [0] }], []] }).columns[0][0]).not.toHaveProperty('at');
+  });
+
+  it('keeps a wide widget in a duplicate and a backup', () => {
+    const { web } = setup();
+    const d = web.save({ name: 'Wide', columns: [[{ id: 'a', type: 'cameras', span: 2, at: [1] }], [{ id: 'b', type: 'clock' }]] });
+    const { dashboard: copy } = web.duplicate(d.id);
+    expect(copy.columns[0][0]).toMatchObject({ span: 2, at: [1] });
+    const file = web.backup();
+    web.remove(d.id);
+    web.restore(file);
+    expect(web.list().find(x => x.id === d.id)!.columns[0][0]).toMatchObject({ span: 2, at: [1] });
+  });
+
   it('has at least one column and at most six', () => {
     const { web } = setup();
     expect(web.save({ columns: [] }).columns).toEqual([[]]);

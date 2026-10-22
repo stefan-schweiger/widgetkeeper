@@ -44,9 +44,14 @@ export type WebBackground = typeof WEB_BACKGROUNDS[number];
 
 /**
  * One widget on a web dashboard: its type (our widget id, or another app's `homey:app:<appId>:<widgetId>`), settings and
- * devices, as Homey keeps a dashboard widget's. `trusted`: another app's widget the user lets run unsandboxed.
+ * devices, as Homey keeps a dashboard widget's. `trusted`: another app's widget the user lets run unsandboxed. `span`: a
+ * wide widget's columns (its own and those to its right); `at`: in each column it covers, the index of that column's
+ * widget it sits before (the column's length: under them all).
  */
-export type WebWidget = { id: string, type: string, title: string, settings: Record<string, unknown>, deviceIds: string[], trusted?: true };
+export type WebWidget = {
+  id: string, type: string, title: string, settings: Record<string, unknown>, deviceIds: string[], trusted?: true,
+  span?: number, at?: number[],
+};
 
 /** The device filter the page sends for another app's widget (its `devices.filter`; `app`: only that app's devices). */
 export type ForeignDeviceFilter = { class?: string, capabilities?: string, app?: boolean };
@@ -619,6 +624,7 @@ export default class WebDashboardService {
     const background: WebBackground = (WEB_BACKGROUNDS as readonly unknown[]).includes(d.background) ? d.background : 'default';
     const columnsIn: unknown[] = Array.isArray(d.columns) ? d.columns.slice(0, MAX_COLUMNS) : [];
     const ids = new Set<string>();
+    const given = new Map<WebWidget, Record<string, any>>();
     let count = 0;
     const columns = columnsIn.map((col) => {
       const widgets: WebWidget[] = [];
@@ -627,11 +633,24 @@ export default class WebDashboardService {
         const widget = this.normalizeWidget(w, ids);
         if (!widget) continue;
         widgets.push(widget);
+        given.set(widget, w as Record<string, any>);
         count += 1;
       }
       return widgets;
     });
     if (!columns.length) columns.push([]);
+    // A wide widget's columns, now that every column's widgets are known: no further than the last column.
+    columns.forEach((col, c) => col.forEach((widget, i) => {
+      const w = given.get(widget)!;
+      const span = Number.isFinite(w.span) ? Math.min(Math.max(Math.round(w.span), 1), columns.length - c) : 1;
+      if (span < 2) return;
+      const at = Array.isArray(w.at) ? w.at : [];
+      widget.span = span;
+      widget.at = Array.from({ length: span - 1 }, (_, j) => {
+        const n = columns[c + 1 + j].length;
+        return Number.isFinite(at[j]) ? Math.min(Math.max(Math.round(at[j]), 0), n) : Math.min(i, n);
+      });
+    }));
     return { id, name, theme, background, columns };
   }
 

@@ -8,6 +8,13 @@ interface Window {
   /** settings/dashboard.js, the web dashboards page; `io` is the vendored socket.io-client (settings/socket.io.js). */
   mountWebDashboards: (root: HTMLElement) => void;
   io: (url: string, opts?: object) => any;
+  /** Wide widgets' columns on the web dashboards (settings/dashboard-layout.js). */
+  WidgetkeeperLayout: {
+    spanOf: (w: any, c: number, count: number) => number,
+    expand: (columns: any[][]) => any[][],
+    collapse: (columns: any[][]) => any[][],
+    place: (columns: any[][], heightOf: (entry: any) => number, gap: number) => { entry: any, top: number, margin: number, height: number, hidden: boolean }[][],
+  };
   createElectricityWidget: (root: HTMLElement, opts?: object) => any;
   /** The chart module shared by the Electricity Overview and Charts (widgets/electricity/public/chart.js). */
   WidgetkeeperChart: any;

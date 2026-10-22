@@ -360,6 +360,7 @@ The front page shows every dashboard as a card with a miniature of its widgets, 
 <img src="docs/web/editor.png" alt="A web dashboard being edited in a browser window" width="100%">
 
 - **Columns and widgets:** one to six columns. Add widgets per column, move them by dragging their bar or with the arrows, and remove them with a second tap.
+- **Wide widgets:** drag the handle on a widget's right edge (or set **Width** in its settings) to make it span two or more columns, such as a large camera or chart. The columns it covers keep their own widgets above and below it: drag one above or under it. On a phone, where there's one column, it's as wide as the rest.
 - **Settings:** each widget has the same settings as on a Homey dashboard, in cards: the devices, the general settings, and a card per button, tile or column that folds and sums up what's set. Devices are picked from a list grouped by room, with a search; values (for Device Values, Sparklines and Charts) with their readings.
 - **Look:** light, dark or automatic, and a background per dashboard from calm tints (Default, Black or White, Slate, Ocean, Forest, Plum, Berry, Sand), each with a light and a dark shade. The sun button in the bar switches between light and dark in this browser only.
 - **Full screen:** the corner button gives the whole screen to the dashboard, for a wall tablet.

@@ -99,6 +99,9 @@
     remove: 'Remove',
     widgetTitle: 'Title',
     widgetTitleHint: 'Shown above the widget. Leave it empty for none.',
+    width: 'Width',
+    widthHint: 'How many columns it spans.',
+    resize: 'Drag to change the width',
     devices: 'Devices',
     device: 'Device',
     search: 'Search',
@@ -198,6 +201,8 @@
   const DRAG_SLOP = 6;
   /** Near the window's top or bottom edge, a drag scrolls the page. */
   const EDGE_PX = 64;
+  /** Wide widgets' columns (settings/dashboard-layout.js, loaded first). */
+  const LAYOUT = window.WidgetkeeperLayout;
   /** The most dashboards the app keeps (`MAX_DASHBOARDS` in lib/WebDashboardService.ts). */
   const MAX_DASHBOARDS = 64;
 
@@ -500,7 +505,7 @@
     const typeOf = (type) => types.get(type) || foreign.get(type);
     let dashboards = [];
     let frontPage = { widgets: true }; // the front page's choices (`/web/setup`'s `front`), made in its edit mode
-    let current = null; // {dashboard, editing, grid, columns: Map<widget id, {el, sig}>}
+    let current = null; // {dashboard, editing, grid, widgets: Map<widget id, {el, sig}>, covers: Map<`<id>@<column>`, el>}
     let live = false;
     let socketStarted = false;
     const frames = new Set(); // {widget, iframe, subs: Map<callbackId, event>}
@@ -986,6 +991,8 @@
 
     function clearRoot() {
       if (drag) endDrag(false);
+      if (resizing) endResize(false);
+      sizes.disconnect();
       setTitle(null);
       root.classList.remove('editing');
       root.textContent = '';
@@ -1786,10 +1793,28 @@
       clearRoot();
       setTitle(dashboard);
       applyTheme(dashboard.theme, dashboard.background);
-      current = { dashboard: clone(dashboard), editing, widgets: new Map(), grid: el('main', 'wd-grid') };
+      current = { dashboard: editable(dashboard), editing, widgets: new Map(), covers: new Map(), grid: el('main', 'wd-grid') };
       root.classList.toggle('editing', editing);
       root.append(editing ? editBar() : viewBar(), current.grid);
+      sizes.observe(current.grid);
       syncGrid();
+    }
+
+    /**
+     * A dashboard as the page edits it: a cover (`{cover: <id>}`) in each column a wide widget covers, where it sits in
+     * that column (`settings/dashboard-layout.js`), so moving, adding and removing widgets carries them along.
+     */
+    function editable(d) {
+      const copy = clone(d);
+      copy.columns = LAYOUT.expand(copy.columns);
+      return copy;
+    }
+
+    /** And as it's stored: each wide widget's place in the columns it covers as its `at`. */
+    function stored(d) {
+      const copy = clone(d);
+      copy.columns = LAYOUT.collapse(copy.columns);
+      return copy;
     }
 
     function viewBar() {
@@ -1913,7 +1938,7 @@
       while (d.columns.length < n) d.columns.push([]);
       while (d.columns.length > n) {
         const last = d.columns.pop();
-        d.columns[d.columns.length - 1].push(...last); // its widgets stay, in the column before
+        d.columns[d.columns.length - 1].push(...last.filter(e => !e.cover)); // its widgets stay, in the column before
       }
       const count = root.querySelector('.wd-count');
       if (count) count.textContent = String(d.columns.length);
@@ -1928,22 +1953,38 @@
     function syncGrid() {
       if (!current) return;
       if (drag) endDrag(false); // its widget may be rebuilt
-      const { dashboard, grid, widgets, editing } = current;
-      grid.style.setProperty('--cols', String(dashboard.columns.length));
-      while (grid.children.length < dashboard.columns.length) grid.append(el('section', 'wd-col'));
-      while (grid.children.length > dashboard.columns.length) grid.lastChild.remove();
+      if (resizing) endResize(false);
+      tidyCovers();
+      const { dashboard, grid, widgets, covers, editing } = current;
+      const count = dashboard.columns.length;
+      grid.style.setProperty('--cols', String(count));
+      while (grid.children.length < count) grid.append(el('section', 'wd-col'));
+      while (grid.children.length > count) grid.lastChild.remove();
       const seen = new Set();
+      const coversSeen = new Set();
       dashboard.columns.forEach((column, c) => {
         const col = grid.children[c];
         const nodes = column.map((w, i) => {
+          if (w.cover) {
+            // The room a wide widget from the left takes in this column (`layoutWide()` sizes it).
+            const key = `${w.cover}@${c}`;
+            coversSeen.add(key);
+            if (!covers.has(key)) covers.set(key, el('div', 'wd-cover'));
+            return covers.get(key);
+          }
           seen.add(w.id);
           const sig = signature(w);
           let entry = widgets.get(w.id);
           if (!entry || entry.sig !== sig) {
-            if (entry) entry.el.remove();
+            if (entry) { entry.el.remove(); sizes.unobserve(entry.el); }
             entry = { el: widgetElement(w), sig };
             widgets.set(w.id, entry);
+            sizes.observe(entry.el);
           }
+          const span = LAYOUT.spanOf(w, c, count);
+          entry.el.classList.toggle('wide', span > 1);
+          if (span > 1) entry.el.style.setProperty('--span', String(span));
+          else entry.el.style.removeProperty('--span');
           setTools(entry.el, w, c, i, column.length);
           return entry.el;
         });
@@ -1963,10 +2004,114 @@
       for (const [id, entry] of widgets) {
         if (seen.has(id)) continue;
         entry.el.remove();
+        sizes.unobserve(entry.el);
         widgets.delete(id);
       }
+      for (const key of covers.keys()) if (!coversSeen.has(key)) covers.delete(key);
       sweepFrames();
+      layoutWide();
     }
+
+    /**
+     * Keeps the covers in line with the widgets: a span no further than the last column, one cover in each column a
+     * wide widget covers (a missing one at the column's end), none elsewhere.
+     */
+    function tidyCovers() {
+      const columns = current.dashboard.columns;
+      const wide = new Map();
+      columns.forEach((column, c) => column.forEach((w) => {
+        if (w.cover) return;
+        const span = LAYOUT.spanOf(w, c, columns.length);
+        if (span > 1) { w.span = span; wide.set(w.id, { c, span }); } else { delete w.span; delete w.at; }
+      }));
+      columns.forEach((column, k) => {
+        const seen = new Set();
+        const keep = column.filter((e) => {
+          if (!e.cover) return true;
+          const o = wide.get(e.cover);
+          if (!o || k <= o.c || k >= o.c + o.span || seen.has(e.cover)) return false;
+          seen.add(e.cover);
+          return true;
+        });
+        for (const [id, o] of wide) if (k > o.c && k < o.c + o.span && !seen.has(id)) keep.push({ cover: id });
+        column.splice(0, column.length, ...keep);
+      });
+    }
+
+    // ---- Wide widgets: a cover in each column they cover takes their room; `place()` says how far down. --------
+
+    /** Sizes the dashboard as it is: what changed, a widget's height, the window's width (a wide widget's height). */
+    const sizes = new ResizeObserver(() => scheduleLayout());
+    let layoutQueued = false;
+    function scheduleLayout() {
+      if (layoutQueued) return;
+      layoutQueued = true;
+      requestAnimationFrame(() => { layoutQueued = false; layoutWide(); });
+    }
+
+    /**
+     * Moves the wide widgets and their covers down to where `place()` puts them (a top margin) and gives each cover
+     * its widget's height. In one column (a phone) the wide widgets are as wide as the rest and the covers hidden (the
+     * CSS), so the margins go.
+     */
+    function layoutWide() {
+      if (!current) return;
+      const { dashboard, grid, widgets, covers } = current;
+      const cols = [...grid.children];
+      const stacked = cols.length < 2 || /** @type {HTMLElement} */ (cols[1]).offsetLeft === /** @type {HTMLElement} */ (cols[0]).offsetLeft;
+      const any = dashboard.columns.some((col, c) => col.some(w => !w.cover && LAYOUT.spanOf(w, c, cols.length) > 1));
+      const nodeOf = (e, k) => (e.cover ? covers.get(`${e.cover}@${k}`) : widgets.get(e.id) && widgets.get(e.id).el);
+      if (stacked || !any) {
+        dashboard.columns.forEach((col, k) => col.forEach((e) => {
+          const node = nodeOf(e, k);
+          if (!node) return;
+          node.style.marginTop = '';
+          if (e.cover) node.style.height = '';
+        }));
+        return;
+      }
+      const gap = parseFloat(getComputedStyle(cols[0]).rowGap) || 0;
+      const placed = LAYOUT.place(dashboard.columns, (e) => { const node = nodeOf(e, 0); return node ? node.offsetHeight : 0; }, gap);
+      placed.forEach((col, k) => col.forEach(({ entry, margin, height, hidden }) => {
+        const node = nodeOf(entry, k);
+        if (!node) return;
+        node.hidden = hidden;
+        node.style.marginTop = margin ? `${margin}px` : '';
+        if (entry.cover) node.style.height = `${height}px`;
+      }));
+    }
+
+    /**
+     * Puts a wide widget's covers at `y` (a top, in the window): in each column it covers, under the entries whose
+     * middle is above it. From what's on screen, so every column agrees on which wide widget comes first.
+     */
+    function placeCovers(id, c, y) {
+      const columns = current.dashboard.columns;
+      const w = columns[c].find(e => e.id === id);
+      for (let k = 0; k < columns.length; k++) {
+        const i = columns[k].findIndex(e => e.cover === id);
+        if (i >= 0) columns[k].splice(i, 1);
+      }
+      const span = LAYOUT.spanOf(w, c, columns.length);
+      for (let k = c + 1; k < c + span; k++) columns[k].splice(indexAt(k, y, id), 0, { cover: id });
+    }
+
+    /** How many of column `k`'s entries (not `id`'s own) are above `y`: their middle is. */
+    function indexAt(k, y, id) {
+      const column = current.dashboard.columns[k];
+      let i = 0;
+      for (const e of column) {
+        if ((e.cover || e.id) === id) continue;
+        const node = e.cover ? current.covers.get(`${e.cover}@${k}`) : current.widgets.get(e.id) && current.widgets.get(e.id).el;
+        const r = node && !node.hidden ? node.getBoundingClientRect() : null;
+        if (r && r.top + r.height / 2 >= y) break;
+        i++;
+      }
+      return i;
+    }
+
+    /** A widget's top on screen (where its covers line up). */
+    const topOf = (id) => current.widgets.get(id).el.getBoundingClientRect().top;
 
     function widgetElement(w) {
       const app = appWidget(w.type);
@@ -1974,7 +2119,7 @@
       const def = typeOf(w.type) || (app && foreignState !== 'ok' ? { name: app.widgetId, height: null, transparent: false } : null);
       const node = el('article', 'wd-widget');
       node.dataset.id = w.id;
-      if (current.editing) node.append(dragHandle(el('div', 'wd-tools')));
+      if (current.editing) node.append(dragHandle(el('div', 'wd-tools')), resizeHandle(node));
       if (w.title) node.append(el('h2', 'wd-title', w.title));
       if (!def) {
         node.append(el('p', 'wd-error', app ? t('notInstalled', { name: app.appId }) : w.type));
@@ -2034,7 +2179,9 @@
       up.disabled = i === 0;
       down.disabled = i === n - 1;
       left.disabled = c === 0;
-      right.disabled = c === cols - 1;
+      right.disabled = c + LAYOUT.spanOf(w, c, cols) >= cols;
+      const handle = node.querySelector(':scope > .wd-resize');
+      if (handle) handle.hidden = cols - c < 2 && LAYOUT.spanOf(w, c, cols) < 2;
     }
 
     function find(id) {
@@ -2050,6 +2197,24 @@
       const at = find(id);
       if (!at) return;
       const columns = current.dashboard.columns;
+      if (LAYOUT.spanOf(at.widget, at.c, columns.length) > 1) {
+        // A wide widget: past the entry above or below it in its own column, its covers at that height; or a column
+        // over, lining up with its top.
+        if (dc) {
+          moveWide(id, at.c + dc, topOf(id));
+          return;
+        }
+        const past = columns[at.c][at.i + di];
+        if (!past) return;
+        const node = past.cover ? current.covers.get(`${past.cover}@${at.c}`) : current.widgets.get(past.id).el;
+        const r = node.getBoundingClientRect();
+        columns[at.c].splice(at.i, 1);
+        columns[at.c].splice(at.i + di, 0, at.widget);
+        placeCovers(id, at.c, di < 0 ? r.top : r.bottom);
+        persist();
+        syncGrid();
+        return;
+      }
       if (dc) {
         const to = at.c + dc;
         if (to < 0 || to >= columns.length) return;
@@ -2072,6 +2237,24 @@
       if (!at || !columns[c] || (at.c === c && at.i === index)) return;
       columns[at.c].splice(at.i, 1);
       columns[c].splice(Math.min(index, columns[c].length), 0, at.widget);
+      persist();
+      syncGrid();
+    }
+
+    /**
+     * Puts a wide widget in column `c` (moved left so its span fits) with its top at `y` (in the window): in each of its
+     * columns, under the entries whose middle is above `y`.
+     */
+    function moveWide(id, c, y) {
+      const at = find(id);
+      const columns = current.dashboard.columns;
+      if (!at) return;
+      const span = LAYOUT.spanOf(at.widget, at.c, columns.length);
+      const to = Math.max(0, Math.min(c, columns.length - span));
+      const i = indexAt(to, y, id);
+      columns[at.c].splice(at.i, 1);
+      columns[to].splice(Math.min(i, columns[to].length), 0, at.widget);
+      placeCovers(id, to, y);
       persist();
       syncGrid();
     }
@@ -2129,16 +2312,27 @@
         const dy = Math.max(r.top - drag.y, 0, drag.y - r.bottom);
         if (dx * dx + dy * dy < best) { best = dx * dx + dy * dy; c = n; }
       });
+      // A wide widget goes no further right than its span fits; the line is as wide as it.
+      const columns = current.dashboard.columns;
+      const at = find(drag.id);
+      const span = at ? LAYOUT.spanOf(at.widget, at.c, columns.length) : 1;
+      if (span > 1) c = Math.min(c, columns.length - span);
       const col = current.grid.children[c];
       if (!col) return;
-      const others = [...col.children].filter(n => n.classList.contains('wd-widget') && n !== drag.node);
+      // Its own covers aren't places to go; other wide widgets' covers are: above or below them in this column.
+      const own = [...current.covers.entries()].filter(([key]) => key.startsWith(`${drag.id}@`)).map(([, node]) => node);
+      const others = [...col.children].filter(n => (n.classList.contains('wd-widget') || (n.classList.contains('wd-cover') && !n.hidden))
+        && n !== drag.node && !own.includes(n));
       let i = 0;
       while (i < others.length) {
         const r = others[i].getBoundingClientRect();
         if (drag.y < r.top + r.height / 2) break;
         i++;
       }
-      drag.target = { c, i };
+      const prev = others[i - 1];
+      drag.target = { c, i, y: prev ? prev.getBoundingClientRect().bottom + 1 : col.getBoundingClientRect().top };
+      drag.marker.classList.toggle('wide', span > 1);
+      if (span > 1) drag.marker.style.setProperty('--span', String(span));
       const before = others[i] || col.querySelector(':scope > .wd-add');
       if (drag.marker.parentNode !== col || drag.marker.nextSibling !== before) col.insertBefore(drag.marker, before || null);
     }
@@ -2165,15 +2359,90 @@
         root.classList.remove('dragging');
       }
       drag = null;
-      if (drop && active && target && current) moveTo(id, target.c, target.i);
+      if (!drop || !active || !target || !current) return;
+      const at = find(id);
+      if (at && LAYOUT.spanOf(at.widget, at.c, current.dashboard.columns.length) > 1) moveWide(id, target.c, target.y);
+      else moveTo(id, target.c, target.i);
     }
 
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drag) endDrag(false); });
+    window.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (drag) endDrag(false);
+      if (resizing) endResize(false);
+    });
+
+    // ---- Resizing (editing): a handle on a widget's right edge sets how many columns it spans. The width follows
+    // the pointer a column at a time (a column counts once the pointer is past its middle); the covers follow on
+    // release, at the widget's top. ------------------------------------------------------------------------------
+
+    let resizing = null; // {id, node, pointerId, c, span, from}
+
+    function resizeHandle(node) {
+      const handle = el('div', 'wd-resize');
+      handle.title = t('resize');
+      handle.setAttribute('aria-hidden', 'true'); // the Width row in its settings is the keyboard's way
+      handle.addEventListener('pointerdown', (e) => {
+        if (drag || resizing || !current || !current.editing || e.button !== 0) return;
+        const at = find(node.dataset.id);
+        if (!at) return;
+        const span = LAYOUT.spanOf(at.widget, at.c, current.dashboard.columns.length);
+        resizing = { id: at.widget.id, node, pointerId: e.pointerId, c: at.c, span, from: span };
+        try { handle.setPointerCapture(e.pointerId); } catch (err) { /* moves still come while over the handle */ }
+        root.classList.add('resizing');
+        e.preventDefault();
+      });
+      handle.addEventListener('pointermove', (e) => {
+        if (!resizing || e.pointerId !== resizing.pointerId) return;
+        const cols = [...current.grid.children];
+        let span = 1;
+        for (let k = resizing.c + 1; k < cols.length; k++) {
+          const r = cols[k].getBoundingClientRect();
+          if (e.clientX > r.left + r.width / 2) span = k - resizing.c + 1;
+        }
+        if (span === resizing.span) return;
+        resizing.span = span;
+        node.classList.toggle('wide', span > 1);
+        node.style.setProperty('--span', String(span));
+      });
+      handle.addEventListener('pointerup', (e) => { if (resizing && e.pointerId === resizing.pointerId) endResize(true); });
+      handle.addEventListener('pointercancel', () => endResize(false));
+      handle.addEventListener('lostpointercapture', () => endResize(false));
+      return handle;
+    }
+
+    function endResize(keep) {
+      if (!resizing) return;
+      const { id, node, c, span, from } = resizing;
+      resizing = null;
+      root.classList.remove('resizing');
+      if (!keep || span === from) {
+        node.classList.toggle('wide', from > 1);
+        if (from > 1) node.style.setProperty('--span', String(from));
+        else node.style.removeProperty('--span');
+        return;
+      }
+      setSpan(id, c, span);
+    }
+
+    /** A widget's span (1: one column), its covers lined up with its top; saved. */
+    function setSpan(id, c, span) {
+      const at = find(id);
+      if (!at) return;
+      if (span > 1) at.widget.span = span;
+      else { delete at.widget.span; delete at.widget.at; }
+      placeCovers(id, c, topOf(id));
+      persist();
+      syncGrid();
+    }
 
     function removeWidget(id) {
       const at = find(id);
       if (!at) return;
       current.dashboard.columns[at.c].splice(at.i, 1);
+      for (const column of current.dashboard.columns) {
+        const i = column.findIndex(e => e.cover === id);
+        if (i >= 0) column.splice(i, 1);
+      }
       persist();
       syncGrid();
     }
@@ -2185,7 +2454,7 @@
      * takes the app's copy, so a value it corrected (a clamped number, a new widget id) shows and is sent on.
      */
     function persist() {
-      const snapshot = clone(current.dashboard);
+      const snapshot = stored(current.dashboard);
       saving = saving.then(async () => {
         if (deleted.has(snapshot.id)) return;
         try {
@@ -2194,9 +2463,9 @@
           const i = dashboards.findIndex(d => d.id === saved.id);
           if (i >= 0) dashboards[i] = saved; else dashboards.push(saved);
           if (current && current.dashboard.id === saved.id
-            && JSON.stringify(current.dashboard) === JSON.stringify(snapshot)
+            && JSON.stringify(stored(current.dashboard)) === JSON.stringify(snapshot)
             && JSON.stringify(saved) !== JSON.stringify(snapshot)) {
-            current.dashboard = clone(saved);
+            current.dashboard = editable(saved);
             syncGrid();
           }
         } catch (err) {
@@ -2329,6 +2598,20 @@
       titleText.append(titleLabel, el('p', 'wd-hint', t('widgetTitleHint')));
       titleRow.append(titleText, title);
 
+      // Its width in columns, as far as the columns to its right go (the resize handle's keyboard and touch twin).
+      const count = current.dashboard.columns.length;
+      const width = { span: LAYOUT.spanOf(w, at.c, count) };
+      let widthRow = null;
+      if (count - at.c > 1) {
+        widthRow = el('div', 'wd-set-row inline');
+        const widthText = el('div', 'wd-set-text');
+        widthText.append(el('span', 'wd-set-label', t('width')), el('p', 'wd-hint', t('widthHint')));
+        const spans = Array.from({ length: count - at.c }, (_, k) => ({ id: String(k + 1), title: String(k + 1) }));
+        const seg = choiceGroup(null, spans, String(width.span), (v) => { width.span = Number(v); }, false);
+        seg.setAttribute('aria-label', t('width'));
+        widthRow.append(widthText, seg);
+      }
+
       const sections = def.sections || [{ kind: 'plain', ids: def.settings.map(s => s.id) }];
       // A run of numbered groups (Flow Buttons' eight buttons) shares a card; one of more than two starts folded.
       const numbered = (sec) => sec && sec.kind === 'group' && sec.numbered;
@@ -2347,7 +2630,7 @@
         if (!numbered(sec)) stack = null;
         if (sec.kind === 'plain') {
           const c = card();
-          if (i === 0) { c.append(titleRow); general = c; }
+          if (i === 0) { c.append(titleRow); if (widthRow) c.append(widthRow); general = c; }
           c.append(...rows(sec.ids));
           body.append(c);
         } else if (sec.kind === 'slots') {
@@ -2379,6 +2662,7 @@
       if (!general) {
         general = card();
         general.append(titleRow);
+        if (widthRow) general.append(widthRow);
         body.insertBefore(general, body.querySelector(':scope > .wd-set-card:not(.wd-set-devices)') || null);
       }
       if (def.app) {
@@ -2456,6 +2740,11 @@
             now.widget.deviceIds = draft.deviceIds;
             if (trust.settings.trusted === true) now.widget.trusted = true;
             else delete now.widget.trusted;
+            if (width.span !== LAYOUT.spanOf(now.widget, now.c, current.dashboard.columns.length)) {
+              setSpan(id, now.c, width.span); // saves it all
+              d.close();
+              return;
+            }
             persist();
             syncGrid();
           }

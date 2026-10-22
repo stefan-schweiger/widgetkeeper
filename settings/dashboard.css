@@ -256,6 +256,17 @@ textarea.wd-input { width: 100%; resize: vertical; }
 }
 .wd-col { display: flex; flex-direction: column; gap: var(--wd-gap); min-width: 0; }
 .wd-widget { min-width: 0; }
+/* A wide widget runs on over the columns to its right (the grid's 16 px gap and, editing, the columns' padding), where
+   a cover in each takes its room; dashboard.js moves both down to where it fits. One column: as wide as the rest. */
+.wd-widget.wide {
+  position: relative; z-index: 1; box-sizing: border-box;
+  width: calc(var(--span) * 100% + (var(--span) - 1) * (16px + 2 * var(--wd-col-pad, 0px)));
+}
+.wd-cover { flex: none; }
+@media (max-width: 720px) {
+  .wd-widget.wide { width: auto; }
+  .wd-cover { display: none; }
+}
 .wd-title { margin: 0 0 8px; padding: 0 4px; font-size: 17px; line-height: 24px; font-weight: 700; }
 .wd-frame { position: relative; }
 .wd-frame.card { border-radius: var(--wd-radius); overflow: hidden; background: var(--homey-background-color, #FFFFFF); }
@@ -264,9 +275,10 @@ textarea.wd-input { width: 100%; resize: vertical; }
 
 /* Editing: each widget in a frame with its bar as the frame's header (so it's clear which bar is whose), more room
    between them, and an add button under each column. */
-.editing { --wd-gap: 16px; }
-.editing .wd-col { min-height: 120px; padding: 8px; border-radius: 14px; outline: 1px dashed var(--wd-line); outline-offset: -1px; }
+.editing { --wd-gap: 16px; --wd-col-pad: 8px; }
+.editing .wd-col { min-height: 120px; padding: var(--wd-col-pad); border-radius: 14px; outline: 1px dashed var(--wd-line); outline-offset: -1px; }
 .editing .wd-widget {
+  position: relative; /* its resize handle */
   padding: 0 8px 8px; border: 1px solid var(--wd-line); border-radius: 14px;
   background: color-mix(in srgb, var(--wd-raised) 40%, transparent);
 }
@@ -292,6 +304,22 @@ textarea.wd-input { width: 100%; resize: vertical; }
   font-family: inherit; font-weight: 500; font-size: 14px; line-height: 20px;
 }
 .wd-add:hover { color: var(--wd-text); border-color: var(--wd-muted); }
+/* The resize handle: a short bar on the widget's right edge, under its tools. */
+.wd-resize {
+  position: absolute; top: 44px; bottom: 8px; right: -9px; width: 16px; z-index: 2;
+  display: flex; align-items: center; justify-content: center; cursor: ew-resize; touch-action: none;
+}
+.wd-resize::after {
+  content: ''; width: 6px; height: min(48px, 60%); border-radius: 3px;
+  background: var(--wd-line); border: 1px solid var(--wd-raised); transition: background .15s;
+}
+.wd-widget:hover > .wd-resize::after, .wd-resize:hover::after, .resizing .wd-resize::after { background: var(--wd-accent); }
+.wd-resize[hidden] { display: none; }
+.resizing, .resizing * { cursor: ew-resize !important; -webkit-user-select: none; user-select: none; }
+.resizing iframe { pointer-events: none; }
+/* Editing, a cover shows the room a wide widget takes there. */
+.editing .wd-cover { border-radius: 14px; background: repeating-linear-gradient(135deg, transparent 0 8px, color-mix(in srgb, var(--wd-line) 35%, transparent) 8px 9px); }
+@media (max-width: 720px) { .wd-resize { display: none; } }
 .wd-empty { min-height: 1px; }
 
 /* Dragging a widget: it stays faded in place, a pill with its name follows the pointer, and a line (taking no room,
@@ -300,6 +328,7 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .dragging iframe { pointer-events: none; }
 .wd-widget.lifted { opacity: .35; }
 .wd-drop { flex: none; height: 4px; margin: calc(-2px - var(--wd-gap) / 2) 0; border-radius: 2px; background: var(--wd-accent); }
+.wd-drop.wide { position: relative; z-index: 2; width: calc(var(--span) * 100% + (var(--span) - 1) * (16px + 2 * var(--wd-col-pad, 0px))); }
 .wd-ghost {
   position: fixed; left: 0; top: 0; z-index: 20; pointer-events: none; margin: -48px 0 0 -24px; max-width: 240px;
   padding: 8px 14px; border-radius: 18px; background: var(--wd-accent); color: #FFFFFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;

@@ -71,6 +71,8 @@
         { id: 'home', name: 'Home', theme: 'auto', columns: [[W('electricity'), W('price')], [W('lights', {}, ['d1', 'd2', 'd5', 'd8']), W('thermostat')], [W('weather'), W('timers'), W('locks')]] },
         { id: 'kitchen', name: 'Kitchen tablet', theme: 'dark', background: 'ocean', columns: [[W('timers'), W('media')], [W('flows'), W('sensordots'), W('values', { slot1: { id: 't1:measure_temperature', name: 'Living room thermostat · Temperature', description: 'Living room · °C' } })]] },
         { id: 'hall', name: 'Hallway', theme: 'auto', columns: [[W('locks'), W('cameras'), W('sensoralarms')]] },
+        // A wide widget: the cameras over two columns, the weather above it and the flows under it in the second.
+        { id: 'wide', name: 'Overview', theme: 'auto', columns: [[W('clock'), { ...W('cameras'), span: 2, at: [1] }, W('values')], [W('weather'), W('flows')], [W('lights', {}, ['d1', 'd2']), W('timers'), W('locks')]] },
         { id: 'new', name: 'Spare room', theme: 'auto', columns: [[], [], []] },
       ];
 
@@ -78,6 +80,7 @@
     })();
   </script>
   <script src="../widgets/spacer/public/kit.js"></script>
+  <script src="../settings/dashboard-layout.js"></script>
   <script src="../settings/dashboard.js"></script>
 </head>
 <body>
