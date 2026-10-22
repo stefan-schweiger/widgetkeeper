@@ -67,6 +67,10 @@
     pageSettings: 'Settings',
     thisBrowser: 'This browser',
     forgetKeyText: 'Signs this browser out: it asks for an API key again.',
+    keepAwake: 'Keep screen on',
+    keepAwakeLock: 'The screen stays on while this page is open.',
+    keepAwakeVideo: 'Uses a silent video to keep the screen on. If it still sleeps, turn off sleep in the device\'s settings.',
+    keepAwakeNone: 'This browser can\'t keep the screen on.',
     backupTitle: 'Backup',
     backupText: 'The dashboards you choose in one file: their layouts, widgets, settings and the names typed on tiles. A restore brings back the ones you tick and leaves the others.',
     backupDownload: 'Download backup',
@@ -177,6 +181,8 @@
   const SESSION_STORAGE = 'widgetkeeper.web.session';
   /** This browser's own dark or light (the bar's button), over the dashboard's theme; none follows the dashboard. */
   const THEME_STORAGE = 'widgetkeeper.web.theme';
+  /** Keep screen on (`'1'`), this browser's choice in Settings; absent lets the screen sleep. */
+  const AWAKE_STORAGE = 'widgetkeeper.web.awake';
   const PREFIX = 'CF2_MESSAGE';
   const ACK_TIMEOUT_MS = 10e3;
   /** After a realtime outage this long, the frames reload: they may have missed changes (they re-read every 5 min). */
@@ -351,6 +357,92 @@
     }
     return params;
   }
+
+  /**
+   * A 2-second black 16 × 16 H.264 video, played muted on a loop where the browser has no Wake Lock (it only has one
+   * over HTTPS; the home address is http://). Made with ffmpeg 9: `-f lavfi -i color=black:s=16x16:r=1 -t 2 -c:v libx264
+   * -profile:v baseline -pix_fmt yuv420p -an -movflags +faststart -map_metadata -1 -fflags +bitexact -flags:v +bitexact`.
+   */
+  const KEEP_AWAKE_VIDEO = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAMGbW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAB9AAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAlV0cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAB9AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAABAAAAAQAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAAAfQAAAAAAABAAAAAAHNbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAABAAAAAgABVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABeG1pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAThzdGJsAAAAuHN0c2QAAAAAAAAAAQAAAKhhdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAABAAEABIAAAASAAAAAAAAAABDExhdmMgbGlieDI2NAAAAAAAAAAAAAAAAAAAAAAAAAAAGP//AAAALmF2Y0MBQsAK/+EAFmdCwArZHsBEAAADAAQAAAMACDxImSABAAVoy4PLIAAAABBwYXNwAAAAAQAAAAEAAAAUYnRydAAAAAAAAApAAAAAAAAAABhzdHRzAAAAAAAAAAEAAAACAABAAAAAABRzdHNzAAAAAAAAAAEAAAABAAAAHHN0c2MAAAAAAAAAAQAAAAEAAAACAAAAAQAAABxzdHN6AAAAAAAAAAAAAAACAAAChgAAAAoAAAAUc3RjbwAAAAAAAAABAAADNgAAAD11ZHRhAAAANW1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAG1kaXJhcHBsAAAAAAAAAAAAAAAACGlsc3QAAAAIZnJlZQAAAphtZGF0AAACcAYF//9s3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDE2NSByMzIyMyAwNDgwY2IwIC0gSC4yNjQvTVBFRy00IEFWQyBjb2RlYyAtIENvcHlsZWZ0IDIwMDMtMjAyNSAtIGh0dHA6Ly93d3cudmlkZW9sYW4ub3JnL3gyNjQuaHRtbCAtIG9wdGlvbnM6IGNhYmFjPTAgcmVmPTMgZGVibG9jaz0xOjA6MCBhbmFseXNlPTB4MToweDExMSBtZT1oZXggc3VibWU9NyBwc3k9MSBwc3lfcmQ9MS4wMDowLjAwIG1peGVkX3JlZj0xIG1lX3JhbmdlPTE2IGNocm9tYV9tZT0xIHRyZWxsaXM9MSA4eDhkY3Q9MCBjcW09MCBkZWFkem9uZT0yMSwxMSBmYXN0X3Bza2lwPTEgY2hyb21hX3FwX29mZnNldD0tMiB0aHJlYWRzPTEgbG9va2FoZWFkX3RocmVhZHM9MSBzbGljZWRfdGhyZWFkcz0wIG5yPTAgZGVjaW1hdGU9MSBpbnRlcmxhY2VkPTAgYmx1cmF5X2NvbXBhdD0wIGNvbnN0cmFpbmVkX2ludHJhPTAgYmZyYW1lcz0wIHdlaWdodHA9MCBrZXlpbnQ9MjUwIGtleWludF9taW49MSBzY2VuZWN1dD00MCBpbnRyYV9yZWZyZXNoPTAgcmNfbG9va2FoZWFkPTQwIHJjPWNyZiBtYnRyZWU9MSBjcmY9MjMuMCBxY29tcD0wLjYwIHFwbWluPTAgcXBtYXg9NjkgcXBzdGVwPTQgaXBfcmF0aW89MS40MCBhcT0xOjEuMDAAgAAAAA5liIQFv///D0UAAU9/gAAAAAZBmjgK+oA=';
+
+  /**
+   * Keep screen on (this browser's choice in Settings): the Screen Wake Lock where the browser has it (HTTPS: away from
+   * home through Homey's cloud), else a silent video playing on a loop, the NoSleep.js idea, which iOS and some others
+   * keep the screen on for. The lock goes while the page is hidden, so it's asked for again when it shows. A video
+   * the browser won't start without a tap (iOS in Low Power Mode) starts on the next tap or key.
+   */
+  const keepAwake = (() => {
+    const nav = /** @type {any} */ (navigator);
+    const hasLock = !!(nav.wakeLock && typeof nav.wakeLock.request === 'function');
+    let on = false;
+    let lock = null;
+    let asking = false;
+    let video = null;
+    let retrying = false;
+
+    async function holdLock() {
+      if (!on || lock || asking || document.visibilityState !== 'visible') return;
+      asking = true;
+      try {
+        const sentinel = await nav.wakeLock.request('screen');
+        sentinel.addEventListener('release', () => { if (lock === sentinel) lock = null; });
+        lock = sentinel;
+        if (!on) release();
+      } catch (e) { /* refused (a battery saver, a policy): nothing to do */ }
+      asking = false;
+    }
+
+    function release() {
+      if (lock) { lock.release().catch(() => {}); lock = null; }
+      if (video) { video.pause(); video.remove(); video = null; }
+    }
+
+    function retryOnTap() {
+      if (retrying) return;
+      retrying = true;
+      const again = () => {
+        retrying = false;
+        window.removeEventListener('pointerdown', again, true);
+        window.removeEventListener('keydown', again, true);
+        if (on) playVideo();
+      };
+      window.addEventListener('pointerdown', again, true);
+      window.addEventListener('keydown', again, true);
+    }
+
+    function playVideo() {
+      if (!video) {
+        video = document.createElement('video');
+        video.className = 'wd-awake';
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.setAttribute('muted', '');
+        video.setAttribute('playsinline', '');
+        video.setAttribute('aria-hidden', 'true');
+        video.src = KEEP_AWAKE_VIDEO;
+        document.body.append(video);
+      }
+      const played = video.play();
+      if (played && played.catch) played.catch(() => retryOnTap());
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (!on || document.visibilityState !== 'visible') return;
+      if (hasLock) holdLock(); else if (video && video.paused) playVideo();
+    });
+
+    return {
+      /** How it's kept on here: 'lock' or 'video' ('none' where neither can be). */
+      how: hasLock ? 'lock' : (typeof document.createElement('video').play === 'function' ? 'video' : 'none'),
+      get on() { return on; },
+      set(value) {
+        on = !!value;
+        if (!on) { release(); return; }
+        if (hasLock) holdLock(); else playVideo();
+      },
+    };
+  })();
 
   /**
    * `opts.mountWidget(widget, wrap)`, when given, draws a widget into `wrap` in place of its iframe (the dev renders,
@@ -1105,7 +1197,7 @@
       });
     }
 
-    /** The front page's edit mode: Settings in its bar, a dialog with the backup and Forget the key (this browser's). */
+    /** The front page's edit mode: Settings in its bar, a dialog with the backup, then this browser's Keep screen on and Forget the key. */
     function pageSettings() {
       const { d, body } = dialog(t('pageSettings'));
       d.classList.add('wd-page-settings');
@@ -1119,7 +1211,20 @@
       });
       const row = el('div', 'wd-row');
       row.append(forget);
-      browser.append(el('h3', 'wd-h2', t('thisBrowser')), el('p', 'wd-muted', t('forgetKeyText')), row);
+      const awake = el('label', 'wd-awake-row');
+      const box = el('input', 'wd-switch');
+      box.type = 'checkbox';
+      box.setAttribute('role', 'switch');
+      box.checked = keepAwake.on;
+      box.disabled = keepAwake.how === 'none';
+      box.addEventListener('change', () => {
+        storageSet(AWAKE_STORAGE, box.checked ? '1' : null);
+        keepAwake.set(box.checked); // in the tap, so a video may start
+      });
+      awake.append(el('span', null, t('keepAwake')), box);
+      const how = { lock: 'keepAwakeLock', video: 'keepAwakeVideo', none: 'keepAwakeNone' }[keepAwake.how];
+      browser.append(el('h3', 'wd-h2', t('thisBrowser')), awake, el('p', 'wd-muted', t(how)),
+        el('p', 'wd-muted', t('forgetKeyText')), row);
       body.append(backupSection(), browser);
       d.showModal();
     }
@@ -2987,6 +3092,7 @@
       await saving;
       route();
     });
+    keepAwake.set(storageGet(AWAKE_STORAGE) === '1');
     start();
   };
 })();

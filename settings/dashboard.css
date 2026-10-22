@@ -175,6 +175,10 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .wd-page-section + .wd-page-section { padding-top: 16px; border-top: 1px solid var(--wd-line); }
 .wd-page-section .wd-row { flex-wrap: wrap; margin-top: 4px; }
 .wd-backup-status:empty { display: none; }
+.wd-awake-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; }
+.wd-awake-row:has(:disabled) { opacity: .5; cursor: default; }
+/* Keep screen on's silent video, where there's no Wake Lock: in the page (a browser may not count a hidden one), unseen. */
+.wd-awake { position: fixed; left: 0; bottom: 0; width: 16px; height: 16px; opacity: .01; pointer-events: none; }
 /* The dashboards to download or restore: a checkbox each, every one ticked at first. */
 .wd-backup-pick { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
 .wd-backup-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }

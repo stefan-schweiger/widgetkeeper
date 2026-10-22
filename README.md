@@ -354,7 +354,7 @@ Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an
 ### Your dashboards
 <img src="docs/web/front.png" alt="The web dashboards front page in a browser window: seven dashboards as cards, and the widgets you can add" width="100%">
 
-The front page shows every dashboard as a card with a miniature of its widgets, then the widgets you can add, one at a time. The pen at the top puts it in edit mode: drag the dashboards into the order you like, duplicate one (the copy comes right after it, with the names typed on its tiles), delete one with a second tap, or hide the widgets. Its **Settings** has the backup and forgets this browser's key.
+The front page shows every dashboard as a card with a miniature of its widgets, then the widgets you can add, one at a time. The pen at the top puts it in edit mode: drag the dashboards into the order you like, duplicate one (the copy comes right after it, with the names typed on its tiles), delete one with a second tap, or hide the widgets. Its **Settings** has the backup, keeps this browser's screen on, and forgets its key.
 
 ### Building a dashboard
 <img src="docs/web/editor.png" alt="A web dashboard being edited in a browser window" width="100%">
@@ -363,6 +363,7 @@ The front page shows every dashboard as a card with a miniature of its widgets, 
 - **Settings:** each widget has the same settings as on a Homey dashboard, in cards: the devices, the general settings, and a card per button, tile or column that folds and sums up what's set. Devices are picked from a list grouped by room, with a search; values (for Device Values, Sparklines and Charts) with their readings.
 - **Look:** light, dark or automatic, and a background per dashboard from calm tints (Default, Black or White, Slate, Ocean, Forest, Plum, Berry, Sand), each with a light and a dark shade. The sun button in the bar switches between light and dark in this browser only.
 - **Full screen:** the corner button gives the whole screen to the dashboard, for a wall tablet.
+- **Keep screen on:** turn it on in the front page's **Settings** (under the pen) to stop this tablet, phone or computer from sleeping while the page is open. Browsers only offer this properly over HTTPS, as through the [away from home](#away-from-home) address; on the home address the page plays a silent, invisible video instead, which works on iPads and iPhones but not in every browser. Where it doesn't, turn off sleep in the device's own settings.
 - **A menu:** put [Dashboard Shortcuts](#dashboard-shortcuts) on every dashboard to jump between them.
 
 <img src="docs/web/light.png" alt="A light web dashboard, the Kitchen on the Sand background, in a browser window" width="100%">

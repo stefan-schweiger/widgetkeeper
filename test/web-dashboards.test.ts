@@ -766,6 +766,15 @@ describe('web dashboards page', () => {
     expect(html).not.toContain('/public/');
   });
 
+  it("keeps Keep screen on's silent video a small MP4", () => {
+    const js = readFileSync('settings/dashboard.js', 'utf8');
+    const m = js.match(/const KEEP_AWAKE_VIDEO = 'data:video\/mp4;base64,([A-Za-z0-9+/=]+)';/);
+    expect(m).toBeTruthy();
+    const mp4 = Buffer.from(m![1], 'base64');
+    expect(mp4.subarray(4, 8).toString('latin1')).toBe('ftyp');
+    expect(mp4.length).toBeLessThan(4096);
+  });
+
   it('bundles the socket.io-client version installed', () => {
     const { version } = JSON.parse(readFileSync('node_modules/socket.io-client/package.json', 'utf8'));
     expect(readFileSync('settings/socket.io.js', 'utf8').slice(0, 200)).toContain(`socket.io-client ${version} `);
