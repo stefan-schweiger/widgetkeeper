@@ -186,8 +186,8 @@
     }
 
     /**
-     * The next days, kept quiet: a column each, a row per type with a small dot in its level's colour (the level word
-     * as its label), and the day's UV peak as a muted number.
+     * The next days, kept quiet: a column each, a row per type with a thin four-step bar like today's (the level word as
+     * its label), and the day's UV peak as a muted number.
      */
     function renderDays(days) {
       const grid = el('div', { class: 'pw-days' }, root);
@@ -200,7 +200,8 @@
           const entry = day.pollen[type];
           const level = entry ? entry.level : 0;
           const word = entry ? t(LEVEL_KEYS[level]) : '–';
-          el('span', { class: 'pw-cell', 'data-level': String(level), title: word, 'aria-label': word }, grid);
+          const cell = el('span', { class: 'pw-cell', 'data-level': String(level), title: word, 'aria-label': word }, grid);
+          for (let i = 0; i < STEPS; i++) el('i', { class: i < level ? 'on' : null }, cell);
         }
       }
       if (!showUv) return;
