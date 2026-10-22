@@ -522,7 +522,6 @@
     "keepAwake": "Hold skærmen tændt",
     "keepAwakeLock": "Skærmen forbliver tændt, så længe denne side er åben.",
     "keepAwakeVideo": "Bruger en lydløs video til at holde skærmen tændt. Slukker den alligevel, så slå dvale fra i enhedens indstillinger.",
-    "keepAwakeNone": "Denne browser kan ikke holde skærmen tændt.",
     "dim": "Dæmp",
     "dimOff": "Fra",
     "dimText": "Gør hele siden mørkere, som om skærmen var skruet ned.",

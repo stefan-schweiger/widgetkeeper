@@ -522,7 +522,6 @@
     "keepAwake": "Bildschirm anlassen",
     "keepAwakeLock": "Der Bildschirm bleibt an, solange diese Seite offen ist.",
     "keepAwakeVideo": "Hält den Bildschirm mit einem stummen Video an. Schaltet er sich trotzdem ab, den Ruhezustand in den Einstellungen des Geräts ausschalten.",
-    "keepAwakeNone": "Dieser Browser kann den Bildschirm nicht anlassen.",
     "dim": "Dimmen",
     "dimOff": "Aus",
     "dimText": "Dunkelt die ganze Seite ab, als wäre der Bildschirm heruntergeregelt.",

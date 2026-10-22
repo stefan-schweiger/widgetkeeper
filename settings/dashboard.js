@@ -70,7 +70,6 @@
     keepAwake: 'Keep screen on',
     keepAwakeLock: 'The screen stays on while this page is open.',
     keepAwakeVideo: 'Uses a silent video to keep the screen on. If it still sleeps, turn off sleep in the device\'s settings.',
-    keepAwakeNone: 'This browser can\'t keep the screen on.',
     dim: 'Dim',
     dimOff: 'Off',
     dimText: 'Darkens the whole page, as if the screen were turned down.',
@@ -375,47 +374,56 @@
   /**
    * Keep screen on (this browser's choice in Settings): the Screen Wake Lock where the browser has it (HTTPS: away from
    * home through Homey's cloud), else a silent video playing on a loop, the NoSleep.js idea, which iOS and some others
-   * keep the screen on for. The lock goes while the page is hidden, so it's asked for again when it shows. A video
-   * the browser won't start without a tap (iOS in Low Power Mode) starts on the next tap or key.
+   * keep the screen on for. The lock goes while the page is hidden, or when the system takes it, so it's asked for
+   * again; a refused lock (a battery saver, a policy) falls back to the video. A video the browser won't start without
+   * a tap (iOS in Low Power Mode) starts on the next tap or key, in the page or in a widget's frame (`watch()`).
    */
   const keepAwake = (() => {
     const nav = /** @type {any} */ (navigator);
-    const hasLock = !!(nav.wakeLock && typeof nav.wakeLock.request === 'function');
+    /** 'lock' or 'video', how it's kept on here. */
+    let how = nav.wakeLock && typeof nav.wakeLock.request === 'function' ? 'lock' : 'video';
     let on = false;
     let lock = null;
     let asking = false;
     let video = null;
-    let retrying = false;
+    /** A refused `play()` waits for a tap. */
+    let waiting = false;
 
     async function holdLock() {
       if (!on || lock || asking || document.visibilityState !== 'visible') return;
       asking = true;
       try {
         const sentinel = await nav.wakeLock.request('screen');
-        sentinel.addEventListener('release', () => { if (lock === sentinel) lock = null; });
+        // Released by the system while the page shows (hidden is `visibilitychange`'s): asked for again.
+        sentinel.addEventListener('release', () => { if (lock === sentinel) { lock = null; holdLock(); } });
         lock = sentinel;
         if (!on) release();
-      } catch (e) { /* refused (a battery saver, a policy): nothing to do */ }
+      } catch (e) {
+        how = 'video';
+        if (on) playVideo();
+      }
       asking = false;
     }
 
     function release() {
-      if (lock) { lock.release().catch(() => {}); lock = null; }
+      if (lock) { const held = lock; lock = null; held.release().catch(() => {}); }
       if (video) { video.pause(); video.remove(); video = null; }
     }
 
-    function retryOnTap() {
-      if (retrying) return;
-      retrying = true;
-      const again = () => {
-        retrying = false;
-        window.removeEventListener('pointerdown', again, true);
-        window.removeEventListener('keydown', again, true);
-        if (on) playVideo();
-      };
-      window.addEventListener('pointerdown', again, true);
-      window.addEventListener('keydown', again, true);
+    function retry() {
+      if (!waiting) return;
+      waiting = false;
+      if (on) playVideo();
     }
+
+    /**
+     * Retries a refused video on a tap or key in `win`: the page, or a widget's frame (same origin), where most taps
+     * land and never reach the page. The events a browser counts as a user's.
+     */
+    function watch(win) {
+      for (const type of ['pointerup', 'touchend', 'keydown']) win.addEventListener(type, retry, true);
+    }
+    watch(window);
 
     function playVideo() {
       if (!video) {
@@ -431,23 +439,26 @@
         document.body.append(video);
       }
       const played = video.play();
-      if (played && played.catch) played.catch(() => retryOnTap());
+      if (played && played.catch) played.catch(() => { waiting = true; });
     }
 
     document.addEventListener('visibilitychange', () => {
       if (!on || document.visibilityState !== 'visible') return;
-      if (hasLock) holdLock(); else if (video && video.paused) playVideo();
+      if (how === 'lock') holdLock(); else if (video && video.paused) playVideo();
     });
 
     return {
-      /** How it's kept on here: 'lock' or 'video' ('none' where neither can be). */
-      how: hasLock ? 'lock' : (typeof document.createElement('video').play === 'function' ? 'video' : 'none'),
+      /** How it's kept on here: 'lock' or 'video' (after a refused lock too). */
+      get how() { return how; },
       get on() { return on; },
-      set(value) {
+      /** Turns it on or off; the promise settles once a lock is held or refused. */
+      async set(value) {
         on = !!value;
         if (!on) { release(); return; }
-        if (hasLock) holdLock(); else playVideo();
+        if (how === 'lock') await holdLock(); else playVideo();
       },
+      watch,
+      retry,
     };
   })();
 
@@ -922,7 +933,11 @@
       if (!frame) return;
       let msg;
       try { msg = JSON.parse(hexDecode(e.data.slice(PREFIX.length))); } catch (err) { return; }
-      if (msg && msg.type === 'tx') handle(frame, msg);
+      if (!msg || msg.type !== 'tx') return;
+      // A sandboxed widget's tap only reaches the page as its message (an `api` call); the browser counts the tap
+      // for the page too, so a refused Keep screen on video may start now.
+      if (frame.sandboxed) keepAwake.retry();
+      handle(frame, msg);
     });
 
     function dropListeners(frame) {
@@ -1254,14 +1269,14 @@
       box.id = 'wd-keep-awake';
       box.setAttribute('role', 'switch');
       box.checked = keepAwake.on;
-      box.disabled = keepAwake.how === 'none';
+      const howText = () => t(keepAwake.how === 'lock' ? 'keepAwakeLock' : 'keepAwakeVideo');
+      const awake = setRow(t('keepAwake'), howText(), box, box.id);
+      awake.classList.add('switch');
       box.addEventListener('change', () => {
         storageSet(AWAKE_STORAGE, box.checked ? '1' : null);
-        keepAwake.set(box.checked); // in the tap, so a video may start
+        // In the tap, so a video may start; a refused lock turns to the video, and the hint says so.
+        keepAwake.set(box.checked).then(() => { awake.querySelector('.wd-hint').textContent = howText(); });
       });
-      const how = { lock: 'keepAwakeLock', video: 'keepAwakeVideo', none: 'keepAwakeNone' }[keepAwake.how];
-      const awake = setRow(t('keepAwake'), t(how), box, box.id);
-      awake.classList.add('switch');
       // Dim: the page behind the dialog darkens while the slider moves; stored when it's let go. The slider spans the row.
       const slider = el('input', 'wd-dim-slider');
       slider.id = 'wd-dim-level';
@@ -1985,6 +2000,8 @@
       // Another app's widget is sandboxed (no `allow-same-origin`: it can't read the key) unless the user trusts it.
       const sandboxed = !!app && w.trusted !== true;
       if (sandboxed) iframe.setAttribute('sandbox', SANDBOX);
+      // Keep screen on's refused video retries on a tap in the widget too (each load is a new window).
+      else iframe.addEventListener('load', () => { try { keepAwake.watch(iframe.contentWindow); } catch (e) { /* not ours */ } });
       iframe.src = `${widgetFolder(w.type)}/index.html?widgetInstanceId=${encodeURIComponent(instance)}`;
       wrap.append(iframe);
       node.append(wrap);

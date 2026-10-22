@@ -522,7 +522,6 @@
     "keepAwake": "Keep screen on",
     "keepAwakeLock": "The screen stays on while this page is open.",
     "keepAwakeVideo": "Uses a silent video to keep the screen on. If it still sleeps, turn off sleep in the device's settings.",
-    "keepAwakeNone": "This browser can't keep the screen on.",
     "dim": "Dim",
     "dimOff": "Off",
     "dimText": "Darkens the whole page, as if the screen were turned down.",

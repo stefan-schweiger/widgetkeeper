@@ -522,7 +522,6 @@
     "keepAwake": "Nie wygaszaj ekranu",
     "keepAwakeLock": "Ekran pozostaje włączony, dopóki ta strona jest otwarta.",
     "keepAwakeVideo": "Używa cichego wideo, by ekran się nie wygaszał. Jeśli mimo to gaśnie, wyłącz uśpienie w ustawieniach urządzenia.",
-    "keepAwakeNone": "Ta przeglądarka nie może utrzymać włączonego ekranu.",
     "dim": "Przyciemnij",
     "dimOff": "Wył.",
     "dimText": "Przyciemnia całą stronę, jakby zmniejszono jasność ekranu.",

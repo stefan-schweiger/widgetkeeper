@@ -522,7 +522,6 @@
     "keepAwake": "Mantener pantalla encendida",
     "keepAwakeLock": "La pantalla sigue encendida mientras esta página está abierta.",
     "keepAwakeVideo": "Usa un vídeo silencioso para mantener la pantalla encendida. Si aun así se apaga, desactiva la suspensión en los ajustes del dispositivo.",
-    "keepAwakeNone": "Este navegador no puede mantener la pantalla encendida.",
     "dim": "Atenuar",
     "dimOff": "No",
     "dimText": "Oscurece toda la página, como si se bajara el brillo de la pantalla.",

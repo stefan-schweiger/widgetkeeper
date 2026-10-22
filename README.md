@@ -354,7 +354,7 @@ Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an
 ### Your dashboards
 <img src="docs/web/front.png" alt="The web dashboards front page in a browser window: seven dashboards as cards, and the widgets you can add" width="100%">
 
-The front page shows every dashboard as a card with a miniature of its widgets, then the widgets you can add, one at a time. The pen at the top puts it in edit mode: drag the dashboards into the order you like, duplicate one (the copy comes right after it, with the names typed on its tiles), delete one with a second tap, or hide the widgets. Its **Settings** has the backup, keeps this browser's screen on, and forgets its key.
+The front page shows every dashboard as a card with a miniature of its widgets, then the widgets you can add, one at a time. The pen at the top puts it in edit mode: drag the dashboards into the order you like, duplicate one (the copy comes right after it, with the names typed on its tiles), delete one with a second tap, or hide the widgets. Its **Settings** has the backup, keeps this browser's screen on, dims it, and forgets its key.
 
 ### Building a dashboard
 <img src="docs/web/editor.png" alt="A web dashboard being edited in a browser window" width="100%">

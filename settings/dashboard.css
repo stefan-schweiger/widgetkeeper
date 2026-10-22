@@ -175,9 +175,8 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .wd-page-section + .wd-page-section { padding-top: 16px; border-top: 1px solid var(--wd-line); }
 .wd-page-section .wd-row { flex-wrap: wrap; margin-top: 4px; }
 .wd-backup-status:empty { display: none; }
-/* This browser: the editor's rows in a card. Keep screen on fades where the browser can't; Dim's slider spans its row. */
+/* This browser: the editor's rows in a card. Dim's slider spans its row. */
 .wd-page-settings .wd-set-row.inline { row-gap: 10px; }
-.wd-page-settings .wd-set-row:has(.wd-switch:disabled) { opacity: .5; }
 .wd-page-settings .wd-set-row.inline.wd-dim-row { display: grid; } /* the value beside the label on a phone too */
 .wd-dim-slider { grid-column: 1 / -1; width: 100%; margin: 0; accent-color: var(--wd-accent); }
 .wd-dim-value { font-size: 14px; line-height: 20px; color: var(--wd-muted); text-align: right; font-variant-numeric: tabular-nums; }

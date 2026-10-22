@@ -522,7 +522,6 @@
     "keepAwake": "Håll skärmen på",
     "keepAwakeLock": "Skärmen är på så länge den här sidan är öppen.",
     "keepAwakeVideo": "Använder en tyst video för att hålla skärmen på. Om den ändå släcks, stäng av viloläget i enhetens inställningar.",
-    "keepAwakeNone": "Den här webbläsaren kan inte hålla skärmen på.",
     "dim": "Dämpa",
     "dimOff": "Av",
     "dimText": "Gör hela sidan mörkare, som om skärmen var nedskruvad.",
