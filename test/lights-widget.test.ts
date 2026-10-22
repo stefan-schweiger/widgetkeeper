@@ -21,10 +21,10 @@ const hueGo = (temperature = true) => ({
   },
 });
 
-function widget(devices: any[], onSet: any = vi.fn(async () => {}), groupByZone = false, palette?: string, barMin?: string) {
+function widget(devices: any[], onSet: any = vi.fn(async () => {}), groupByZone = false, palette?: string, barMin?: string, wideLast = false) {
   const root = document.createElement('div');
   document.body.append(root);
-  const w = win.createLightsWidget(root, { onSet, groupByZone, palette, barMin });
+  const w = win.createLightsWidget(root, { onSet, groupByZone, palette, barMin, wideLast });
   w.setState(devices);
   const tile = (id: string) => root.querySelector<HTMLElement>(`.lc-tile[data-device="${id}"]`)!;
   /** The bar's value in percent. */
@@ -394,6 +394,43 @@ describe('group by room', () => {
   it('keeps lights without a known room on their own tiles', () => {
     const { root } = widget([lamp('a', null, true, 1), lamp('b', null, true, 1)], undefined, true);
     expect(ids(root)).toEqual(['a', 'b']);
+  });
+});
+
+describe('widen the last tile', () => {
+  const stue = { id: 'z1', name: 'Stue' };
+  const lamp = (id: string, zone: any = null) => ({ id, name: id, icon: null, zone, caps: { onoff: cap(true), dim: cap(0.5) } });
+  const wide = (root: HTMLElement) =>
+    [...root.querySelectorAll('.lc-tile.wide')].map(t => t.getAttribute('data-device'));
+  const make = (devices: any[], { group = false, on = true } = {}) =>
+    widget(devices, undefined, group, undefined, undefined, on);
+
+  it('is off by default', () => {
+    expect(wide(make([lamp('a'), lamp('b'), lamp('c')], { on: false }).root)).toEqual([]);
+  });
+
+  it('widens only the last of an odd number of tiles', () => {
+    expect(wide(make([lamp('a'), lamp('b'), lamp('c')]).root)).toEqual(['c']);
+    expect(wide(make([lamp('a'), lamp('b')]).root)).toEqual([]);
+    expect(wide(make([lamp('a')]).root)).toEqual(['a']);
+  });
+
+  it('counts a missing device as a tile', () => {
+    expect(wide(make([lamp('a'), lamp('b'), { id: 'c', missing: true }]).root)).toEqual(['c']);
+    expect(wide(make([lamp('a'), { id: 'b', missing: true }]).root)).toEqual([]);
+  });
+
+  it('counts the tiles after grouping by room', () => {
+    expect(wide(make([lamp('a', stue), lamp('b', stue)], { group: true }).root)).toEqual(['zone:z1']);
+    expect(wide(make([lamp('a', stue), lamp('b', stue), lamp('c')], { group: true }).root)).toEqual([]);
+  });
+
+  it('follows a change in the number of tiles', () => {
+    const { w, root } = make([lamp('a'), lamp('b'), lamp('c')]);
+    w.setState([lamp('a'), lamp('b')]);
+    expect(wide(root)).toEqual([]);
+    w.setState([lamp('a')]);
+    expect(wide(root)).toEqual(['a']);
   });
 });
 

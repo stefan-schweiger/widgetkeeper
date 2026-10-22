@@ -372,6 +372,7 @@ const BUILD = {
     return { cols: 3, widgets: [
       w('lights', 'Colour lights · defaults', {}, colour.slice(0, 6)),
       w('lights', 'Grouped by room', { groupByZone: true }, all.slice(0, 20)),
+      w('lights', 'Three lights · last tile widened', { wideLast: true }, all.slice(0, 3)),
       w('lights', 'Warm palette · bar stops at 1 %', { palette: 'warm', barMin: '1' }, colour.slice(6, 10)),
       w('lights', 'Dusk palette', { palette: 'dusk' }, colour.slice(0, 4)),
       w('lights', "Room's Moods · a tile per light", { palette: 'moods' }, inMoodRooms.slice(0, 6)),

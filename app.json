@@ -8657,6 +8657,41 @@
           "value": false
         },
         {
+          "id": "wideLast",
+          "type": "checkbox",
+          "title": {
+            "en": "Widen the last tile",
+            "nl": "Laatste tegel verbreden",
+            "de": "Letzte Kachel verbreitern",
+            "fr": "Élargir la dernière tuile",
+            "it": "Allarga l'ultimo riquadro",
+            "sv": "Bredda sista rutan",
+            "no": "Gjør siste flis bred",
+            "es": "Ensanchar el último mosaico",
+            "da": "Gør sidste felt bredt",
+            "ru": "Растянуть последнюю плитку",
+            "pl": "Poszerz ostatni kafelek",
+            "ko": "마지막 타일 넓게",
+            "ar": "توسيع البلاطة الأخيرة"
+          },
+          "hint": {
+            "en": "With an odd number of tiles, the last one fills the whole row.",
+            "nl": "Bij een oneven aantal tegels vult de laatste de hele rij.",
+            "de": "Bei einer ungeraden Zahl von Kacheln füllt die letzte die ganze Reihe.",
+            "fr": "Avec un nombre impair de tuiles, la dernière occupe toute la ligne.",
+            "it": "Con un numero dispari di riquadri, l'ultimo occupa tutta la riga.",
+            "sv": "Med ett udda antal rutor fyller den sista hela raden.",
+            "no": "Med et oddetall fliser fyller den siste hele raden.",
+            "es": "Con un número impar de mosaicos, el último ocupa toda la fila.",
+            "da": "Med et ulige antal felter fylder det sidste hele rækken.",
+            "ru": "При нечётном числе плиток последняя занимает весь ряд.",
+            "pl": "Przy nieparzystej liczbie kafelków ostatni zajmuje cały rząd.",
+            "ko": "타일 수가 홀수이면 마지막 타일이 한 줄을 모두 차지합니다.",
+            "ar": "مع عدد فردي من البلاطات، تملأ الأخيرة الصف كله."
+          },
+          "value": false
+        },
+        {
           "id": "barMin",
           "type": "dropdown",
           "title": {

@@ -3,7 +3,7 @@
  * goes to the colour chip's tap area). A tap on the tile turns the light on or off; the bar at the bottom
  * sets the brightness (0 = off); lights without brightness (plugs, switches) have no bar. The chip opens a panel of colour and white swatches over the tile's row
  * (with `palette: moods`, the room's Homey Moods in place of the colours): taps only, as Homey's Android app takes
- * any drag. Plain browser JS (served as-is).
+ * any drag. With `wideLast`, the last of an odd number of tiles spans the row. Plain browser JS (served as-is).
  */
 (function () {
   const { el, tileNames, applyColors, KEY_PROBLEMS } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
@@ -100,7 +100,8 @@
    *     hue?: number, saturation?: number}) => Promise<any>,
    *   onMood?: (moodId: string) => Promise<any>,
    *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
-   *   onHeight?: (h: number) => void, groupByZone?: boolean, palette?: string, barMin?: string }} opts
+   *   onHeight?: (h: number) => void, groupByZone?: boolean, wideLast?: boolean, palette?: string,
+   *   barMin?: string }} opts
    */
   function createLightsWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -665,13 +666,15 @@
         if (!ids.has(id)) { tile.tile.remove(); tiles.delete(id); }
       }
       let prev = null;
-      for (const d of items) {
+      for (const [i, d] of items.entries()) {
         const tile = tileFor(d.id);
         // Keeps the settings' order. Only moves a tile that is out of place: moving it would drop
         // the bar's pointer capture during a drag.
         const want = prev ? prev.nextSibling : grid.firstChild;
         if (tile.tile !== want) grid.insertBefore(tile.tile, want);
         prev = tile.tile;
+        // `wideLast`: the last of an odd number of tiles (missing ones too) spans the row.
+        tile.tile.classList.toggle('wide', !!opts.wideLast && items.length % 2 === 1 && i === items.length - 1);
         if (!('members' in d)) {
           tile.tile.classList.add('missing');
           tile.name.textContent = t('unavailable');

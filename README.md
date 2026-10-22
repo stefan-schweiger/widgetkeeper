@@ -223,7 +223,7 @@ A week of one Insights value as a grid of days and hours: numbers such as light 
 
 Six lights in the space of three of Homey's light cards. Tap a tile to switch it, drag or tap the bar to dim, and tap the colour button for colours and whites. Lights in a room can share one tile. The Room's Moods palette puts the room's Homey Moods on the colour button instead of the colours and whites; starting one needs an [API key](#api-key) with **Set Moods**.
 
-**Settings:** lights, group by room, what the bar's far left does, colour palette, [colour style](#colour-style), [rename tiles](#tile-names).
+**Settings:** lights, group by room, widen the last tile, what the bar's far left does, colour palette, [colour style](#colour-style), [rename tiles](#tile-names).
 
 ## Locks and Doors
 <img src="docs/screenshots/locks.png" alt="Locks and Doors on a Homey dashboard" width="358">

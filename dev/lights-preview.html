@@ -22,6 +22,7 @@
   <div class="col"><span>358 px · light</span><div class="dash light" style="width:358px"><div id="w2"></div></div></div>
   <div class="col"><span>300 px · dark</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
   <div class="col"><span>358 px · grouped by room</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · grouped, last tile widened</span><div class="dash homey-dark-mode" style="width:358px"><div id="w9"></div></div></div>
   <div class="col"><span>358 px · room's Moods · dark</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
   <div class="col"><span>358 px · room's Moods · light</span><div class="dash light" style="width:358px"><div id="w7"></div></div></div>
   <div class="col"><span>300 px · room's Moods, grouped</span><div class="dash homey-dark-mode" style="width:300px"><div id="w8"></div></div></div>
@@ -65,7 +66,8 @@
     const roomMoods = moods.map(({ devices, ...m }) => ({ ...m, colors: moodColors({ devices }) }));
 
     // Simulates the device: the change is reported back after a moment.
-    function mount(id, groupByZone = false, palette = new URLSearchParams(location.search).get('palette') || undefined) {
+    // `only`: the ids of the lights to show (all by default).
+    function mount(id, groupByZone = false, palette = new URLSearchParams(location.search).get('palette') || undefined, { wideLast = false, only = null } = {}) {
       let w;
       const onSet = (deviceId, change) => new Promise((resolve) => setTimeout(() => {
         // A group's lights report the group's change too.
@@ -86,12 +88,13 @@
         resolve();
       }, 400));
       // ?palette=warm|dusk|moods
-      w = createLightsWidget(document.getElementById(id), { t: devT, onSet, onMood, groupByZone, palette });
-      w.setState(lights());
+      w = createLightsWidget(document.getElementById(id), { t: devT, onSet, onMood, groupByZone, palette, wideLast });
+      w.setState(lights().filter(d => !only || only.includes(d.id)));
       if (palette === 'moods') w.setMoods(roomMoods);
     }
     for (const id of ['w1', 'w2', 'w3']) mount(id);
     mount('w5', true);
+    mount('w9', true, undefined, { wideLast: true, only: ['a', 'd', 'b', 'c', 'e'] });
     mount('w6', false, 'moods');
     mount('w7', false, 'moods');
     mount('w8', true, 'moods');

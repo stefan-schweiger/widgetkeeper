@@ -50,6 +50,8 @@ html, body { background: transparent !important; }
   box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
 }
 .lc-tile.pressing { transform: scale(.97); }
+/* `wideLast`: the last of an odd number of tiles spans the row. */
+.lc-tile.wide { grid-column: 1 / -1; }
 .lc-tile.missing { cursor: default; }
 .lc-tile.missing > * { opacity: .5; }
 .lc-tile.missing .lc-bar, .lc-tile.no-dim .lc-bar { visibility: hidden; }

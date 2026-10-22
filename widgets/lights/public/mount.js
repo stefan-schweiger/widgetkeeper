@@ -23,6 +23,7 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
     renameTiles: settings.renameTiles === true,
     onRename: (key, name) => tileNames.rename(key, name),
     groupByZone: settings.groupByZone === true,
+    wideLast: settings.wideLast === true,
     palette: settings.palette,
     barMin: settings.barMin,
     onSet: (deviceId, change) => Homey.api('POST', '/set', { deviceId, ...change }),

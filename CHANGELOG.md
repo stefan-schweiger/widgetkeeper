@@ -2,6 +2,11 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 1.0.3
+
+### Light Controls
+- **Widen the last tile:** with an odd number of tiles, the last one fills the row, such as a room's lights grouped into one tile.
+
 ## 1.0.2
 
 ### Thermostat Presets
