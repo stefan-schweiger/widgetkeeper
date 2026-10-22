@@ -13,6 +13,7 @@ import LightService from './lib/LightService.js';
 import LockService from './lib/LockService.js';
 import MediaService from './lib/MediaService.js';
 import PersonalApiKey from './lib/PersonalApiKey.js';
+import PollenService from './lib/PollenService.js';
 import QuickActionService from './lib/QuickActionService.js';
 import RoomHealthService from './lib/RoomHealthService.js';
 import ValueMatrixService from './lib/ValueMatrixService.js';
@@ -40,6 +41,7 @@ export default class WidgetkeeperApp extends Homey.App {
   roomHealth!: RoomHealthService;
   valueMatrix!: ValueMatrixService;
   weather!: WeatherService;
+  pollen!: PollenService;
   heatmap!: HeatmapService;
   cameras!: CameraService;
   values!: ValueService;
@@ -84,6 +86,8 @@ export default class WidgetkeeperApp extends Homey.App {
     this.valueMatrix.start();
     this.weather = new WeatherService(this.homey, log, debug);
     this.weather.start();
+    this.pollen = new PollenService(this.homey, log, debug);
+    this.pollen.start();
     this.heatmap = new HeatmapService(this.homey, log, debug);
     this.heatmap.start();
     this.cameras = new CameraService(this.homey, log, debug);
@@ -161,6 +165,7 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.roomHealth?.stop();
     await this.valueMatrix?.stop();
     await this.weather?.stop();
+    await this.pollen?.stop();
     await this.heatmap?.stop();
     await this.cameras?.stop();
     await this.values?.stop();

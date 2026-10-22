@@ -4,6 +4,10 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ## 1.1.0
 
+### New: Pollen and UV
+- Today's pollen at your Homey's location, a row per type with a bar from low to very high, and the day's UV peak and when it comes. Pick any of alder, birch, olive, grass, mugwort and ragweed.
+- Detailed adds the grains per m³ and the next three days. Pollen forecasts cover Europe; elsewhere it shows the UV only.
+
 ### New: Web Page
 - Any web page on the dashboard, drawn at the width and height you set and scaled to fill the widget at any size, so a page made in a fixed size has no white borders on a phone and isn't cut off on a tablet.
 - Links never open, and taps are ignored unless you let the page be tapped, so a swipe still scrolls the dashboard.

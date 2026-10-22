@@ -1139,6 +1139,24 @@
                 }
               },
               {
+                "id": "pollen",
+                "title": {
+                  "en": "Pollen and UV",
+                  "nl": "Pollen en uv",
+                  "de": "Pollen und UV",
+                  "fr": "Pollen et UV",
+                  "it": "Pollini e UV",
+                  "sv": "Pollen och UV",
+                  "no": "Pollen og UV",
+                  "es": "Polen y UV",
+                  "da": "Pollen og UV",
+                  "ru": "Пыльца и УФ",
+                  "pl": "Pyłki i UV",
+                  "ko": "꽃가루와 자외선",
+                  "ar": "حبوب اللقاح والأشعة فوق البنفسجية"
+                }
+              },
+              {
                 "id": "heatmap",
                 "title": {
                   "en": "Insights Heatmap",
@@ -10456,6 +10474,426 @@
         }
       },
       "id": "media"
+    },
+    "pollen": {
+      "name": {
+        "en": "Pollen and UV",
+        "nl": "Pollen en uv",
+        "de": "Pollen und UV",
+        "fr": "Pollen et UV",
+        "it": "Pollini e UV",
+        "sv": "Pollen och UV",
+        "no": "Pollen og UV",
+        "es": "Polen y UV",
+        "da": "Pollen og UV",
+        "ru": "Пыльца и УФ",
+        "pl": "Pyłki i UV",
+        "ko": "꽃가루와 자외선",
+        "ar": "حبوب اللقاح والأشعة فوق البنفسجية"
+      },
+      "height": 170,
+      "transparent": false,
+      "settings": [
+        {
+          "id": "density",
+          "type": "dropdown",
+          "title": {
+            "en": "Layout",
+            "nl": "Indeling",
+            "de": "Darstellung",
+            "fr": "Affichage",
+            "it": "Layout",
+            "sv": "Layout",
+            "no": "Oppsett",
+            "es": "Diseño",
+            "da": "Layout",
+            "ru": "Вид",
+            "pl": "Układ",
+            "ko": "레이아웃",
+            "ar": "التخطيط"
+          },
+          "hint": {
+            "en": "Detailed adds the grains per m³ and the next three days.",
+            "nl": "Gedetailleerd voegt de korrels per m³ en de komende drie dagen toe.",
+            "de": "Ausführlich zeigt zusätzlich die Pollen pro m³ und die nächsten drei Tage.",
+            "fr": "Détaillé ajoute les grains par m³ et les trois jours suivants.",
+            "it": "Dettagliato aggiunge i granuli per m³ e i prossimi tre giorni.",
+            "sv": "Detaljerad lägger till pollenkorn per m³ och de kommande tre dagarna.",
+            "no": "Detaljert legger til pollenkorn per m³ og de neste tre dagene.",
+            "es": "Detallado añade los granos por m³ y los próximos tres días.",
+            "da": "Detaljeret tilføjer pollenkorn pr. m³ og de næste tre dage.",
+            "ru": "Подробный добавляет зёрна на м³ и следующие три дня.",
+            "pl": "Szczegółowy dodaje ziarna na m³ i kolejne trzy dni.",
+            "ko": "자세히는 m³당 꽃가루 수와 앞으로 사흘을 더합니다.",
+            "ar": "المفصل يضيف عدد الحبوب لكل م³ والأيام الثلاثة القادمة."
+          },
+          "value": "compact",
+          "values": [
+            {
+              "id": "compact",
+              "title": {
+                "en": "Compact",
+                "nl": "Compact",
+                "de": "Kompakt",
+                "fr": "Compact",
+                "it": "Compatto",
+                "sv": "Kompakt",
+                "no": "Kompakt",
+                "es": "Compacto",
+                "da": "Kompakt",
+                "ru": "Компактный",
+                "pl": "Kompaktowy",
+                "ko": "간단히",
+                "ar": "مضغوط"
+              }
+            },
+            {
+              "id": "detailed",
+              "title": {
+                "en": "Detailed",
+                "nl": "Gedetailleerd",
+                "de": "Ausführlich",
+                "fr": "Détaillé",
+                "it": "Dettagliato",
+                "sv": "Detaljerad",
+                "no": "Detaljert",
+                "es": "Detallado",
+                "da": "Detaljeret",
+                "ru": "Подробный",
+                "pl": "Szczegółowy",
+                "ko": "자세히",
+                "ar": "مفصل"
+              }
+            }
+          ]
+        },
+        {
+          "id": "showUv",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Show the UV index",
+            "nl": "Uv-index tonen",
+            "de": "UV-Index zeigen",
+            "fr": "Afficher l'indice UV",
+            "it": "Mostra l'indice UV",
+            "sv": "Visa UV-index",
+            "no": "Vis UV-indeks",
+            "es": "Mostrar el índice UV",
+            "da": "Vis UV-indeks",
+            "ru": "Показывать УФ-индекс",
+            "pl": "Pokaż indeks UV",
+            "ko": "자외선 지수 표시",
+            "ar": "إظهار مؤشر الأشعة فوق البنفسجية"
+          }
+        },
+        {
+          "id": "showAlder",
+          "type": "checkbox",
+          "value": false,
+          "title": {
+            "en": "Pollen: alder",
+            "nl": "Pollen: els",
+            "de": "Pollen: Erle",
+            "fr": "Pollens : aulne",
+            "it": "Pollini: ontano",
+            "sv": "Pollen: al",
+            "no": "Pollen: or",
+            "es": "Polen: aliso",
+            "da": "Pollen: el",
+            "ru": "Пыльца: ольха",
+            "pl": "Pyłki: olsza",
+            "ko": "꽃가루: 오리나무",
+            "ar": "حبوب اللقاح: جار الماء"
+          },
+          "hint": {
+            "en": "Which pollen to show. Open-Meteo forecasts these six, for Europe only.",
+            "nl": "Welke pollen te tonen. Open-Meteo voorspelt deze zes, alleen voor Europa.",
+            "de": "Welche Pollen gezeigt werden. Open-Meteo sagt diese sechs vorher, nur für Europa.",
+            "fr": "Les pollens à afficher. Open-Meteo prévoit ces six, pour l'Europe seulement.",
+            "it": "Quali pollini mostrare. Open-Meteo prevede questi sei, solo per l'Europa.",
+            "sv": "Vilka pollen som visas. Open-Meteo förutsäger dessa sex, bara för Europa.",
+            "no": "Hvilke pollen som vises. Open-Meteo varsler disse seks, bare for Europa.",
+            "es": "Qué pólenes mostrar. Open-Meteo pronostica estos seis, solo para Europa.",
+            "da": "Hvilke pollen der vises. Open-Meteo varsler disse seks, kun for Europa.",
+            "ru": "Какую пыльцу показывать. Open-Meteo прогнозирует эти шесть, только для Европы.",
+            "pl": "Które pyłki pokazywać. Open-Meteo prognozuje tych sześć, tylko dla Europy.",
+            "ko": "표시할 꽃가루입니다. Open-Meteo는 유럽에 한해 이 여섯 가지를 예보합니다.",
+            "ar": "حبوب اللقاح التي تُعرض. يتنبأ Open-Meteo بهذه الستة، لأوروبا فقط."
+          }
+        },
+        {
+          "id": "showBirch",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "  – Birch",
+            "nl": "  – Berk",
+            "de": "  – Birke",
+            "fr": "  – Bouleau",
+            "it": "  – Betulla",
+            "sv": "  – Björk",
+            "no": "  – Bjørk",
+            "es": "  – Abedul",
+            "da": "  – Birk",
+            "ru": "  – Берёза",
+            "pl": "  – Brzoza",
+            "ko": "  – 자작나무",
+            "ar": "  – البتولا"
+          }
+        },
+        {
+          "id": "showOlive",
+          "type": "checkbox",
+          "value": false,
+          "title": {
+            "en": "  – Olive",
+            "nl": "  – Olijf",
+            "de": "  – Olive",
+            "fr": "  – Olivier",
+            "it": "  – Olivo",
+            "sv": "  – Oliv",
+            "no": "  – Oliven",
+            "es": "  – Olivo",
+            "da": "  – Oliven",
+            "ru": "  – Олива",
+            "pl": "  – Oliwka",
+            "ko": "  – 올리브",
+            "ar": "  – الزيتون"
+          }
+        },
+        {
+          "id": "showGrass",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "  – Grass",
+            "nl": "  – Gras",
+            "de": "  – Gräser",
+            "fr": "  – Graminées",
+            "it": "  – Graminacee",
+            "sv": "  – Gräs",
+            "no": "  – Gress",
+            "es": "  – Gramíneas",
+            "da": "  – Græs",
+            "ru": "  – Злаки",
+            "pl": "  – Trawy",
+            "ko": "  – 풀",
+            "ar": "  – الحشائش"
+          }
+        },
+        {
+          "id": "showMugwort",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "  – Mugwort",
+            "nl": "  – Bijvoet",
+            "de": "  – Beifuß",
+            "fr": "  – Armoise",
+            "it": "  – Artemisia",
+            "sv": "  – Gråbo",
+            "no": "  – Burot",
+            "es": "  – Artemisa",
+            "da": "  – Bynke",
+            "ru": "  – Полынь",
+            "pl": "  – Bylica",
+            "ko": "  – 쑥",
+            "ar": "  – الشيح"
+          }
+        },
+        {
+          "id": "showRagweed",
+          "type": "checkbox",
+          "value": false,
+          "title": {
+            "en": "  – Ragweed",
+            "nl": "  – Ambrosia",
+            "de": "  – Ambrosia",
+            "fr": "  – Ambroisie",
+            "it": "  – Ambrosia",
+            "sv": "  – Ambrosia",
+            "no": "  – Ambrosia",
+            "es": "  – Ambrosía",
+            "da": "  – Ambrosie",
+            "ru": "  – Амброзия",
+            "pl": "  – Ambrozja",
+            "ko": "  – 돼지풀",
+            "ar": "  – الأمبروسيا"
+          }
+        },
+        {
+          "id": "colorStyle",
+          "type": "dropdown",
+          "title": {
+            "en": "Colour style",
+            "nl": "Kleurstijl",
+            "de": "Farbstil",
+            "fr": "Style de couleur",
+            "it": "Stile colori",
+            "sv": "Färgstil",
+            "no": "Fargestil",
+            "es": "Estilo de color",
+            "da": "Farvestil",
+            "ru": "Цветовой стиль",
+            "pl": "Styl kolorów",
+            "ko": "색상 스타일",
+            "ar": "نمط الألوان"
+          },
+          "hint": {
+            "en": "Vivid shows the colours bright and at full strength.",
+            "nl": "Levendig toont de kleuren fel en op volle sterkte.",
+            "de": "Kräftig zeigt die Farben kräftig und in voller Stärke.",
+            "fr": "Vives affiche les couleurs vives, à pleine intensité.",
+            "it": "Vivaci mostra i colori vivaci e a piena intensità.",
+            "sv": "Livfulla visar färgerna klara och i full styrka.",
+            "no": "Livlige viser fargene klare og med full styrke.",
+            "es": "Vivos muestra los colores vivos y con toda su intensidad.",
+            "da": "Livlige viser farverne klare og i fuld styrke.",
+            "ru": "«Яркие» показывают цвета ярко и в полную силу.",
+            "pl": "Żywe pokazują kolory jaskrawo i w pełnej mocy.",
+            "ko": "선명하게는 색을 선명하고 진하게 표시합니다.",
+            "ar": "«زاهية» تعرض الألوان زاهية وبكامل قوتها."
+          },
+          "value": "soft",
+          "values": [
+            {
+              "id": "soft",
+              "title": {
+                "en": "Muted",
+                "nl": "Gedempt",
+                "de": "Gedämpft",
+                "fr": "Atténuées",
+                "it": "Smorzati",
+                "sv": "Dämpade",
+                "no": "Dempede",
+                "es": "Suaves",
+                "da": "Dæmpede",
+                "ru": "Приглушённые",
+                "pl": "Stonowane",
+                "ko": "차분하게",
+                "ar": "هادئة"
+              }
+            },
+            {
+              "id": "deep",
+              "title": {
+                "en": "Vivid",
+                "nl": "Levendig",
+                "de": "Kräftig",
+                "fr": "Vives",
+                "it": "Vivaci",
+                "sv": "Livfulla",
+                "no": "Livlige",
+                "es": "Vivos",
+                "da": "Livlige",
+                "ru": "Яркие",
+                "pl": "Żywe",
+                "ko": "선명하게",
+                "ar": "زاهية"
+              }
+            }
+          ]
+        },
+        {
+          "id": "timeFormat",
+          "type": "dropdown",
+          "title": {
+            "en": "Time format",
+            "nl": "Tijdnotatie",
+            "de": "Zeitformat",
+            "fr": "Format de l'heure",
+            "it": "Formato ora",
+            "sv": "Tidsformat",
+            "no": "Tidsformat",
+            "es": "Formato de hora",
+            "da": "Tidsformat",
+            "ru": "Формат времени",
+            "pl": "Format godziny",
+            "ko": "시간 형식",
+            "ar": "تنسيق الوقت"
+          },
+          "hint": {
+            "en": "Automatic follows the language of the phone or browser that shows it.",
+            "nl": "Automatisch volgt de taal van de telefoon of browser waarop het wordt getoond.",
+            "de": "Automatisch folgt der Sprache des Telefons oder Browsers, auf dem es angezeigt wird.",
+            "fr": "Automatique suit la langue du téléphone ou du navigateur qui l'affiche.",
+            "it": "Automatico segue la lingua del telefono o del browser che lo mostra.",
+            "sv": "Automatiskt följer språket i telefonen eller webbläsaren som visar den.",
+            "no": "Automatisk følger språket på telefonen eller nettleseren som viser den.",
+            "es": "Automático sigue el idioma del teléfono o del navegador que lo muestra.",
+            "da": "Automatisk følger sproget på telefonen eller browseren, der viser den.",
+            "ru": "«Автоматически» следует языку телефона или браузера, на котором он показан.",
+            "pl": "Automatycznie: według języka telefonu lub przeglądarki, która go wyświetla.",
+            "ko": "자동은 표시하는 휴대폰이나 브라우저의 언어를 따릅니다.",
+            "ar": "«تلقائي» يتبع لغة الهاتف أو المتصفح الذي يعرضه."
+          },
+          "value": "auto",
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Automatic",
+                "nl": "Automatisch",
+                "de": "Automatisch",
+                "fr": "Automatique",
+                "it": "Automatico",
+                "sv": "Automatiskt",
+                "no": "Automatisk",
+                "es": "Automático",
+                "da": "Automatisk",
+                "ru": "Автоматически",
+                "pl": "Automatycznie",
+                "ko": "자동",
+                "ar": "تلقائي"
+              }
+            },
+            {
+              "id": "24",
+              "title": {
+                "en": "24-hour",
+                "nl": "24-uurs",
+                "de": "24 Stunden",
+                "fr": "24 heures",
+                "it": "24 ore",
+                "sv": "24 timmar",
+                "no": "24 timer",
+                "es": "24 horas",
+                "da": "24 timer",
+                "ru": "24 часа",
+                "pl": "24-godzinny",
+                "ko": "24시간",
+                "ar": "24 ساعة"
+              }
+            },
+            {
+              "id": "12",
+              "title": {
+                "en": "12-hour",
+                "nl": "12-uurs",
+                "de": "12 Stunden",
+                "fr": "12 heures",
+                "it": "12 ore",
+                "sv": "12 timmar",
+                "no": "12 timer",
+                "es": "12 horas",
+                "da": "12 timer",
+                "ru": "12 часов",
+                "pl": "12-godzinny",
+                "ko": "12시간",
+                "ar": "12 ساعة"
+              }
+            }
+          ]
+        }
+      ],
+      "api": {
+        "getPollen": {
+          "method": "GET",
+          "path": "/pollen"
+        }
+      },
+      "id": "pollen"
     },
     "price": {
       "name": {

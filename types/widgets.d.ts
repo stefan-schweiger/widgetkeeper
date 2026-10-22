@@ -33,6 +33,8 @@ interface Window {
   valueMatrixRows: (devices: object[], mode?: string) => { key: string, name?: string, missing?: true, devices: object[], values: Record<string, number | null> }[];
   roomHealthRooms: (devices: object[]) => { key: string, name?: string, missing?: true, sensors: object[], values: Record<string, number | null> }[];
   createWeatherWidget: (root: HTMLElement, opts?: object) => any;
+  createPollenWidget: (root: HTMLElement, opts?: object) => any;
+  pollenTypes: (settings: Record<string, unknown>) => string[];
   createCamerasWidget: (root: HTMLElement, opts?: object) => any;
   createHeatmapWidget: (root: HTMLElement, opts?: object) => any;
   createValuesWidget: (root: HTMLElement, opts?: object) => any;
@@ -135,6 +137,7 @@ interface Window {
   mountVariablesWidget: MountWidget;
   mountVarPresetsWidget: MountWidget;
   mountWeatherWidget: MountWidget;
+  mountPollenWidget: MountWidget;
   mountStackWidget: MountWidget;
   createStackWidget: (root: HTMLElement, opts?: object) => any;
   createStackAttentionWatcher: (pages: any[], io: object) => { refresh: () => Promise<unknown>, attention: (id: string) => boolean };

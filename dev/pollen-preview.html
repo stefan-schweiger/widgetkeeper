@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pollen and UV widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/spacer/public/kit.css">
+  <link rel="stylesheet" href="../widgets/pollen/public/widget.css">
+  <script src="../widgets/spacer/public/kit.js"></script>
+  <script src="../widgets/pollen/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <link rel="stylesheet" href="preview.css">
+  <style>
+    /* Homey's widget frame: 16px padding inside the dashboard tile. */
+    .frame { padding: 16px; box-sizing: border-box; }
+    .light { background: #FFFFFF; border-radius: 10px; --homey-line-color-light: #E4E5E9; }
+  </style>
+</head>
+<body>
+  <script>
+    // Made-up data: Monday 15 June 2026 in Copenhagen, the tail of the birch season and grass high. ?lang=de translates.
+    const day = (date, values, uv, uvHour) => ({
+      date,
+      pollen: Object.fromEntries(Object.entries(values).map(([type, v]) => [type, v == null ? null : { value: v, level: LEVEL(type, v) }])),
+      uv: { max: uv, level: uv < 2.5 ? 1 : uv < 5.5 ? 2 : uv < 7.5 ? 3 : uv < 10.5 ? 4 : 5, at: Date.parse(`${date}T${String(uvHour - 2).padStart(2, '0')}:00:00Z`) },
+    });
+    // lib/pollenLevels.ts's bands.
+    const LEVEL = (type, v) => (['alder', 'birch', 'olive'].includes(type) ? [1, 30, 101, 1001] : [1, 10, 51, 251]).filter(b => Math.round(v) >= b).length;
+    const JUNE = {
+      language: 'en', outside: false, uvNow: 3,
+      days: [
+        day('2026-06-15', { alder: 0, birch: 4, olive: 0, grass: 64, mugwort: 0, ragweed: 0 }, 6.1, 13),
+        day('2026-06-16', { alder: 0, birch: 2, olive: 0, grass: 38, mugwort: 0, ragweed: 0 }, 4.8, 13),
+        day('2026-06-17', { alder: 0, birch: 1, olive: 0, grass: 120, mugwort: 3, ragweed: 0 }, 7.2, 14),
+        day('2026-06-18', { alder: 0, birch: 0, olive: 0, grass: 22, mugwort: 12, ragweed: 0 }, 3.9, 13),
+      ],
+    };
+    // Every level once, for the colours: alder none … ragweed very high, and UV extreme.
+    const ALL = { ...JUNE, days: [day('2026-07-20', { alder: 0, birch: 12, olive: 64, grass: 120, mugwort: 300, ragweed: 30 }, 11.4, 14), ...JUNE.days.slice(1)] };
+    const OUTSIDE = { ...JUNE, outside: true, days: JUNE.days.map(d => ({ ...d, pollen: Object.fromEntries(Object.keys(d.pollen).map(k => [k, null])) })) };
+    const SEASON = { ...JUNE, days: JUNE.days.map(d => ({ ...d, uv: { ...d.uv, max: 1.4, level: 1 }, pollen: Object.fromEntries(Object.keys(d.pollen).map(k => [k, { value: 0, level: 0 }])) })) };
+    const SIX = ['alder', 'birch', 'olive', 'grass', 'mugwort', 'ragweed'];
+    const cases = [
+      ['358 px · dark · compact', 358, 'dark', {}, JUNE],
+      ['358 px · light · compact', 358, 'light', {}, JUNE],
+      ['300 px · dark · compact', 300, 'dark', {}, JUNE],
+      ['358 px · dark · detailed', 358, 'dark', { density: 'detailed' }, JUNE],
+      ['358 px · light · detailed', 358, 'light', { density: 'detailed' }, JUNE],
+      ['300 px · dark · detailed · all six', 300, 'dark', { density: 'detailed', types: SIX }, JUNE],
+      ['358 px · dark · every level · Muted', 358, 'dark', { types: SIX }, ALL],
+      ['358 px · dark · every level · Vivid', 358, 'dark', { types: SIX, colorStyle: 'deep' }, ALL],
+      ['358 px · light · every level · Vivid', 358, 'light', { types: SIX, colorStyle: 'deep', density: 'detailed' }, ALL],
+      ['358 px · dark · 12-hour · no UV', 358, 'dark', { timeFormat: '12', showUv: false }, JUNE],
+      ['358 px · dark · UV only', 358, 'dark', { types: [] }, JUNE],
+      ['358 px · dark · outside Europe', 358, 'dark', {}, OUTSIDE],
+      ['358 px · light · out of season', 358, 'light', {}, SEASON],
+      ['358 px · dark · no location', 358, 'dark', {}, { noLocation: true, language: 'en' }],
+      ['358 px · dark · nothing chosen', 358, 'dark', { types: [], showUv: false }, JUNE],
+    ];
+    for (const [label, width, theme, opts, data] of cases) {
+      const col = document.createElement('div');
+      col.className = 'col';
+      col.innerHTML = `<span>${label}</span>`;
+      const frame = document.createElement('div');
+      frame.className = theme === 'dark' ? 'frame pw-frame homey-dark-mode' : 'frame light';
+      frame.style.width = `${width}px`;
+      const root = document.createElement('div');
+      frame.appendChild(root);
+      col.appendChild(frame);
+      document.body.appendChild(col);
+      createPollenWidget(root, { t: devT, timeFormat: '24', ...opts }).setData(data);
+    }
+  </script>
+</body>
+</html>

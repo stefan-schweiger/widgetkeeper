@@ -158,6 +158,7 @@
       roomhealth: "Each room's temperature, humidity and air at a glance, yellow to red when one is off.",
       valuematrix: 'Devices or rooms against chosen values, green, orange or red by their range.',
       weather: 'The next 36 hours, hour by hour.',
+      pollen: "Today's pollen and the UV peak, for Europe.",
       heatmap: 'A week of any value as a weekday × hour heatmap.',
       cameras: 'Camera snapshots, with live video on a tap.',
       values: 'Any device value as a compact tile.',
