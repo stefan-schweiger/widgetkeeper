@@ -14,6 +14,9 @@ import LockService from './lib/LockService.js';
 import MediaService from './lib/MediaService.js';
 import PersonalApiKey from './lib/PersonalApiKey.js';
 import PollenService from './lib/PollenService.js';
+import PopupService, {
+  POPUP_ASK_CARD, POPUP_ASK_IMAGE_CARD, POPUP_CLOSE_CARD, POPUP_SHOW_CARD, POPUP_SHOW_IMAGE_CARD,
+} from './lib/PopupService.js';
 import QuickActionService from './lib/QuickActionService.js';
 import RoomHealthService from './lib/RoomHealthService.js';
 import ValueMatrixService from './lib/ValueMatrixService.js';
@@ -62,6 +65,8 @@ export default class WidgetkeeperApp extends Homey.App {
   web!: WebDashboardService;
   /** The web dashboards' optional password and the browsers signed in with it. */
   webPassword!: WebPassword;
+  /** Messages and Yes/No questions that Flows show on web dashboards and Popups widgets. */
+  popups!: PopupService;
   /** The user's personal API key, shared by Variables, Flow Buttons, Media and the Smart Stack (the app's token may only read). */
   apiKey!: PersonalApiKey;
 
@@ -122,6 +127,8 @@ export default class WidgetkeeperApp extends Homey.App {
     this.web = new WebDashboardService(this.homey, log, widgetAutocompletes(this), this.tileNames);
     this.adoptOldTileNames();
     this.webPassword = new WebPassword(this.homey, log);
+    this.popups = new PopupService(this.homey, { cameras: this.cameras, web: this.web }, log, debug);
+    this.registerPopupFlows();
     this.registerAutocompletes();
     this.debug('Widgetkeeper has been initialized');
   }
@@ -177,6 +184,7 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.locks?.stop();
     await this.curtains?.stop();
     await this.media?.stop();
+    this.popups?.stop();
   }
 
   /** Every widget's autocomplete settings (`lib/widgetAutocompletes.ts`, which the web dashboards' editor uses too). */
@@ -249,6 +257,43 @@ export default class WidgetkeeperApp extends Homey.App {
     const isOverdue = this.homey.flow.getConditionCard(DAYS_SINCE_IS_OVERDUE_CARD);
     isOverdue.registerArgumentAutocompleteListener('counter', list(true));
     isOverdue.registerRunListener(async (args: Args) => this.daysSince.isOverdue(args.counter));
+  }
+
+  /**
+   * The Popups cards: *Show …* and *Ask …* (with a camera or an address as the picture, or an image tag dropped on the
+   * `_image` ones; *Ask* waits for the answer and hands it back as tags), and *Close the popups on …*.
+   */
+  private registerPopupFlows() {
+    type Screen = { screen?: { id?: string } };
+    type Shown = Screen & { text: string, duration: number, unit: string };
+    type Asked = Screen & { question: string, seconds: number };
+    const screens = async (query: string) => this.popups.targetItems(query);
+    const pictures = async (query: string) => this.popups.pictureItems(query);
+    const seconds = (args: Shown) => args.duration * (args.unit === 'minutes' ? 60 : 1);
+    for (const id of [POPUP_SHOW_CARD, POPUP_ASK_CARD, POPUP_SHOW_IMAGE_CARD, POPUP_ASK_IMAGE_CARD, POPUP_CLOSE_CARD]) {
+      this.homey.flow.getActionCard(id).registerArgumentAutocompleteListener('screen', screens);
+    }
+    for (const id of [POPUP_SHOW_CARD, POPUP_ASK_CARD]) {
+      this.homey.flow.getActionCard(id).registerArgumentAutocompleteListener('picture', pictures);
+    }
+    this.homey.flow.getActionCard(POPUP_SHOW_CARD)
+      .registerRunListener(async (args: Shown & { picture?: { id?: string } }) => this.popups.show({
+        target: args.screen?.id, text: args.text, seconds: seconds(args), picture: PopupService.pictureArg(args.picture),
+      }));
+    this.homey.flow.getActionCard(POPUP_SHOW_IMAGE_CARD)
+      .registerRunListener(async (args: Shown & { droptoken?: unknown }) => this.popups.show({
+        target: args.screen?.id, text: args.text, seconds: seconds(args), picture: PopupService.droptokenArg(args.droptoken),
+      }));
+    this.homey.flow.getActionCard(POPUP_ASK_CARD)
+      .registerRunListener(async (args: Asked & { picture?: { id?: string } }) => this.popups.ask({
+        target: args.screen?.id, text: args.question, seconds: args.seconds, picture: PopupService.pictureArg(args.picture),
+      }));
+    this.homey.flow.getActionCard(POPUP_ASK_IMAGE_CARD)
+      .registerRunListener(async (args: Asked & { droptoken?: unknown }) => this.popups.ask({
+        target: args.screen?.id, text: args.question, seconds: args.seconds, picture: PopupService.droptokenArg(args.droptoken),
+      }));
+    this.homey.flow.getActionCard(POPUP_CLOSE_CARD)
+      .registerRunListener(async (args: Screen) => this.popups.close(args.screen?.id));
   }
 
   /** The trigger *… became overdue*: the counter's name and its days since the reset; `state` picks the Flows of that counter. */

@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
 import WebDashboardService, { WEB_ENABLED_SETTING } from '../lib/WebDashboardService.js';
 import WebPassword, { WEB_PASSWORD_SETTING, WEB_SESSIONS_SETTING } from '../lib/WebPassword.js';
+import PopupService from '../lib/PopupService.js';
 import api from '../api.js';
 
 vi.mock('homey-api', () => homeyApiMock);
@@ -16,7 +17,7 @@ function setup({ enabled = true, now = () => Date.now() } = {}) {
   const log = vi.fn();
   const web = new WebDashboardService(homey, log, {});
   const password = new WebPassword(homey, log, now);
-  homey.app = { web, webPassword: password, log, debug: vi.fn() };
+  homey.app = { web, webPassword: password, popups: new PopupService(homey, { cameras: {} as any, web }, log), log, debug: vi.fn() };
   homey.cloud = { getHomeyId: async () => 'homey-id' };
   return { homey, web, password, log };
 }

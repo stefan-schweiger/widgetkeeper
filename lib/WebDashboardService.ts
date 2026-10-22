@@ -33,6 +33,8 @@ const MAX_DEVICES = 100; // per widget
 const MAX_TEXT = 2000;
 const MAX_FOREIGN_SETTINGS = 60; // per widget of another app
 const ID = /^[A-Za-z0-9_-]{1,40}$/;
+/** Widgets the editor doesn't offer: Popups only opens Homey's in-app browser, and the page draws popups itself. */
+const NOT_ON_WEB = new Set(['popups']);
 /** Another app's widget type: its id on Homey's dashboards (`homey:app:<appId>:<widgetId>`). */
 const FOREIGN = /^homey:app:([A-Za-z0-9._-]{1,100}):([A-Za-z0-9_-]{1,60})$/;
 
@@ -484,7 +486,7 @@ export default class WebDashboardService {
 
   /** Every widget type, in the manifest's order, with its settings in Homey's language. */
   widgetTypes(language = this.homey.i18n.getLanguage()): WebWidgetType[] {
-    return Object.entries(this.manifestWidgets).map(([type, w]) => {
+    return Object.entries(this.manifestWidgets).filter(([type]) => !NOT_ON_WEB.has(type)).map(([type, w]) => {
       const settings = Array.isArray(w.settings) ? w.settings : [];
       const { sections, labels } = settingSections(settings, language);
       return {
@@ -576,7 +578,12 @@ export default class WebDashboardService {
 
   /** Dashboard Shortcuts' `dashboardN` autocomplete: `None`, then every web dashboard by name, with its widget count. */
   dashboardItems(query: string): AutocompleteItem[] {
-    const items = this.list()
+    return withNone(this.homey.__('shortcuts.none') || 'None', query, this.dashboardList(query));
+  }
+
+  /** Every web dashboard matching the query, by name, with its widget count (also the Popups cards' screens). */
+  dashboardList(query: string): AutocompleteItem[] {
+    return this.list()
       .map((d) => {
         const name = d.name || this.homey.__('web.untitled') || 'Untitled';
         const count = d.columns.reduce((n, c) => n + c.length, 0);
@@ -584,7 +591,6 @@ export default class WebDashboardService {
       })
       .filter(i => matches(query, i.name))
       .sort((a, b) => a.name.localeCompare(b.name));
-    return withNone(this.homey.__('shortcuts.none') || 'None', query, items);
   }
 
   /** The app's strings (`locales/<lang>.json`) in Homey's language, as Homey gives a widget frame (`Homey.__`). */

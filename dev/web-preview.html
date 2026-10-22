@@ -76,7 +76,21 @@
         { id: 'new', name: 'Spare room', theme: 'auto', columns: [[], [], []] },
       ];
 
-      mockWebApi({ lang, dashboards, zones, devices, readings: READINGS });
+      // `?popup=message|ask|picture|camera|elsewhere`: a Flow's popup on everywhere, open for 10 min (wk-084).
+      const kind = new URLSearchParams(location.search).get('popup');
+      const POPUPS = {
+        message: { kind: 'message', text: 'Dinner is ready', picture: null },
+        ask: { kind: 'ask', text: 'Open the garage door?', picture: null },
+        picture: { kind: 'message', text: 'Someone is at the front door', picture: { source: 'stored' } },
+        camera: { kind: 'ask', text: 'Someone is at the front door. Unlock it?', picture: { source: 'camera' } },
+        elsewhere: { kind: 'ask', text: 'Turn off the lights downstairs?', picture: null, elsewhere: true },
+      };
+      const now = Date.now();
+      const popups = POPUPS[kind]
+        ? [Object.assign({ id: 'p1', token: 'preview', target: 'all', createdAt: now, until: now + 600e3 }, POPUPS[kind])]
+        : [];
+
+      mockWebApi({ lang, dashboards, zones, devices, readings: READINGS, popups });
     })();
   </script>
   <script src="../widgets/spacer/public/kit.js"></script>

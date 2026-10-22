@@ -149,6 +149,13 @@
     notInstalled: '__name__ isn\'t installed.',
     trustTitle: 'Trust this widget',
     trustHint: 'Runs it outside the sandbox, for a widget that doesn\'t work in it. A trusted widget can read this browser\'s API key.',
+    popupYes: 'Yes',
+    popupNo: 'No',
+    popupElsewhereYes: 'Answered on another screen: Yes',
+    popupElsewhereNo: 'Answered on another screen: No',
+    popupClose: 'Close',
+    popupPictureFailed: 'The picture could not be loaded',
+    popupAnswerFailed: 'The answer didn\'t reach Homey',
     about: {
       electricity: 'Live power, the day\'s prices and your usage in charts.',
       thermostat: 'Three preset buttons for a thermostat or an aircon.',
@@ -199,6 +206,10 @@
   /** After a realtime outage this long, the frames reload: they may have missed changes (they re-read every 5 min). */
   const STALE_AFTER_MS = 30e3;
   const CONFIRM_MS = 3000;
+  /** A popup's camera picture is read again this often while it shows. */
+  const CAMERA_REFRESH_MS = 3000;
+  /** How long "Answered on another screen" shows before the popup closes. */
+  const ELSEWHERE_MS = 2000;
   /** A press on a widget's bar that moves this far is a drag. */
   const DRAG_SLOP = 6;
   /** Near the window's top or bottom edge, a drag scrolls the page. */
@@ -580,6 +591,7 @@
       frontPage = setup.front || { widgets: true };
       if (setup.language) document.documentElement.lang = setup.language;
       if (setup.disabled || setup.passwordRequired) return; // turned off, or the password first: `route()` says so
+      setPopups(setup.popups && setup.popups.popups, setup.popups && setup.popups.now);
       if (!socketStarted) {
         socketStarted = true;
         connectSocket();
@@ -749,6 +761,7 @@
         retryMs = 2000;
         setLive(true);
         if (lostAt != null && Date.now() - lostAt > STALE_AFTER_MS) reloadFrames();
+        if (lostAt != null) refreshPopups();
         lostAt = null;
       } catch (err) {
         fail(err);
@@ -3428,9 +3441,211 @@
       return wrap;
     }
 
+    // ---- Popups (wk-084): a Flow's message or Yes/No question, over everything ----------------------------------
+
+    /**
+     * The open popups (`lib/PopupService.ts`), oldest first, each with `localUntil` (its end on this browser's clock).
+     * One shows at a time, in a modal dialog (the top layer: above the dim layer, full screen and the frames): a
+     * dashboard shows those sent to it and to everywhere, the front page only everywhere's, the editor none.
+     */
+    const popups = new Map();
+    const dismissed = new Set(); // messages tapped away on this screen (the others keep theirs)
+    let shownPopup = null; // {id, d, close(note)}
+
+    /** Takes the open popups as Homey lists them (`/web/setup`, `/web/popups`), its clock beside them. */
+    function setPopups(list, now) {
+      const skew = typeof now === 'number' ? now - Date.now() : 0;
+      const ids = new Set();
+      for (const p of Array.isArray(list) ? list : []) {
+        ids.add(p.id);
+        if (!popups.has(p.id)) addPopup(p, skew);
+      }
+      for (const id of [...popups.keys()]) if (!ids.has(id)) removePopup(id, null, 'closed');
+      syncPopups();
+    }
+
+    function addPopup(p, skew) {
+      const localUntil = p.until - skew;
+      if (localUntil <= Date.now()) return;
+      const timer = setTimeout(() => removePopup(p.id, null, 'expired'), localUntil - Date.now());
+      popups.set(p.id, Object.assign({}, p, { localUntil, timer }));
+    }
+
+    function removePopup(id, answer, reason) {
+      const p = popups.get(id);
+      if (p) clearTimeout(p.timer);
+      popups.delete(id);
+      dismissed.delete(id);
+      if (shownPopup && shownPopup.id === id) {
+        // Another screen's answer: said for a moment, so this screen sees what happened.
+        const note = reason === 'answered' && !shownPopup.answeredHere && answer != null
+          ? t(answer ? 'popupElsewhereYes' : 'popupElsewhereNo') : null;
+        shownPopup.close(note);
+      }
+      syncPopups();
+    }
+
+    /** Whether a popup belongs on the view now open. */
+    function popupHere(p) {
+      if (!setup || setup.disabled || setup.passwordRequired || !key) return false;
+      const m = location.hash.match(/^#\/d\/([A-Za-z0-9_-]+)(\/edit)?$/);
+      if (m) return !m[2] && (p.target === 'all' || p.target === `web:${m[1]}`);
+      return p.target === 'all' && location.hash !== '#/edit';
+    }
+
+    /** Shows the oldest popup that belongs here, or closes the one shown when it no longer does (another view). */
+    function syncPopups() {
+      if (shownPopup) {
+        const p = popups.get(shownPopup.id);
+        if (p && !popupHere(p)) shownPopup.close(null);
+        return;
+      }
+      for (const p of popups.values()) {
+        if (!dismissed.has(p.id) && popupHere(p)) { showPopup(p); return; }
+      }
+    }
+
+    function showPopup(p) {
+      const d = el('dialog', 'wd-dialog wd-popup');
+      d.classList.toggle('ask', p.kind === 'ask');
+      const box = el('div', 'wd-popup-box');
+      d.append(box);
+      const timers = [];
+      let closed = false;
+      const shown = { id: p.id, d, answeredHere: false, close: null };
+
+      if (p.picture) {
+        const frame = el('div', 'wd-popup-picture loading');
+        const img = el('img');
+        img.alt = '';
+        frame.append(img);
+        box.append(frame);
+        const load = async () => {
+          if (closed) return;
+          if (!document.hidden) {
+            try {
+              const res = await request('GET', `/web/popups/${encodeURIComponent(p.id)}/image`);
+              if (closed) return;
+              img.src = `data:${res.type};base64,${res.data}`;
+              frame.classList.remove('loading', 'failed');
+            } catch (err) {
+              if (closed) return;
+              if (frame.classList.contains('loading')) {
+                frame.classList.replace('loading', 'failed');
+                frame.append(el('p', 'wd-muted', t('popupPictureFailed')));
+              }
+            }
+          }
+          // A camera's snapshot is read again while it shows; a kept picture once.
+          if (p.picture.source === 'camera') timers.push(setTimeout(load, CAMERA_REFRESH_MS));
+        };
+        load();
+      }
+      if (p.text) {
+        const text = el('p', 'wd-popup-text', p.text);
+        text.dir = 'auto';
+        box.append(text);
+      }
+      const status = el('p', 'wd-popup-status');
+      status.setAttribute('role', 'status');
+
+      if (p.kind === 'ask') {
+        const actions = el('div', 'wd-popup-actions');
+        const send = async (answer) => {
+          for (const b of actions.querySelectorAll('button')) b.disabled = true;
+          shown.answeredHere = true;
+          status.textContent = '';
+          try {
+            const res = await request('POST', `/web/popups/${encodeURIComponent(p.id)}/answer`, { answer });
+            if (res && res.ok === false && res.reason === 'closed') {
+              // Someone else was first: say what they answered.
+              shown.answeredHere = false;
+              removePopup(p.id, res.answer, res.answer == null ? 'closed' : 'answered');
+            } else {
+              removePopup(p.id, answer, 'answered');
+            }
+          } catch (err) {
+            shown.answeredHere = false;
+            status.textContent = t('popupAnswerFailed');
+            for (const b of actions.querySelectorAll('button')) b.disabled = false;
+          }
+        };
+        actions.append(
+          button('wd-btn wd-popup-no', t('popupNo'), () => send(false)),
+          button('wd-btn primary wd-popup-yes', t('popupYes'), () => send(true)),
+        );
+        box.append(actions, status);
+      } else {
+        // A message: a bar runs down to its end; a tap anywhere closes it on this screen.
+        const bar = el('div', 'wd-popup-bar');
+        const fill = el('span');
+        bar.append(fill);
+        box.append(bar);
+        const left = Math.max(0, p.localUntil - Date.now());
+        const total = Math.max(left, p.until - p.createdAt);
+        fill.style.transform = `scaleX(${left / total})`;
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          fill.style.transition = `transform ${left}ms linear`;
+          fill.style.transform = 'scaleX(0)';
+        }));
+        d.addEventListener('click', () => { dismissed.add(p.id); shown.close(null); });
+        d.setAttribute('aria-label', p.text || t('popupClose'));
+      }
+
+      // Escape closes it here (a question stays open on the other screens).
+      d.addEventListener('cancel', (e) => { e.preventDefault(); dismissed.add(p.id); shown.close(null); });
+      shown.close = (note) => {
+        if (closed) return;
+        closed = true;
+        for (const timer of timers) clearTimeout(timer);
+        const done = () => {
+          if (shownPopup === shown) shownPopup = null;
+          d.close();
+          d.remove();
+          syncPopups();
+        };
+        if (note) {
+          for (const b of d.querySelectorAll('button')) b.disabled = true;
+          status.textContent = note;
+          if (!status.isConnected) box.append(status);
+          setTimeout(done, ELSEWHERE_MS);
+        } else {
+          done();
+        }
+      };
+      shownPopup = shown;
+      document.body.append(d);
+      d.showModal();
+      const yes = d.querySelector('.wd-popup-yes');
+      if (yes) /** @type {HTMLElement} */ (yes).focus();
+    }
+
+    /** The open popups again, after a reconnect: a screen that was offline missed their events. */
+    function refreshPopups() {
+      request('GET', '/web/popups').then(res => setPopups(res && res.popups, res && res.now), () => { /* the next reconnect tries again */ });
+    }
+
+    {
+      const uri = `homey:app:${APP_ID}`;
+      const on = (event, fn) => {
+        const k = listenerKey(uri, event);
+        if (!listeners.has(k)) listeners.set(k, new Set());
+        listeners.get(k).add(fn);
+      };
+      on('popups:show', (data) => {
+        if (!data || typeof data.id !== 'string' || popups.has(data.id)) return;
+        addPopup(data, typeof data.now === 'number' ? data.now - Date.now() : 0);
+        syncPopups();
+      });
+      on('popups:close', (data) => {
+        if (data && typeof data.id === 'string') removePopup(data.id, data.answer == null ? null : data.answer === true, data.reason);
+      });
+    }
+
     // ---- Routing: #/ the list, #/d/<id> a dashboard, #/d/<id>/edit editing it ---------------------------------
 
     function route() {
+      queueMicrotask(syncPopups); // once this view is drawn: its popups show, another view's close
       if (!key) { renderKey(); return; }
       if (!setup) { start(); return; }
       if (setup.disabled) { renderOff(); return; }

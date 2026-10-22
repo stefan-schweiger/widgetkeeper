@@ -1,0 +1,201 @@
+{
+  "id": "popup_ask_image",
+  "title": {
+    "en": "Ask Yes or No in a popup with an image",
+    "nl": "Ja of Nee vragen in een pop-up met een afbeelding",
+    "de": "Ja oder Nein in einem Popup mit einem Bild fragen",
+    "fr": "Demander Oui ou Non dans une pop-up avec une image",
+    "it": "Chiedi Sì o No in un popup con un'immagine",
+    "sv": "Fråga Ja eller Nej i ett popup-fönster med en bild",
+    "no": "Spør Ja eller Nei i et popup-vindu med et bilde",
+    "es": "Preguntar Sí o No en una ventana emergente con una imagen",
+    "da": "Spørg Ja eller Nej i en popup med et billede",
+    "ru": "Спросить Да или Нет во всплывающем окне с изображением",
+    "pl": "Zapytaj Tak lub Nie w oknie wyskakującym z obrazem",
+    "ko": "이미지와 함께 팝업으로 예/아니요 묻기",
+    "ar": "السؤال بنعم أو لا في نافذة منبثقة مع صورة"
+  },
+  "titleFormatted": {
+    "en": "Ask [[question]] with [[droptoken]] on [[screen]], wait up to [[seconds]] seconds",
+    "nl": "Vraag [[question]] met [[droptoken]] op [[screen]], wacht maximaal [[seconds]] seconden",
+    "de": "[[question]] mit [[droptoken]] auf [[screen]] fragen, höchstens [[seconds]] Sekunden warten",
+    "fr": "Demander [[question]] avec [[droptoken]] sur [[screen]], attendre au plus [[seconds]] secondes",
+    "it": "Chiedi [[question]] con [[droptoken]] su [[screen]], attendi al massimo [[seconds]] secondi",
+    "sv": "Fråga [[question]] med [[droptoken]] på [[screen]], vänta högst [[seconds]] sekunder",
+    "no": "Spør [[question]] med [[droptoken]] på [[screen]], vent høyst [[seconds]] sekunder",
+    "es": "Preguntar [[question]] con [[droptoken]] en [[screen]], esperar como máximo [[seconds]] segundos",
+    "da": "Spørg [[question]] med [[droptoken]] på [[screen]], vent højst [[seconds]] sekunder",
+    "ru": "Спросить [[question]] с [[droptoken]] на [[screen]], ждать не дольше [[seconds]] с",
+    "pl": "Zapytaj [[question]] z [[droptoken]] na [[screen]], czekaj najwyżej [[seconds]] s",
+    "ko": "[[screen]]에서 [[droptoken]]와(과) 함께 [[question]] 묻기, 최대 [[seconds]]초 대기",
+    "ar": "اسأل [[question]] مع [[droptoken]] على [[screen]]، وانتظر [[seconds]] ثانية على الأكثر"
+  },
+  "hint": {
+    "en": "As Ask Yes or No, with an image tag (or a text tag with a picture address) dropped on this card.",
+    "nl": "Zoals Ja of Nee vragen, met een afbeeldingstag (of een teksttag met een afbeeldingsadres) op deze kaart.",
+    "de": "Wie Ja oder Nein fragen, mit einem Bild-Tag (oder einem Text-Tag mit einer Bildadresse) auf dieser Karte.",
+    "fr": "Comme Demander Oui ou Non, avec un tag image (ou un tag texte avec l'adresse d'une image) déposé sur cette carte.",
+    "it": "Come Chiedi Sì o No, con un tag immagine (o un tag di testo con l'indirizzo di un'immagine) su questa scheda.",
+    "sv": "Som Fråga Ja eller Nej, med en bildtagg (eller en texttagg med en bildadress) på kortet.",
+    "no": "Som Spør Ja eller Nei, med en bildetagg (eller en teksttagg med en bildeadresse) på kortet.",
+    "es": "Como Preguntar Sí o No, con una etiqueta de imagen (o una etiqueta de texto con la dirección de una imagen) en esta tarjeta.",
+    "da": "Som Spørg Ja eller Nej, med et billedtag (eller et teksttag med en billedadresse) på kortet.",
+    "ru": "Как «Спросить Да или Нет», но с тегом изображения (или текстовым тегом с адресом изображения) на этой карточке.",
+    "pl": "Jak Zapytaj Tak lub Nie, z tagiem obrazu (albo tagiem tekstowym z adresem obrazu) na tej karcie.",
+    "ko": "예/아니요 묻기와 같으며, 이 카드에 이미지 태그(또는 사진 주소가 담긴 텍스트 태그)를 놓습니다.",
+    "ar": "مثل السؤال بنعم أو لا، مع وسم صورة (أو وسم نصي فيه عنوان صورة) على هذه البطاقة."
+  },
+  "droptoken": [
+    "image",
+    "string"
+  ],
+  "tokens": [
+    {
+      "name": "answer",
+      "type": "boolean",
+      "title": {
+        "en": "Answer",
+        "nl": "Antwoord",
+        "de": "Antwort",
+        "fr": "Réponse",
+        "it": "Risposta",
+        "sv": "Svar",
+        "no": "Svar",
+        "es": "Respuesta",
+        "da": "Svar",
+        "ru": "Ответ",
+        "pl": "Odpowiedź",
+        "ko": "답변",
+        "ar": "الإجابة"
+      },
+      "example": true
+    },
+    {
+      "name": "answered",
+      "type": "boolean",
+      "title": {
+        "en": "Answered",
+        "nl": "Beantwoord",
+        "de": "Beantwortet",
+        "fr": "Répondu",
+        "it": "Risposto",
+        "sv": "Besvarad",
+        "no": "Besvart",
+        "es": "Respondida",
+        "da": "Besvaret",
+        "ru": "Отвечено",
+        "pl": "Odpowiedziano",
+        "ko": "응답됨",
+        "ar": "تمت الإجابة"
+      },
+      "example": true
+    }
+  ],
+  "args": [
+    {
+      "type": "text",
+      "name": "question",
+      "title": {
+        "en": "Question",
+        "nl": "Vraag",
+        "de": "Frage",
+        "fr": "Question",
+        "it": "Domanda",
+        "sv": "Fråga",
+        "no": "Spørsmål",
+        "es": "Pregunta",
+        "da": "Spørgsmål",
+        "ru": "Вопрос",
+        "pl": "Pytanie",
+        "ko": "질문",
+        "ar": "السؤال"
+      },
+      "placeholder": {
+        "en": "Open the garage door?",
+        "nl": "Garagedeur openen?",
+        "de": "Garagentor öffnen?",
+        "fr": "Ouvrir la porte du garage ?",
+        "it": "Aprire il garage?",
+        "sv": "Öppna garageporten?",
+        "no": "Åpne garasjeporten?",
+        "es": "¿Abrir la puerta del garaje?",
+        "da": "Åbn garageporten?",
+        "ru": "Открыть ворота гаража?",
+        "pl": "Otworzyć bramę garażu?",
+        "ko": "차고 문을 열까요?",
+        "ar": "هل أفتح باب المرآب؟"
+      }
+    },
+    {
+      "type": "autocomplete",
+      "name": "screen",
+      "title": {
+        "en": "Screen",
+        "nl": "Scherm",
+        "de": "Bildschirm",
+        "fr": "Écran",
+        "it": "Schermo",
+        "sv": "Skärm",
+        "no": "Skjerm",
+        "es": "Pantalla",
+        "da": "Skærm",
+        "ru": "Экран",
+        "pl": "Ekran",
+        "ko": "화면",
+        "ar": "الشاشة"
+      },
+      "placeholder": {
+        "en": "Screen",
+        "nl": "Scherm",
+        "de": "Bildschirm",
+        "fr": "Écran",
+        "it": "Schermo",
+        "sv": "Skärm",
+        "no": "Skjerm",
+        "es": "Pantalla",
+        "da": "Skærm",
+        "ru": "Экран",
+        "pl": "Ekran",
+        "ko": "화면",
+        "ar": "الشاشة"
+      }
+    },
+    {
+      "type": "number",
+      "name": "seconds",
+      "title": {
+        "en": "Wait (seconds)",
+        "nl": "Wachten (seconden)",
+        "de": "Warten (Sekunden)",
+        "fr": "Attente (secondes)",
+        "it": "Attesa (secondi)",
+        "sv": "Vänta (sekunder)",
+        "no": "Vent (sekunder)",
+        "es": "Espera (segundos)",
+        "da": "Vent (sekunder)",
+        "ru": "Ожидание (секунды)",
+        "pl": "Czekaj (sekundy)",
+        "ko": "대기 (초)",
+        "ar": "الانتظار (ثوانٍ)"
+      },
+      "placeholder": {
+        "en": "30",
+        "nl": "30",
+        "de": "30",
+        "fr": "30",
+        "it": "30",
+        "sv": "30",
+        "no": "30",
+        "es": "30",
+        "da": "30",
+        "ru": "30",
+        "pl": "30",
+        "ko": "30",
+        "ar": "30"
+      },
+      "min": 5,
+      "max": 85,
+      "step": 1
+    }
+  ]
+}

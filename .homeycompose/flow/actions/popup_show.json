@@ -1,0 +1,246 @@
+{
+  "id": "popup_show",
+  "title": {
+    "en": "Show a popup",
+    "nl": "Een pop-up tonen",
+    "de": "Ein Popup zeigen",
+    "fr": "Afficher une pop-up",
+    "it": "Mostra un popup",
+    "sv": "Visa ett popup-fönster",
+    "no": "Vis et popup-vindu",
+    "es": "Mostrar una ventana emergente",
+    "da": "Vis en popup",
+    "ru": "Показать всплывающее окно",
+    "pl": "Pokaż okno wyskakujące",
+    "ko": "팝업 표시",
+    "ar": "إظهار نافذة منبثقة"
+  },
+  "titleFormatted": {
+    "en": "Show [[text]] on [[screen]] for [[duration]] [[unit]], picture: [[picture]]",
+    "nl": "Toon [[text]] op [[screen]] gedurende [[duration]] [[unit]], afbeelding: [[picture]]",
+    "de": "[[text]] auf [[screen]] für [[duration]] [[unit]] zeigen, Bild: [[picture]]",
+    "fr": "Afficher [[text]] sur [[screen]] pendant [[duration]] [[unit]], image : [[picture]]",
+    "it": "Mostra [[text]] su [[screen]] per [[duration]] [[unit]], immagine: [[picture]]",
+    "sv": "Visa [[text]] på [[screen]] i [[duration]] [[unit]], bild: [[picture]]",
+    "no": "Vis [[text]] på [[screen]] i [[duration]] [[unit]], bilde: [[picture]]",
+    "es": "Mostrar [[text]] en [[screen]] durante [[duration]] [[unit]], imagen: [[picture]]",
+    "da": "Vis [[text]] på [[screen]] i [[duration]] [[unit]], billede: [[picture]]",
+    "ru": "Показать [[text]] на [[screen]] на [[duration]] [[unit]], изображение: [[picture]]",
+    "pl": "Pokaż [[text]] na [[screen]] przez [[duration]] [[unit]], obraz: [[picture]]",
+    "ko": "[[screen]]에 [[text]]을(를) [[duration]] [[unit]] 동안 표시, 사진: [[picture]]",
+    "ar": "إظهار [[text]] على [[screen]] لمدة [[duration]] [[unit]]، الصورة: [[picture]]"
+  },
+  "hint": {
+    "en": "In front of everything on every screen showing that web dashboard, or on the phones and tablets with a Popups widget of that screen name. A tap closes it on that screen.",
+    "nl": "Voor alles op elk scherm dat dat webdashboard toont, of op de telefoons en tablets met een Pop-ups-widget met die schermnaam. Een tik sluit hem op dat scherm.",
+    "de": "Vor allem anderen auf jedem Bildschirm, der dieses Web-Dashboard zeigt, oder auf den Handys und Tablets mit einem Popups-Widget mit diesem Bildschirmnamen. Ein Tippen schließt es auf diesem Bildschirm.",
+    "fr": "Au premier plan sur chaque écran qui affiche ce tableau de bord web, ou sur les téléphones et tablettes avec un widget Pop-ups de ce nom d'écran. Un appui la ferme sur cet écran.",
+    "it": "In primo piano su ogni schermo che mostra quella dashboard web, o su telefoni e tablet con un widget Popup con quel nome di schermo. Un tocco lo chiude su quello schermo.",
+    "sv": "Framför allt annat på varje skärm som visar den webbinstrumentpanelen, eller på telefoner och surfplattor med en Popup-fönster-widget med det skärmnamnet. Ett tryck stänger det på den skärmen.",
+    "no": "Foran alt annet på hver skjerm som viser det nettdashbordet, eller på telefoner og nettbrett med en Popup-vinduer-widget med det skjermnavnet. Et trykk lukker det på den skjermen.",
+    "es": "Delante de todo en cada pantalla que muestre ese panel web, o en los teléfonos y tabletas con un widget Ventanas emergentes con ese nombre de pantalla. Un toque la cierra en esa pantalla.",
+    "da": "Foran alt andet på hver skærm, der viser det webdashboard, eller på telefoner og tablets med en Popups-widget med det skærmnavn. Et tryk lukker den på den skærm.",
+    "ru": "Поверх всего на каждом экране с этой веб-панелью или на телефонах и планшетах с виджетом «Всплывающие окна» с этим именем экрана. Касание закрывает его на этом экране.",
+    "pl": "Na wierzchu na każdym ekranie z tym pulpitem webowym albo na telefonach i tabletach z widżetem Okna wyskakujące o tej nazwie ekranu. Dotknięcie zamyka je na tym ekranie.",
+    "ko": "그 웹 대시보드를 보여주는 모든 화면, 또는 그 화면 이름의 팝업 위젯이 있는 휴대폰과 태블릿에서 모든 것 위에 표시됩니다. 탭하면 그 화면에서 닫힙니다.",
+    "ar": "فوق كل شيء على كل شاشة تعرض لوحة الويب هذه، أو على الهواتف والأجهزة اللوحية التي فيها أداة النوافذ المنبثقة باسم الشاشة هذا. النقر يغلقها على تلك الشاشة."
+  },
+  "args": [
+    {
+      "type": "text",
+      "name": "text",
+      "title": {
+        "en": "Text",
+        "nl": "Tekst",
+        "de": "Text",
+        "fr": "Texte",
+        "it": "Testo",
+        "sv": "Text",
+        "no": "Tekst",
+        "es": "Texto",
+        "da": "Tekst",
+        "ru": "Текст",
+        "pl": "Tekst",
+        "ko": "텍스트",
+        "ar": "النص"
+      },
+      "placeholder": {
+        "en": "Dinner is ready",
+        "nl": "Het eten is klaar",
+        "de": "Das Essen ist fertig",
+        "fr": "Le dîner est prêt",
+        "it": "La cena è pronta",
+        "sv": "Middagen är klar",
+        "no": "Middagen er klar",
+        "es": "La cena está lista",
+        "da": "Aftensmaden er klar",
+        "ru": "Ужин готов",
+        "pl": "Obiad gotowy",
+        "ko": "저녁 준비됐어요",
+        "ar": "العشاء جاهز"
+      }
+    },
+    {
+      "type": "autocomplete",
+      "name": "screen",
+      "title": {
+        "en": "Screen",
+        "nl": "Scherm",
+        "de": "Bildschirm",
+        "fr": "Écran",
+        "it": "Schermo",
+        "sv": "Skärm",
+        "no": "Skjerm",
+        "es": "Pantalla",
+        "da": "Skærm",
+        "ru": "Экран",
+        "pl": "Ekran",
+        "ko": "화면",
+        "ar": "الشاشة"
+      },
+      "placeholder": {
+        "en": "Screen",
+        "nl": "Scherm",
+        "de": "Bildschirm",
+        "fr": "Écran",
+        "it": "Schermo",
+        "sv": "Skärm",
+        "no": "Skjerm",
+        "es": "Pantalla",
+        "da": "Skærm",
+        "ru": "Экран",
+        "pl": "Ekran",
+        "ko": "화면",
+        "ar": "الشاشة"
+      }
+    },
+    {
+      "type": "number",
+      "name": "duration",
+      "title": {
+        "en": "Duration",
+        "nl": "Duur",
+        "de": "Dauer",
+        "fr": "Durée",
+        "it": "Durata",
+        "sv": "Tid",
+        "no": "Varighet",
+        "es": "Duración",
+        "da": "Varighed",
+        "ru": "Длительность",
+        "pl": "Czas",
+        "ko": "시간",
+        "ar": "المدة"
+      },
+      "placeholder": {
+        "en": "10",
+        "nl": "10",
+        "de": "10",
+        "fr": "10",
+        "it": "10",
+        "sv": "10",
+        "no": "10",
+        "es": "10",
+        "da": "10",
+        "ru": "10",
+        "pl": "10",
+        "ko": "10",
+        "ar": "10"
+      },
+      "min": 1,
+      "max": 1440,
+      "step": 1
+    },
+    {
+      "type": "dropdown",
+      "name": "unit",
+      "title": {
+        "en": "Unit",
+        "nl": "Eenheid",
+        "de": "Einheit",
+        "fr": "Unité",
+        "it": "Unità",
+        "sv": "Enhet",
+        "no": "Enhet",
+        "es": "Unidad",
+        "da": "Enhed",
+        "ru": "Единица",
+        "pl": "Jednostka",
+        "ko": "단위",
+        "ar": "الوحدة"
+      },
+      "values": [
+        {
+          "id": "seconds",
+          "title": {
+            "en": "seconds",
+            "nl": "seconden",
+            "de": "Sekunden",
+            "fr": "secondes",
+            "it": "secondi",
+            "sv": "sekunder",
+            "no": "sekunder",
+            "es": "segundos",
+            "da": "sekunder",
+            "ru": "секунд",
+            "pl": "sekund",
+            "ko": "초",
+            "ar": "ثوانٍ"
+          }
+        },
+        {
+          "id": "minutes",
+          "title": {
+            "en": "minutes",
+            "nl": "minuten",
+            "de": "Minuten",
+            "fr": "minutes",
+            "it": "minuti",
+            "sv": "minuter",
+            "no": "minutter",
+            "es": "minutos",
+            "da": "minutter",
+            "ru": "минут",
+            "pl": "minut",
+            "ko": "분",
+            "ar": "دقائق"
+          }
+        }
+      ]
+    },
+    {
+      "type": "autocomplete",
+      "name": "picture",
+      "title": {
+        "en": "Picture",
+        "nl": "Afbeelding",
+        "de": "Bild",
+        "fr": "Image",
+        "it": "Immagine",
+        "sv": "Bild",
+        "no": "Bilde",
+        "es": "Imagen",
+        "da": "Billede",
+        "ru": "Изображение",
+        "pl": "Obraz",
+        "ko": "사진",
+        "ar": "الصورة"
+      },
+      "placeholder": {
+        "en": "Picture",
+        "nl": "Afbeelding",
+        "de": "Bild",
+        "fr": "Image",
+        "it": "Immagine",
+        "sv": "Bild",
+        "no": "Bilde",
+        "es": "Imagen",
+        "da": "Billede",
+        "ru": "Изображение",
+        "pl": "Obraz",
+        "ko": "사진",
+        "ar": "الصورة"
+      }
+    }
+  ]
+}

@@ -77,6 +77,10 @@ A speaker with its album art, mute, a volume that never overshoots and buttons f
 <a href="#notes"><b>Notes</b></a><br>
 A note on a tile or a handwritten Post-it, typed in or written by your Flows<br clear="left"></p>
 
+<p><a href="#popups"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/popups-dark.png"><img src="docs/previews/popups-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#popups"><b>Popups</b></a><br>
+A Flow's message or Yes/No question, with a picture if you like, in front of everything on a phone, tablet or web dashboard<br clear="left"></p>
+
 <p><a href="#room-health"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/roomhealth-dark.png"><img src="docs/previews/roomhealth-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#room-health"><b>Room Health</b></a><br>
 Each room's temperature, humidity, CO₂, radon and particles at a glance, as icons or bars that turn yellow to red<br clear="left"></p>
@@ -254,6 +258,18 @@ A short message on the dashboard, as a tile with one line of text or as a Post-i
 
 **Settings:** style (tile or Post-it), text from (the message typed in the settings, a Flow card or a text variable), message, note name, variable, alignment, text size, long text, icon, colour, [colour style](#colour-style).
 
+## Popups
+A Flow shows a message, or asks a question with **Yes** and **No**, in front of everything on the screens you choose: a web dashboard, or the phones and tablets that show a Homey dashboard with a Popups widget.
+
+- *Show [text] on [screen] for [duration], picture: [picture]*: the message, closed after the time or with a tap on that screen.
+- *Ask [question] on [screen], picture: [picture], wait up to [seconds] seconds*: the first answer from any screen closes it everywhere and goes back to the Flow as two tags, **Answer** (yes or no) and **Answered** (no when nobody answered in time). It waits at most 85 seconds, as Homey stops a Flow card after 90. Tags from a card only reach the next cards in an **Advanced Flow**.
+- The picture is a camera, refreshed while the popup is open, or a picture address typed in. The cards *with an image* take an image tag instead, such as a doorbell's snapshot from its own Flow, taken when the Flow runs (or a text tag holding a picture address).
+- *Close the popups on [screen]* closes them early; an open question then ends unanswered.
+
+The screen is **Everywhere**, one of your [web dashboards](#web-dashboards), or the name of a Popups widget. On a web dashboard the popup covers the page in every browser showing that dashboard. On Homey's own dashboards a widget can't draw over the dashboard, so the Popups widget, which shows nothing itself, opens the popup in the Homey app's built-in browser; close that window when you're done. Put one on each dashboard where you want popups, with the same name on every screen that should get the same ones.
+
+**Settings:** screen name.
+
 ## Room Health
 <img src="docs/screenshots/roomhealth.png" alt="Room Health on a Homey dashboard: six rooms with their icons, the kitchen humid, the bedroom stuffy and the office's radon far over" width="358">
 
@@ -389,6 +405,7 @@ The front page shows every dashboard as a card with a miniature of its widgets, 
 - **Keep screen on:** turn it on in the front page's **Settings** (under the pen) to stop this tablet, phone or computer from sleeping while the page is open. Browsers only offer this properly over HTTPS, as through the [away from home](#away-from-home) address; on the home address the page plays a silent, invisible video instead, which works on iPads and iPhones but not in every browser. Where it doesn't, turn off sleep in the device's own settings.
 - **Dim:** the slider in the same **Settings** darkens the whole page in this browser, as if the screen were turned down, up to 80 %. Handy for a wall tablet at night.
 - **A menu:** put [Dashboard Shortcuts](#dashboard-shortcuts) on every dashboard to jump between them.
+- **Popups:** Flows can show a message or ask Yes or No over a dashboard, in every browser showing it, with a camera's picture if you like. See [Popups](#popups).
 
 <img src="docs/web/light.png" alt="A light web dashboard, the Kitchen on the Sand background, in a browser window" width="100%">
 

@@ -39,6 +39,7 @@ This file holds what applies across the app. Each widget's notes, and those of t
 | Smart Stack | `stack` | `widgets/stack.md` |
 | Dashboard Shortcuts (web dashboards only) | `shortcuts` | `widgets/shortcuts.md` |
 | Web Page | `webpage` | `widgets/webpage.md` |
+| Popups (and their Flow cards, prompt page and web overlay) | `popups` | `widgets/popups.md` |
 
 Areas: `tile-names.md` (Rename tiles in twelve widgets, `lib/TileNameService.ts`), `web-dashboards.md` (`settings/dashboard.*`, `/web/…` routes, the password) and `renders.md` (the render scripts and their pages in `dev/`).
 

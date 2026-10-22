@@ -13,6 +13,10 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Links never open, and taps are ignored unless you let the page be tapped, so a swipe still scrolls the dashboard.
 - Up to four buttons under the page switch between addresses, such as a map's zoom levels. `{lat}` and `{lon}` in an address become the Homey's location. It can reload every few minutes, for a screen that's always on.
 
+### New: Popups
+- **Flow cards:** show a message for a number of seconds or minutes, or ask Yes or No, in front of everything on a web dashboard or on the phones and tablets with a Popups widget. The first answer from any screen closes the question everywhere and goes back to the Flow as the tags Answer and Answered (no answer in time). A picture can come along: a camera, refreshed while it's open, a picture address, or an image tag such as a doorbell's snapshot. A third card closes them early.
+- **Popups widget:** on a Homey dashboard it shows nothing itself, and opens the popups sent to its screen name in the Homey app's built-in browser, as a widget can't draw over the dashboard.
+
 ### Web dashboards
 - **Wide widgets:** a widget can span two or more columns, such as a floor plan, a camera or a chart. Drag the handle on its right edge in edit mode, or set its Width in its settings. Each column it covers keeps its own widgets above and below it. Kept in duplicates and backups.
 

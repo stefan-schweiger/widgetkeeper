@@ -722,6 +722,33 @@ function spacer(t, theme) {
   </div>`;
 }
 
+// Popups: a Flow's question over a faded dashboard: a doorbell's picture (a drawn front door), the question as a
+// line, and No and Yes. The widget itself draws nothing; the popup is what it brings up.
+function popups(t, theme) {
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const raised = theme === 'dark' ? '#2B2C36' : '#EAEAF1';
+  const faded = h => `<div style="height:${h}px;border-radius:28px;background:${tileBg};opacity:.35"></div>`;
+  const door = `<svg width="560" height="300" viewBox="0 0 560 300" style="display:block">
+      <rect width="560" height="300" fill="#2B3A4A"/><rect y="210" width="560" height="90" fill="#3D4A3A"/>
+      <rect x="205" y="56" width="150" height="196" rx="8" fill="#6B3E26"/><rect x="190" y="44" width="180" height="16" fill="#1C2733"/>
+      <circle cx="330" cy="160" r="9" fill="#E8C66A"/><circle cx="420" cy="96" r="18" fill="#FFE9A8"/></svg>`;
+  return `<div style="position:relative;width:880px;height:820px">
+    <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-content:start">
+      <div style="display:flex;flex-direction:column;gap:40px">${faded(300)}${faded(220)}${faded(220)}</div>
+      <div style="display:flex;flex-direction:column;gap:40px">${faded(200)}${faded(360)}${faded(180)}</div>
+    </div>
+    <div style="position:absolute;left:100px;top:70px;width:680px;border-radius:36px;background:${tileBg};box-shadow:${shadow};padding:60px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:44px">
+      <div style="border-radius:24px;overflow:hidden">${door}</div>
+      ${pill(400, 44, t.fg)}
+      <div style="width:100%;display:flex;gap:28px">
+        <div style="flex:1;height:112px;border-radius:56px;background:${raised};display:flex;align-items:center;justify-content:center">${pill(90, 30, t.fg)}</div>
+        <div style="flex:1;height:112px;border-radius:56px;background:${BLUE};display:flex;align-items:center;justify-content:center">${pill(90, 30, '#FFFFFF')}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
 // Notes: its two looks, one above the other: a tile with an icon and one line of text, and a yellow Post-it tilted
 // on the dashboard with a folded corner and three lines of handwriting (scribbles, so it reads the same in every language).
 function textLine(t, theme) {
@@ -897,6 +924,8 @@ const PREVIEWS = [
   { id: 'wp-light',     label: '3j · Web Page — preview-light.png',            theme: 'light', render: webPage },
   { id: 'pw-dark',      label: '3k · Pollen and UV — preview-dark.png',        theme: 'dark',  render: pollen },
   { id: 'pw-light',     label: '3l · Pollen and UV — preview-light.png',       theme: 'light', render: pollen },
+  { id: 'pu-dark',      label: '3m · Popups — preview-dark.png',                 theme: 'dark',  render: popups },
+  { id: 'pu-light',     label: '3n · Popups — preview-light.png',                theme: 'light', render: popups },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');

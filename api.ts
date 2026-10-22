@@ -4,6 +4,7 @@ import { scopesAllow, type KeyUse } from './lib/PersonalApiKey.js';
 import { idList } from './lib/widgetApi.js';
 import { autocompleteKeyUse, callWidgetRoute, routeKeyUse, type WidgetApis } from './lib/widgetRoutes.js';
 import dayssince from './widgets/dayssince/api.js';
+import popups from './widgets/popups/api.js';
 import shortcuts from './widgets/shortcuts/api.js';
 import stack, { PAGE_APIS } from './widgets/stack/api.js';
 import webpage from './widgets/webpage/api.js';
@@ -12,9 +13,9 @@ type Homey = App['homey'];
 
 /**
  * Every widget's API, by widget id, for the web dashboards' frames (the Smart Stack's included, and Days Since, Dashboard
- * Shortcuts and Web Page, which aren't stack pages).
+ * Shortcuts, Web Page and Popups, which aren't stack pages; a Popups widget on a web dashboard never calls it).
  */
-export const WEB_APIS: WidgetApis = { ...PAGE_APIS, stack, dayssince, shortcuts, webpage };
+export const WEB_APIS: WidgetApis = { ...PAGE_APIS, stack, dayssince, shortcuts, webpage, popups };
 
 /** Why the web page's own key (`key`) may not do what the app's stored key would do here, or null when it may. */
 async function pageKeyProblem(app: WidgetkeeperApp, key: unknown, use: KeyUse): Promise<'keyInvalid' | 'keyScope' | null> {
@@ -101,6 +102,7 @@ export default {
       widgets: app.web.widgetTypes(language),
       dashboards: app.web.list(),
       front: app.web.front(),
+      popups: app.popups.all(),
     };
   },
 
@@ -235,5 +237,52 @@ export default {
     const app = homey.app as WidgetkeeperApp;
     app.webPassword.logout(query?.session);
     return null;
+  },
+
+  /** The web dashboards page: the open popups (after a reconnect, so a screen that was offline catches up). */
+  async getWebPopups({ homey, query }: { homey: Homey, query?: Record<string, string> }) {
+    const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
+    return app.popups.all();
+  },
+
+  /** The web dashboards page: a popup's picture, `{type, data}` (a camera's is read again on every call). */
+  async getWebPopupImage({ homey, query, params }: { homey: Homey, query?: Record<string, string>, params: Record<string, string> }) {
+    const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
+    return app.popups.image(params.id);
+  },
+
+  /** The web dashboards page: the answer to a question (`{answer: true|false}`); the first one from any screen wins. */
+  async postWebPopupAnswer({ homey, query, params, body }: {
+    homey: Homey, query?: Record<string, string>, params: Record<string, string>, body: { answer?: unknown },
+  }) {
+    const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
+    return app.popups.answer(params.id, body?.answer);
+  },
+
+  /**
+   * The prompt page a Popups widget opens in the phone app's in-app browser (`settings/popup.html`), which has no login:
+   * public, so only the popup's token (`{t}`, in the body) lets it read the popup, its picture or answer it.
+   */
+  async postPopup({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { t?: unknown } }) {
+    const app = homey.app as WidgetkeeperApp;
+    const popup = app.popups.page(params.id, body?.t);
+    const language = homey.i18n.getLanguage();
+    const strings = await app.web.appStrings(language);
+    return { ...popup, language, strings: (strings as any)?.popups ?? {} };
+  },
+
+  async postPopupImage({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { t?: unknown } }) {
+    const app = homey.app as WidgetkeeperApp;
+    if (typeof body?.t !== 'string') throw new Error('Not found');
+    return app.popups.image(params.id, body.t);
+  },
+
+  async postPopupAnswer({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { t?: unknown, answer?: unknown } }) {
+    const app = homey.app as WidgetkeeperApp;
+    if (typeof body?.t !== 'string') throw new Error('Not found');
+    return app.popups.answer(params.id, body.answer, body.t);
   },
 };

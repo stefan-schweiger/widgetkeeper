@@ -7,6 +7,7 @@ import WebDashboardService, { passesDeviceFilter, WEB_BACKUP_FORMAT, WEB_DASHBOA
 import { widgetAutocompletes } from '../lib/widgetAutocompletes.js';
 import { routeKeyUse } from '../lib/widgetRoutes.js';
 import WebPassword from '../lib/WebPassword.js';
+import PopupService from '../lib/PopupService.js';
 import api from '../api.js';
 
 vi.mock('homey-api', () => homeyApiMock);
@@ -20,7 +21,8 @@ function setup(autocompletes = {}, enabled = true) {
   const log = vi.fn();
   const tileNames = new TileNameService(homey);
   const web = new WebDashboardService(homey, log, autocompletes, tileNames);
-  homey.app = { web, tileNames, webPassword: new WebPassword(homey, log), log, debug: vi.fn() };
+  const popups = new PopupService(homey, { cameras: {} as any, web }, log);
+  homey.app = { web, tileNames, webPassword: new WebPassword(homey, log), popups, log, debug: vi.fn() };
   return { homey, web, log, tileNames };
 }
 
@@ -320,7 +322,8 @@ describe('web dashboards: what the editor needs', () => {
     expect(barMin.values!.map(v => v.id)).toEqual(['0', '1']);
     expect(types.find(t => t.type === 'electricity')!.devices).toEqual({ singular: true });
     expect(types.find(t => t.type === 'timers')!.devices).toBeNull();
-    expect(types).toHaveLength(Object.keys(app.widgets).length);
+    // Every widget but Popups, which only opens Homey's in-app browser (the page draws popups itself).
+    expect(types.map(t => t.type).sort()).toEqual(Object.keys(app.widgets).filter(id => id !== 'popups').sort());
   });
 
   it("groups the settings by their titles: a group's head, the rows under it, and numbered slots", () => {
@@ -786,7 +789,7 @@ describe('web dashboards page', () => {
 
   it('describes every widget type on the front page', () => {
     const en = JSON.parse(readFileSync('locales/en.json', 'utf8'));
-    expect(Object.keys(en.web.about).sort()).toEqual(Object.keys(app.widgets).sort());
+    expect(Object.keys(en.web.about).sort()).toEqual(Object.keys(app.widgets).filter(id => id !== 'popups').sort());
   });
 
   it("loads the kit from where the Homey serves it (a widget's public folder is /app/<appId>/widgets/<id>/)", () => {
@@ -808,5 +811,43 @@ describe('web dashboards page', () => {
   it('bundles the socket.io-client version installed', () => {
     const { version } = JSON.parse(readFileSync('node_modules/socket.io-client/package.json', 'utf8'));
     expect(readFileSync('settings/socket.io.js', 'utf8').slice(0, 200)).toContain(`socket.io-client ${version} `);
+  });
+});
+
+describe('web dashboards: popups (wk-084)', () => {
+  it('lists, pictures and answers popups for the page, like its other routes', async () => {
+    const { homey } = setup();
+    homey.cloud = { getHomeyId: async () => 'homey-id' };
+    const asked = homey.app.popups.ask({ target: 'all', text: 'Open the garage?', seconds: 30 });
+    await new Promise(r => setTimeout(r, 0));
+    const listed = await api.getWebPopups({ homey, query: {} });
+    expect(listed.popups.map((p: any) => p.text)).toEqual(['Open the garage?']);
+    expect((await api.getWebSetup({ homey, query: {} })).popups!.popups).toHaveLength(1);
+    const { id } = listed.popups[0];
+    await expect(api.getWebPopupImage({ homey, query: {}, params: { id } })).rejects.toThrow('Not found'); // no picture
+    expect(await api.postWebPopupAnswer({ homey, query: {}, params: { id }, body: { answer: true } })).toEqual({ ok: true, answer: true });
+    await expect(asked).resolves.toEqual({ answer: true, answered: true });
+    // Turned off, the page's routes refuse as the rest do.
+    const off = setup({}, false);
+    await expect(api.getWebPopups({ homey: off.homey, query: {} })).rejects.toThrow(/turned off/);
+    await expect(api.postWebPopupAnswer({ homey: off.homey, query: {}, params: { id }, body: { answer: true } })).rejects.toThrow(/turned off/);
+  });
+
+  it('lets the prompt page in with the popup token only, web dashboards on or off', async () => {
+    const { homey } = setup({}, false);
+    await homey.app.popups.show({ target: 'name:hall', text: 'Dinner', seconds: 30 });
+    const { id, token } = homey.app.popups.forScreen('hall').popups[0];
+    const page = await api.postPopup({ homey, params: { id }, body: { t: token } });
+    expect(page).toMatchObject({ closed: false, kind: 'message', text: 'Dinner', language: 'en' });
+    expect(page.strings.yes).toBe('Yes');
+    await expect(api.postPopup({ homey, params: { id }, body: { t: 'nope' } })).rejects.toThrow('Not found');
+    await expect(api.postPopup({ homey, params: { id }, body: {} })).rejects.toThrow('Not found');
+    await expect(api.postPopupImage({ homey, params: { id }, body: {} })).rejects.toThrow('Not found');
+    await expect(api.postPopupAnswer({ homey, params: { id }, body: { answer: true } })).rejects.toThrow('Not found');
+  });
+
+  it('marks exactly the prompt page routes public', () => {
+    const publicRoutes = Object.entries(app.api).filter(([, r]: [string, any]) => r.public).map(([name]) => name).sort();
+    expect(publicRoutes).toEqual(['postPopup', 'postPopupAnswer', 'postPopupImage']);
   });
 });
