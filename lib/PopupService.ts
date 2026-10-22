@@ -18,10 +18,10 @@ export const POPUP_CLOSE_CARD = 'popup_close';
 /** The screen name a Popups widget answers to unless its `name` setting says another. */
 export const DEFAULT_SCREEN = 'Screen';
 /**
- * The longest a question waits. Homey ends an app's Flow card after a while (measured on the Homey, 2026-10-22; see
- * `.claude/rules/widgets/popups.md`), so a question closes as unanswered a little before that.
+ * The longest a question waits. Homey ends an app's action card after 90 s (its error output then runs; measured in
+ * an Advanced Flow on the Homey, 2026-10-22), so a question closes as unanswered a little before that.
  */
-export const MAX_ASK_SECONDS = 50;
+export const MAX_ASK_SECONDS = 85;
 export const MAX_SHOW_SECONDS = 24 * 3600;
 
 const MAX_OPEN = 20;

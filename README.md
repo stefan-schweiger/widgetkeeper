@@ -254,7 +254,7 @@ A short message on the dashboard, as a tile with one line of text or as a Post-i
 A Flow shows a message, or asks a question with **Yes** and **No**, in front of everything on the screens you choose: a web dashboard, or the phones and tablets that show a Homey dashboard with a Popups widget.
 
 - *Show [text] on [screen] for [duration], picture: [picture]*: the message, closed after the time or with a tap on that screen.
-- *Ask [question] on [screen], picture: [picture], wait up to [seconds] seconds*: the first answer from any screen closes it everywhere and goes back to the Flow as two tags, **Answer** (yes or no) and **Answered** (no when nobody answered in time). Tags from a card only reach the next cards in an **Advanced Flow**.
+- *Ask [question] on [screen], picture: [picture], wait up to [seconds] seconds*: the first answer from any screen closes it everywhere and goes back to the Flow as two tags, **Answer** (yes or no) and **Answered** (no when nobody answered in time). It waits at most 85 seconds, as Homey stops a Flow card after 90. Tags from a card only reach the next cards in an **Advanced Flow**.
 - The picture is a camera, refreshed while the popup is open, or a picture address typed in. The cards *with an image* take an image tag instead, such as a doorbell's snapshot from its own Flow, taken when the Flow runs (or a text tag holding a picture address).
 - *Close the popups on [screen]* closes them early; an open question then ends unanswered.
 
