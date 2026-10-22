@@ -85,14 +85,15 @@ describe('detailed', () => {
     expect(text('.pw-uv-peak')).toMatch(/· now 3$/);
     const days = root.querySelector<HTMLElement>('.pw-days')!;
     expect([...days.querySelectorAll('.pw-day')].map(d => d.textContent)).toEqual(['Tue', 'Wed', 'Thu']);
-    const cells = [...days.querySelectorAll<HTMLElement>('.pw-cell')].map(c => [c.textContent, c.dataset.level]);
-    // Birch, grass, mugwort, then the UV peaks (none on the last day).
+    // Birch, grass, mugwort: a dot each, its level word as the label.
+    const cells = [...days.querySelectorAll<HTMLElement>('.pw-cell')].map(c => [c.getAttribute('aria-label'), c.dataset.level, c.textContent]);
     expect(cells).toEqual([
-      ['Low', '1'], ['–', '0'], ['–', '0'],
-      ['Moderate', '2'], ['High', '3'], ['Moderate', '2'],
-      ['–', '0'], ['Low', '1'], ['Moderate', '2'],
-      ['5', '2'], ['7', '3'], ['–', '0'],
+      ['Low', '1', ''], ['None', '0', ''], ['None', '0', ''],
+      ['Moderate', '2', ''], ['High', '3', ''], ['Moderate', '2', ''],
+      ['None', '0', ''], ['Low', '1', ''], ['Moderate', '2', ''],
     ]);
+    // The UV peaks as plain numbers (none on the last day).
+    expect([...days.querySelectorAll('.pw-cell-uv')].map(c => c.textContent)).toEqual(['5', '7', '–']);
   });
 });
 

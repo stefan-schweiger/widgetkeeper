@@ -90,15 +90,15 @@ html, body { margin: 0; }
 .pw-grains { font-size: var(--pw-fs-label); line-height: var(--pw-lh-label); color: var(--pw-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 @container pw (max-width: 300px) { .pw-row { grid-template-columns: var(--homey-icon-size-medium, 20px) 84px 1fr 64px; } }
 
-/* Detailed: the next days, a column each, under the rows. */
-.pw-days { display: grid; grid-template-columns: var(--homey-icon-size-medium, 20px) repeat(var(--pw-cols, 3), 1fr); gap: var(--homey-su-1, 4px);
-  align-items: center; margin-top: var(--homey-su-2, 8px); padding-top: var(--homey-su-2, 8px); border-top: 1px solid var(--pw-line); }
-.pw-day { font-size: var(--pw-fs-label); line-height: var(--pw-lh-label); color: var(--pw-muted); }
+/* Detailed: the next days under the rows, kept quiet: small icons, a dot per type and day, the UV peaks in the muted colour. */
+.pw-days { display: grid; grid-template-columns: var(--homey-icon-size-medium, 20px) repeat(var(--pw-cols, 3), 1fr); gap: 0 var(--homey-su-1, 4px);
+  align-items: center; margin-top: var(--homey-su-2, 8px); padding-top: var(--homey-su-1, 4px); border-top: 1px solid var(--pw-line);
+  font-size: var(--pw-fs-label); line-height: var(--pw-lh-label); color: var(--pw-muted); }
+.pw-day { padding-bottom: 2px; }
 .pw-days .pw-day[dir="auto"] { text-align: center; }
-.pw-days-icon { color: var(--pw-muted); }
-.pw-cell { height: 24px; border-radius: 6px; background: var(--pw-track); display: flex; align-items: center; justify-content: center;
-  font-size: var(--pw-fs-label); line-height: var(--pw-lh-label); font-weight: var(--pw-medium); white-space: nowrap; overflow: hidden;
-  padding: 0 var(--homey-su-1, 4px); font-variant-numeric: tabular-nums; }
-.pw-days .pw-cell[dir="auto"] { text-align: center; }
-.pw-cell:not([data-level="0"]) { background: var(--pw-c); color: var(--pw-on); }
-.pw-cell[data-level="0"] { color: var(--pw-muted); font-weight: var(--pw-regular); }
+.pw-days-icon { display: flex; justify-content: center; }
+.pw-days-icon .pw-icon { width: var(--homey-icon-size-regular, 16px); height: var(--homey-icon-size-regular, 16px); }
+.pw-cell { height: 20px; display: flex; align-items: center; justify-content: center; }
+.pw-cell::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--pw-c); }
+.pw-cell[data-level="0"]::before { width: 6px; height: 6px; background: var(--pw-track); }
+.pw-cell-uv { height: 20px; text-align: center; font-variant-numeric: tabular-nums; }

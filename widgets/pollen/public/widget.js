@@ -185,7 +185,10 @@
       if (detailed && level) el('span', { class: 'pw-grains', dir: 'auto', text: t('grains', { value: number(entry.value) }) }, end);
     }
 
-    /** The next days: a column each, a row per type (its level), and the day's UV peak. */
+    /**
+     * The next days, kept quiet: a column each, a row per type with a small dot in its level's colour (the level word
+     * as its label), and the day's UV peak as a muted number.
+     */
     function renderDays(days) {
       const grid = el('div', { class: 'pw-days' }, root);
       grid.style.setProperty('--pw-cols', String(days.length));
@@ -196,14 +199,13 @@
         for (const day of days) {
           const entry = day.pollen[type];
           const level = entry ? entry.level : 0;
-          el('span', { class: 'pw-cell', 'data-level': String(level), dir: 'auto', text: level ? t(LEVEL_KEYS[level]) : '–' }, grid);
+          const word = entry ? t(LEVEL_KEYS[level]) : '–';
+          el('span', { class: 'pw-cell', 'data-level': String(level), title: word, 'aria-label': word }, grid);
         }
       }
       if (!showUv) return;
       icon('sun', el('span', { class: 'pw-days-icon', title: t('uv', { value: '' }).trim() }, grid));
-      for (const day of days) {
-        el('span', { class: 'pw-cell pw-cell-uv', 'data-level': String(day.uv ? day.uv.level : 0), text: day.uv ? number(day.uv.max) : '–' }, grid);
-      }
+      for (const day of days) el('span', { class: 'pw-cell-uv', text: day.uv ? number(day.uv.max) : '–' }, grid);
     }
 
     render();
