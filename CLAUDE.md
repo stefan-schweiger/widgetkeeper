@@ -17,6 +17,7 @@ This file holds what applies across the app. Each widget's notes, and those of t
 | Room Health | `roomhealth` | `widgets/roomhealth.md` |
 | Value Matrix | `valuematrix` | `widgets/valuematrix.md` |
 | Weather Forecast | `weather` | `widgets/weather.md` |
+| Pollen and UV | `pollen` | `widgets/pollen.md` |
 | Insights Heatmap | `heatmap` | `widgets/heatmap.md` |
 | Cameras | `cameras` | `widgets/cameras.md` |
 | Device Values | `values` | `widgets/values.md` |

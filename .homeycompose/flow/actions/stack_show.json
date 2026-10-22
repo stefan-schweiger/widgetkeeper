@@ -210,6 +210,24 @@
           }
         },
         {
+          "id": "pollen",
+          "title": {
+            "en": "Pollen and UV",
+            "nl": "Pollen en uv",
+            "de": "Pollen und UV",
+            "fr": "Pollen et UV",
+            "it": "Pollini e UV",
+            "sv": "Pollen och UV",
+            "no": "Pollen og UV",
+            "es": "Polen y UV",
+            "da": "Pollen og UV",
+            "ru": "Пыльца и УФ",
+            "pl": "Pyłki i UV",
+            "ko": "꽃가루와 자외선",
+            "ar": "حبوب اللقاح والأشعة فوق البنفسجية"
+          }
+        },
+        {
           "id": "heatmap",
           "title": {
             "en": "Insights Heatmap",

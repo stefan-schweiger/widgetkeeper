@@ -276,6 +276,15 @@ const BUILD = {
     w('weather', 'Vivid · 2 rows', { theme: 'card', rows: '2' }),
   ] }),
 
+  pollen: () => ({ cols: 3, widgets: [
+    w('pollen', 'Defaults (compact: birch, grass, mugwort, UV)'),
+    w('pollen', 'Detailed', { density: 'detailed' }),
+    w('pollen', 'All six types · 12-hour', { showAlder: true, showOlive: true, showRagweed: true, timeFormat: '12' }),
+    w('pollen', 'Detailed · all six · no UV', { density: 'detailed', showAlder: true, showOlive: true, showRagweed: true, showUv: false }),
+    w('pollen', 'UV only', { showBirch: false, showGrass: false, showMugwort: false }),
+    w('pollen', 'Nothing chosen', { showUv: false, showBirch: false, showGrass: false, showMugwort: false }),
+  ] }),
+
   async heatmap() {
     const devs = await autocomplete('heatmap', 'device');
     const pair = async (fn, capId) => {

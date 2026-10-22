@@ -10,6 +10,7 @@ import sensordots from '../sensordots/api.js';
 import roomhealth from '../roomhealth/api.js';
 import valuematrix from '../valuematrix/api.js';
 import weather from '../weather/api.js';
+import pollen from '../pollen/api.js';
 import heatmap from '../heatmap/api.js';
 import cameras from '../cameras/api.js';
 import values from '../values/api.js';
@@ -32,7 +33,7 @@ type Homey = App['homey'];
 
 /** Each page widget's own API (its `api.ts`), by widget id: one for every `STACK_TYPES` (tsc checks). */
 export const PAGE_APIS: Record<StackType, WidgetApis[string]> = {
-  electricity, thermostat, quickactions, sensoralarms, sensordots, roomhealth, valuematrix, weather, heatmap, cameras, values,
+  electricity, thermostat, quickactions, sensoralarms, sensordots, roomhealth, valuematrix, weather, pollen, heatmap, cameras, values,
   lights, sparklines, charts, variables, varpresets, flows, price, timers, locks, curtains, media, clock, textline,
 };
 

@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|sd-dark|sd-light|rh-dark|rh-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|chart-dark|chart-light|var-dark|var-light|vp-dark|vp-light|sd-dark|sd-light|fb-dark|fb-light|pb-dark|pb-light|tm-dark|tm-light|lk-dark|lk-light|ct-dark|ct-light|mw-dark|mw-light|sk-dark|sk-light|ck-dark|ck-light|sp-dark|sp-light|tl-dark|tl-light|ds-dark|ds-light|sc-dark|sc-light|wp-dark|wp-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|sd-dark|sd-light|rh-dark|rh-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|chart-dark|chart-light|var-dark|var-light|vp-dark|vp-light|sd-dark|sd-light|fb-dark|fb-light|pb-dark|pb-light|tm-dark|tm-light|lk-dark|lk-light|ct-dark|ct-light|mw-dark|mw-light|sk-dark|sk-light|ck-dark|ck-light|sp-dark|sp-light|tl-dark|tl-light|ds-dark|ds-light|sc-dark|sc-light|wp-dark|wp-light|pw-dark|pw-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -607,6 +607,29 @@ function clock(t, theme) {
   </div>`;
 }
 
+// Pollen and UV: the UV line (the sun in its level's colour, the value, the level, when it peaks), then a row per pollen
+// type: its icon, the name, a four-step bar lit to its level (Muted's shades) and the level.
+function pollen(t, theme) {
+  const dark = theme === 'dark';
+  const track = dark ? '#34353F' : '#E4E5E9', line = dark ? 'rgba(255,255,255,.08)' : 'rgba(31,32,41,.08)';
+  const GREEN = '#267700', ORANGE_SHADE = '#A85700';
+  const icon = (d, color) => `<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+  const SUN = 'M8 12a4 4 0 1 0 8 0a4 4 0 1 0-8 0M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4';
+  const BIRCH = 'M3 5.5C9 4.5 15 4.5 21 6M7.5 6.5C8.9 6.5 9.2 8 9.2 9.5V17.5C9.2 19.5 8.5 21 7.5 21S5.8 19.5 5.8 17.5V9.5C5.8 8 6.1 6.5 7.5 6.5ZM5.8 11 7.5 12.3 9.2 11M5.8 15 7.5 16.3 9.2 15M16 5.5C13.5 9.7 15.1 15.2 18.2 17.8C20.1 14.3 19.8 8.6 16 5.5ZM16 5.5 17.6 14.5';
+  const GRASS = 'M12 22V4M12 5C13 4 12.8 2.4 12 1.5C11.2 2.4 11 4 12 5ZM12 7.5C12 5.9 10.7 4.7 9.4 4.4C9.5 5.7 10.5 7.2 12 7.5ZM12 7.5C13.5 7.2 14.5 5.7 14.6 4.4C13.3 4.7 12 5.9 12 7.5ZM12 10.5C12 8.9 10.7 7.7 9.4 7.4C9.5 8.7 10.5 10.2 12 10.5ZM12 10.5C13.5 10.2 14.5 8.7 14.6 7.4C13.3 7.7 12 8.9 12 10.5ZM12 13.5C12 11.9 10.7 10.7 9.4 10.4C9.5 11.7 10.5 13.2 12 13.5ZM12 13.5C13.5 13.2 14.5 11.7 14.6 10.4C13.3 10.7 12 11.9 12 13.5ZM12 22C10.5 19.5 8 18 4.5 17.5M12 22C13.5 19.5 16 18.5 19.5 18.5';
+  const MUGWORT = 'M12 2.5 13.2 6 17.5 4.5 14 8.5 19.5 9 14 12 18.5 14.5 13 15.5 12 17 11 15.5 5.5 14.5 10 12 4.5 9 10 8.5 6.5 4.5 10.8 6ZM12 6.5V21.5';
+  const row = (d, name, level, color) => `<div style="display:flex;align-items:center;gap:28px;height:96px">
+      ${icon(d, t.muted)}${pill(name, 30, t.fg, 'opacity:.85')}
+      <div style="flex:1;display:flex;gap:10px">${[0, 1, 2, 3].map(i => `<div class="pill" style="flex:1;height:16px;background:${i < level ? color : track}"></div>`).join('')}</div>
+      <div style="width:120px;display:flex;justify-content:flex-end">${pill(level ? 110 : 80, 30, level ? t.fg : t.muted)}</div>
+    </div>`;
+  return `<div class="card" style="gap:8px">
+    <div style="display:flex;align-items:center;gap:24px;height:96px">${icon(SUN, ORANGE_SHADE)}${pill(120, 44, t.fg)}${pill(100, 30, t.fg, 'opacity:.85')}${pill(190, 26, t.muted)}</div>
+    <div style="height:3px;background:${line};margin:8px 0"></div>
+    ${row(BIRCH, 110, 1, GREEN)}${row(GRASS, 120, 3, ORANGE_SHADE)}${row(MUGWORT, 150, 0, track)}
+  </div>`;
+}
+
 // Web Page: a page scaled to fill the card edge to edge, as a neutral wireframe (a header with a logo and links, a
 // picture placeholder, a heading and lines of text), over the row of buttons that switch between its addresses, the
 // second one lit.
@@ -872,6 +895,8 @@ const PREVIEWS = [
   { id: 'sc-light',     label: '3h · Dashboard Shortcuts — preview-light.png',   theme: 'light', render: dashboardShortcuts },
   { id: 'wp-dark',      label: '3i · Web Page — preview-dark.png',             theme: 'dark',  render: webPage },
   { id: 'wp-light',     label: '3j · Web Page — preview-light.png',            theme: 'light', render: webPage },
+  { id: 'pw-dark',      label: '3k · Pollen and UV — preview-dark.png',        theme: 'dark',  render: pollen },
+  { id: 'pw-light',     label: '3l · Pollen and UV — preview-light.png',       theme: 'light', render: pollen },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');
