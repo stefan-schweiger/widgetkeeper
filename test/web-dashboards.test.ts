@@ -783,3 +783,41 @@ describe('web dashboards page', () => {
     expect(readFileSync('settings/socket.io.js', 'utf8').slice(0, 200)).toContain(`socket.io-client ${version} `);
   });
 });
+
+describe('web dashboards: popups (wk-084)', () => {
+  it('lists, pictures and answers popups for the page, like its other routes', async () => {
+    const { homey } = setup();
+    homey.cloud = { getHomeyId: async () => 'homey-id' };
+    const asked = homey.app.popups.ask({ target: 'all', text: 'Open the garage?', seconds: 30 });
+    await new Promise(r => setTimeout(r, 0));
+    const listed = await api.getWebPopups({ homey, query: {} });
+    expect(listed.popups.map((p: any) => p.text)).toEqual(['Open the garage?']);
+    expect((await api.getWebSetup({ homey, query: {} })).popups!.popups).toHaveLength(1);
+    const { id } = listed.popups[0];
+    await expect(api.getWebPopupImage({ homey, query: {}, params: { id } })).rejects.toThrow('Not found'); // no picture
+    expect(await api.postWebPopupAnswer({ homey, query: {}, params: { id }, body: { answer: true } })).toEqual({ ok: true, answer: true });
+    await expect(asked).resolves.toEqual({ answer: true, answered: true });
+    // Turned off, the page's routes refuse as the rest do.
+    const off = setup({}, false);
+    await expect(api.getWebPopups({ homey: off.homey, query: {} })).rejects.toThrow(/turned off/);
+    await expect(api.postWebPopupAnswer({ homey: off.homey, query: {}, params: { id }, body: { answer: true } })).rejects.toThrow(/turned off/);
+  });
+
+  it('lets the prompt page in with the popup token only, web dashboards on or off', async () => {
+    const { homey } = setup({}, false);
+    await homey.app.popups.show({ target: 'name:hall', text: 'Dinner', seconds: 30 });
+    const { id, token } = homey.app.popups.forScreen('hall').popups[0];
+    const page = await api.postPopup({ homey, params: { id }, body: { t: token } });
+    expect(page).toMatchObject({ closed: false, kind: 'message', text: 'Dinner', language: 'en' });
+    expect(page.strings.yes).toBe('Yes');
+    await expect(api.postPopup({ homey, params: { id }, body: { t: 'nope' } })).rejects.toThrow('Not found');
+    await expect(api.postPopup({ homey, params: { id }, body: {} })).rejects.toThrow('Not found');
+    await expect(api.postPopupImage({ homey, params: { id }, body: {} })).rejects.toThrow('Not found');
+    await expect(api.postPopupAnswer({ homey, params: { id }, body: { answer: true } })).rejects.toThrow('Not found');
+  });
+
+  it('marks exactly the prompt page routes public', () => {
+    const publicRoutes = Object.entries(app.api).filter(([, r]: [string, any]) => r.public).map(([name]) => name).sort();
+    expect(publicRoutes).toEqual(['postPopup', 'postPopupAnswer', 'postPopupImage']);
+  });
+});
