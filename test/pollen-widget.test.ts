@@ -85,13 +85,13 @@ describe('detailed', () => {
     expect(text('.pw-uv-peak')).toMatch(/· now 3$/);
     const days = root.querySelector<HTMLElement>('.pw-days')!;
     expect([...days.querySelectorAll('.pw-day')].map(d => d.textContent)).toEqual(['Tue', 'Wed', 'Thu']);
-    // Birch, grass, mugwort: a small bar each, lit to its level, the level word as the label.
+    // Birch, grass, mugwort: a dot and the level in words each, None as a dash (its word as the title).
     const cells = [...days.querySelectorAll<HTMLElement>('.pw-cell')]
-      .map(c => [c.getAttribute('aria-label'), c.dataset.level, c.querySelectorAll('i.on').length, c.querySelectorAll('i').length]);
+      .map(c => [c.dataset.level, c.querySelector('.pw-cell-word')!.textContent, c.title, c.querySelectorAll('i').length]);
     expect(cells).toEqual([
-      ['Low', '1', 1, 4], ['None', '0', 0, 4], ['None', '0', 0, 4],
-      ['Moderate', '2', 2, 4], ['High', '3', 3, 4], ['Moderate', '2', 2, 4],
-      ['None', '0', 0, 4], ['Low', '1', 1, 4], ['Moderate', '2', 2, 4],
+      ['1', 'Low', 'Low', 1], ['0', '–', 'None', 1], ['0', '–', 'None', 1],
+      ['2', 'Moderate', 'Moderate', 1], ['3', 'High', 'High', 1], ['2', 'Moderate', 'Moderate', 1],
+      ['0', '–', 'None', 1], ['1', 'Low', 'Low', 1], ['2', 'Moderate', 'Moderate', 1],
     ]);
     // The UV peaks as plain numbers (none on the last day).
     expect([...days.querySelectorAll('.pw-cell-uv')].map(c => c.textContent)).toEqual(['5', '7', '–']);

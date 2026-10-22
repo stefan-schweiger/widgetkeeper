@@ -91,16 +91,18 @@ html, body { margin: 0; }
 @container pw (max-width: 300px) { .pw-row { grid-template-columns: var(--homey-icon-size-medium, 20px) 84px 1fr 64px; } }
 
 /*
- * Detailed: the next days under the rows, kept quiet but filling the width: small icons, a thin four-step bar per type and
- * day (today's bars, smaller), the UV peaks in the muted colour.
+ * Detailed: the next days under the rows, kept quiet and unlike today's bars: small icons, a dot in the level's colour and
+ * the level in words per type and day, the UV peaks in the muted colour.
  */
 .pw-days { display: grid; grid-template-columns: var(--homey-icon-size-medium, 20px) repeat(var(--pw-cols, 3), 1fr);
-  gap: 2px var(--homey-su-3, 12px); align-items: center; margin-top: var(--homey-su-2, 8px); padding-top: var(--homey-su-1, 4px);
+  gap: 2px var(--homey-su-2, 8px); align-items: center; margin-top: var(--homey-su-2, 8px); padding-top: var(--homey-su-1, 4px);
   border-top: 1px solid var(--pw-line); font-size: var(--pw-fs-label); line-height: var(--pw-lh-label); color: var(--pw-muted); }
-.pw-days .pw-day[dir="auto"] { text-align: center; }
+.pw-days .pw-day[dir="auto"] { text-align: left; padding-left: 12px; }
 .pw-days-icon { display: flex; justify-content: center; }
 .pw-days-icon .pw-icon { width: var(--homey-icon-size-small, 14px); height: var(--homey-icon-size-small, 14px); }
-.pw-cell { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; align-items: center; height: 16px; }
-.pw-cell i { display: block; height: 4px; border-radius: 2px; background: var(--pw-track); }
-.pw-cell i.on { background: var(--pw-c); }
-.pw-cell-uv { height: 16px; text-align: center; font-variant-numeric: tabular-nums; }
+.pw-cell { display: flex; align-items: center; gap: 6px; height: 18px; min-width: 0; }
+.pw-cell i { flex: 0 0 auto; width: 6px; height: 6px; border-radius: 50%; background: var(--pw-c); }
+.pw-cell[data-level="0"] i { background: var(--pw-track); }
+.pw-cell-word { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.pw-cell:not([data-level="0"]) .pw-cell-word { color: var(--pw-text); }
+.pw-cell-uv { height: 18px; padding-left: 12px; font-variant-numeric: tabular-nums; }

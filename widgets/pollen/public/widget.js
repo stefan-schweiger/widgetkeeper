@@ -186,8 +186,8 @@
     }
 
     /**
-     * The next days, kept quiet: a column each, a row per type with a thin four-step bar like today's (the level word as
-     * its label), and the day's UV peak as a muted number.
+     * The next days, kept quiet and unlike today's bars: a column each, a row per type with a small dot in its level's
+     * colour and the level in words, and the day's UV peak as a muted number.
      */
     function renderDays(days) {
       const grid = el('div', { class: 'pw-days' }, root);
@@ -199,9 +199,10 @@
         for (const day of days) {
           const entry = day.pollen[type];
           const level = entry ? entry.level : 0;
-          const word = entry ? t(LEVEL_KEYS[level]) : '–';
-          const cell = el('span', { class: 'pw-cell', 'data-level': String(level), title: word, 'aria-label': word }, grid);
-          for (let i = 0; i < STEPS; i++) el('i', { class: i < level ? 'on' : null }, cell);
+          // "None" stays a dash, so the days with pollen stand out.
+          const cell = el('span', { class: 'pw-cell', 'data-level': String(level), title: entry ? t(LEVEL_KEYS[level]) : null }, grid);
+          el('i', {}, cell);
+          el('span', { class: 'pw-cell-word', dir: 'auto', text: level ? t(LEVEL_KEYS[level]) : '–' }, cell);
         }
       }
       if (!showUv) return;
