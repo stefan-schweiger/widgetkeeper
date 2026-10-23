@@ -302,7 +302,7 @@ export default class WidgetkeeperApp extends Homey.App {
     return this.homey.flow.getTriggerCard(DAYS_SINCE_OVERDUE_CARD).trigger({ counter: counter.name, days: counter.days }, { key: counter.key });
   }
 
-  /** The Flow card *A timer finished*: the timer's name (or its duration, as the widget shows it) and its minutes. */
+  /** The Flow card *A timer on the Timers widget finished*: the timer's name (or its duration, as the widget shows it) and its minutes. */
   private timerFinished(timer: Timer) {
     const minutes = Math.round(timer.duration / 6e3) / 10;
     const name = timer.label

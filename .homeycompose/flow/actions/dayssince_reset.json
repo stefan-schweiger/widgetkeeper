@@ -1,19 +1,19 @@
 {
   "id": "dayssince_reset",
   "title": {
-    "en": "Reset a counter",
-    "nl": "Een teller resetten",
-    "de": "Einen Zähler zurücksetzen",
-    "fr": "Remettre un compteur à zéro",
-    "it": "Azzera un contatore",
-    "sv": "Nollställ en räknare",
-    "no": "Nullstill en teller",
-    "es": "Reiniciar un contador",
-    "da": "Nulstil en tæller",
-    "ru": "Сбросить счётчик",
-    "pl": "Wyzeruj licznik",
-    "ko": "카운터 초기화",
-    "ar": "إعادة ضبط عداد"
+    "en": "Reset a Days Since counter",
+    "nl": "Een Dagen geleden-teller resetten",
+    "de": "Einen Tage-seit-Zähler zurücksetzen",
+    "fr": "Remettre à zéro un compteur Jours depuis",
+    "it": "Azzera un contatore di Giorni da",
+    "sv": "Nollställ en Dagar sedan-räknare",
+    "no": "Nullstill en Dager siden-teller",
+    "es": "Reiniciar un contador de Días desde",
+    "da": "Nulstil en Dage siden-tæller",
+    "ru": "Сбросить счётчик «Дней прошло»",
+    "pl": "Wyzeruj licznik Dni od",
+    "ko": "경과 일수 카운터 초기화",
+    "ar": "إعادة ضبط عداد «أيام منذ»"
   },
   "titleFormatted": {
     "en": "Reset [[counter]]",

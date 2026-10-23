@@ -1,19 +1,19 @@
 {
   "id": "dayssince_set",
   "title": {
-    "en": "Set a counter's days",
-    "nl": "De dagen van een teller instellen",
-    "de": "Die Tage eines Zählers setzen",
-    "fr": "Régler les jours d'un compteur",
-    "it": "Imposta i giorni di un contatore",
-    "sv": "Ställ in en räknares dagar",
-    "no": "Still inn dagene til en teller",
-    "es": "Ajustar los días de un contador",
-    "da": "Indstil en tællers dage",
-    "ru": "Задать дни счётчика",
-    "pl": "Ustaw dni licznika",
-    "ko": "카운터 일수 설정",
-    "ar": "ضبط أيام عداد"
+    "en": "Back-date a Days Since counter",
+    "nl": "Een Dagen geleden-teller terugdateren",
+    "de": "Einen Tage-seit-Zähler zurückdatieren",
+    "fr": "Antidater un compteur Jours depuis",
+    "it": "Retrodata un contatore di Giorni da",
+    "sv": "Bakdatera en Dagar sedan-räknare",
+    "no": "Tilbakedater en Dager siden-teller",
+    "es": "Antedatar un contador de Días desde",
+    "da": "Tilbagedater en Dage siden-tæller",
+    "ru": "Сдвинуть счётчик «Дней прошло» в прошлое",
+    "pl": "Przestaw wstecz licznik Dni od",
+    "ko": "경과 일수 카운터를 과거 날짜로 설정",
+    "ar": "تعيين تاريخ سابق لعداد «أيام منذ»"
   },
   "titleFormatted": {
     "en": "Set [[counter]] to [[days]] days ago",

@@ -149,6 +149,7 @@ How this project uses it:
 - All 13 Homey languages: en nl de fr it sv no es da ru pl ko ar. The widget, service and settings-page strings are in `locales/<lang>.json`, the manifest strings in the compose JSONs, the store text in `README.<lang>.txt`.
 - `test/locales.test.ts` fails if a key, a `__token__` or a manifest language is missing, so a new string needs all 13. Each widget's `DEFAULT_STRINGS` (the fallback without `opts.t`) must equal its en.json strings (`test/widget-html.test.ts`, 'fallback strings').
 - Keep strings as short as the English: the 300 px widget truncates the header subtitles and the footer label.
+- A Flow card's `title` names its widget ("Reset a Days Since counter", "Colour a Flow Button"): Homey lists all the app's cards in one flat list and its search matches titles only (2026-10-23). The `titleFormatted`, shown on a card already in a Flow, needn't. Never change a card's `id`, args or tokens: it breaks Flows using it.
 - Arabic keeps the LTR layout; text elements are `dir="auto"` with `text-align: left`.
 
 ## Branding

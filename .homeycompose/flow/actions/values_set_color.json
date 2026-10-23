@@ -1,19 +1,19 @@
 {
   "id": "values_set_color",
   "title": {
-    "en": "Set the tile colour",
-    "nl": "Tegelkleur instellen",
-    "de": "Kachelfarbe setzen",
-    "fr": "Définir la couleur de la tuile",
-    "it": "Imposta il colore del riquadro",
-    "sv": "Ange rutans färg",
-    "no": "Angi flisens farge",
-    "es": "Establecer el color del mosaico",
-    "da": "Angiv feltets farve",
-    "ru": "Задать цвет плитки",
-    "pl": "Ustaw kolor kafelka",
-    "ko": "타일 색상 설정",
-    "ar": "تعيين لون البلاطة"
+    "en": "Colour a Device Values tile",
+    "nl": "Een Apparaatwaarden-tegel kleuren",
+    "de": "Eine Gerätewerte-Kachel einfärben",
+    "fr": "Colorer une tuile Valeurs d'appareils",
+    "it": "Colora un riquadro di Valori dispositivi",
+    "sv": "Färga en Enhetsvärden-ruta",
+    "no": "Farg en Enhetsverdier-flis",
+    "es": "Colorear un mosaico de Valores de dispositivos",
+    "da": "Farv et Enhedsværdier-felt",
+    "ru": "Окрасить плитку «Значения устройств»",
+    "pl": "Pokoloruj kafelek Wartości urządzeń",
+    "ko": "기기 값 타일 색상 설정",
+    "ar": "تلوين بلاطة «قيم الأجهزة»"
   },
   "titleFormatted": {
     "en": "Set the tile colour of [[slot]] to [[color]]",
