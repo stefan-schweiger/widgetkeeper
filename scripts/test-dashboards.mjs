@@ -399,7 +399,7 @@ const BUILD = {
     const items = await autocomplete('sparklines', 'slot1');
     const cap = c => i => i.id.endsWith(`:${c}`);
     const set = [pick(items, cap('measure_temperature'))[0], pick(items, cap('measure_power'))[0], ...pick(items, cap('measure_temperature'), 3).slice(1), pick(items, cap('measure_battery'))[0]];
-    const out = ['1h', '6h', '24h', '2d', '3d', '5d', '7d'].map(span =>
+    const out = ['1h', '6h', '24h', 'today', 'yesterday', '2d', '3d', '5d', '7d'].map(span =>
       w('sparklines', `${span}${span === '24h' ? ' (default)' : ''}`, { span, ...slots('slot', set.slice(0, 4)) }));
     out.push(
       w('sparklines', '1 column · 7 days · six', { span: '7d', columns: '1', ...slots('slot', set) }),
@@ -424,6 +424,8 @@ const BUILD = {
       w('charts', 'On one chart · area + line', { charts: 'overlay', chart1: temp, color1: 'purple', chart2: power, style2: 'line', smooth2: true, color2: 'orange' }),
       w('charts', 'On one chart · bars + bars, from zero', { charts: 'overlay', chart1: power, span1: '6h', style1: 'bars', range1: 'zero', chart2: other[0] || temp, style2: 'bars' }),
       w('charts', 'Start at zero · below zero yellow', { chart1: temp, range1: 'zero', negative1: true, color1: 'purple' }),
+      w('charts', 'Two · today area + yesterday bars', { charts: '2', chart1: temp, span1: 'today', chart2: power, span2: 'yesterday', style2: 'bars', color2: 'green' }),
+      w('charts', 'On one chart · yesterday', { charts: 'overlay', chart1: temp, span1: 'yesterday', color1: 'purple', chart2: power, style2: 'line', color2: 'orange' }),
       w('charts', '1 h · no header · own title', { chart1: power, span1: '1h', showHeader: false, title1: 'Power now' }),
       ...other.map((item, i) => w('charts', `Other value ${i + 1} · ${['2d', '3d', '5d'][i]}`, { chart1: item, span1: ['2d', '3d', '5d'][i], color1: ['red', 'yellow', 'green'][i] })),
       w('charts', 'Deleted device + empty', { charts: '2', chart1: missing }),
