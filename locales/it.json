@@ -694,7 +694,8 @@
       "dayssince": "I giorni da una faccenda, in rosso quando è di nuovo ora.",
       "stack": "Widget di un'altra dashboard, a turno.",
       "shortcuts": "Passa alle altre dashboard web, nei tuoi colori e icone.",
-      "webpage": "Qualsiasi pagina web, scalata per riempire il widget."
+      "webpage": "Qualsiasi pagina web, scalata per riempire il widget.",
+      "popups": "Mostra anche qui i popup che i Flow inviano al suo nome di schermo."
     }
   }
 }

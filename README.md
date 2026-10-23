@@ -266,7 +266,7 @@ A Flow shows a message, or asks a question with **Yes** and **No**, in front of 
 - The picture is a camera, refreshed while the popup is open, or a picture address typed in. The cards *with an image* take an image tag instead, such as a doorbell's snapshot from its own Flow, taken when the Flow runs (or a text tag holding a picture address).
 - *Close the popups on [screen]* closes them early; an open question then ends unanswered.
 
-The screen is **Everywhere**, one of your [web dashboards](#web-dashboards), or the name of a Popups widget. On a web dashboard the popup covers the page in every browser showing that dashboard. On Homey's own dashboards a widget can't draw over the dashboard, so the Popups widget, which shows nothing itself, opens the popup in the Homey app's built-in browser; close that window when you're done. Put one on each dashboard where you want popups, with the same name on every screen that should get the same ones.
+The screen is **Everywhere**, one of your [web dashboards](#web-dashboards), or the name of a Popups widget. On a web dashboard the popup covers the page in every browser showing that dashboard. On Homey's own dashboards a widget can't draw over the dashboard, so the Popups widget, which shows nothing itself, opens the popup in the Homey app's built-in browser; close that window when you're done. Put one on each dashboard where you want popups, with the same name on every screen that should get the same ones. A web dashboard can have one too, so a name such as *Hallway* reaches the phones and the hallway's wall tablet at once.
 
 **Settings:** screen name.
 

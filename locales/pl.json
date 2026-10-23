@@ -694,7 +694,8 @@
       "dayssince": "Dni od ostatniego zadania, czerwone, gdy znów czas.",
       "stack": "Widżety z innego pulpitu, na zmianę.",
       "shortcuts": "Przechodź do innych pulpitów webowych, w Twoich kolorach i ikonach.",
-      "webpage": "Dowolna strona WWW, przeskalowana, by wypełnić widżet."
+      "webpage": "Dowolna strona WWW, przeskalowana, by wypełnić widżet.",
+      "popups": "Pokazuje tu też okna wyskakujące, które Flow wysyłają na jego nazwę ekranu."
     }
   }
 }

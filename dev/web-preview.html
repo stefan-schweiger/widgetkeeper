@@ -70,13 +70,14 @@
       const dashboards = [
         { id: 'home', name: 'Home', theme: 'auto', columns: [[W('electricity'), W('price')], [W('lights', {}, ['d1', 'd2', 'd5', 'd8']), W('thermostat')], [W('weather'), W('timers'), W('locks')]] },
         { id: 'kitchen', name: 'Kitchen tablet', theme: 'dark', background: 'ocean', columns: [[W('timers'), W('media')], [W('flows'), W('sensordots'), W('values', { slot1: { id: 't1:measure_temperature', name: 'Living room thermostat · Temperature', description: 'Living room · °C' } })]] },
-        { id: 'hall', name: 'Hallway', theme: 'auto', columns: [[W('locks'), W('cameras'), W('sensoralarms')]] },
+        { id: 'hall', name: 'Hallway', theme: 'auto', columns: [[W('locks'), W('cameras'), W('sensoralarms'), W('popups', { name: 'Hallway' })]] },
         // A wide widget: the cameras over two columns, the weather above it and the flows under it in the second.
         { id: 'wide', name: 'Overview', theme: 'auto', columns: [[W('clock'), { ...W('cameras'), span: 2, at: [1] }, W('values')], [W('weather'), W('flows')], [W('lights', {}, ['d1', 'd2']), W('timers'), W('locks')]] },
         { id: 'new', name: 'Spare room', theme: 'auto', columns: [[], [], []] },
       ];
 
-      // `?popup=message|ask|picture|camera|elsewhere`: a Flow's popup on everywhere, open for 10 min (wk-084).
+      // `?popup=message|ask|picture|camera|elsewhere`: a Flow's popup on everywhere, open for 10 min (wk-084);
+      // `named`: one sent to the screen name Hallway, which only the Hallway dashboard's Popups widget has.
       const kind = new URLSearchParams(location.search).get('popup');
       const POPUPS = {
         message: { kind: 'message', text: 'Dinner is ready', picture: null },
@@ -84,6 +85,7 @@
         picture: { kind: 'message', text: 'Someone is at the front door', picture: { source: 'stored' } },
         camera: { kind: 'ask', text: 'Someone is at the front door. Unlock it?', picture: { source: 'camera' } },
         elsewhere: { kind: 'ask', text: 'Turn off the lights downstairs?', picture: null, elsewhere: true },
+        named: { kind: 'message', text: 'The post has arrived', picture: null, target: 'name:hallway' },
       };
       const now = Date.now();
       const popups = POPUPS[kind]

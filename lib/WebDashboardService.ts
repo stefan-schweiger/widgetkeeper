@@ -33,8 +33,6 @@ const MAX_DEVICES = 100; // per widget
 const MAX_TEXT = 2000;
 const MAX_FOREIGN_SETTINGS = 60; // per widget of another app
 const ID = /^[A-Za-z0-9_-]{1,40}$/;
-/** Widgets the editor doesn't offer: Popups only opens Homey's in-app browser, and the page draws popups itself. */
-const NOT_ON_WEB = new Set(['popups']);
 /** Another app's widget type: its id on Homey's dashboards (`homey:app:<appId>:<widgetId>`). */
 const FOREIGN = /^homey:app:([A-Za-z0-9._-]{1,100}):([A-Za-z0-9_-]{1,60})$/;
 
@@ -486,7 +484,7 @@ export default class WebDashboardService {
 
   /** Every widget type, in the manifest's order, with its settings in Homey's language. */
   widgetTypes(language = this.homey.i18n.getLanguage()): WebWidgetType[] {
-    return Object.entries(this.manifestWidgets).filter(([type]) => !NOT_ON_WEB.has(type)).map(([type, w]) => {
+    return Object.entries(this.manifestWidgets).map(([type, w]) => {
       const settings = Array.isArray(w.settings) ? w.settings : [];
       const { sections, labels } = settingSections(settings, language);
       return {

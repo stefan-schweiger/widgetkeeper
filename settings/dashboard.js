@@ -187,6 +187,7 @@
       stack: 'Widgets from another dashboard, taking turns.',
       shortcuts: 'Jump to your other web dashboards, in your colours and icons.',
       webpage: 'Any web page, scaled to fill the widget.',
+      popups: 'Shows the popups that Flows send to its screen name here too.',
     },
   };
 
@@ -3489,8 +3490,25 @@
     function popupHere(p) {
       if (!setup || setup.disabled || setup.passwordRequired || !key) return false;
       const m = location.hash.match(/^#\/d\/([A-Za-z0-9_-]+)(\/edit)?$/);
-      if (m) return !m[2] && (p.target === 'all' || p.target === `web:${m[1]}`);
+      if (m) return !m[2] && (p.target === 'all' || p.target === `web:${m[1]}` || screenNamesOf(m[1]).has(p.target));
       return p.target === 'all' && location.hash !== '#/edit';
+    }
+
+    /**
+     * The screen names of a dashboard's Popups widgets, as targets (`name:<key>`, keyed as `screenKey()` in
+     * lib/PopupService.ts and the widget's `popupsScreenKey()`): a popup sent to one shows on that dashboard too.
+     */
+    function screenNamesOf(dashboardId) {
+      const d = dashboards.find(x => x.id === dashboardId);
+      const names = new Set();
+      for (const column of (d && d.columns) || []) {
+        for (const w of column) {
+          if (w.type !== 'popups') continue;
+          const name = w.settings && typeof w.settings.name === 'string' ? w.settings.name.trim() : '';
+          names.add(`name:${(name || 'Screen').toLowerCase().slice(0, 60)}`);
+        }
+      }
+      return names;
     }
 
     /** Shows the oldest popup that belongs here, or closes the one shown when it no longer does (another view). */

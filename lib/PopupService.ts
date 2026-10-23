@@ -200,6 +200,15 @@ export default class PopupService {
     for (const d of this.deps.web.dashboardList(q)) items.push({ id: `web:${d.id}`, name: d.name, description: t('popups.webDashboard', 'Web dashboard') });
     const names = new Map<string, string>([[screenKey(DEFAULT_SCREEN), DEFAULT_SCREEN]]);
     for (const [key, n] of Object.entries(this.names)) names.set(key, n.name);
+    // The web dashboards' Popups widgets, which never call `/state` (the page shows their popups itself).
+    for (const d of this.deps.web.list()) {
+      for (const w of d.columns.flat()) {
+        if (w.type !== 'popups') continue;
+        const name = typeof w.settings?.name === 'string' && w.settings.name.trim() ? w.settings.name.trim().slice(0, MAX_NAME) : DEFAULT_SCREEN;
+        const key = screenKey(name);
+        if (key && !names.has(key)) names.set(key, name);
+      }
+    }
     const screen = t('popups.screenName', 'Popups widget');
     for (const [, name] of [...names.entries()].filter(([, n]) => matches(q, n)).sort((a, b) => a[1].localeCompare(b[1]))) {
       items.push({ id: `name:${name}`, name, description: screen });

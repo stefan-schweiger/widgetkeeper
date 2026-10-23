@@ -694,7 +694,8 @@
       "dayssince": "Dagen sinds een klusje, rood als het weer tijd is.",
       "stack": "Widgets van een ander dashboard, om de beurt.",
       "shortcuts": "Spring naar je andere webdashboards, in je eigen kleuren en iconen.",
-      "webpage": "Elke webpagina, geschaald om de widget te vullen."
+      "webpage": "Elke webpagina, geschaald om de widget te vullen.",
+      "popups": "Toont ook hier de pop-ups die Flows naar zijn schermnaam sturen."
     }
   }
 }

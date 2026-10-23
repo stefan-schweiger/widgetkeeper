@@ -136,6 +136,17 @@ describe('screens', () => {
     expect(service.targetItems('Garage').map(i => [i.id, i.description])).toEqual([['name:Garage', 'New screen name']]);
   });
 
+  it("lists the screen names of the web dashboards' Popups widgets too", () => {
+    const homey = fakeHomey(fakeApi({}));
+    const w = (type: string, settings: object) => ({ id: type, type, title: '', settings, deviceIds: [] });
+    const web = {
+      list: () => [{ id: 'hall', name: 'Hall tablet', columns: [[w('clock', {})], [w('popups', { name: ' Wall tablet ' }), w('popups', {})]] }],
+      dashboardList: () => [],
+    };
+    const service = new PopupService(homey, { cameras: {} as any, web: web as any }, vi.fn());
+    expect(service.targetItems('').map(i => i.id)).toEqual(['all', 'name:Screen', 'name:Wall tablet']);
+  });
+
   it("doesn't rewrite a name it saw within the day", async () => {
     const { service, homey } = setup();
     service.forScreen('Hall');

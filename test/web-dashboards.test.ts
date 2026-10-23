@@ -322,8 +322,7 @@ describe('web dashboards: what the editor needs', () => {
     expect(barMin.values!.map(v => v.id)).toEqual(['0', '1']);
     expect(types.find(t => t.type === 'electricity')!.devices).toEqual({ singular: true });
     expect(types.find(t => t.type === 'timers')!.devices).toBeNull();
-    // Every widget but Popups, which only opens Homey's in-app browser (the page draws popups itself).
-    expect(types.map(t => t.type).sort()).toEqual(Object.keys(app.widgets).filter(id => id !== 'popups').sort());
+    expect(types.map(t => t.type).sort()).toEqual(Object.keys(app.widgets).sort());
   });
 
   it("groups the settings by their titles: a group's head, the rows under it, and numbered slots", () => {
@@ -789,7 +788,7 @@ describe('web dashboards page', () => {
 
   it('describes every widget type on the front page', () => {
     const en = JSON.parse(readFileSync('locales/en.json', 'utf8'));
-    expect(Object.keys(en.web.about).sort()).toEqual(Object.keys(app.widgets).filter(id => id !== 'popups').sort());
+    expect(Object.keys(en.web.about).sort()).toEqual(Object.keys(app.widgets).sort());
   });
 
   it("loads the kit from where the Homey serves it (a widget's public folder is /app/<appId>/widgets/<id>/)", () => {

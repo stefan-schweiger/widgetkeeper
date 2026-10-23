@@ -708,8 +708,8 @@ const BUILD = {
     ] };
   },
 
-  // Native only: a Popups widget draws nothing, so a clock above and below shows where it is. Send a popup to the
-  // screen name "Test" (or Everywhere) from a Flow to see it open in the phone app's browser.
+  // A Popups widget draws nothing, so a clock above and below shows where it is. Send a popup to the screen name
+  // "Test" from a Flow: it opens in the phone app's browser (--native) or over the web dashboard.
   popups: () => ({ cols: 1, widgets: [
     w('clock', 'Above: a Popups widget named Test', { showWeather: false }),
     w('popups', '', { name: 'Test' }),
@@ -722,12 +722,8 @@ const BUILD = {
 if (opts.apps && (opts.native || positionals.length)) throw new Error('--apps builds a web dashboard of its own: no --native or widget types with it');
 /** Widgets Homey's own dashboards don't offer (deprecated there): left out with --native. */
 const WEB_ONLY = Object.keys(widgetDefs).filter(t => widgetDefs[t].deprecated === true);
-/** Widgets the web dashboards don't offer (Popups: the page draws popups itself): left out without --native. */
-const NATIVE_ONLY = ['popups'];
 if (opts.native && positionals.some(t => WEB_ONLY.includes(t))) throw new Error(`Web dashboards only: ${positionals.filter(t => WEB_ONLY.includes(t)).join(', ')}`);
-if (!opts.native && positionals.some(t => NATIVE_ONLY.includes(t))) throw new Error(`Homey dashboards only (--native): ${positionals.filter(t => NATIVE_ONLY.includes(t)).join(', ')}`);
-const types = (opts.apps ? [] : positionals.length ? positionals : Object.keys(widgetDefs))
-  .filter(t => (opts.native ? !WEB_ONLY.includes(t) : !NATIVE_ONLY.includes(t)));
+const types = (opts.apps ? [] : positionals.length ? positionals : Object.keys(widgetDefs)).filter(t => !opts.native || !WEB_ONLY.includes(t));
 for (const t of types) if (!BUILD[t]) throw new Error(`Unknown widget type: ${t} (known: ${Object.keys(BUILD).join(', ')})`);
 const missingBuilders = Object.keys(widgetDefs).filter(t => !BUILD[t]);
 if (missingBuilders.length) console.warn(`No test dashboard for: ${missingBuilders.join(', ')}`);

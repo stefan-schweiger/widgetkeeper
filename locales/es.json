@@ -694,7 +694,8 @@
       "dayssince": "Los días desde una tarea, en rojo cuando vuelve a tocar.",
       "stack": "Widgets de otro panel, por turnos.",
       "shortcuts": "Salta a tus otros paneles web, con tus colores e iconos.",
-      "webpage": "Cualquier página web, escalada para llenar el widget."
+      "webpage": "Cualquier página web, escalada para llenar el widget.",
+      "popups": "Muestra también aquí las ventanas emergentes que los Flows envían a su nombre de pantalla."
     }
   }
 }

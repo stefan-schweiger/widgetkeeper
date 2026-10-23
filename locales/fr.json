@@ -694,7 +694,8 @@
       "dayssince": "Les jours depuis une tâche, en rouge quand c'est à refaire.",
       "stack": "Les widgets d'un autre tableau de bord, à tour de rôle.",
       "shortcuts": "Passez à vos autres tableaux de bord web, avec vos couleurs et icônes.",
-      "webpage": "N'importe quelle page web, mise à l'échelle du widget."
+      "webpage": "N'importe quelle page web, mise à l'échelle du widget.",
+      "popups": "Affiche aussi ici les pop-ups que les Flows envoient à son nom d'écran."
     }
   }
 }

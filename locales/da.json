@@ -694,7 +694,8 @@
       "dayssince": "Dage siden en opgave, rød når det er tid igen.",
       "stack": "Widgets fra et andet dashboard, på skift.",
       "shortcuts": "Hop til dine andre webdashboards, i dine farver og ikoner.",
-      "webpage": "Enhver webside, skaleret så den fylder widgeten."
+      "webpage": "Enhver webside, skaleret så den fylder widgeten.",
+      "popups": "Viser også her de popups, som Flows sender til dens skærmnavn."
     }
   }
 }
