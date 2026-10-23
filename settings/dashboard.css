@@ -38,8 +38,8 @@ body { margin: 0; color: var(--wd-text); font-size: var(--homey-font-size-defaul
   padding: 8px 16px; background: color-mix(in srgb, var(--wd-bg) 88%, transparent);
   -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
 }
-/* Full screen: the dashboard's bar keeps only its buttons for dark/light and full screen and the live note, without
-   its backdrop, and scrolls away. */
+/* Full screen: the dashboard's bar keeps only its full screen button and the live note, without its backdrop, and
+   scrolls away. */
 .wd-full .wd-back, .wd-full .wd-bar-title, .wd-full .wd-bar-edit { display: none; }
 .wd-full .wd-bar { position: static; background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
 /* The dashboard's backdrop in the editor: a button with its swatch, opening the palette under it. */

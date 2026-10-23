@@ -1027,7 +1027,10 @@
       else html.style.removeProperty('--wd-bg');
     }
 
-    /** The bar's dark/light button: this browser only; back to following the theme when that shows the same. */
+    /**
+     * The edit modes' dark/light button (the front page's and a dashboard's; the user wanted it off the bars you look
+     * at): this browser only; back to following the theme when that shows the same.
+     */
     function themeButton() {
       const b = button('wd-icon', '', () => {
         const dark = !isDark();
@@ -1038,7 +1041,7 @@
       return b;
     }
 
-    // Full screen: the dashboard's bar keeps only the exit button, the dark/light one and the live note (dashboard.css).
+    // Full screen: the dashboard's bar keeps only the exit button and the live note (dashboard.css).
     for (const type of ['fullscreenchange', 'webkitfullscreenchange']) {
       document.addEventListener(type, () => {
         const page = /** @type {any} */ (document);
@@ -1223,7 +1226,7 @@
         settings.append(icon('sliders'), el('span', 'wd-bar-label', t('pageSettings')));
         const done = el('a', 'wd-btn primary', t('done'));
         done.href = '#/';
-        root.append(bar(brand(), el('span', 'wd-spacer'), settings, done), page);
+        root.append(bar(brand(), el('span', 'wd-spacer'), themeButton(), settings, done), page);
         return;
       }
       const add = button('wd-dash wd-dash-new', '', async () => {
@@ -1249,7 +1252,7 @@
       edit.title = t('edit');
       edit.setAttribute('aria-label', t('edit'));
       edit.append(icon('pen'));
-      root.append(bar(brand(), el('span', 'wd-spacer'), liveNote(), themeButton(), edit), page);
+      root.append(bar(brand(), el('span', 'wd-spacer'), liveNote(), edit), page);
     }
 
     /** Saves the front page's choices (`order`, `widgets`) after the saves already queued; keeps what the app answers. */
@@ -1840,7 +1843,7 @@
       back.href = '#/';
       back.title = t('dashboards');
       back.setAttribute('aria-label', t('dashboards'));
-      const items = [back, el('span', 'wd-bar-title', d.name || t('untitled')), el('span', 'wd-spacer'), liveNote(), themeButton()];
+      const items = [back, el('span', 'wd-bar-title', d.name || t('untitled')), el('span', 'wd-spacer'), liveNote()];
       // Safari on an iPad only has the webkit-prefixed calls.
       const doc = /** @type {any} */ (document.documentElement);
       const page = /** @type {any} */ (document);
@@ -1946,7 +1949,7 @@
 
       const done = el('a', 'wd-btn primary', t('done'));
       done.href = `#/d/${d.id}`;
-      return bar(name, cols, theme, bgPick, el('span', 'wd-spacer'), remove, done);
+      return bar(name, cols, theme, bgPick, el('span', 'wd-spacer'), themeButton(), remove, done);
     }
 
     function setColumns(n) {
