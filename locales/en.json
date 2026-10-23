@@ -192,6 +192,10 @@
     "webPasswordRemoved": "Password removed.",
     "webPasswordTooShort": "Use at least __min__ characters.",
     "webPasswordTooLong": "Use at most __max__ characters.",
+    "webPasswordCurrent": "Current password",
+    "webPasswordWrong": "The current password is wrong.",
+    "webPasswordLocked": "Too many wrong passwords. Try again in __seconds__ s.",
+    "webPasswordForgot": "Forgot it? The Flow card Remove the web dashboards password removes it.",
     "webBackupHelp": "To back up or restore your web dashboards, open the web dashboards page and tap the pen on its front page."
   },
   "heatmap": {

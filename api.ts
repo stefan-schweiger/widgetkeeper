@@ -216,10 +216,13 @@ export default {
     return { set: app.webPassword.isSet };
   },
 
-  /** Used by the app settings page: sets the web dashboards' password (`{password: ''}` removes it). */
-  async putWebPassword({ homey, body }: { homey: Homey, body: { password?: unknown } }) {
+  /**
+   * Used by the app settings page: sets the web dashboards' password (`{password: ''}` removes it). While one is set,
+   * `current` must be it (anyone whose API key may call the app reaches this route, not only the owner).
+   */
+  async putWebPassword({ homey, body }: { homey: Homey, body: { password?: unknown, current?: unknown } }) {
     const app = homey.app as WidgetkeeperApp;
-    return app.webPassword.setPassword(typeof body?.password === 'string' ? body.password : '');
+    return app.webPassword.setPassword(typeof body?.password === 'string' ? body.password : '', body?.current);
   },
 
   /**

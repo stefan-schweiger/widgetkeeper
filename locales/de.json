@@ -192,6 +192,10 @@
     "webPasswordRemoved": "Passwort entfernt.",
     "webPasswordTooShort": "Mindestens __min__ Zeichen verwenden.",
     "webPasswordTooLong": "Höchstens __max__ Zeichen verwenden.",
+    "webPasswordCurrent": "Aktuelles Passwort",
+    "webPasswordWrong": "Das aktuelle Passwort ist falsch.",
+    "webPasswordLocked": "Zu viele falsche Passwörter. Versuche es in __seconds__ s erneut.",
+    "webPasswordForgot": "Vergessen? Die Flow-Karte Passwort der Web-Dashboards entfernen entfernt es.",
     "webBackupHelp": "Zum Sichern oder Wiederherstellen öffne die Web-Dashboard-Seite und tippe auf ihrer Startseite auf den Stift."
   },
   "heatmap": {

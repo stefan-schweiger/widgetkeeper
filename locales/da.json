@@ -192,6 +192,10 @@
     "webPasswordRemoved": "Adgangskoden er fjernet.",
     "webPasswordTooShort": "Brug mindst __min__ tegn.",
     "webPasswordTooLong": "Brug højst __max__ tegn.",
+    "webPasswordCurrent": "Nuværende adgangskode",
+    "webPasswordWrong": "Den nuværende adgangskode er forkert.",
+    "webPasswordLocked": "For mange forkerte adgangskoder. Prøv igen om __seconds__ s.",
+    "webPasswordForgot": "Glemt den? Flow-kortet Fjern webdashboardenes adgangskode fjerner den.",
     "webBackupHelp": "For at tage en sikkerhedskopi eller gendanne dine webdashboards skal du åbne deres side og trykke på blyanten på forsiden."
   },
   "heatmap": {

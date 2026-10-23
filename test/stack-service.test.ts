@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
 import { API_KEY_SETTING, KeyError } from '../lib/PersonalApiKey.js';
+import Secrets from '../lib/secrets.js';
 import StackService, { dashboardPages, STACK_RESUME_EVENT, STACK_SHOW_EVENT, STACK_TYPES } from '../lib/StackService.js';
 import stackApi, { PAGE_APIS } from '../widgets/stack/api.js';
 import { findWidgetRoute } from '../lib/widgetRoutes.js';
@@ -44,7 +45,7 @@ function setup(scopes = ['homey.dashboard.readonly']) {
     return { dash1: KITCHEN, dash2: { id: 'dash2', name: 'Energy', columns: [] } };
   });
   keyApis.set('key', { sessions: { getSessionMe: async () => ({ scopes }) }, dashboards: { getDashboards } });
-  homey.settings.set(API_KEY_SETTING, 'key');
+  Secrets.for(homey).set(API_KEY_SETTING, 'key');
   return { homey, service: new StackService(homey, () => {}), getDashboards };
 }
 
@@ -102,7 +103,7 @@ describe('StackService', () => {
   it("turns a key without the permission into keyScope, and no key into noKey", async () => {
     const { service, homey } = setup(['homey.flow.start']);
     await expect(service.getPages('dash1')).rejects.toMatchObject({ reason: 'keyScope' });
-    homey.settings.unset(API_KEY_SETTING);
+    Secrets.for(homey).unset(API_KEY_SETTING);
     await expect(service.getPages('dash1')).rejects.toBeInstanceOf(KeyError);
     await expect(service.getPages('dash1')).rejects.toMatchObject({ reason: 'noKey' });
   });
@@ -136,7 +137,7 @@ describe('StackService', () => {
     const { service, homey } = setup(['homey.flow.start']);
     homey.__ = (key: string) => ({ 'stack.keyScope': 'The API key may not read dashboards.', 'stack.keyHint': 'Add one' } as any)[key];
     expect(await service.listDashboards('')).toEqual([{ id: 'none', name: 'The API key may not read dashboards.', description: 'Add one' }]);
-    homey.settings.unset(API_KEY_SETTING);
+    Secrets.for(homey).unset(API_KEY_SETTING);
     expect((await service.listDashboards(''))[0]).toMatchObject({ id: 'none', name: 'noKey' });
   });
 

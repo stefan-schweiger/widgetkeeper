@@ -3,6 +3,7 @@ import { fakeApi, fakeDevice, fakeHomey, homeyApiMock, keyApis } from './helpers
 import FlowService from '../lib/FlowService.js';
 import MediaService, { MEDIA_ART_EVENT, MEDIA_STATE_EVENT, mediaArt, parseCardId } from '../lib/MediaService.js';
 import { API_KEY_SETTING, KeyError } from '../lib/PersonalApiKey.js';
+import Secrets from '../lib/secrets.js';
 
 vi.mock('homey-api', () => homeyApiMock);
 
@@ -214,7 +215,7 @@ describe('buttons', () => {
     const { service, homey } = setup([sonos(), kitchen]);
     const key = keyApi();
     keyApis.set('k', key);
-    homey.settings.set(API_KEY_SETTING, 'k');
+    Secrets.for(homey).set(API_KEY_SETTING, 'k');
     const scan = { uri: 'homey:app:nl.xiut.sonoslocal', id: 'homey:app:nl.xiut.sonoslocal:scan_library', args: {} };
     await service.runButton('tv', 'card:homey:app:nl.xiut.sonoslocal:scan_library');
     expect(key.flow.runFlowCardAction).toHaveBeenLastCalledWith(scan);
@@ -228,7 +229,7 @@ describe('buttons', () => {
     const { service, homey } = setup();
     const key = keyApi();
     keyApis.set('k', key);
-    homey.settings.set(API_KEY_SETTING, 'k');
+    Secrets.for(homey).set(API_KEY_SETTING, 'k');
     await expect(service.runButton('tv', 'card:homey:app:nl.xiut.sonoslocal:set_alarm')).rejects.toThrow(/not an action/);
     await expect(service.runButton('tv', 'card:homey:app:com.uc.heimdall:deactivate')).rejects.toThrow(/not an action/);
     await expect(service.runButton('tv', 'card:homey:app:nl.xiut.sonoslocal:nope')).rejects.toThrow(/not an action/);
@@ -239,7 +240,7 @@ describe('buttons', () => {
     const { service, homey } = setup();
     const key = keyApi();
     keyApis.set('k', key);
-    homey.settings.set(API_KEY_SETTING, 'k');
+    Secrets.for(homey).set(API_KEY_SETTING, 'k');
     await expect(service.runButton('lamp', 'card:homey:device:lamp:on')).rejects.toThrow(/not a speaker/);
     expect(key.flow.runFlowCardAction).not.toHaveBeenCalled();
   });
@@ -253,7 +254,7 @@ describe('buttons', () => {
     const { service, homey } = setup();
     const key = keyApi();
     keyApis.set('k', key);
-    homey.settings.set(API_KEY_SETTING, 'k');
+    Secrets.for(homey).set(API_KEY_SETTING, 'k');
     await service.runButton('tv', 'card:homey:device:tv:cloud_play_home_theater');
     expect(key.flow.runFlowCardAction).toHaveBeenCalledWith({
       uri: 'homey:device:tv', id: 'homey:device:tv:cloud_play_home_theater', args: {},
@@ -264,7 +265,7 @@ describe('buttons', () => {
     const { service, homey } = setup();
     await expect(service.runButton('tv', 'card:homey:device:tv:cloud_play_home_theater')).rejects.toMatchObject({ reason: 'noKey' });
     keyApis.set('k', keyApi(['homey.flow.start']));
-    homey.settings.set(API_KEY_SETTING, 'k');
+    Secrets.for(homey).set(API_KEY_SETTING, 'k');
     const err = await service.runButton('tv', 'card:homey:device:tv:cloud_play_home_theater').catch(e => e);
     expect(err).toBeInstanceOf(KeyError);
     expect(err.reason).toBe('keyScope');
@@ -274,7 +275,7 @@ describe('buttons', () => {
     const { service, homey } = setup();
     const key = keyApi();
     keyApis.set('k', key);
-    homey.settings.set(API_KEY_SETTING, 'k');
+    Secrets.for(homey).set(API_KEY_SETTING, 'k');
     await expect(service.runButton('tv', 'card:homey:device:kitchen:cloud_play_line_in')).rejects.toThrow(/not an action/);
     await expect(service.runButton('tv', 'card:homey:device:tv:cloud_play_url')).rejects.toThrow(/not an action/);
     expect(key.flow.runFlowCardAction).not.toHaveBeenCalled();
@@ -284,7 +285,7 @@ describe('buttons', () => {
     const { service, homey } = setup();
     const key = keyApi();
     keyApis.set('k', key);
-    homey.settings.set(API_KEY_SETTING, 'k');
+    Secrets.for(homey).set(API_KEY_SETTING, 'k');
     await service.runButton('tv', 'card:homey:device:kitchen:cloud_play_home_theater');
     expect(key.flow.runFlowCardAction).toHaveBeenCalledWith({
       uri: 'homey:device:tv', id: 'homey:device:tv:cloud_play_home_theater', args: {},
@@ -302,7 +303,7 @@ describe('buttons', () => {
     const { service, homey } = setup();
     const key = keyApi(['homey.flow.start']);
     keyApis.set('k', key);
-    homey.settings.set(API_KEY_SETTING, 'k');
+    Secrets.for(homey).set(API_KEY_SETTING, 'k');
     await service.runButton('tv', 'flow:f1');
     expect(key.flow.triggerFlow).toHaveBeenCalledWith({ id: 'f1' });
   });

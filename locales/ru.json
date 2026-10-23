@@ -192,6 +192,10 @@
     "webPasswordRemoved": "Пароль удалён.",
     "webPasswordTooShort": "Не менее __min__ символов.",
     "webPasswordTooLong": "Не более __max__ символов.",
+    "webPasswordCurrent": "Текущий пароль",
+    "webPasswordWrong": "Текущий пароль неверен.",
+    "webPasswordLocked": "Слишком много неверных паролей. Повторите через __seconds__ с.",
+    "webPasswordForgot": "Забыли? Карточка Flow «Удалить пароль веб-панелей» удалит его.",
     "webBackupHelp": "Чтобы сохранить или восстановить веб-панели, откройте их страницу и нажмите карандаш на главной."
   },
   "heatmap": {

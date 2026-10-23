@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
 import WebDashboardService, { WEB_ENABLED_SETTING } from '../lib/WebDashboardService.js';
 import WebPassword, { WEB_PASSWORD_SETTING, WEB_SESSIONS_SETTING } from '../lib/WebPassword.js';
+import Secrets from '../lib/secrets.js';
 import PopupService from '../lib/PopupService.js';
 import api from '../api.js';
 
@@ -37,7 +38,8 @@ describe('web dashboards password', () => {
     await expect(password.login('whatever')).resolves.toEqual({ ok: false, reason: 'notSet' });
     await expect(password.setPassword('short')).resolves.toEqual({ ok: false, reason: 'tooShort' });
     await expect(password.setPassword('correct horse')).resolves.toEqual({ ok: true });
-    expect(JSON.stringify(homey.settings.get(WEB_PASSWORD_SETTING))).not.toContain('correct horse');
+    expect(JSON.stringify(Secrets.for(homey).get(WEB_PASSWORD_SETTING))).not.toContain('correct horse');
+    expect(homey.settings.get(WEB_PASSWORD_SETTING)).toBeNull();
     await expect(password.login('wrong horse')).resolves.toEqual({ ok: false, reason: 'wrong' });
     const res = await password.login('correct horse');
     expect(res.ok).toBe(true);
@@ -45,7 +47,7 @@ describe('web dashboards password', () => {
     expect(password.check(token)).toBe(true);
     expect(password.check('nope')).toBe(false);
     // Only the token's hash is stored.
-    expect(JSON.stringify(homey.settings.get(WEB_SESSIONS_SETTING))).not.toContain(token);
+    expect(JSON.stringify(Secrets.for(homey).get(WEB_SESSIONS_SETTING))).not.toContain(token);
     // A restart keeps the browser signed in.
     expect(new WebPassword(homey, vi.fn()).check(token)).toBe(true);
     password.logout(token);
@@ -56,12 +58,41 @@ describe('web dashboards password', () => {
     const { password } = setup();
     await password.setPassword('first password');
     const { token } = (await password.login('first password')) as any;
-    await password.setPassword('second password');
+    await expect(password.setPassword('second password', 'first password')).resolves.toEqual({ ok: true });
     expect(password.check(token)).toBe(false);
     const { token: second } = (await password.login('second password')) as any;
-    await password.setPassword('');
+    await expect(password.setPassword('', 'second password')).resolves.toEqual({ ok: true });
     expect(password.isSet).toBe(false);
     expect(password.check(second)).toBe(false);
+  });
+
+  it('changes or removes a set password only with the current one, which counts toward the lock', async () => {
+    let now = 1e12;
+    const { password } = setup({ now: () => now });
+    await password.setPassword('correct horse');
+    const { token } = (await password.login('correct horse')) as any;
+    await expect(password.setPassword('')).resolves.toEqual({ ok: false, reason: 'wrong' });
+    await expect(password.setPassword('new password', 'wrong horse')).resolves.toEqual({ ok: false, reason: 'wrong' });
+    expect(password.isSet).toBe(true);
+    expect(password.check(token)).toBe(true);
+    for (let i = 0; i < 2; i++) await expect(password.setPassword('', 'x')).resolves.toEqual({ ok: false, reason: 'wrong' });
+    // The fifth wrong one in a row, sign-ins and changes alike, locks both.
+    await expect(password.login('x')).resolves.toEqual({ ok: false, reason: 'locked', retryAfter: 30 });
+    await expect(password.setPassword('', 'correct horse')).resolves.toMatchObject({ ok: false, reason: 'locked' });
+    now += 31e3;
+    await expect(password.setPassword('new password', 'correct horse')).resolves.toEqual({ ok: true });
+    expect(password.check(token)).toBe(false);
+    await expect(password.login('new password')).resolves.toMatchObject({ ok: true });
+  });
+
+  it('is removed by the Flow card without the current one, signing every browser out', async () => {
+    const { password } = setup();
+    await password.setPassword('correct horse');
+    const { token } = (await password.login('correct horse')) as any;
+    await password.clear();
+    expect(password.isSet).toBe(false);
+    expect(password.check(token)).toBe(false);
+    await expect(password.setPassword('new password')).resolves.toEqual({ ok: true });
   });
 
   it('locks the login after five wrong passwords, longer each time', async () => {
@@ -89,6 +120,10 @@ describe('web dashboards password: the app API', () => {
     expect(password.check((res as any).token)).toBe(true);
     await api.postWebLogout({ homey, query: { session: (res as any).token } });
     expect(password.check((res as any).token)).toBe(false);
+    // Anyone whose key may call the app reaches this route, so a set password takes the current one.
+    await expect(api.putWebPassword({ homey, body: { password: '' } })).resolves.toEqual({ ok: false, reason: 'wrong' });
+    await expect(api.putWebPassword({ homey, body: { password: '', current: 'correct horse' } })).resolves.toEqual({ ok: true });
+    await expect(api.getWebPassword({ homey })).resolves.toEqual({ set: false });
   });
 
   it('answers the web routes only with a session while a password is set', async () => {

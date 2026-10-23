@@ -31,7 +31,7 @@ import ValueService from './lib/ValueService.js';
 import VariableService from './lib/VariableService.js';
 import WeatherService from './lib/WeatherService.js';
 import WebDashboardService from './lib/WebDashboardService.js';
-import WebPassword from './lib/WebPassword.js';
+import WebPassword, { WEB_PASSWORD_REMOVE_CARD } from './lib/WebPassword.js';
 import { widgetAutocompletes } from './lib/widgetAutocompletes.js';
 
 export default class WidgetkeeperApp extends Homey.App {
@@ -127,6 +127,7 @@ export default class WidgetkeeperApp extends Homey.App {
     this.web = new WebDashboardService(this.homey, log, widgetAutocompletes(this), this.tileNames);
     this.adoptOldTileNames();
     this.webPassword = new WebPassword(this.homey, log);
+    this.homey.flow.getActionCard(WEB_PASSWORD_REMOVE_CARD).registerRunListener(async () => this.webPassword.clear());
     this.popups = new PopupService(this.homey, { cameras: this.cameras, web: this.web }, log, debug);
     this.registerPopupFlows();
     this.registerAutocompletes();

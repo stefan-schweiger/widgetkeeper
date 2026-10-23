@@ -192,6 +192,10 @@
     "webPasswordRemoved": "Lösenordet borttaget.",
     "webPasswordTooShort": "Använd minst __min__ tecken.",
     "webPasswordTooLong": "Använd högst __max__ tecken.",
+    "webPasswordCurrent": "Nuvarande lösenord",
+    "webPasswordWrong": "Det nuvarande lösenordet är fel.",
+    "webPasswordLocked": "För många felaktiga lösenord. Försök igen om __seconds__ s.",
+    "webPasswordForgot": "Glömt det? Flow-kortet Ta bort webbinstrumentpanelernas lösenord tar bort det.",
     "webBackupHelp": "För att säkerhetskopiera eller återställa dina webbinstrumentpaneler, öppna deras sida och tryck på pennan på startsidan."
   },
   "heatmap": {

@@ -192,6 +192,10 @@
     "webPasswordRemoved": "Wachtwoord verwijderd.",
     "webPasswordTooShort": "Gebruik minstens __min__ tekens.",
     "webPasswordTooLong": "Gebruik hoogstens __max__ tekens.",
+    "webPasswordCurrent": "Huidig wachtwoord",
+    "webPasswordWrong": "Het huidige wachtwoord klopt niet.",
+    "webPasswordLocked": "Te veel verkeerde wachtwoorden. Probeer het over __seconds__ s opnieuw.",
+    "webPasswordForgot": "Vergeten? De Flow-kaart Wachtwoord van de webdashboards verwijderen verwijdert het.",
     "webBackupHelp": "Open de webdashboardpagina en tik op het potlood op de startpagina om een back-up te maken of terug te zetten."
   },
   "heatmap": {

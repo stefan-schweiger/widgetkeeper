@@ -1,10 +1,14 @@
 import { randomBytes, scrypt, timingSafeEqual, createHash } from 'node:crypto';
 import type Homey from 'homey';
+import Secrets from './secrets.js';
 
-/** The app setting with the web dashboards' password: `{salt, hash}` (hex, scrypt), never the password itself. */
+/** The secret (`Secrets`; an app setting until 1.1.0) with the web dashboards' password: `{salt, hash}` (hex, scrypt), never the password itself. */
 export const WEB_PASSWORD_SETTING = 'webPassword';
-/** The app setting with the signed-in browsers: `[{hash, created, used}]`, a SHA-256 of each session token. */
+/** The secret with the signed-in browsers: `[{hash, created, used}]`, a SHA-256 of each session token. */
 export const WEB_SESSIONS_SETTING = 'webSessions';
+
+/** The Flow card that removes the password: the way back for a forgotten one. */
+export const WEB_PASSWORD_REMOVE_CARD = 'web_password_remove';
 
 export const MIN_PASSWORD = 8;
 const MAX_PASSWORD = 200;
@@ -20,7 +24,10 @@ const MAX_LOCK_MS = 15 * 60e3;
 
 type Session = { hash: string, created: number, used: number };
 type Stored = { salt: string, hash: string };
-type LoginResult = { ok: true, token: string } | { ok: false, reason: 'notSet' | 'wrong' | 'locked', retryAfter?: number };
+type Refused = { ok: false, reason: 'wrong' | 'locked', retryAfter?: number };
+type Checked = { ok: true } | Refused;
+type LoginResult = { ok: true, token: string } | Refused | { ok: false, reason: 'notSet' };
+type SetResult = { ok: true } | Refused | { ok: false, reason: 'tooShort' | 'tooLong' };
 
 const sha256 = (s: string) => createHash('sha256').update(s).digest('hex');
 
@@ -39,41 +46,46 @@ export default class WebPassword {
 
   private failures = 0;
   private lockedUntil = 0;
-  /** The sign-in attempts, one at a time (`login()`). */
+  /** The password checks, one at a time (`queued()`). */
   private attempts: Promise<unknown> = Promise.resolve();
   private sessions: Session[];
+  private secrets: Secrets;
 
   constructor(
-    private homey: Homey.App['homey'],
+    homey: Homey.App['homey'],
     private log: (...args: any[]) => void,
     private now: () => number = Date.now,
   ) {
-    const saved = homey.settings.get(WEB_SESSIONS_SETTING);
+    this.secrets = Secrets.for(homey, log);
+    const saved = this.secrets.get(WEB_SESSIONS_SETTING);
     this.sessions = Array.isArray(saved) ? saved.filter(s => s && typeof s.hash === 'string') : [];
   }
 
   get isSet(): boolean {
-    const stored = this.homey.settings.get(WEB_PASSWORD_SETTING) as Stored | null;
+    const stored = this.secrets.get(WEB_PASSWORD_SETTING) as Stored | null;
     return !!(stored && typeof stored.salt === 'string' && typeof stored.hash === 'string');
   }
 
-  /** Sets the password (`''` removes it). Either way every browser signed in with the old one has to sign in again. */
-  async setPassword(password: string): Promise<{ ok: true } | { ok: false, reason: 'tooShort' | 'tooLong' }> {
+  /**
+   * Sets the password (`''` removes it). While one is set, `current` must be it: the settings page can't tell the
+   * Homey's owner from anyone else whose API key may call the app, so only the password itself (or the Flow card,
+   * `clear()`) changes it. A wrong one counts toward the lock, like a sign-in. Either way every browser signed in with
+   * the old one has to sign in again.
+   */
+  async setPassword(password: string, current?: unknown): Promise<SetResult> {
     if (password && password.length < MIN_PASSWORD) return { ok: false, reason: 'tooShort' };
     if (password.length > MAX_PASSWORD) return { ok: false, reason: 'tooLong' };
-    if (!password) {
-      this.homey.settings.unset(WEB_PASSWORD_SETTING);
-    } else {
-      const salt = randomBytes(16);
-      const hash = await derive(password, salt);
-      this.homey.settings.set(WEB_PASSWORD_SETTING, { salt: salt.toString('hex'), hash: hash.toString('hex') });
+    if (this.isSet) {
+      const checked = await this.queued(() => this.verify(current));
+      if (!checked.ok) return checked;
     }
-    this.sessions = [];
-    this.saveSessions();
-    this.failures = 0;
-    this.lockedUntil = 0;
-    this.log(password ? 'Web dashboards: password set' : 'Web dashboards: password removed');
+    await this.store(password);
     return { ok: true };
+  }
+
+  /** The Flow card *Remove the web dashboards password*: the way back for a forgotten one. */
+  async clear() {
+    await this.store('');
   }
 
   /**
@@ -81,14 +93,47 @@ export default class WebPassword {
    * can't all be checked before the lock is set.
    */
   login(password: unknown): Promise<LoginResult> {
-    const attempt = this.attempts.then(() => this.attempt(password));
-    this.attempts = attempt.catch(() => undefined);
-    return attempt;
+    return this.queued(async () => {
+      if (!this.isSet) return { ok: false, reason: 'notSet' };
+      const checked = await this.verify(password);
+      if (!checked.ok) return checked;
+      const token = randomBytes(32).toString('base64url');
+      const at = this.now();
+      this.sessions = this.sessions.filter(s => at - s.used < SESSION_IDLE_MS);
+      this.sessions.push({ hash: sha256(token), created: at, used: at });
+      this.sessions.sort((a, b) => b.used - a.used);
+      this.sessions.length = Math.min(this.sessions.length, MAX_SESSIONS);
+      this.saveSessions();
+      return { ok: true, token };
+    });
   }
 
-  private async attempt(password: unknown): Promise<LoginResult> {
-    const stored = this.homey.settings.get(WEB_PASSWORD_SETTING) as Stored | null;
-    if (!stored || !this.isSet) return { ok: false, reason: 'notSet' };
+  private async store(password: string) {
+    if (!password) {
+      this.secrets.unset(WEB_PASSWORD_SETTING);
+    } else {
+      const salt = randomBytes(16);
+      const hash = await derive(password, salt);
+      this.secrets.set(WEB_PASSWORD_SETTING, { salt: salt.toString('hex'), hash: hash.toString('hex') });
+    }
+    this.sessions = [];
+    this.saveSessions();
+    this.failures = 0;
+    this.lockedUntil = 0;
+    this.log(password ? 'Web dashboards: password set' : 'Web dashboards: password removed');
+  }
+
+  /** Runs password checks one at a time (sign-ins and changes alike). */
+  private queued<T>(fn: () => Promise<T>): Promise<T> {
+    const run = this.attempts.then(fn);
+    this.attempts = run.catch(() => undefined);
+    return run;
+  }
+
+  /** Whether `password` is the one set, counting wrong ones toward the lock. */
+  private async verify(password: unknown): Promise<Checked> {
+    const stored = this.secrets.get(WEB_PASSWORD_SETTING) as Stored | null;
+    if (!stored || !this.isSet) return { ok: false, reason: 'wrong' };
     const now = this.now();
     if (now < this.lockedUntil) return { ok: false, reason: 'locked', retryAfter: Math.ceil((this.lockedUntil - now) / 1000) };
     const given = typeof password === 'string' && password.length <= MAX_PASSWORD ? password : '';
@@ -105,14 +150,7 @@ export default class WebPassword {
       return { ok: false, reason: 'wrong' };
     }
     this.failures = 0;
-    const token = randomBytes(32).toString('base64url');
-    const at = this.now();
-    this.sessions = this.sessions.filter(s => at - s.used < SESSION_IDLE_MS);
-    this.sessions.push({ hash: sha256(token), created: at, used: at });
-    this.sessions.sort((a, b) => b.used - a.used);
-    this.sessions.length = Math.min(this.sessions.length, MAX_SESSIONS);
-    this.saveSessions();
-    return { ok: true, token };
+    return { ok: true };
   }
 
   /** Whether a session token is signed in (with the password still set). */
@@ -138,7 +176,7 @@ export default class WebPassword {
   }
 
   private saveSessions() {
-    this.homey.settings.set(WEB_SESSIONS_SETTING, this.sessions);
+    this.secrets.set(WEB_SESSIONS_SETTING, this.sessions);
   }
 
   describe() {

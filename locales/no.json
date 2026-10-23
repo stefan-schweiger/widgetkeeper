@@ -192,6 +192,10 @@
     "webPasswordRemoved": "Passordet er fjernet.",
     "webPasswordTooShort": "Bruk minst __min__ tegn.",
     "webPasswordTooLong": "Bruk høyst __max__ tegn.",
+    "webPasswordCurrent": "Nåværende passord",
+    "webPasswordWrong": "Det nåværende passordet er feil.",
+    "webPasswordLocked": "For mange feil passord. Prøv igjen om __seconds__ s.",
+    "webPasswordForgot": "Glemt det? Flow-kortet Fjern passordet til nettdashbordene fjerner det.",
     "webBackupHelp": "For å sikkerhetskopiere eller gjenopprette nettdashbordene, åpne siden deres og trykk på blyanten på forsiden."
   },
   "heatmap": {

@@ -192,6 +192,10 @@
     "webPasswordRemoved": "Mot de passe supprimé.",
     "webPasswordTooShort": "Utilisez au moins __min__ caractères.",
     "webPasswordTooLong": "Utilisez au plus __max__ caractères.",
+    "webPasswordCurrent": "Mot de passe actuel",
+    "webPasswordWrong": "Le mot de passe actuel est incorrect.",
+    "webPasswordLocked": "Trop de mots de passe erronés. Réessayez dans __seconds__ s.",
+    "webPasswordForgot": "Oublié ? La carte Flow Supprimer le mot de passe des tableaux de bord web le supprime.",
     "webBackupHelp": "Pour sauvegarder ou restaurer vos tableaux de bord web, ouvrez leur page et touchez le crayon sur la page d’accueil."
   },
   "heatmap": {

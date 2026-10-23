@@ -192,6 +192,10 @@
     "webPasswordRemoved": "تمت إزالة كلمة المرور.",
     "webPasswordTooShort": "استخدم __min__ أحرف على الأقل.",
     "webPasswordTooLong": "استخدم __max__ حرفًا على الأكثر.",
+    "webPasswordCurrent": "كلمة المرور الحالية",
+    "webPasswordWrong": "كلمة المرور الحالية خاطئة.",
+    "webPasswordLocked": "كلمات مرور خاطئة كثيرة. حاول مجددًا بعد __seconds__ ث.",
+    "webPasswordForgot": "نسيتها؟ بطاقة Flow «إزالة كلمة مرور لوحات الويب» تزيلها.",
     "webBackupHelp": "لحفظ نسخة من لوحات الويب أو استعادتها، افتح صفحة لوحات الويب واضغط على القلم في صفحتها الرئيسية."
   },
   "heatmap": {

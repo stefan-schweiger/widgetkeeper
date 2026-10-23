@@ -192,6 +192,10 @@
     "webPasswordRemoved": "Password rimossa.",
     "webPasswordTooShort": "Usa almeno __min__ caratteri.",
     "webPasswordTooLong": "Usa al massimo __max__ caratteri.",
+    "webPasswordCurrent": "Password attuale",
+    "webPasswordWrong": "La password attuale è sbagliata.",
+    "webPasswordLocked": "Troppe password sbagliate. Riprova tra __seconds__ s.",
+    "webPasswordForgot": "Dimenticata? La scheda Flow Rimuovi la password delle dashboard web la rimuove.",
     "webBackupHelp": "Per salvare o ripristinare le dashboard web, apri la loro pagina e tocca la matita nella pagina iniziale."
   },
   "heatmap": {

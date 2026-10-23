@@ -192,6 +192,10 @@
     "webPasswordRemoved": "Contraseña quitada.",
     "webPasswordTooShort": "Usa al menos __min__ caracteres.",
     "webPasswordTooLong": "Usa como máximo __max__ caracteres.",
+    "webPasswordCurrent": "Contraseña actual",
+    "webPasswordWrong": "La contraseña actual no es correcta.",
+    "webPasswordLocked": "Demasiadas contraseñas incorrectas. Inténtalo de nuevo en __seconds__ s.",
+    "webPasswordForgot": "¿La olvidaste? La tarjeta Flow Quitar la contraseña de los paneles web la quita.",
     "webBackupHelp": "Para guardar o restaurar tus paneles web, abre su página y toca el lápiz en la página de inicio."
   },
   "heatmap": {

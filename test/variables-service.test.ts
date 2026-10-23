@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
 import { API_KEY_SETTING } from '../lib/PersonalApiKey.js';
+import Secrets from '../lib/secrets.js';
 import VariableService, { checkValue, VARIABLES_STATE_EVENT } from '../lib/VariableService.js';
 
 vi.mock('homey-api', () => homeyApiMock);
@@ -186,7 +187,7 @@ describe('set', () => {
     const s = setup();
     const api = keyApi(s.logic, scopes);
     keyApis.set('key-1', api);
-    s.homey.settings.set(API_KEY_SETTING, 'key-1');
+    Secrets.for(s.homey).set(API_KEY_SETTING, 'key-1');
     return { ...s, keyApi: api };
   }
 
@@ -219,7 +220,7 @@ describe('set', () => {
     await expect(service.set('v1', true)).rejects.toMatchObject({ reason: 'noKey' });
     const { service: scoped } = withKey(['homey.logic.readonly']);
     await expect(scoped.set('v1', true)).rejects.toMatchObject({ reason: 'keyScope' });
-    homey.settings.set(API_KEY_SETTING, 'unknown');
+    Secrets.for(homey).set(API_KEY_SETTING, 'unknown');
     await expect(service.set('v1', true)).rejects.toMatchObject({ reason: 'keyInvalid' });
     // The app's own token never writes: Homey refuses it (`homey.logic.readonly` only).
     expect(homey.fakeApi.logic.updateVariable).not.toHaveBeenCalled();

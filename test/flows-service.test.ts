@@ -4,6 +4,7 @@ import FlowService, { FLOW_COLORS_SETTING, FLOW_ICONS, FLOWS_COLOR_EVENT, parseF
 import { FLOW_ICON_IMAGES } from '../lib/flowIconImages.js';
 import { FLOW_ICON_PATHS } from './helpers/flowIcons.js';
 import { API_KEY_SETTING } from '../lib/PersonalApiKey.js';
+import Secrets from '../lib/secrets.js';
 
 vi.mock('homey-api', () => homeyApiMock);
 
@@ -133,7 +134,7 @@ describe('trigger', () => {
     const s = setup();
     const api = keyApi(scopes);
     keyApis.set('key-1', api);
-    s.homey.settings.set(API_KEY_SETTING, 'key-1');
+    Secrets.for(s.homey).set(API_KEY_SETTING, 'key-1');
     return { ...s, keyApi: api };
   }
 

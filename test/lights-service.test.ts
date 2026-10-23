@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeDevice, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
 import LightService, { GROUP_DRIVER, LIGHTS_STATE_EVENT } from '../lib/LightService.js';
 import { API_KEY_SETTING } from '../lib/PersonalApiKey.js';
+import Secrets from '../lib/secrets.js';
 import { routeKeyUse } from '../lib/widgetRoutes.js';
 
 vi.mock('homey-api', () => homeyApiMock);
@@ -211,7 +212,7 @@ describe('moods', () => {
   it('starts a Mood through the personal API key', async () => {
     const { homey, service, setMood } = withMoods();
     await expect(service.setMood('m1')).rejects.toMatchObject({ reason: 'noKey' });
-    homey.settings.set(API_KEY_SETTING, 'key');
+    Secrets.for(homey).set(API_KEY_SETTING, 'key');
     await service.setMood('m1');
     expect(setMood).toHaveBeenCalledWith({ id: 'm1' });
     setMood.mockRejectedValueOnce(new Error('Missing Scopes: homey.mood.set'));

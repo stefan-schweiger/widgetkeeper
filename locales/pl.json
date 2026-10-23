@@ -192,6 +192,10 @@
     "webPasswordRemoved": "Hasło usunięte.",
     "webPasswordTooShort": "Użyj co najmniej __min__ znaków.",
     "webPasswordTooLong": "Użyj najwyżej __max__ znaków.",
+    "webPasswordCurrent": "Obecne hasło",
+    "webPasswordWrong": "Obecne hasło jest nieprawidłowe.",
+    "webPasswordLocked": "Za dużo błędnych haseł. Spróbuj ponownie za __seconds__ s.",
+    "webPasswordForgot": "Zapomniane? Karta Flow Usuń hasło pulpitów webowych je usuwa.",
     "webBackupHelp": "Aby zapisać lub przywrócić pulpity webowe, otwórz ich stronę i stuknij ołówek na stronie głównej."
   },
   "heatmap": {

@@ -192,6 +192,10 @@
     "webPasswordRemoved": "비밀번호를 제거했습니다.",
     "webPasswordTooShort": "__min__자 이상 입력하세요.",
     "webPasswordTooLong": "__max__자 이하로 입력하세요.",
+    "webPasswordCurrent": "현재 비밀번호",
+    "webPasswordWrong": "현재 비밀번호가 틀렸습니다.",
+    "webPasswordLocked": "잘못된 비밀번호가 너무 많습니다. __seconds__초 후에 다시 시도하세요.",
+    "webPasswordForgot": "잊으셨나요? Flow 카드 웹 대시보드 비밀번호 제거로 지울 수 있습니다.",
     "webBackupHelp": "웹 대시보드를 백업하거나 복원하려면 웹 대시보드 페이지를 열고 첫 페이지의 연필을 누르세요."
   },
   "heatmap": {
