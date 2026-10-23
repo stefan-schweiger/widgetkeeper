@@ -28,7 +28,8 @@
     "validate": "homey app validate --level debug",
     "start": "homey app run",
     "install-homey": "homey app install",
-    "whats-new": "node scripts/render-whats-new.mjs"
+    "whats-new": "node scripts/render-whats-new.mjs",
+    "whats-next": "node scripts/render-whats-next.mjs"
   },
   "dependencies": {
     "homey-api": "^3.20.0"
