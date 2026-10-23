@@ -460,6 +460,7 @@
   },
   "dayssince": {
     "setup": "Name your counters in the widget settings.",
+    "nothingDue": "Nothing due.",
     "error": "Could not load the counters.",
     "failed": "Could not reset __name__.",
     "undoFailed": "Could not undo the reset of __name__.",

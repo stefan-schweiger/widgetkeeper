@@ -25,6 +25,8 @@
   <div class="col"><span>220 px · dark · narrow</span><div class="card homey-dark-mode" style="width:220px"><div id="w4"></div></div></div>
   <div class="col"><span>358 px · dark · Broken fails</span><div class="card homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
   <div class="col"><span>358 px · no counters</span><div class="card homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+  <div class="col"><span>358 px · dark · only amber and red</span><div class="card homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
+  <div class="col"><span>358 px · dark · only red, nothing due</span><div class="card homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
 
   <script>
     // A simulated app: the counters by key, as lib/DaysSinceService.ts keeps them; "Broken" can't be reset.
@@ -88,6 +90,8 @@
     mount('w4', HOUSE.slice(0, 3));
     mount('w5', [{ name: 'Broken', icon: 'bolt', amber: 1, red: 2 }, { name: 'Plants', icon: 'leaf', amber: 5, red: 7 }]);
     mount('w6', []);
+    mount('w7', HOUSE.filter(c => c.name !== 'Smoke alarm test'), { show: 'due' });
+    mount('w8', HOUSE.slice(3, 6), { show: 'overdue' });
     // Opens Undo on the 300 px widget's Fish, as a tap would.
     const fish = document.querySelectorAll('#w3 .ds-row')[3];
     fish.dispatchEvent(new MouseEvent('click', { bubbles: true }));

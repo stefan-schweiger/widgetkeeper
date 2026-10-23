@@ -460,6 +460,7 @@
   },
   "dayssince": {
     "setup": "Namnge dina räknare i widgetinställningarna.",
+    "nothingDue": "Inget att göra.",
     "error": "Kunde inte läsa in räknarna.",
     "failed": "Kunde inte nollställa __name__.",
     "undoFailed": "Kunde inte ångra nollställningen av __name__.",

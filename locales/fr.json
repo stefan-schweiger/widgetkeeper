@@ -460,6 +460,7 @@
   },
   "dayssince": {
     "setup": "Nommez vos compteurs dans les réglages du widget.",
+    "nothingDue": "Rien à faire.",
     "error": "Impossible de charger les compteurs.",
     "failed": "Impossible de remettre __name__ à zéro.",
     "undoFailed": "Impossible d'annuler la remise à zéro de __name__.",

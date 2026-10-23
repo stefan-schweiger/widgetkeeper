@@ -460,6 +460,7 @@
   },
   "dayssince": {
     "setup": "Benenne deine Zähler in den Widget-Einstellungen.",
+    "nothingDue": "Nichts fällig.",
     "error": "Die Zähler konnten nicht geladen werden.",
     "failed": "__name__ konnte nicht zurückgesetzt werden.",
     "undoFailed": "Das Zurücksetzen von __name__ konnte nicht rückgängig gemacht werden.",

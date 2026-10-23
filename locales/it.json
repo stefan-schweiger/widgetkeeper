@@ -460,6 +460,7 @@
   },
   "dayssince": {
     "setup": "Dai un nome ai contatori nelle impostazioni del widget.",
+    "nothingDue": "Niente in scadenza.",
     "error": "Impossibile caricare i contatori.",
     "failed": "Impossibile azzerare __name__.",
     "undoFailed": "Impossibile annullare l'azzeramento di __name__.",

@@ -460,6 +460,7 @@
   },
   "dayssince": {
     "setup": "Pon nombre a tus contadores en los ajustes del widget.",
+    "nothingDue": "Nada pendiente.",
     "error": "No se pudieron cargar los contadores.",
     "failed": "No se pudo reiniciar __name__.",
     "undoFailed": "No se pudo deshacer el reinicio de __name__.",

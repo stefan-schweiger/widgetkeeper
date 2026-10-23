@@ -460,6 +460,7 @@
   },
   "dayssince": {
     "setup": "Gi tellerne navn i widgetinnstillingene.",
+    "nothingDue": "Ingenting å gjøre.",
     "error": "Kunne ikke laste tellerne.",
     "failed": "Kunne ikke nullstille __name__.",
     "undoFailed": "Kunne ikke angre nullstillingen av __name__.",

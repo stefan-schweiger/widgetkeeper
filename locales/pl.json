@@ -460,6 +460,7 @@
   },
   "dayssince": {
     "setup": "Nazwij liczniki w ustawieniach widżetu.",
+    "nothingDue": "Nic do zrobienia.",
     "error": "Nie udało się wczytać liczników.",
     "failed": "Nie udało się wyzerować: __name__.",
     "undoFailed": "Nie udało się cofnąć wyzerowania: __name__.",

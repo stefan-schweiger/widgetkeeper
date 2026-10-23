@@ -91,6 +91,97 @@
       ]
     },
     {
+      "id": "show",
+      "type": "dropdown",
+      "title": {
+        "en": "Show",
+        "nl": "Tonen",
+        "de": "Anzeigen",
+        "fr": "Afficher",
+        "it": "Mostra",
+        "sv": "Visa",
+        "no": "Vis",
+        "es": "Mostrar",
+        "da": "Vis",
+        "ru": "Показывать",
+        "pl": "Pokazuj",
+        "ko": "표시",
+        "ar": "عرض"
+      },
+      "hint": {
+        "en": "A hidden counter shows again once it turns amber (or red). Counters not yet started always show.",
+        "nl": "Een verborgen teller verschijnt weer zodra hij geel (of rood) wordt. Niet gestarte tellers worden altijd getoond.",
+        "de": "Ein ausgeblendeter Zähler erscheint wieder, sobald er gelb (oder rot) wird. Nicht gestartete Zähler werden immer angezeigt.",
+        "fr": "Un compteur masqué réapparaît dès qu'il passe au jaune (ou au rouge). Les compteurs pas encore démarrés s'affichent toujours.",
+        "it": "Un contatore nascosto riappare quando diventa giallo (o rosso). I contatori non ancora avviati sono sempre visibili.",
+        "sv": "En dold räknare visas igen när den blir gul (eller röd). Räknare som inte har startats visas alltid.",
+        "no": "En skjult teller vises igjen når den blir gul (eller rød). Tellere som ikke er startet, vises alltid.",
+        "es": "Un contador oculto vuelve a mostrarse cuando se pone ámbar (o rojo). Los contadores sin iniciar se muestran siempre.",
+        "da": "En skjult tæller vises igen, når den bliver gul (eller rød). Tællere, der ikke er startet, vises altid.",
+        "ru": "Скрытый счётчик появится снова, когда станет жёлтым (или красным). Не запущенные счётчики видны всегда.",
+        "pl": "Ukryty licznik pojawi się znowu, gdy zmieni kolor na żółty (lub czerwony). Nieuruchomione liczniki są zawsze widoczne.",
+        "ko": "숨긴 카운터는 노란색(또는 빨간색)이 되면 다시 표시됩니다. 시작하지 않은 카운터는 항상 표시됩니다.",
+        "ar": "يظهر العداد المخفي مجددًا عندما يصبح كهرمانيًا (أو أحمر). تظهر العدادات التي لم تبدأ دائمًا."
+      },
+      "value": "all",
+      "values": [
+        {
+          "id": "all",
+          "title": {
+            "en": "All counters",
+            "nl": "Alle tellers",
+            "de": "Alle Zähler",
+            "fr": "Tous les compteurs",
+            "it": "Tutti i contatori",
+            "sv": "Alla räknare",
+            "no": "Alle tellere",
+            "es": "Todos los contadores",
+            "da": "Alle tællere",
+            "ru": "Все счётчики",
+            "pl": "Wszystkie liczniki",
+            "ko": "모든 카운터",
+            "ar": "كل العدادات"
+          }
+        },
+        {
+          "id": "due",
+          "title": {
+            "en": "Only amber and red",
+            "nl": "Alleen geel en rood",
+            "de": "Nur gelb und rot",
+            "fr": "Jaune et rouge seulement",
+            "it": "Solo giallo e rosso",
+            "sv": "Bara gul och röd",
+            "no": "Bare gul og rød",
+            "es": "Solo ámbar y rojo",
+            "da": "Kun gul og rød",
+            "ru": "Только жёлтые и красные",
+            "pl": "Tylko żółte i czerwone",
+            "ko": "노란색과 빨간색만",
+            "ar": "الكهرماني والأحمر فقط"
+          }
+        },
+        {
+          "id": "overdue",
+          "title": {
+            "en": "Only red",
+            "nl": "Alleen rood",
+            "de": "Nur rot",
+            "fr": "Rouge seulement",
+            "it": "Solo rosso",
+            "sv": "Bara röd",
+            "no": "Bare rød",
+            "es": "Solo rojo",
+            "da": "Kun rød",
+            "ru": "Только красные",
+            "pl": "Tylko czerwone",
+            "ko": "빨간색만",
+            "ar": "الأحمر فقط"
+          }
+        }
+      ]
+    },
+    {
       "id": "colorStyle",
       "type": "dropdown",
       "title": {

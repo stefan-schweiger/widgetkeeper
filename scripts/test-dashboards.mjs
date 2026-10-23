@@ -675,6 +675,8 @@ const BUILD = {
       w('dayssince', 'Defaults · one counter (Plants)', counter(1, 'Plants', 'leaf', 5, 7)),
       w('dayssince', 'Household · amber and red', household),
       w('dayssince', 'Days only · the same counters', { units: 'days', ...household }),
+      w('dayssince', 'Only amber and red · the same counters', { show: 'due', ...household }),
+      w('dayssince', 'Only red · the same counters', { show: 'overdue', ...household }),
       w('dayssince', 'Eight · no colours (0 and 0)', eight),
       w('dayssince', 'No icons · Plants red after 2 days (the app takes the last loaded)', {
         ...counter(1, 'Plants', null, 1, 2), icon1: { id: 'none', name: 'None' }, ...counter(2, 'Fish', null, 2, 3), icon2: { id: 'none', name: 'None' } }),

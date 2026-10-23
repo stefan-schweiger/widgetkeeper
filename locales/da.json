@@ -460,6 +460,7 @@
   },
   "dayssince": {
     "setup": "Navngiv dine tællere i widgetindstillingerne.",
+    "nothingDue": "Intet at gøre.",
     "error": "Kunne ikke indlæse tællerne.",
     "failed": "Kunne ikke nulstille __name__.",
     "undoFailed": "Kunne ikke fortryde nulstillingen af __name__.",

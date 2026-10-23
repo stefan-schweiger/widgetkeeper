@@ -184,7 +184,7 @@ Counters for the things you do every so often: plants watered *6 days* ago, the 
 
 Flow cards: *Reset [counter]* (when the robot vacuum is done, for instance), *Set [counter] to [days] days ago* (for something done before you added the widget), the trigger *[counter] became overdue* (when it turns red, even with no dashboard open) and the condition *[counter] is overdue*; the last two also take *Any counter*.
 
-**Settings:** days only or days, weeks and months; [colour style](#colour-style); up to eight counters, each with a name, an icon and the days until amber and red.
+**Settings:** days only or days, weeks and months; all counters, or only those that are amber and red (or only red), so the ones far from due don't take up room; [colour style](#colour-style); up to eight counters, each with a name, an icon and the days until amber and red.
 
 ## Device Quick Actions
 <img src="docs/screenshots/quickactions.png" alt="Device Quick Actions on a Homey dashboard" width="358">

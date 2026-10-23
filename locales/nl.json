@@ -460,6 +460,7 @@
   },
   "dayssince": {
     "setup": "Geef je tellers een naam in de widgetinstellingen.",
+    "nothingDue": "Niets te doen.",
     "error": "Kan de tellers niet laden.",
     "failed": "Kan __name__ niet resetten.",
     "undoFailed": "Kan de reset van __name__ niet ongedaan maken.",
