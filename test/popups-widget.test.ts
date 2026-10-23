@@ -71,8 +71,16 @@ describe('Popups widget', () => {
     expect(Homey.popup).toHaveBeenCalledTimes(2);
   });
 
-  it('is never 0 px tall: the iOS app kept showing its loading placeholder for ready({height: 0})', () => {
-    expect(readFileSync('widgets/popups/public/widget.css', 'utf8')).toMatch(/#root \{ height: 1px;/);
+  it('shows a bell and its screen name, so it has a real height (iOS kept its loading placeholder over 0 or 1 px)', () => {
+    const win = loadWidget('popups');
+    const named = document.createElement('div');
+    win.createPopupsWidget(named, { name: ' Hallway ', page: PAGE, open: vi.fn(), storage: memoryStorage() });
+    expect(named.querySelector('.pu-label svg.pu-icon path')!.getAttribute('d')).toBe(win.WidgetkeeperKit.icons.bell.d);
+    expect(named.querySelector('.pu-name')!.textContent).toBe('Hallway');
+    const unnamed = document.createElement('div');
+    win.createPopupsWidget(unnamed, { name: '', page: PAGE, open: vi.fn(), storage: memoryStorage() });
+    expect(unnamed.querySelector('.pu-name')!.textContent).toBe('Screen');
+    expect(readFileSync('widgets/popups/public/widget.css', 'utf8')).toContain('min-height: 32px');
   });
 
   it('does nothing on a web dashboard, where the page draws popups itself', async () => {

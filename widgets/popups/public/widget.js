@@ -18,6 +18,29 @@
   }
   window.popupsScreenKey = popupsScreenKey;
 
+  /**
+   * A quiet row, a bell and the screen name, so the widget has a real height (the iOS app kept its loading
+   * placeholder over a 0 or 1 px widget, 2026-10-23) and can be found on the dashboard. The name needs no translation.
+   */
+  function drawLabel(root, name) {
+    const NS = 'http://www.w3.org/2000/svg';
+    const row = document.createElement('div');
+    row.className = 'pu-label';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('class', 'pu-icon');
+    svg.setAttribute('aria-hidden', 'true');
+    const path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', window.WidgetkeeperKit.icons.bell.d);
+    svg.appendChild(path);
+    const text = document.createElement('span');
+    text.className = 'pu-name';
+    text.dir = 'auto';
+    text.textContent = name;
+    row.append(svg, text);
+    root.replaceChildren(row);
+  }
+
   const localStore = {
     getItem(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
     setItem(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* private mode */ } },
@@ -31,6 +54,7 @@
    */
   window.createPopupsWidget = function (root, opts) {
     const key = popupsScreenKey(opts.name);
+    drawLabel(root, typeof opts.name === 'string' && opts.name.trim() ? opts.name.trim() : DEFAULT_SCREEN);
     const now = opts.now || (() => Date.now());
     const storage = opts.storage || localStore;
 

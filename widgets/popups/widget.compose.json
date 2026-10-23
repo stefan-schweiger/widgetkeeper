@@ -14,7 +14,7 @@
     "ko": "팝업",
     "ar": "النوافذ المنبثقة"
   },
-  "height": 1,
+  "height": 32,
   "transparent": true,
   "settings": [
     {
@@ -36,19 +36,19 @@
         "ar": "اسم الشاشة"
       },
       "hint": {
-        "en": "The name the popup Flow cards send to. The widget itself shows nothing: a message or question sent here opens over the dashboard on this phone or tablet.",
-        "nl": "De naam waar de pop-up-Flowkaarten naartoe sturen. De widget zelf toont niets: een bericht of vraag die hierheen gaat, opent over het dashboard op deze telefoon of tablet.",
-        "de": "Der Name, an den die Popup-Flow-Karten senden. Das Widget selbst zeigt nichts: Eine Nachricht oder Frage hierher öffnet sich über dem Dashboard auf diesem Handy oder Tablet.",
-        "fr": "Le nom auquel les cartes Flow de pop-up envoient. Le widget lui-même n'affiche rien : un message ou une question envoyé ici s'ouvre par-dessus le tableau de bord sur ce téléphone ou cette tablette.",
-        "it": "Il nome a cui inviano le schede Flow dei popup. Il widget non mostra nulla: un messaggio o una domanda inviati qui si aprono sopra la dashboard su questo telefono o tablet.",
-        "sv": "Namnet som popup-fönstrens Flow-kort skickar till. Widgeten visar inget själv: ett meddelande eller en fråga som skickas hit öppnas över instrumentpanelen på den här telefonen eller surfplattan.",
-        "no": "Navnet popup-vinduenes Flow-kort sender til. Widgeten viser ingenting selv: en melding eller et spørsmål som sendes hit, åpnes over dashbordet på denne telefonen eller nettbrettet.",
-        "es": "El nombre al que envían las tarjetas Flow de ventanas emergentes. El widget no muestra nada: un mensaje o una pregunta enviados aquí se abren sobre el panel en este teléfono o tableta.",
-        "da": "Navnet, som popup-Flowkortene sender til. Widgetten viser ikke selv noget: en besked eller et spørgsmål sendt hertil åbner over dashboardet på denne telefon eller tablet.",
-        "ru": "Имя, на которое отправляют карточки Flow всплывающих окон. Сам виджет ничего не показывает: сообщение или вопрос, отправленные сюда, открываются поверх панели на этом телефоне или планшете.",
-        "pl": "Nazwa, do której wysyłają karty Flow okien wyskakujących. Sam widżet nic nie pokazuje: wiadomość lub pytanie wysłane tutaj otwiera się nad pulpitem na tym telefonie lub tablecie.",
-        "ko": "팝업 Flow 카드가 보내는 이름입니다. 위젯 자체는 아무것도 표시하지 않으며, 여기로 보낸 메시지나 질문은 이 휴대폰이나 태블릿의 대시보드 위에 열립니다.",
-        "ar": "الاسم الذي ترسل إليه بطاقات Flow للنوافذ المنبثقة. الأداة نفسها لا تعرض شيئًا: الرسالة أو السؤال المرسل هنا يفتح فوق اللوحة على هذا الهاتف أو الجهاز اللوحي."
+        "en": "The name the popup Flow cards send to. The widget shows a bell and this name; a message or question sent here opens over the dashboard on this phone or tablet.",
+        "nl": "De naam waar de pop-up-Flowkaarten naartoe sturen. De widget toont een bel en deze naam; een bericht of vraag die hierheen gaat, opent over het dashboard op deze telefoon of tablet.",
+        "de": "Der Name, an den die Popup-Flow-Karten senden. Das Widget zeigt eine Glocke und diesen Namen; eine Nachricht oder Frage hierher öffnet sich über dem Dashboard auf diesem Handy oder Tablet.",
+        "fr": "Le nom auquel les cartes Flow de pop-up envoient. Le widget affiche une cloche et ce nom ; un message ou une question envoyé ici s'ouvre par-dessus le tableau de bord sur ce téléphone ou cette tablette.",
+        "it": "Il nome a cui inviano le schede Flow dei popup. Il widget mostra una campanella e questo nome; un messaggio o una domanda inviati qui si aprono sopra la dashboard su questo telefono o tablet.",
+        "sv": "Namnet som popup-fönstrens Flow-kort skickar till. Widgeten visar en klocka och det här namnet; ett meddelande eller en fråga som skickas hit öppnas över instrumentpanelen på den här telefonen eller surfplattan.",
+        "no": "Navnet popup-vinduenes Flow-kort sender til. Widgeten viser en bjelle og dette navnet; en melding eller et spørsmål som sendes hit, åpnes over dashbordet på denne telefonen eller nettbrettet.",
+        "es": "El nombre al que envían las tarjetas Flow de ventanas emergentes. El widget muestra una campana y este nombre; un mensaje o una pregunta enviados aquí se abren sobre el panel en este teléfono o tableta.",
+        "da": "Navnet, som popup-Flowkortene sender til. Widgetten viser en klokke og dette navn; en besked eller et spørgsmål sendt hertil åbner over dashboardet på denne telefon eller tablet.",
+        "ru": "Имя, на которое отправляют карточки Flow всплывающих окон. Виджет показывает колокольчик и это имя; сообщение или вопрос, отправленные сюда, открываются поверх панели на этом телефоне или планшете.",
+        "pl": "Nazwa, do której wysyłają karty Flow okien wyskakujących. Widżet pokazuje dzwonek i tę nazwę; wiadomość lub pytanie wysłane tutaj otwiera się nad pulpitem na tym telefonie lub tablecie.",
+        "ko": "팝업 Flow 카드가 보내는 이름입니다. 위젯에는 종 모양과 이 이름이 표시되며, 여기로 보낸 메시지나 질문은 이 휴대폰이나 태블릿의 대시보드 위에 열립니다.",
+        "ar": "الاسم الذي ترسل إليه بطاقات Flow للنوافذ المنبثقة. تعرض الأداة جرسًا وهذا الاسم؛ الرسالة أو السؤال المرسل هنا يفتح فوق اللوحة على هذا الهاتف أو الجهاز اللوحي."
       },
       "placeholder": {
         "en": "Screen",
