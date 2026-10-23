@@ -836,9 +836,13 @@ describe('web dashboards: popups (wk-084)', () => {
     const { homey } = setup({}, false);
     await homey.app.popups.show({ target: 'name:hall', text: 'Dinner', seconds: 30 });
     const { id, token } = homey.app.popups.forScreen('hall').popups[0];
-    const page = await api.postPopup({ homey, params: { id }, body: { t: token } });
+    const page = await api.postPopup({ homey, params: { id }, body: { t: token, strings: true } });
     expect(page).toMatchObject({ closed: false, kind: 'message', text: 'Dinner', language: 'en' });
-    expect(page.strings.yes).toBe('Yes');
+    expect((page as any).strings.yes).toBe('Yes');
+    // A poll: how it stands, without the strings.
+    const poll = await api.postPopup({ homey, params: { id }, body: { t: token } });
+    expect(poll).toMatchObject({ closed: false, text: 'Dinner' });
+    expect(poll).not.toHaveProperty('strings');
     await expect(api.postPopup({ homey, params: { id }, body: { t: 'nope' } })).rejects.toThrow('Not found');
     await expect(api.postPopup({ homey, params: { id }, body: {} })).rejects.toThrow('Not found');
     await expect(api.postPopupImage({ homey, params: { id }, body: {} })).rejects.toThrow('Not found');

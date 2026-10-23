@@ -65,6 +65,12 @@ describe('compact', () => {
     expect(text('.pw-uv-peak')).toMatch(/pm/i);
   });
 
+  it("writes the peak time in Homey's language when the screen gives no locale", () => {
+    const { text } = widget({ ...JUNE, language: 'da' }, { locale: undefined, timeFormat: undefined });
+    const at = new Date(JUNE.days[0].uv.at);
+    expect(text('.pw-uv-peak')).toBe(`· peak at ${new Intl.DateTimeFormat('da', { hour: 'numeric', minute: '2-digit' }).format(at)}`);
+  });
+
   it('leaves the UV out when switched off, and shows only the UV without types', () => {
     expect(widget(JUNE, { showUv: false }).root.querySelector('.pw-uv')).toBeNull();
     const uvOnly = widget(JUNE, { types: [] });

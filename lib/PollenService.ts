@@ -1,14 +1,12 @@
 import type Homey from 'homey';
+import ForecastCache from './forecastCache.js';
 import { localHour } from './heatmap.js';
 import { POLLEN_TYPES, pollenLevel, uvLevel, type PollenType } from './pollenLevels.js';
 import Timings from './Timings.js';
 
 const MINUTE = 60e3;
-const TICK = MINUTE;
-const IDLE_TIMEOUT = 10 * MINUTE;
 /** CAMS' pollen forecast is made once a day and UV changes by the hour, so an hour old is fresh enough. */
 const TTL = 60 * MINUTE;
-const RETRY_AFTER_ERROR = 5 * MINUTE;
 const FETCH_TIMEOUT = 15e3;
 /** Today and the next three: Open-Meteo forecasts pollen four days ahead. */
 const DAYS = 4;
@@ -39,50 +37,24 @@ type Cached = { key: string, body: any, expires: number, fetchedAt: number };
  */
 export default class PollenService {
 
-  private cached: Cached | null = null;
-  private inflight: Promise<Cached> | null = null;
-  private lastRequested = 0;
-  private lastStatus: string | null = null;
-  private lastError: string | null = null;
-  private tickTimer: NodeJS.Timeout | null = null;
-  private onLocation = () => {
-    this.debug('Pollen: Homey location changed, dropping the cached forecast');
-    this.cached = null;
-  };
+  private forecast: ForecastCache<Cached>;
 
   constructor(
     private homey: Homey.App['homey'],
-    private log: (...args: any[]) => void, // errors and warnings: always kept
+    log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
-  ) {}
+  ) {
+    this.forecast = new ForecastCache<Cached>(homey, {
+      name: 'Pollen', log, debug, fetch: key => this.fetchPollen(key),
+    });
+  }
 
   start() {
-    this.tickTimer = this.homey.setInterval(() => this.tick(), TICK);
-    (this.homey.geolocation as any).on?.('location', this.onLocation);
+    this.forecast.start();
   }
 
   async stop() {
-    if (this.tickTimer) this.homey.clearInterval(this.tickTimer);
-    this.tickTimer = null;
-    (this.homey.geolocation as any).off?.('location', this.onLocation);
-    this.cached = null;
-  }
-
-  /** Drops the forecast once no widget has asked for 10 min and it has expired (a valid one answers a waking tablet). */
-  private tick() {
-    const now = Date.now();
-    if (this.cached && now - this.lastRequested > IDLE_TIMEOUT && now >= this.cached.expires) {
-      this.debug('Pollen: no widget asked for 10 min, dropping the expired forecast');
-      this.cached = null;
-    }
-  }
-
-  /** Rounded to 3 decimals (~100 m), like the weather's. */
-  private location(): { lat: number, lon: number } | null {
-    const lat = Number(this.homey.geolocation.getLatitude());
-    const lon = Number(this.homey.geolocation.getLongitude());
-    if (!Number.isFinite(lat) || !Number.isFinite(lon) || (lat === 0 && lon === 0)) return null;
-    return { lat: Math.round(lat * 1000) / 1000, lon: Math.round(lon * 1000) / 1000 };
+    this.forecast.stop();
   }
 
   private timeZone(): string {
@@ -90,65 +62,47 @@ export default class PollenService {
   }
 
   async getPollen(): Promise<Pollen> {
-    this.lastRequested = Date.now();
     const language = this.homey.i18n.getLanguage();
-    const loc = this.location();
+    const loc = this.forecast.location();
     if (!loc) return { noLocation: true, language };
     const timeZone = this.timeZone();
     const tm = new Timings();
-    const cached = await tm.time('open-meteo', () => this.load(`${loc.lat},${loc.lon},${timeZone}`, loc, timeZone));
+    const cached = await tm.time('open-meteo', () => this.forecast.get(`${loc.lat},${loc.lon},${timeZone}`));
     this.debug(`Pollen: ${tm.summary()}`);
     return { ...pollenFrom(cached.body, Date.now(), timeZone), language };
   }
 
-  private load(key: string, loc: { lat: number, lon: number }, timeZone: string): Promise<Cached> {
-    const c = this.cached;
-    if (c && c.key === key && Date.now() < c.expires) return Promise.resolve(c);
-    if (!this.inflight) {
-      this.inflight = this.fetchPollen(key, loc, timeZone, c && c.key === key ? c : null)
-        .finally(() => { this.inflight = null; });
-    }
-    return this.inflight;
-  }
-
-  private async fetchPollen(key: string, loc: { lat: number, lon: number }, timeZone: string, stale: Cached | null): Promise<Cached> {
+  /** One request to Open-Meteo (the key is `lat,lon,timeZone`). Throws on failure (`ForecastCache` keeps the last one). */
+  private async fetchPollen(key: string): Promise<Cached> {
+    const [lat, lon, timeZone] = key.split(',');
     const headers = {
       'User-Agent': `Widgetkeeper/${this.homey.manifest?.version ?? '0'} github.com/thomassidor/widgetkeeper`,
       Accept: 'application/json',
     };
-    try {
-      const signal = typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(FETCH_TIMEOUT) : undefined;
-      const res = await fetch(pollenUrl(loc, timeZone), { headers, signal });
-      this.lastStatus = `${res.status} at ${new Date().toISOString()}`;
-      if (!res.ok) throw new Error(`Open-Meteo air quality: HTTP ${res.status}`);
-      const body: any = await res.json();
-      if (!Array.isArray(body?.hourly?.time)) throw new Error('Unexpected air-quality response');
-      this.cached = { key, body, expires: Date.now() + TTL, fetchedAt: Date.now() };
-      this.lastError = null;
-      this.debug(`Pollen: fetched, next fetch after ${new Date(this.cached.expires).toISOString()}`);
-      return this.cached;
-    } catch (err) {
-      this.lastError = err instanceof Error ? err.message : String(err);
-      if (!stale) throw err;
-      this.log('Pollen: fetch failed, showing the previous forecast', err);
-      this.cached = { ...stale, expires: Date.now() + RETRY_AFTER_ERROR };
-      return this.cached;
-    }
+    const signal = typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(FETCH_TIMEOUT) : undefined;
+    const res = await fetch(pollenUrl({ lat: Number(lat), lon: Number(lon) }, timeZone), { headers, signal });
+    this.forecast.lastStatus = `${res.status} at ${new Date().toISOString()}`;
+    if (!res.ok) throw new Error(`Open-Meteo air quality: HTTP ${res.status}`);
+    const body: any = await res.json();
+    if (!Array.isArray(body?.hourly?.time)) throw new Error('Unexpected air-quality response');
+    const expires = Date.now() + TTL;
+    this.debug(`Pollen: fetched, next fetch after ${new Date(expires).toISOString()}`);
+    return { key, body, expires, fetchedAt: Date.now() };
   }
 
   /** For the diagnostics report. */
   describe() {
-    const c = this.cached;
+    const c = this.forecast.cached;
     const now = Date.now();
     const today = c ? pollenFrom(c.body, now, this.timeZone()) : null;
     return {
-      location: this.location(),
+      location: this.forecast.location(),
       fetchedAt: c ? new Date(c.fetchedAt).toISOString() : null,
       expires: c ? new Date(c.expires).toISOString() : null,
       outside: today ? today.outside : null,
       today: today?.days[0] ?? null,
-      lastStatus: this.lastStatus,
-      lastError: this.lastError,
+      lastStatus: this.forecast.lastStatus,
+      lastError: this.forecast.lastError,
     };
   }
 
@@ -173,7 +127,6 @@ export function pollenFrom(body: any, now: number, timeZone: string): Omit<Extra
   const pollen = Object.fromEntries(POLLEN_TYPES.map(t => [t, series(`${t}_pollen`)])) as Record<PollenType, unknown[]>;
   const uv = series('uv_index');
   const today = localHour(now, timeZone).date;
-  const nowHour = Math.floor(now / 3600e3) * 3600e3;
 
   type Acc = { sums: Record<PollenType, { sum: number, n: number }>, uv: { max: number, at: number } | null };
   const byDate = new Map<string, Acc>();
@@ -199,7 +152,8 @@ export function pollenFrom(body: any, now: number, timeZone: string): Omit<Extra
     const u = num(uv[i]);
     if (u != null) {
       if (!acc.uv || u > acc.uv.max) acc.uv = { max: u, at: t };
-      if (t === nowHour) uvNow = u;
+      // The hour holding `now`: Open-Meteo's start on local hours, half past a UTC hour in India or Adelaide.
+      if (t <= now && now < t + 3600e3) uvNow = u;
     }
   });
 

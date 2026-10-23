@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, memoryStorage } from './helpers/fakeHomey.js';
-import Secrets, { fileStorage, MOVED_SETTINGS } from '../lib/secrets.js';
+import Secrets, { fileStorage, MOVED_MARK, MOVED_SETTINGS } from '../lib/secrets.js';
 
 describe('secrets', () => {
   it('moves the key, the password hash and the sessions out of the app settings', () => {
@@ -30,6 +30,24 @@ describe('secrets', () => {
     const secrets = new Secrets(homey, vi.fn(), memoryStorage(JSON.stringify({ variablesApiKey: 'the-key' })));
     expect(secrets.get('variablesApiKey')).toBe('the-key');
     expect(homey.settings.get('variablesApiKey')).toBeNull();
+  });
+
+  it('moves once: a setting written after that is unset, never taken, even where the file has none', () => {
+    const homey = fakeHomey(fakeApi({}));
+    const storage = memoryStorage();
+    new Secrets(homey, vi.fn(), storage);
+    // A first start with nothing to move marks the file too.
+    expect(JSON.parse(storage.text!)).toEqual({ [MOVED_MARK]: true });
+    homey.settings.set('variablesApiKey', 'planted');
+    homey.settings.set('webPassword', { salt: 'aa', hash: 'bb' });
+    const log = vi.fn();
+    const secrets = new Secrets(homey, log, storage);
+    expect(secrets.get('variablesApiKey')).toBeNull();
+    expect(secrets.get('webPassword')).toBeNull();
+    expect(homey.settings.get('variablesApiKey')).toBeNull();
+    expect(homey.settings.get('webPassword')).toBeNull();
+    expect(JSON.parse(storage.text!)).toEqual({ [MOVED_MARK]: true });
+    expect(log).toHaveBeenCalledWith(expect.stringMatching(/Ignored and unset variablesApiKey, webPassword/));
   });
 
   it('leaves the settings when the file can\'t be written, so nothing is lost', () => {

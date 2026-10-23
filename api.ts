@@ -253,7 +253,7 @@ export default {
   async getWebPopupImage({ homey, query, params }: { homey: Homey, query?: Record<string, string>, params: Record<string, string> }) {
     const app = homey.app as WidgetkeeperApp;
     assertWebSession(app, query);
-    return app.popups.image(params.id);
+    return app.popups.imageFromSession(params.id);
   },
 
   /** The web dashboards page: the answer to a question (`{answer: true|false}`); the first one from any screen wins. */
@@ -262,16 +262,18 @@ export default {
   }) {
     const app = homey.app as WidgetkeeperApp;
     assertWebSession(app, query);
-    return app.popups.answer(params.id, body?.answer);
+    return app.popups.answerFromSession(params.id, body?.answer);
   },
 
   /**
    * The prompt page a Popups widget opens in the phone app's in-app browser (`settings/popup.html`), which has no login:
-   * public, so only the popup's token (`{t}`, in the body) lets it read the popup, its picture or answer it.
+   * public, so only the popup's token (`{t}`, in the body) lets it read the popup, its picture or answer it. Its first
+   * call asks for the strings (`{strings: true}`); its polls don't.
    */
-  async postPopup({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { t?: unknown } }) {
+  async postPopup({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { t?: unknown, strings?: unknown } }) {
     const app = homey.app as WidgetkeeperApp;
     const popup = app.popups.page(params.id, body?.t);
+    if (body?.strings !== true) return popup;
     const language = homey.i18n.getLanguage();
     const strings = await app.web.appStrings(language);
     return { ...popup, language, strings: (strings as any)?.popups ?? {} };
@@ -279,13 +281,11 @@ export default {
 
   async postPopupImage({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { t?: unknown } }) {
     const app = homey.app as WidgetkeeperApp;
-    if (typeof body?.t !== 'string') throw new Error('Not found');
-    return app.popups.image(params.id, body.t);
+    return app.popups.imageWithToken(params.id, body?.t);
   },
 
   async postPopupAnswer({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { t?: unknown, answer?: unknown } }) {
     const app = homey.app as WidgetkeeperApp;
-    if (typeof body?.t !== 'string') throw new Error('Not found');
-    return app.popups.answer(params.id, body.answer, body.t);
+    return app.popups.answerWithToken(params.id, body?.answer, body?.t);
   },
 };

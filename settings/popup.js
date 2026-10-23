@@ -1,7 +1,8 @@
 /*
  * The prompt page (popup.html, wk-084): a Flow's message or Yes/No question in the phone app's in-app browser, which a
  * Popups widget opened with `Homey.popup()`. It has no login: `#id=&t=` name the popup and its token, which the app's
- * public routes take in the body (`POST /api/app/<appId>/popup/:id`, `/image`, `/answer`). It polls every 2 s, so it
+ * public routes take in the body (`POST /api/app/<appId>/popup/:id`, `/image`, `/answer`); the first call also asks for
+ * the strings (`strings: true`). It polls every 2 s, so it
  * says when another screen answered first or the time ran out; the in-app browser is closed by the user.
  */
 (function () {
@@ -206,7 +207,8 @@
     async function start() {
       if (!id || !token) { finish(t('notFound')); return; }
       try {
-        const data = await call('');
+        // The strings once; the polls only ask how it stands.
+        const data = await call('', { strings: true });
         useStrings(data);
         if (data.closed) { finish(ending(data)); return; }
         render(data);

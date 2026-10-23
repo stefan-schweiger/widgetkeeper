@@ -87,6 +87,14 @@ describe('pollenFrom', () => {
     expect(res.uvNow).toBe(4.5);
   });
 
+  it("finds the current hour's UV where local hours start half past a UTC hour", () => {
+    // Kolkata is UTC+5:30: its local hours start at :30 UTC. 13:20 UTC is 18:50 there, in the hour from 18:00 (12:30 UTC).
+    const start = Date.parse('2026-06-14T18:30:00Z'); // local midnight on the 15th
+    const time = Array.from({ length: 48 }, (_, i) => (start + i * HOUR) / 1000);
+    const hourly = { time, uv_index: time.map((_, i) => i / 10) };
+    expect(pollenFrom({ hourly }, NOW, 'Asia/Kolkata').uvNow).toBe(1.8);
+  });
+
   it('is outside the coverage when every pollen value is null (outside Europe)', () => {
     const nulls = Object.fromEntries(TYPES.map(t => [t, null]));
     const res = pollenFrom(body(nulls), NOW, 'Europe/Copenhagen');
@@ -120,6 +128,26 @@ describe('getPollen', () => {
     expect(init.headers['User-Agent']).toBe('Widgetkeeper/0.3.0 github.com/thomassidor/widgetkeeper');
     expect(res).toMatchObject({ language: 'en', outside: false });
     expect('days' in res && res.days[0].pollen.grass).toEqual({ value: 64, level: 3 });
+  });
+
+  it("doesn't answer a new location with a fetch for the old one still under way", async () => {
+    const { service, homey } = setup();
+    let release!: () => void;
+    fetchMock.mockImplementationOnce(() => new Promise((r) => { release = () => r(response(200, body({ birch: 4 }))); }));
+    const old = service.getPollen();
+    await vi.advanceTimersByTimeAsync(0);
+    vi.spyOn(homey.geolocation, 'getLatitude').mockReturnValue(48.137);
+    const moved = service.getPollen();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[1][0]).toContain('latitude=48.137');
+    release();
+    await old;
+    await moved;
+    // The old place's answer, ending last, isn't kept for the new one.
+    await service.getPollen();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(service.describe().location).toEqual({ lat: 48.137, lon: 12.568 });
   });
 
   it('shares one request between widgets asking at once, and caches it for an hour', async () => {

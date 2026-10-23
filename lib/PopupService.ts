@@ -59,6 +59,7 @@ type Popup = {
 type Closed = { token: string, kind: PopupKind, answer: boolean | null, reason: CloseReason, closedAt: number };
 
 export type AskResult = { answer: boolean, answered: boolean };
+export type AnswerResult = { ok: true, answer: boolean } | { ok: false, reason: 'closed' | 'notAsk', answer: boolean | null };
 
 /** A popup as the screens get it (`popups:show`, `/web/popups`, the widget's `/state`): the picture's source only. */
 export type PopupView = {
@@ -136,21 +137,16 @@ export default class PopupService {
   }
 
   /**
-   * A screen's answer to a question. The first one wins; later ones (and a message, which has none) get
-   * `{ok: false, reason}` with the answer that closed it, if any. `token` is the prompt page's, which has no login.
+   * A web dashboard's answer to a question (its session was checked). The first one wins; later ones (and a message,
+   * which has none) get `{ok: false, reason}` with the answer that closed it, if any.
    */
-  answer(id: string, yes: unknown, token?: unknown): { ok: true, answer: boolean } | { ok: false, reason: 'closed' | 'notAsk', answer: boolean | null } {
-    const p = this.open.get(id);
-    if (!p || (token !== undefined && !sameToken(p.token, token))) {
-      const c = this.closed.get(id);
-      if (!c && token !== undefined) throw new Error('Not found');
-      if (c && token !== undefined && !sameToken(c.token, token)) throw new Error('Not found');
-      return { ok: false, reason: 'closed', answer: c ? c.answer : null };
-    }
-    if (p.kind !== 'ask') return { ok: false, reason: 'notAsk', answer: null };
-    const answer = yes === true;
-    this.finish(id, answer, 'answered');
-    return { ok: true, answer };
+  answerFromSession(id: string, yes: unknown): AnswerResult {
+    return this.answerAs(id, yes, null);
+  }
+
+  /** The prompt page's answer (no login): only with the popup's token, else `Not found`. */
+  answerWithToken(id: string, yes: unknown, token: unknown): AnswerResult {
+    return this.answerAs(id, yes, t => sameToken(t, token));
   }
 
   /** Every open popup, oldest first, and the Homey's clock (the page moves `until` into its own). */
@@ -179,12 +175,14 @@ export default class PopupService {
     throw new Error('Not found');
   }
 
-  /** A popup's picture: the one kept (an image tag or an address), or the camera's snapshot now. */
-  async image(id: string, token?: unknown): Promise<Snapshot> {
-    const p = this.open.get(id);
-    if (!p || !p.picture || (token !== undefined && !sameToken(p.token, token))) throw new Error('Not found');
-    if (p.picture.source === 'stored') return { type: p.picture.type, data: p.picture.data };
-    return this.deps.cameras.getSnapshot(p.picture.deviceId);
+  /** A popup's picture for a web dashboard (its session was checked): the one kept, or the camera's snapshot now. */
+  imageFromSession(id: string): Promise<Snapshot> {
+    return this.imageAs(id, null);
+  }
+
+  /** A popup's picture for the prompt page (no login): only with the popup's token, else `Not found`. */
+  imageWithToken(id: string, token: unknown): Promise<Snapshot> {
+    return this.imageAs(id, t => sameToken(t, token));
   }
 
   /**
@@ -260,6 +258,27 @@ export default class PopupService {
   }
 
   // ---- Inside -----------------------------------------------------------------------------------------------
+
+  /** `may`: whether a token is the one the caller gave (the prompt page); null for a signed-in web dashboard. */
+  private answerAs(id: string, yes: unknown, may: ((token: string) => boolean) | null): AnswerResult {
+    const p = this.open.get(id);
+    if (!p || (may && !may(p.token))) {
+      const c = this.closed.get(id);
+      if (may && !(c && may(c.token))) throw new Error('Not found');
+      return { ok: false, reason: 'closed', answer: c ? c.answer : null };
+    }
+    if (p.kind !== 'ask') return { ok: false, reason: 'notAsk', answer: null };
+    const answer = yes === true;
+    this.finish(id, answer, 'answered');
+    return { ok: true, answer };
+  }
+
+  private async imageAs(id: string, may: ((token: string) => boolean) | null): Promise<Snapshot> {
+    const p = this.open.get(id);
+    if (!p || !p.picture || (may && !may(p.token))) throw new Error('Not found');
+    if (p.picture.source === 'stored') return { type: p.picture.type, data: p.picture.data };
+    return this.deps.cameras.getSnapshot(p.picture.deviceId);
+  }
 
   /** A Flow's screen choice (`all`, `web:<id>`, `name:<name>`) as a target; a deleted web dashboard throws. */
   private target(input: unknown): string {
@@ -341,20 +360,26 @@ export default class PopupService {
     }
     if ('image' in input) {
       const stream = await input.image.getStream();
-      const chunks: Buffer[] = [];
-      let size = 0;
-      for await (const chunk of stream) {
-        size += chunk.length;
-        if (size > MAX_PICTURE) {
-          stream.destroy?.();
-          throw new Error(this.homey.__('popups.pictureTooLarge') || 'The picture is larger than 3 MB');
-        }
-        chunks.push(Buffer.from(chunk));
-      }
+      const bytes = await this.readPicture(stream);
       const type = typeof stream.contentType === 'string' && stream.contentType.startsWith('image/') ? stream.contentType : 'image/jpeg';
-      return { source: 'stored', type, data: Buffer.concat(chunks).toString('base64') };
+      return { source: 'stored', type, data: bytes.toString('base64') };
     }
     return this.fetchPicture(input.url);
+  }
+
+  /**
+   * A picture's bytes, up to 3 MB: past that it throws and reads no more (leaving the loop ends the stream), whatever
+   * the sender said its size was.
+   */
+  private async readPicture(stream: AsyncIterable<Uint8Array> | null): Promise<Buffer> {
+    const chunks: Buffer[] = [];
+    let size = 0;
+    for await (const chunk of stream ?? []) {
+      size += chunk.length;
+      if (size > MAX_PICTURE) throw new Error(this.homey.__('popups.pictureTooLarge') || 'The picture is larger than 3 MB');
+      chunks.push(Buffer.from(chunk));
+    }
+    return Buffer.concat(chunks);
   }
 
   private async fetchPicture(address: string): Promise<Picture> {
@@ -377,8 +402,7 @@ export default class PopupService {
     const type = (res.headers.get('content-type') || '').split(';')[0].trim();
     if (!type.startsWith('image/')) throw new Error(`${this.homey.__('popups.pictureFailed') || 'The picture could not be loaded'} (${type || 'no type'})`);
     if (Number(res.headers.get('content-length')) > MAX_PICTURE) throw new Error(this.homey.__('popups.pictureTooLarge') || 'The picture is larger than 3 MB');
-    const bytes = Buffer.from(await res.arrayBuffer());
-    if (bytes.length > MAX_PICTURE) throw new Error(this.homey.__('popups.pictureTooLarge') || 'The picture is larger than 3 MB');
+    const bytes = await this.readPicture(res.body as AsyncIterable<Uint8Array> | null);
     return { source: 'stored', type, data: bytes.toString('base64') };
   }
 

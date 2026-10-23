@@ -71,7 +71,7 @@ describe('show (a message)', () => {
   it("isn't answered: a message has no answer", async () => {
     const { service, events } = setup();
     await service.show({ target: 'all', text: 'Hi', seconds: 5 });
-    expect(service.answer(events(POPUP_SHOW_EVENT)[0].id, true)).toEqual({ ok: false, reason: 'notAsk', answer: null });
+    expect(service.answerFromSession(events(POPUP_SHOW_EVENT)[0].id, true)).toEqual({ ok: false, reason: 'notAsk', answer: null });
   });
 });
 
@@ -82,9 +82,9 @@ describe('ask (a Yes/No question)', () => {
     await vi.advanceTimersByTimeAsync(0);
     const [shown] = events(POPUP_SHOW_EVENT);
     expect(shown.kind).toBe('ask');
-    expect(service.answer(shown.id, true)).toEqual({ ok: true, answer: true });
+    expect(service.answerFromSession(shown.id, true)).toEqual({ ok: true, answer: true });
     await expect(asked).resolves.toEqual({ answer: true, answered: true });
-    expect(service.answer(shown.id, false)).toEqual({ ok: false, reason: 'closed', answer: true });
+    expect(service.answerFromSession(shown.id, false)).toEqual({ ok: false, reason: 'closed', answer: true });
     expect(events(POPUP_CLOSE_EVENT)).toEqual([{ id: shown.id, answer: true, reason: 'answered' }]);
   });
 
@@ -166,13 +166,16 @@ describe('the prompt page (public, by token)', () => {
     const { id, token } = events(POPUP_SHOW_EVENT)[0];
     expect(() => service.page(id, 'wrong')).toThrow('Not found');
     expect(() => service.page(id, undefined)).toThrow('Not found');
-    expect(() => service.answer(id, true, 'wrong')).toThrow('Not found');
+    expect(() => service.answerWithToken(id, true, 'wrong')).toThrow('Not found');
+    // Leaving the token out is no way past it.
+    expect(() => service.answerWithToken(id, true, undefined)).toThrow('Not found');
+    expect(() => service.answerWithToken('gone', true, undefined)).toThrow('Not found');
     expect(service.page(id, token)).toMatchObject({ closed: false, kind: 'ask', text: 'Q?', picture: null });
-    expect(service.answer(id, false, token)).toEqual({ ok: true, answer: false });
+    expect(service.answerWithToken(id, false, token)).toEqual({ ok: true, answer: false });
     await expect(asked).resolves.toEqual({ answer: false, answered: true });
     expect(service.page(id, token)).toMatchObject({ closed: true, kind: 'ask', answer: false, reason: 'answered' });
     expect(() => service.page(id, 'wrong')).toThrow('Not found');
-    expect(service.answer(id, true, token)).toEqual({ ok: false, reason: 'closed', answer: false });
+    expect(service.answerWithToken(id, true, token)).toEqual({ ok: false, reason: 'closed', answer: false });
   });
 });
 
@@ -182,9 +185,10 @@ describe('pictures', () => {
     await service.show({ target: 'all', text: '', seconds: 5, picture: PopupService.droptokenArg(imageTag(Buffer.from('jpeg!'), 'image/png')) });
     const { id, token, picture } = events(POPUP_SHOW_EVENT)[0];
     expect(picture).toEqual({ source: 'stored' });
-    await expect(service.image(id)).resolves.toEqual({ type: 'image/png', data: Buffer.from('jpeg!').toString('base64') });
-    await expect(service.image(id, token)).resolves.toMatchObject({ type: 'image/png' });
-    await expect(service.image(id, 'wrong')).rejects.toThrow('Not found');
+    await expect(service.imageFromSession(id)).resolves.toEqual({ type: 'image/png', data: Buffer.from('jpeg!').toString('base64') });
+    await expect(service.imageWithToken(id, token)).resolves.toMatchObject({ type: 'image/png' });
+    await expect(service.imageWithToken(id, 'wrong')).rejects.toThrow('Not found');
+    await expect(service.imageWithToken(id, undefined)).rejects.toThrow('Not found');
   });
 
   it('refuses an image tag over 3 MB', async () => {
@@ -198,8 +202,8 @@ describe('pictures', () => {
     await service.show({ target: 'all', text: 'Door', seconds: 5, picture: PopupService.pictureArg({ id: 'camera:cam1' }) });
     const { id, picture } = events(POPUP_SHOW_EVENT)[0];
     expect(picture).toEqual({ source: 'camera' });
-    await service.image(id);
-    await expect(service.image(id)).resolves.toEqual({ type: 'image/jpeg', data: 'snap-cam1' });
+    await service.imageFromSession(id);
+    await expect(service.imageFromSession(id)).resolves.toEqual({ type: 'image/jpeg', data: 'snap-cam1' });
     expect(cameras.getSnapshot).toHaveBeenCalledTimes(2);
   });
 
@@ -211,11 +215,23 @@ describe('pictures', () => {
     vi.stubGlobal('fetch', fetch);
     await service.show({ target: 'all', text: 'Radar', seconds: 5, picture: PopupService.pictureArg({ id: 'url:http://example.test/radar.png' }) });
     const { id } = events(POPUP_SHOW_EVENT)[0];
-    await expect(service.image(id)).resolves.toEqual({ type: 'image/png', data: Buffer.from('png').toString('base64') });
+    await expect(service.imageFromSession(id)).resolves.toEqual({ type: 'image/png', data: Buffer.from('png').toString('base64') });
     expect(fetch).toHaveBeenCalledTimes(1);
     await expect(service.show({ target: 'all', text: 'x', seconds: 5, picture: { url: 'http://example.test/page' } })).rejects.toThrow('(text/html)');
     await expect(service.show({ target: 'all', text: 'x', seconds: 5, picture: { url: 'file:///etc/passwd' } })).rejects.toThrow('Not a picture address');
     await expect(service.show({ target: 'all', text: 'x', seconds: 5, picture: PopupService.droptokenArg(' nonsense ') })).rejects.toThrow('Not a picture address');
+  });
+
+  it('stops reading an address past 3 MB, whatever its Content-Length says', async () => {
+    const { service } = setup();
+    let pulled = 0;
+    const chunk = new Uint8Array(1024 * 1024);
+    const body = new ReadableStream<Uint8Array>({
+      pull(controller) { pulled += 1; controller.enqueue(chunk); }, // never ends
+    });
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(body, { headers: { 'content-type': 'image/jpeg', 'content-length': '10' } })));
+    await expect(service.show({ target: 'all', text: 'x', seconds: 5, picture: { url: 'http://example.test/big.jpg' } })).rejects.toThrow('larger than 3 MB');
+    expect(pulled).toBeLessThan(8);
   });
 
   it('reads the picture argument and the droptoken', () => {

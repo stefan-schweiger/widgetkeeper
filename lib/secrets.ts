@@ -11,6 +11,9 @@ export const SECRETS_FILE = '/userdata/secrets.json';
 /** The app settings that held secrets before they moved here: moved over once, then unset. */
 export const MOVED_SETTINGS = ['variablesApiKey', 'webPassword', 'webSessions'] as const;
 
+/** Kept in the file once the settings have been moved: from then on a setting of those names is only unset, never taken. */
+export const MOVED_MARK = 'settingsMoved';
+
 /** How the secrets are read and written: the file on the Homey, memory in the tests. */
 export type SecretStorage = { read(): string | null, write(text: string): void };
 
@@ -58,13 +61,15 @@ export default class Secrets {
     private log: (...args: any[]) => void,
     private storage: SecretStorage,
   ) {
+    let readable = true;
     try {
       const parsed = JSON.parse(storage.read() ?? '{}');
       if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) this.values = parsed;
     } catch (err) {
+      readable = false;
       this.log('The secrets file could not be read:', String((err as any)?.message ?? err));
     }
-    this.moveSettings();
+    this.moveSettings(readable);
   }
 
   get(key: string): unknown {
@@ -87,25 +92,31 @@ export default class Secrets {
   }
 
   /**
-   * Moves what older versions kept in the app settings. A setting is unset only once the file holds it, so a failed
-   * write loses nothing. One the file already has (from an earlier move) is just unset.
+   * Moves what older versions kept in the app settings, once (`MOVED_MARK`): after that a setting of those names was
+   * written by someone else (an *Apps → Control* key may write the settings), so it's only unset, even where the file
+   * has none (a removed key or password). A setting is unset only once the file holds it, so a failed write loses
+   * nothing. One the file already has is just unset. An unreadable file isn't marked unless something is moved.
    */
-  private moveSettings() {
+  private moveSettings(readable: boolean) {
     const found = MOVED_SETTINGS.filter(key => this.homey.settings.get(key) !== null && this.homey.settings.get(key) !== undefined);
-    if (!found.length) return;
-    let changed = false;
+    if (this.values[MOVED_MARK] === true) {
+      for (const key of found) this.homey.settings.unset(key);
+      if (found.length) this.log(`Ignored and unset ${found.join(', ')} in the app settings (written after the move)`);
+      return;
+    }
+    if (!found.length && !readable) return;
     for (const key of found) {
       if (Object.prototype.hasOwnProperty.call(this.values, key)) continue;
       this.values[key] = this.homey.settings.get(key);
-      changed = true;
     }
+    this.values[MOVED_MARK] = true;
     try {
-      if (changed) this.save();
+      this.save();
     } catch (err) {
       this.log('The secrets could not be moved out of the app settings:', String((err as any)?.message ?? err));
       return;
     }
     for (const key of found) this.homey.settings.unset(key);
-    this.log(`Moved ${found.join(', ')} out of the app settings`);
+    if (found.length) this.log(`Moved ${found.join(', ')} out of the app settings`);
   }
 }

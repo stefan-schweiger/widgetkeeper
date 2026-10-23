@@ -168,7 +168,7 @@
       icon('sun', line, 'pw-sun');
       el('span', { class: 'pw-uv-value', dir: 'auto', text: t('uv', { value: number(uv.max) }) }, line);
       el('span', { class: 'pw-uv-level', dir: 'auto', text: t(LEVEL_KEYS[uv.level]) }, line);
-      let rest = t('peak', { time: timeFormatter(opts.locale, opts.timeFormat).format(new Date(uv.at)) });
+      let rest = t('peak', { time: timeFormatter(locale(), opts.timeFormat).format(new Date(uv.at)) });
       if (detailed && typeof data.uvNow === 'number') rest += ` · ${t('now', { value: number(data.uvNow) })}`;
       el('span', { class: 'pw-uv-peak', dir: 'auto', text: `· ${rest}` }, line);
     }

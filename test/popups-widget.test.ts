@@ -138,6 +138,8 @@ describe('popup prompt page (settings/popup.js)', () => {
     expect(sent).toEqual([{ t: 'secret', answer: true }]);
     expect(root.querySelector('.pp-result')!.textContent).toBe('Besvaret: Ja');
     expect(fetch.mock.calls[0][0]).toBe('/api/app/com.thomassidor.widgetkeeper/popup/p1');
+    // The strings only on the first call.
+    expect(JSON.parse(fetch.mock.calls[0][1].body)).toEqual({ t: 'secret', strings: true });
   });
 
   it('says when another screen answered first, from its poll', async () => {

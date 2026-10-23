@@ -3482,10 +3482,15 @@
       popups.delete(id);
       dismissed.delete(id);
       if (shownPopup && shownPopup.id === id) {
-        // Another screen's answer: said for a moment, so this screen sees what happened.
-        const note = reason === 'answered' && !shownPopup.answeredHere && answer != null
-          ? t(answer ? 'popupElsewhereYes' : 'popupElsewhereNo') : null;
-        shownPopup.close(note);
+        if (shownPopup.sending) {
+          // This screen's answer is on its way, so this close may be its own or another screen's: its reply says.
+          shownPopup.held = { answer, reason };
+        } else {
+          // Another screen's answer: said for a moment, so this screen sees what happened.
+          const note = reason === 'answered' && !shownPopup.answeredHere && answer != null
+            ? t(answer ? 'popupElsewhereYes' : 'popupElsewhereNo') : null;
+          shownPopup.close(note);
+        }
       }
       syncPopups();
     }
@@ -3534,7 +3539,8 @@
       d.append(box);
       const timers = [];
       let closed = false;
-      const shown = { id: p.id, d, answeredHere: false, close: null };
+      // `sending`: this screen's answer is on its way; `held`: how the popup closed meanwhile.
+      const shown = { id: p.id, d, answeredHere: false, sending: false, held: null, close: null };
 
       if (p.picture) {
         const frame = el('div', 'wd-popup-picture loading');
@@ -3575,21 +3581,26 @@
         const actions = el('div', 'wd-popup-actions');
         const send = async (answer) => {
           for (const b of actions.querySelectorAll('button')) b.disabled = true;
-          shown.answeredHere = true;
+          shown.sending = true;
           status.textContent = '';
+          let res;
           try {
-            const res = await request('POST', `/web/popups/${encodeURIComponent(p.id)}/answer`, { answer });
-            if (res && res.ok === false && res.reason === 'closed') {
-              // Someone else was first: say what they answered.
-              shown.answeredHere = false;
-              removePopup(p.id, res.answer, res.answer == null ? 'closed' : 'answered');
-            } else {
-              removePopup(p.id, answer, 'answered');
-            }
+            res = await request('POST', `/web/popups/${encodeURIComponent(p.id)}/answer`, { answer });
           } catch (err) {
-            shown.answeredHere = false;
+            shown.sending = false;
+            // It closed meanwhile (another screen, or the time ran out): say how.
+            if (shown.held) { removePopup(p.id, shown.held.answer, shown.held.reason); return; }
             status.textContent = t('popupAnswerFailed');
             for (const b of actions.querySelectorAll('button')) b.disabled = false;
+            return;
+          }
+          shown.sending = false;
+          if (res && res.ok === false && res.reason === 'closed') {
+            // Someone else was first: say what they answered.
+            removePopup(p.id, res.answer, res.answer == null ? 'closed' : 'answered');
+          } else {
+            shown.answeredHere = true;
+            removePopup(p.id, answer, 'answered');
           }
         };
         actions.append(
