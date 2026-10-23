@@ -158,6 +158,10 @@ textarea.wd-input { width: 100%; resize: vertical; }
   display: flex; gap: 6px; aspect-ratio: 16 / 9; padding: 10px; overflow: hidden; box-sizing: border-box;
   background: linear-gradient(160deg, color-mix(in srgb, var(--wd-accent) 14%, var(--wd-bg)), var(--wd-bg) 70%);
 }
+/* A miniature in its dashboard's mode, whatever the page's: the dashboard's own colours (the fallbacks: Homey's
+   tokens follow the page). */
+.wd-dash-art.light { --wd-bg: #F4F4FA; --wd-raised: #EAEAF1; --wd-line: #DADAE2; }
+.wd-dash-art.dark { --wd-bg: #111217; --wd-raised: #2B2C36; --wd-line: #383944; }
 .wd-dash-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .wd-dash-thumb { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 6px; flex: none; background: var(--wd-raised); }
 .wd-dash-thumb.empty { background: transparent; outline: 1px dashed var(--wd-line); outline-offset: -1px; }

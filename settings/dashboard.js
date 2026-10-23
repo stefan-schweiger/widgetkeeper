@@ -825,15 +825,20 @@
       return theme === 'dark' || (theme !== 'light' && !!(darkQuery && darkQuery.matches));
     }
 
-    function isDark() {
+    /** Whether a dashboard of that theme shows dark in this browser (its own choice first). */
+    function showsDark(theme) {
       const own = ownTheme();
-      return own ? own === 'dark' : themeIsDark(current ? current.dashboard.theme : 'auto');
+      return own ? own === 'dark' : themeIsDark(theme);
     }
 
-    /** A backdrop's colour in the page's mode. */
-    function backdrop(background) {
+    function isDark() {
+      return showsDark(current ? current.dashboard.theme : 'auto');
+    }
+
+    /** A backdrop's colour in the page's mode, or in `dark`'s. */
+    function backdrop(background, dark = isDark()) {
       const pair = BACKGROUNDS[background] || BACKGROUNDS.default;
-      return pair[isDark() ? 1 : 0];
+      return pair[dark ? 1 : 0];
     }
 
     function setFrameHeight(frame, height) {
@@ -1043,6 +1048,8 @@
     if (darkQuery && darkQuery.addEventListener) {
       darkQuery.addEventListener('change', () => {
         if (ownTheme() || (current && current.dashboard.theme !== 'auto')) return;
+        // The front page: its cards of Automatic dashboards change mode too.
+        if (root.querySelector(':scope > .wd-home')) { route(); return; }
         applyTheme(current ? current.dashboard.theme : 'auto');
         reloadFrames(); // a frame's dark mode is set when it starts
       });
@@ -1180,9 +1187,9 @@
     }
 
     /** A widget type's own preview (as Homey's widget picker shows it), served beside its files, in the page's theme. */
-    function preview(type, className) {
+    function preview(type, className, dark = isDark()) {
       const img = el('img', className);
-      img.src = `${widgetFolder(type)}/preview-${isDark() ? 'dark' : 'light'}.png`;
+      img.src = `${widgetFolder(type)}/preview-${dark ? 'dark' : 'light'}.png`;
       img.alt = '';
       img.loading = 'lazy';
       img.decoding = 'async';
@@ -1676,12 +1683,14 @@
     function dashboardCard(d, editing = false) {
       const card = el('div', 'wd-dash');
       card.dataset.id = d.id;
-      const art = el('div', 'wd-dash-art');
-      if (d.background && d.background !== 'default') art.style.setProperty('--wd-bg', backdrop(d.background));
+      // The miniature in the mode the dashboard shows in (a Dark one on a light page too), the page's for Automatic.
+      const dark = showsDark(d.theme);
+      const art = el('div', `wd-dash-art ${dark ? 'dark' : 'light'}`);
+      if (d.background && d.background !== 'default') art.style.setProperty('--wd-bg', backdrop(d.background, dark));
       const columns = d.columns.length ? d.columns : [[]];
       for (const column of columns) {
         const col = el('div', 'wd-dash-col');
-        for (const w of column.slice(0, 3)) col.append(preview(w.type, 'wd-dash-thumb'));
+        for (const w of column.slice(0, 3)) col.append(preview(w.type, 'wd-dash-thumb', dark));
         if (!column.length) col.append(el('span', 'wd-dash-thumb empty'));
         art.append(col);
       }
