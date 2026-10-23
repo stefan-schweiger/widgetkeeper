@@ -80,7 +80,7 @@
     .browser b { color: #339BFB; font-weight: 500; width: 64px; }
     .browser span { flex: 1; text-align: center; }
     .browser i { width: 64px; }
-    .screen iframe { display: block; width: 358px; height: 520px; border: 0; }
+    .screen iframe { display: block; width: 358px; height: 440px; border: 0; }
 
     .flow { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; padding-top: 4px; }
     .flow .kind { margin: 0 0 6px 2px; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: #8E8DA0; }
@@ -96,7 +96,10 @@
     .link { width: 2px; height: 18px; margin-left: 31px; background: #3A3B46; }
     .link.yes { height: 30px; position: relative; }
     .link.yes::after { content: 'Yes'; position: absolute; left: 10px; top: 6px; font-size: 12px; line-height: 16px; font-weight: 700; color: #3FC700; }
-    .flow ul.more { margin-top: 26px; }
+    .flow .kind.just { margin-top: 26px; }
+    .message { margin-top: 10px; border-radius: 14px; overflow: hidden; }
+    .message iframe { display: block; width: 100%; height: 150px; border: 0; }
+    .side { flex: none; width: 378px; display: flex; flex-direction: column; gap: 26px; }
 
     .wide { margin-top: 24px; display: flex; gap: 40px; align-items: center; padding: 32px 40px 32px 36px; }
     .wide .text { flex: 1 1 auto; min-width: 0; }
@@ -149,12 +152,18 @@
       <section class="feat">
         <span class="tag new">New widget and Flow cards</span>
         <h2>Popups</h2>
-        <p>A Flow shows a message, or asks Yes or No, in front of everything: on a web dashboard, or on the phones and tablets with a Popups widget. The first answer from any screen closes it everywhere and goes back to the Flow.</p>
+        <p>A Flow shows a message for as long as you set, or asks Yes or No, in front of everything: on a web dashboard, or on the phones and tablets with a Popups widget. The first answer from any screen closes it everywhere and goes back to the Flow.</p>
         <div class="popups">
-          <div class="phone"><div class="screen">
-            <div class="browser"><b>Done</b><span>192.168.1.20</span><i></i></div>
-            <iframe id="w-popup" title="Popup"></iframe>
-          </div></div>
+          <div class="side">
+            <div class="phone"><div class="screen">
+              <div class="browser"><b>Done</b><span>192.168.1.20</span><i></i></div>
+              <iframe id="w-popup" title="Popup"></iframe>
+            </div></div>
+            <ul class="more">
+              <li><b>Pictures:</b> a camera, refreshed while it's open, a picture's address, or an image tag such as a doorbell's snapshot.</li>
+              <li><b>Screen names:</b> everywhere, one web dashboard, or the screens whose Popups widget has that name. A third card closes popups early.</li>
+            </ul>
+          </div>
           <div class="flow">
             <div class="kind">Advanced Flow</div>
             <div class="fc">
@@ -180,11 +189,15 @@
               <div class="icon" style="background:#0082FA"><svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg></div>
               <div><div class="owner">Front door</div><div class="text">Unlock</div></div>
             </div>
-            <ul class="more">
-              <li><b>Pictures:</b> a camera, refreshed while it's open, a picture's address, or an image tag such as a doorbell's snapshot.</li>
-              <li><b>Messages</b> stay for the seconds or minutes you set; a third card closes popups early.</li>
-              <li><b>Screen names:</b> send a popup everywhere, to one web dashboard, or to the screens whose Popups widget has that name.</li>
-            </ul>
+            <div class="kind just">Or just a message, no question</div>
+            <div class="fc">
+              <div class="icon" style="background:#2A1958"><svg viewBox="0 0 64 64"><g fill="none" stroke="#FFFFFF" stroke-width="4"><rect x="11.5" y="11.5" width="17" height="17" rx="5"/><rect x="11.5" y="35.5" width="17" height="17" rx="5"/><rect x="35.5" y="35.5" width="17" height="17" rx="5"/></g><path d="M44 11Q44 20 53 20Q44 20 44 29Q44 20 35 20Q44 20 44 11Z" fill="#FFFFFF"/></svg></div>
+              <div>
+                <div class="owner">Widgetkeeper</div>
+                <div class="text">Show <span class="arg">The washing machine is done</span> on <span class="arg">Kitchen</span> for <span class="arg">20</span> <span class="arg">seconds</span></div>
+              </div>
+            </div>
+            <div class="message"><iframe id="w-message" title="Message"></iframe></div>
           </div>
         </div>
       </section>
@@ -236,27 +249,32 @@
         buttons: [{ name: 'Country', url: at(6) }, { name: 'Province', url: at(8) }, { name: 'Region', url: at(11) }, { name: 'City', url: at(13) }],
       });
 
-      // Popups: the real prompt page in dark mode, asking with the hallway camera's (made-up) picture, against a
-      // simulated app (as popups-preview.html); its strings are the page's own English fallbacks.
-      const frame = el('w-popup');
-      frame.srcdoc = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
-        + '<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">'
-        + '<link rel="stylesheet" href="../settings/popup.css"><script src="../settings/popup.js"><\/script>'
-        + '<style>.pp { --pp-bg: #111217; --pp-card: #1F2029; --pp-raised: #2B2C36; --pp-text: #E4E4E7; --pp-muted: #999AA3; --pp-accent: #339BFB; }</style>'
-        + '</head><body><main id="app" class="pp"></main></body></html>';
+      // Popups: the real prompt page in dark mode against a simulated app (as popups-preview.html), its strings the
+      // page's own English fallbacks: a question with the hallway camera's (made-up) picture, and a message, its bar
+      // held a third of the way down (it runs down for real, so a render would catch it anywhere).
       const picture = fetch('cameras/door.webp').then(r => r.arrayBuffer()).then((buf) => {
         let bin = '';
         for (const b of new Uint8Array(buf)) bin += String.fromCharCode(b);
         return { type: 'image/webp', data: btoa(bin) };
       });
-      frame.addEventListener('load', () => {
-        const json = body => new Response(JSON.stringify(body));
-        const popup = { closed: false, kind: 'ask', text: 'Someone is at the front door. Unlock it?', picture: { source: 'camera' } };
-        frame.contentWindow.mountPopupPage(frame.contentWindow.document.getElementById('app'), {
-          hash: '#id=p1&t=poster',
-          fetch: async url => (url.endsWith('/image') ? json(await picture) : json({ ...popup, now: Date.now(), until: Date.now() + 60e3, language: 'en' })),
+      const showPopup = (frame, popup) => {
+        frame.srcdoc = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+          + '<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">'
+          + '<link rel="stylesheet" href="../settings/popup.css"><script src="../settings/popup.js"><\/script>'
+          + '<style>.pp { --pp-bg: #111217; --pp-card: #1F2029; --pp-raised: #2B2C36; --pp-text: #E4E4E7; --pp-muted: #999AA3; --pp-accent: #339BFB; }'
+          + ' .pp-bar span { transition: none !important; transform: scaleX(.65) !important; }</style>'
+          + '</head><body><main id="app" class="pp"></main></body></html>';
+        frame.addEventListener('load', () => {
+          const json = body => new Response(JSON.stringify(body));
+          frame.contentWindow.mountPopupPage(frame.contentWindow.document.getElementById('app'), {
+            hash: '#id=p1&t=poster',
+            fetch: async url => (url.endsWith('/image') ? json(await picture)
+              : json({ closed: false, ...popup, now: Date.now(), until: Date.now() + 60e3, language: 'en' })),
+          });
         });
-      });
+      };
+      showPopup(el('w-popup'), { kind: 'ask', text: 'Someone is at the front door. Unlock it?', picture: { source: 'camera' } });
+      showPopup(el('w-message'), { kind: 'message', text: 'The washing machine is done', picture: null });
 
       // The page's size and the columns' heights, for the render script.
       document.fonts.ready.then(() => setTimeout(() => {
