@@ -4,7 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, formatNumber, formatValue, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, formatNumber, formatValue, applyColors, timeSpan, isTimeSpan } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -14,7 +14,6 @@
     renameFailed: 'Could not save the name.',
   };
 
-  const SPAN_MS = { '1h': 3600e3, '6h': 6 * 3600e3, '24h': 24 * 3600e3, '2d': 2 * 24 * 3600e3, '3d': 3 * 24 * 3600e3, '5d': 5 * 24 * 3600e3, '7d': 7 * 24 * 3600e3 };
   /** The chart's vertical padding, so the line and the dot aren't cut at the top and bottom. */
   const PAD = 3;
 
@@ -102,7 +101,9 @@
       return (DEFAULT_STRINGS[key] || key).replace(/__(\w+)__/g, (_, k) => (tokens && tokens[k] != null ? tokens[k] : ''));
     };
     const now = opts.now || (() => Date.now());
-    const spanMs = SPAN_MS[opts.span] || SPAN_MS['24h'];
+    const span = isTimeSpan(opts.span) ? opts.span : '24h';
+    /** The chart's window at `at` (the kit's `timeSpan()`): today's is the whole day, yesterday's ends at midnight. */
+    const windowAt = at => timeSpan(span, at);
 
     let slots = []; // [{ deviceId, capabilityId, name, capability, value, points } | { deviceId, capabilityId, missing }]
     let messageText = null;
@@ -147,9 +148,10 @@
       for (const s of slots) {
         if (s.deviceId !== deviceId || s.capabilityId !== capabilityId || 'missing' in s) continue;
         s.value = value;
-        if (typeof value === 'number' && isFinite(value)) {
+        const w = windowAt(at);
+        if (typeof value === 'number' && isFinite(value) && w.end === at) { // not for yesterday
           s.points.push([at, value]);
-          while (s.points.length && s.points[0][0] < at - spanMs) s.points.shift();
+          while (s.points.length && s.points[0][0] < w.from) s.points.shift();
         }
         changed = true;
       }
@@ -194,11 +196,13 @@
       const w = Math.round(tile.plot.getBoundingClientRect().width) || 100;
       const h = Math.round(tile.plot.getBoundingClientRect().height) || 36;
       tile.plot.setAttribute('viewBox', `0 0 ${w} ${h}`);
-      const to = now();
+      const at = now();
+      const { from, to, end } = windowAt(at);
       let points = 'missing' in s ? [] : s.points;
-      // The value holds until it changes (Homey doesn't log repeats), so the line runs on to now.
-      if (!('missing' in s) && typeof s.value === 'number' && isFinite(s.value) && lastT(points) < to) points = points.concat([[to, s.value]]);
-      const p = sparkPath(points, to - spanMs, to, w, h);
+      // The value holds until it changes (Homey doesn't log repeats), so the line runs on to now (not yesterday's).
+      const live = end === at && !('missing' in s) && typeof s.value === 'number' && isFinite(s.value);
+      if (live && lastT(points) < at) points = points.concat([[at, s.value]]);
+      const p = sparkPath(points.filter(q => q[0] <= end), from, to, w, h);
       tile.line.setAttribute('d', p ? p.line : '');
       tile.area.setAttribute('d', p ? p.area : '');
       tile.dot.style.display = p ? '' : 'none';
@@ -246,7 +250,8 @@
 
     // The line scrolls with time: about one of its 120 points per redraw; not while the page is hidden (drawn at once
     // when it's back).
-    setInterval(() => { if (!document.hidden) render(); }, Math.max(10e3, Math.min(60e3, spanMs / 120)));
+    const first = windowAt(now());
+    setInterval(() => { if (!document.hidden) render(); }, Math.max(10e3, Math.min(60e3, (first.to - first.from) / 120)));
     document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
     if (typeof ResizeObserver === 'function') new ResizeObserver(() => render()).observe(grid);
 

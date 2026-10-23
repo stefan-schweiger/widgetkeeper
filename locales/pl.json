@@ -241,7 +241,8 @@
     "selectChart": "Wybierz wartość urządzenia w ustawieniach widżetu.",
     "error": "Nie udało się wczytać wykresu.",
     "unavailable": "Niedostępne",
-    "noHistory": "Brak historii."
+    "noHistory": "Brak historii.",
+    "yesterdayAvg": "Wczoraj · śr."
   },
   "lights": {
     "selectDevices": "Wybierz światła w ustawieniach widżetu.",

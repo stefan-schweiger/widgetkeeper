@@ -154,7 +154,7 @@ Your cameras as a grid of snapshots that refresh every few seconds (cameras with
 
 One chart, two stacked, or two values on one chart (each with its own scale), of any value that Homey logs in Insights, drawn like Electricity Overview's charts. The value now sits at the top in the chart's colour. Tap a chart to see the value at that moment.
 
-**Settings:** one chart, two stacked or two on one chart; for each, the value, the time span (1 hour to 7 days), line with area, line or bars, the colour, a scale that fits the values or starts at zero, below zero in yellow, a smooth line and a title. The values at the top can be turned off. [Colour style](#colour-style).
+**Settings:** one chart, two stacked or two on one chart; for each, the value, the time span (1 hour to 7 days, today or yesterday), line with area, line or bars, the colour, a scale that fits the values or starts at zero, below zero in yellow, a smooth line and a title. The values at the top can be turned off; yesterday shows its average there. [Colour style](#colour-style).
 
 ## Clock
 <img src="docs/screenshots/clock.png" alt="Clock on a Homey dashboard" width="358">
@@ -313,7 +313,7 @@ An empty widget of the height you set, in pixels (16 at least), to line up widge
 
 Device Values' tiles with a small live chart of each value and its highest and lowest.
 
-**Settings:** up to six values, time span (1 hour to 7 days), 2 or 1 per row, [colour style](#colour-style), [rename tiles](#tile-names).
+**Settings:** up to six values, time span (1 hour to 7 days, today or yesterday), 2 or 1 per row, [colour style](#colour-style), [rename tiles](#tile-names).
 
 <a name="thermostat-shortcuts"></a>
 

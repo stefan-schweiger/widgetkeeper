@@ -241,7 +241,8 @@
     "selectChart": "Vælg en enhedsværdi i widgetindstillingerne.",
     "error": "Kunne ikke hente grafen.",
     "unavailable": "Utilgængelig",
-    "noHistory": "Ingen historik endnu."
+    "noHistory": "Ingen historik endnu.",
+    "yesterdayAvg": "I går · gns."
   },
   "lights": {
     "selectDevices": "Vælg lys i widgetindstillingerne.",

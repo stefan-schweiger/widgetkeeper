@@ -221,6 +221,31 @@
     return low;
   }
 
+  /** The time spans of Charts and Sparklines (`SPANS` in lib/SparklineService.ts): rolling ones by length, days by offset. */
+  const SPAN_MS = { '1h': 36e5, '6h': 6 * 36e5, '24h': DAY, '2d': 2 * DAY, '3d': 3 * DAY, '5d': 5 * DAY, '7d': 7 * DAY };
+  const SPAN_DAYS = { today: 0, yesterday: -1 };
+  const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+
+  /**
+   * A span's window at `at`: the axis `[from, to]` and `end`, where its data stops. A rolling span ends at `at`;
+   * `today` is the local day (data up to `at`), `yesterday` the day before (up to midnight). A DST day is 23 or
+   * 25 h. An unknown span is 24 h.
+   */
+  function timeSpan(span, at) {
+    if (!own(SPAN_DAYS, span)) return { from: at - (own(SPAN_MS, span) ? SPAN_MS[span] : DAY), to: at, end: at };
+    const d = new Date(at);
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + SPAN_DAYS[span]);
+    const from = d.getTime();
+    d.setDate(d.getDate() + 1);
+    return { from, to: d.getTime(), end: Math.min(d.getTime(), at) };
+  }
+
+  /** Whether `span` is one the widgets know. */
+  function isTimeSpan(span) {
+    return own(SPAN_MS, span) || own(SPAN_DAYS, span);
+  }
+
   /** Why a write through the personal API key failed (`KeyProblem` in lib/PersonalApiKey.ts): each has its own message. */
   const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
 
@@ -367,5 +392,5 @@
     return scheme;
   }
 
-  window.WidgetkeeperKit = { icons: ICONS, TIGHT_UNITS, KEY_PROBLEMS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, timeFormatter, formatSince, baseTitle, lowestSlot, wireFrame, getDeviceIds, wireTileNames, colorStyle, applyColors };
+  window.WidgetkeeperKit = { icons: ICONS, TIGHT_UNITS, KEY_PROBLEMS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, timeFormatter, formatSince, baseTitle, lowestSlot, timeSpan, isTimeSpan, wireFrame, getDeviceIds, wireTileNames, colorStyle, applyColors };
 })();

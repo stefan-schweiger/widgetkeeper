@@ -23,6 +23,8 @@
   <div class="col"><span>300 px · dark · 24 h</span><div class="dash homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
   <div class="col"><span>358 px · dark · 1 column · 7 days</span><div class="dash homey-dark-mode" style="width:358px"><div id="w4"></div></div></div>
   <div class="col"><span>358 px · dark · 1 h, live every 2 s</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · dark · today</span><div class="dash homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
+  <div class="col"><span>358 px · light · yesterday</span><div class="dash light" style="width:358px"><div id="w8"></div></div></div>
   <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
 
   <script>
@@ -57,6 +59,9 @@
       temp = round(temp + (Math.random() - 0.5) * 0.4, 1);
       live.pushChange({ deviceId: 'a', capabilityId: 'measure_temperature', value: temp });
     }, 2000);
+    // Today and yesterday: 48 hours of history, which each cuts to its own day.
+    createSparklinesWidget(document.getElementById('w7'), { t: devT, span: 'today' }).setState(slots(48 * HOUR).slice(0, 4));
+    createSparklinesWidget(document.getElementById('w8'), { t: devT, span: 'yesterday' }).setState(slots(48 * HOUR).slice(0, 4));
     const empty = createSparklinesWidget(document.getElementById('w6'), { t: devT });
     empty.setMessage(empty.t('selectSlots'));
   </script>

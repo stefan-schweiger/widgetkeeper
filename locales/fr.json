@@ -241,7 +241,8 @@
     "selectChart": "Choisissez une valeur d'appareil dans les réglages du widget.",
     "error": "Impossible de charger le graphique.",
     "unavailable": "Indisponible",
-    "noHistory": "Pas encore d'historique."
+    "noHistory": "Pas encore d'historique.",
+    "yesterdayAvg": "Hier · moy."
   },
   "lights": {
     "selectDevices": "Choisissez des lampes dans les réglages du widget.",

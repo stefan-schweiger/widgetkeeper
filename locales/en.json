@@ -241,7 +241,8 @@
     "selectChart": "Pick a device value in the widget settings.",
     "error": "Could not load the chart.",
     "unavailable": "Unavailable",
-    "noHistory": "No history yet."
+    "noHistory": "No history yet.",
+    "yesterdayAvg": "Yesterday · avg"
   },
   "lights": {
     "selectDevices": "Select lights in the widget settings.",

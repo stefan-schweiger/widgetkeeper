@@ -62,6 +62,8 @@ interface Window {
     formatSince: (ms: number, now: number, language?: string, locale?: string, timeFormat?: unknown) => string,
     baseTitle: (title: unknown) => string,
     lowestSlot: (slots: any[], from: number, hours: number) => number,
+    timeSpan: (span: string, at: number) => { from: number, to: number, end: number },
+    isTimeSpan: (span: unknown) => boolean,
     wireFrame: (Homey: any, frame: HTMLElement) => {
       height: () => number,
       setHeight: () => void,

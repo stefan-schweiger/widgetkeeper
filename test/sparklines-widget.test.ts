@@ -108,6 +108,27 @@ describe('render', () => {
   });
 });
 
+describe('today and yesterday', () => {
+  // NOW is 14:00 in Copenhagen: today began 14 hours ago.
+  it('draws today over the whole day, the line up to now', () => {
+    const { tiles, text } = widget([temp()], { span: 'today' });
+    expect(text('.sl-max')).toEqual([`↑${dec(23.1)}`]); // not yesterday's 19.4
+    expect(text('.sl-min')).toEqual([`↓${dec(21.5)}`]);
+    expect(Number(tiles()[0].querySelector('.sl-dot')!.getAttribute('cx'))).toBeCloseTo(100 * 14 / 24, 1);
+  });
+
+  it('draws yesterday up to midnight, without the value now or live values', () => {
+    const points = [[NOW - 30 * HOUR, 18], [NOW - 20 * HOUR, 19.4], [NOW - HOUR, 21.5]];
+    const { w, tiles, text, setNow } = widget([temp({ points, value: 30 })], { span: 'yesterday' });
+    expect(text('.sl-max')).toEqual([`↑${dec(19.4)}`]);
+    expect(Number(tiles()[0].querySelector('.sl-dot')!.getAttribute('cx'))).toBeCloseTo(100 * 18 / 24, 1);
+    setNow(NOW + 60e3);
+    w.pushChange({ deviceId: 'a', capabilityId: 'measure_temperature', value: 50 });
+    expect(text('.sl-value')).toEqual(['50°C']); // the tile's value is still the value now
+    expect(text('.sl-max')).toEqual([`↑${dec(19.4)}`]);
+  });
+});
+
 describe('live values', () => {
   it('adds a point, moves the min/max and keeps the same SVG nodes', () => {
     const { w, tiles, text, setNow } = widget([temp()]);

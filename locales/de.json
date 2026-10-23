@@ -241,7 +241,8 @@
     "selectChart": "Wähle einen Gerätewert in den Widget-Einstellungen.",
     "error": "Das Diagramm konnte nicht geladen werden.",
     "unavailable": "Nicht verfügbar",
-    "noHistory": "Noch kein Verlauf."
+    "noHistory": "Noch kein Verlauf.",
+    "yesterdayAvg": "Gestern · Ø"
   },
   "lights": {
     "selectDevices": "Wähle Lampen in den Widget-Einstellungen.",

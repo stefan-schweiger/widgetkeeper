@@ -3827,19 +3827,19 @@
             "ar": "عرض القيم في الأعلى"
           },
           "hint": {
-            "en": "The latest value of each chart, in its colour. Tap a chart to see an earlier one.",
-            "nl": "De laatste waarde van elke grafiek, in zijn kleur. Tik op een grafiek voor een eerdere.",
-            "de": "Der letzte Wert jedes Diagramms, in seiner Farbe. Tippe auf ein Diagramm für einen früheren.",
-            "fr": "La dernière valeur de chaque graphique, dans sa couleur. Touchez un graphique pour une valeur antérieure.",
-            "it": "L'ultimo valore di ogni grafico, nel suo colore. Tocca un grafico per vederne uno precedente.",
-            "sv": "Det senaste värdet i varje diagram, i dess färg. Tryck på ett diagram för ett tidigare.",
-            "no": "Siste verdi i hvert diagram, i sin farge. Trykk på et diagram for en tidligere.",
-            "es": "El último valor de cada gráfico, en su color. Toca un gráfico para ver uno anterior.",
-            "da": "Den seneste værdi i hver graf, i dens farve. Tryk på en graf for en tidligere.",
-            "ru": "Последнее значение каждого графика, его цветом. Коснитесь графика, чтобы увидеть более раннее.",
-            "pl": "Ostatnia wartość każdego wykresu, w jego kolorze. Dotknij wykresu, aby zobaczyć wcześniejszą.",
-            "ko": "각 차트의 최신 값이 차트 색상으로 표시됩니다. 차트를 탭하면 이전 값을 볼 수 있습니다.",
-            "ar": "آخر قيمة لكل مخطط بلونه. المس المخطط لرؤية قيمة سابقة."
+            "en": "The latest value of each chart, in its colour. Tap a chart to see an earlier one. Yesterday shows the day's average.",
+            "nl": "De laatste waarde van elke grafiek, in zijn kleur. Tik op een grafiek voor een eerdere. Gisteren toont het daggemiddelde.",
+            "de": "Der letzte Wert jedes Diagramms, in seiner Farbe. Tippe auf ein Diagramm für einen früheren. Gestern zeigt den Tagesdurchschnitt.",
+            "fr": "La dernière valeur de chaque graphique, dans sa couleur. Touchez un graphique pour une valeur antérieure. Hier affiche la moyenne du jour.",
+            "it": "L'ultimo valore di ogni grafico, nel suo colore. Tocca un grafico per vederne uno precedente. Ieri mostra la media del giorno.",
+            "sv": "Det senaste värdet i varje diagram, i dess färg. Tryck på ett diagram för ett tidigare. I går visar dagens medelvärde.",
+            "no": "Siste verdi i hvert diagram, i sin farge. Trykk på et diagram for en tidligere. I går viser dagens gjennomsnitt.",
+            "es": "El último valor de cada gráfico, en su color. Toca un gráfico para ver uno anterior. Ayer muestra la media del día.",
+            "da": "Den seneste værdi i hver graf, i dens farve. Tryk på en graf for en tidligere. I går viser dagens gennemsnit.",
+            "ru": "Последнее значение каждого графика, его цветом. Коснитесь графика, чтобы увидеть более раннее. «Вчера» показывает среднее за день.",
+            "pl": "Ostatnia wartość każdego wykresu, w jego kolorze. Dotknij wykresu, aby zobaczyć wcześniejszą. Wczoraj pokazuje średnią z dnia.",
+            "ko": "각 차트의 최신 값이 차트 색상으로 표시됩니다. 차트를 탭하면 이전 값을 볼 수 있습니다. 어제는 하루 평균을 표시합니다.",
+            "ar": "آخر قيمة لكل مخطط بلونه. المس المخطط لرؤية قيمة سابقة. يعرض أمس متوسط اليوم."
           },
           "value": true
         },
@@ -4022,6 +4022,42 @@
                 "pl": "24 godziny",
                 "ko": "24시간",
                 "ar": "24 ساعة"
+              }
+            },
+            {
+              "id": "today",
+              "title": {
+                "en": "Today",
+                "nl": "Vandaag",
+                "de": "Heute",
+                "fr": "Aujourd'hui",
+                "it": "Oggi",
+                "sv": "I dag",
+                "no": "I dag",
+                "es": "Hoy",
+                "da": "I dag",
+                "ru": "Сегодня",
+                "pl": "Dziś",
+                "ko": "오늘",
+                "ar": "اليوم"
+              }
+            },
+            {
+              "id": "yesterday",
+              "title": {
+                "en": "Yesterday",
+                "nl": "Gisteren",
+                "de": "Gestern",
+                "fr": "Hier",
+                "it": "Ieri",
+                "sv": "I går",
+                "no": "I går",
+                "es": "Ayer",
+                "da": "I går",
+                "ru": "Вчера",
+                "pl": "Wczoraj",
+                "ko": "어제",
+                "ar": "أمس"
               }
             },
             {
@@ -4558,6 +4594,42 @@
                 "pl": "24 godziny",
                 "ko": "24시간",
                 "ar": "24 ساعة"
+              }
+            },
+            {
+              "id": "today",
+              "title": {
+                "en": "Today",
+                "nl": "Vandaag",
+                "de": "Heute",
+                "fr": "Aujourd'hui",
+                "it": "Oggi",
+                "sv": "I dag",
+                "no": "I dag",
+                "es": "Hoy",
+                "da": "I dag",
+                "ru": "Сегодня",
+                "pl": "Dziś",
+                "ko": "오늘",
+                "ar": "اليوم"
+              }
+            },
+            {
+              "id": "yesterday",
+              "title": {
+                "en": "Yesterday",
+                "nl": "Gisteren",
+                "de": "Gestern",
+                "fr": "Hier",
+                "it": "Ieri",
+                "sv": "I går",
+                "no": "I går",
+                "es": "Ayer",
+                "da": "I går",
+                "ru": "Вчера",
+                "pl": "Wczoraj",
+                "ko": "어제",
+                "ar": "أمس"
               }
             },
             {
@@ -15945,6 +16017,42 @@
                 "pl": "24 godziny",
                 "ko": "24시간",
                 "ar": "24 ساعة"
+              }
+            },
+            {
+              "id": "today",
+              "title": {
+                "en": "Today",
+                "nl": "Vandaag",
+                "de": "Heute",
+                "fr": "Aujourd'hui",
+                "it": "Oggi",
+                "sv": "I dag",
+                "no": "I dag",
+                "es": "Hoy",
+                "da": "I dag",
+                "ru": "Сегодня",
+                "pl": "Dziś",
+                "ko": "오늘",
+                "ar": "اليوم"
+              }
+            },
+            {
+              "id": "yesterday",
+              "title": {
+                "en": "Yesterday",
+                "nl": "Gisteren",
+                "de": "Gestern",
+                "fr": "Hier",
+                "it": "Ieri",
+                "sv": "I går",
+                "no": "I går",
+                "es": "Ayer",
+                "da": "I går",
+                "ru": "Вчера",
+                "pl": "Wczoraj",
+                "ko": "어제",
+                "ar": "أمس"
               }
             },
             {

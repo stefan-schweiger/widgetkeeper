@@ -241,7 +241,8 @@
     "selectChart": "Kies een apparaatwaarde in de widgetinstellingen.",
     "error": "Kon de grafiek niet laden.",
     "unavailable": "Niet beschikbaar",
-    "noHistory": "Nog geen geschiedenis."
+    "noHistory": "Nog geen geschiedenis.",
+    "yesterdayAvg": "Gisteren · gem."
   },
   "lights": {
     "selectDevices": "Kies lampen in de widgetinstellingen.",
