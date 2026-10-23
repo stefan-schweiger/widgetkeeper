@@ -6,11 +6,12 @@
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { edge } from './headless.mjs';
+import { downloadIcons, edge } from './headless.mjs';
 
 const SCALE = 2;
 
 if (!existsSync('docs/web/wide.png')) throw new Error('Render docs/web/wide.png first: npm run web-showcase -- wide');
+await downloadIcons();
 mkdirSync('docs', { recursive: true });
 const child = spawn(process.execPath, [resolve('scripts/render-web-showcase.mjs'), '--serve'], { stdio: ['ignore', 'pipe', 'inherit'] });
 const port = await new Promise((done, fail) => {
