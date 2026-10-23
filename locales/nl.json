@@ -584,6 +584,7 @@
     "themeDark": "Donker",
     "themeLight": "Licht",
     "darkLight": "Donker of licht",
+    "darkLightText": "Automatisch volgt het thema van elk dashboard.",
     "background": "Achtergrond",
     "bgDefault": "Standaard",
     "bgBlack": "Zwart/wit",

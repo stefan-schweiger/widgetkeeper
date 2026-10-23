@@ -584,6 +584,7 @@
     "themeDark": "داكن",
     "themeLight": "فاتح",
     "darkLight": "داكن أو فاتح",
+    "darkLightText": "تلقائي يتبع مظهر كل لوحة.",
     "background": "الخلفية",
     "bgDefault": "افتراضي",
     "bgBlack": "أسود/أبيض",

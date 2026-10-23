@@ -584,6 +584,7 @@
     "themeDark": "Mörkt",
     "themeLight": "Ljust",
     "darkLight": "Mörkt eller ljust",
+    "darkLightText": "Automatiskt följer varje instrumentpanels tema.",
     "background": "Bakgrund",
     "bgDefault": "Standard",
     "bgBlack": "Svart/vit",

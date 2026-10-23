@@ -584,6 +584,7 @@
     "themeDark": "Dark",
     "themeLight": "Light",
     "darkLight": "Dark or light",
+    "darkLightText": "Automatic follows each dashboard's theme.",
     "background": "Background",
     "bgDefault": "Default",
     "bgBlack": "Black/White",

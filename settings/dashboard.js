@@ -50,6 +50,7 @@
     themeDark: 'Dark',
     themeLight: 'Light',
     darkLight: 'Dark or light',
+    darkLightText: "Automatic follows each dashboard's theme.",
     background: 'Background',
     bgDefault: 'Default',
     bgBlack: 'Black/White',
@@ -195,7 +196,7 @@
   const KEY_STORAGE = 'widgetkeeper.web.key';
   /** The session token from signing in with the web dashboards password (when one is set), on top of the key. */
   const SESSION_STORAGE = 'widgetkeeper.web.session';
-  /** This browser's own dark or light (the bar's button), over the dashboard's theme; none follows the dashboard. */
+  /** This browser's own dark or light (Settings, This browser), over the dashboard's theme; none follows the dashboard. */
   const THEME_STORAGE = 'widgetkeeper.web.theme';
   /** Keep screen on (`'1'`), this browser's choice in Settings; absent lets the screen sleep. */
   const AWAKE_STORAGE = 'widgetkeeper.web.awake';
@@ -299,8 +300,6 @@
     pen: 'M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16v4zM13.5 6.5l4 4',
     fullScreen: 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5',
     fullScreenExit: 'M9 4v5H4M15 4v5h5M20 15h-5v5M4 15h5v5',
-    moon: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
-    sun: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2.5v2M12 19.5v2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M2.5 12h2M19.5 12h2M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4',
     plus: 'M12 5v14M5 12h14',
     left: 'M15 5l-7 7 7 7',
     right: 'M9 5l7 7-7 7',
@@ -308,6 +307,9 @@
     grip: 'M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01',
     close: 'M6 6l12 12M18 6L6 18',
     down: 'M6 9l6 6 6-6',
+    up: 'M6 15l6-6 6 6',
+    columns: 'M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM9.5 4v16M14.5 4v16',
+    minus: 'M5 12h14',
     sliders: 'M4 6h9M17 6h3M15 4v4M4 12h3M11 12h9M9 10v4M4 18h11M19 18h1M17 16v4',
     trash: 'M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3',
     copy: 'M10 9h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2zM16 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2',
@@ -812,7 +814,7 @@
       post(frame, { type: 'cb', args: [error, result === undefined ? null : result], callbackId });
     }
 
-    /** This browser's own choice from the bar's button (`dark` or `light`), or null. */
+    /** This browser's own mode (`dark` or `light`, from Settings' This browser), or null. */
     function ownTheme() {
       const v = storageGet(THEME_STORAGE);
       return v === 'dark' || v === 'light' ? v : null;
@@ -1028,20 +1030,6 @@
       else html.style.removeProperty('--wd-bg');
     }
 
-    /**
-     * The edit modes' dark/light button (the front page's and a dashboard's; the user wanted it off the bars you look
-     * at): this browser only; back to following the theme when that shows the same.
-     */
-    function themeButton() {
-      const b = button('wd-icon', '', () => {
-        const dark = !isDark();
-        storageSet(THEME_STORAGE, dark === themeIsDark(current ? current.dashboard.theme : 'auto') ? null : (dark ? 'dark' : 'light'));
-        route(); // redraws the bar and the frames (their signature has the mode), or the front page's previews
-      }, t('darkLight'));
-      b.append(icon(isDark() ? 'sun' : 'moon'));
-      return b;
-    }
-
     // Full screen: the dashboard's bar keeps only the exit button and the live note (dashboard.css).
     for (const type of ['fullscreenchange', 'webkitfullscreenchange']) {
       document.addEventListener(type, () => {
@@ -1227,7 +1215,7 @@
         settings.append(icon('sliders'), el('span', 'wd-bar-label', t('pageSettings')));
         const done = el('a', 'wd-btn primary', t('done'));
         done.href = '#/';
-        root.append(bar(brand(), el('span', 'wd-spacer'), themeButton(), settings, done), page);
+        root.append(bar(brand(), el('span', 'wd-spacer'), settings, done), page);
         return;
       }
       const add = button('wd-dash wd-dash-new', '', async () => {
@@ -1327,8 +1315,16 @@
       const dim = setRow(t('dim'), t('dimText'), amount, slider.id);
       dim.classList.add('wd-dim-row');
       dim.append(slider);
+      // Dark or light: this browser's own mode for every dashboard, or each one's theme (Automatic). The front page
+      // behind redraws in it (the dialog is on body, so it stays).
+      const modes = [['auto', 'themeAuto'], ['dark', 'themeDark'], ['light', 'themeLight']].map(([id, key]) => ({ id, title: t(key) }));
+      const mode = choiceGroup(null, modes, ownTheme() || 'auto', (id) => {
+        storageSet(THEME_STORAGE, id === 'auto' ? null : id);
+        route();
+      }, false);
+      mode.setAttribute('aria-label', t('darkLight'));
       const card = el('div', 'wd-set-card');
-      card.append(awake, dim, setRow(t('keyPlaceholder'), t('forgetKeyText'), forget));
+      card.append(setRow(t('darkLight'), t('darkLightText'), mode), awake, dim, setRow(t('keyPlaceholder'), t('forgetKeyText'), forget));
       browser.append(el('h3', 'wd-h2', t('thisBrowser')), card);
       body.append(backupSection(), browser);
       d.showModal();
@@ -1877,16 +1873,16 @@
       // current.dashboard, not d, when it changes: a save the app corrected swaps it for the app's copy.
       name.addEventListener('change', () => { const dash = current.dashboard; dash.name = name.value.trim(); setTitle(dash); persist(); });
 
+      // The columns: one pill with its icon, − the count +.
       const cols = el('span', 'wd-stepper');
-      const count = el('span', 'wd-count', String(d.columns.length));
-      cols.append(
-        button('wd-btn small', '−', () => setColumns(current.dashboard.columns.length - 1), t('columns')),
-        count,
-        button('wd-btn small', '+', () => setColumns(current.dashboard.columns.length + 1), t('columns')),
-      );
+      const fewer = button('wd-step wd-fewer', '', () => setColumns(current.dashboard.columns.length - 1), t('columns'));
+      const more = button('wd-step wd-more', '', () => setColumns(current.dashboard.columns.length + 1), t('columns'));
+      fewer.append(icon('minus'));
+      more.append(icon('plus'));
+      cols.append(icon('columns'), fewer, el('span', 'wd-count', String(d.columns.length)), more);
       cols.title = t('columns');
 
-      const theme = el('select', 'wd-input wd-theme');
+      const theme = el('select', 'wd-theme');
       theme.setAttribute('aria-label', t('theme'));
       for (const [id, label] of [['auto', 'themeAuto'], ['dark', 'themeDark'], ['light', 'themeLight']]) {
         const o = el('option', null, t(label));
@@ -1905,7 +1901,7 @@
 
       // The backdrop: a button with the current one's swatch, opening the palette under it.
       const bgPick = el('span', 'wd-bgpick');
-      const bgButton = button('wd-btn small', '', () => (pop.hidden ? openPalette() : closePalette()), t('background'));
+      const bgButton = button('wd-btn wd-bgbutton', '', () => (pop.hidden ? openPalette() : closePalette()), t('background'));
       bgButton.setAttribute('aria-haspopup', 'true');
       bgButton.setAttribute('aria-expanded', 'false');
       const pop = el('div', 'wd-bgpop');
@@ -1913,7 +1909,7 @@
       bgPick.append(bgButton, pop);
       const backgrounds = Object.keys(BACKGROUNDS).map(id => ({ id, title: t(`bg${id[0].toUpperCase()}${id.slice(1)}`) }));
       function drawBackground() {
-        bgButton.replaceChildren(swatch(backdrop(current.dashboard.background), 'small'), t('background'));
+        bgButton.replaceChildren(swatch(backdrop(current.dashboard.background), 'small'), el('span', 'wd-bar-label', t('background')));
         // Each swatch shows both its shades (the dark tints alone look alike): the theme picks one.
         const colours = Object.fromEntries(backgrounds.map(b => [b.id, `linear-gradient(135deg, ${BACKGROUNDS[b.id][0]} 50%, ${BACKGROUNDS[b.id][1]} 50%)`]));
         pop.replaceChildren(choiceGroup(null, backgrounds, current.dashboard.background || 'default', (id) => {
@@ -1946,11 +1942,28 @@
       }
       drawBackground();
 
-      const remove = confirmButton('wd-btn danger', t('deleteDashboard'), () => deleteDashboard(d.id, () => { location.hash = '#/'; }), t('tapAgain'));
+      // A bin, as on the front page's cards: red once armed.
+      const remove = confirmButton('wd-icon wd-bar-delete', icon('trash'), () => deleteDashboard(d.id, () => { location.hash = '#/'; }), t('tapAgain'), t('deleteDashboard'));
 
       const done = el('a', 'wd-btn primary', t('done'));
       done.href = `#/d/${d.id}`;
-      return bar(name, cols, theme, bgPick, el('span', 'wd-spacer'), themeButton(), remove, done);
+      // The end of the bar stays together when a narrow window wraps it.
+      const end = el('span', 'wd-bar-end');
+      end.append(remove, done);
+      const b = bar(name, el('span', 'wd-bar-rule'), cols, theme, bgPick, end);
+      stepColumns(b);
+      return b;
+    }
+
+    /** The columns' count and its − and + (one column at least, six at most). */
+    function stepColumns(scope) {
+      const n = current.dashboard.columns.length;
+      const count = scope.querySelector('.wd-count');
+      if (count) count.textContent = String(n);
+      const fewer = /** @type {HTMLButtonElement} */ (scope.querySelector('.wd-fewer'));
+      const more = /** @type {HTMLButtonElement} */ (scope.querySelector('.wd-more'));
+      if (fewer) fewer.disabled = n <= 1;
+      if (more) more.disabled = n >= 6;
     }
 
     function setColumns(n) {
@@ -1961,8 +1974,7 @@
         const last = d.columns.pop();
         d.columns[d.columns.length - 1].push(...last.filter(e => !e.cover)); // its widgets stay, in the column before
       }
-      const count = root.querySelector('.wd-count');
-      if (count) count.textContent = String(d.columns.length);
+      stepColumns(root);
       persist();
       syncGrid();
     }
@@ -2182,21 +2194,28 @@
       const def = typeOf(w.type);
       const cols = current.dashboard.columns.length;
       tools.textContent = '';
-      const grip = el('span', 'wd-grip', '⠿');
+      const grip = el('span', 'wd-grip');
       grip.title = t('drag');
-      grip.setAttribute('aria-hidden', 'true');
+      grip.append(icon('grip'));
+      const tool = (name, className, onClick, label) => {
+        const b = button(`wd-tool${className ? ` ${className}` : ''}`, '', onClick, label);
+        b.append(icon(name));
+        return b;
+      };
+      // The moves, then (past a rule) the widget's settings and remove.
       tools.append(
         grip,
         el('span', 'wd-tools-name', (def && def.name) || (appWidget(w.type) || { widgetId: w.type }).widgetId),
         el('span', 'wd-spacer'),
-        button('wd-tool', '⚙', () => editWidget(w.id), t('settings')),
-        button('wd-tool', '↑', () => move(w.id, 0, -1), t('moveUp')),
-        button('wd-tool', '↓', () => move(w.id, 0, 1), t('moveDown')),
-        button('wd-tool', '←', () => move(w.id, -1, 0), t('moveLeft')),
-        button('wd-tool', '→', () => move(w.id, 1, 0), t('moveRight')),
-        confirmButton('wd-tool danger', '✕', () => removeWidget(w.id), '✕?', t('remove')),
+        tool('up', 'wd-move', () => move(w.id, 0, -1), t('moveUp')),
+        tool('down', 'wd-move', () => move(w.id, 0, 1), t('moveDown')),
+        tool('left', 'wd-move', () => move(w.id, -1, 0), t('moveLeft')),
+        tool('right', 'wd-move', () => move(w.id, 1, 0), t('moveRight')),
+        el('span', 'wd-tools-rule'),
+        tool('sliders', 'wd-tool-settings', () => editWidget(w.id), t('settings')),
+        confirmButton('wd-tool danger', icon('close'), () => removeWidget(w.id), t('tapAgain'), t('remove')),
       );
-      const [, up, down, left, right] = tools.querySelectorAll('.wd-tool');
+      const [up, down, left, right] = tools.querySelectorAll('.wd-move');
       up.disabled = i === 0;
       down.disabled = i === n - 1;
       left.disabled = c === 0;

@@ -584,6 +584,7 @@
     "themeDark": "Scuro",
     "themeLight": "Chiaro",
     "darkLight": "Scuro o chiaro",
+    "darkLightText": "Automatico segue il tema di ogni dashboard.",
     "background": "Sfondo",
     "bgDefault": "Predefinito",
     "bgBlack": "Nero/bianco",

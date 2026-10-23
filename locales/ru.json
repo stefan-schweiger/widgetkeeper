@@ -584,6 +584,7 @@
     "themeDark": "Тёмная",
     "themeLight": "Светлая",
     "darkLight": "Тёмная или светлая",
+    "darkLightText": "Автоматически: как в теме каждой панели.",
     "background": "Фон",
     "bgDefault": "Стандартный",
     "bgBlack": "Чёрный/белый",

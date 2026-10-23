@@ -91,9 +91,41 @@ body { margin: 0; color: var(--wd-text); font-size: var(--homey-font-size-defaul
   background: var(--wd-tile); color: var(--wd-text); font-family: inherit; font-size: 16px; line-height: 22px; min-width: 0;
 }
 textarea.wd-input { width: 100%; resize: vertical; }
-.wd-name { flex: 0 1 220px; font-weight: 700; }
-.wd-stepper { display: inline-flex; align-items: center; gap: 4px; }
-.wd-count { min-width: 20px; text-align: center; font-weight: 700; }
+/* The editor's bar: every control 36 px and a pill, the name reading as the dashboard's title. */
+.wd-bar .wd-name {
+  flex: 0 1 240px; min-height: 36px; padding: 6px 10px; border-color: transparent; border-radius: 10px; background: transparent;
+  font-size: var(--homey-font-size-default, 17px); line-height: 24px; font-weight: 700;
+}
+.wd-bar .wd-name:hover { border-color: var(--wd-line); }
+.wd-bar .wd-name:focus { border-color: var(--wd-accent); outline: none; background: var(--wd-tile); }
+.wd-bar-end { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; }
+.wd-bar-rule { flex: none; width: 1px; height: 20px; margin: 0 4px; background: var(--wd-line); }
+.wd-stepper {
+  display: inline-flex; align-items: center; gap: 2px; height: 36px; padding: 0 4px 0 12px; border-radius: 18px;
+  background: var(--wd-raised); color: var(--wd-text);
+}
+.wd-stepper > svg { width: 18px; height: 18px; margin-right: 4px; fill: none; stroke: var(--wd-muted); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.wd-step {
+  -webkit-appearance: none; appearance: none; border: 0; margin: 0; padding: 0; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 14px;
+  background: transparent; color: var(--wd-text);
+}
+.wd-step svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.wd-step:hover:not(:disabled) { background: color-mix(in srgb, var(--wd-text) 10%, transparent); }
+.wd-step:disabled { opacity: .3; cursor: default; }
+.wd-count { min-width: 16px; text-align: center; font-size: var(--homey-font-size-small, 14px); line-height: 20px; font-weight: 700; }
+/* The theme: a select drawn as the bar's other pills, with a chevron. */
+.wd-theme {
+  -webkit-appearance: none; appearance: none; height: 36px; margin: 0; padding: 0 32px 0 14px; border: 0; border-radius: 18px; cursor: pointer;
+  background: var(--wd-raised) no-repeat right 12px center / 14px 14px; color: var(--wd-text);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238E8F99' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  font-family: inherit; font-weight: 500; font-size: var(--homey-font-size-small, 14px); line-height: 20px;
+}
+.wd-theme:focus-visible, .wd-step:focus-visible { outline: 2px solid var(--wd-accent); outline-offset: 1px; }
+.wd-theme option { background: var(--wd-tile); color: var(--wd-text); }
+.wd-bgbutton .wd-swatch-dot.small { width: 16px; height: 16px; border-radius: 8px; }
+.wd-bar-delete:hover { color: var(--wd-red); }
+.wd-bar-delete.armed, .wd-bar-delete.armed:hover { color: #FFFFFF; background: var(--wd-red); } /* tap again to delete */
 
 /* The key, the list and messages: one card in the middle. */
 .wd-center { display: flex; justify-content: center; padding: 24px 16px; }
@@ -252,7 +284,10 @@ textarea.wd-input { width: 100%; resize: vertical; }
 }
 @media (max-width: 720px) {
   .wd-grid { grid-template-columns: minmax(0, 1fr); }
-  .wd-bar .wd-name { flex-basis: 100%; }
+  /* The name and the bar's end on one row, the columns, theme and backdrop under them. */
+  .wd-bar .wd-name, .wd-bar-end { order: -1; }
+  .wd-bar .wd-name { flex: 1 1 calc(100% - 180px); }
+  .wd-bar-rule { display: none; }
 }
 .wd-col { display: flex; flex-direction: column; gap: var(--wd-gap); min-width: 0; }
 .wd-widget { min-width: 0; }
@@ -280,24 +315,31 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .editing .wd-widget {
   position: relative; /* its resize handle */
   padding: 0 8px 8px; border: 1px solid var(--wd-line); border-radius: 14px;
-  background: color-mix(in srgb, var(--wd-raised) 40%, transparent);
+  /* Opaque (on the backdrop it looks the same): a widget being widened runs over the next columns' widgets. */
+  background: color-mix(in srgb, var(--wd-raised) 40%, var(--wd-bg));
 }
+.resizing .wd-widget.wide { z-index: 3; box-shadow: 0 10px 28px rgba(0, 0, 0, .3); }
 .editing .wd-widget:hover, .editing .wd-widget:focus-within { border-color: var(--wd-accent); }
 .editing .wd-widget:hover .wd-tools-name, .editing .wd-widget:focus-within .wd-tools-name { color: var(--wd-text); }
 .wd-tools {
-  display: flex; align-items: center; gap: 2px; margin: 0 -8px 8px; padding: 2px 2px 2px 8px;
+  display: flex; align-items: center; gap: 2px; min-height: 36px; box-sizing: border-box; margin: 0 -8px 8px; padding: 2px 4px 2px 8px;
   border-radius: 13px 13px 0 0; border-bottom: 1px solid var(--wd-line); background: var(--wd-raised);
   cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; /* the drag handle */
 }
-.wd-grip { flex: none; width: 16px; margin-right: 4px; color: var(--wd-muted); font-size: 14px; line-height: 16px; text-align: center; }
+.wd-grip { flex: none; display: inline-flex; margin-right: 4px; color: var(--wd-muted); }
+.wd-grip svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; }
 .wd-tools-name { font-size: 14px; line-height: 20px; font-weight: 700; color: var(--wd-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .wd-tool {
   -webkit-appearance: none; appearance: none; border: 0; margin: 0; padding: 0; cursor: pointer;
   width: 32px; height: 32px; border-radius: 16px; background: transparent; color: var(--wd-text); font-family: inherit; font-size: 16px; line-height: 1;
 }
-.wd-tool:hover:not(:disabled) { background: color-mix(in srgb, var(--wd-text) 10%, transparent); }
-.wd-tool:disabled { opacity: .3; cursor: default; }
-.wd-tool.danger.armed, .wd-tool.danger:hover { color: var(--wd-red); }
+.wd-tools .wd-tool { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 28px; height: 28px; border-radius: 14px; color: var(--wd-muted); }
+.wd-tool svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.wd-tool:hover:not(:disabled), .wd-tool:focus-visible { color: var(--wd-text); background: color-mix(in srgb, var(--wd-text) 10%, transparent); }
+.wd-tool:disabled { opacity: .25; cursor: default; }
+.wd-tools-rule { flex: none; width: 1px; height: 16px; margin: 0 4px; background: var(--wd-line); }
+.wd-tool.danger:hover { color: var(--wd-red); }
+.wd-tool.danger.armed, .wd-tool.danger.armed:hover { color: #FFFFFF; background: var(--wd-red); } /* tap again to remove */
 .wd-add {
   -webkit-appearance: none; appearance: none; border: 1px dashed var(--wd-line); margin: 0; cursor: pointer;
   min-height: 48px; border-radius: var(--wd-radius); background: transparent; color: var(--wd-muted);

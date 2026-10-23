@@ -584,6 +584,7 @@
     "themeDark": "Dunkel",
     "themeLight": "Hell",
     "darkLight": "Dunkel oder hell",
+    "darkLightText": "Automatisch folgt dem Design jedes Dashboards.",
     "background": "Hintergrund",
     "bgDefault": "Standard",
     "bgBlack": "Schwarz/Weiß",

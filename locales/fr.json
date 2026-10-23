@@ -584,6 +584,7 @@
     "themeDark": "Sombre",
     "themeLight": "Clair",
     "darkLight": "Sombre ou clair",
+    "darkLightText": "Automatique suit le thème de chaque tableau de bord.",
     "background": "Arrière-plan",
     "bgDefault": "Par défaut",
     "bgBlack": "Noir/blanc",

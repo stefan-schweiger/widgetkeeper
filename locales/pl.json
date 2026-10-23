@@ -584,6 +584,7 @@
     "themeDark": "Ciemny",
     "themeLight": "Jasny",
     "darkLight": "Ciemny lub jasny",
+    "darkLightText": "Automatyczny: według motywu każdego pulpitu.",
     "background": "Tło",
     "bgDefault": "Domyślne",
     "bgBlack": "Czarne/białe",

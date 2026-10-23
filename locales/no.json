@@ -584,6 +584,7 @@
     "themeDark": "Mørkt",
     "themeLight": "Lyst",
     "darkLight": "Mørkt eller lyst",
+    "darkLightText": "Automatisk følger temaet til hvert dashbord.",
     "background": "Bakgrunn",
     "bgDefault": "Standard",
     "bgBlack": "Svart/hvit",

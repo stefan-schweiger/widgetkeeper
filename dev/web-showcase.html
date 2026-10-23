@@ -237,7 +237,7 @@
       const open = () => {
         const tools = [...document.querySelectorAll('.wd-tools')].find(x => x.querySelector('.wd-tools-name')?.textContent === 'Flow Buttons');
         if (!tools) { setTimeout(open, 50); return; }
-        tools.querySelector('.wd-tool').click();
+        tools.querySelector('.wd-tool-settings').click();
         document.querySelector('.wd-dialog .wd-set-head')?.click();
       };
       open();
