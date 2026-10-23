@@ -17,8 +17,19 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - **Flow cards:** show a message for a number of seconds or minutes, or ask Yes or No, in front of everything on a web dashboard or on the phones and tablets with a Popups widget. The first answer from any screen closes the question everywhere and goes back to the Flow as the tags Answer and Answered (no answer in time). A picture can come along: a camera, refreshed while it's open, a picture address, or an image tag such as a doorbell's snapshot. A third card closes them early.
 - **Popups widget:** a quiet row with a bell and its screen name; on a Homey dashboard it opens the popups sent to that name in the Homey app's built-in browser, as a widget can't draw over the dashboard. On a web dashboard it lets the same name reach that dashboard too. Put it at the bottom of a dashboard, so it doesn't push other widgets down.
 
+### New: Lights by Room
+- Every room's lights on a card: the room's own icon from Homey, its name and how many lights are on (*2 of 3 on · 55%*), a switch for the whole room and a bar that dims every light in it. Pick the lights in the settings; rooms follow the Homey's zones.
+- Tap a room's name to open it: the room's Moods, then a row per light with its brightness. A tap on a light's colour dot opens its colours and whites. Rooms start closed, and several can be open.
+
 ### Web dashboards
 - **Wide widgets:** a widget can span two or more columns, such as a floor plan, a camera or a chart. Drag the handle on its right edge in edit mode, or set its Width in its settings. Each column it covers keeps its own widgets above and below it. Kept in duplicates and backups.
+- **Password:** changing or removing the web dashboards password now asks for the current one. A forgotten password is removed with the Flow card *Remove the web dashboards password*.
+
+### Charts and Sparklines
+- **Today and Yesterday** as time spans: a calendar day in the phone's own time. Today shows the whole day, 00–24, with the line up to now; Yesterday ends at midnight, and Charts' header shows the day's average.
+
+### Days Since
+- **Show:** only the counters that are amber and red, or only red, so counters due every month or so don't take room until they're due. A counter not started yet, or one just tapped, still shows; with none due it says *Nothing due.*
 
 ### Spacer
 - At least 16 px high: at 0 px the iPhone app kept showing a loading indicator in its place. A spacer set to 0 is now 16 px.
