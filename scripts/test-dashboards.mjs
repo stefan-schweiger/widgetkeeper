@@ -395,6 +395,23 @@ const BUILD = {
     ] };
   },
 
+  async lightrooms() {
+    const all = where(d => cls(d) === 'light');
+    const onoffOnly = where(d => ['light', 'socket'].includes(cls(d)) && has(d, 'onoff') && !has(d, 'dim'), 4);
+    // The lights in rooms with Homey Moods first, so their Moods show (none without Moods).
+    const moodZones = new Set(Object.values(await homeyApi('GET', '/api/manager/moods/mood').catch(() => ({}))).map(m => m.zone));
+    const inMoodRooms = where(d => cls(d) === 'light' && moodZones.has(d.zone));
+    const many = [...inMoodRooms, ...all.filter(id => !inMoodRooms.includes(id))].slice(0, 30);
+    return { cols: 3, widgets: [
+      w('lightrooms', 'Defaults · many rooms, Moods first', {}, many),
+      w('lightrooms', 'Vivid · warm palette · bar stops at 1 %', { colorStyle: 'deep', palette: 'warm', barMin: '1' }, all.slice(0, 12)),
+      w('lightrooms', 'Moods off · dusk palette', { showMoods: false, palette: 'dusk' }, inMoodRooms.slice(0, 8)),
+      w('lightrooms', 'On/off only · deleted device', {}, [...onoffOnly, MISSING]),
+      w('lightrooms', 'One light', {}, all.slice(0, 1)),
+      w('lightrooms', 'Nothing picked'),
+    ] };
+  },
+
   async sparklines() {
     const items = await autocomplete('sparklines', 'slot1');
     const cap = c => i => i.id.endsWith(`:${c}`);

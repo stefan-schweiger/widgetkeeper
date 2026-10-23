@@ -33,7 +33,7 @@ export function loadMount(name: WidgetName): any {
 }
 
 export type WidgetName = 'electricity' | 'thermostat' | 'quickactions' | 'sensoralarms' | 'sensordots' | 'roomhealth' | 'valuematrix' | 'weather' | 'heatmap'
-  | 'cameras' | 'values' | 'lights' | 'sparklines' | 'charts' | 'variables' | 'varpresets' | 'flows' | 'price' | 'timers' | 'locks' | 'curtains' | 'media' | 'clock'
+  | 'cameras' | 'values' | 'lights' | 'lightrooms' | 'sparklines' | 'charts' | 'variables' | 'varpresets' | 'flows' | 'price' | 'timers' | 'locks' | 'curtains' | 'media' | 'clock'
   | 'spacer' | 'textline' | 'dayssince' | 'stack' | 'shortcuts' | 'webpage' | 'pollen' | 'popups';
 
 function loadScript(name: WidgetName, file: string): any {

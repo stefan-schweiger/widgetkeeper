@@ -9960,6 +9960,326 @@
       },
       "id": "heatmap"
     },
+    "lightrooms": {
+      "name": {
+        "en": "Lights by Room",
+        "nl": "Licht per kamer",
+        "de": "Licht nach Raum",
+        "fr": "Lumières par pièce",
+        "it": "Luci per stanza",
+        "sv": "Ljus per rum",
+        "no": "Lys per rom",
+        "es": "Luces por habitación",
+        "da": "Lys pr. rum",
+        "ru": "Свет по комнатам",
+        "pl": "Światło według pokoi",
+        "ko": "방별 조명",
+        "ar": "الإضاءة حسب الغرفة"
+      },
+      "height": 160,
+      "transparent": true,
+      "devices": {
+        "type": "global",
+        "singular": false,
+        "filter": {
+          "class": "light|socket",
+          "capabilities": "onoff|dim"
+        }
+      },
+      "settings": [
+        {
+          "id": "showMoods",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Show the room’s Moods",
+            "nl": "Moods van de kamer tonen",
+            "de": "Moods des Raums zeigen",
+            "fr": "Afficher les Moods de la pièce",
+            "it": "Mostra i Mood della stanza",
+            "sv": "Visa rummets Moods",
+            "no": "Vis rommets Moods",
+            "es": "Mostrar los Moods de la habitación",
+            "da": "Vis rummets Moods",
+            "ru": "Показывать настроения комнаты",
+            "pl": "Pokaż nastroje pokoju",
+            "ko": "방의 무드 표시",
+            "ar": "إظهار أجواء الغرفة"
+          },
+          "hint": {
+            "en": "In an open room, its Homey Moods as a row of buttons; starting one needs the API key on the app’s settings page, with the Set Moods permission.",
+            "nl": "In een geopende kamer de Homey Moods van de kamer als rij knoppen; om er een te starten is de API-sleutel op de instellingenpagina van de app nodig, met het recht Moods zetten.",
+            "de": "In einem geöffneten Raum seine Homey Moods als Tastenreihe; zum Starten wird der API-Schlüssel auf der Einstellungsseite der App benötigt, mit dem Recht Moods festlegen.",
+            "fr": "Dans une pièce ouverte, ses Moods Homey en une rangée de boutons ; en lancer un nécessite la clé API dans les réglages de l'app, avec le droit Définir les Moods.",
+            "it": "In una stanza aperta, i suoi Mood di Homey come fila di pulsanti; per avviarne uno serve la chiave API nelle impostazioni dell'app, con il permesso Imposta Mood.",
+            "sv": "I ett öppnat rum visas dess Homey Moods som en rad knappar; för att starta en behövs API-nyckeln på appens inställningssida, med behörigheten Ställ in Moods.",
+            "no": "I et åpnet rom vises Homey Moods som en rad knapper; for å starte en trengs API-nøkkelen på appens innstillingsside, med tillatelsen Innstill Moods.",
+            "es": "En una habitación abierta, sus Moods de Homey como una fila de botones; para iniciar uno se necesita la clave API en los ajustes de la app, con el permiso Establecer Moods.",
+            "da": "I et åbnet rum vises dets Homey Moods som en række knapper; for at starte en skal API-nøglen på appens indstillingsside bruges, med tilladelsen Indstil Moods.",
+            "ru": "В открытой комнате — её Moods Homey в виде ряда кнопок; для запуска нужен API-ключ на странице настроек приложения с правом Настроить Moods.",
+            "pl": "W otwartym pokoju jego Moods Homey jako rząd przycisków; do uruchomienia potrzebny jest klucz API na stronie ustawień aplikacji, z uprawnieniem Ustaw Mood.",
+            "ko": "열린 방에 그 방의 Homey 무드를 버튼 한 줄로 표시합니다. 무드를 시작하려면 앱 설정 페이지에 Mood 설정 권한이 있는 API 키가 필요합니다.",
+            "ar": "في الغرفة المفتوحة، تظهر أجواء Homey الخاصة بها كصف من الأزرار؛ ويتطلب تشغيلها مفتاح API في صفحة إعدادات التطبيق مع إذن ضبط Moods."
+          }
+        },
+        {
+          "id": "palette",
+          "type": "dropdown",
+          "title": {
+            "en": "Colour palette",
+            "nl": "Kleurenpalet",
+            "de": "Farbpalette",
+            "fr": "Palette de couleurs",
+            "it": "Tavolozza colori",
+            "sv": "Färgpalett",
+            "no": "Fargepalett",
+            "es": "Paleta de colores",
+            "da": "Farvepalet",
+            "ru": "Палитра",
+            "pl": "Paleta kolorów",
+            "ko": "색상 팔레트",
+            "ar": "لوحة الألوان"
+          },
+          "hint": {
+            "en": "The colours offered by a light’s colour button.",
+            "nl": "De kleuren die de kleurknop van een lamp aanbiedt.",
+            "de": "Die Farben, die die Farbtaste einer Lampe anbietet.",
+            "fr": "Les couleurs proposées par le bouton couleur d'une lampe.",
+            "it": "I colori offerti dal pulsante colore di una luce.",
+            "sv": "Färgerna som en lampas färgknapp erbjuder.",
+            "no": "Fargene som en lampes fargeknapp tilbyr.",
+            "es": "Los colores que ofrece el botón de color de una luz.",
+            "da": "Farverne, som en lampes farveknap tilbyder.",
+            "ru": "Цвета, которые предлагает кнопка цвета светильника.",
+            "pl": "Kolory dostępne pod przyciskiem koloru lampy.",
+            "ko": "조명의 색상 버튼에 표시되는 색상입니다.",
+            "ar": "الألوان التي يعرضها زر لون المصباح."
+          },
+          "value": "default",
+          "values": [
+            {
+              "id": "default",
+              "title": {
+                "en": "Bright colours",
+                "nl": "Felle kleuren",
+                "de": "Kräftige Farben",
+                "fr": "Couleurs vives",
+                "it": "Colori vivaci",
+                "sv": "Klara färger",
+                "no": "Klare farger",
+                "es": "Colores vivos",
+                "da": "Klare farver",
+                "ru": "Яркие цвета",
+                "pl": "Żywe kolory",
+                "ko": "선명한 색상",
+                "ar": "ألوان زاهية"
+              }
+            },
+            {
+              "id": "warm",
+              "title": {
+                "en": "Warm: red to cool white",
+                "nl": "Warm: rood tot koel wit",
+                "de": "Warm: Rot bis Kaltweiß",
+                "fr": "Chaud : du rouge au blanc froid",
+                "it": "Caldo: dal rosso al bianco freddo",
+                "sv": "Varm: röd till kallvit",
+                "no": "Varm: rød til kaldhvit",
+                "es": "Cálido: del rojo al blanco frío",
+                "da": "Varm: rød til koldhvid",
+                "ru": "Тёплая: от красного до холодного белого",
+                "pl": "Ciepła: od czerwieni do zimnej bieli",
+                "ko": "따뜻한 색: 빨강에서 차가운 흰색까지",
+                "ar": "دافئة: من الأحمر إلى الأبيض البارد"
+              }
+            },
+            {
+              "id": "dusk",
+              "title": {
+                "en": "Dusk",
+                "nl": "Schemering",
+                "de": "Abenddämmerung",
+                "fr": "Crépuscule",
+                "it": "Crepuscolo",
+                "sv": "Skymning",
+                "no": "Skumring",
+                "es": "Atardecer",
+                "da": "Skumring",
+                "ru": "Сумерки",
+                "pl": "Zmierzch",
+                "ko": "해 질 녘",
+                "ar": "الغسق"
+              }
+            }
+          ]
+        },
+        {
+          "id": "barMin",
+          "type": "dropdown",
+          "title": {
+            "en": "Brightness bar at the far left",
+            "nl": "Helderheidsbalk helemaal links",
+            "de": "Helligkeitsbalken ganz links",
+            "fr": "Barre de luminosité tout à gauche",
+            "it": "Barra luminosità tutta a sinistra",
+            "sv": "Ljusstyrkereglaget längst till vänster",
+            "no": "Lysstyrkelinjen helt til venstre",
+            "es": "Barra de brillo a la izquierda del todo",
+            "da": "Lysstyrkebjælken helt til venstre",
+            "ru": "Ползунок яркости до упора влево",
+            "pl": "Pasek jasności maksymalnie w lewo",
+            "ko": "밝기 막대를 맨 왼쪽으로",
+            "ar": "شريط السطوع في أقصى اليسار"
+          },
+          "hint": {
+            "en": "With 1%, sliding all the way left dims the light as far as it goes without turning it off. A tap on the light or the room’s switch still turns it off.",
+            "nl": "Met 1% dimt helemaal naar links de lamp zo ver mogelijk zonder hem uit te zetten. Een tik op de lamp of de schakelaar van de kamer zet hem nog steeds uit.",
+            "de": "Mit 1 % dimmt ganz nach links die Lampe so weit wie möglich, ohne sie auszuschalten. Ein Tipp auf die Lampe oder den Schalter des Raums schaltet sie weiterhin aus.",
+            "fr": "Avec 1 %, glisser tout à gauche baisse la lampe au minimum sans l'éteindre. Un appui sur la lampe ou l'interrupteur de la pièce l'éteint toujours.",
+            "it": "Con 1%, scorrere tutto a sinistra abbassa la luce al minimo senza spegnerla. Un tocco sulla luce o sull'interruttore della stanza la spegne comunque.",
+            "sv": "Med 1 % dimmar längst till vänster lampan så långt det går utan att släcka den. Ett tryck på lampan eller rummets reglage släcker den fortfarande.",
+            "no": "Med 1 % dimmes lyset så langt det går uten å slå det av når du drar helt til venstre. Et trykk på lyset eller rommets bryter slår det fortsatt av.",
+            "es": "Con 1 %, deslizar del todo a la izquierda atenúa la luz al mínimo sin apagarla. Un toque en la luz o en el interruptor de la habitación la sigue apagando.",
+            "da": "Med 1 % dæmpes lyset så meget som muligt uden at slukke, når du trækker helt til venstre. Et tryk på lyset eller rummets kontakt slukker det stadig.",
+            "ru": "При 1 % движение до упора влево приглушает свет до минимума, не выключая его. Касание светильника или выключателя комнаты по-прежнему выключает свет.",
+            "pl": "Przy 1% przesunięcie maksymalnie w lewo przyciemnia światło najbardziej, jak się da, bez wyłączania. Dotknięcie światła lub przełącznika pokoju nadal je wyłącza.",
+            "ko": "1%로 설정하면 맨 왼쪽으로 밀어도 조명이 꺼지지 않고 최대한 어두워집니다. 조명이나 방의 스위치를 탭하면 여전히 꺼집니다.",
+            "ar": "مع 1%، يؤدي السحب إلى أقصى اليسار إلى خفض الضوء لأدنى حد دون إطفائه. النقر على الضوء أو مفتاح الغرفة لا يزال يطفئه."
+          },
+          "value": "0",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Turns the light off (0%)",
+                "nl": "Zet de lamp uit (0%)",
+                "de": "Schaltet die Lampe aus (0 %)",
+                "fr": "Éteint la lampe (0 %)",
+                "it": "Spegne la luce (0%)",
+                "sv": "Släcker lampan (0 %)",
+                "no": "Slår av lyset (0 %)",
+                "es": "Apaga la luz (0 %)",
+                "da": "Slukker lyset (0 %)",
+                "ru": "Выключает свет (0 %)",
+                "pl": "Wyłącza światło (0%)",
+                "ko": "조명 끄기 (0%)",
+                "ar": "يطفئ الضوء (0%)"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Dims to 1%, stays on",
+                "nl": "Dimt naar 1%, blijft aan",
+                "de": "Dimmt auf 1 %, bleibt an",
+                "fr": "Baisse à 1 %, reste allumée",
+                "it": "Abbassa all'1%, resta accesa",
+                "sv": "Dimmar till 1 %, förblir tänd",
+                "no": "Dimmer til 1 %, forblir på",
+                "es": "Atenúa al 1 %, sigue encendida",
+                "da": "Dæmper til 1 %, forbliver tændt",
+                "ru": "Приглушает до 1 %, не выключая",
+                "pl": "Przyciemnia do 1%, pozostaje włączone",
+                "ko": "1%로 어둡게, 켜진 상태 유지",
+                "ar": "يخفت إلى 1%، ويبقى مضاءً"
+              }
+            }
+          ]
+        },
+        {
+          "id": "colorStyle",
+          "type": "dropdown",
+          "title": {
+            "en": "Colour style",
+            "nl": "Kleurstijl",
+            "de": "Farbstil",
+            "fr": "Style de couleur",
+            "it": "Stile colori",
+            "sv": "Färgstil",
+            "no": "Fargestil",
+            "es": "Estilo de color",
+            "da": "Farvestil",
+            "ru": "Цветовой стиль",
+            "pl": "Styl kolorów",
+            "ko": "색상 스타일",
+            "ar": "نمط الألوان"
+          },
+          "hint": {
+            "en": "Vivid makes the colours of a lit room stronger at the top of its card.",
+            "nl": "Levendig maakt de kleuren van een verlichte kamer sterker bovenaan de kaart.",
+            "de": "Kräftig macht die Farben eines beleuchteten Raums oben auf seiner Karte stärker.",
+            "fr": "Vives renforce les couleurs d'une pièce allumée en haut de sa carte.",
+            "it": "Vivaci rende più intensi i colori di una stanza accesa in cima alla sua scheda.",
+            "sv": "Livfulla gör färgerna i ett tänt rum starkare överst på dess kort.",
+            "no": "Livlige gjør fargene i et opplyst rom sterkere øverst på kortet.",
+            "es": "Vivos hace más intensos los colores de una habitación encendida en la parte superior de su tarjeta.",
+            "da": "Livlige gør farverne i et oplyst rum stærkere øverst på kortet.",
+            "ru": "«Яркие» делают цвета освещённой комнаты насыщеннее в верхней части её карточки.",
+            "pl": "Żywe wzmacniają kolory oświetlonego pokoju u góry jego karty.",
+            "ko": "선명하게는 불이 켜진 방의 색을 카드 위쪽에서 더 진하게 표시합니다.",
+            "ar": "«زاهية» تجعل ألوان الغرفة المضاءة أقوى في أعلى بطاقتها."
+          },
+          "value": "soft",
+          "values": [
+            {
+              "id": "soft",
+              "title": {
+                "en": "Muted",
+                "nl": "Gedempt",
+                "de": "Gedämpft",
+                "fr": "Atténuées",
+                "it": "Smorzati",
+                "sv": "Dämpade",
+                "no": "Dempede",
+                "es": "Suaves",
+                "da": "Dæmpede",
+                "ru": "Приглушённые",
+                "pl": "Stonowane",
+                "ko": "차분하게",
+                "ar": "هادئة"
+              }
+            },
+            {
+              "id": "deep",
+              "title": {
+                "en": "Vivid",
+                "nl": "Levendig",
+                "de": "Kräftig",
+                "fr": "Vives",
+                "it": "Vivaci",
+                "sv": "Livfulla",
+                "no": "Livlige",
+                "es": "Vivos",
+                "da": "Livlige",
+                "ru": "Яркие",
+                "pl": "Żywe",
+                "ko": "선명하게",
+                "ar": "زاهية"
+              }
+            }
+          ]
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        },
+        "set": {
+          "method": "POST",
+          "path": "/set"
+        },
+        "getMoods": {
+          "method": "GET",
+          "path": "/moods"
+        },
+        "setMood": {
+          "method": "POST",
+          "path": "/mood"
+        }
+      },
+      "id": "lightrooms"
+    },
     "lights": {
       "name": {
         "en": "Light Controls",

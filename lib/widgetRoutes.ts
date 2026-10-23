@@ -48,6 +48,7 @@ export function routeKeyUse(type: string, method: string, path: string, body: un
     case 'media POST /button': return String(b.id ?? '').startsWith('card:') ? 'cards' : 'flows';
     case 'stack GET /pages': return 'dashboards';
     case 'lights POST /mood': return 'moods';
+    case 'lightrooms POST /mood': return 'moods';
     case 'stack POST /call': return routeKeyUse(String(b.type ?? ''), String(b.method ?? ''), String(b.path ?? ''), b.body);
     default: return null;
   }

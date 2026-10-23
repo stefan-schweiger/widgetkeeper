@@ -22,6 +22,7 @@ This file holds what applies across the app. Each widget's notes, and those of t
 | Cameras | `cameras` | `widgets/cameras.md` |
 | Device Values | `values` | `widgets/values.md` |
 | Light Controls | `lights` | `widgets/lights.md` |
+| Lights by Room | `lightrooms` | `widgets/lightrooms.md` |
 | Charts (and the shared chart module) | `charts` | `widgets/charts.md` |
 | Sparklines | `sparklines` | `widgets/sparklines.md` |
 | Variables | `variables` | `widgets/variables.md` |

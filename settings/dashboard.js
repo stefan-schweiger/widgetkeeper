@@ -170,6 +170,7 @@
       cameras: 'Camera snapshots, with live video on a tap.',
       values: 'Any device value as a compact tile.',
       lights: 'Light tiles with brightness and colour at hand.',
+      lightrooms: "Every room's lights on a card: switch a room, or open it for its lights and Moods.",
       sparklines: 'Values with a small chart of their recent history.',
       charts: 'One or two charts of any value, like the electricity ones.',
       variables: 'Variables as rows you can switch or change.',

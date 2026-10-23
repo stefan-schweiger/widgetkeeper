@@ -300,3 +300,26 @@ describe('Homey group devices', () => {
     expect(await service.getState(['bulb'])).not.toHaveProperty('0.groupLights');
   });
 });
+
+describe('zoneIcons (Lights by Room)', () => {
+  afterEach(() => { vi.unstubAllGlobals(); });
+
+  it("gives each known zone Homey's own icon for it, the generic one for an icon it doesn't know", async () => {
+    const fetch = vi.fn(async (url: string) => (url.includes('/garage') ? { ok: false, status: 404 } : { ok: true, text: async () => `<svg>${url}</svg>` }));
+    vi.stubGlobal('fetch', fetch);
+    const zones = { z1: { name: 'Køkken', icon: 'kitchen' }, z2: { name: 'Stue', icon: 'livingRoom' }, z3: { name: 'Loft', icon: 'somethingNew' }, z4: { name: 'Garage', icon: 'garage' } };
+    const homey = fakeHomey(fakeApi({ devices: [], zones }));
+    const icons = await new LightService(homey, () => {}).zoneIcons(['z1', 'z2', 'z3', 'z4', 'nope', '__proto__']);
+    const decode = (d: string) => Buffer.from(d.split(',')[1], 'base64').toString();
+    // An unknown zone is left out, and so is one whose icon didn't load.
+    expect(Object.keys(icons)).toEqual(['z1', 'z2', 'z3']);
+    expect(decode(icons.z1)).toBe('<svg>https://my.homey.app/img/zones/kitchen.svg</svg>');
+    expect(decode(icons.z2)).toBe('<svg>https://my.homey.app/img/zones/living_room.svg</svg>');
+    expect(decode(icons.z3)).toBe('<svg>https://my.homey.app/img/zones/zone.svg</svg>');
+  });
+
+  it('starting a Mood from Lights by Room uses the API key, as from Light Controls', () => {
+    expect(routeKeyUse('lightrooms', 'POST', '/mood', { id: 'm' })).toBe('moods');
+    expect(routeKeyUse('lightrooms', 'POST', '/set', { deviceId: 'd' })).toBeNull();
+  });
+});

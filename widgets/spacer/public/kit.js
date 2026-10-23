@@ -370,7 +370,9 @@
    * a light, a swatch or a Mood shows.
    */
   const lightSvg = (viewBox, body) => `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`)}`;
-  const LIGHT_GLYPHS = {
+  /** Built on first use (`btoa`), so loading the kit needs none (test/helpers/flowIcons.ts runs it in a bare context). */
+  let lightGlyphs = null;
+  const LIGHT_GLYPHS = () => lightGlyphs || (lightGlyphs = {
     // A thermometer with a sun ray, for the temperature chip.
     temp: lightSvg('6.3 1.3 11.4 21.4', '<path d="M10 14.5V4a2 2 0 0 1 4 0v10.5a4 4 0 1 1-4 0z"/><circle cx="12" cy="17.5" r="1.6" fill="#000"/><path d="M12 9.5v6"/>'),
     // A half-filled circle, for the chip of a light with colour: a ring with its right half filled.
@@ -378,7 +380,7 @@
     close: lightSvg('5 5 14 14', '<path d="M6 6l12 12M18 6L6 18"/>'),
     // A full circle, for the chip of a tile whose lights shine in several colours: filled with a pie of them.
     pie: lightSvg('2 2 20 20', '<circle cx="12" cy="12" r="9" fill="#000" stroke="none"/>'),
-  };
+  });
 
   /**
    * The swatch palettes (the `palette` setting): 7 colours for the first row (hue in degrees, saturation 0–1)
@@ -436,7 +438,7 @@
     return list.length === 1 ? list[0] : `linear-gradient(135deg, ${list.join(', ')})`;
   }
 
-  const LIGHTS = { glyphs: LIGHT_GLYPHS, PALETTES, temperatureColor, hueColor, lightColor, moodDot };
+  const LIGHTS = { get glyphs() { return LIGHT_GLYPHS(); }, PALETTES, temperatureColor, hueColor, lightColor, moodDot };
 
   /** The colour settings' names (Device Values' Flow colours), in kit.css's palette. */
   const COLORS = ['blue', 'red', 'orange', 'yellow', 'green', 'purple'];

@@ -56,7 +56,7 @@ describe('copied widget helpers', () => {
   it('onTap() is the same in the widgets that share a version', () => {
     // Deliberately different: Media's and Variables' have no keydown (their rows hold buttons and inputs
     // whose keys would bubble to it), and the stack's is its own design.
-    expectSame(['lights', 'curtains'].map(id => source(id, 'onTap'))); // in the widget's closure
+    expectSame(['lights', 'lightrooms', 'curtains'].map(id => source(id, 'onTap'))); // in the widget's closure
     expectSame(['flows', 'sensordots', 'roomhealth', 'shortcuts', 'webpage'].map(id => source(id, 'onTap')));
     expectSame(['timers', 'locks', 'dayssince'].map(id => source(id, 'onTap'))); // stops the tap at a button inside a row
   });
@@ -65,8 +65,8 @@ describe('copied widget helpers', () => {
     expectSame(['values', 'sparklines', 'variables'].map(id => source(id, 'nameKeys')));
   });
 
-  it('wireBar() is the same in Light Controls and Curtains', () => {
-    expectSame(['lights', 'curtains'].map(id => source(id, 'wireBar')));
+  it('wireBar() is the same in Light Controls, Lights by Room and Curtains', () => {
+    expectSame(['lights', 'lightrooms', 'curtains'].map(id => source(id, 'wireBar')));
   });
 
 

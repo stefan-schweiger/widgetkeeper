@@ -65,6 +65,10 @@ A week of one value (light, temperature, motion …) as a grid of weekdays and h
 <a href="#light-controls"><b>Light Controls</b></a><br>
 Compact light tiles with brightness, colour and colour temperature: six lights in the space of three<br clear="left"></p>
 
+<p><a href="#lights-by-room"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/lightrooms-dark.png"><img src="docs/previews/lightrooms-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#lights-by-room"><b>Lights by Room</b></a><br>
+Every room's lights on a card: switch and dim a room, or open it for each light and the room's Moods<br clear="left"></p>
+
 <p><a href="#locks-and-doors"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/locks-dark.png"><img src="docs/previews/locks-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#locks-and-doors"><b>Locks and Doors</b></a><br>
 One line that says whether every lock and door is locked and closed<br clear="left"></p>
@@ -236,6 +240,11 @@ A week of one Insights value as a grid of days and hours: numbers such as light 
 Six lights in the space of three of Homey's light cards. Tap a tile to switch it, drag or tap the bar to dim, and tap the colour button for colours and whites. Lights in a room can share one tile. The Room's Moods palette puts the room's Homey Moods on the colour button instead of the colours and whites; starting one needs an [API key](#api-key) with **Set Moods**.
 
 **Settings:** lights, group by room, widen the last tile, what the bar's far left does, colour palette, [colour style](#colour-style), [rename tiles](#tile-names).
+
+## Lights by Room
+For many lights in many rooms. The lights you pick are grouped by their Homey room, a card per room with the room's icon, how many lights are on and how bright, a switch for the whole room and a bar that dims every light in it. Tap a room's name to open it: its Homey Moods as a row of buttons, then a row per light. Tap a light's row to switch it, tap or drag its bar to dim it, and tap its colour button for colours and whites, as in Light Controls. Rooms start closed; open as many as you like. Starting a Mood needs an [API key](#api-key) with **Set Moods**.
+
+**Settings:** lights, show the room's Moods, colour palette, what the bar's far left does, [colour style](#colour-style).
 
 ## Locks and Doors
 <img src="docs/screenshots/locks.png" alt="Locks and Doors on a Homey dashboard" width="358">
@@ -485,6 +494,7 @@ Homey doesn't let apps change variables, start flows, read dashboards or start M
 | Media's buttons: a flow | **Start Flows** | `homey.flow.start` |
 | Media's buttons: the speaker's own actions, such as *Set source to TV*, and its app's | **Flows** (Start Flows isn't enough) | `homey.flow` |
 | Light Controls' Room's Moods: starting a Mood | **Set Moods** | `homey.mood.set` |
+| Lights by Room: starting a Mood | **Set Moods** | `homey.mood.set` |
 | Smart Stack: reading the dashboard | **Homey**: the API Keys page has no permission for dashboards alone, so it takes the top one, which allows everything | `homey` |
 
 Ticking a group's first box (**Flows**, **Moods**, **Homey**) includes the boxes under it. Everything else needs no key: the widgets read devices, Insights, variables, flows and Moods with Widgetkeeper's own permissions, and Variables' Read only shows values without one. The scopes are the ones Homey's Web API asks for (`updateVariable`, `triggerFlow`/`triggerAdvancedFlow`, `runFlowCardAction`, `setMood`, `getDashboards`); the API Keys page shows each one beside its box.

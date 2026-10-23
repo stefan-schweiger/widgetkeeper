@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { KIT, loadMount, loadWidget, type WidgetName } from './helpers/loadWidget.js';
 
 // The Colour style setting (`colorStyle`: Muted or Vivid, kit.css's palette) and the colour pickers it goes with.
-const SCHEME_WIDGETS: WidgetName[] = ['quickactions', 'sensoralarms', 'locks', 'values', 'lights', 'curtains', 'dayssince', 'textline',
+const SCHEME_WIDGETS: WidgetName[] = ['quickactions', 'sensoralarms', 'locks', 'values', 'lights', 'lightrooms', 'curtains', 'dayssince', 'textline',
   'timers', 'flows', 'variables', 'varpresets', 'thermostat', 'price', 'heatmap', 'sparklines', 'charts', 'electricity', 'media', 'sensordots', 'roomhealth',
   'valuematrix', 'shortcuts'];
 // Widgets whose fixed state colour became a `color` setting with Colour style.

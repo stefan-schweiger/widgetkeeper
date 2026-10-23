@@ -65,11 +65,11 @@ describe('dashboardPages', () => {
     expect(dashboardPages(null, APP)).toEqual([]);
   });
 
-  it('knows every widget of the app but the stack, the spacer, Days Since, Dashboard Shortcuts, Web Page and Popups', () => {
+  it('knows every widget of the app but the stack, the spacer, Days Since, Lights by Room, Dashboard Shortcuts, Web Page and Popups', () => {
     const app = JSON.parse(readFileSync('app.json', 'utf8'));
     // Dashboard Shortcuts is web only (deprecated on Homey's dashboards), so a stack never meets it. A Web Page's frame
-    // would take the stack's swipes; Popups draws nothing.
-    expect([...STACK_TYPES].sort()).toEqual(Object.keys(app.widgets).filter(id => !['stack', 'spacer', 'dayssince', 'shortcuts', 'webpage', 'popups'].includes(id)).sort());
+    // would take the stack's swipes; Popups draws nothing; Lights by Room's list of rooms is too tall for a slide (for now).
+    expect([...STACK_TYPES].sort()).toEqual(Object.keys(app.widgets).filter(id => !['stack', 'spacer', 'dayssince', 'lightrooms', 'shortcuts', 'webpage', 'popups'].includes(id)).sort());
     // The widget's own list (TYPES in widget.js) must match too, both ways.
     const js = readFileSync('widgets/stack/public/widget.js', 'utf8');
     const types = js.match(/const TYPES = \{([\s\S]*?)\};/)![1];
