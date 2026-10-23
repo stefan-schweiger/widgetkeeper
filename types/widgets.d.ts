@@ -39,6 +39,7 @@ interface Window {
   createHeatmapWidget: (root: HTMLElement, opts?: object) => any;
   createValuesWidget: (root: HTMLElement, opts?: object) => any;
   createLightsWidget: (root: HTMLElement, opts?: object) => any;
+  createLightRoomsWidget: (root: HTMLElement, opts?: object) => any;
   createSparklinesWidget: (root: HTMLElement, opts?: object) => any;
   createVariablesWidget: (root: HTMLElement, opts?: object) => any;
   variableNameKeys: (slots: { id: string }[]) => string[];
@@ -49,6 +50,15 @@ interface Window {
   /** The shared kit (widgets/spacer/public/kit.js), which every widget's index.html loads first. */
   WidgetkeeperKit: {
     icons: Record<string, { d: string, fill?: boolean }>,
+    /** Light Controls' and Lights by Room's colours: chip glyphs, swatch palettes, a light's, swatch's or Mood's colour. */
+    lights: {
+      glyphs: Record<'temp' | 'hue' | 'close' | 'pie', string>,
+      PALETTES: Record<string, { colors: number[][], whites: number[] }>,
+      temperatureColor: (k: number) => string,
+      hueColor: (hue: number, sat: number) => string,
+      lightColor: (caps: Record<string, { value: unknown }>) => string,
+      moodDot: (colors: ({ hue: number, saturation: number } | { temperature: number })[]) => string | null,
+    },
     TIGHT_UNITS: RegExp,
     KEY_PROBLEMS: string[],
     scaled: (cap: any, value: number) => number,
@@ -120,6 +130,7 @@ interface Window {
   mountShortcutsWidget: MountWidget;
   mountHeatmapWidget: MountWidget;
   mountLightsWidget: MountWidget;
+  mountLightRoomsWidget: MountWidget;
   mountLocksWidget: MountWidget;
   mountMediaWidget: MountWidget;
   mountClockWidget: MountWidget;
