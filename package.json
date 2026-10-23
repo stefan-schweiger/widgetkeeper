@@ -59,6 +59,7 @@
   },
   "allowScripts": {
     "esbuild@0.28.2": true,
-    "ssh2": false
+    "ssh2": false,
+    "cpu-features": false
   }
 }
