@@ -112,7 +112,16 @@
     }));
     const params = new URLSearchParams(location.search);
     const VIEW = params.get('v') || 'dashboard';
-    const BOARD = VIEW === 'light' ? LIGHT_BOARD : params.get('d') || 'home';
+    // The wide view (1.1.0's wide widgets): Security with four of its cameras across the first two columns, at their
+    // top, so both columns' own widgets show under it.
+    const WIDE_BOARD = 'security';
+    if (VIEW === 'wide') {
+      const cameras = BOARDS.find(b => b.id === WIDE_BOARD).columns[0][0];
+      Object.assign(cameras, { span: 2, at: [0] });
+      const entry = ENTRY.get(cameras.id);
+      ENTRY.set(cameras.id, { ...entry, cameras: entry.cameras.slice(0, 4) });
+    }
+    const BOARD = VIEW === 'light' ? LIGHT_BOARD : VIEW === 'wide' ? WIDE_BOARD : params.get('d') || 'home';
     const HASH = VIEW === 'front' ? '#/' : VIEW === 'editor' || VIEW === 'settings' ? `#/d/${BOARD}/edit` : `#/d/${BOARD}`;
 
     // The settings view: Home's Flow Buttons set up as the showcase draws them (four buttons), and the dialog drawn

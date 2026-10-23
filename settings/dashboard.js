@@ -1619,8 +1619,9 @@
       };
       grid.addEventListener('pointerdown', (e) => {
         const card = /** @type {Element} */ (e.target).closest('.wd-dash[data-id]');
-        // A card's own button (Duplicate) is pressed, not dragged: the grid's capture would take its click.
-        if (move || !card || e.button !== 0 || /** @type {Element} */ (e.target).closest('button')) return;
+        // A card's own buttons (the pen, Duplicate) are pressed, not dragged: the grid's capture would take their click.
+        // The card's own link has no href here.
+        if (move || !card || e.button !== 0 || /** @type {Element} */ (e.target).closest('button, a[href]')) return;
         move = { card, pointerId: e.pointerId, x0: e.clientX, y0: e.clientY, active: false, before: order() };
         try { grid.setPointerCapture(e.pointerId); } catch (err) { /* moves still come while over the grid */ }
         e.preventDefault();
@@ -1668,9 +1669,9 @@
     }
 
     /**
-     * A dashboard's card: a miniature of its columns (each widget as its preview), its name and widget count. While
-     * the front page is edited it opens nothing: it's dragged (a grip in place of the pen), and it has Duplicate and Delete
-     * (a second tap).
+     * A dashboard's card: a miniature of its columns (each widget as its preview), its name and widget count; it opens
+     * the dashboard. While the front page is edited it opens nothing: it's dragged (a grip), and it has a pen (the
+     * dashboard's editor), Duplicate and Delete (a second tap).
      */
     function dashboardCard(d, editing = false) {
       const card = el('div', 'wd-dash');
@@ -1694,23 +1695,23 @@
         card.tabIndex = 0;
         card.setAttribute('aria-roledescription', t('drag'));
         card.setAttribute('aria-label', d.name || t('untitled'));
-        const grip = el('span', 'wd-icon wd-dash-edit');
+        const grip = el('span', 'wd-icon wd-dash-grip');
         grip.append(icon('grip'));
+        const edit = el('a', 'wd-icon wd-dash-edit');
+        edit.href = `#/d/${d.id}/edit`;
+        edit.title = t('edit');
+        edit.setAttribute('aria-label', t('edit'));
+        edit.append(icon('pen'));
         const copy = button('wd-icon wd-dash-copy', '', () => duplicate(d.id), t('duplicate'));
         copy.append(icon('copy'));
         copy.disabled = dashboards.length >= MAX_DASHBOARDS;
         const remove = confirmButton('wd-icon wd-dash-delete', icon('trash'), () => deleteDashboard(d.id, () => {
           if (location.hash === '#/edit') renderList(true);
         }), t('tapAgain'), t('deleteDashboard'));
-        card.append(art, link, remove, copy, grip);
+        card.append(art, link, remove, copy, edit, grip);
         return card;
       }
-      const edit = el('a', 'wd-icon wd-dash-edit');
-      edit.href = `#/d/${d.id}/edit`;
-      edit.title = t('edit');
-      edit.setAttribute('aria-label', t('edit'));
-      edit.append(icon('pen'));
-      card.append(art, link, edit);
+      card.append(art, link);
       return card;
     }
 

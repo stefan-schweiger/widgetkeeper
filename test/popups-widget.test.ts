@@ -71,6 +71,10 @@ describe('Popups widget', () => {
     expect(Homey.popup).toHaveBeenCalledTimes(2);
   });
 
+  it('is never 0 px tall: the iOS app kept showing its loading placeholder for ready({height: 0})', () => {
+    expect(readFileSync('widgets/popups/public/widget.css', 'utf8')).toMatch(/#root \{ height: 1px;/);
+  });
+
   it('does nothing on a web dashboard, where the page draws popups itself', async () => {
     loadWidget('popups');
     const win = loadMount('popups');

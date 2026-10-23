@@ -1,2 +1,3 @@
-/* The Popups widget draws nothing: it only opens Flows' popups in the phone app's in-app browser. */
-#root { height: 0; overflow: hidden; }
+/* The Popups widget draws nothing: it only opens Flows' popups in the phone app's in-app browser. 1 px, not 0: with
+   `ready({height: 0})` the iOS app kept showing its loading placeholder (2026-10-23), as 0 reads as no height. */
+#root { height: 1px; overflow: hidden; }
