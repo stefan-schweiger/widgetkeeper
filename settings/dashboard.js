@@ -310,6 +310,10 @@
     up: 'M6 15l6-6 6 6',
     columns: 'M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM9.5 4v16M14.5 4v16',
     minus: 'M5 12h14',
+    // The Theme pill's: Automatic (a half-filled circle: `fill`), Dark, Light.
+    contrast: { d: 'M12 4a8 8 0 1 0 0 16a8 8 0 1 0 0-16z', fill: 'M12 4a8 8 0 0 1 0 16z' },
+    moon: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
+    sun: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2.5v2M12 19.5v2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M2.5 12h2M19.5 12h2M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4',
     sliders: 'M4 6h9M17 6h3M15 4v4M4 12h3M11 12h9M9 10v4M4 18h11M19 18h1M17 16v4',
     trash: 'M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3',
     copy: 'M10 9h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2zM16 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2',
@@ -344,9 +348,17 @@
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('aria-hidden', 'true');
+    const def = ICONS[name];
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', ICONS[name]);
+    path.setAttribute('d', typeof def === 'string' ? def : def.d);
     svg.append(path);
+    if (typeof def !== 'string' && def.fill) {
+      const solid = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      solid.setAttribute('d', def.fill);
+      solid.setAttribute('fill', 'currentColor');
+      solid.setAttribute('stroke', 'none');
+      svg.append(solid);
+    }
     return svg;
   }
 
@@ -1899,7 +1911,14 @@
         theme.append(o);
       }
       theme.value = d.theme;
+      // In a pill with the theme's icon, as the columns' and the backdrop's have theirs.
+      const themePick = el('span', 'wd-themepick');
+      const themeIcon = el('span', 'wd-themepick-icon');
+      const drawThemeIcon = () => themeIcon.replaceChildren(icon({ dark: 'moon', light: 'sun' }[theme.value] || 'contrast'));
+      drawThemeIcon();
+      themePick.append(themeIcon, theme);
       theme.addEventListener('change', () => {
+        drawThemeIcon();
         current.dashboard.theme = theme.value;
         storageSet(THEME_STORAGE, null); // this browser's own dark or light would hide the choice
         applyTheme(theme.value, current.dashboard.background);
@@ -1959,7 +1978,7 @@
       // The end of the bar stays together when a narrow window wraps it.
       const end = el('span', 'wd-bar-end');
       end.append(remove, done);
-      const b = bar(name, el('span', 'wd-bar-rule'), cols, theme, bgPick, end);
+      const b = bar(name, el('span', 'wd-bar-rule'), cols, themePick, bgPick, end);
       stepColumns(b);
       return b;
     }
