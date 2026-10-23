@@ -687,7 +687,7 @@ const BUILD = {
   // Four columns: a clock, a spacer of the height in its title, another clock, so the second row shows the gap Homey
   // adds and how far each spacer moves it down.
   spacer: () => {
-    const heights = [32, 0, 16, 76]; // the default, nothing, a little, a clock's height
+    const heights = [32, 16, 48, 76]; // the default, the least (0 showed the iOS app's loading placeholder), more, a clock's height
     const clock = title => w('clock', title, { showWeather: false });
     return { cols: 4, widgets: [
       ...heights.map(h => clock(`${h} px below${h === 32 ? ' (default)' : ''}`)),
