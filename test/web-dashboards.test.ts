@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
 import PersonalApiKey from '../lib/PersonalApiKey.js';
-import TileNameService, { TILE_NAMES_EVENT, TILE_NAMES_SETTING } from '../lib/TileNameService.js';
+import TileNameService, { TILE_NAMES_EVENT, TILE_NAMES_SETTING, tileNameRoutes } from '../lib/TileNameService.js';
 import WebDashboardService, { MAX_DASHBOARDS, passesDeviceFilter, settingSections, WEB_BACKUP_FORMAT, WEB_DASHBOARDS_SETTING, WEB_ENABLED_SETTING, WEB_FRONT_SETTING, WEB_REMOTE_SETTING } from '../lib/WebDashboardService.js';
 import { widgetAutocompletes } from '../lib/widgetAutocompletes.js';
 import { routeKeyUse } from '../lib/widgetRoutes.js';
@@ -148,6 +148,72 @@ describe('web dashboards: storage', () => {
     expect(web.save({ columns: [] }).columns).toEqual([[]]);
     expect(web.save({ columns: Array.from({ length: 9 }, () => []) }).columns).toHaveLength(6);
     expect(() => web.save(null)).toThrow();
+  });
+
+  // Any key holder can store a dashboard (`PUT /web/dashboards`, a backup): each value keeps to its type and size.
+  it("keeps each setting to its type and size, and the dashboard's name, title, widgets and devices to their counts", () => {
+    const { web, homey } = setup();
+    homey.manifest = {
+      ...homey.manifest,
+      widgets: {
+        ...app.widgets,
+        probe: {
+          devices: { singular: false },
+          settings: [
+            { id: 'n', type: 'number', value: 5, min: 0, max: 10 },
+            { id: 't', type: 'text', value: 'x' },
+            { id: 'a', type: 'autocomplete', value: null },
+            { id: 'c', type: 'colorpicker', value: '#fff' },
+          ],
+        },
+      },
+    };
+    const probe = (w: object) => web.save({ columns: [[{ type: 'probe', ...w }]] }).columns[0][0];
+    const settings = (s: object) => probe({ settings: s }).settings;
+    expect(settings({ n: '' }).n).toBeNull();
+    expect(settings({ n: null }).n).toBeNull();
+    expect(settings({ n: '7' }).n).toBe(7);
+    expect(settings({ n: -3 }).n).toBe(0);
+    expect(settings({ n: 'x' }).n).toBe(5); // not a number: the default
+    expect(settings({ n: Infinity }).n).toBe(5);
+    expect(settings({ t: 'y'.repeat(5000) }).t).toHaveLength(2000);
+    expect(settings({ t: 42 }).t).toBe('x');
+    expect(settings({ a: null }).a).toBeNull();
+    expect(settings({ a: { id: 'x' } }).a).toBeNull(); // no name: not a choice, so the default
+    expect(settings({ c: '#000' }).c).toBe('#fff'); // a type it doesn't know keeps the default
+    expect(settings(JSON.parse('{"n": 1, "__proto__": {"polluted": true}, "extra": 1}'))).toEqual({ n: 1, t: 'x', a: null, c: '#fff' });
+
+    const ids = Array.from({ length: 120 }, (_, i) => `d${i}`);
+    const widget = probe({ id: '../x', title: ` ${'T'.repeat(80)} `, deviceIds: [...ids, '../bad', 7, 'd0'] });
+    expect(widget.id).toMatch(/^[A-Za-z0-9_-]{1,40}$/);
+    expect(widget.title).toHaveLength(60);
+    expect(widget.deviceIds).toEqual(ids.slice(0, 100));
+
+    const big = web.save({ name: 'N'.repeat(80), columns: Array.from({ length: 6 }, () => Array.from({ length: 12 }, () => ({ type: 'clock' }))) });
+    expect(big.name).toHaveLength(60);
+    expect(big.columns.flat()).toHaveLength(60); // at most 60 widgets
+    expect(big.columns.map(c => c.length)).toEqual([12, 12, 12, 12, 12, 0]);
+  });
+
+  it('drops a stored dashboard it cannot read, and refuses one past 64', () => {
+    const { web, homey, log } = setup();
+    homey.settings.set(WEB_DASHBOARDS_SETTING, [null, 'x', { id: '../x', name: 'Bad id', columns: [] }, { name: 'No id' }, { id: 'ok', name: 'Kept', columns: [[]] }]);
+    expect(web.list().map(d => d.name)).toEqual(['Kept']);
+    expect(log).toHaveBeenCalledWith('Web dashboards: dropped a saved dashboard:', 'A dashboard needs an id');
+    expect(log).toHaveBeenCalledWith('Web dashboards: dropped a saved dashboard:', 'Not a dashboard');
+    homey.settings.set(WEB_DASHBOARDS_SETTING, Array.from({ length: MAX_DASHBOARDS }, (_, i) => ({ id: `d${i}`, columns: [[]] })));
+    expect(() => web.save({ name: 'One more', columns: [[]] })).toThrow(/At most 64/);
+    expect(web.save({ id: 'd3', name: 'Replaced', columns: [[]] }).name).toBe('Replaced'); // a stored one is still replaced
+  });
+
+  it('keeps at most 20 sections, each id once, names cut at 60', () => {
+    const { web } = setup();
+    const sections = [{ id: 's0', name: 'Again' }, ...Array.from({ length: 25 }, (_, i) => ({ id: `s${i}`, name: `${'S'.repeat(70)}${i}` })), { id: '../x', name: 'Bad' }];
+    const { front } = web.saveFront({ sections });
+    expect(front.sections).toHaveLength(20);
+    expect(front.sections[0]).toEqual({ id: 's0', name: 'Again' });
+    expect(front.sections.map(s => s.id)).toEqual(['s0', ...Array.from({ length: 19 }, (_, i) => `s${i + 1}`)]);
+    expect(front.sections[1].name).toHaveLength(60);
   });
 });
 
@@ -513,6 +579,10 @@ describe('web dashboards: the routes that act with the stored key', () => {
       try { source = readFileSync(`widgets/${id}/api.ts`, 'utf8'); } catch { continue; }
       const handlers = source.split(/\n {2}async (?=\w+\()/).slice(1);
       expect(handlers.length).toBeGreaterThan(0);
+      // Every route in the manifest is a handler read here (or the spread tile names route, which uses no key), so a
+      // handler written in another form fails here instead of being skipped.
+      const read = [...handlers.map(h => h.match(/^\w+/)![0]), ...(source.includes('...tileNameRoutes') ? Object.keys(tileNameRoutes) : [])];
+      expect([id, read.sort()]).toEqual([id, Object.keys(app.widgets[id]?.api ?? {}).sort()]);
       for (const handler of handlers) {
         const name = handler.match(/^\w+/)![0];
         const route = app.widgets[id]?.api?.[name];

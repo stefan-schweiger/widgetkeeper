@@ -110,6 +110,43 @@ describe('run', () => {
   });
 });
 
+describe("another key's scopes (the web page's own key)", () => {
+  afterEach(() => { vi.useRealTimers(); });
+
+  it('asks Homey once a minute per key', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(1e12);
+    const { key } = setup();
+    const page = keyApi(['homey.flow.start']);
+    keyApis.set('page', page);
+    await expect(key.scopesOf('page')).resolves.toEqual(['homey.flow.start']);
+    vi.setSystemTime(1e12 + 59e3);
+    await expect(key.scopesOf('page')).resolves.toEqual(['homey.flow.start']);
+    expect(page.sessions.getSessionMe).toHaveBeenCalledTimes(1);
+    // After the minute it asks again, so a key whose permissions changed (or was removed) is read anew.
+    vi.setSystemTime(1e12 + 61e3);
+    page.sessions.getSessionMe.mockResolvedValueOnce({ scopes: [] });
+    await expect(key.scopesOf('page')).resolves.toEqual([]);
+    expect(page.sessions.getSessionMe).toHaveBeenCalledTimes(2);
+  });
+
+  it('is null for a key Homey refuses, and remembers that for the minute', async () => {
+    const { key } = setup();
+    await expect(key.scopesOf('unknown')).resolves.toBeNull();
+    keyApis.set('unknown', keyApi(['homey']));
+    await expect(key.scopesOf('unknown')).resolves.toBeNull();
+  });
+
+  it("doesn't remember a busy Homey's answer", async () => {
+    const { key } = setup();
+    const busy = Object.assign(new Error('Too many requests.'), { statusCode: 429 });
+    keyApis.set('page', busy);
+    await expect(key.scopesOf('page')).rejects.toBe(busy);
+    keyApis.set('page', keyApi(['homey.logic']));
+    await expect(key.scopesOf('page')).resolves.toEqual(['homey.logic']);
+  });
+});
+
 describe('shared instance', () => {
   it('is one per app, also for services built without one', () => {
     const { homey } = setup();
