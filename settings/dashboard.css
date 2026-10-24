@@ -152,6 +152,25 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .wd-section-titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .wd-section-head .wd-h1 { font-size: 24px; line-height: 32px; }
 .wd-dashboards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); grid-auto-rows: 1fr; gap: 16px; }
+/* The front page's sections: a heading over each one's cards; in edit mode the name is typed in place (as the editor's
+   bar's), with ↑ ↓ and delete, and an empty one is a dashed place to drag dashboards into. */
+.wd-group-title { margin: 12px 0 0; font-size: 20px; line-height: 28px; font-weight: 700; overflow-wrap: anywhere; }
+.wd-group-head { display: flex; align-items: center; gap: 4px; margin-top: 12px; }
+.wd-group-name {
+  flex: 0 1 360px; min-height: 36px; padding: 4px 10px; margin-left: -10px; border-color: transparent; border-radius: 10px;
+  background: transparent; font-size: 20px; line-height: 28px; font-weight: 700;
+}
+.wd-group-name:hover { border-color: var(--wd-line); }
+.wd-group-name:focus { border-color: var(--wd-accent); outline: none; background: var(--wd-tile); }
+.wd-group-head .wd-icon:disabled { opacity: .35; cursor: default; background: transparent; color: var(--wd-muted); }
+.wd-group-delete:hover { color: var(--wd-red); }
+.wd-group-delete.armed, .wd-group-delete.armed:hover { color: #FFFFFF; background: var(--wd-red); }
+.wd-group-empty {
+  display: none; grid-column: 1 / -1; margin: 0; padding: 28px 16px; border: 1.5px dashed var(--wd-line); border-radius: 16px;
+  text-align: center;
+}
+.arranging .wd-dashboards:not(:has(> .wd-dash)) > .wd-group-empty { display: block; }
+.wd-group-add { align-self: flex-start; }
 .wd-dash {
   position: relative; display: flex; flex-direction: column; overflow: hidden; border-radius: 16px;
   container-type: inline-size; /* the miniature's rows (cqw) */

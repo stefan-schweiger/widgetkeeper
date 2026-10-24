@@ -24,6 +24,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Web dashboards
 - **Wide widgets:** a widget can span two or more columns, such as a floor plan, a camera or a chart. Drag the handle on its right edge in edit mode, or set its Width in its settings. Each column it covers keeps its own widgets above and below it. Kept in duplicates and backups. The front page's miniatures show them across their columns.
+- **Sections on the front page:** group the dashboards under headings of your own. In the front page's edit mode, Add section, type its name, and drag dashboards into it; ↑ ↓ move a section, and deleting one keeps its dashboards. Kept in duplicates and backups.
 - **Password:** changing or removing the web dashboards password now asks for the current one. A forgotten password is removed with the Flow card *Remove the web dashboards password*.
 
 ### Charts and Sparklines

@@ -60,7 +60,12 @@
     bgPlum: 'Plum',
     bgBerry: 'Berry',
     bgSand: 'Sand',
-    arrangeHint: 'Drag the dashboards to change their order.',
+    arrangeHint: 'Drag the dashboards to change their order or section.',
+    addSection: 'Add section',
+    newSection: 'New section',
+    sectionName: 'Section name',
+    deleteSection: 'Delete section',
+    sectionEmpty: 'Drag dashboards here',
     showWidgets: 'Show on the front page',
     duplicate: 'Duplicate',
     copyName: '__name__ (copy)',
@@ -221,6 +226,7 @@
   const LAYOUT = window.WidgetkeeperLayout;
   /** The most dashboards the app keeps (`MAX_DASHBOARDS` in lib/WebDashboardService.ts). */
   const MAX_DASHBOARDS = 64;
+  const MAX_SECTIONS = 20; // the app's copy (lib/WebDashboardService.ts)
 
   function storageGet(key) {
     try { return localStorage.getItem(key); } catch (e) { return null; }
@@ -533,7 +539,7 @@
     const appLocales = new Map(); // app id → Promise of its strings
     const typeOf = (type) => types.get(type) || foreign.get(type);
     let dashboards = [];
-    let frontPage = { widgets: true }; // the front page's choices (`/web/setup`'s `front`), made in its edit mode
+    let frontPage = { widgets: true, sections: [] }; // the front page's choices (`/web/setup`'s `front`), made in its edit mode
     let current = null; // {dashboard, editing, grid, widgets: Map<widget id, {el, sig}>, covers: Map<`<id>@<column>`, el>}
     let live = false;
     let socketStarted = false;
@@ -604,7 +610,7 @@
       setup = await request('GET', '/web/setup');
       types = new Map((setup.widgets || []).map(w => [w.type, w]));
       dashboards = setup.dashboards || [];
-      frontPage = setup.front || { widgets: true };
+      frontPage = { widgets: true, sections: [], ...setup.front };
       if (setup.language) document.documentElement.lang = setup.language;
       if (setup.disabled || setup.passwordRequired) return; // turned off, or the password first: `route()` says so
       setPopups(setup.popups && setup.popups.popups, setup.popups && setup.popups.now);
@@ -1224,11 +1230,26 @@
       titles.append(el('h1', 'wd-h1', t('yourDashboards')));
       if (editing) titles.append(el('p', 'wd-muted', t('arrangeHint')));
       head.append(titles);
-      const grid = el('div', 'wd-dashboards');
-      for (const d of dashboards) grid.append(dashboardCard(d, editing));
+      // The dashboards in no section under Your dashboards, then each section under its heading (an empty one only
+      // while editing, to drag dashboards into).
+      const sections = frontPage.sections || [];
+      const sectionOf = d => (sections.some(x => x.id === d.section) ? d.section : '');
+      const grid = dashboardGrid('');
+      for (const d of dashboards) if (!sectionOf(d)) grid.append(dashboardCard(d, editing));
+      page.append(head, grid);
+      sections.forEach((section, i) => {
+        const inside = dashboards.filter(d => sectionOf(d) === section.id);
+        if (!editing && !inside.length) return;
+        const g = dashboardGrid(section.id);
+        for (const d of inside) g.append(dashboardCard(d, editing));
+        page.append(editing ? sectionEditHead(section, i) : el('h2', 'wd-group-title', section.name || t('untitled')), g);
+      });
       if (editing) {
-        arrangeCards(grid);
-        page.append(head, grid);
+        const add = button('wd-btn wd-group-add', '', () => addSection(), t('addSection'));
+        add.append(icon('plus'), el('span', null, t('addSection')));
+        add.disabled = sections.length >= MAX_SECTIONS;
+        page.append(add);
+        arrangeCards(page);
         if (types.size) page.append(widgetCarousel(true));
         const settings = button('wd-btn quiet', '', () => pageSettings(), t('pageSettings'));
         settings.append(icon('sliders'), el('span', 'wd-bar-label', t('pageSettings')));
@@ -1252,7 +1273,6 @@
       plus.append(icon('plus'));
       add.append(plus, el('span', 'wd-dash-new-text', t('newDashboard')));
       grid.append(add);
-      page.append(head, grid);
       if (types.size && frontPage.widgets) page.append(widgetCarousel());
 
       const edit = el('a', 'wd-icon');
@@ -1263,7 +1283,80 @@
       root.append(bar(brand(), el('span', 'wd-spacer'), liveNote(), edit), page);
     }
 
-    /** Saves the front page's choices (`order`, `widgets`) after the saves already queued; keeps what the app answers. */
+    /** A grid of dashboard cards, of one section (`''`: none); an empty one says to drag dashboards into it (edit mode). */
+    function dashboardGrid(section) {
+      const grid = el('div', 'wd-dashboards');
+      grid.dataset.section = section;
+      if (section) grid.append(el('p', 'wd-group-empty wd-muted', t('sectionEmpty')));
+      return grid;
+    }
+
+    /** A section's heading in edit mode: its name to type in, ↑ ↓ to move it, and delete (its dashboards stay, in none). */
+    function sectionEditHead(section, i) {
+      const head = el('div', 'wd-group-head');
+      const name = /** @type {HTMLInputElement} */ (el('input', 'wd-input wd-group-name'));
+      name.type = 'text';
+      name.value = section.name;
+      name.maxLength = 60;
+      name.placeholder = t('sectionName');
+      name.setAttribute('aria-label', t('sectionName'));
+      name.dataset.section = section.id;
+      name.addEventListener('keydown', (e) => { if (e.key === 'Enter') name.blur(); });
+      name.addEventListener('change', () => {
+        const value = name.value.trim();
+        if (value === section.name) return;
+        frontPage = { ...frontPage, sections: frontPage.sections.map(x => (x.id === section.id ? { ...x, name: value } : x)) };
+        saveFront({ sections: frontPage.sections });
+      });
+      const move = (step) => {
+        const list = [...frontPage.sections];
+        list.splice(i + step, 0, ...list.splice(i, 1));
+        frontPage = { ...frontPage, sections: list };
+        saveFront({ sections: list });
+        renderList(true);
+        const moved = /** @type {HTMLElement} */ (root.querySelector(`.wd-group-name[data-section="${section.id}"]`));
+        const b = moved && /** @type {HTMLButtonElement} */ (moved.parentElement.querySelector(step < 0 ? '.wd-group-up' : '.wd-group-down'));
+        if (b) (b.disabled ? moved : b).focus();
+      };
+      const up = button('wd-icon wd-group-up', '', () => move(-1), t('moveUp'));
+      up.append(icon('up'));
+      up.disabled = i === 0;
+      const down = button('wd-icon wd-group-down', '', () => move(1), t('moveDown'));
+      down.append(icon('down'));
+      down.disabled = i === frontPage.sections.length - 1;
+      const remove = confirmButton('wd-icon wd-group-delete', icon('trash'), () => {
+        frontPage = { ...frontPage, sections: frontPage.sections.filter(x => x.id !== section.id) };
+        dashboards = dashboards.map(d => (d.section === section.id ? withSection(d, '') : d));
+        saveFront({ sections: frontPage.sections });
+        renderList(true);
+      }, t('tapAgain'), t('deleteSection'));
+      head.append(name, up, down, remove);
+      return head;
+    }
+
+    /** Edit mode: a new section at the end, its name selected to type over. */
+    function addSection() {
+      if ((frontPage.sections || []).length >= MAX_SECTIONS) return;
+      const section = { id: newId(), name: t('newSection') };
+      frontPage = { ...frontPage, sections: [...(frontPage.sections || []), section] };
+      saveFront({ sections: frontPage.sections });
+      renderList(true);
+      const name = /** @type {HTMLInputElement} */ (root.querySelector(`.wd-group-name[data-section="${section.id}"]`));
+      if (!name) return;
+      name.scrollIntoView({ block: 'nearest' });
+      name.focus();
+      name.select();
+    }
+
+    /** A dashboard in a section (`''`: none). */
+    function withSection(d, section) {
+      const copy = { ...d };
+      delete copy.section;
+      if (section) copy.section = section;
+      return copy;
+    }
+
+    /** Saves the front page's choices (`sections`, `placement`, `order`, `widgets`) after the saves already queued; keeps what the app answers. */
     function saveFront(change) {
       saving = saving.then(async () => {
         try {
@@ -1615,13 +1708,27 @@
     }
 
     /**
-     * The front page's edit mode: a card is dragged (pointer events, so by touch too; the grid holds the capture, as
-     * the card itself moves) and the others make room at once; arrow keys move a focused one. Escape puts them back.
+     * The front page's edit mode: a card is dragged (pointer events, so by touch too; the page holds the capture, as
+     * the card itself moves), within its section or into another (`page`'s grids), and the others make room at once;
+     * arrow keys move a focused one, on into the next or previous section at either end. Escape puts them back.
      */
-    function arrangeCards(grid) {
-      const cards = () => [...grid.querySelectorAll('.wd-dash[data-id]')];
-      const order = () => cards().map(c => /** @type {HTMLElement} */ (c).dataset.id);
-      let move = null; // {card, pointerId, x0, y0, active, before: the order when it started}
+    function arrangeCards(page) {
+      const grids = () => /** @type {HTMLElement[]} */ ([...page.querySelectorAll('.wd-dashboards')]);
+      const cards = () => /** @type {HTMLElement[]} */ ([...page.querySelectorAll('.wd-dashboards > .wd-dash[data-id]')]);
+      // Where every card is, first to last: its id and section.
+      const arrangement = () => cards().map(c => ({ id: c.dataset.id, section: /** @type {HTMLElement} */ (c.parentElement).dataset.section }));
+      const save = () => {
+        const now = arrangement();
+        const placement = Object.fromEntries(now.map(x => [x.id, x.section || null]));
+        // The page's own copy at once, so a redraw before the app answers (a section added) keeps it.
+        const byId = new Map(dashboards.map(d => [d.id, d]));
+        dashboards = [
+          ...now.filter(x => byId.has(x.id)).map(x => withSection(byId.get(x.id), x.section)),
+          ...dashboards.filter(d => !(d.id in placement)),
+        ];
+        saveFront({ order: now.map(x => x.id), placement });
+      };
+      let move = null; // {card, pointerId, x0, y0, active, before: the arrangement when it started}
       const finish = (keep) => {
         if (!move) return;
         const { card, active, before } = move;
@@ -1629,23 +1736,26 @@
         if (!active) return;
         card.classList.remove('lifted');
         root.classList.remove('dragging');
-        const now = order();
         if (!keep) {
-          for (const id of before) grid.append(cards().find(c => /** @type {HTMLElement} */ (c).dataset.id === id));
-        } else if (now.join() !== before.join()) {
-          saveFront({ order: now });
+          for (const x of before) grids().find(g => g.dataset.section === x.section).append(cards().find(c => c.dataset.id === x.id));
+        } else if (JSON.stringify(arrangement()) !== JSON.stringify(before)) {
+          save();
         }
       };
-      grid.addEventListener('pointerdown', (e) => {
-        const card = /** @type {Element} */ (e.target).closest('.wd-dash[data-id]');
-        // A card's own buttons (the pen, Duplicate) are pressed, not dragged: the grid's capture would take their click.
+      const under = (node, e) => {
+        const r = node.getBoundingClientRect();
+        return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      };
+      page.addEventListener('pointerdown', (e) => {
+        const card = /** @type {Element} */ (e.target).closest('.wd-dashboards > .wd-dash[data-id]');
+        // A card's own buttons (the pen, Duplicate) are pressed, not dragged: the page's capture would take their click.
         // The card's own link has no href here.
         if (move || !card || e.button !== 0 || /** @type {Element} */ (e.target).closest('button, a[href]')) return;
-        move = { card, pointerId: e.pointerId, x0: e.clientX, y0: e.clientY, active: false, before: order() };
-        try { grid.setPointerCapture(e.pointerId); } catch (err) { /* moves still come while over the grid */ }
+        move = { card, pointerId: e.pointerId, x0: e.clientX, y0: e.clientY, active: false, before: arrangement() };
+        try { page.setPointerCapture(e.pointerId); } catch (err) { /* moves still come while over the page */ }
         e.preventDefault();
       });
-      grid.addEventListener('pointermove', (e) => {
+      page.addEventListener('pointermove', (e) => {
         if (!move || e.pointerId !== move.pointerId) return;
         if (!move.active) {
           if (Math.hypot(e.clientX - move.x0, e.clientY - move.y0) < DRAG_SLOP) return;
@@ -1657,32 +1767,42 @@
         if (e.clientY < EDGE_PX) window.scrollBy(0, -16);
         else if (e.clientY > h - EDGE_PX) window.scrollBy(0, 16);
         const all = cards();
-        const over = all.find((c) => {
-          if (c === move.card) return false;
-          const r = c.getBoundingClientRect();
-          return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
-        });
-        if (!over) return;
-        const after = all.indexOf(over) > all.indexOf(move.card);
-        grid.insertBefore(move.card, after ? over.nextSibling : over);
+        const over = all.find(c => c !== move.card && under(c, e));
+        if (over) {
+          const after = all.indexOf(over) > all.indexOf(move.card);
+          over.parentElement.insertBefore(move.card, after ? over.nextSibling : over);
+          return;
+        }
+        // Over another section with no card under the pointer (an empty one, or past its last card): at its end.
+        const grid = grids().find(g => g !== move.card.parentElement && under(g, e));
+        if (grid) grid.append(move.card);
       });
-      grid.addEventListener('pointerup', (e) => { if (move && e.pointerId === move.pointerId) finish(true); });
-      grid.addEventListener('pointercancel', () => finish(false));
-      grid.addEventListener('lostpointercapture', () => finish(true));
-      grid.addEventListener('keydown', (e) => {
+      page.addEventListener('pointerup', (e) => { if (move && e.pointerId === move.pointerId) finish(true); });
+      page.addEventListener('pointercancel', () => finish(false));
+      page.addEventListener('lostpointercapture', () => finish(true));
+      page.addEventListener('keydown', (e) => {
         const card = /** @type {HTMLElement} */ (e.target);
         const step = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
-        if (!step || !card.matches('.wd-dash[data-id]')) return;
+        if (!step || !card.matches('.wd-dashboards > .wd-dash[data-id]')) return;
         e.preventDefault();
-        const all = cards();
-        const other = all[all.indexOf(card) + step];
-        if (!other) return;
-        grid.insertBefore(card, step > 0 ? other.nextSibling : other);
+        const grid = /** @type {HTMLElement} */ (card.parentElement);
+        const mine = [...grid.querySelectorAll(':scope > .wd-dash[data-id]')];
+        const other = mine[mine.indexOf(card) + step];
+        if (other) {
+          grid.insertBefore(card, step > 0 ? other.nextSibling : other);
+        } else {
+          // Past either end: the next section's start, or the previous one's end.
+          const next = grids()[grids().indexOf(grid) + step];
+          if (!next) return;
+          if (step > 0) next.insertBefore(card, next.querySelector(':scope > .wd-dash[data-id]'));
+          else next.append(card);
+        }
         card.focus();
-        saveFront({ order: order() });
+        card.scrollIntoView({ block: 'nearest' });
+        save();
       });
       window.addEventListener('keydown', function escape(e) {
-        if (!grid.isConnected) { window.removeEventListener('keydown', escape); return; }
+        if (!page.isConnected) { window.removeEventListener('keydown', escape); return; }
         if (e.key === 'Escape' && move) finish(false);
       });
     }

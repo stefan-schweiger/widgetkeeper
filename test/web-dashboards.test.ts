@@ -535,15 +535,58 @@ describe('web dashboards: the front page', () => {
   it('reorders the dashboards and keeps whether the widgets show', async () => {
     const { homey, web } = setup();
     const [a, b, c] = ['A', 'B', 'C'].map(name => web.save({ name, columns: [[]] }));
-    expect(web.front()).toEqual({ widgets: true });
+    expect(web.front()).toEqual({ widgets: true, sections: [] });
     // Ids it doesn't name keep their order after the named ones; unknown and repeated ids are ignored.
     const res = await api.putWebFront({ homey, body: { order: [c.id, 'nope', a.id, c.id] } });
     expect(res.dashboards.map(d => d.name)).toEqual(['C', 'A', 'B']);
     expect(web.list().map(d => d.id)).toEqual([c.id, a.id, b.id]);
-    expect(res.front).toEqual({ widgets: true });
-    expect((await api.putWebFront({ homey, body: { widgets: false } })).front).toEqual({ widgets: false });
+    expect(res.front).toEqual({ widgets: true, sections: [] });
+    expect((await api.putWebFront({ homey, body: { widgets: false } })).front).toEqual({ widgets: false, sections: [] });
     expect(web.list().map(d => d.id)).toEqual([c.id, a.id, b.id]); // no order: left as it is
-    expect(web.front()).toEqual({ widgets: false });
+    expect(web.front()).toEqual({ widgets: false, sections: [] });
+  });
+
+  it('keeps sections, puts dashboards in them, and takes them out of one deleted', async () => {
+    const { homey, web } = setup();
+    const [a, b, c] = ['A', 'B', 'C'].map(name => web.save({ name, columns: [[]] }));
+    const res = await api.putWebFront({
+      homey,
+      body: {
+        sections: [{ id: 'tests', name: '  Tests  ' }, { id: 'tests', name: 'Again' }, { id: 'bad id!', name: 'X' }, { id: 'rooms', name: 7 }],
+        placement: { [a.id]: 'tests', [c.id]: 'nope', [b.id]: 'rooms' },
+        order: [b.id, c.id, a.id],
+      },
+    });
+    expect(res.front).toEqual({ widgets: true, sections: [{ id: 'tests', name: 'Tests' }, { id: 'rooms', name: '' }] });
+    expect(web.list().map(d => [d.name, d.section])).toEqual([['B', 'rooms'], ['C', undefined], ['A', 'tests']]);
+    expect(web.list()[1]).not.toHaveProperty('section');
+    // A save from the editor keeps it; a placement of null takes it out.
+    web.save({ ...web.list()[2], name: 'A2' });
+    expect(web.list()[2].section).toBe('tests');
+    web.saveFront({ placement: { [b.id]: null } });
+    expect(web.list()[0]).not.toHaveProperty('section');
+    // Deleting a section (the list without it) leaves its dashboards in none; the carousel's choice stays.
+    web.saveFront({ widgets: false });
+    expect(web.saveFront({ sections: [{ id: 'rooms', name: 'Rooms' }] }).front).toEqual({ widgets: false, sections: [{ id: 'rooms', name: 'Rooms' }] });
+    expect(web.list().map(d => d.section)).toEqual([undefined, undefined, undefined]);
+    // At most 20.
+    web.saveFront({ sections: Array.from({ length: 25 }, (_, i) => ({ id: `s${i}`, name: `S${i}` })) });
+    expect(web.front().sections).toHaveLength(20);
+  });
+
+  it('copies a dashboard into its section, and a restore brings the sections its dashboards are in', () => {
+    const { web } = setup();
+    const a = web.save({ name: 'A', columns: [[]] });
+    web.saveFront({ sections: [{ id: 'tests', name: 'Tests' }], placement: { [a.id]: 'tests' } });
+    expect(web.duplicate(a.id).dashboard.section).toBe('tests');
+    const backup = web.backup([a.id]);
+    expect(backup.front.sections).toEqual([{ id: 'tests', name: 'Tests' }]);
+    web.saveFront({ sections: [{ id: 'other', name: 'Other' }] });
+    web.restore(backup); // not `complete`: the section is added after those here
+    expect(web.front().sections).toEqual([{ id: 'other', name: 'Other' }, { id: 'tests', name: 'Tests' }]);
+    expect(web.list().find(d => d.id === a.id)!.section).toBe('tests');
+    web.restore({ ...backup, complete: true }); // the file's front page as it is
+    expect(web.front().sections).toEqual([{ id: 'tests', name: 'Tests' }]);
   });
 });
 
@@ -610,7 +653,7 @@ describe('web dashboards: backup and restore', () => {
     await expect(api.putWebBackup({ homey, body: { ...backup, complete: true } })).resolves.toEqual({ dashboards: 2, widgets: 2, skipped: 0 });
     expect(web.list().map(d => d.name)).toEqual(['Kitchen', 'New', 'Hall']); // Kitchen in place, Hall added
     expect(web.list().filter(d => d.id !== later.id)).toEqual(backup.dashboards);
-    expect(web.front()).toEqual({ widgets: false });
+    expect(web.front()).toEqual({ widgets: false, sections: [] });
     expect(tileNames.get(`web-${a.id}-w1`).names).toEqual({ d1: 'Porch' });
     expect(tileNames.get(`web-${b.id}-w1`).names).toEqual({});
     expect(tileNames.get(`web-${later.id}-w1`).names).toEqual({ d1: 'Since' });
@@ -639,7 +682,7 @@ describe('web dashboards: backup and restore', () => {
     expect(first.columns[0][0].settings).not.toHaveProperty('bogus');
     expect(second.id).not.toBe('one');
     expect(second.name).toBe('Second');
-    expect(web.front()).toEqual({ widgets: true }); // none in the file: the default
+    expect(web.front()).toEqual({ widgets: true, sections: [] }); // none in the file: the default
     expect(homey.settings.get(TILE_NAMES_SETTING)).toEqual({ 'web-one-w2': { names: { a: 'Tea' }, updatedAt: expect.any(Number) } });
     expect(tileNames.get(`web-${second.id}-w2`).names).toEqual({});
   });
@@ -697,7 +740,7 @@ describe('web dashboards: backup and restore', () => {
     expect(web.restore({ ...backup, front: { widgets: true } })).toEqual({ dashboards: 1, widgets: 1, skipped: 0 });
     expect(web.list().map(d => d.name)).toEqual(['Hall', 'Kitchen']);
     expect(web.list()[0]).toEqual(backup.dashboards[0]);
-    expect(web.front()).toEqual({ widgets: false }); // not `complete`
+    expect(web.front()).toEqual({ widgets: false, sections: [] }); // not `complete`
     expect(tileNames.get(`web-${a.id}-w1`).names).toEqual({ d1: 'Porch' });
     expect(tileNames.get(`web-${a.id}-w2`).names).toEqual({});
     expect(tileNames.get(`web-${b.id}-w1`).names).toEqual({ d1: 'Oven' });

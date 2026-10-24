@@ -11,7 +11,8 @@
 //
 // It writes the app setting `webDashboards` through the Homey CLI's login (the web dashboards' own API wants the
 // password's session too), so the app's `normalize()` checks it on the next read, as for any saved dashboard.
-// The "Rename tiles" widgets get a name already typed on a tile, in the app setting `tileNames`.
+// The "Rename tiles" widgets get a name already typed on a tile, in the app setting `tileNames`. On the front page they're
+// under their own section, Test dashboards (the app setting `webFront`), which goes with the last of them.
 // Each type also gets a Vivid copy of its first plain widget (Colour style), one in purple where it has a colour setting,
 // and a Muted one in orange. A widget marked `wide()` spans two columns on the web dashboard (native ones can't).
 //
@@ -26,10 +27,12 @@
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { parseArgs } from 'node:util';
-import { APP_ID, WEB_SETTING as SETTING, DASHBOARDS, TILE_NAMES, MAX_WEB_DASHBOARDS, connect, widgetManifests } from './homey-session.mjs';
+import { APP_ID, WEB_SETTING as SETTING, WEB_FRONT_SETTING, DASHBOARDS, TILE_NAMES, MAX_WEB_DASHBOARDS, connect, widgetManifests } from './homey-session.mjs';
 
 const EN = JSON.parse(readFileSync(new URL('../locales/en.json', import.meta.url), 'utf8'));
 const PREFIX = 'test-';
+/** The front page's section the web test dashboards are under, as long as there are any. */
+const SECTION = { id: 'test-dashboards', name: 'Test dashboards' };
 /** The name every native test dashboard starts with: the Homey picks their ids, so the name is the marker. */
 const NATIVE_PREFIX = 'Test · ';
 const MISSING = 'missing-device-0000'; // a device id that doesn't exist: the widgets' missing state
@@ -853,14 +856,22 @@ async function writeWeb(built) {
     const laid = placed.some(x => x.col !== undefined)
       ? Array.from({ length: cols }, (_, i) => widgets.filter((x, j) => placed[j].col === i))
       : columns(widgets, cols);
-    return { id: PREFIX + type, name, theme: 'auto', columns: laid };
+    return { id: PREFIX + type, name, theme: 'auto', columns: laid, section: SECTION.id };
   });
   // The user's dashboards first, as they were; then the test ones in the manifest's order.
   const order = [...Object.keys(widgetDefs), 'apps'].map(t => PREFIX + t);
   const tests = [...current.filter(d => d.id.startsWith(PREFIX) && !replace.has(d.id)), ...dashboards]
+    .map(d => ({ ...d, section: SECTION.id }))
     .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
   const next = [...current.filter(d => !d.id.startsWith(PREFIX)), ...tests];
   if (next.length > MAX_WEB_DASHBOARDS) throw new Error(`That would make ${next.length} web dashboards; at most ${MAX_WEB_DASHBOARDS}`);
+  // The section first, so the app never reads a test dashboard in one it doesn't know (it'd show under Your dashboards).
+  const front = await homeyApi('GET', WEB_FRONT_SETTING);
+  // Where it is when it's there already (the user may have moved or renamed it), else last.
+  const sections = front && Array.isArray(front.sections) ? front.sections : [];
+  const has = sections.some(x => x && x.id === SECTION.id);
+  const kept = !tests.length ? sections.filter(x => !x || x.id !== SECTION.id) : has ? sections : [...sections, SECTION];
+  await homeyApi('PUT', WEB_FRONT_SETTING, { value: { ...(front && typeof front === 'object' ? front : {}), sections: kept } });
   await homeyApi('PUT', SETTING, { value: next });
   await writeTileNames(instance => [...replace].some(id => instance.startsWith(`web-${id}-`)), typed);
   console.log(`${opts.remove ? 'Removed' : 'Saved'}; ${next.length} web dashboards on the Homey now.`);

@@ -69,8 +69,8 @@
       const W = (type, settings = {}, deviceIds = []) => ({ id: Math.random().toString(36).slice(2, 10), type, title: '', settings, deviceIds });
       const dashboards = [
         { id: 'home', name: 'Home', theme: 'auto', columns: [[W('electricity'), W('price')], [W('lights', {}, ['d1', 'd2', 'd5', 'd8']), W('thermostat')], [W('weather'), W('timers'), W('locks')]] },
-        { id: 'kitchen', name: 'Kitchen tablet', theme: 'dark', background: 'ocean', columns: [[W('timers'), W('media')], [W('flows'), W('sensordots'), W('values', { slot1: { id: 't1:measure_temperature', name: 'Living room thermostat · Temperature', description: 'Living room · °C' } })]] },
-        { id: 'hall', name: 'Hallway', theme: 'auto', columns: [[W('locks'), W('cameras'), W('sensoralarms'), W('popups', { name: 'Hallway' })]] },
+        { id: 'kitchen', section: 'rooms', name: 'Kitchen tablet', theme: 'dark', background: 'ocean', columns: [[W('timers'), W('media')], [W('flows'), W('sensordots'), W('values', { slot1: { id: 't1:measure_temperature', name: 'Living room thermostat · Temperature', description: 'Living room · °C' } })]] },
+        { id: 'hall', section: 'rooms', name: 'Hallway', theme: 'auto', columns: [[W('locks'), W('cameras'), W('sensoralarms'), W('popups', { name: 'Hallway' })]] },
         // A wide widget: the cameras over two columns, the weather above it and the flows under it in the second.
         { id: 'wide', name: 'Overview', theme: 'auto', columns: [[W('clock'), { ...W('cameras'), span: 2, at: [1] }, W('values')], [W('weather'), W('flows')], [W('lights', {}, ['d1', 'd2']), W('timers'), W('locks')]] },
         { id: 'new', name: 'Spare room', theme: 'auto', columns: [[], [], []] },
@@ -92,7 +92,8 @@
         ? [Object.assign({ id: 'p1', token: 'preview', target: 'all', createdAt: now, until: now + 600e3 }, POPUPS[kind])]
         : [];
 
-      mockWebApi({ lang, dashboards, zones, devices, readings: READINGS, popups });
+      // A section on the front page: the two wall tablets' dashboards.
+      mockWebApi({ lang, dashboards, front: { sections: [{ id: 'rooms', name: 'Wall tablets' }] }, zones, devices, readings: READINGS, popups });
     })();
   </script>
   <script src="../widgets/spacer/public/kit.js"></script>

@@ -27,6 +27,7 @@ const LOCALES_DIR = new URL('../locales/', import.meta.url);
 const LANGUAGES = ['en', 'nl', 'de', 'fr', 'it', 'sv', 'no', 'es', 'da', 'ru', 'pl', 'ko', 'ar'];
 
 const MAX_DASHBOARDS = 64;
+const MAX_SECTIONS = 20;
 const MAX_COLUMNS = 6;
 const MAX_WIDGETS = 60; // per dashboard
 const MAX_DEVICES = 100; // per widget
@@ -56,11 +57,19 @@ export type WebWidget = {
 /** The device filter the page sends for another app's widget (its `devices.filter`; `app`: only that app's devices). */
 export type ForeignDeviceFilter = { class?: string, capabilities?: string, app?: boolean };
 
-/** The front page's choices: whether it shows the widgets' carousel under the dashboards. */
-export type WebFront = { widgets: boolean };
+/** A heading on the front page that dashboards are grouped under (`WebDashboard.section`). */
+export type WebSection = { id: string, name: string };
 
-/** A web dashboard: columns of widgets, top to bottom. */
-export type WebDashboard = { id: string, name: string, theme: WebTheme, background: WebBackground, columns: WebWidget[][] };
+/**
+ * The front page's choices: whether it shows the widgets' carousel under the dashboards, and its sections, in order
+ * (the dashboards in none come first, under Your dashboards).
+ */
+export type WebFront = { widgets: boolean, sections: WebSection[] };
+
+/** A web dashboard: columns of widgets, top to bottom; `section`: the front page's section it's under. */
+export type WebDashboard = {
+  id: string, name: string, theme: WebTheme, background: WebBackground, columns: WebWidget[][], section?: string,
+};
 
 /** What a web dashboards backup file is (`format`, `version`), as the web dashboards page downloads it. */
 export const WEB_BACKUP_FORMAT = 'widgetkeeper-web-dashboards';
@@ -366,18 +375,39 @@ export default class WebDashboardService {
     return dashboard;
   }
 
-  /** The front page's choices (the carousel shows unless turned off). */
+  /** The front page's choices (the carousel shows unless turned off; no sections until some are added). */
   front(): WebFront {
     const saved = this.homey.settings.get(WEB_FRONT_SETTING);
-    return { widgets: !(saved && typeof saved === 'object' && saved.widgets === false) };
+    return frontOf(saved);
   }
 
   /**
-   * The front page's edit mode: `order` (dashboard ids, first to last: those it doesn't name keep their order after
-   * them) and `widgets` (the carousel), each only when given. Answers the dashboards and the choices as kept.
+   * The front page's edit mode: `sections` (all of them, in order; a dashboard in one left out goes to none), `placement`
+   * (`{dashboardId: sectionId | null}`, only the dashboards it names), `order` (dashboard ids, first to last: those it
+   * doesn't name keep their order after them) and `widgets` (the carousel), each only when given. Answers the
+   * dashboards and the choices as kept.
    */
   saveFront(input: unknown): { dashboards: WebDashboard[], front: WebFront } {
     const body = (input && typeof input === 'object' ? input : {}) as Record<string, unknown>;
+    const front = this.front();
+    if (Array.isArray(body.sections)) front.sections = sectionsOf(body.sections);
+    if (typeof body.widgets === 'boolean') front.widgets = body.widgets;
+    if (Array.isArray(body.sections) || typeof body.widgets === 'boolean') this.homey.settings.set(WEB_FRONT_SETTING, front);
+    const placement = body.placement && typeof body.placement === 'object' && !Array.isArray(body.placement)
+      ? body.placement as Record<string, unknown> : null;
+    if (placement || Array.isArray(body.sections)) {
+      const known = new Set(front.sections.map(x => x.id));
+      let changed = false;
+      const all = this.list().map((d) => {
+        const given = placement && Object.prototype.hasOwnProperty.call(placement, d.id) ? placement[d.id] : d.section;
+        const section = typeof given === 'string' && known.has(given) ? given : undefined;
+        if (section === d.section) return d;
+        changed = true;
+        const { section: _, ...rest } = d;
+        return section ? { ...rest, section } : rest;
+      });
+      if (changed) this.homey.settings.set(WEB_DASHBOARDS_SETTING, all);
+    }
     if (Array.isArray(body.order)) {
       const ids: unknown[] = body.order;
       const all = this.list();
@@ -389,7 +419,6 @@ export default class WebDashboardService {
         .map(x => x.d);
       if (sorted.some((d, i) => d !== all[i])) this.homey.settings.set(WEB_DASHBOARDS_SETTING, sorted);
     }
-    if (typeof body.widgets === 'boolean') this.homey.settings.set(WEB_FRONT_SETTING, { widgets: body.widgets });
     return { dashboards: this.list(), front: this.front() };
   }
 
@@ -434,7 +463,8 @@ export default class WebDashboardService {
    * kept, so the tile names and Dashboard Shortcuts' choices match again: one with a stored id replaces that dashboard
    * in place, a new one goes at the end while there's room (at most 64; the rest are skipped). The other dashboards stay
    * as they are. The restored dashboards' tile names are the file's; the front page's choices only when `complete`
-   * (the page sent every dashboard in the file). Answers the counts.
+   * (the page sent every dashboard in the file), else the file's sections they're in that aren't here yet. Answers the
+   * counts.
    */
   restore(input: unknown): { dashboards: number, widgets: number, skipped: number } {
     const b = (input && typeof input === 'object' ? input : {}) as Record<string, any>;
@@ -462,8 +492,13 @@ export default class WebDashboardService {
       restored.push(dashboard);
     }
     this.homey.settings.set(WEB_DASHBOARDS_SETTING, all);
+    const fileFront = frontOf(b.front);
     if (b.complete === true) {
-      this.homey.settings.set(WEB_FRONT_SETTING, { widgets: !(b.front && typeof b.front === 'object' && b.front.widgets === false) });
+      this.homey.settings.set(WEB_FRONT_SETTING, fileFront);
+    } else {
+      const front = this.front();
+      const wanted = fileFront.sections.filter(x => restored.some(d => d.section === x.id) && !front.sections.some(y => y.id === x.id));
+      if (wanted.length) this.homey.settings.set(WEB_FRONT_SETTING, { ...front, sections: sectionsOf([...front.sections, ...wanted]) });
     }
     const instances = instanceIds(restored);
     const before = instanceIds(replaced);
@@ -655,7 +690,8 @@ export default class WebDashboardService {
         return Number.isFinite(at[j]) ? Math.min(Math.max(Math.round(at[j]), 0), n) : Math.min(i, n);
       });
     }));
-    return { id, name, theme, background, columns };
+    const section = typeof d.section === 'string' && ID.test(d.section) ? d.section : null;
+    return { id, name, theme, background, columns, ...(section ? { section } : {}) };
   }
 
   private normalizeWidget(input: unknown, ids: Set<string>): WebWidget | null {
@@ -755,6 +791,24 @@ function instanceIds(dashboards: WebDashboard[]): Set<string> {
 /** Device ids, each once, at most `max`. */
 function deviceIdList(list: unknown[], max: number): string[] {
   return [...new Set(list.filter((x: unknown): x is string => typeof x === 'string' && ID.test(x)))].slice(0, max);
+}
+
+/** The front page's choices as kept (`WebFront`), from what's stored or a backup's. */
+function frontOf(saved: unknown): WebFront {
+  const f = (saved && typeof saved === 'object' ? saved : {}) as Record<string, unknown>;
+  return { widgets: f.widgets !== false, sections: sectionsOf(Array.isArray(f.sections) ? f.sections : []) };
+}
+
+/** Sections as kept: an id (unique) and a name each, at most `MAX_SECTIONS`. */
+function sectionsOf(input: unknown[]): WebSection[] {
+  const out: WebSection[] = [];
+  for (const x of input) {
+    if (out.length >= MAX_SECTIONS) break;
+    const s = (x && typeof x === 'object' ? x : {}) as Record<string, unknown>;
+    if (typeof s.id !== 'string' || !ID.test(s.id) || out.some(y => y.id === s.id)) continue;
+    out.push({ id: s.id, name: typeof s.name === 'string' ? s.name.trim().slice(0, 60) : '' });
+  }
+  return out;
 }
 
 function newId() {

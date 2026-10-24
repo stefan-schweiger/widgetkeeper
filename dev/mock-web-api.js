@@ -1,17 +1,18 @@
 // A simulated Widgetkeeper app API for the web dashboards page (settings/dashboard.js), shared by web-preview.html
 // and web-showcase.html. Load it before dashboard.js, from a served repo root (it fetches /app.json and
 // /locales/<lang>.json). It answers the page's `fetch('/api/app/<appId>/…')` calls; everything else goes through.
-// `mockWebApi({lang, dashboards, zones, devices, readings})`: the dashboards, and for the device and value pickers a
+// `mockWebApi({lang, dashboards, front, zones, devices, readings})`: the dashboards (and the front page's sections in
+// `front`), and for the device and value pickers a
 // made-up house (`zones`: id → [name, parent id]; `devices`: {id, name, zone, class, capabilities, icon};
 // `readings`: capability → {title, type, units, …, value (or a function of the device)}).
 // `popups`: the open popups (wk-084), as `/web/popups` lists them; their pictures are a drawn front door, never a real
 // camera image, and one with `elsewhere` answers as if another screen had been first.
-function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], readings = {}, popups = [] } = {}) {
+function mockWebApi({ lang = 'en', dashboards = [], front: frontIn = {}, zones = {}, devices = [], readings = {}, popups = [] } = {}) {
   try { localStorage.setItem('widgetkeeper.web.key', 'preview'); } catch (e) { /* private mode */ }
   const loc = (text) => (text && typeof text === 'object' ? text[lang] || text.en : text) || '';
 
   let manifest = null;
-  let front = { widgets: true };
+  let front = { widgets: true, sections: [], ...frontIn };
   let strings = null;
   const ready = Promise.all([
     fetch('/app.json').then(r => r.json()).then((m) => { manifest = m; }),
@@ -146,8 +147,16 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
       return saved;
     }
     if (p === '/web/front' && method === 'PUT') {
+      // As the app: sections (all of them), the dashboards' placement, then the order.
+      if (Array.isArray(body.sections)) front = { ...front, sections: body.sections };
+      if (typeof body.widgets === 'boolean') front = { ...front, widgets: body.widgets };
+      const known = new Set(front.sections.map(x => x.id));
+      dashboards = dashboards.map((d) => {
+        const section = body.placement && d.id in body.placement ? body.placement[d.id] : d.section;
+        const { section: _, ...rest } = d;
+        return known.has(section) ? { ...rest, section } : rest;
+      });
       if (Array.isArray(body.order)) dashboards.sort((a, b) => body.order.indexOf(a.id) - body.order.indexOf(b.id));
-      if (typeof body.widgets === 'boolean') front = { widgets: body.widgets };
       return { dashboards, front };
     }
     if (p === '/web/backup' && method === 'GET') {
@@ -166,7 +175,7 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
         restored++;
         widgets += d.columns.flat().length;
       }
-      if (body.complete === true) front = { widgets: !(body.front && body.front.widgets === false) };
+      if (body.complete === true) front = { widgets: !(body.front && body.front.widgets === false), sections: (body.front && body.front.sections) || [] };
       return { dashboards: restored, widgets, skipped };
     }
     const copy = p.match(/^\/web\/dashboards\/([^/]+)\/copy$/);

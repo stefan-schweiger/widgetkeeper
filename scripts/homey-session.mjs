@@ -11,6 +11,8 @@ const require = createRequire(import.meta.url);
 export const APP_ID = JSON.parse(readFileSync(new URL('../.homeycompose/app.json', import.meta.url), 'utf8')).id;
 /** The web dashboards (lib/WebDashboardService.ts), as the app setting keeps them. */
 export const WEB_SETTING = `/api/manager/apps/app/${APP_ID}/setting/webDashboards`;
+/** The web dashboards' front page (its sections, the carousel), as the app setting keeps it. */
+export const WEB_FRONT_SETTING = `/api/manager/apps/app/${APP_ID}/setting/webFront`;
 /** Homey's own dashboards. */
 export const DASHBOARDS = '/api/manager/dashboards/dashboard/';
 /** The typed tile names (lib/TileNameService.ts), by widget instance: a web dashboard widget's is `web-<dashboard>-<widget>`. */
