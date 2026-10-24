@@ -126,6 +126,7 @@
     const grid = el('div', { class: 'sl-grid' }, root);
     const messageEl = el('div', { class: 'sl-message', dir: 'auto' }, root);
     const tiles = new Map();
+    let offScreen = false; // a Smart Stack page that isn't the one on screen (`setVisible`)
 
     /** Live points received since the last fetch are kept when a refresh brings an older history (it's cached up to 5 min). */
     function setState(list) {
@@ -155,7 +156,7 @@
         }
         changed = true;
       }
-      if (changed) render();
+      if (changed && !offScreen) render(); // else drawn when it's back
     }
 
     function setMessage(text, transient) {
@@ -243,14 +244,21 @@
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    // The line scrolls with time: about one of its 120 points per redraw; not while the page is hidden (drawn at once
-    // when it's back).
+    // The line scrolls with time: about one of its 120 points per redraw; not while the page is hidden or the stack shows
+    // another page (drawn at once when it's back).
     const first = windowAt(now());
-    setInterval(() => { if (!document.hidden) render(); }, Math.max(10e3, Math.min(60e3, (first.to - first.from) / 120)));
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+    setInterval(() => { if (!document.hidden && !offScreen) render(); }, Math.max(10e3, Math.min(60e3, (first.to - first.from) / 120)));
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && !offScreen) render(); });
     if (typeof ResizeObserver === 'function') new ResizeObserver(() => render()).observe(grid);
 
-    return { setState, setNames: names.set, pushChange, setMessage, render, t };
+    /** The Smart Stack: whether this page is the one on screen. */
+    function setVisible(visible) {
+      if (offScreen === !visible) return;
+      offScreen = !visible;
+      if (visible) render();
+    }
+
+    return { setState, setNames: names.set, pushChange, setMessage, render, t, setVisible };
   }
 
   window.createSparklinesWidget = createSparklinesWidget;

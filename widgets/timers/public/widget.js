@@ -322,10 +322,12 @@
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    // Repaints the running timers four times a second (only their text and fill; the rows stay).
+    // Repaints the running timers four times a second (only their text and fill; the rows stay), but not on a Smart
+    // Stack page that isn't on screen: it's painted when it's back, and the app's `timers:state` still rings it.
     let ticker = null;
+    let offScreen = false;
     function scheduleTick() {
-      const running = timers.some(x => x.endsAt != null && x.doneAt == null);
+      const running = !offScreen && timers.some(x => x.endsAt != null && x.doneAt == null);
       if (running && !ticker) {
         ticker = setInterval(() => {
           const now = serverNow();
@@ -368,8 +370,15 @@
       beepTimer = null;
     }
 
+    /** The Smart Stack: whether this page is the one on screen. */
+    function setVisible(visible) {
+      if (offScreen === !visible) return;
+      offScreen = !visible;
+      render();
+    }
+
     render();
-    return { setState, setMessage, render, t };
+    return { setState, setMessage, render, t, setVisible };
   }
 
   window.createTimersWidget = createTimersWidget;

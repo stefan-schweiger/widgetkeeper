@@ -100,6 +100,17 @@ describe('render', () => {
     expect(q('.mw-progress-text').textContent).toBe('0:35 / 4:00');
   });
 
+  it('stops counting on while a Smart Stack shows another page, and catches up when back', () => {
+    const { w, q } = widget();
+    w.setVisible(false);
+    vi.advanceTimersByTime(5000);
+    expect(q('.mw-progress-text').textContent).toBe('0:30 / 4:00'); // no redraws off screen
+    w.setVisible(true);
+    expect(q('.mw-progress-text').textContent).toBe('0:35 / 4:00');
+    vi.advanceTimersByTime(1000);
+    expect(q('.mw-progress-text').textContent).toBe('0:36 / 4:00');
+  });
+
   it('says TV instead of greying out, with the transport stepped back and mute still there', () => {
     const { root, q } = widget(speaker({ speaker_track: cap('HDMI', false), volume_mute: cap(true) }));
     expect(q('.mw-title').textContent).toBe('TV');

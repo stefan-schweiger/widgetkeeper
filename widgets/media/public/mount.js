@@ -130,6 +130,11 @@ window.mountMediaWidget = function (Homey, { root, frame }) {
 
   setInterval(load, REFRESH_MS);
   load();
+
+  return {
+    /** The Smart Stack: whether this page is the one on screen (the progress only counts on while it is). */
+    setVisible: v => widget.setVisible(v),
+  };
 };
 /** The classes index.html puts on its body; the Smart Stack puts them on the slide. */
 window.mountMediaWidget.frameClass = 'homey-widget mw-frame';
