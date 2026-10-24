@@ -14,14 +14,19 @@ const living = { id: 'z1', name: 'Living room' };
 const light = (id: string, name: string) => ({ id, name, icon: null, zone: living, caps: { onoff: cap(false), dim: cap(0.5) } });
 const valueCap = { title: 'Temperature', type: 'number', units: '°C', decimals: 1, min: null, max: null, values: null, icon: null };
 const value = (deviceId: string, name: string) => ({ deviceId, capabilityId: 'measure_temperature', name, capability: valueCap, value: 21 });
+const twoReadings = { temperature: { capabilityId: 'measure_temperature', value: 21 }, humidity: { capabilityId: 'measure_humidity', value: 45 } };
 const roomSensor = (id: string, zone: string, room: string, measures: object = { temperature: { capabilityId: 'measure_temperature', value: 21 } }) =>
   ({ id, name: `Sensor ${id}`, zone: { id: zone, name: room }, measures });
 
 /**
  * Per widget: how it's made, the state it gets (two tiles: `a` and `b`, or a grouped room), the tile keys, the
- * element that shows a tile's name, and the tap that would act on the tile (`act`, called through the spy).
+ * element that shows a tile's name, and what a tap on the tile does: calls `act` (through the spy), changes the tile
+ * (`act: ''`: Sensor Alarms' panel, a camera going live, Room Health's next reading) or nothing (`tap: false`).
+ * `target` is what's tapped, when it isn't the tile itself (Locks' button).
  */
-const CASES: Record<string, { create: string, state: any, keys: string[], own: string[], name: string, opts?: object, tile: string, act: string }> = {
+const CASES: Record<string, {
+  create: string, state: any, keys: string[], own: string[], name: string, opts?: object, tile: string, act: string, tap?: false, target?: string,
+}> = {
   lights: {
     create: 'createLightsWidget', state: [light('a', 'Lamp'), light('b', 'Spot')], opts: { groupByZone: true },
     keys: ['zone:z1'], own: ['Living room'], name: '.lc-name', tile: '.lc-tile', act: 'onSet',
@@ -42,23 +47,24 @@ const CASES: Record<string, { create: string, state: any, keys: string[], own: s
     keys: ['a', 'b'], own: ['Sensor a', 'Sensor b'],
   },
   values: {
-    create: 'createValuesWidget', act: '', tile: '.vt-tile', name: '.vt-name',
+    create: 'createValuesWidget', act: '', tap: false, tile: '.vt-tile', name: '.vt-name',
     // The same value twice: the second tile's key is `#2`, whatever its position.
     state: [value('a', 'Fridge'), value('a', 'Fridge')], keys: ['a:measure_temperature', 'a:measure_temperature#2'], own: ['Fridge', 'Fridge'],
   },
   sparklines: {
-    create: 'createSparklinesWidget', act: '', tile: '.sl-tile', name: '.sl-name', opts: { now: () => Date.now() },
+    create: 'createSparklinesWidget', act: '', tap: false, tile: '.sl-tile', name: '.sl-name', opts: { now: () => Date.now() },
     state: [{ ...value('a', 'Fridge'), points: [] }, { ...value('b', 'Freezer'), points: [] }],
     keys: ['a:measure_temperature', 'b:measure_temperature'], own: ['Fridge', 'Freezer'],
   },
   locks: {
-    create: 'createLocksWidget', act: 'onSet', tile: '.lk-row', name: '.lk-name', opts: { view: 'list' },
+    create: 'createLocksWidget', act: 'onSet', tile: '.lk-row', target: '.lk-action', name: '.lk-name', opts: { view: 'list' },
     state: { devices: ['a', 'b'].map(id => ({ id, name: `Door ${id}`, icon: null, caps: { locked: cap(false) } })), language: 'en' },
     keys: ['a', 'b'], own: ['Door a', 'Door b'],
   },
   cameras: {
     create: 'createCamerasWidget', act: '', tile: '.cw-tile', name: '.cw-name', opts: { api: vi.fn(() => new Promise(() => {})) },
-    state: ['a', 'b'].map(id => ({ id, name: `Cam ${id}`, icon: null, image: null, video: null, videos: [], h265: [] })),
+    // With a stream, so a tap starts the live view (which says it failed here: no WebRTC in the test's DOM).
+    state: ['a', 'b'].map(id => ({ id, name: `Cam ${id}`, icon: null, image: null, video: 'main', videos: [{ id: 'main' }], h265: [] })),
     keys: ['a', 'b'], own: ['Cam a', 'Cam b'],
   },
   variables: {
@@ -69,11 +75,11 @@ const CASES: Record<string, { create: string, state: any, keys: string[], own: s
   },
   roomhealth: {
     create: 'createRoomHealthWidget', act: '', tile: '.rh-room', name: '.rh-name',
-    // A cell per room: the key is the zone's.
-    state: [roomSensor('a', 'z1', 'Living room'), roomSensor('b', 'z2', 'Kitchen')], keys: ['zone:z1', 'zone:z2'], own: ['Living room', 'Kitchen'],
+    // A cell per room: the key is the zone's. Two readings, so a tap shows the next.
+    state: [roomSensor('a', 'z1', 'Living room', twoReadings), roomSensor('b', 'z2', 'Kitchen', twoReadings)], keys: ['zone:z1', 'zone:z2'], own: ['Living room', 'Kitchen'],
   },
   valuematrix: {
-    create: 'createValueMatrixWidget', act: '', tile: '.vm-row:not(.vm-head)', name: '.vm-name', opts: { columns: [{ capabilityId: 'measure_temperature' }] },
+    create: 'createValueMatrixWidget', act: '', tap: false, tile: '.vm-row:not(.vm-head)', name: '.vm-name', opts: { columns: [{ capabilityId: 'measure_temperature' }] },
     // A row per room: the key is the zone's.
     state: { columns: [], devices: [['a', 'z1', 'Living room'], ['b', 'z2', 'Kitchen']].map(([id, zone, room]) => ({ id, name: `Sensor ${id}`, zone: { id: zone, name: room }, values: { measure_temperature: 21 } })) },
     keys: ['zone:z1', 'zone:z2'], own: ['Living room', 'Kitchen'],
@@ -95,7 +101,9 @@ function mount(id: string, opts: object = {}) {
   const names = () => [...root.querySelectorAll<HTMLElement>(c.name)].map(n => n.textContent);
   const fields = () => [...root.querySelectorAll<HTMLInputElement>('.wk-rename')];
   const tiles = () => [...root.querySelectorAll<HTMLElement>(c.tile)];
-  return { w, root, names, fields, tiles, spy, c };
+  /** What a tap acts on: the tile, or its button. */
+  const targets = () => [...root.querySelectorAll<HTMLElement>(c.target ?? c.tile)];
+  return { w, root, names, fields, tiles, targets, spy, c };
 }
 
 describe.each(Object.keys(CASES))('tile names: %s', (id) => {
@@ -111,7 +119,7 @@ describe.each(Object.keys(CASES))('tile names: %s', (id) => {
 
   it('renames on the tiles: a field per tile, saved on change, and taps do nothing meanwhile', async () => {
     const onRename = vi.fn(async () => {});
-    const { w, root, fields, tiles, names, spy, c } = mount(id, { renameTiles: true, onRename });
+    const { w, root, fields, tiles, targets, names, spy, c } = mount(id, { renameTiles: true, onRename });
     expect(root.classList.contains('renaming')).toBe(true);
     w.setNames({ [c.keys[0]]: 'Sofa lights' });
     expect(fields().map(f => f.placeholder)).toEqual(c.own);
@@ -127,16 +135,19 @@ describe.each(Object.keys(CASES))('tile names: %s', (id) => {
     fields()[0].dispatchEvent(new Event('change'));
     expect(onRename).toHaveBeenLastCalledWith(c.keys[0], '');
 
-    // A tap on the tile, or on the field, does nothing to the device.
-    for (const target of [tiles()[0], fields()[0]]) target.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    // A tap on the tile (or its button), or on the field, does nothing to the device, and changes nothing shown.
+    const before = root.innerHTML;
+    for (const target of [tiles()[0], ...(c.target ? targets().slice(0, 1) : []), fields()[0]]) target.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(spy).not.toHaveBeenCalled();
-    expect(root.querySelector('.sa-panel:not([style*="none"]) .sa-row')).toBeNull();
+    expect(root.innerHTML).toBe(before);
   });
 
-  it.runIf(!!CASES[id].act && id !== 'locks')('acts on a tap outside rename mode (so the check above means something)', () => {
-    const { tiles, spy } = mount(id);
-    tiles()[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    expect(spy).toHaveBeenCalled();
+  it.runIf(CASES[id].tap !== false)('acts on a tap outside rename mode (so the check above means something)', () => {
+    const { root, targets, spy, c } = mount(id);
+    const before = root.innerHTML;
+    targets()[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    if (c.act) expect(spy).toHaveBeenCalled();
+    else expect(root.innerHTML).not.toBe(before);
   });
 
   it('puts the name back when it could not be saved', async () => {
