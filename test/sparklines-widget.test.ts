@@ -130,6 +130,17 @@ describe('today and yesterday', () => {
 });
 
 describe('live values', () => {
+  it('draws nothing while a Smart Stack shows another page, and catches up when back', () => {
+    const { w, text, setNow } = widget([temp()]);
+    w.setVisible(false);
+    setNow(NOW + 60e3);
+    w.pushChange({ deviceId: 'a', capabilityId: 'measure_temperature', value: 25 });
+    expect(text('.sl-value')).toEqual([`${dec(21.5)}°C`]);
+    w.setVisible(true);
+    expect(text('.sl-value')).toEqual([`${dec(25)}°C`]);
+    expect(text('.sl-max')).toEqual(['↑25']);
+  });
+
   it('adds a point, moves the min/max and keeps the same SVG nodes', () => {
     const { w, tiles, text, setNow } = widget([temp()]);
     const line = tiles()[0].querySelector('.sl-line');

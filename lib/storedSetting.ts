@@ -9,8 +9,6 @@ export function isReservedKey(key: string): boolean {
 
 export type DebouncedSettingOptions = {
   homey: Homey.App['homey'],
-  /** The app setting. */
-  setting: string,
   /** How long after the first change it's written, so a burst of changes is one write. */
   delay: number,
   /** What to write, read when it's written. */
@@ -18,11 +16,16 @@ export type DebouncedSettingOptions = {
   log: (...args: any[]) => void,
   /** For the log line of a failed write: `Could not save <what>:`. */
   what: string,
-};
+} & (
+  /** The app setting it's written to. */
+  | { setting: string, store?: never }
+  /** Or where else it's written (a file in `/userdata`); a throw is a failed write. */
+  | { store: (value: unknown) => void, setting?: never }
+);
 
 /**
- * An app setting written a while after a change (`schedule()`). `flush()` writes a pending change at once: call it in
- * the service's `stop()`, or an app restart loses what changed since the last write.
+ * An app setting (or `store`) written a while after a change (`schedule()`). `flush()` writes a pending change at once:
+ * call it in the service's `stop()`, or an app restart loses what changed since the last write.
  */
 export class DebouncedSetting {
 
@@ -47,7 +50,9 @@ export class DebouncedSetting {
 
   private write() {
     try {
-      this.opts.homey.settings.set(this.opts.setting, this.opts.value());
+      const value = this.opts.value();
+      if (this.opts.store) this.opts.store(value);
+      else this.opts.homey.settings.set(this.opts.setting, value);
     } catch (err) {
       this.opts.log(`Could not save ${this.opts.what}:`, err);
     }

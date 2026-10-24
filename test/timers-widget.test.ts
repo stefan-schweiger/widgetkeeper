@@ -76,6 +76,23 @@ describe('render', () => {
     expect(onHaptic).toHaveBeenCalledTimes(1);
   });
 
+  it('stops ticking while a Smart Stack shows another page, and paints the time left when back', () => {
+    const { w, rows, text, onHaptic } = widget([running('a', 5)]);
+    expect(text(rows()[0], 'tm-time')).toBe('5:00');
+    w.setVisible(false);
+    vi.advanceTimersByTime(60e3);
+    expect(text(rows()[0], 'tm-time')).toBe('5:00');
+    w.setVisible(true);
+    expect(text(rows()[0], 'tm-time')).toBe('4:00');
+    vi.advanceTimersByTime(1000);
+    expect(text(rows()[0], 'tm-time')).toBe('3:59');
+    // Off screen, the app's own "done" still rings it.
+    w.setVisible(false);
+    w.setState({ timers: [running('a', 0, { doneAt: Date.now() })], now: Date.now() });
+    expect(rows()[0].dataset.state).toBe('done');
+    expect(onHaptic).toHaveBeenCalledTimes(1);
+  });
+
   it('corrects for a Homey clock that differs from the screen', () => {
     const root = document.createElement('div');
     document.body.append(root);

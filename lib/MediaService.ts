@@ -10,6 +10,8 @@ import { sharedCache } from './sharedCache.js';
 import Timings from './Timings.js';
 /** The flow card list is long (every device's cards); the settings' autocomplete reuses a read this long. */
 const CARDS_CACHE_MS = 60e3;
+/** And let go this long after it came in, so a speaker list's cards aren't held between rare uses. */
+const CARDS_KEEP_MS = 2 * 60e3;
 /**
  * After a track change the device is read again for its album art, which a driver often sets a moment after the
  * track: once soon, once later, sending the art only when it changed.
@@ -126,6 +128,30 @@ export function deviceApp(device: any): string | null {
 /** A Flow action card a button can run: one that takes no arguments and isn't deprecated. */
 const runnable = (c: any) => typeof c?.id === 'string' && !(Array.isArray(c.args) && c.args.length) && !c.deprecated;
 
+/** A runnable card as kept: what the buttons and their list need, not the read's homey-api Items. */
+export type CardInfo = { id: string, title: string, ownerUri: string, ownerName?: string };
+
+/** The runnable cards of one `getFlowCardActions()` read, by owner (in the read's order) and by id. */
+export type CardIndex = { byOwner: Map<string, CardInfo[]>, byId: Map<string, CardInfo> };
+
+/**
+ * The runnable cards of a `getFlowCardActions()` read. The read is every device's and app's action cards as homey-api
+ * Items (a long list); only this index of the few fields the buttons use is kept.
+ */
+export function cardIndex(all: Record<string, any> | null | undefined): CardIndex {
+  const index: CardIndex = { byOwner: new Map(), byId: new Map() };
+  for (const c of Object.values(all ?? {})) {
+    if (!runnable(c) || typeof c.ownerUri !== 'string') continue;
+    const info: CardInfo = { id: c.id, title: typeof c.title === 'string' ? c.title : c.id, ownerUri: c.ownerUri };
+    if (typeof c.ownerName === 'string') info.ownerName = c.ownerName;
+    index.byId.set(info.id, info);
+    const list = index.byOwner.get(info.ownerUri);
+    if (list) list.push(info);
+    else index.byOwner.set(info.ownerUri, [info]);
+  }
+  return index;
+}
+
 const sameArt = (a: MediaArt | null, b: MediaArt | null) => a?.url === b?.url && a?.lastUpdated === b?.lastUpdated;
 
 /**
@@ -137,14 +163,14 @@ const sameArt = (a: MediaArt | null, b: MediaArt | null) => a?.url === b?.url &&
 export default class MediaService {
 
   private tracker: DeviceTracker<Tracked>;
-  /** Every device's Flow action cards (a long list); the settings' autocomplete reuses a read for a minute. */
+  /** Every device's and app's runnable Flow action cards (`cardIndex()`), from a read shared for a minute. */
   private cards = sharedCache(() => getAppApi(this.homey)
     .then(api => api.flow.getFlowCardActions({ $cache: false }))
-    .then((all: Record<string, any>) => Object.values(all ?? {}))
+    .then((all: Record<string, any>) => cardIndex(all))
     .catch((err: unknown) => {
       this.log('Could not read the Flow cards:', err);
       throw err;
-    }));
+    }), { keepFor: CARDS_KEEP_MS });
   private lastCardError: string | null = null;
 
   constructor(
@@ -211,9 +237,9 @@ export default class MediaService {
       this.speakerAppCards(deviceId).catch(() => []),
     ]) : [[], []];
     const cards = [
-      ...own.map(c => ({ name: c.title as string, description: speakerAction, id: `card:${c.id}` })),
+      ...own.map(c => ({ name: c.title, description: speakerAction, id: `card:${c.id}` })),
       ...app.map(c => ({
-        name: c.title as string,
+        name: c.title,
         description: c.ownerName ? `${appAction} · ${c.ownerName}` : appAction,
         id: `card:${c.id}`,
       })),
@@ -309,7 +335,7 @@ export default class MediaService {
       await this.flows.trigger(id);
       return;
     }
-    let card: any;
+    let card: CardInfo | null | undefined;
     if (cardId.startsWith('homey:app:')) {
       card = await this.speakerAppCard(cardId);
       if (!card) throw new Error(`${cardId} is not an action of a speaker app`);
@@ -349,33 +375,32 @@ export default class MediaService {
   }
 
   /** The speaker's own Flow action cards that take no arguments, except those the card already covers. */
-  private async deviceCards(deviceId: string): Promise<any[]> {
-    const owner = `homey:device:${deviceId}`;
-    return (await this.readCards()).filter(c => runnable(c) && c.ownerUri === owner && !BUILT_IN_CARDS.test(c.id));
+  private async deviceCards(deviceId: string): Promise<CardInfo[]> {
+    return ((await this.readCards()).byOwner.get(`homey:device:${deviceId}`) ?? []).filter(c => !BUILT_IN_CARDS.test(c.id));
   }
 
   /** An app's own Flow action cards (`homey:app:<appId>`) that take no arguments. */
-  private async appCards(appUri: string): Promise<any[]> {
-    return (await this.readCards()).filter(c => runnable(c) && c.ownerUri === appUri);
+  private async appCards(appUri: string): Promise<CardInfo[]> {
+    return (await this.readCards()).byOwner.get(appUri) ?? [];
   }
 
   /** The argument-free action cards of the app the speaker belongs to (Sonos (LocalAPI)'s Scan the music library …). */
-  private async speakerAppCards(deviceId: string): Promise<any[]> {
+  private async speakerAppCards(deviceId: string): Promise<CardInfo[]> {
     const api = await getAppApi(this.homey);
     const app = deviceApp(await api.devices.getDevice({ id: deviceId }));
     return app ? this.appCards(app) : [];
   }
 
   /** An app's argument-free card, when that app has a speaker: what a button may run, on any speaker. */
-  private async speakerAppCard(cardId: string): Promise<any | null> {
-    const card = (await this.readCards()).find(c => runnable(c) && c.id === cardId && String(c.ownerUri).startsWith('homey:app:'));
-    if (!card) return null;
+  private async speakerAppCard(cardId: string): Promise<CardInfo | null> {
+    const card = (await this.readCards()).byId.get(cardId);
+    if (!card || !card.ownerUri.startsWith('homey:app:')) return null;
     // Every device, shared for 5 s with the autocompletes (a tap mustn't read them all each time).
     const [devices] = await devicesAndZones(this.homey);
     return devices.some(d => isSpeaker(d) && deviceApp(d) === card.ownerUri) ? card : null;
   }
 
-  private readCards(): Promise<any[]> {
+  private readCards(): Promise<CardIndex> {
     return this.cards.get(CARDS_CACHE_MS);
   }
 

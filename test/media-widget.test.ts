@@ -100,6 +100,17 @@ describe('render', () => {
     expect(q('.mw-progress-text').textContent).toBe('0:35 / 4:00');
   });
 
+  it('stops counting on while a Smart Stack shows another page, and catches up when back', () => {
+    const { w, q } = widget();
+    w.setVisible(false);
+    vi.advanceTimersByTime(5000);
+    expect(q('.mw-progress-text').textContent).toBe('0:30 / 4:00'); // no redraws off screen
+    w.setVisible(true);
+    expect(q('.mw-progress-text').textContent).toBe('0:35 / 4:00');
+    vi.advanceTimersByTime(1000);
+    expect(q('.mw-progress-text').textContent).toBe('0:36 / 4:00');
+  });
+
   it('says TV instead of greying out, with the transport stepped back and mute still there', () => {
     const { root, q } = widget(speaker({ speaker_track: cap('HDMI', false), volume_mute: cap(true) }));
     expect(q('.mw-title').textContent).toBe('TV');
@@ -479,6 +490,33 @@ describe('switching layout (wk-077)', () => {
     click('.mw-art');
     expect(root.classList.contains('mw-large')).toBe(true);
     expect(onLayout).not.toHaveBeenCalled();
+  });
+});
+
+describe('mount: a switched speaker’s cards', () => {
+  beforeAll(() => { loadMount('media'); });
+  afterEach(() => { localStorage.clear(); });
+
+  async function paths(settings: object) {
+    localStorage.setItem('widgetkeeper.media.speaker.w1', 'b');
+    const root = document.createElement('div');
+    document.body.append(root);
+    const Homey = {
+      api: vi.fn(async () => speaker()),
+      on: vi.fn(), ready: vi.fn(), setHeight: vi.fn(), hapticFeedback: vi.fn(),
+      getSettings: () => ({ device: { id: 'k' }, ...settings }),
+      getDeviceIds: () => [], getWidgetInstanceId: () => 'w1', __: (key: string) => key,
+    };
+    win.mountMediaWidget(Homey, { root, frame: root });
+    await vi.advanceTimersByTimeAsync(0);
+    return Homey.api.mock.calls.map((c: any[]) => String(c[1])).filter(p => p.startsWith('/state'));
+  }
+
+  it('asks for them only when a button is a speaker’s own card', async () => {
+    expect(await paths({ button1: { id: 'flow:f1', name: 'Movie time' }, button2: { id: 'card:homey:app:nl.xiut.sonoslocal:scan_library', name: 'Scan' } }))
+      .toEqual([expect.not.stringContaining('cards=1')]);
+    expect(await paths({ button1: { id: 'card:homey:device:k:cloud_play_home_theater', name: 'TV' } }))
+      .toEqual([expect.stringContaining('/state?deviceId=b&cards=1')]);
   });
 });
 

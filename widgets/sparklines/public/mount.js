@@ -58,6 +58,11 @@ window.mountSparklinesWidget = function (Homey, { root, frame }) {
 
   setInterval(load, REFRESH_MS);
   load();
+
+  return {
+    /** The Smart Stack: whether this page is the one on screen (the lines only scroll while it is). */
+    setVisible: v => widget.setVisible(v),
+  };
 };
 /** The classes index.html puts on its body; the Smart Stack puts them on the slide. */
 window.mountSparklinesWidget.frameClass = 'homey-widget-full';

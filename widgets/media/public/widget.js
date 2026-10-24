@@ -210,6 +210,7 @@
     const message = messageLine(() => render(), { clear: () => { device = null; } });
     const touches = touchGuard(); // the taps' and the volume bar's touches
     let progressTimer = null;
+    let offScreen = false; // a Smart Stack page that isn't the one on screen (`setVisible`)
 
     // Album art: the direct route (the frame loads `/api/image/…` itself), or the app's after it failed once.
     let artRoute = 'direct';
@@ -795,10 +796,18 @@
       return name;
     }
 
-    /** Counts the position on while playing, once a second, and only while the page is visible. */
+    /** Counts the position on while playing, once a second, and only while the page (and its stack slide) is visible. */
     function scheduleProgress(on) {
-      if (on && !progressTimer && !document.hidden) progressTimer = setInterval(render, 1000);
-      if ((!on || document.hidden) && progressTimer) { clearInterval(progressTimer); progressTimer = null; }
+      const shown = !document.hidden && !offScreen;
+      if (on && !progressTimer && shown) progressTimer = setInterval(render, 1000);
+      if ((!on || !shown) && progressTimer) { clearInterval(progressTimer); progressTimer = null; }
+    }
+
+    /** The Smart Stack: whether this page is the one on screen; off screen the progress stops counting on. */
+    function setVisible(visible) {
+      if (offScreen === !visible) return;
+      offScreen = !visible;
+      render();
     }
     document.addEventListener('visibilitychange', () => render());
 
@@ -974,7 +983,7 @@
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
     }
 
-    return { setState, pushChange, pushArt, setMessage, render, t, setPanel, setSpeakers, setLayout };
+    return { setState, pushChange, pushArt, setMessage, render, t, setPanel, setSpeakers, setLayout, setVisible };
   }
 
   window.createMediaWidget = createMediaWidget;

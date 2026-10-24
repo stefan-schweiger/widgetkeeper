@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey } from './helpers/fakeHomey.js';
-import TimerService, { timerDurationText, TIMERS_SETTING, TIMERS_STATE_EVENT } from '../lib/TimerService.js';
+import TimerService, { MAX_INSTANCES, timerDurationText, TIMERS_SETTING, TIMERS_STATE_EVENT } from '../lib/TimerService.js';
 import { readFileSync } from 'node:fs';
 
 const en = JSON.parse(readFileSync('locales/en.json', 'utf8'));
@@ -131,6 +131,34 @@ describe('saving', () => {
       expect(finished).toHaveBeenCalledTimes(1);
       expect(finished).toHaveBeenCalledWith(expect.objectContaining({ id: 'late' }));
     });
+  });
+
+  it(`keeps at most ${MAX_INSTANCES} widgets' timers: the oldest without a running one goes first`, async () => {
+    const { homey, service } = setup();
+    service.startTimer('paused', 30, '');
+    const [paused] = service.getState('paused').timers;
+    service.act('paused', paused.id, 'pause');
+    for (let i = 0; i < MAX_INSTANCES - 1; i++) service.startTimer(`w${i}`, 30, '');
+    expect(service.describe().widgets).toBe(MAX_INSTANCES);
+    service.startTimer('new', 30, ''); // over: the paused one goes, though w0 is older among the running
+    expect(service.describe()).toMatchObject({ widgets: MAX_INSTANCES, paused: 0 });
+    expect(homey.api.realtime).toHaveBeenLastCalledWith(TIMERS_STATE_EVENT, expect.objectContaining({ instance: 'new' }));
+    expect(homey.api.realtime).toHaveBeenCalledWith(TIMERS_STATE_EVENT, { instance: 'paused', timers: [], now: Date.now() });
+    service.startTimer('w0', 10, ''); // a new start makes it the newest
+    service.startTimer('newer', 30, ''); // all running: the oldest, w1, goes
+    expect(service.getState('w1').timers).toEqual([]);
+    expect(service.getState('w0').timers).toHaveLength(1);
+    await service.stop();
+  });
+
+  it(`loads the newest ${MAX_INSTANCES} widgets' timers from the setting`, async () => {
+    const saved: Record<string, unknown> = {};
+    for (let i = 0; i < MAX_INSTANCES + 5; i++) saved[`w${i}`] = [{ id: `t${i}`, label: '', duration: 60 * MIN, endsAt: Date.now() + 60 * MIN, remaining: null, doneAt: null }];
+    const { service } = setup(saved);
+    expect(service.describe().widgets).toBe(MAX_INSTANCES);
+    expect(service.getState('w4').timers).toEqual([]);
+    expect(service.getState('w5').timers).toHaveLength(1);
+    await service.stop();
   });
 
   it('describes the timers by count only', () => {

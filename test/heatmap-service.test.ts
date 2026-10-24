@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fakeApi, fakeDevice, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
-import HeatmapService, { HISTORY_SETTING, heatmapCaps, mergeChanges } from '../lib/HeatmapService.js';
+import { fakeApi, fakeDevice, fakeHomey, homeyApiMock, memoryStorage } from './helpers/fakeHomey.js';
+import HeatmapService, { HISTORY_SETTING, heatmapCaps, mergeChanges, mergeInto } from '../lib/HeatmapService.js';
 import { heatmapDates, hourlyAverages, hourlyShareTrue, spanFor } from '../lib/heatmap.js';
 
 vi.mock('homey-api', () => homeyApiMock);
@@ -21,13 +21,24 @@ const sensor = () => fakeDevice({
   },
 });
 
-function setup(opts: { logEntries?: (args: any) => unknown } = {}) {
+/** The history file in memory, counting its writes. */
+function historyFile(text: string | null = null) {
+  const storage = memoryStorage(text);
+  const write = vi.spyOn(storage, 'write');
+  return Object.assign(storage, { writes: () => write.mock.calls.length, saved: () => (storage.text === null ? null : JSON.parse(storage.text)) });
+}
+
+function setup(opts: { logEntries?: (args: any) => unknown, file?: ReturnType<typeof historyFile> } = {}) {
   const device = sensor();
   const api = fakeApi({ devices: [device], logEntries: opts.logEntries });
   const homey = fakeHomey(api);
-  const service = new HeatmapService(homey, () => {});
-  return { homey, api, device, service };
+  const file = opts.file ?? historyFile();
+  const log = vi.fn();
+  const service = new HeatmapService(homey, log, () => {}, file);
+  return { homey, api, device, service, file, log };
 }
+
+const TEN_MINUTES = 10 * 60e3;
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -111,6 +122,30 @@ describe('hourlyShareTrue', () => {
 describe('mergeChanges', () => {
   it('sorts and keeps a change both sources have once', () => {
     expect(mergeChanges([[1000, 1], [5000, 0]], [[1030, 1], [3000, 0], [3000, 0]])).toEqual([[1000, 1], [3000, 0], [5000, 0]]);
+  });
+});
+
+describe('mergeInto', () => {
+  it('merges only the end that the backfill reaches, as mergeChanges would', () => {
+    const list: [number, 0 | 1][] = Array.from({ length: 1000 }, (_, i) => [i * 60e3, (i % 2) as 0 | 1]);
+    const incoming: [number, 0 | 1][] = [[998 * 60e3 + 20, 0], [999 * 60e3 - 10, 1], [1000 * 60e3, 0], [1001 * 60e3, 1]];
+    const expected = mergeChanges(list, incoming);
+    expect(mergeInto(list, incoming)).toBe(true);
+    expect(list).toEqual(expected);
+    expect(list).toHaveLength(1002);
+  });
+
+  it('says nothing changed for a backfill it already has', () => {
+    const list: [number, 0 | 1][] = [[1000, 1], [5000, 0], [9000, 1]];
+    expect(mergeInto(list, [[5020, 0], [9000, 1]])).toBe(false);
+    expect(mergeInto(list, [])).toBe(false);
+    expect(list).toEqual([[1000, 1], [5000, 0], [9000, 1]]);
+  });
+
+  it('takes changes from before the whole list too', () => {
+    const list: [number, 0 | 1][] = [[5000, 0]];
+    expect(mergeInto(list, [[1000, 1], [3000, 0]])).toBe(true);
+    expect(list).toEqual([[1000, 1], [3000, 0], [5000, 0]]);
   });
 });
 
@@ -210,7 +245,7 @@ describe('HeatmapService', () => {
   });
 
   it('records a boolean itself, backfilled from Insights, and saves it', async () => {
-    const { homey, device, service } = setup({
+    const { homey, device, service, file } = setup({
       logEntries: () => ({ values: [
         { t: '2026-10-04T06:15:00.000Z', v: true },
         { t: '2026-10-04T06:45:00.000Z', v: false },
@@ -227,23 +262,113 @@ describe('HeatmapService', () => {
     h = await service.getHistory('hue', 'alarm_motion');
     expect(h.days[6].hours[9]).toBeCloseTo(10 / 50); // true 09:40–09:50 out of 09:00–09:50
 
-    vi.advanceTimersByTime(61e3);
-    const saved = homey.settings.get(HISTORY_SETTING);
-    expect(saved['hue:alarm_motion'].changes.map((c: any) => c[1])).toEqual([1, 0, 1]);
+    vi.advanceTimersByTime(TEN_MINUTES);
+    expect(file.saved()['hue:alarm_motion'].changes.map((c: any) => c[1])).toEqual([1, 0, 1]);
+    expect(homey.settings.get(HISTORY_SETTING)).toBeNull(); // presence data: never in the app settings
   });
 
   it('resumes recording saved booleans when the app starts', async () => {
     const first = setup();
     await first.service.getHistory('hue', 'alarm_motion');
-    vi.advanceTimersByTime(61e3);
     await first.service.stop();
 
     const device = sensor();
     const homey = fakeHomey(fakeApi({ devices: [device] }));
-    homey.settings.set(HISTORY_SETTING, first.homey.settings.get(HISTORY_SETTING));
-    const service = new HeatmapService(homey, () => {});
+    const service = new HeatmapService(homey, () => {}, () => {}, historyFile(first.file.text));
     service.start();
     await vi.waitFor(() => expect(device.listenerCount('alarm_motion')).toBe(1));
+    expect(service.describe().recorded.map(r => r.key)).toEqual(['hue:alarm_motion']);
+    await service.stop();
+  });
+
+  it('writes the history 10 minutes after a change, once for a burst', async () => {
+    const { device, service, file } = setup();
+    await service.getHistory('hue', 'alarm_motion'); // a new recording: written too
+    vi.advanceTimersByTime(TEN_MINUTES);
+    expect(file.writes()).toBe(1);
+    device.report('alarm_motion', true);
+    vi.advanceTimersByTime(60e3);
+    device.report('alarm_motion', false);
+    vi.advanceTimersByTime(TEN_MINUTES - 60e3 - 1);
+    expect(file.writes()).toBe(1);
+    vi.advanceTimersByTime(1);
+    expect(file.writes()).toBe(2);
+    expect(file.saved()['hue:alarm_motion'].changes.map((c: any) => c[1])).toEqual([0, 1, 0]);
+    await service.stop();
+  });
+
+  it('writes nothing for reads that bring nothing new, until an hour on', async () => {
+    const { service, file } = setup({ logEntries: () => ({ values: [{ t: '2026-10-04T06:15:00.000Z', v: true }] }) });
+    await service.getHistory('hue', 'alarm_motion');
+    vi.advanceTimersByTime(TEN_MINUTES);
+    expect(file.writes()).toBe(1);
+    for (let i = 0; i < 5; i++) { // a widget's refreshes, each with a backfill that's already known
+      vi.advanceTimersByTime(5 * 60e3 + 1);
+      await service.getHistory('hue', 'alarm_motion');
+    }
+    vi.advanceTimersByTime(TEN_MINUTES);
+    expect(file.writes()).toBe(1);
+    vi.advanceTimersByTime(35 * 60e3); // over an hour since the last write: the last request is kept
+    await service.getHistory('hue', 'alarm_motion');
+    vi.advanceTimersByTime(TEN_MINUTES);
+    expect(file.writes()).toBe(2);
+    await service.stop();
+  });
+
+  it('writes a pending change at stop', async () => {
+    const { device, service, file } = setup();
+    await service.getHistory('hue', 'alarm_motion');
+    device.report('alarm_motion', true);
+    expect(file.writes()).toBe(0);
+    await service.stop();
+    expect(file.writes()).toBe(1);
+    expect(file.saved()['hue:alarm_motion'].changes.at(-1)[1]).toBe(1);
+  });
+
+  it('moves the old app setting into the file, and unsets it only once the file is written', async () => {
+    const old = { 'hue:alarm_motion': { deviceId: 'hue', capabilityId: 'alarm_motion', lastRequested: NOW - 60e3, changes: [[NOW - 3600e3, 1], [NOW - 1800e3, 0]] } };
+    const failing = historyFile();
+    failing.write = () => { throw new Error('No space left'); };
+    const first = setup({ file: failing });
+    first.homey.settings.set(HISTORY_SETTING, old);
+    first.service.start();
+    expect(first.homey.settings.get(HISTORY_SETTING)).toEqual(old); // the write failed: kept
+    expect(first.log).toHaveBeenCalledWith(expect.stringContaining('Could not move the heatmap history'), expect.any(Error));
+    await first.service.stop();
+
+    const { homey, service, file, log } = setup();
+    homey.settings.set(HISTORY_SETTING, old);
+    service.start();
+    expect(file.saved()['hue:alarm_motion'].changes).toEqual(old['hue:alarm_motion'].changes);
+    expect(homey.settings.get(HISTORY_SETTING)).toBeNull();
+    expect(log).toHaveBeenCalledWith('Moved the heatmap history out of the app settings');
+    await service.stop();
+  });
+
+  it('merges a setting an older version wrote after the move with the file', async () => {
+    const fromFile = { 'hue:alarm_motion': { deviceId: 'hue', capabilityId: 'alarm_motion', lastRequested: NOW - 600e3, changes: [[NOW - 7200e3, 1]] } };
+    const fromSetting = {
+      'hue:alarm_motion': { deviceId: 'hue', capabilityId: 'alarm_motion', lastRequested: NOW - 60e3, changes: [[NOW - 7200e3, 1], [NOW - 3600e3, 0]] },
+      'hue:button': { deviceId: 'hue', capabilityId: 'button', lastRequested: NOW - 60e3, changes: [[NOW - 900e3, 1]] },
+    };
+    // An own `__proto__` key, as JSON can hold: left out.
+    Object.defineProperty(fromSetting, '__proto__', { value: { deviceId: 'x', capabilityId: 'y', lastRequested: 0, changes: [] }, enumerable: true });
+    const { homey, service, file } = setup({ file: historyFile(JSON.stringify(fromFile)) });
+    homey.settings.set(HISTORY_SETTING, fromSetting);
+    service.start();
+    const saved = file.saved();
+    expect(Object.keys(saved)).toEqual(['hue:alarm_motion', 'hue:button']);
+    expect(saved['hue:alarm_motion'].changes).toEqual([[NOW - 7200e3, 1], [NOW - 3600e3, 0]]);
+    expect(saved['hue:alarm_motion'].lastRequested).toBe(NOW - 60e3);
+    expect(homey.settings.get(HISTORY_SETTING)).toBeNull();
+    await service.stop();
+  });
+
+  it('starts empty from a file it can\'t read, and says so', async () => {
+    const { service, log } = setup({ file: historyFile('{not json') });
+    service.start();
+    expect(service.describe().recorded).toEqual([]);
+    expect(log).toHaveBeenCalledWith('The heatmap history file could not be read:', expect.any(String));
     await service.stop();
   });
 
