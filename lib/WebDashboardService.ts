@@ -47,14 +47,22 @@ export const WEB_BACKGROUNDS = ['default', 'black', 'slate', 'ocean', 'forest', 
 export type WebBackground = typeof WEB_BACKGROUNDS[number];
 
 /**
+ * How wide a dashboard's columns are (the page's `COLUMN_WIDTHS`): `narrow` is a phone's widget width, as on Homey's
+ * dashboard; `fit` shares the window's width between them. `normal` (440 px) isn't stored.
+ */
+export const WEB_COLUMN_WIDTHS = ['narrow', 'normal', 'wide', 'fit'] as const;
+export type WebColumnWidth = typeof WEB_COLUMN_WIDTHS[number];
+
+/**
  * One widget on a web dashboard: its type (our widget id, or another app's `homey:app:<appId>:<widgetId>`), settings and
- * devices, as Homey keeps a dashboard widget's. `trusted`: another app's widget the user lets run unsandboxed. `span`: a
- * wide widget's columns (its own and those to its right); `at`: in each column it covers, the index of that column's
- * widget it sits before (the column's length: under them all).
+ * devices, as Homey keeps a dashboard widget's. `trusted`: another app's widget the user lets run unsandboxed; `scaled`:
+ * another app's widget laid out at a phone's width and scaled to its column, as on Homey's dashboard. `span`: a wide
+ * widget's columns (its own and those to its right); `at`: in each column it covers, the index of that column's widget it
+ * sits before (the column's length: under them all).
  */
 export type WebWidget = {
   id: string, type: string, title: string, settings: Record<string, unknown>, deviceIds: string[], trusted?: true,
-  span?: number, at?: number[],
+  scaled?: true, span?: number, at?: number[],
 };
 
 /** The device filter the page sends for another app's widget (its `devices.filter`; `app`: only that app's devices). */
@@ -69,9 +77,13 @@ export type WebSection = { id: string, name: string };
  */
 export type WebFront = { widgets: boolean, sections: WebSection[] };
 
-/** A web dashboard: columns of widgets, top to bottom; `section`: the front page's section it's under. */
+/**
+ * A web dashboard: columns of widgets, top to bottom; `section`: the front page's section it's under; `columnWidth`: its
+ * columns' width when not `normal`.
+ */
 export type WebDashboard = {
   id: string, name: string, theme: WebTheme, background: WebBackground, columns: WebWidget[][], section?: string,
+  columnWidth?: Exclude<WebColumnWidth, 'normal'>,
 };
 
 /** What a web dashboards backup file is (`format`, `version`), as the web dashboards page downloads it. */
@@ -665,6 +677,7 @@ export default class WebDashboardService {
     const name = typeof d.name === 'string' ? d.name.trim().slice(0, 60) : '';
     const theme: WebTheme = d.theme === 'dark' || d.theme === 'light' ? d.theme : 'auto';
     const background: WebBackground = (WEB_BACKGROUNDS as readonly unknown[]).includes(d.background) ? d.background : 'default';
+    const width: WebColumnWidth = (WEB_COLUMN_WIDTHS as readonly unknown[]).includes(d.columnWidth) ? d.columnWidth : 'normal';
     const columnsIn: unknown[] = Array.isArray(d.columns) ? d.columns.slice(0, MAX_COLUMNS) : [];
     const ids = new Set<string>();
     const given = new Map<WebWidget, Record<string, any>>();
@@ -695,7 +708,7 @@ export default class WebDashboardService {
       });
     }));
     const section = typeof d.section === 'string' && ID.test(d.section) ? d.section : null;
-    return { id, name, theme, background, columns, ...(section ? { section } : {}) };
+    return { id, name, theme, background, columns, ...(section ? { section } : {}), ...(width !== 'normal' ? { columnWidth: width } : {}) };
   }
 
   private normalizeWidget(input: unknown, ids: Set<string>): WebWidget | null {
@@ -712,7 +725,10 @@ export default class WebDashboardService {
     if (!def) {
       // Another app's widget: only the page can read its manifest (with its key), so its settings are kept as plain values.
       const deviceIds = Array.isArray(w.deviceIds) ? deviceIdList(w.deviceIds, MAX_DEVICES) : [];
-      return { id, type: w.type, title, settings: foreignSettings(w.settings), deviceIds, ...(w.trusted === true ? { trusted: true as const } : {}) };
+      return {
+        id, type: w.type, title, settings: foreignSettings(w.settings), deviceIds,
+        ...(w.trusted === true ? { trusted: true as const } : {}), ...(w.scaled === true ? { scaled: true as const } : {}),
+      };
     }
     const given = w.settings && typeof w.settings === 'object' ? w.settings as Record<string, unknown> : {};
     const settings: Record<string, unknown> = {};

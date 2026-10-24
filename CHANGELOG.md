@@ -24,6 +24,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Web dashboards
 - **Wide widgets:** a widget can span two or more columns, such as a floor plan, a camera or a chart. Drag the handle on its right edge in edit mode, or set its Width in its settings. Each column it covers keeps its own widgets above and below it. Kept in duplicates and backups. The front page's miniatures show them across their columns.
+- **Column width:** each dashboard's columns can be Narrow (a phone's width, as on a Homey dashboard), Normal, Wide, or Fit to window, where they share the window's width. In the editor's bar.
+- **Other apps' widgets, sized as on Homey:** *Size as on Homey* in such a widget's settings lays it out at a phone's width and scales it to fill the column. A widget made for that width, such as one with a picture as wide as the widget, then has the same height as on a Homey dashboard.
+- **Other apps' widgets' heights:** a widget that sets its height as a percentage of its width now gets that shape, as on Homey, and one that sets no height no longer becomes 0 px high.
 - **Sections on the front page:** group the dashboards under headings of your own. In the front page's edit mode, Add section, type its name, and drag dashboards into it, or make one there with its own New dashboard; ↑ ↓ move a section, and deleting one keeps its dashboards. Kept in duplicates and backups.
 - **Password:** changing or removing the web dashboards password now asks for the current one. A forgotten password is removed with the Flow card *Remove the web dashboards password*.
 - **Switching devices takes a key that may:** a browser's API key now needs permission to control devices to switch lights, open locks and the like through the widgets. A key without it still shows them.

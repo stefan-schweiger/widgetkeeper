@@ -5,8 +5,8 @@
 //   npm run port-dashboard -- "Lilletoften 3"            by name (or by the dashboard's id)
 //   npm run port-dashboard -- "Lilletoften 3" --dry-run  only says what it would do
 //
-// The web dashboard's id is the Homey dashboard's, so a re-run replaces it (keeping the theme and backdrop chosen on
-// the web since) and each widget keeps its id: its tile names are copied from `<widget id>` to
+// The web dashboard's id is the Homey dashboard's, so a re-run replaces it (keeping the theme, backdrop and column
+// width chosen on the web since) and each widget keeps its id: its tile names are copied from `<widget id>` to
 // `web-<dashboard id>-<widget id>` (lib/TileNameService.ts). Running timers and Media's chosen speaker stay with the
 // Homey dashboard's widgets. Like `test-dashboards.mjs`, it writes the app setting `webDashboards` through the Homey
 // CLI's login, and the app's `normalize()` checks it on the next read.
@@ -77,7 +77,7 @@ async function main() {
     const saved = await api('GET', WEB_SETTING);
     const current = Array.isArray(saved) ? saved : [];
     const before = current.find(d => d.id === dashboard.id);
-    if (before) Object.assign(dashboard, { theme: before.theme ?? 'auto', background: before.background ?? 'default' });
+    if (before) Object.assign(dashboard, { theme: before.theme ?? 'auto', background: before.background ?? 'default', ...(before.columnWidth ? { columnWidth: before.columnWidth } : {}) });
     const ported = dashboard.columns.flat();
     console.log(`${dashboard.name}: ${ported.length} widgets in ${dashboard.columns.length} columns (${ported.map(x => x.type).join(', ')})`);
     for (const s of skipped) console.log(`  left out: ${s.title} (${s.type}): ${s.reason}`);

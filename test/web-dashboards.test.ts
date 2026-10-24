@@ -42,6 +42,7 @@ describe('web dashboards: storage', () => {
     expect(saved.name).toBe('Kitchen');
     expect(saved.theme).toBe('auto');
     expect(saved.background).toBe('default');
+    expect(saved).not.toHaveProperty('columnWidth'); // normal
     expect(saved.columns[0]).toHaveLength(1); // the unknown type is dropped
     const timers = saved.columns[0][0];
     expect(timers.settings.minutes1).toBe(3);
@@ -62,6 +63,12 @@ describe('web dashboards: storage', () => {
     expect(web.save({ name: 'A', background: 'ocean', columns: [[]] }).background).toBe('ocean');
     expect(web.save({ name: 'B', background: 'neon', columns: [[]] }).background).toBe('default');
     expect(web.save({ name: 'C', background: '__proto__', columns: [[]] }).background).toBe('default');
+  });
+
+  it('keeps a known column width, but not normal (the default) or an unknown one', () => {
+    const { web } = setup();
+    for (const width of ['narrow', 'wide', 'fit']) expect(web.save({ name: width, columnWidth: width, columns: [[]] }).columnWidth).toBe(width);
+    for (const width of ['normal', 'huge', '__proto__', 440]) expect(web.save({ name: 'X', columnWidth: width, columns: [[]] })).not.toHaveProperty('columnWidth');
   });
 
   it("keeps an autocomplete choice's own fields, without the image", () => {
@@ -227,6 +234,7 @@ describe("web dashboards: other apps' widgets", () => {
         title: 'Plants',
         deviceIds: ['p1', 'p1', 'p2', 3],
         trusted: true,
+        scaled: true,
         settings: {
           stage: 'beta',
           count: 3,
@@ -243,19 +251,22 @@ describe("web dashboards: other apps' widgets", () => {
       }, {
         type: 'homey:app:com.example.plants:status',
         trusted: 'yes',
+        scaled: 1,
       }]],
     });
     const [w, untrusted] = saved.columns[0];
     expect(w.type).toBe('homey:app:com.example.plants:status');
     expect(w.title).toBe('Plants');
     expect(w.trusted).toBe(true);
+    expect(w.scaled).toBe(true);
     expect(w.deviceIds).toEqual(['p1', 'p2']);
     expect(w.settings).toEqual({ stage: 'beta', count: 3, on: false, none: null, note: 'x'.repeat(2000), device: { id: 'd1', name: 'Fern' } });
     expect(untrusted).not.toHaveProperty('trusted');
+    expect(untrusted).not.toHaveProperty('scaled');
     expect(untrusted.settings).toEqual({});
   });
 
-  it("drops our own app's id in that form, a malformed one and a trusted flag on ours", () => {
+  it("drops our own app's id in that form, a malformed one and a trusted or scaled flag on ours", () => {
     const { web } = setup();
     const saved = web.save({
       columns: [[
@@ -266,11 +277,12 @@ describe("web dashboards: other apps' widgets", () => {
         { type: 'homey:app:.:plants' },
         { type: 'homey:app:.hidden:plants' },
         { type: 'homey:manager:dashboards:x' },
-        { type: 'timers', trusted: true },
+        { type: 'timers', trusted: true, scaled: true },
       ]],
     });
     expect(saved.columns[0].map(w => w.type)).toEqual(['timers']);
     expect(saved.columns[0][0]).not.toHaveProperty('trusted');
+    expect(saved.columns[0][0]).not.toHaveProperty('scaled');
   });
 
   it('keeps at most 60 settings', () => {
@@ -666,7 +678,8 @@ describe('web dashboards: the front page', () => {
 describe('web dashboards: duplicate', () => {
   it('copies a dashboard right after it, with the tile names of its widgets', async () => {
     const { homey, web, tileNames } = setup();
-    const a = web.save({ name: 'Hall', theme: 'dark', background: 'ocean', columns: [[{ id: 'w1', type: 'lights', deviceIds: ['d1'], settings: { renameTiles: true } }], [{ id: 'w2', type: 'timers' }]] });
+    const a = web.save({ name: 'Hall', theme: 'dark', background: 'ocean', columnWidth: 'fit', columns: [[{ id: 'w1', type: 'lights', deviceIds: ['d1'], settings: { renameTiles: true } }], [{ id: 'w2', type: 'timers' }]] });
+    expect(a.columnWidth).toBe('fit');
     const b = web.save({ name: 'Kitchen', columns: [[]] });
     tileNames.set(`web-${a.id}-w1`, 'd1', 'Porch');
     const res = await api.postWebDashboardCopy({ homey, params: { id: a.id } });
@@ -705,7 +718,10 @@ describe('web dashboards: backup and restore', () => {
   it('backs up the dashboards, the front page and their tile names, and restores them as they were', async () => {
     const { homey, web, tileNames } = setup();
     const a = web.save({ name: 'Hall', columns: [[{ id: 'w1', type: 'lights', deviceIds: ['d1'] }]] });
-    const b = web.save({ name: 'Kitchen', background: 'sand', columns: [[{ id: 'w1', type: 'timers' }], []] });
+    const b = web.save({
+      name: 'Kitchen', background: 'sand', columnWidth: 'narrow',
+      columns: [[{ id: 'w1', type: 'timers' }], [{ id: 'w2', type: 'homey:app:com.example.plants:status', scaled: true }]],
+    });
     web.saveFront({ order: [b.id, a.id], widgets: false });
     tileNames.set(`web-${a.id}-w1`, 'd1', 'Porch');
     tileNames.set('native-widget', 'd1', 'Mine'); // a Homey dashboard widget's: not in the backup
@@ -713,6 +729,7 @@ describe('web dashboards: backup and restore', () => {
     const backup = JSON.parse(JSON.stringify(await api.getWebBackup({ homey })));
     expect(backup).toMatchObject({ format: WEB_BACKUP_FORMAT, version: 1, app: '0.3.0', front: { widgets: false } });
     expect(backup.dashboards.map((d: any) => d.name)).toEqual(['Kitchen', 'Hall']);
+    expect(backup.dashboards[0]).toMatchObject({ columnWidth: 'narrow', columns: [[{}], [{ scaled: true }]] });
     expect(backup.tileNames).toEqual({ [`web-${a.id}-w1`]: { d1: 'Porch' } });
     expect(Number.isNaN(Date.parse(backup.exportedAt))).toBe(false);
 
@@ -723,7 +740,7 @@ describe('web dashboards: backup and restore', () => {
     web.saveFront({ widgets: true });
     tileNames.set(`web-${b.id}-w1`, 'x', 'Later');
     tileNames.set(`web-${later.id}-w1`, 'd1', 'Since');
-    await expect(api.putWebBackup({ homey, body: { ...backup, complete: true } })).resolves.toEqual({ dashboards: 2, widgets: 2, skipped: 0 });
+    await expect(api.putWebBackup({ homey, body: { ...backup, complete: true } })).resolves.toEqual({ dashboards: 2, widgets: 3, skipped: 0 });
     expect(web.list().map(d => d.name)).toEqual(['Kitchen', 'New', 'Hall']); // Kitchen in place, Hall added
     expect(web.list().filter(d => d.id !== later.id)).toEqual(backup.dashboards);
     expect(web.front()).toEqual({ widgets: false, sections: [] });

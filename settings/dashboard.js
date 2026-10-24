@@ -50,6 +50,11 @@
     themeAuto: 'Automatic',
     themeDark: 'Dark',
     themeLight: 'Light',
+    columnWidth: 'Column width',
+    columnNarrow: 'Narrow',
+    columnNormal: 'Normal',
+    columnWide: 'Wide',
+    columnFit: 'Fit to window',
     darkLight: 'Dark or light',
     darkLightText: "Automatic follows each dashboard's theme.",
     background: 'Background',
@@ -156,6 +161,8 @@
     notInstalled: '__name__ isn\'t installed.',
     trustTitle: 'Trust this widget',
     trustHint: 'Runs it outside the sandbox, for a widget that doesn\'t work in it. A trusted widget can read this browser\'s API key.',
+    scaleTitle: 'Size as on Homey',
+    scaleHint: 'Lays it out at a phone\'s width and scales it to fill the column, so it wraps and sizes as on Homey\'s dashboard.',
     popupYes: 'Yes',
     popupNo: 'No',
     popupElsewhereYes: 'Answered on another screen: Yes',
@@ -313,6 +320,7 @@
     down: 'M6 9l6 6 6-6',
     up: 'M6 15l6-6 6 6',
     columns: 'M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM9.5 4v16M14.5 4v16',
+    width: 'M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4',
     minus: 'M5 12h14',
     // The Theme pill's: Automatic (a half-filled circle: `fill`), Dark, Light.
     contrast: { d: 'M12 4a8 8 0 1 0 0 16a8 8 0 1 0 0-16z', fill: 'M12 4a8 8 0 0 1 0 16z' },
@@ -347,6 +355,15 @@
     berry: ['#F6E6EA', '#24121A'],
     sand: ['#F3EEE4', '#1F1A13'],
   };
+
+  /** A widget's width on Homey's dashboard on a phone, which other apps' widgets are designed at (wk-089). */
+  const HOMEY_WIDTH = 358;
+
+  /**
+   * A dashboard's column widths (`columnWidth`; the ids are `WEB_COLUMN_WIDTHS` in lib/WebDashboardService.ts), as the
+   * grid's `--wd-col-max`: Narrow is a phone's widget width, as on Homey's dashboard; Fit to window shares the window.
+   */
+  const COLUMN_WIDTHS = { narrow: `${HOMEY_WIDTH}px`, normal: '440px', wide: '560px', fit: '1fr' };
 
   function icon(name) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -865,10 +882,52 @@
       return pair[dark ? 1 : 0];
     }
 
+    /**
+     * A widget's height (`ready`/`setHeight`, where Homey's docs allow a number, a string or null): pixels, or a share of
+     * the width (`'50%'`, as a manifest's `height`). Anything else leaves it: `Number(null)` used to make it 0 px.
+     */
     function setFrameHeight(frame, height) {
-      const h = Number(height);
-      if (Number.isFinite(h) && h >= 0) frame.iframe.style.height = `${Math.ceil(h)}px`;
+      const style = frame.iframe.style;
+      const text = typeof height === 'string' ? height.trim() : '';
+      if (/^\d+(\.\d+)?%$/.test(text) && parseFloat(text) > 0) {
+        style.height = '';
+        style.aspectRatio = `100 / ${parseFloat(text)}`;
+      } else if ((typeof height === 'number' && Number.isFinite(height) && height >= 0) || /^\d+(\.\d+)?(px)?$/.test(text)) {
+        style.height = `${Math.ceil(parseFloat(String(height)))}px`;
+      } else {
+        return;
+      }
+      if (frame.scaled) fitFrame(frame);
     }
+
+    /**
+     * Another app's widget sized as on Homey (`scaled`): laid out at a phone's widget width and scaled to fill its column,
+     * so it wraps, and measures its own height, as on Homey's dashboard (wk-089: an image as wide as the widget made it
+     * taller in a wider column). A wide widget takes its column's scale; a column narrower than a phone's isn't scaled.
+     */
+    function fitFrame(frame) {
+      const wrap = frame.iframe.parentElement;
+      const col = wrap && wrap.closest('.wd-col');
+      const width = wrap ? wrap.clientWidth : 0;
+      if (!col || !width) return;
+      const pad = getComputedStyle(col);
+      const column = col.clientWidth - parseFloat(pad.paddingLeft) - parseFloat(pad.paddingRight);
+      const scale = Math.max(1, Math.min(width, column) / HOMEY_WIDTH);
+      frame.iframe.style.width = `${width / scale}px`;
+      frame.iframe.style.transform = scale > 1 ? `scale(${scale})` : '';
+      wrap.style.height = `${frame.iframe.offsetHeight * scale}px`;
+    }
+
+    /** Refits a scaled frame when its room changes width: the window, the columns, a wide widget's span. */
+    const scaler = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        for (const frame of frames) {
+          if (!frame.scaled || frame.iframe.parentElement !== entry.target || frame.fitted === entry.contentRect.width) continue;
+          frame.fitted = entry.contentRect.width; // its own height changes come here too
+          fitFrame(frame);
+        }
+      }
+    });
 
     /**
      * Another app's widget's own request (`Homey.api(method, path, body)`), straight to that widget's API on the
@@ -1006,6 +1065,7 @@
       for (const frame of [...frames]) {
         if (frame.iframe.isConnected) continue;
         dropListeners(frame);
+        if (frame.scaled) scaler.unobserve(frame.iframe.parentElement);
         frames.delete(frame);
       }
     }
@@ -1967,7 +2027,7 @@
     }
 
     /** The widget ids' frame signature: a change (settings, devices, title, theme) reloads that frame. */
-    const signature = (w) => JSON.stringify([w.type, w.title, w.settings, w.deviceIds, w.trusted === true, isDark()]);
+    const signature = (w) => JSON.stringify([w.type, w.title, w.settings, w.deviceIds, w.trusted === true, w.scaled === true, isDark()]);
 
     function renderDashboard(dashboard, editing) {
       clearRoot();
@@ -2069,6 +2129,27 @@
         drawBackground();
       });
 
+      // The columns' width, drawn as the Theme's pill.
+      const width = el('select', 'wd-theme');
+      width.setAttribute('aria-label', t('columnWidth'));
+      width.title = t('columnWidth');
+      for (const [id, label] of [['narrow', 'columnNarrow'], ['normal', 'columnNormal'], ['wide', 'columnWide'], ['fit', 'columnFit']]) {
+        const o = el('option', null, t(label));
+        o.value = id;
+        width.append(o);
+      }
+      width.value = COLUMN_WIDTHS[d.columnWidth] ? d.columnWidth : 'normal';
+      const widthPick = el('span', 'wd-themepick');
+      const widthIcon = el('span', 'wd-themepick-icon');
+      widthIcon.append(icon('width'));
+      widthPick.append(widthIcon, width);
+      width.addEventListener('change', () => {
+        if (width.value === 'normal') delete current.dashboard.columnWidth;
+        else current.dashboard.columnWidth = width.value;
+        persist();
+        syncGrid();
+      });
+
       // The backdrop: a button with the current one's swatch, opening the palette under it.
       const bgPick = el('span', 'wd-bgpick');
       const bgButton = button('wd-btn wd-bgbutton', '', () => (pop.hidden ? openPalette() : closePalette()), t('background'));
@@ -2120,7 +2201,7 @@
       // The end of the bar stays together when a narrow window wraps it.
       const end = el('span', 'wd-bar-end');
       end.append(remove, done);
-      const b = bar(name, el('span', 'wd-bar-rule'), cols, themePick, bgPick, end);
+      const b = bar(name, el('span', 'wd-bar-rule'), cols, widthPick, themePick, bgPick, end);
       stepColumns(b);
       return b;
     }
@@ -2161,6 +2242,7 @@
       const { dashboard, grid, widgets, covers, editing } = current;
       const count = dashboard.columns.length;
       grid.style.setProperty('--cols', String(count));
+      grid.style.setProperty('--wd-col-max', COLUMN_WIDTHS[dashboard.columnWidth] || COLUMN_WIDTHS.normal);
       while (grid.children.length < count) grid.append(el('section', 'wd-col'));
       while (grid.children.length > count) grid.lastChild.remove();
       const seen = new Set();
@@ -2329,7 +2411,9 @@
         return node;
       }
       if (app && opts.mountWidget) return node; // the dev renders draw only ours
-      const wrap = el('div', def.transparent ? 'wd-frame' : 'wd-frame card');
+      // Another app's widget may be laid out at a phone's width and scaled to the column, as on Homey (`fitFrame()`).
+      const scaled = !!app && w.scaled === true;
+      const wrap = el('div', `wd-frame${def.transparent ? '' : ' card'}${scaled ? ' scaled' : ''}`);
       if (opts.mountWidget) {
         node.append(wrap);
         opts.mountWidget(clone(w), wrap);
@@ -2353,7 +2437,8 @@
       iframe.src = `${widgetFolder(w.type)}/index.html?widgetInstanceId=${encodeURIComponent(instance)}`;
       wrap.append(iframe);
       node.append(wrap);
-      frames.add({ widget: clone(w), iframe, subs: new Map(), gen: 0, app, sandboxed });
+      frames.add({ widget: clone(w), iframe, subs: new Map(), gen: 0, app, sandboxed, scaled });
+      if (scaled) scaler.observe(wrap);
       return node;
     }
 
@@ -2783,7 +2868,8 @@
       const def = typeOf(w.type);
       if (!def) return;
       const draft = { title: w.title || '', settings: clone(w.settings || {}), deviceIds: (w.deviceIds || []).slice() };
-      const trust = { settings: { trusted: w.trusted === true } }; // another app's widget: run it unsandboxed
+      // Another app's widget: size it as on Homey, run it unsandboxed.
+      const trust = { settings: { scaled: w.scaled === true, trusted: w.trusted === true } };
       for (const s of def.settings) if (!(s.id in draft.settings)) draft.settings[s.id] = clone(s.value);
       const { d, body } = dialog(def.name, def.type);
       d.classList.add('wd-settings');
@@ -2877,7 +2963,10 @@
       }
       if (def.app) {
         const c = card();
-        c.append(settingRow(def, { id: 'trusted', type: 'checkbox', title: t('trustTitle'), hint: t('trustHint') }, trust, () => {}, uid()));
+        c.append(
+          settingRow(def, { id: 'scaled', type: 'checkbox', title: t('scaleTitle'), hint: t('scaleHint') }, trust, () => {}, uid()),
+          settingRow(def, { id: 'trusted', type: 'checkbox', title: t('trustTitle'), hint: t('trustHint') }, trust, () => {}, uid()),
+        );
         body.append(c);
       }
 
@@ -2948,8 +3037,10 @@
             now.widget.title = draft.title.trim();
             now.widget.settings = draft.settings;
             now.widget.deviceIds = draft.deviceIds;
-            if (trust.settings.trusted === true) now.widget.trusted = true;
-            else delete now.widget.trusted;
+            for (const key of ['scaled', 'trusted']) {
+              if (trust.settings[key] === true) now.widget[key] = true;
+              else delete now.widget[key];
+            }
             if (width.span !== LAYOUT.spanOf(now.widget, now.c, current.dashboard.columns.length)) {
               setSpan(id, now.c, width.span); // saves it all
               d.close();

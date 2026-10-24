@@ -341,6 +341,9 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .wd-frame.card { border-radius: var(--wd-radius); overflow: hidden; background: var(--homey-background-color, #FFFFFF); }
 .homey-dark-mode .wd-frame.card { background: #181920; }
 .wd-frame iframe { display: block; width: 100%; border: 0; background: transparent; }
+/* Another app's widget sized as on Homey: laid out at a phone's width and scaled to the column (`fitFrame()`). */
+.wd-frame.scaled { overflow: hidden; }
+.wd-frame.scaled iframe { transform-origin: 0 0; }
 
 /* Editing: each widget in a frame with its bar as the frame's header (so it's clear which bar is whose), more room
    between them, and an add button under each column. */
