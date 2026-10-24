@@ -374,9 +374,12 @@
   /** Opened away from home, through Homey's cloud relay: the app only answers then with Remote access on. */
   const AWAY = /\.connect\.athom\.com$/i.test(location.hostname);
 
-  /** Another app's widget type (`homey:app:<appId>:<widgetId>`, its id on Homey's dashboards), split; null for ours. */
+  /**
+   * Another app's widget type (`homey:app:<appId>:<widgetId>`, its id on Homey's dashboards), split; null for ours. As
+   * the server's `FOREIGN`: no app id starting with a dot, as `.` or `..` would make `widgetFolder()` leave `/app/`.
+   */
   function appWidget(type) {
-    const m = /^homey:app:([A-Za-z0-9._-]{1,100}):([A-Za-z0-9_-]{1,60})$/.exec(String(type));
+    const m = /^homey:app:([A-Za-z0-9][A-Za-z0-9._-]{0,99}):([A-Za-z0-9_-]{1,60})$/.exec(String(type));
     return m && m[1] !== APP_ID ? { appId: m[1], widgetId: m[2] } : null;
   }
 

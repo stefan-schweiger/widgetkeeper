@@ -91,7 +91,11 @@ describe("web dashboards page: another app's widget API (appApi)", () => {
     const { appWidget } = load();
     expect(appWidget('homey:app:com.example.garden:plants')).toEqual(garden);
     expect(appWidget('homey:app:com.thomassidor.widgetkeeper:clock')).toBeNull();
-    for (const type of ['clock', 'homey:app:com.example.garden', 'homey:app:com.example garden:plants', 'homey:app:x:y/z', 'homey:device:abc:x', null]) {
+    for (const type of [
+      'clock', 'homey:app:com.example.garden', 'homey:app:com.example garden:plants', 'homey:app:x:y/z', 'homey:device:abc:x', null,
+      // `/app/../widgets/<id>` would be the Homey's `/widgets/<id>`
+      'homey:app:..:plants', 'homey:app:.:plants', 'homey:app:.hidden:plants',
+    ]) {
       expect([type, appWidget(type)]).toEqual([type, null]);
     }
   });

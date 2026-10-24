@@ -34,8 +34,11 @@ const MAX_DEVICES = 100; // per widget
 const MAX_TEXT = 2000;
 const MAX_FOREIGN_SETTINGS = 60; // per widget of another app
 const ID = /^[A-Za-z0-9_-]{1,40}$/;
-/** Another app's widget type: its id on Homey's dashboards (`homey:app:<appId>:<widgetId>`). */
-const FOREIGN = /^homey:app:([A-Za-z0-9._-]{1,100}):([A-Za-z0-9_-]{1,60})$/;
+/**
+ * Another app's widget type: its id on Homey's dashboards (`homey:app:<appId>:<widgetId>`). The app id never starts with
+ * a dot: `.` or `..` would make the page's `/app/<appId>/widgets/…` frame point elsewhere on the Homey.
+ */
+const FOREIGN = /^homey:app:([A-Za-z0-9][A-Za-z0-9._-]{0,99}):([A-Za-z0-9_-]{1,60})$/;
 
 export type WebTheme = 'auto' | 'dark' | 'light';
 
