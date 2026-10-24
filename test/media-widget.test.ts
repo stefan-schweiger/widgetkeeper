@@ -482,6 +482,33 @@ describe('switching layout (wk-077)', () => {
   });
 });
 
+describe('mount: a switched speaker’s cards', () => {
+  beforeAll(() => { loadMount('media'); });
+  afterEach(() => { localStorage.clear(); });
+
+  async function paths(settings: object) {
+    localStorage.setItem('widgetkeeper.media.speaker.w1', 'b');
+    const root = document.createElement('div');
+    document.body.append(root);
+    const Homey = {
+      api: vi.fn(async () => speaker()),
+      on: vi.fn(), ready: vi.fn(), setHeight: vi.fn(), hapticFeedback: vi.fn(),
+      getSettings: () => ({ device: { id: 'k' }, ...settings }),
+      getDeviceIds: () => [], getWidgetInstanceId: () => 'w1', __: (key: string) => key,
+    };
+    win.mountMediaWidget(Homey, { root, frame: root });
+    await vi.advanceTimersByTimeAsync(0);
+    return Homey.api.mock.calls.map((c: any[]) => String(c[1])).filter(p => p.startsWith('/state'));
+  }
+
+  it('asks for them only when a button is a speaker’s own card', async () => {
+    expect(await paths({ button1: { id: 'flow:f1', name: 'Movie time' }, button2: { id: 'card:homey:app:nl.xiut.sonoslocal:scan_library', name: 'Scan' } }))
+      .toEqual([expect.not.stringContaining('cards=1')]);
+    expect(await paths({ button1: { id: 'card:homey:device:k:cloud_play_home_theater', name: 'TV' } }))
+      .toEqual([expect.stringContaining('/state?deviceId=b&cards=1')]);
+  });
+});
+
 describe('mount: the layout remembered on this screen', () => {
   const KEY = 'widgetkeeper.media.layout.w1';
   beforeAll(() => { loadMount('media'); });
