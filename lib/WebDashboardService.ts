@@ -434,7 +434,7 @@ export default class WebDashboardService {
     const from = all[i];
     let copyId = newId();
     while (all.some(d => d.id === copyId)) copyId = newId();
-    const original = from.name || this.homey.__('web.untitled') || 'Untitled';
+    const original = from.name || this.homey.__('web.untitled') || 'Dashboard';
     const name = this.homey.__('web.copyName', { name: original }) || `${original} (copy)`;
     const dashboard = this.normalize({ ...from, id: copyId, name });
     all.splice(i + 1, 0, dashboard);
@@ -605,7 +605,7 @@ export default class WebDashboardService {
       current: holder?.id ?? null,
       tiles: ids.map((id) => {
         const d = byId.get(id);
-        return d ? { id, name: d.name || this.homey.__('web.untitled') || 'Untitled' } : { id, missing: true as const };
+        return d ? { id, name: d.name || this.homey.__('web.untitled') || 'Dashboard' } : { id, missing: true as const };
       }),
     };
   }
@@ -619,9 +619,9 @@ export default class WebDashboardService {
   dashboardList(query: string): AutocompleteItem[] {
     return this.list()
       .map((d) => {
-        const name = d.name || this.homey.__('web.untitled') || 'Untitled';
+        const name = d.name || this.homey.__('web.untitled') || 'Dashboard';
         const count = d.columns.reduce((n, c) => n + c.length, 0);
-        return { id: d.id, name, description: this.homey.__('web.widgetCount', { count }) || `${count}` };
+        return { id: d.id, name, description: this.homey.__('web.widgetCount', { count }) || `${count} widgets` };
       })
       .filter(i => matches(query, i.name))
       .sort((a, b) => a.name.localeCompare(b.name));

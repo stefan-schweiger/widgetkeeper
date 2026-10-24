@@ -114,7 +114,7 @@ describe('chartBuckets: on the local clock across a DST change', () => {
   it('keeps 6-hour bars at 00, 06, 12 and 18 after the change', () => {
     const from = new Date('2026-10-21T18:40:00').getTime(); // summer time
     const to = new Date('2026-10-28T18:40:00').getTime(); // winter time, after 25 October
-    const starts = win.chartBuckets([], from, to, 6 * HOUR).slice(1).map((b: any) => new Date(b.t).getHours());
+    const starts: number[] = win.chartBuckets([], from, to, 6 * HOUR).slice(1).map((b: any) => new Date(b.t).getHours());
     expect([...new Set(starts)].sort((a: number, b: number) => a - b)).toEqual([0, 6, 12, 18]);
   });
 

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
@@ -108,6 +109,72 @@ describe('web dashboards password', () => {
     now += 61e3;
     await expect(password.login('correct horse')).resolves.toMatchObject({ ok: true });
     await expect(password.login('x')).resolves.toEqual({ ok: false, reason: 'wrong' });
+  });
+
+  it('locks for at most 15 minutes, however many wrong passwords follow', async () => {
+    let now = 1e12;
+    const { password } = setup({ now: () => now });
+    await password.setPassword('correct horse');
+    for (let i = 0; i < 4; i++) await password.login('x');
+    const waits: number[] = [];
+    for (let i = 0; i < 7; i++) {
+      const res = await password.login('x') as { retryAfter: number };
+      waits.push(res.retryAfter);
+      now += res.retryAfter * 1000 + 1000;
+    }
+    expect(waits).toEqual([30, 60, 120, 240, 480, 900, 900]);
+  });
+
+  it('refuses a password over 200 characters, to set or to sign in with', async () => {
+    const { password } = setup();
+    await expect(password.setPassword('x'.repeat(201))).resolves.toEqual({ ok: false, reason: 'tooLong' });
+    await expect(password.setPassword('x'.repeat(200))).resolves.toEqual({ ok: true });
+    await expect(password.login('x'.repeat(201))).resolves.toEqual({ ok: false, reason: 'wrong' });
+    await expect(password.login('x'.repeat(200))).resolves.toMatchObject({ ok: true });
+  });
+
+  it('signs a browser out after 180 days unused; one in use stays, its use saved at most hourly', async () => {
+    const DAY = 24 * 3600e3;
+    let now = 1e12;
+    const { homey, password } = setup({ now: () => now });
+    await password.setPassword('correct horse');
+    const { token: idle } = await password.login('correct horse') as { token: string };
+    const { token: used } = await password.login('correct horse') as { token: string };
+    const secrets = Secrets.for(homey);
+    const set = vi.spyOn(secrets, 'set');
+    now += 30 * 60e3;
+    expect(password.check(used)).toBe(true);
+    expect(set).not.toHaveBeenCalled(); // used within the hour: not saved again
+    now += 60 * 60e3;
+    expect(password.check(used)).toBe(true);
+    expect(set).toHaveBeenCalledTimes(1); // over an hour since: saved
+    expect(password.check(used)).toBe(true);
+    expect(set).toHaveBeenCalledTimes(1);
+    now += 179 * DAY;
+    expect(password.check(used)).toBe(true); // 179 days since it was last used
+    now += DAY;
+    expect(password.check(idle)).toBe(false); // 180 days and 1.5 h unused
+    // A new sign-in prunes it from the stored list; the other one stays.
+    await password.login('correct horse');
+    expect(secrets.get(WEB_SESSIONS_SETTING) as unknown[]).toHaveLength(2);
+    expect(password.check(used)).toBe(true);
+    set.mockRestore();
+  });
+
+  it('keeps the 50 browsers used last', async () => {
+    const now = 1e12;
+    const { homey, password, log } = setup({ now: () => now });
+    await password.setPassword('correct horse');
+    // 50 signed-in browsers (stored: 50 sign-ins would each derive the key), the first used longest ago.
+    const tokens = Array.from({ length: 50 }, (_, i) => `token-${i}`);
+    const sha = (s: string) => createHash('sha256').update(s).digest('hex');
+    Secrets.for(homey).set(WEB_SESSIONS_SETTING, tokens.map((t, i) => ({ hash: sha(t), created: now - 1000 + i, used: now - 1000 + i })));
+    const restarted = new WebPassword(homey, log, () => now);
+    const { token } = await restarted.login('correct horse') as { token: string };
+    expect(Secrets.for(homey).get(WEB_SESSIONS_SETTING) as unknown[]).toHaveLength(50);
+    expect(restarted.check(token)).toBe(true);
+    expect(restarted.check(tokens[0])).toBe(false);
+    expect(tokens.slice(1).every(t => restarted.check(t))).toBe(true);
   });
 });
 

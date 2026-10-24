@@ -1,12 +1,23 @@
 // @vitest-environment happy-dom
-// The frames' pages are never fetched.
-// @vitest-environment-options {"settings": {"disableIframePageLoading": true}}
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+// The frames' pages are never fetched (happy-dom's default, under the `happyDOM` key a file's options would need).
+import nodeConsole from 'node:console';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { pageLocation } from '../widgets/webpage/api.js';
 import { loadMount, loadWidget } from './helpers/loadWidget.js';
 
 let win: any;
 beforeAll(() => { win = loadWidget('webpage'); loadMount('webpage'); });
+
+// happy-dom says so for every frame it doesn't load, on Node's own console (vitest hands it that one): kept out of the
+// test output, other errors aren't.
+const nodeError = nodeConsole.error;
+beforeAll(() => {
+  vi.spyOn(nodeConsole, 'error').mockImplementation((...args: unknown[]) => {
+    if (args[0] instanceof Error && /Iframe page loading is disabled/.test(args[0].message)) return;
+    nodeError.apply(nodeConsole, args);
+  });
+});
+afterAll(() => { vi.restoreAllMocks(); });
 beforeEach(() => { vi.useFakeTimers(); });
 afterEach(() => { vi.useRealTimers(); document.body.innerHTML = ''; });
 

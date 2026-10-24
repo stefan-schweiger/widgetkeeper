@@ -1,9 +1,9 @@
 // @vitest-environment happy-dom
-import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { runFile } from './helpers/loadWidget.js';
 
 // The kit's taps, message line and device loop (widgets/spacer/public/kit.js), which the widgets used to copy.
-new Function(readFileSync('widgets/spacer/public/kit.js', 'utf8'))();
+runFile('widgets/spacer/public/kit.js');
 const kit = (window as any).WidgetkeeperKit;
 
 function touch(node: Element, type: string, x = 0, y = 0) {
@@ -210,5 +210,125 @@ describe('wireDeviceState()', () => {
     Homey.api.mockRejectedValueOnce(new Error('offline'));
     await vi.advanceTimersByTimeAsync(5 * 60e3);
     expect(widget.setMessage).toHaveBeenLastCalledWith('error', true);
+  });
+});
+
+describe('undoTextZoom()', () => {
+  /** A WebView that zooms all text by `zoom` (Android's font scale), with Homey's tokens on the body. */
+  function zoomed(zoom: number) {
+    document.body.style.setProperty('--homey-font-size-default', 'calc(1.1 * 17px)');
+    document.body.style.setProperty('--homey-line-height-default', '24px');
+    const real = window.getComputedStyle.bind(window);
+    return vi.spyOn(window, 'getComputedStyle').mockImplementation((node: Element) => {
+      const style = real(node);
+      if ((node as HTMLElement).style?.fontSize === '100px') return { ...style, fontSize: `${100 * zoom}px` } as CSSStyleDeclaration;
+      return style;
+    });
+  }
+  afterEach(() => { vi.restoreAllMocks(); document.body.removeAttribute('style'); });
+
+  it("divides Homey's text tokens by the WebView's zoom, so token text is zoomed once like native text", () => {
+    zoomed(1.1);
+    kit.undoTextZoom();
+    expect(document.body.style.getPropertyValue('--homey-font-size-default')).toBe('calc((calc(1.1 * 17px)) / 1.1)');
+    expect(document.body.style.getPropertyValue('--homey-line-height-default')).toBe('calc((24px) / 1.1)');
+    expect(document.body.style.getPropertyValue('--homey-font-size-small')).toBe(''); // a token Homey didn't set stays unset
+    expect(document.body.querySelector('span')).toBeNull(); // the probe is gone
+  });
+
+  it('leaves the tokens alone without a zoom (iOS, a browser)', () => {
+    zoomed(1.005);
+    kit.undoTextZoom();
+    expect(document.body.style.getPropertyValue('--homey-font-size-default')).toBe('calc(1.1 * 17px)');
+  });
+});
+
+describe('wireFrame()', () => {
+  function setup() {
+    const Homey = { ready: vi.fn(), setHeight: vi.fn() };
+    const frame = document.createElement('div');
+    vi.spyOn(frame, 'getBoundingClientRect').mockReturnValue({ height: 99.2 } as DOMRect);
+    return { Homey, link: kit.wireFrame(Homey, frame) };
+  }
+
+  it('is ready once, after what it waits for, at most maxMs; the height goes on only once ready', async () => {
+    const { Homey, link } = setup();
+    link.setHeight();
+    expect(Homey.setHeight).not.toHaveBeenCalled();
+    const before = vi.fn();
+    void link.ready({ waitFor: () => [new Promise(() => {})], maxMs: 500, before });
+    void link.ready();
+    await vi.advanceTimersByTimeAsync(499);
+    expect(Homey.ready).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1);
+    expect(before).toHaveBeenCalledTimes(1);
+    expect(Homey.ready).toHaveBeenCalledTimes(1);
+    expect(Homey.ready).toHaveBeenCalledWith({ height: 100 });
+    link.setHeight();
+    expect(Homey.setHeight).toHaveBeenCalledWith(100);
+  });
+
+  it('is ready as soon as what it waits for is', async () => {
+    const { Homey, link } = setup();
+    let done!: () => void;
+    void link.ready({ waitFor: () => [new Promise<void>((r) => { done = r; })], maxMs: 5000 });
+    await vi.advanceTimersByTimeAsync(10);
+    done();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(Homey.ready).toHaveBeenCalledTimes(1);
+  });
+
+  it('sends the load marks on the first request only', () => {
+    const { link } = setup();
+    expect(link.perfParam('?')).toMatch(/^\?perf=\d+,-?\d+,\d+,\d+$/);
+    expect(link.perfParam()).toBe('');
+  });
+});
+
+describe('getDeviceIds() and wireTileNames()', () => {
+  it('always gives a list of devices', async () => {
+    await expect(kit.getDeviceIds({ getDeviceIds: () => ['a'] })).resolves.toEqual(['a']);
+    await expect(kit.getDeviceIds({ getDeviceIds: async () => ['b'] })).resolves.toEqual(['b']);
+    await expect(kit.getDeviceIds({ getDeviceIds: async () => { throw new Error('no'); } })).resolves.toEqual([]);
+    await expect(kit.getDeviceIds({ getDeviceIds: () => 'a' })).resolves.toEqual([]);
+    await expect(kit.getDeviceIds({})).resolves.toEqual([]);
+  });
+
+  it("keeps a widget's names under `default` when its instance can't be read", async () => {
+    for (const getWidgetInstanceId of [() => { throw new Error('no'); }, async () => { throw new Error('no'); }, () => '', undefined]) {
+      const Homey = { api: vi.fn(async () => ({ state: 1, tileNames: { a: 'A' } })), on: vi.fn(), getWidgetInstanceId };
+      const setNames = vi.fn();
+      const tileNames = kit.wireTileNames(Homey, setNames);
+      await expect(tileNames.state('/state?ids=a')).resolves.toBe(1);
+      expect(Homey.api).toHaveBeenCalledWith('GET', '/state?ids=a&instance=default');
+      expect(setNames).toHaveBeenCalledWith({ a: 'A' });
+      await tileNames.rename('a', 'B');
+      expect(Homey.api).toHaveBeenLastCalledWith('POST', '/names', { instance: 'default', key: 'a', name: 'B' });
+    }
+  });
+
+  it("takes only its own instance's realtime names, and a /state without them as it is", async () => {
+    const handlers: Record<string, (data: any) => void> = {};
+    const Homey = { api: vi.fn(async () => [1, 2]), on: (event: string, fn: any) => { handlers[event] = fn; }, getWidgetInstanceId: () => 'w1' };
+    const setNames = vi.fn();
+    const tileNames = kit.wireTileNames(Homey, setNames);
+    await expect(tileNames.state('/state?ids=a')).resolves.toEqual([1, 2]); // an app without tile names
+    handlers['tilenames:state']({ instance: 'w2', names: { a: 'X' } });
+    handlers['tilenames:state']({ instance: 'w1', names: { a: 'Y' } });
+    expect(setNames.mock.calls).toEqual([[{ a: 'Y' }]]);
+  });
+});
+
+describe('formatSince()', () => {
+  it('says the time today, the weekday and time this week, else the date', () => {
+    const now = new Date(2026, 9, 24, 15, 0).getTime();
+    const at = (d: number, h: number, m = 0) => new Date(2026, 9, d, h, m).getTime();
+    expect(kit.formatSince(at(24, 9, 5), now, 'en', 'en-GB', '24')).toBe('9:05');
+    expect(kit.formatSince(at(23, 21, 30), now, 'en', 'en-GB', '24')).toBe('Fri 21:30');
+    expect(kit.formatSince(at(18, 8), now, 'en', 'en-GB', '24')).toBe('Sun 8:00');
+    expect(kit.formatSince(at(17, 23, 59), now, 'en', 'en-GB', '24')).toBe('Oct 17');
+    expect(kit.formatSince(at(17, 23, 59), now, 'da', 'da-DK', '24')).toBe('17. okt.');
+    // A language Intl doesn't know falls back to the screen's, without throwing.
+    expect(() => kit.formatSince(at(17, 23), now, 'not a tag!', 'en-GB', '24')).not.toThrow();
   });
 });

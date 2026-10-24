@@ -11,9 +11,10 @@
   },
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit --noUnusedLocals && tsc -p tsconfig.widgets.json --noUnusedLocals",
+    "typecheck": "tsc --noEmit --noUnusedLocals && tsc -p tsconfig.widgets.json --noUnusedLocals && tsc -p tsconfig.test.json --noUnusedLocals",
     "test": "vitest run",
     "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
     "app-images": "node scripts/render-app-images.mjs",
     "previews": "node scripts/render-previews.mjs",
     "screenshots": "node scripts/render-screenshots.mjs",
@@ -39,6 +40,7 @@
     "@tsconfig/node16": "^16.1.9",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
     "@types/node": "^26.6.5",
+    "@vitest/coverage-v8": "5.0.5",
     "esbuild": "^0.28.2",
     "happy-dom": "^21.0.4",
     "homey": "^4.6.1",
@@ -55,6 +57,9 @@
       },
       "external-editor": {
         "tmp": "^0.2.7"
+      },
+      "express": {
+        "body-parser": "^1.20.9"
       }
     }
   },

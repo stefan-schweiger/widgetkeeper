@@ -119,7 +119,7 @@ describe('screens', () => {
     await service.show({ target: { id: 'web:kitchen' }, text: 'a', seconds: 5 });
     await service.show({ target: { id: 'name: Hall ' }, text: 'b', seconds: 5 });
     await service.show({ target: undefined, text: 'c', seconds: 5 });
-    expect(events(POPUP_SHOW_EVENT).map(e => e.target)).toEqual(['web:kitchen', 'name:hall', 'all']);
+    expect(events(POPUP_SHOW_EVENT).map((e: any) => e.target)).toEqual(['web:kitchen', 'name:hall', 'all']);
     await expect(service.show({ target: { id: 'web:gone' }, text: 'd', seconds: 5 })).rejects.toThrow('Dashboard not found');
   });
 

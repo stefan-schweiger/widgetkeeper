@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { compileFunction } from 'node:vm';
 
 /**
  * Runs a widget's `public/widget.js` (a plain-browser IIFE that assigns its API to `window`) in
@@ -43,5 +45,16 @@ function loadScript(name: WidgetName, file: string): any {
 
 function loadFile(file: string) {
   const [widget, name] = file.split('/');
-  new Function(readFileSync(resolve(import.meta.dirname, `../../widgets/${widget}/public/${name}`), 'utf8'))();
+  runFile(`widgets/${widget}/public/${name}`);
+}
+
+/**
+ * Runs a plain-browser script of the repo (`path` from its root) unchanged in the current environment, as a function
+ * (its top-level names stay its own, as `new Function` would keep them) of `args`' names, and returns what it returns.
+ * It runs under its file's name, so a coverage report (`npm run coverage`) counts its lines.
+ */
+export function runFile(path: string, args: Record<string, unknown> = {}): any {
+  const file = resolve(import.meta.dirname, '../..', path);
+  const fn = compileFunction(readFileSync(file, 'utf8'), Object.keys(args), { filename: pathToFileURL(file).href });
+  return fn(...Object.values(args));
 }

@@ -113,17 +113,16 @@ export default class StackService {
       dashboards = await this.read(AUTOCOMPLETE_CACHE_MS);
     } catch (err) {
       if (!(err instanceof KeyError)) throw err;
-      return [{ id: 'none', name: this.homey.__(`stack.${err.reason}`) || err.reason, description: this.homey.__('stack.keyHint') || '' }];
+      return [{ id: 'none', name: this.homey.__(`stack.${err.reason}`) || err.reason, description: this.homey.__('stack.keyHint') || 'Widgetkeeper → Configure: an API key with the Homey permission.' }];
     }
     const appId = this.homey.manifest.id;
     return dashboards
       .filter(d => matches(query, d.name))
       .sort((a, b) => String(a.name).localeCompare(String(b.name)))
-      .map(d => ({
-        id: d.id,
-        name: d.name,
-        description: this.homey.__('stack.pageCount', { count: dashboardPages(d, appId).length }) || '',
-      }));
+      .map((d) => {
+        const count = dashboardPages(d, appId).length;
+        return { id: d.id, name: d.name, description: this.homey.__('stack.pageCount', { count }) || `${count} Widgetkeeper widgets` };
+      });
   }
 
   // ---------------------------------------------------------------- state

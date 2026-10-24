@@ -10,6 +10,6 @@
     "types": [],
     "skipLibCheck": true
   },
-  // Every widget's scripts (widget.js, mount.js, and the shared chart.js and presets.js), and the web dashboards page.
-  "include": ["types/widgets.d.ts", "widgets/*/public/*.js", "settings/dashboard.js", "settings/dashboard-layout.js"]
+  // Every widget's scripts (widget.js, mount.js, and the shared chart.js and presets.js), the web dashboards page and the popup page.
+  "include": ["types/widgets.d.ts", "widgets/*/public/*.js", "settings/dashboard.js", "settings/dashboard-layout.js", "settings/popup.js"]
 }

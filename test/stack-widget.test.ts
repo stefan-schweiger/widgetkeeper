@@ -285,7 +285,7 @@ describe('rotation', () => {
 
 describe("attention watcher: the pages' own state", () => {
   it("takes a page's own /state for smart rotate, and doesn't read it again while it's fresh", async () => {
-    const call = vi.fn(async () => ({ devices: [] }));
+    const call = vi.fn(async (_type: string, ..._rest: unknown[]) => ({ devices: [] }));
     const onChange = vi.fn();
     const w = win.createStackAttentionWatcher([page('pl', 'locks', { deviceIds: ['l1'] }), page('pc', 'cameras', { deviceIds: ['c1'] })],
       { call, on: () => {}, onChange });
@@ -307,6 +307,7 @@ describe('mount', () => {
     loadWidget('timers'); loadMount('timers');
     loadWidget('values'); loadMount('values');
   });
+  afterEach(() => { vi.restoreAllMocks(); });
 
   function fakeHomey(settings: object, pagesAnswer: any, calls: Record<string, any> = {}) {
     const handlers = new Map<string, ((d: any) => void)[]>();
@@ -478,6 +479,79 @@ describe('mount', () => {
     vi.advanceTimersByTime(119e3);
     expect(root.querySelectorAll('.sk-dot')[1].classList.contains('alert')).toBe(true);
     vi.advanceTimersByTime(2e3);
+    expect(root.querySelectorAll('.sk-dot')[1].classList.contains('alert')).toBe(false);
+  });
+
+  it('says when the dashboard is gone or has no pages, and shows an error only when the first read fails', async () => {
+    const gone = mount(fakeHomey({ dashboard: { id: 'd' } }, { ok: true, missing: true, pages: [] }));
+    const empty = mount(fakeHomey({ dashboard: { id: 'd' } }, { ok: true, pages: [] }));
+    const failing = fakeHomey({ dashboard: { id: 'd' } }, null);
+    failing.api.mockRejectedValue(new Error('offline'));
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const failed = mount(failing);
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(gone.querySelector('.sk-message')!.textContent).toBe('dashboardMissing');
+    expect(empty.querySelector('.sk-message')!.textContent).toBe('noPages');
+    expect(failed.querySelector('.sk-message')!.textContent).toBe('error');
+    expect(failing.ready).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps its pages when a refresh fails, and a changed dashboard starts it again', async () => {
+    const answer = {
+      ok: true,
+      pages: [page('w-values', 'values', { settings: {} }), page('w-timers', 'timers', { settings: {} })],
+      requests: [],
+    };
+    const Homey = fakeHomey({ dashboard: { id: 'd' } }, answer, { 'timers GET /state': { instance: 'w-timers', timers: [], now: Date.now() } });
+    const reload = vi.fn();
+    vi.spyOn(window, 'location', 'get').mockReturnValue({ ...window.location, reload } as Location);
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const root = mount(Homey);
+    await vi.advanceTimersByTimeAsync(3000);
+    const pagesReads = () => Homey.api.mock.calls.filter(c => String(c[1]).startsWith('/pages')).length;
+    expect(pagesReads()).toBe(1);
+    // Every 5 min it reads the pages again: a failed read keeps them, the same ones change nothing.
+    Homey.api.mockImplementationOnce(async () => { throw new Error('offline'); });
+    await vi.advanceTimersByTimeAsync(5 * 60e3);
+    expect(root.querySelectorAll('.sk-slide')).toHaveLength(2);
+    expect(root.querySelector('.sk-message.error')).toBeNull();
+    await vi.advanceTimersByTimeAsync(5 * 60e3);
+    expect(pagesReads()).toBe(3);
+    expect(reload).not.toHaveBeenCalled();
+    // A page added on the dashboard: the frame starts again with the new pages.
+    answer.pages = [...answer.pages, page('w-more', 'timers', { settings: {} })];
+    await vi.advanceTimersByTimeAsync(5 * 60e3);
+    expect(reload).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows a page whose widget fails to mount as failed, and is still ready', async () => {
+    const Homey = fakeHomey({ dashboard: { id: 'd' } }, {
+      ok: true,
+      pages: [page('w-values', 'values', { settings: {} }), page('w-timers', 'timers', { settings: { minutes1: 3 } })],
+      requests: [],
+    }, { 'timers GET /state': { instance: 'w-timers', timers: [], now: Date.now() } });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const mountValues = vi.spyOn(window as any, 'mountValuesWidget').mockImplementation(() => { throw new Error('boom'); });
+    const root = mount(Homey);
+    await vi.advanceTimersByTimeAsync(3000);
+    mountValues.mockRestore();
+    const [values, timers] = root.querySelectorAll('.sk-slide');
+    expect(values.textContent).toBe('pageFailed');
+    expect(timers.querySelector('.tm-preset')).not.toBeNull();
+    expect(Homey.ready).toHaveBeenCalledTimes(1);
+  });
+
+  it('a Flow card ends the requests, and the stack goes back to its rotation', async () => {
+    const Homey = fakeHomey({ dashboard: { id: 'd' }, interval: 'never' }, {
+      ok: true,
+      pages: [page('w-values', 'values', { settings: {} }), page('w-timers', 'timers', { settings: {} })],
+      requests: [],
+    }, { 'timers GET /state': { instance: 'w-timers', timers: [], now: Date.now() } });
+    const root = mount(Homey);
+    await vi.advanceTimersByTimeAsync(3000);
+    Homey.emit('stack:show', { type: 'timers', until: Date.now() + 60e3 });
+    expect(root.querySelectorAll('.sk-dot')[1].classList.contains('alert')).toBe(true);
+    Homey.emit('stack:resume', {});
     expect(root.querySelectorAll('.sk-dot')[1].classList.contains('alert')).toBe(false);
   });
 

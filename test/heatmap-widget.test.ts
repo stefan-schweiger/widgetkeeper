@@ -6,9 +6,7 @@ let win: any;
 beforeAll(() => { win = loadWidget('heatmap'); });
 afterEach(() => { document.body.innerHTML = ''; });
 
-const DATES = ['2026-09-28', '2026-09-29', '2026-09-30', '2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04'];
-
-/** 7 days ending `today` (index into DATES); `fn(day, hour)` gives each value. */
+/** 7 days ending `today` (2026-09-28 … 2026-10-04: an index into them); `fn(day, hour)` gives each value. */
 function history(fn: (d: number, h: number) => number | null, opts: { last?: number, count?: number, type?: string, value?: any } = {}) {
   const last = opts.last ?? 6;
   const count = opts.count ?? 7;

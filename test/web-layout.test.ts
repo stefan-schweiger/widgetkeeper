@@ -1,9 +1,9 @@
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { runFile } from './helpers/loadWidget.js';
 
 // settings/dashboard-layout.js as the page loads it: it puts WidgetkeeperLayout on window.
 const win: any = {};
-new Function('window', readFileSync('settings/dashboard-layout.js', 'utf8'))(win);
+runFile('settings/dashboard-layout.js', { window: win });
 const { expand, collapse, place } = win.WidgetkeeperLayout;
 
 const W = (id: string, extra = {}) => ({ id, type: 'clock', ...extra });
@@ -30,7 +30,7 @@ describe('web dashboards: wide widgets', () => {
     ];
     expect(ids(expand(columns))).toEqual([['x', 'y'], ['^x', 'b', '^y'], ['^x', '^y']]);
     columns[1].length = 0;
-    columns[0][1].at = [0, 0];
+    (columns[0][1] as { at?: number[] }).at = [0, 0];
     expect(ids(expand(columns))).toEqual([['x', 'y'], ['^x', '^y'], ['^x', '^y']]);
   });
 

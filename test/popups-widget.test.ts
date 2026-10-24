@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { loadMount, loadWidget } from './helpers/loadWidget.js';
+import { loadMount, loadWidget, runFile } from './helpers/loadWidget.js';
 
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-22T12:00:00Z')); });
 afterEach(() => { vi.useRealTimers(); document.body.innerHTML = ''; localStorage.clear(); });
@@ -115,7 +115,7 @@ describe('Popups widget', () => {
 
 describe('popup prompt page (settings/popup.js)', () => {
   function load() {
-    new Function(readFileSync('settings/popup.js', 'utf8'))();
+    runFile('settings/popup.js');
     return window as any;
   }
 
@@ -201,7 +201,7 @@ describe("sounds (the kit's `sound`)", () => {
       }
     }
     (window as any).AudioContext = FakeContext;
-    new Function(readFileSync('widgets/spacer/public/kit.js', 'utf8'))();
+    runFile('widgets/spacer/public/kit.js');
     return { notes, sound: (window as any).WidgetkeeperKit.sound };
   }
   afterEach(() => { delete (window as any).AudioContext; delete (window as any).WidgetkeeperKit; });
@@ -248,7 +248,7 @@ describe("sounds (the kit's `sound`)", () => {
 
   it('plays on the prompt page when the popup opens, not on its polls', async () => {
     const { notes } = fakeAudio('running');
-    new Function(readFileSync('settings/popup.js', 'utf8'))();
+    runFile('settings/popup.js');
     const fetch = vi.fn(async () => new Response(JSON.stringify({ closed: false, kind: 'message', text: 'Dinner', picture: null, sound: 'chime', until: Date.now() + 30e3, now: Date.now() })));
     (window as any).mountPopupPage(document.createElement('main'), { fetch, hash: '#id=p1&t=secret' });
     await vi.advanceTimersByTimeAsync(4100);

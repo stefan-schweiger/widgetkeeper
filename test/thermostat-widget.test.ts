@@ -207,7 +207,7 @@ describe('a device without onoff', () => {
 
   it('disables "off" when the device has no way to turn off', () => {
     const s = noOnoff();
-    s.caps.aircon_mode = { ...MODE, values: MODE.values.filter(v => v.id !== 'off') };
+    (s.caps as Record<string, unknown>).aircon_mode = { ...MODE, values: MODE.values.filter(v => v.id !== 'off') };
     const { buttons } = widget({ b1Power: 'off', b2Mode: item('aircon_mode', 'heat', 'x') }, s);
     expect(buttons().map(b => b.disabled)).toEqual([true, false, true]);
   });

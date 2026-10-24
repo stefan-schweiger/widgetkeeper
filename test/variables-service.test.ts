@@ -85,7 +85,7 @@ describe('listPresetValues', () => {
       { id: 'string:"Away"', name: 'Away', description: 'Text', value: 'Away', type: 'string' },
     ]);
     expect((await service.listPresetValues('v3', '')).map(i => i.name)).toEqual(['None', 'Hello']);
-    expect((await service.listPresetValues('v3', 'x'.repeat(300)))[0].value).toHaveLength(200);
+    expect(((await service.listPresetValues('v3', 'x'.repeat(300)))[0] as { value?: string }).value).toHaveLength(200);
   });
 
   it('asks for the variable first, and says when it is gone', async () => {

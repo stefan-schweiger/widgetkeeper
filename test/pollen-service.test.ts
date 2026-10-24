@@ -217,6 +217,6 @@ describe('getPollen', () => {
       lastStatus: `200 at ${new Date(NOW).toISOString()}`,
       lastError: null,
     });
-    expect(service.describe().today.date).toBe('2026-06-15');
+    expect(service.describe().today!.date).toBe('2026-06-15');
   });
 });

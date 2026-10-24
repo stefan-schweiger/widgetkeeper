@@ -26,6 +26,7 @@ export type FakeCap = {
   value?: unknown,
   type?: string,
   setable?: boolean,
+  getable?: boolean,
   title?: string,
   units?: string,
   values?: { id: string, title?: string }[],
@@ -96,7 +97,7 @@ export function fakeDevice({ id = 'dev1', name = 'Aircon', zone = 'z1', class: c
 
 export type FakeApiOptions = {
   devices?: FakeDevice[],
-  zones?: Record<string, { name: string }>,
+  zones?: Record<string, { name: string, id?: string, parent?: string | null }>,
   logs?: { id: string, ownerUri: string, ownerId: string }[],
   logEntries?: (args: { uri: string, id: string, resolution: string }) => unknown,
   prices?: (args: { date: string }) => unknown,

@@ -92,6 +92,39 @@ describe('locales', () => {
     }
   });
 
+  // The app's own strings (`homey.__('…')`): the key is in en.json, and the English it falls back to is en.json's text
+  // (the tests' Homey has no strings, so service tests see the fallbacks).
+  describe("the app's strings", () => {
+    const SOURCES = [
+      ...readdirSync('lib').filter(f => f.endsWith('.ts')).map(f => `lib/${f}`), 'app.ts', 'api.ts',
+      ...readdirSync('widgets').map(id => `widgets/${id}/api.ts`).filter(f => { try { readFileSync(f); return true; } catch { return false; } }),
+    ];
+    const uses = SOURCES.flatMap(file => [...readFileSync(file, 'utf8')
+      .matchAll(/__\(\s*'([\w.]+)'(?:\s*,\s*\{[^}]*\})?\s*\)(?:\s*\|\|\s*(['`])((?:[^'`\\]|\\.)*)\2)?/g)]
+      .map(m => ({ file, key: m[1], fallback: m[2] ? m[3] : null })));
+
+    it('finds them', () => {
+      expect(uses.length).toBeGreaterThan(40);
+    });
+
+    it('uses only keys en.json has', () => {
+      expect(uses.filter(u => !(u.key in en)).map(u => `${u.file}: ${u.key}`)).toEqual([]);
+    });
+
+    it("falls back to en.json's text", () => {
+      const asWildcards = (s: string) => s.replace(/__\w+__/g, '*').replace(/\$\{[^}]*\}/g, '*').replace(/\\'/g, "'");
+      const differ = uses.filter(u => u.fallback !== null && u.key in en && asWildcards(u.fallback) !== asWildcards(en[u.key]));
+      expect(differ.map(u => `${u.file}: ${u.key}: ${JSON.stringify(u.fallback)} vs ${JSON.stringify(en[u.key])}`)).toEqual([]);
+    });
+
+    it('has the strings built from a name: the key problems, the variable types, the Flow icons', async () => {
+      for (const reason of ['noKey', 'keyScope', 'keyInvalid']) expect(en).toHaveProperty([`stack.${reason}`]);
+      for (const type of ['typeBoolean', 'typeNumber', 'typeString']) expect(en).toHaveProperty([`variables.${type}`]);
+      const { FLOW_ICONS } = await import('../lib/FlowService.js');
+      expect(FLOW_ICONS.filter(id => !(`flows.icons.${id}` in en))).toEqual([]);
+    });
+  });
+
   // Homey's compose has no shared Flow card arguments, so the three colour cards each carry the list.
   it("the Flow colour cards list `default` and TILE_COLORS, each named alike, and the kit's COLORS are the same", async () => {
     const { TILE_COLORS } = await import('../lib/tileColors.js');

@@ -38,6 +38,8 @@ export default class Diagnostics {
       app: this.homey.manifest.id,
       version: this.homey.manifest.version,
       homeyVersion: this.homey.version,
+      // The Node.js the Homey runs the app on: CI's node-version should match it.
+      node: process.version,
       uptimeMinutes: Math.round((Date.now() - this.startedAt) / 60e3),
       debugLog: this.homey.settings.get(DEBUG_LOG_SETTING) === true,
       electricity: await (this.homey.app as any)?.electricity?.describe?.().catch((err: unknown) => String(err)) ?? null,

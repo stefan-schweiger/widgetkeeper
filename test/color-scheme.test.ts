@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { KIT, loadMount, loadWidget, type WidgetName } from './helpers/loadWidget.js';
+import { KIT, loadMount, loadWidget, runFile, type WidgetName } from './helpers/loadWidget.js';
 
 // The Colour style setting (`colorStyle`: Muted or Vivid, kit.css's palette) and the colour pickers it goes with.
 const SCHEME_WIDGETS: WidgetName[] = ['quickactions', 'sensoralarms', 'locks', 'values', 'lights', 'lightrooms', 'curtains', 'dayssince', 'textline',
@@ -61,7 +61,7 @@ describe('the Colour style setting', () => {
 describe('kit.js colours', () => {
   let kit: any;
   beforeEach(() => {
-    new Function(readFileSync(`widgets/${KIT.replace('/', '/public/')}`, 'utf8'))();
+    runFile(`widgets/${KIT.replace('/', '/public/')}`);
     kit = (window as any).WidgetkeeperKit;
   });
 

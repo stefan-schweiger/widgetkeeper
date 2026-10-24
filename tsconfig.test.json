@@ -1,0 +1,10 @@
+{
+  // The tests, type-checked like the app (`npm run typecheck`); vitest itself only strips the types. Nothing is emitted.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "target": "es2022"
+  },
+  "include": ["test/**/*.ts", "app.ts", "api.ts", "lib/**/*.ts", "widgets/*/api.ts"]
+}
