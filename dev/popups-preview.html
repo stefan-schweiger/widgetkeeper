@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Popups prompt page preview</title>
+  <!--
+    The prompt page a Popups widget opens in the Homey app's in-app browser (settings/popup.html), with made-up
+    popups and a simulated app: a question with a doorbell's picture (a drawn front door, never a real camera image),
+    a message, and a question another screen answers 4 s in. Each is a phone-sized frame of the real page script.
+    Serve the repo root (`python -m http.server 8765`) and open /dev/popups-preview.html (`?lang=de`; the colours
+    follow the browser's light or dark mode).
+  -->
+  <style>
+    body { margin: 0; padding: 16px; font-family: system-ui, sans-serif; background: #8A8B93; }
+    h1 { font-size: 16px; margin: 0 0 12px; color: #FFFFFF; }
+    .frames { display: flex; flex-wrap: wrap; gap: 16px; }
+    .frame { width: 360px; }
+    .frame p { margin: 0 0 6px; color: #FFFFFF; font-size: 13px; }
+    iframe { width: 360px; height: 680px; border: 0; border-radius: 24px; background: #FFFFFF; }
+  </style>
+</head>
+<body>
+  <h1>Popups: the prompt page (settings/popup.html)</h1>
+  <div class="frames" id="frames"></div>
+  <script>
+    const lang = new URLSearchParams(location.search).get('lang') || 'en';
+    const DOOR = btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360"><rect width="640" height="360" fill="#2B3A4A"/>'
+      + '<rect y="250" width="640" height="110" fill="#3D4A3A"/><rect x="250" y="70" width="140" height="210" rx="6" fill="#6B3E26"/>'
+      + '<circle cx="365" cy="180" r="7" fill="#E8C66A"/><rect x="230" y="60" width="180" height="14" fill="#1C2733"/>'
+      + '<circle cx="450" cy="110" r="16" fill="#FFE9A8"/></svg>');
+    const CASES = [
+      { label: 'A question with a camera', popup: { kind: 'ask', text: 'Someone is at the front door. Unlock it?', picture: { source: 'camera' } } },
+      { label: 'A message for 20 s', popup: { kind: 'message', text: 'Dinner is ready', picture: null, seconds: 20 } },
+      { label: 'Answered on another screen, 4 s in', popup: { kind: 'ask', text: 'Turn off the lights downstairs?', picture: null }, elsewhereAfter: 4000 },
+    ];
+
+    fetch(`/locales/${lang}.json`).then(r => r.json()).then((strings) => {
+      for (const c of CASES) {
+        const wrap = document.createElement('div');
+        wrap.className = 'frame';
+        const label = document.createElement('p');
+        label.textContent = c.label;
+        const frame = document.createElement('iframe');
+        wrap.append(label, frame);
+        document.getElementById('frames').append(wrap);
+        frame.srcdoc = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+          + '<link rel="stylesheet" href="/settings/popup.css"><script src="/settings/popup.js"><\/script></head>'
+          + '<body><main id="app" class="pp"></main></body></html>';
+        frame.addEventListener('load', () => mount(frame.contentWindow, c, strings.popups));
+      }
+    });
+
+    /** Runs the page script in the frame against a simulated app: the popup, its picture and its answer. */
+    function mount(win, c, strings) {
+      const started = Date.now();
+      const until = started + (c.popup.seconds || 30) * 1000;
+      let answered = null;
+      const json = (body, status = 200) => new Response(JSON.stringify(body), { status });
+      const fakeFetch = async (url, init) => {
+        const body = JSON.parse(init.body);
+        if (body.t !== 'preview') return json({ error: 'Not found' }, 404);
+        if (url.endsWith('/image')) return json({ type: 'image/svg+xml', data: DOOR });
+        if (url.endsWith('/answer')) {
+          if (answered) return json({ ok: false, reason: 'closed', answer: answered.answer });
+          answered = { answer: body.answer, here: true };
+          return json({ ok: true, answer: body.answer });
+        }
+        if (c.elsewhereAfter && !answered && Date.now() - started > c.elsewhereAfter) answered = { answer: true };
+        if (answered) return json({ closed: true, kind: c.popup.kind, answer: answered.answer, reason: 'answered', now: Date.now(), language: lang, strings });
+        if (Date.now() > until) return json({ closed: true, kind: c.popup.kind, answer: null, reason: 'expired', now: Date.now(), language: lang, strings });
+        return json(Object.assign({ closed: false, until, now: Date.now(), language: lang, strings }, c.popup));
+      };
+      win.mountPopupPage(win.document.getElementById('app'), { fetch: fakeFetch, hash: '#id=p1&t=preview' });
+    }
+  </script>
+</body>
+</html>

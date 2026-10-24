@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lights by Room widget preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/spacer/public/kit.css">
+  <link rel="stylesheet" href="../widgets/lightrooms/public/widget.css">
+  <script src="../widgets/spacer/public/kit.js"></script>
+  <script src="../widgets/lightrooms/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <link rel="stylesheet" href="preview.css">
+  <style>
+    /* The widget is transparent: it sits straight on the dashboard background. */
+    .dash { padding: 0; box-sizing: border-box; }
+    .light { background: #F2F3F5; padding: 12px; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <div class="col"><span>358 px (phone) · dark · as it opens</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · dark · Living room open</span><div class="dash homey-dark-mode" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>358 px · light · Kitchen open</span><div class="dash light" style="width:358px"><div id="w3"></div></div></div>
+  <div class="col"><span>300 px · dark · Living room open</span><div class="dash homey-dark-mode" style="width:300px"><div id="w4"></div></div></div>
+  <div class="col"><span>358 px · dark · Vivid, Kitchen open</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
+  <div class="col"><span>358 px · nothing picked</span><div class="dash homey-dark-mode" style="width:358px"><div id="w6"></div></div></div>
+
+  <script>
+    const cap = value => ({ value, setable: true });
+    // Stand-ins for Homey's zone icons (the app sends Homey's own, from its library, as SVG data URLs).
+    const icon = body => `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`)}`;
+    const zoneIcons = {
+      kit: icon('<path d="M4 10h16v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M2 10h20"/><path d="M9 7c0-1 1-1.5 1-2.5M14 7c0-1 1-1.5 1-2.5"/>'),
+      liv: icon('<path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><path d="M3 13a2 2 0 0 1 4 0v1h10v-1a2 2 0 0 1 4 0v4H3z"/><path d="M5 17v2M19 17v2"/>'),
+      hal: icon('<path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M4 21h16"/><circle cx="15" cy="12" r="1" fill="#000"/>'),
+      bed: icon('<path d="M3 19V6M3 15h18v4M21 15v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="12" r="1.8"/>'),
+      gar: icon('<path d="M12 21v-6"/><path d="M12 3a5 5 0 0 0-5 5 4 4 0 0 0 1 7h8a4 4 0 0 0 1-7 5 5 0 0 0-5-5z"/>'),
+    };
+    const Z = { kit: { id: 'kit', name: 'Kitchen' }, liv: { id: 'liv', name: 'Living room' }, hal: { id: 'hal', name: 'Hallway' }, bed: { id: 'bed', name: 'Bedroom' }, gar: { id: 'gar', name: 'Garden' } };
+    const temp = (on, dim, k) => ({ onoff: cap(on), dim: cap(dim), light_temperature: cap(k), light_mode: cap('temperature') });
+    const color = (on, dim, hue, sat = 1) => ({ onoff: cap(on), dim: cap(dim), light_hue: cap(hue), light_saturation: cap(sat), light_temperature: cap(0.5), light_mode: cap('color') });
+    const lights = () => [
+      { id: 'k1', name: 'Ceiling', icon: null, zone: Z.kit, caps: temp(true, 0.8, 0.25) },
+      { id: 'k2', name: 'Island 1', icon: null, zone: Z.kit, caps: temp(true, 0.65, 0.75) },
+      { id: 'k3', name: 'Island 2', icon: null, zone: Z.kit, caps: temp(true, 0.65, 0.75) },
+      { id: 'k4', name: 'Cabinet strip', icon: null, zone: Z.kit, caps: { onoff: cap(false), dim: cap(0.4) } },
+      { id: 'l1', name: 'Floor lamp', icon: null, zone: Z.liv, caps: temp(true, 0.45, 0.8) },
+      { id: 'l2', name: 'Sofa lamp', icon: null, zone: Z.liv, caps: color(true, 0.3, 0.08, 0.9) },
+      { id: 'l3', name: 'TV strip', icon: null, zone: Z.liv, caps: { onoff: cap(true), dim: cap(0.6), light_hue: cap(0.76), light_saturation: cap(1) } },
+      { id: 'l4', name: 'Ceiling', icon: null, zone: Z.liv, caps: temp(false, 0.7, 0.5) },
+      { id: 'h1', name: 'Ceiling', icon: null, zone: Z.hal, caps: { onoff: cap(false), dim: cap(0.9) } },
+      { id: 'h2', name: 'Stairs', icon: null, zone: Z.hal, caps: { onoff: cap(false), dim: cap(0.3) } },
+      { id: 'b1', name: 'Bedside left', icon: null, zone: Z.bed, caps: color(false, 0.2, 0.08) },
+      { id: 'b2', name: 'Bedside right', icon: null, zone: Z.bed, caps: color(false, 0.2, 0.08) },
+      { id: 'g1', name: 'Path lights', icon: null, zone: Z.gar, caps: { onoff: cap(true) } },
+      { id: 'g2', name: 'String lights', icon: null, zone: Z.gar, caps: { onoff: cap(false) } },
+      { id: 'gone', missing: true },
+    ];
+    // The rooms' Moods: what each sets on its lights (the app sends the colours only).
+    const moods = [
+      { id: 'm1', name: 'Movie night', zone: 'liv', devices: { l1: { onoff: false }, l2: { onoff: true, dim: 0.15, light_mode: 'color', light_hue: 0.08, light_saturation: 1 }, l3: { onoff: true, dim: 0.6, light_hue: 0.76, light_saturation: 1 }, l4: { onoff: false } } },
+      { id: 'm2', name: 'Cosy', zone: 'liv', devices: { l1: { onoff: true, dim: 0.4, light_mode: 'temperature', light_temperature: 1 }, l2: { onoff: true, dim: 0.3, light_mode: 'temperature', light_temperature: 1 }, l3: { onoff: true, dim: 0.2, light_hue: 0.08, light_saturation: 1 } } },
+      { id: 'm3', name: 'Reading', zone: 'liv', devices: { l1: { onoff: true, dim: 0.9, light_mode: 'temperature', light_temperature: 0.5 }, l3: { onoff: false } } },
+      { id: 'm4', name: 'Colourful', zone: 'liv', devices: { l2: { onoff: true, dim: 0.5, light_mode: 'color', light_hue: 0, light_saturation: 1 }, l3: { onoff: true, dim: 0.7, light_hue: 0.6, light_saturation: 1 } } },
+      { id: 'm5', name: 'Cooking', zone: 'kit', devices: { k1: { onoff: true, dim: 1, light_mode: 'temperature', light_temperature: 0 }, k2: { onoff: true, dim: 1, light_mode: 'temperature', light_temperature: 0.25 }, k3: { onoff: true, dim: 1, light_mode: 'temperature', light_temperature: 0.25 }, k4: { onoff: true, dim: 0.8 } } },
+      { id: 'm6', name: 'Dinner', zone: 'kit', devices: { k1: { onoff: false }, k2: { onoff: true, dim: 0.45, light_mode: 'temperature', light_temperature: 1 }, k3: { onoff: true, dim: 0.45, light_mode: 'temperature', light_temperature: 1 }, k4: { onoff: true, dim: 0.2 } } },
+    ];
+    // The colours the app reads from a Mood (moodColors() in lib/LightService.ts).
+    const moodColors = m => Object.values(m.devices).filter(s => s.onoff !== false).map(s => (
+      (s.light_mode === 'color' || (s.light_mode == null && s.light_temperature == null)) && s.light_hue != null
+        ? { hue: s.light_hue, saturation: s.light_saturation ?? 1 }
+        : s.light_temperature != null ? { temperature: s.light_temperature } : null)).filter(Boolean).slice(0, 4);
+    const roomMoods = moods.map(({ devices, ...m }) => ({ ...m, colors: moodColors({ devices }) }));
+
+    // Simulates the devices: a change is reported back after a moment. "Movie night" fails, as without an API key.
+    function mount(id, open = [], extra = {}) {
+      let w;
+      const push = (deviceId, capabilityId, value) => w.pushChange({ deviceId, capabilityId, value });
+      const onSet = (deviceId, change) => new Promise((resolve) => setTimeout(() => {
+        if ('dim' in change) { if (change.dim === 0) push(deviceId, 'onoff', false); else { push(deviceId, 'dim', change.dim); push(deviceId, 'onoff', true); } }
+        if ('onoff' in change) push(deviceId, 'onoff', change.onoff);
+        if ('hue' in change) { push(deviceId, 'light_mode', 'color'); push(deviceId, 'light_hue', change.hue); push(deviceId, 'light_saturation', change.saturation); push(deviceId, 'onoff', true); }
+        if ('temperature' in change) { push(deviceId, 'light_mode', 'temperature'); push(deviceId, 'light_temperature', change.temperature); push(deviceId, 'onoff', true); }
+        resolve();
+      }, 400));
+      const onMood = moodId => new Promise((resolve, reject) => setTimeout(() => {
+        if (moodId === 'm1') { reject(Object.assign(new Error('noKey'), { reason: 'noKey' })); return; }
+        for (const [deviceId, state] of Object.entries(moods.find(m => m.id === moodId).devices)) {
+          for (const [capabilityId, value] of Object.entries(state)) push(deviceId, capabilityId, value);
+        }
+        resolve();
+      }, 400));
+      // ?palette=warm|dusk; ?open=<zone id>,… opens rooms in every widget.
+      const q = new URLSearchParams(location.search);
+      const opened = q.get('open') ? q.get('open').split(',') : open;
+      w = createLightRoomsWidget(document.getElementById(id), { t: devT, onSet, onMood, palette: q.get('palette') || undefined, open: opened, ...extra });
+      w.setState(lights(), zoneIcons);
+      w.setMoods(roomMoods);
+    }
+    mount('w1');
+    mount('w2', ['liv']);
+    mount('w3', ['kit']);
+    mount('w4', ['liv']);
+    mount('w5', ['kit'], { colorStyle: 'deep' });
+    const empty = createLightRoomsWidget(document.getElementById('w6'), { t: devT });
+    empty.setMessage(empty.t('selectDevices'));
+  </script>
+</body>
+</html>

@@ -4,7 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { TIGHT_UNITS, COLORS, scaled, formatNumber, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { TIGHT_UNITS, COLORS, scaled, formatNumber, applyColors, timeSpan, isTimeSpan } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const C = window.WidgetkeeperChart;
@@ -13,9 +13,8 @@
   const CHIP_H = 38; // chip row → top grid line, as the Electricity Overview's
   const PLOT_H = { 1: 122, 2: 83 }; // one chart: the price chart's height; two: the live chart's
   const R = 34; // right gutter for the second scale on one chart, as the Electricity Overview's usage scale
-  const SPAN_MS = { '1h': HOUR, '6h': 6 * HOUR, '24h': 24 * HOUR, '2d': 48 * HOUR, '3d': 72 * HOUR, '5d': 120 * HOUR, '7d': 168 * HOUR };
   /** Each bar's length per span: about 12–28 bars, on the clock. */
-  const BAR_MS = { '1h': 5 * MIN, '6h': 15 * MIN, '24h': HOUR, '2d': 2 * HOUR, '3d': 3 * HOUR, '5d': 6 * HOUR, '7d': 6 * HOUR };
+  const BAR_MS = { '1h': 5 * MIN, '6h': 15 * MIN, '24h': HOUR, today: HOUR, yesterday: HOUR, '2d': 2 * HOUR, '3d': 3 * HOUR, '5d': 6 * HOUR, '7d': 6 * HOUR };
   const STYLES = ['area', 'line', 'bars'];
 
   const DEFAULT_STRINGS = {
@@ -24,6 +23,7 @@
     error: 'Could not load the chart.',
     unavailable: 'Unavailable',
     noHistory: 'No history yet.',
+    yesterdayAvg: 'Yesterday · avg',
   };
 
 
@@ -100,7 +100,7 @@
 
     /** The charts' settings, with fallbacks for anything missing or unknown. */
     const charts = (opts.charts && opts.charts.length ? opts.charts : [{}]).slice(0, 2).map(c => ({
-      span: SPAN_MS[c.span] ? c.span : '24h',
+      span: isTimeSpan(c.span) ? c.span : '24h',
       style: STYLES.includes(c.style) ? c.style : 'area',
       color: COLORS.includes(c.color) ? c.color : 'blue',
       fit: c.range !== 'zero',
@@ -142,14 +142,20 @@
 
     // ------------------------------------------------------------------ derived data
 
-    function spanMs(i) { return SPAN_MS[charts[i].span]; }
+    /**
+     * The chart's window at `at` (the kit's `timeSpan()`): the axis `[from, to]` and `end`, where its data stops;
+     * `live` when that's now (not yesterday), `day` for today and yesterday, whose axis is a whole day.
+     */
+    function windowOf(i, at) {
+      const w = timeSpan(charts[i].span, at);
+      return { ...w, live: w.end === at, day: w.to !== at };
+    }
 
-    /** The chart's logged (and live) points over its span. */
-    function loggedPoints(i, to) {
+    /** The chart's logged (and live) points in its window. */
+    function loggedPoints(i, win) {
       const s = state.entries[i];
       if (!s || 'missing' in s) return [];
-      const from = to - spanMs(i);
-      return (s.points || []).filter(p => p[0] >= from && p[0] <= to && typeof p[1] === 'number' && isFinite(p[1]));
+      return (s.points || []).filter(p => p[0] >= win.from && p[0] <= win.end && typeof p[1] === 'number' && isFinite(p[1]));
     }
 
     /** The chart's current value, or null. */
@@ -158,12 +164,12 @@
       return s && !('missing' in s) && typeof s.value === 'number' && isFinite(s.value) ? s.value : null;
     }
 
-    /** The chart's points over its span, with the current value carried on to now. */
-    function pointsOf(i, to) {
-      const pts = loggedPoints(i, to);
+    /** The chart's points in its window, with the current value carried on to now (not yesterday). */
+    function pointsOf(i, win) {
+      const pts = loggedPoints(i, win);
       const last = pts.length ? pts[pts.length - 1][0] : -Infinity;
-      const v = currentOf(i);
-      return v != null && last < to ? pts.concat([[to, v]]) : pts;
+      const v = win.live ? currentOf(i) : null;
+      return v != null && last < win.end ? pts.concat([[win.end, v]]) : pts;
     }
 
     function titleOf(i) {
@@ -214,15 +220,21 @@
       if (h && h !== state.lastHeight) { state.lastHeight = h; opts.onHeight(h); }
     }
 
-    /** The value and time a chart shows: the tapped point or bar, else the current value. */
+    /** The value and time a chart shows: the tapped point or bar, else the current value (yesterday: its average). */
     function shown(i) {
       const s = state.entries[i];
       const g = geom[i];
+      const win = windowOf(i, now());
       if (g && g.sel != null && g.items[g.sel]) {
         const item = g.items[g.sel];
-        const long = spanMs(i) > 24 * HOUR;
+        const long = win.to - win.from > 24 * HOUR && !win.day;
         const at = ms => (long ? `${weekday(ms)} ${hhmm(ms)}` : hhmm(ms));
         return { value: item.v, sub: item.end != null ? `${at(item.t)}–${hhmm(item.end)}` : at(item.t) };
+      }
+      if (s && !('missing' in s) && !win.live) {
+        // The drawn points and bars are evenly spaced and carry the last value over gaps, so their mean is the day's.
+        const vs = g ? g.items.map(item => item.v).filter(v => typeof v === 'number' && isFinite(v)) : [];
+        return { value: vs.length ? vs.reduce((a, v) => a + v, 0) / vs.length : null, sub: t('yesterdayAvg') };
       }
       return { value: s && !('missing' in s) ? s.value : null, sub: s && 'missing' in s ? t('unavailable') : t('now') };
     }
@@ -252,13 +264,13 @@
       const plotH = PLOT_H[state.entries.length > 1 ? 2 : 1];
       const top = CHIP_H, base = top + plotH;
       const H = base + X_LABEL_GAP + X_LABEL_H;
-      const to = now(), span = spanMs(i), from = to - span;
+      const win = windowOf(i, now());
       const missing = !s || 'missing' in s;
 
       clear(u.chips);
       chip(u.chips, i);
 
-      const data = seriesData(i, from, to);
+      const data = seriesData(i, win);
       show(u.svg, !missing && data.drawable);
       // A missing device's chip already says Unavailable, unless the chart has a title of its own.
       show(u.note, missing ? !!c.title : !data.drawable);
@@ -269,9 +281,9 @@
 
       const svg = u.svg;
       kit.prepareSvg(svg, w, H);
-      const x = ms => L + pw * (ms - from) / span;
+      const x = ms => L + pw * (ms - win.from) / (win.to - win.from);
       const scale = kit.valueScale(svg, { max: data.max, min: data.min, h: plotH, top, pw, format: axisLabel, fit: c.fit });
-      xLabels(svg, from, to, pw, top, base);
+      xLabels(svg, win, pw, top, base);
       kit.axis(svg, top, base, pw);
 
       const drawn = drawSeries(i, svg, { data, x, scale, top, base });
@@ -288,14 +300,14 @@
       const plotH = PLOT_H[1];
       const top = CHIP_H, base = top + plotH;
       const H = base + X_LABEL_GAP + X_LABEL_H;
-      const to = now(), span = spanMs(0), from = to - span;
+      const win = windowOf(0, now());
 
       clear(u.chips);
       chip(u.chips, 0);
       chip(u.chips, 1);
 
       const missing = [0, 1].map(i => !state.entries[i] || 'missing' in state.entries[i]);
-      const data = [0, 1].map(i => seriesData(i, from, to));
+      const data = [0, 1].map(i => seriesData(i, win));
       const any = data[0].drawable || data[1].drawable;
       show(u.svg, any);
       // Missing devices' chips already say Unavailable, unless a chart has a title of its own.
@@ -307,11 +319,11 @@
 
       const svg = u.svg;
       kit.prepareSvg(svg, w, H);
-      const x = ms => L + pw * (ms - from) / span;
+      const x = ms => L + pw * (ms - win.from) / (win.to - win.from);
       // A side with nothing to draw still gets a scale, so the other series keeps its place.
       const side = d => (d.drawable ? { max: d.max, min: d.min, format: axisLabel } : { max: 1, min: 0, format: () => '' });
       const scales = kit.dualScale(svg, { a: side(data[0]), b: side(data[1]), h: plotH, top, pw, fit: charts[0].fit });
-      xLabels(svg, from, to, pw, top, base);
+      xLabels(svg, win, pw, top, base);
       kit.axis(svg, top, base, pw);
 
       const bothBars = !!(data[0].bars && data[1].bars && data[0].drawable && data[1].drawable);
@@ -336,12 +348,14 @@
       parent.lastChild.setAttribute('data-color', charts[i].color);
     }
 
-    /** A series' points (or bars) over `[from, to]`, the display scaling and the range of what's drawn. */
-    function seriesData(i, from, to) {
+    /** A series' points (or bars) in the window, the display scaling and the range of what's drawn. */
+    function seriesData(i, win) {
       const s = state.entries[i];
       if (!s || 'missing' in s) return { drawable: false };
-      const bars = charts[i].style === 'bars' ? chartBuckets(loggedPoints(i, to), from, to, BAR_MS[charts[i].span], currentOf(i)) : null;
-      const pts = bars ? null : pointsOf(i, to);
+      const { from } = win;
+      const bars = charts[i].style === 'bars'
+        ? chartBuckets(loggedPoints(i, win), from, win.end, BAR_MS[charts[i].span], win.live ? currentOf(i) : null) : null;
+      const pts = bars ? null : pointsOf(i, win);
       const drawable = bars ? bars.some(b => b.v != null) : pts.length >= 2;
       if (!drawable) return { drawable };
       const disp = v => scaled(s.capability, v);
@@ -414,10 +428,11 @@
     }
 
     /**
-     * Time labels: up to 6 h relative (`1h · 30m · Now`, as the live power chart), 24 h the clock hours every
-     * 6 h, longer spans the weekday at each day's noon; Now always at the right end. Midnights are dashed lines.
+     * Time labels: up to 6 h relative (`1h · 30m · Now`, as the live power chart), 24 h and a day (today, yesterday)
+     * the clock hours every 6 h, longer spans the weekday at each day's noon; Now at the right end, except on a day,
+     * which ends at midnight. Midnights are dashed lines.
      */
-    function xLabels(svg, from, to, pw, top, base) {
+    function xLabels(svg, { from, to, day }, pw, top, base) {
       const span = to - from;
       const ly = base + X_LABEL_GAP;
       if (span <= 6 * HOUR) {
@@ -432,9 +447,9 @@
       d.setHours(24, 0, 0, 0);
       for (; d.getTime() < to; d.setDate(d.getDate() + 1)) midnights.push(d.getTime());
       kit.midnightLines(svg, midnights.map(x), top, base);
-      const kept = [{ x: L + pw, cx: L + pw - 15, anchor: 'end', label: t('now') }];
+      const kept = day ? [] : [{ x: L + pw, cx: L + pw - 15, anchor: 'end', label: t('now') }];
       const candidates = [];
-      if (span <= 24 * HOUR) {
+      if (span <= 24 * HOUR || day) {
         const h = new Date(from);
         h.setMinutes(0, 0, 0);
         for (h.setHours(h.getHours() + 1); h.getTime() < to; h.setHours(h.getHours() + 1)) {
@@ -506,7 +521,7 @@
 
     // The line scrolls with time: about a pixel per redraw, at most once a second. Not while nobody sees it (a hidden
     // page, or a Smart Stack page that isn't on screen); drawn at once when it's back.
-    const shortest = Math.min(...charts.map((c) => SPAN_MS[c.span]));
+    const shortest = Math.min(...charts.map((c, i) => { const w = windowOf(i, now()); return w.to - w.from; }));
     let offScreen = false;
     const scrolling = () => state.entries.length && !state.message && !offScreen && !document.hidden;
     const scrollTimer = setInterval(() => { if (scrolling()) render(); },
@@ -539,9 +554,10 @@
         state.entries.forEach((s, i) => {
           if (!s || 'missing' in s || s.deviceId !== deviceId || s.capabilityId !== capabilityId) return;
           s.value = value;
-          if (typeof value === 'number' && isFinite(value)) {
+          const win = windowOf(i, at);
+          if (typeof value === 'number' && isFinite(value) && win.live) {
             s.points.push([at, value]);
-            while (s.points.length && s.points[0][0] < at - spanMs(i)) s.points.shift();
+            while (s.points.length && s.points[0][0] < win.from) s.points.shift();
           }
           changed = true;
         });

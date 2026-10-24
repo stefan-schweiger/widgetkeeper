@@ -206,6 +206,54 @@ describe('rows', () => {
   });
 });
 
+describe('show only due', () => {
+  const shown = (tiles: () => HTMLElement[]) => tiles().map(t => t.style.display !== 'none');
+
+  it('shows amber and red rows with `due`, red ones with `overdue`', () => {
+    const entries = [
+      { key: 'plants', resetAt: Date.now() - 8 * DAY }, // red
+      { key: 'filter', resetAt: Date.now() - 70 * DAY }, // amber
+      { key: 'fish', resetAt: Date.now() - 40 * DAY }, // no intervals: never due
+    ];
+    expect(shown(widget(entries).tiles)).toEqual([true, true, true]);
+    expect(shown(widget(entries, { show: 'due' }).tiles)).toEqual([true, true, false]);
+    document.body.innerHTML = '';
+    expect(shown(widget(entries, { show: 'overdue' }).tiles)).toEqual([true, false, false]);
+  });
+
+  it('keeps a counter not started, for its first tap', () => {
+    const { tiles } = widget([{ key: 'plants', resetAt: null }, { key: 'filter', resetAt: Date.now() - DAY }], { show: 'overdue' });
+    expect(shown(tiles)).toEqual([true, false, false]);
+  });
+
+  it('keeps a reset row while Undo shows, then hides it', async () => {
+    const { tiles, value } = widget([{ key: 'plants', resetAt: Date.now() - 8 * DAY }], { show: 'due' });
+    tap(tiles()[0]);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(value(0)).toBe('Today');
+    expect(shown(tiles)[0]).toBe(true);
+    await vi.advanceTimersByTimeAsync(5100);
+    expect(shown(tiles)[0]).toBe(false);
+  });
+
+  it('shows a row once it turns amber', async () => {
+    const { tiles } = widget([{ key: 'plants', resetAt: Date.now() - 5 * DAY + 30 * 60e3 }], { show: 'due' });
+    expect(shown(tiles)[0]).toBe(false);
+    await vi.advanceTimersByTimeAsync(31 * 60e3);
+    expect(shown(tiles)[0]).toBe(true);
+  });
+
+  it('says nothing is due when every row is hidden', () => {
+    const entries = [{ key: 'plants', resetAt: Date.now() - DAY }, { key: 'filter', resetAt: Date.now() - DAY }];
+    const { message } = widget(entries, { show: 'due' });
+    expect(message().textContent).toBe('Nothing due.');
+    expect(message().style.display).toBe('');
+    expect(message().classList.contains('error')).toBe(false);
+    document.body.innerHTML = '';
+    expect(widget(entries).message().style.display).toBe('none');
+  });
+});
+
 describe('reset and undo', () => {
   it('a tap resets at once and offers Undo for 5 s', async () => {
     const { tiles, value, undo, onReset, onHaptic } = widget([{ key: 'plants', resetAt: Date.now() - 8 * DAY }]);

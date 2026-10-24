@@ -21,6 +21,7 @@
 
   const DEFAULT_STRINGS = {
     setup: 'Name your counters in the widget settings.',
+    nothingDue: 'Nothing due.',
     error: 'Could not load the counters.',
     failed: 'Could not reset __name__.',
     undoFailed: 'Could not undo the reset of __name__.',
@@ -176,7 +177,7 @@
    * @param {HTMLElement} root
    * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string,
    *   counters?: {key: string, name: string, icon: string | null, amber: number | null, red: number | null}[],
-   *   units?: string,
+   *   units?: string, show?: string,
    *   onReset?: (name: string) => Promise<any>,
    *   onUndo?: (name: string, at: number) => Promise<any>,
    *   onHaptic?: () => void, now?: () => number, onHeight?: (h: number) => void }} opts
@@ -189,6 +190,8 @@
     };
     const counters = Array.isArray(opts.counters) ? opts.counters.slice(0, COUNTERS.length) : [];
     const units = opts.units === 'days' ? 'days' : 'friendly';
+    // Which rows show: `all`, or only those that are due (`due`: amber and red; `overdue`: red).
+    const show = opts.show === 'due' || opts.show === 'overdue' ? opts.show : 'all';
     const clock = opts.now || (() => Date.now()); // the screen's clock (the previews fix it)
     let offset = 0; // the Homey's clock minus ours
     const serverNow = () => clock() + offset;
@@ -349,6 +352,7 @@
       const now = serverNow();
       for (const [key, mark] of undoable) if (mark.until <= screenNow) undoable.delete(key);
       list.style.display = counters.length && !failed ? '' : 'none';
+      let shown = 0;
       for (const tl of tiles) {
         const c = tl.counter;
         const e = entries.get(c.key);
@@ -369,8 +373,13 @@
         tl.tile.classList.toggle('no-due', c.red == null && c.amber == null);
         tl.bar.style.setProperty('--ds-fill', p ? `${(p.fill * 100).toFixed(2)}%` : '0%');
         tl.tile.setAttribute('aria-label', t('resetLabel', { name: c.name, time: leftText ? `${text}, ${leftText}` : text }));
+        // With a filter: a due row, one not started (it needs its first tap) and one just reset (for its Undo).
+        const visible = show === 'all' || level === 'red' || level === 'amber' && show === 'due'
+          || !!e && resetAt == null || undoable.has(c.key);
+        tl.tile.style.display = visible ? '' : 'none';
+        if (visible) shown++;
       }
-      const msg = message.text || (!counters.length ? t('setup') : null);
+      const msg = message.text || (!counters.length ? t('setup') : loaded && !failed && !shown ? t('nothingDue') : null);
       messageEl.textContent = msg || '';
       messageEl.style.display = msg ? '' : 'none';
       messageEl.classList.toggle('error', !!message.text);

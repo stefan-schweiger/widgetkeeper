@@ -1,6 +1,6 @@
 {
   "name": "com.thomassidor.widgetkeeper",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "Custom dashboard widgets for Homey Pro",
@@ -25,24 +25,42 @@
     "web-socket": "node scripts/build-web-socket.mjs",
     "diagnostics": "node scripts/diagnostics.mjs",
     "test-dashboards": "node scripts/test-dashboards.mjs",
+    "port-dashboard": "node scripts/port-dashboard.mjs",
     "validate": "homey app validate --level debug",
     "start": "homey app run",
     "install-homey": "homey app install",
-    "whats-new": "node scripts/render-whats-new.mjs"
+    "whats-new": "node scripts/render-whats-new.mjs",
+    "whats-next": "node scripts/render-whats-next.mjs"
   },
   "dependencies": {
-    "homey-api": "^3.20.0"
+    "homey-api": "^3.21.0"
   },
   "devDependencies": {
     "@tsconfig/node16": "^16.1.9",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
-    "@types/node": "^26.6.3",
+    "@types/node": "^26.6.5",
     "esbuild": "^0.28.2",
-    "happy-dom": "^20.14.5",
-    "homey": "^4.5.3",
-    "sharp": "^0.34.5",
+    "happy-dom": "^21.0.4",
+    "homey": "^4.6.1",
+    "sharp": "^0.35.5",
     "socket.io-client": "^2.5.0",
     "typescript": "^7.0.2",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "homey": {
+      "sharp": "$sharp",
+      "dockerode": {
+        "tar-fs": "^2.1.5"
+      },
+      "external-editor": {
+        "tmp": "^0.2.7"
+      }
+    }
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "ssh2": false,
+    "cpu-features": false
   }
 }

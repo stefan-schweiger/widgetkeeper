@@ -42,6 +42,7 @@ export default class Diagnostics {
       debugLog: this.homey.settings.get(DEBUG_LOG_SETTING) === true,
       electricity: await (this.homey.app as any)?.electricity?.describe?.().catch((err: unknown) => String(err)) ?? null,
       weather: (this.homey.app as any)?.weather?.describe?.() ?? null,
+      pollen: (this.homey.app as any)?.pollen?.describe?.() ?? null,
       heatmap: (this.homey.app as any)?.heatmap?.describe?.() ?? null,
       sparklines: (this.homey.app as any)?.sparklines?.describe?.() ?? null,
       variables: (this.homey.app as any)?.variables?.describe?.() ?? null,
@@ -55,6 +56,7 @@ export default class Diagnostics {
       stack: await (this.homey.app as any)?.stack?.describe?.().catch((err: unknown) => String(err)) ?? null,
       web: (this.homey.app as any)?.web?.describe?.() ?? null,
       webPassword: (this.homey.app as any)?.webPassword?.describe?.() ?? null,
+      popups: (this.homey.app as any)?.popups?.describe?.() ?? null,
     };
     try {
       const api = await getAppApi(this.homey);

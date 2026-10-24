@@ -225,6 +225,31 @@
     return low;
   }
 
+  /** The time spans of Charts and Sparklines (`SPANS` in lib/SparklineService.ts): rolling ones by length, days by offset. */
+  const SPAN_MS = { '1h': 36e5, '6h': 6 * 36e5, '24h': DAY, '2d': 2 * DAY, '3d': 3 * DAY, '5d': 5 * DAY, '7d': 7 * DAY };
+  const SPAN_DAYS = { today: 0, yesterday: -1 };
+  const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+
+  /**
+   * A span's window at `at`: the axis `[from, to]` and `end`, where its data stops. A rolling span ends at `at`;
+   * `today` is the local day (data up to `at`), `yesterday` the day before (up to midnight). A DST day is 23 or
+   * 25 h. An unknown span is 24 h.
+   */
+  function timeSpan(span, at) {
+    if (!own(SPAN_DAYS, span)) return { from: at - (own(SPAN_MS, span) ? SPAN_MS[span] : DAY), to: at, end: at };
+    const d = new Date(at);
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + SPAN_DAYS[span]);
+    const from = d.getTime();
+    d.setDate(d.getDate() + 1);
+    return { from, to: d.getTime(), end: Math.min(d.getTime(), at) };
+  }
+
+  /** Whether `span` is one the widgets know. */
+  function isTimeSpan(span) {
+    return own(SPAN_MS, span) || own(SPAN_DAYS, span);
+  }
+
   /** Why a write through the personal API key failed (`KeyProblem` in lib/PersonalApiKey.ts): each has its own message. */
   const KEY_PROBLEMS = ['noKey', 'keyScope', 'keyInvalid'];
 
@@ -442,15 +467,19 @@
    * those devices (`watches(id)` adds others, e.g. a group's lights). Without devices the widget says
    * `selectDevices` (or what `need()` says is missing); a failed refresh keeps the tiles with a passing message, only
    * a failed first load replaces them. `tileNames` (the mount's `wireTileNames()`) reads the names with it; `query()`
-   * adds to the request; `onState(state)` runs after each good one. Ready is told after the first load, once the
+   * adds to the request; `setState(state)` hands the answer to the widget (default `widget.setState(state)`), and
+   * `onState(state)` runs after each good one. Ready is told after the first load, once the
    * text font is in (at most 1 s), so the names don't pop in after the icons.
    * @param {any} Homey
    * @param {{ ready: (opts?: object) => Promise<void>, perfParam: (sep?: string) => string }} link the mount's `wireFrame()`
    * @param {any} widget
    * @param {{ event?: string | null, tileNames?: { state: (path: string) => Promise<any> } | null, query?: () => string,
-   *   need?: (ids: string[]) => string | null, watches?: (id: string) => boolean, onState?: ((state: any) => void) | null }} [opts]
+   *   need?: (ids: string[]) => string | null, watches?: (id: string) => boolean, setState?: ((state: any) => void) | null,
+   *   onState?: ((state: any) => void) | null }} [opts]
    */
-  function wireDeviceState(Homey, link, widget, { event = null, tileNames = null, query = () => '', need = () => null, watches = () => false, onState = null } = {}) {
+  function wireDeviceState(Homey, link, widget, {
+    event = null, tileNames = null, query = () => '', need = () => null, watches = () => false, setState = null, onState = null,
+  } = {}) {
     let deviceIds = [];
     let loaded = false;
     const ready = () => link.ready({ fonts: true });
@@ -464,7 +493,8 @@
       try {
         const path = `/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${query()}${link.perfParam()}`;
         const state = await (tileNames ? tileNames.state(path) : Homey.api('GET', path));
-        widget.setState(state);
+        if (setState) setState(state);
+        else widget.setState(state);
         loaded = true;
         if (onState) onState(state);
       } catch (err) {
@@ -493,6 +523,81 @@
     };
   }
 
+  /**
+   * Light colours, shared by Light Controls and Lights by Room: the chip glyphs, the swatch palettes and the colour
+   * a light, a swatch or a Mood shows.
+   */
+  const lightSvg = (viewBox, body) => `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`)}`;
+  /** Built on first use (`btoa`), so loading the kit needs none (test/helpers/flowIcons.ts runs it in a bare context). */
+  let lightGlyphs = null;
+  const LIGHT_GLYPHS = () => lightGlyphs || (lightGlyphs = {
+    // A thermometer with a sun ray, for the temperature chip.
+    temp: lightSvg('6.3 1.3 11.4 21.4', '<path d="M10 14.5V4a2 2 0 0 1 4 0v10.5a4 4 0 1 1-4 0z"/><circle cx="12" cy="17.5" r="1.6" fill="#000"/><path d="M12 9.5v6"/>'),
+    // A half-filled circle, for the chip of a light with colour: a ring with its right half filled.
+    hue: lightSvg('2 2 20 20', '<circle cx="12" cy="12" r="9" stroke-width="1.6"/><path fill="#000" stroke="none" d="M12 3a9 9 0 0 1 0 18z"/>'),
+    close: lightSvg('5 5 14 14', '<path d="M6 6l12 12M18 6L6 18"/>'),
+    // A full circle, for the chip of a tile whose lights shine in several colours: filled with a pie of them.
+    pie: lightSvg('2 2 20 20', '<circle cx="12" cy="12" r="9" fill="#000" stroke="none"/>'),
+  });
+
+  /**
+   * The swatch palettes (the `palette` setting): 7 colours for the first row (hue in degrees, saturation 0–1)
+   * and 5 whites for the second (colour temperature, 0 = cool), each row in the order shown. Light Controls' `moods`
+   * has no entry: it puts the room's Moods in the first row, and a room without Moods gets the default colours.
+   */
+  const PALETTES = {
+    // Bright colours around the wheel, and whites from cool to warm.
+    default: {
+      colors: [[0, 1], [30, 1], [55, 1], [120, 1], [220, 1], [275, 1], [320, 1]],
+      whites: [0, 0.25, 0.5, 0.75, 1],
+    },
+    // Warm: from red through orange and amber, on to warm and then cool white.
+    warm: {
+      colors: [[0, 1], [10, 1], [20, 1], [28, 0.95], [35, 0.85], [40, 0.7], [44, 0.5]],
+      whites: [1, 0.75, 0.5, 0.25, 0],
+    },
+    // Dusk: the sky after sunset, indigo through violet and rose to coral and amber, with warm whites.
+    dusk: {
+      colors: [[240, 0.8], [262, 0.75], [285, 0.65], [320, 0.6], [345, 0.65], [12, 0.75], [30, 0.85]],
+      whites: [1, 0.85, 0.7, 0.55, 0.4],
+    },
+  };
+
+  /** The colour of a temperature (0 = cool, 1 = warm), as on Homey's own light card. */
+  function temperatureColor(k) {
+    const cool = [214, 232, 255];
+    const warm = [255, 176, 84];
+    const mix = cool.map((c, i) => Math.round(c + (warm[i] - c) * Math.min(1, Math.max(0, k))));
+    return `rgb(${mix.join(' ')})`;
+  }
+
+  /** A colour light's hue and saturation (0–1); lighter as the saturation drops, so 0 is white. */
+  function hueColor(hue, sat) {
+    return `hsl(${Math.round(hue * 360)} ${Math.round(sat * 100)}% ${Math.round(62 + (1 - sat) * 38)}%)`;
+  }
+
+  /** The colour a light shines in: its hue in colour mode, else its temperature (or a warm white). */
+  function lightColor(caps) {
+    const v = id => (caps[id] ? caps[id].value : null);
+    const hue = v('light_hue');
+    const colourMode = v('light_mode') === 'color' || (!caps.light_mode && !caps.light_temperature);
+    if (colourMode && typeof hue === 'number') {
+      const sat = typeof v('light_saturation') === 'number' ? v('light_saturation') : 1;
+      return hueColor(hue, sat);
+    }
+    const k = v('light_temperature');
+    return temperatureColor(typeof k === 'number' ? k : 0.6);
+  }
+
+  /** A Mood's colours as the pill's dot: one colour, or a gradient through them (none without colours). */
+  function moodDot(colors) {
+    const list = (colors || []).map(c => ('temperature' in c ? temperatureColor(c.temperature) : hueColor(c.hue, c.saturation)));
+    if (!list.length) return null;
+    return list.length === 1 ? list[0] : `linear-gradient(135deg, ${list.join(', ')})`;
+  }
+
+  const LIGHTS = { get glyphs() { return LIGHT_GLYPHS(); }, PALETTES, temperatureColor, hueColor, lightColor, moodDot };
+
   /** The colour settings' names (Device Values', Flow Buttons' and Notes' Flow colours, `TILE_COLORS` in lib/tileColors.ts), in kit.css's palette. */
   const COLORS = ['blue', 'red', 'orange', 'yellow', 'green', 'purple'];
 
@@ -520,8 +625,79 @@
     return scheme;
   }
 
+  /**
+   * Short sounds drawn with Web Audio, so no sound files ship: Timers' `beep` and the popups' (the Flow cards' `sound`,
+   * `POPUP_SOUNDS` in lib/PopupService.ts). Each note is [frequency (Hz), start (s), length (s), wave, loudness].
+   */
+  const SOUNDS = {
+    beep: [[880, 0, 0.15, 'sine', 0.3], [880, 0.22, 0.15, 'sine', 0.3], [880, 0.44, 0.15, 'sine', 0.3]],
+    chime: [[880, 0, 0.7, 'sine', 0.3], [1318.5, 0.16, 1.1, 'sine', 0.3]],
+    doorbell: [[659.25, 0, 0.9, 'triangle', 0.4], [523.25, 0.5, 1.4, 'triangle', 0.4]],
+    alert: [[988, 0, 0.14, 'square', 0.12], [988, 0.22, 0.14, 'square', 0.12], [988, 0.44, 0.14, 'square', 0.12], [1319, 0.66, 0.3, 'square', 0.12]],
+  };
+  /** A sound the browser lets the page start this much later is still played; one that waited for a tap isn't. */
+  const LATE_MS = 300;
+  let audio = null;
+
+  /** The page's one AudioContext (every widget of a Smart Stack shares it); null where there's no Web Audio. */
+  function audioContext() {
+    if (audio) return audio;
+    try {
+      const Ctx = window.AudioContext || /** @type {any} */ (window).webkitAudioContext;
+      if (Ctx) audio = new Ctx();
+    } catch (err) { audio = null; }
+    return audio;
+  }
+
+  function playNotes(ctx, notes) {
+    try {
+      const t0 = ctx.currentTime + 0.01;
+      for (const [freq, at, length, wave, loud] of notes) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = wave;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, t0 + at);
+        gain.gain.exponentialRampToValueAtTime(loud, t0 + at + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + at + length);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t0 + at);
+        osc.stop(t0 + at + length + 0.01);
+      }
+    } catch (err) { /* no sound */ }
+  }
+
+  const sound = {
+    names: Object.keys(SOUNDS),
+    /**
+     * Wakes the audio from inside a tap or key press: a page (a WebView, Safari) only makes sound after it's been
+     * used, so a later sound can play.
+     */
+    unlock() {
+      const ctx = audioContext();
+      if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => { /* not a gesture the browser counts */ });
+    },
+    /**
+     * Plays a sound by name: at once, or as soon as the browser lets the audio start (within `LATE_MS`; a sound
+     * refused until the next tap is left out). False when it isn't a sound, or there's no Web Audio.
+     */
+    play(name) {
+      const notes = Object.prototype.hasOwnProperty.call(SOUNDS, name) ? SOUNDS[name] : null;
+      const ctx = notes && audioContext();
+      if (!ctx) return false;
+      if (ctx.state === 'running') {
+        playNotes(ctx, notes);
+      } else {
+        const asked = Date.now();
+        ctx.resume().then(() => { if (Date.now() - asked <= LATE_MS) playNotes(ctx, notes); }, () => { /* wants a tap first */ });
+      }
+      return true;
+    },
+  };
+
   window.WidgetkeeperKit = {
-    icons: ICONS, TIGHT_UNITS, KEY_PROBLEMS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, timeFormatter, formatSince,
-    baseTitle, lowestSlot, wireFrame, getDeviceIds, wireTileNames, touchGuard, onTap, messageLine, wireDeviceState, colorStyle, applyColors,
+    icons: ICONS, lights: LIGHTS, TIGHT_UNITS, KEY_PROBLEMS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, timeFormatter,
+    formatSince, baseTitle, lowestSlot, timeSpan, isTimeSpan, wireFrame, getDeviceIds, wireTileNames, touchGuard, onTap, messageLine, wireDeviceState,
+    colorStyle, applyColors, sound,
   };
 })();

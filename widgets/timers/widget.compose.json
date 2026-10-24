@@ -291,19 +291,19 @@
         "ar": "  – الاسم"
       },
       "hint": {
-        "en": "Optional, such as Eggs. Shown on the button and sent to the Flow card “A timer finished”.",
-        "nl": "Optioneel, zoals Eieren. Getoond op de knop en meegegeven aan de Flow-kaart „Een timer is afgelopen”.",
-        "de": "Optional, etwa Eier. Steht auf der Taste und geht an die Flow-Karte „Ein Timer ist abgelaufen“.",
-        "fr": "Facultatif, par exemple Œufs. Affiché sur le bouton et transmis à la carte Flow « Un minuteur est terminé ».",
-        "it": "Facoltativo, ad esempio Uova. Mostrato sul pulsante e passato alla scheda Flow “Un timer è terminato”.",
-        "sv": "Valfritt, till exempel Ägg. Visas på knappen och skickas till flödeskortet ”En timer har gått ut”.",
-        "no": "Valgfritt, for eksempel Egg. Vises på knappen og sendes til Flyt-kortet «En tidtaker er ferdig».",
-        "es": "Opcional, por ejemplo Huevos. Se muestra en el botón y se pasa a la tarjeta de flujo «Un temporizador ha terminado».",
-        "da": "Valgfrit, fx Æg. Vises på knappen og sendes til Flow-kortet “En timer er færdig”.",
-        "ru": "Необязательно, например «Яйца». Показывается на кнопке и передаётся в карточку потока «Таймер завершён».",
-        "pl": "Opcjonalnie, np. Jajka. Widoczne na przycisku i przekazywane do karty Flow „Minutnik się skończył”.",
-        "ko": "선택 사항입니다(예: 달걀). 버튼에 표시되고 플로우 카드 “타이머가 끝났을 때”로 전달됩니다.",
-        "ar": "اختياري، مثل البيض. يظهر على الزر ويُرسل إلى بطاقة التدفق «انتهى مؤقت»."
+        "en": "Optional, such as Eggs. Shown on the button and sent to the Flow card “A timer on the Timers widget finished”.",
+        "nl": "Optioneel, zoals Eieren. Getoond op de knop en meegegeven aan de Flow-kaart „Een timer van de Timers-widget is afgelopen”.",
+        "de": "Optional, etwa Eier. Steht auf der Taste und geht an die Flow-Karte „Ein Timer des Timer-Widgets ist abgelaufen“.",
+        "fr": "Facultatif, par exemple Œufs. Affiché sur le bouton et transmis à la carte Flow « Un minuteur du widget Minuteurs est terminé ».",
+        "it": "Facoltativo, ad esempio Uova. Mostrato sul pulsante e passato alla scheda Flow “Un timer del widget Timer è terminato”.",
+        "sv": "Valfritt, till exempel Ägg. Visas på knappen och skickas till flödeskortet ”En timer i Timers-widgeten har gått ut”.",
+        "no": "Valgfritt, for eksempel Egg. Vises på knappen og sendes til Flyt-kortet «En tidtaker i Tidtakere-widgeten er ferdig».",
+        "es": "Opcional, por ejemplo Huevos. Se muestra en el botón y se pasa a la tarjeta de flujo «Un temporizador del widget Temporizadores ha terminado».",
+        "da": "Valgfrit, fx Æg. Vises på knappen og sendes til Flow-kortet “En timer i Timere-widgetten er færdig”.",
+        "ru": "Необязательно, например «Яйца». Показывается на кнопке и передаётся в карточку потока «Таймер виджета „Таймеры“ завершён».",
+        "pl": "Opcjonalnie, np. Jajka. Widoczne na przycisku i przekazywane do karty Flow „Minutnik z widżetu Minutniki się skończył”.",
+        "ko": "선택 사항입니다(예: 달걀). 버튼에 표시되고 플로우 카드 “타이머 위젯의 타이머가 끝났을 때”로 전달됩니다.",
+        "ar": "اختياري، مثل البيض. يظهر على الزر ويُرسل إلى بطاقة التدفق «انتهى مؤقت في عنصر المؤقتات»."
       },
       "value": ""
     },

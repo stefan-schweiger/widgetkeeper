@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html class="homey-dark-mode">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>What's next in 1.1.0</title>
+  <!--
+    A teaser of 1.1.0 (CHANGELOG.md, .homeychangelog.json), in the look of the 1.0.0 poster (whats-new.html): the real
+    Pollen and UV, Web Page, Lights by Room and Charts widgets with made-up data, the real Popups prompt page in a phone
+    with its Flow cards drawn, and the wide widgets on a web dashboard (docs/web/wide.png, `npm run web-showcase --
+    wide`). scripts/render-whats-next.mjs (`npm run whats-next`) renders it to docs/whats-next-1.1.0.png at 2x. It
+    fetches the popup's picture, so it needs a served repo root (the script serves it); the clock is fixed
+    (fixed-clock.js).
+  -->
+  <script src="fixed-clock.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../widgets/spacer/public/kit.css">
+  <link rel="stylesheet" href="../widgets/pollen/public/widget.css">
+  <link rel="stylesheet" href="../widgets/webpage/public/widget.css">
+  <link rel="stylesheet" href="../widgets/lightrooms/public/widget.css">
+  <link rel="stylesheet" href="../widgets/electricity/public/chart.css">
+  <link rel="stylesheet" href="../widgets/charts/public/widget.css">
+  <link rel="stylesheet" href="../widgets/popups/public/widget.css">
+  <script src="../widgets/spacer/public/kit.js"></script>
+  <script src="../widgets/pollen/public/widget.js"></script>
+  <script src="../widgets/webpage/public/widget.js"></script>
+  <script src="../widgets/lightrooms/public/widget.js"></script>
+  <script src="../widgets/electricity/public/chart.js"></script>
+  <script src="../widgets/charts/public/widget.js"></script>
+  <script src="../widgets/popups/public/widget.js"></script>
+  <script src="../temp/screenshot-icons.js" onerror="window.ICONS = {}"></script>
+  <script src="mock-media.js"></script>
+  <script src="mock-util.js"></script>
+  <script src="showcase-data.js"></script>
+  <script src="showcase-mount.js"></script>
+  <style>
+    html { background: #0C0B12 !important; }
+    body {
+      margin: 0; padding: 56px 48px 48px; width: 1760px; box-sizing: border-box; font-family: Roboto, sans-serif; color: #FFFFFF;
+      background:
+        radial-gradient(1100px 520px at 18% -4%, rgba(92, 64, 180, 0.55), transparent 70%),
+        radial-gradient(900px 600px at 96% 8%, rgba(42, 25, 88, 0.9), transparent 70%),
+        #0C0B12 !important;
+    }
+
+    header { display: flex; align-items: center; gap: 28px; margin: 0 8px 44px; }
+    .logo {
+      width: 96px; height: 96px; flex: none; border-radius: 26px; background: #2A1958;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 12px 32px rgba(0, 0, 0, 0.4);
+      display: grid; place-items: center;
+    }
+    .logo svg { width: 72px; height: 72px; display: block; }
+    header h1 { margin: 0; font-size: 64px; line-height: 68px; font-weight: 900; letter-spacing: -1.5px; }
+    .eyebrow { display: flex; align-items: center; gap: 12px; margin: 0 0 6px; font-size: 20px; line-height: 28px; font-weight: 700; color: #B9A6FF; }
+    .eyebrow span { padding: 2px 10px; border-radius: 999px; background: rgba(185, 166, 255, 0.16); font-size: 13px; line-height: 20px; letter-spacing: 0.6px; text-transform: uppercase; }
+    header p { margin: 8px 0 0; font-size: 22px; line-height: 30px; color: #B4B2C6; }
+    .chips { margin-left: auto; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; max-width: 560px; }
+    .chips span { padding: 8px 14px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); color: #DCDAE8; font-size: 15px; font-weight: 500; }
+
+    .columns { display: flex; gap: 24px; align-items: flex-start; }
+    .column { width: 398px; display: flex; flex-direction: column; gap: 24px; }
+
+    .feat {
+      background: #111217; border-radius: 28px; padding: 22px 20px 20px; box-sizing: border-box;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07), 0 16px 40px rgba(0, 0, 0, 0.35);
+    }
+    .tag {
+      display: inline-block; margin: 0 0 10px; padding: 3px 10px; border-radius: 999px; font-size: 12px; line-height: 18px;
+      font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; background: rgba(255, 255, 255, 0.08); color: #C9C7D6;
+    }
+    .tag.new { background: #6C4CE0; color: #FFFFFF; }
+    .feat h2 { margin: 0 0 6px; font-size: 24px; line-height: 30px; font-weight: 700; }
+    .feat p { margin: 0 0 18px; font-size: 15px; line-height: 21px; color: #A9A8B8; }
+    .feat .label { margin: 14px 0 8px; font-size: 13px; line-height: 16px; font-weight: 500; color: #8E8DA0; text-transform: uppercase; letter-spacing: 0.5px; }
+    .feat .label:first-of-type { margin-top: 0; }
+    ul.more { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    ul.more li { font-size: 15px; line-height: 21px; color: #A9A8B8; padding-left: 18px; position: relative; }
+    ul.more li::before { content: ''; position: absolute; left: 2px; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: #8E6CFF; }
+    ul.more b { color: #FFFFFF; font-weight: 500; }
+
+    /* Homey's widget frames: Pollen and UV's and Charts' (16 px padding), and the Web Page's (none, clipped by the radius). */
+    .card { padding: 16px; box-sizing: border-box; }
+    .card.chart { background: #1F2029; border-radius: 20px; }
+    .dash { border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+
+    /* Popups: a panel of its own, the text, the phone with the prompt page, the Advanced Flow and a message. */
+    .popups { margin-top: 24px; display: flex; gap: 28px; align-items: flex-start; padding: 26px 28px 28px; }
+    .popups .text { flex: 1 1 auto; min-width: 0; }
+    .phone {
+      flex: none; width: 378px; padding: 10px; box-sizing: border-box; border-radius: 48px; background: #1B1C22;
+      box-shadow: inset 0 0 0 2px #34353F, 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+    .screen { border-radius: 38px; overflow: hidden; background: #111217; }
+    .browser { display: flex; align-items: center; height: 72px; padding: 22px 18px 0; box-sizing: border-box; background: #1F2029; color: #999AA3; font-size: 14px; }
+    .browser b { color: #339BFB; font-weight: 500; width: 64px; }
+    .browser span { flex: 1; text-align: center; }
+    .browser i { width: 64px; }
+    .screen iframe { display: block; width: 358px; height: 440px; border: 0; }
+    .widget-row { margin-top: 22px; }
+    .widget-row .tile { padding: 8px 12px; border-radius: 14px; background: #181920; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05); }
+
+    .flow { flex: none; width: 370px; display: flex; flex-direction: column; padding-top: 4px; }
+    .kind { margin: 0 0 6px 2px; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: #8E8DA0; }
+    .fc { display: flex; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #1F2029; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06); }
+    .fc .icon { flex: none; width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; }
+    .fc .icon svg { width: 22px; height: 22px; display: block; }
+    .fc .owner { font-size: 12px; line-height: 16px; color: #8E8DA0; }
+    .fc .text { font-size: 15px; line-height: 24px; color: #E4E4E7; }
+    .fc .arg { display: inline-block; padding: 0 8px; border-radius: 6px; background: #2B2C36; color: #FFFFFF; font-weight: 500; line-height: 22px; }
+    .fc .tokens { display: flex; gap: 6px; margin-top: 8px; }
+    .fc .token { padding: 1px 8px 1px 6px; border-radius: 999px; background: rgba(108, 76, 224, 0.3); color: #D9CFFF; font-size: 12px; line-height: 18px; font-weight: 500; }
+    .fc .token::before { content: '◆ '; font-size: 9px; color: #B9A6FF; }
+    .link { width: 2px; height: 18px; margin-left: 31px; background: #3A3B46; }
+    .link.yes { height: 30px; position: relative; }
+    .link.yes::after { content: 'Yes'; position: absolute; left: 10px; top: 6px; font-size: 12px; line-height: 16px; font-weight: 700; color: #3FC700; }
+    .message { margin-top: 10px; border-radius: 14px; overflow: hidden; }
+    .message iframe { display: block; width: 100%; height: 150px; border: 0; }
+
+    .wide { margin-top: 24px; display: flex; gap: 40px; align-items: center; padding: 32px 40px 32px 36px; }
+    .wide .text { flex: 1 1 auto; min-width: 0; }
+    .wide p { margin-bottom: 22px; }
+    .wide img { flex: none; width: 1140px; margin: -16px -24px -24px 0; display: block; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><svg viewBox="0 0 64 64"><g fill="none" stroke="#FFFFFF" stroke-width="3"><rect x="11.5" y="11.5" width="17" height="17" rx="5"/><rect x="11.5" y="35.5" width="17" height="17" rx="5"/><rect x="35.5" y="35.5" width="17" height="17" rx="5"/></g><path d="M44 11Q44 20 53 20Q44 20 44 29Q44 20 35 20Q44 20 44 11Z" fill="#FFFFFF"/></svg></div>
+    <div>
+      <div class="eyebrow">Widgetkeeper 1.1.0 <span>Coming soon</span></div>
+      <h1>What's next in 1.1.0</h1>
+      <p>Four new widgets, popups from your Flows, and wide widgets on web dashboards.</p>
+    </div>
+    <div class="chips">
+      <span>Pollen and UV</span><span>Web Page</span><span>Lights by Room</span><span>Popups</span><span>Wide widgets</span><span>Today and Yesterday</span>
+    </div>
+  </header>
+
+  <div class="columns">
+    <div class="column">
+      <section class="feat">
+        <span class="tag new">New widget</span>
+        <h2>Pollen and UV</h2>
+        <p>Today's pollen at your Homey's location, a bar per type from low to very high, and when the UV peaks. Alder, birch, olive, grass, mugwort and ragweed.</p>
+        <div class="label">Compact</div>
+        <div class="card pw-frame"><div id="w-pollen"></div></div>
+        <div class="label">Detailed: the grains and the next three days</div>
+        <div class="card pw-frame"><div id="w-pollen-detailed"></div></div>
+      </section>
+    </div>
+
+    <div class="column">
+      <section class="feat">
+        <span class="tag new">New widget</span>
+        <h2>Lights by Room</h2>
+        <p>Every room's lights on a card that switches and dims the whole room. Tap a room's name for its Moods and each light's brightness and colour.</p>
+        <div id="w-lightrooms"></div>
+      </section>
+    </div>
+
+    <div class="column">
+      <section class="feat">
+        <span class="tag new">New widget</span>
+        <h2>Web Page</h2>
+        <p>Any web page on the dashboard, drawn at the size it was made for and scaled to fill the widget: no white borders on a phone, nothing cut off on a tablet.</p>
+        <div class="dash"><div id="w-webpage"></div></div>
+        <ul class="more">
+          <li><b>Buttons</b> under the page switch between up to four addresses, such as a map's zoom levels.</li>
+          <li><b>Links never open</b>, and a swipe still scrolls the dashboard, unless you let the page be tapped.</li>
+          <li><b>{lat} and {lon}</b> in an address become your Homey's location.</li>
+          <li><b>Reloads</b> every few minutes, for a screen that's always on.</li>
+        </ul>
+      </section>
+    </div>
+
+    <div class="column">
+      <section class="feat">
+        <span class="tag">Charts and Sparklines</span>
+        <h2>Today and Yesterday</h2>
+        <p>A calendar day as the time span: today from midnight, the line up to now, or all of yesterday with its average.</p>
+        <div class="card chart"><div id="w-charts"></div></div>
+      </section>
+      <section class="feat">
+        <span class="tag">And also</span>
+        <ul class="more">
+          <li><b>Days Since:</b> a Show setting, to list only the counters that are amber and red, or only red.</li>
+          <li><b>Web dashboards:</b> the API key and password are stored more safely, and changing the password asks for the current one.</li>
+          <li><b>Spacer:</b> at least 16 px high, as the iPhone app showed a loading indicator over a 0 px one.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <section class="feat popups">
+    <div class="text">
+      <span class="tag new">New widget and Flow cards</span>
+      <h2>Popups</h2>
+      <p>A Flow shows a message for as long as you set, or asks Yes or No, in front of everything: on a web dashboard, or on the phones and tablets with a Popups widget. The first answer from any screen closes it everywhere and goes back to the Flow.</p>
+      <ul class="more">
+        <li><b>Pictures:</b> a camera, refreshed while it's open, a picture's address, or an image tag such as a doorbell's snapshot.</li>
+        <li><b>Screen names:</b> everywhere, one web dashboard, or the screens whose Popups widget has that name. A third card closes popups early.</li>
+      </ul>
+      <div class="widget-row">
+        <div class="kind">The Popups widget: a quiet row with its screen name</div>
+        <div class="tile"><div id="w-popups"></div></div>
+      </div>
+    </div>
+    <div class="phone"><div class="screen">
+      <div class="browser"><b>Done</b><span>192.168.1.20</span><i></i></div>
+      <iframe id="w-popup" title="Popup"></iframe>
+    </div></div>
+    <div class="flow">
+      <div class="kind">Advanced Flow</div>
+      <div class="fc">
+        <div class="icon" style="background:#FF8400"><svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg></div>
+        <div><div class="owner">Front doorbell</div><div class="text">The doorbell rang</div></div>
+      </div>
+      <div class="link"></div>
+      <div class="fc">
+        <div class="icon" style="background:#2A1958"><svg viewBox="0 0 64 64"><g fill="none" stroke="#FFFFFF" stroke-width="4"><rect x="11.5" y="11.5" width="17" height="17" rx="5"/><rect x="11.5" y="35.5" width="17" height="17" rx="5"/><rect x="35.5" y="35.5" width="17" height="17" rx="5"/></g><path d="M44 11Q44 20 53 20Q44 20 44 29Q44 20 35 20Q44 20 44 11Z" fill="#FFFFFF"/></svg></div>
+        <div>
+          <div class="owner">Widgetkeeper</div>
+          <div class="text">Ask <span class="arg">Someone is at the front door. Unlock it?</span> on <span class="arg">Everywhere</span>, picture: <span class="arg">Hallway</span>, wait up to <span class="arg">60</span> seconds</div>
+          <div class="tokens"><span class="token">Answer</span><span class="token">Answered</span></div>
+        </div>
+      </div>
+      <div class="link"></div>
+      <div class="fc">
+        <div class="icon" style="background:#3A3B46"><svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h6"/><path d="M15 17l2 2 4-4"/></svg></div>
+        <div><div class="owner">Logic</div><div class="text"><span class="arg">◆ Answer</span> is true</div></div>
+      </div>
+      <div class="link yes"></div>
+      <div class="fc">
+        <div class="icon" style="background:#0082FA"><svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg></div>
+        <div><div class="owner">Front door</div><div class="text">Unlock</div></div>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="kind">Or just a message, no question</div>
+      <div class="fc">
+        <div class="icon" style="background:#2A1958"><svg viewBox="0 0 64 64"><g fill="none" stroke="#FFFFFF" stroke-width="4"><rect x="11.5" y="11.5" width="17" height="17" rx="5"/><rect x="11.5" y="35.5" width="17" height="17" rx="5"/><rect x="35.5" y="35.5" width="17" height="17" rx="5"/></g><path d="M44 11Q44 20 53 20Q44 20 44 29Q44 20 35 20Q44 20 44 11Z" fill="#FFFFFF"/></svg></div>
+        <div>
+          <div class="owner">Widgetkeeper</div>
+          <div class="text">Show <span class="arg">The washing machine is done</span> on <span class="arg">Kitchen</span> for <span class="arg">20</span> <span class="arg">seconds</span></div>
+        </div>
+      </div>
+      <div class="message"><iframe id="w-message" title="Message"></iframe></div>
+    </div>
+  </section>
+
+  <section class="feat wide">
+    <div class="text">
+      <span class="tag">Web dashboards</span>
+      <h2>Wide widgets</h2>
+      <p>A widget can span two or more columns: a floor plan, a camera, a chart. Each column it covers keeps its own widgets above and below it.</p>
+      <ul class="more">
+        <li><b>Drag the handle</b> on its right edge in edit mode, or set its <i>Width</i> in its settings.</li>
+        <li><b>Kept</b> in duplicates and backups.</li>
+        <li><b>On a phone</b> the page is one column, so a wide widget is as wide as the rest.</li>
+      </ul>
+    </div>
+    <img src="../docs/web/wide.png" alt="">
+  </section>
+
+  <script>
+    (function () {
+      const el = id => document.getElementById(id);
+
+      // Pollen and UV: the dev preview's made-up Monday in June near Copenhagen, grass high and the birch season's tail.
+      const LEVEL = (type, v) => (['alder', 'birch', 'olive'].includes(type) ? [1, 30, 101, 1001] : [1, 10, 51, 251]).filter(b => Math.round(v) >= b).length;
+      const day = (date, values, uv, uvHour) => ({
+        date,
+        pollen: Object.fromEntries(Object.entries(values).map(([type, v]) => [type, { value: v, level: LEVEL(type, v) }])),
+        uv: { max: uv, level: uv < 2.5 ? 1 : uv < 5.5 ? 2 : uv < 7.5 ? 3 : uv < 10.5 ? 4 : 5, at: Date.parse(`${date}T${String(uvHour - 2).padStart(2, '0')}:00:00Z`) },
+      });
+      const pollen = {
+        language: 'en', outside: false, uvNow: 3,
+        days: [
+          day('2026-06-15', { alder: 0, birch: 34, olive: 0, grass: 64, mugwort: 4, ragweed: 0 }, 6.1, 13),
+          day('2026-06-16', { alder: 0, birch: 12, olive: 0, grass: 38, mugwort: 6, ragweed: 0 }, 4.8, 13),
+          day('2026-06-17', { alder: 0, birch: 6, olive: 0, grass: 120, mugwort: 12, ragweed: 0 }, 7.2, 14),
+          day('2026-06-18', { alder: 0, birch: 2, olive: 0, grass: 22, mugwort: 9, ragweed: 0 }, 3.9, 13),
+        ],
+      };
+      createPollenWidget(el('w-pollen'), { timeFormat: '24' }).setData(pollen);
+      createPollenWidget(el('w-pollen-detailed'), { timeFormat: '24', density: 'detailed' }).setData(pollen);
+
+      // Lights by Room: four rooms of the dev preview's lights, the living room open. Its zone icons are drawn
+      // stand-ins, as on the dev page (the app sends Homey's own).
+      const icon = body => `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`)}`;
+      const zoneIcons = {
+        kit: icon('<path d="M4 10h16v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M2 10h20"/><path d="M9 7c0-1 1-1.5 1-2.5M14 7c0-1 1-1.5 1-2.5"/>'),
+        liv: icon('<path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><path d="M3 13a2 2 0 0 1 4 0v1h10v-1a2 2 0 0 1 4 0v4H3z"/><path d="M5 17v2M19 17v2"/>'),
+        hal: icon('<path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M4 21h16"/><circle cx="15" cy="12" r="1" fill="#000"/>'),
+        bed: icon('<path d="M3 19V6M3 15h18v4M21 15v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="12" r="1.8"/>'),
+      };
+      const Z = { kit: { id: 'kit', name: 'Kitchen' }, liv: { id: 'liv', name: 'Living room' }, hal: { id: 'hal', name: 'Hallway' }, bed: { id: 'bed', name: 'Bedroom' } };
+      const cap = value => ({ value, setable: true });
+      const temp = (on, dim, k) => ({ onoff: cap(on), dim: cap(dim), light_temperature: cap(k), light_mode: cap('temperature') });
+      const color = (on, dim, hue, sat = 1) => ({ onoff: cap(on), dim: cap(dim), light_hue: cap(hue), light_saturation: cap(sat), light_temperature: cap(0.5), light_mode: cap('color') });
+      const rooms = createLightRoomsWidget(el('w-lightrooms'), { open: ['liv'], onSet: async () => {}, onMood: async () => {} });
+      rooms.setState([
+        { id: 'k1', name: 'Ceiling', icon: null, zone: Z.kit, caps: temp(true, 0.8, 0.25) },
+        { id: 'k2', name: 'Island 1', icon: null, zone: Z.kit, caps: temp(true, 0.65, 0.75) },
+        { id: 'k3', name: 'Island 2', icon: null, zone: Z.kit, caps: temp(true, 0.65, 0.75) },
+        { id: 'k4', name: 'Cabinet strip', icon: null, zone: Z.kit, caps: { onoff: cap(false), dim: cap(0.4) } },
+        { id: 'l1', name: 'Floor lamp', icon: null, zone: Z.liv, caps: temp(true, 0.45, 0.8) },
+        { id: 'l2', name: 'Sofa lamp', icon: null, zone: Z.liv, caps: color(true, 0.3, 0.08, 0.9) },
+        { id: 'l3', name: 'TV strip', icon: null, zone: Z.liv, caps: { onoff: cap(true), dim: cap(0.6), light_hue: cap(0.76), light_saturation: cap(1) } },
+        { id: 'l4', name: 'Ceiling', icon: null, zone: Z.liv, caps: temp(false, 0.7, 0.5) },
+        { id: 'h1', name: 'Ceiling', icon: null, zone: Z.hal, caps: { onoff: cap(false), dim: cap(0.9) } },
+        { id: 'h2', name: 'Stairs', icon: null, zone: Z.hal, caps: { onoff: cap(false), dim: cap(0.3) } },
+        { id: 'b1', name: 'Bedside left', icon: null, zone: Z.bed, caps: color(true, 0.2, 0.08) },
+        { id: 'b2', name: 'Bedside right', icon: null, zone: Z.bed, caps: color(false, 0.2, 0.08) },
+      ], zoneIcons);
+      rooms.setMoods([
+        { id: 'm1', name: 'Movie night', zone: 'liv', colors: [{ hue: 0.08, saturation: 1 }, { hue: 0.76, saturation: 1 }] },
+        { id: 'm2', name: 'Cosy', zone: 'liv', colors: [{ temperature: 1 }, { temperature: 1 }, { hue: 0.08, saturation: 1 }] },
+        { id: 'm3', name: 'Reading', zone: 'liv', colors: [{ temperature: 0.5 }] },
+        { id: 'm4', name: 'Colourful', zone: 'liv', colors: [{ hue: 0, saturation: 1 }, { hue: 0.6, saturation: 1 }] },
+      ]);
+
+      // Web Page: the dev pages' neutral sample page (made in 550 × 512), with four views as buttons.
+      const SAMPLE = new URL('webpage-sample.html', location.href).href;
+      const at = zoom => `${SAMPLE}?zoom=${zoom}`;
+      createWebPageWidget(el('w-webpage'), {
+        url: at(8), pageWidth: 550, pageHeight: 512,
+        buttons: [{ name: 'Country', url: at(6) }, { name: 'Province', url: at(8) }, { name: 'Region', url: at(11) }, { name: 'City', url: at(13) }],
+      });
+
+      // Charts: Today, the house's use as bars against the outdoor temperature, from the showcase's made-up day
+      // (Tuesday 6 October at 18:40), so the day is drawn up to now.
+      const sparkSlot = (deviceId) => {
+        for (let n = 0; findWidget('sparklines', n); n++) {
+          const s = findWidget('sparklines', n).slots.find(x => x.deviceId === deviceId);
+          if (s) return s;
+        }
+        return null;
+      };
+      MOUNT.charts(el('w-charts'), {
+        opts: { overlay: true, charts: [{ span: 'today', style: 'bars', color: 'orange', title: 'House' }, { color: 'blue', smooth: true, title: 'Outdoor' }] },
+        charts: [sparkSlot('m1'), sparkSlot('g1')],
+      });
+
+      // Popups: the widget's own row, and the real prompt page in dark mode against a simulated app (as
+      // popups-preview.html), its strings the page's own English fallbacks: a question with the hallway camera's
+      // (made-up) picture, and a message, its bar held a third of the way down (it runs down for real, so a render
+      // would catch it anywhere).
+      createPopupsWidget(el('w-popups'), { name: 'Kitchen', page: '', open() {} });
+      const picture = fetch('cameras/door.webp').then(r => r.arrayBuffer()).then((buf) => {
+        let bin = '';
+        for (const b of new Uint8Array(buf)) bin += String.fromCharCode(b);
+        return { type: 'image/webp', data: btoa(bin) };
+      });
+      const showPopup = (frame, popup) => {
+        frame.srcdoc = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+          + '<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">'
+          + '<link rel="stylesheet" href="../settings/popup.css"><script src="../settings/popup.js"><\/script>'
+          + '<style>.pp { --pp-bg: #111217; --pp-card: #1F2029; --pp-raised: #2B2C36; --pp-text: #E4E4E7; --pp-muted: #999AA3; --pp-accent: #339BFB; }'
+          + ' .pp-bar span { transition: none !important; transform: scaleX(.65) !important; }</style>'
+          + '</head><body><main id="app" class="pp"></main></body></html>';
+        frame.addEventListener('load', () => {
+          const json = body => new Response(JSON.stringify(body));
+          frame.contentWindow.mountPopupPage(frame.contentWindow.document.getElementById('app'), {
+            hash: '#id=p1&t=poster',
+            fetch: async url => (url.endsWith('/image') ? json(await picture)
+              : json({ closed: false, ...popup, now: Date.now(), until: Date.now() + 60e3, language: 'en' })),
+          });
+        });
+      };
+      showPopup(el('w-popup'), { kind: 'ask', text: 'Someone is at the front door. Unlock it?', picture: { source: 'camera' } });
+      showPopup(el('w-message'), { kind: 'message', text: 'The washing machine is done', picture: null });
+
+      // The page's size and the columns' heights, for the render script.
+      document.fonts.ready.then(() => setTimeout(() => {
+        const r = document.body.getBoundingClientRect();
+        document.body.dataset.width = String(Math.ceil(r.width));
+        document.body.dataset.height = String(Math.ceil(r.height));
+        document.body.dataset.columns = [...document.querySelectorAll('.column')].map(c => Math.round(c.getBoundingClientRect().height)).join(',');
+      }, 800));
+    })();
+  </script>
+</body>
+</html>

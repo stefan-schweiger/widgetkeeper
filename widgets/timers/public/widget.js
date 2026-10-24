@@ -343,34 +343,15 @@
     }
 
     // ---------------------------------------------------------------- sound
-    // A WebView only plays sound after a touch, so the audio is unlocked by the first tap on the widget.
-    let audio = null;
+    // A WebView only plays sound after a touch, so the audio is unlocked by the first tap on the widget (the kit's).
+    const { sound } = window.WidgetkeeperKit;
     let beepTimer = null;
     let beepUntil = 0;
     function unlockAudio() {
-      if (opts.sound === false) return;
-      try {
-        const Ctx = window.AudioContext || /** @type {any} */ (window).webkitAudioContext;
-        if (!audio && Ctx) audio = new Ctx();
-        if (audio && audio.state === 'suspended') audio.resume();
-      } catch (err) { audio = null; }
+      if (opts.sound !== false) sound.unlock();
     }
     function beep() {
-      if (!audio || audio.state !== 'running') return;
-      try {
-        for (let i = 0; i < 3; i++) {
-          const at = audio.currentTime + i * 0.22;
-          const osc = audio.createOscillator();
-          const gain = audio.createGain();
-          osc.frequency.value = 880;
-          gain.gain.setValueAtTime(0.0001, at);
-          gain.gain.exponentialRampToValueAtTime(0.3, at + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.15);
-          osc.connect(gain).connect(audio.destination);
-          osc.start(at);
-          osc.stop(at + 0.16);
-        }
-      } catch (err) { /* no sound */ }
+      sound.play('beep');
     }
     function startBeeping() {
       if (opts.sound === false) return;

@@ -28,65 +28,10 @@
     renameFailed: 'Could not save the name.',
   };
 
-  const svg = (viewBox, body) => `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`)}`;
-  // A thermometer with a sun ray, for the temperature chip.
-  const TEMP_GLYPH = svg('6.3 1.3 11.4 21.4', '<path d="M10 14.5V4a2 2 0 0 1 4 0v10.5a4 4 0 1 1-4 0z"/><circle cx="12" cy="17.5" r="1.6" fill="#000"/><path d="M12 9.5v6"/>');
-  // A half-filled circle, for the chip of a light with colour: a ring with its right half filled.
-  const HUE_GLYPH = svg('2 2 20 20', '<circle cx="12" cy="12" r="9" stroke-width="1.6"/><path fill="#000" stroke="none" d="M12 3a9 9 0 0 1 0 18z"/>');
-  const CLOSE_GLYPH =svg('5 5 14 14', '<path d="M6 6l12 12M18 6L6 18"/>');
-  // A full circle, for the chip of a tile whose lights shine in several colours: filled with a pie of them.
-  const PIE_GLYPH = svg('2 2 20 20', '<circle cx="12" cy="12" r="9" fill="#000" stroke="none"/>');
+  const { glyphs, PALETTES, temperatureColor, hueColor, lightColor, moodDot } = window.WidgetkeeperKit.lights;
+  const { temp: TEMP_GLYPH, hue: HUE_GLYPH, close: CLOSE_GLYPH, pie: PIE_GLYPH } = glyphs;
   /** At most this many colours on a tile whose lights shine in several. */
   const MAX_COLORS = 4;
-
-  /**
-   * The swatch palettes (the `palette` setting): 7 colours for the first row (hue in degrees, saturation 0–1)
-   * and 5 whites for the second (colour temperature, 0 = cool), each row in the order shown. `moods` has no entry:
-   * it puts the room's Moods in the first row, and a room without Moods gets the default colours.
-   */
-  const PALETTES = {
-    // Bright colours around the wheel, and whites from cool to warm.
-    default: {
-      colors: [[0, 1], [30, 1], [55, 1], [120, 1], [220, 1], [275, 1], [320, 1]],
-      whites: [0, 0.25, 0.5, 0.75, 1],
-    },
-    // Warm: from red through orange and amber, on to warm and then cool white.
-    warm: {
-      colors: [[0, 1], [10, 1], [20, 1], [28, 0.95], [35, 0.85], [40, 0.7], [44, 0.5]],
-      whites: [1, 0.75, 0.5, 0.25, 0],
-    },
-    // Dusk: the sky after sunset, indigo through violet and rose to coral and amber, with warm whites.
-    dusk: {
-      colors: [[240, 0.8], [262, 0.75], [285, 0.65], [320, 0.6], [345, 0.65], [12, 0.75], [30, 0.85]],
-      whites: [1, 0.85, 0.7, 0.55, 0.4],
-    },
-  };
-
-  /** The colour of a temperature (0 = cool, 1 = warm), as on Homey's own light card. */
-  function temperatureColor(k) {
-    const cool = [214, 232, 255];
-    const warm = [255, 176, 84];
-    const mix = cool.map((c, i) => Math.round(c + (warm[i] - c) * Math.min(1, Math.max(0, k))));
-    return `rgb(${mix.join(' ')})`;
-  }
-
-  /** A colour light's hue and saturation (0–1); lighter as the saturation drops, so 0 is white. */
-  function hueColor(hue, sat) {
-    return `hsl(${Math.round(hue * 360)} ${Math.round(sat * 100)}% ${Math.round(62 + (1 - sat) * 38)}%)`;
-  }
-
-  /** The colour a light shines in: its hue in colour mode, else its temperature (or a warm white). */
-  function lightColor(caps) {
-    const v = id => (caps[id] ? caps[id].value : null);
-    const hue = v('light_hue');
-    const colourMode = v('light_mode') === 'color' || (!caps.light_mode && !caps.light_temperature);
-    if (colourMode && typeof hue === 'number') {
-      const sat = typeof v('light_saturation') === 'number' ? v('light_saturation') : 1;
-      return hueColor(hue, sat);
-    }
-    const k = v('light_temperature');
-    return temperatureColor(typeof k === 'number' ? k : 0.6);
-  }
 
   const clamp01 = x => Math.min(1, Math.max(0, x));
   /** Snaps to whole percent; anything below half a percent is 0 (off). */
@@ -366,13 +311,6 @@
         const reason = err && err.reason;
         setMessage(KEY_PROBLEMS.includes(reason) ? t(reason) : t('moodFailed', { name: mood.name }), true);
       }
-    }
-
-    /** A Mood's colours as the pill's dot: one colour, or a gradient through them (none without colours). */
-    function moodDot(colors) {
-      const list = (colors || []).map(c => ('temperature' in c ? temperatureColor(c.temperature) : hueColor(c.hue, c.saturation)));
-      if (!list.length) return null;
-      return list.length === 1 ? list[0] : `linear-gradient(135deg, ${list.join(', ')})`;
     }
 
     function armPanel() {

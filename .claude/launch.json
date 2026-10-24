@@ -1,0 +1,48 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev-pages",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8765"
+      ],
+      "port": 8765
+    },
+    {
+      "name": "dev-pages-8768",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8768"
+      ],
+      "port": 8768,
+      "autoPort": false
+    },
+    {
+      "name": "dev-pages-8771",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8771"
+      ],
+      "port": 8771,
+      "autoPort": false
+    },
+    {
+      "name": "dev-pages-8774",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8774"
+      ],
+      "port": 8774,
+      "autoPort": false
+    }
+  ]
+}

@@ -6,13 +6,15 @@
   'use strict';
 
   const DEFAULT_HEIGHT = 32;
+  // At 0 px the iOS app showed its loading placeholder for good; 16 px was fine (2026-10-23).
+  const MIN_HEIGHT = 16;
   const MAX_HEIGHT = 800;
 
-  /** The `height` setting as whole px within 0–800; anything that isn't a number is the default. */
+  /** The `height` setting as whole px within 16–800 (a 0 stored before is 16); anything that isn't a number is the default. */
   function spacerHeight(value) {
     const n = typeof value === 'string' && value.trim() !== '' ? Number(value) : value;
     if (typeof n !== 'number' || !Number.isFinite(n)) return DEFAULT_HEIGHT;
-    return Math.min(MAX_HEIGHT, Math.max(0, Math.round(n)));
+    return Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, Math.round(n)));
   }
 
   /** @param {HTMLElement} root @param {{ height?: unknown }} [opts] */

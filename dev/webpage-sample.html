@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sample page</title>
+  <!--
+    A made-up stand-in for a page made in a fixed size (a neutral wireframe, no real content): a 550 × 512 box on a white
+    page, the whole box a link that opens a new window, as such gadgets often are. dev/webpage-preview.html shows it in
+    the Web Page widget. `?zoom=6|8|11|13` changes the view's name in its footer and how large the picture icon is, so a
+    button switch shows.
+  -->
+  <style>
+    html, body { margin: 0; background: #FFFFFF; font-family: Arial, sans-serif; }
+    a { display: flex; flex-direction: column; gap: 16px; box-sizing: border-box; width: 550px; height: 512px; padding: 20px 24px 0; position: relative;
+      overflow: hidden; background: #F5F6F8; color: #1F2029; text-decoration: none; }
+    .head { display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 2px solid rgba(31, 32, 41, .08); }
+    .logo { width: 28px; height: 28px; border-radius: 7px; background: #2F8DF6; }
+    .bar { height: 14px; border-radius: 7px; background: rgba(31, 32, 41, .2); }
+    .bar.title { height: 22px; background: rgba(31, 32, 41, .75); }
+    .grow { flex: 1; }
+    .picture { height: 210px; border-radius: 14px; background: rgba(31, 32, 41, .06); display: flex; align-items: center; justify-content: center; }
+    .picture svg { transition: transform .2s; }
+    .foot { position: absolute; left: 0; right: 0; bottom: 0; height: 40px; background: rgba(31, 32, 41, .08); display: flex; align-items: center;
+      justify-content: space-between; padding: 0 24px; font-size: 15px; }
+  </style>
+</head>
+<body>
+  <a href="https://example.com/" target="_blank">
+    <div class="head"><div class="logo"></div><div class="bar title" style="width:120px"></div><div class="grow"></div>
+      <div class="bar" style="width:48px"></div><div class="bar" style="width:48px"></div><div class="bar" style="width:56px"></div></div>
+    <div class="picture"><svg width="96" height="74" viewBox="-62 -48 124 96" fill="none" stroke="rgba(31,32,41,.22)" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <rect x="-58" y="-44" width="116" height="88" rx="12"/><circle cx="22" cy="-12" r="9"/><path d="M-58 32l36-34 30 28 18-16 32 30"/></svg></div>
+    <div class="bar title" style="width:290px"></div>
+    <div class="bar" style="width:100%"></div>
+    <div class="bar" style="width:92%"></div>
+    <div class="bar" style="width:70%"></div>
+    <div class="foot"><b>Sample page</b><span id="view"></span></div>
+  </a>
+  <script>
+    const zoom = new URLSearchParams(location.search).get('zoom') || '8';
+    const names = { 6: 'Country', 8: 'Province', 11: 'Region', 13: 'City' };
+    document.getElementById('view').textContent = `zoom ${zoom} · ${names[zoom] || ''}`;
+    document.querySelector('.picture svg').style.transform = `scale(${{ 6: 0.7, 8: 1, 11: 1.4, 13: 1.9 }[zoom] || 1})`;
+  </script>
+</body>
+</html>

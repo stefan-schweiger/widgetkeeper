@@ -1,19 +1,19 @@
 {
   "id": "dayssince_overdue",
   "title": {
-    "en": "A counter became overdue",
-    "nl": "Een teller is te laat geworden",
-    "de": "Ein Zähler ist überfällig geworden",
-    "fr": "Un compteur passe en retard",
-    "it": "Un contatore è appena scaduto",
-    "sv": "En räknare blev försenad",
-    "no": "En teller ble forsinket",
-    "es": "Un contador se ha retrasado",
-    "da": "En tæller er blevet forsinket",
-    "ru": "Счётчик стал просроченным",
-    "pl": "Licznik przekroczył termin",
-    "ko": "카운터 기한이 지났을 때",
-    "ar": "تأخر عداد"
+    "en": "A Days Since counter became overdue",
+    "nl": "Een Dagen geleden-teller is te laat geworden",
+    "de": "Ein Tage-seit-Zähler ist überfällig geworden",
+    "fr": "Un compteur Jours depuis passe en retard",
+    "it": "Un contatore di Giorni da è appena scaduto",
+    "sv": "En Dagar sedan-räknare blev försenad",
+    "no": "En Dager siden-teller ble forsinket",
+    "es": "Un contador de Días desde se ha retrasado",
+    "da": "En Dage siden-tæller er blevet forsinket",
+    "ru": "Счётчик «Дней прошло» стал просроченным",
+    "pl": "Licznik Dni od przekroczył termin",
+    "ko": "경과 일수 카운터 기한이 지났을 때",
+    "ar": "تأخر عداد «أيام منذ»"
   },
   "titleFormatted": {
     "en": "[[counter]] became overdue",

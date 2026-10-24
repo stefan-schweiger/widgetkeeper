@@ -177,6 +177,66 @@ describe('tap to inspect', () => {
   });
 });
 
+describe('today and yesterday', () => {
+  const L = 38, PW = 368 - L - 4; // the chart module's left gutter; the plot's width at the default 368 px
+  const MIDNIGHT = new Date('2026-01-15T00:00:00').getTime();
+  /** 120 points over `[from, to]`, from `f(x)` with x 0…1. */
+  const between = (from: number, to: number, f: (x: number) => number) =>
+    Array.from({ length: 120 }, (_, i) => [from + (i + 0.5) * (to - from) / 120, f(i / 119)] as [number, number]);
+  const xLabels = (r: ReturnType<typeof widget>) => [...r.q('.ch-chart svg')!.querySelectorAll('text')]
+    .filter(t => t.getAttribute('dominant-baseline') === 'hanging').map(t => t.textContent);
+
+  it('draws today over the whole day, the line up to now', () => {
+    const r = widget([{ span: 'today' }], [entry(between(MIDNIGHT - 24 * HOUR, NOW, x => 20 + x * 2))]);
+    expect(r.header()).toEqual(['22°C | Now']);
+    expect(xLabels(r)).toEqual(['6:00', '12:00', '18:00']); // no Now at the right end: that's midnight
+    const cx = Number(r.q('.dot-core.series')!.getAttribute('cx'));
+    expect(cx).toBeCloseTo(L + PW * (NOW - MIDNIGHT) / (24 * HOUR), 0);
+    // Yesterday's points are left out.
+    expect([...r.yLabels()].map(t => t.textContent)).not.toContain('20');
+  });
+
+  it("puts today's bars up to now, an hour each", () => {
+    const r = widget([{ span: 'today', style: 'bars' }], [entry(between(MIDNIGHT, NOW, x => 20 + x))]);
+    expect(r.all('rect.bar').length).toBe(11); // 00:00 … 10:00
+  });
+
+  it('draws yesterday up to midnight, its average in the header', () => {
+    const y = MIDNIGHT - 24 * HOUR;
+    const pts = between(y, MIDNIGHT, x => (x < 0.5 ? 10 : 20)).concat(between(MIDNIGHT, NOW, () => 99));
+    const r = widget([{ span: 'yesterday' }], [entry(pts, { value: 99 })]);
+    expect(r.header()).toEqual(['15°C | Yesterday · avg']);
+    expect(xLabels(r)).toEqual(['6:00', '12:00', '18:00']);
+    // The line ends at midnight, without today's values or the value now carried on.
+    const cx = Number(r.q('.dot-core.series')!.getAttribute('cx'));
+    expect(cx).toBeGreaterThan(L + PW - 3);
+    expect([...r.yLabels()].map(t => t.textContent)).not.toContain('99');
+  });
+
+  it('leaves out live values on yesterday', () => {
+    const y = MIDNIGHT - 24 * HOUR;
+    const r = widget([{ span: 'yesterday' }], [entry(between(y, MIDNIGHT, () => 10))]);
+    r.w.pushChange({ deviceId: 'd1', capabilityId: 'measure_temperature', value: 50 });
+    expect(r.header()).toEqual(['10°C | Yesterday · avg']);
+  });
+
+  it('is 25 hours on the day DST ends', () => {
+    const day = new Date('2026-10-25T00:00:00').getTime(); // Copenhagen: 03:00 → 02:00
+    vi.setSystemTime(day + 20 * HOUR);
+    const r = widget([{ span: 'today' }], [entry(between(day, day + 20 * HOUR, x => 20 + x))]);
+    const noon = [...r.q('.ch-chart svg')!.querySelectorAll('text')].find(t => t.textContent === '12:00')!;
+    expect(Number(noon.getAttribute('x'))).toBeCloseTo(L + PW * 13 / 25, 0);
+  });
+
+  it('moves on at midnight', () => {
+    const r = widget([{ span: 'yesterday' }], [entry(between(MIDNIGHT - 24 * HOUR, MIDNIGHT, () => 10).concat(between(MIDNIGHT, NOW, () => 30)))]);
+    expect(r.header()).toEqual(['10°C | Yesterday · avg']);
+    vi.setSystemTime(MIDNIGHT + 24 * HOUR + 5 * MIN);
+    r.w.render();
+    expect(r.header()).toEqual(['30°C | Yesterday · avg']); // the 15th is yesterday now
+  });
+});
+
 describe('live and states', () => {
   it('appends live values and keeps them over an older history', () => {
     const r = widget([{ span: '1h' }], [entry(series(HOUR, () => 20))]);

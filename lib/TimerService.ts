@@ -59,7 +59,7 @@ export type TimersState = { instance: string, timers: Timer[], now: number };
 
 /**
  * The Timers widget: kitchen timers that run in the app, so every screen showing the dashboard sees the same
- * one, and the Flow card *A timer finished* fires even with no dashboard open. Each widget instance
+ * one, and the Flow card *A timer on the Timers widget finished* fires even with no dashboard open. Each widget instance
  * (`Homey.getWidgetInstanceId()`) has at most one timer; they're kept in the app setting `timers` across restarts.
  */
 export default class TimerService {

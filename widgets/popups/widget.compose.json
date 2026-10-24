@@ -1,0 +1,77 @@
+{
+  "name": {
+    "en": "Popups",
+    "nl": "Pop-ups",
+    "de": "Popups",
+    "fr": "Pop-ups",
+    "it": "Popup",
+    "sv": "Popup-fönster",
+    "no": "Popup-vinduer",
+    "es": "Ventanas emergentes",
+    "da": "Popups",
+    "ru": "Всплывающие окна",
+    "pl": "Okna wyskakujące",
+    "ko": "팝업",
+    "ar": "النوافذ المنبثقة"
+  },
+  "height": 32,
+  "transparent": true,
+  "settings": [
+    {
+      "id": "name",
+      "type": "text",
+      "title": {
+        "en": "Screen name",
+        "nl": "Schermnaam",
+        "de": "Bildschirmname",
+        "fr": "Nom de l'écran",
+        "it": "Nome dello schermo",
+        "sv": "Skärmnamn",
+        "no": "Skjermnavn",
+        "es": "Nombre de la pantalla",
+        "da": "Skærmnavn",
+        "ru": "Имя экрана",
+        "pl": "Nazwa ekranu",
+        "ko": "화면 이름",
+        "ar": "اسم الشاشة"
+      },
+      "hint": {
+        "en": "The name the popup Flow cards send to; a message or question sent here opens over the dashboard on this phone or tablet. The widget itself is blank. Put it at the bottom of the dashboard, so it doesn't push other widgets down.",
+        "nl": "De naam waar de pop-up-Flowkaarten naartoe sturen; een bericht of vraag die hierheen gaat, opent over het dashboard op deze telefoon of tablet. De widget zelf is leeg. Zet hem onderaan het dashboard, zodat hij geen andere widgets omlaag duwt.",
+        "de": "Der Name, an den die Popup-Flow-Karten senden; eine Nachricht oder Frage hierher öffnet sich über dem Dashboard auf diesem Handy oder Tablet. Das Widget selbst ist leer. Setz es unten aufs Dashboard, damit es keine anderen Widgets nach unten schiebt.",
+        "fr": "Le nom auquel les cartes Flow de pop-up envoient ; un message ou une question envoyé ici s'ouvre par-dessus le tableau de bord sur ce téléphone ou cette tablette. Le widget lui-même est vide. Placez-le en bas du tableau de bord, pour qu'il ne pousse pas les autres widgets vers le bas.",
+        "it": "Il nome a cui inviano le schede Flow dei popup; un messaggio o una domanda inviati qui si aprono sopra la dashboard su questo telefono o tablet. Il widget in sé è vuoto. Mettilo in fondo alla dashboard, così non spinge in basso gli altri widget.",
+        "sv": "Namnet som popup-fönstrens Flow-kort skickar till; ett meddelande eller en fråga som skickas hit öppnas över instrumentpanelen på den här telefonen eller surfplattan. Själva widgeten är tom. Lägg den längst ner på instrumentpanelen, så att den inte trycker ner andra widgetar.",
+        "no": "Navnet popup-vinduenes Flow-kort sender til; en melding eller et spørsmål som sendes hit, åpnes over dashbordet på denne telefonen eller nettbrettet. Selve widgeten er tom. Legg den nederst på dashbordet, så den ikke skyver andre widgeter ned.",
+        "es": "El nombre al que envían las tarjetas Flow de ventanas emergentes; un mensaje o una pregunta enviados aquí se abren sobre el panel en este teléfono o tableta. El widget en sí está vacío. Ponlo al final del panel, para que no empuje hacia abajo los demás widgets.",
+        "da": "Navnet, som popup-Flowkortene sender til; en besked eller et spørgsmål sendt hertil åbner over dashboardet på denne telefon eller tablet. Selve widgetten er tom. Sæt den nederst på dashboardet, så den ikke skubber andre widgets ned.",
+        "ru": "Имя, на которое отправляют карточки Flow всплывающих окон; сообщение или вопрос, отправленные сюда, открываются поверх панели на этом телефоне или планшете. Сам виджет пустой. Разместите его внизу панели, чтобы он не сдвигал другие виджеты вниз.",
+        "pl": "Nazwa, do której wysyłają karty Flow okien wyskakujących; wiadomość lub pytanie wysłane tutaj otwiera się nad pulpitem na tym telefonie lub tablecie. Sam widżet jest pusty. Umieść go na dole pulpitu, aby nie przesuwał innych widżetów w dół.",
+        "ko": "팝업 Flow 카드가 보내는 이름이며, 여기로 보낸 메시지나 질문은 이 휴대폰이나 태블릿의 대시보드 위에 열립니다. 위젯 자체는 비어 있습니다. 다른 위젯을 아래로 밀지 않도록 대시보드 맨 아래에 두세요.",
+        "ar": "الاسم الذي ترسل إليه بطاقات Flow للنوافذ المنبثقة؛ الرسالة أو السؤال المرسل هنا يفتح فوق اللوحة على هذا الهاتف أو الجهاز اللوحي. الأداة نفسها فارغة. ضعها في أسفل اللوحة حتى لا تدفع الأدوات الأخرى إلى الأسفل."
+      },
+      "placeholder": {
+        "en": "Screen",
+        "nl": "Scherm",
+        "de": "Bildschirm",
+        "fr": "Écran",
+        "it": "Schermo",
+        "sv": "Skärm",
+        "no": "Skjerm",
+        "es": "Pantalla",
+        "da": "Skærm",
+        "ru": "Экран",
+        "pl": "Ekran",
+        "ko": "화면",
+        "ar": "الشاشة"
+      },
+      "value": "Screen"
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    }
+  }
+}

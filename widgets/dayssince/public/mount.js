@@ -24,6 +24,7 @@ window.mountDaysSinceWidget = function (Homey, { root, frame }) {
     t: (key, tokens) => Homey.__(key, tokens),
     counters,
     units: settings.units,
+    show: settings.show,
     onReset: name => Homey.api('POST', '/reset', { name }),
     onUndo: (name, at) => Homey.api('POST', '/undo', { name, at }),
     onHaptic: () => {

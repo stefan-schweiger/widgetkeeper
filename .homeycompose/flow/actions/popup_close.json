@@ -1,0 +1,84 @@
+{
+  "id": "popup_close",
+  "title": {
+    "en": "Close popups",
+    "nl": "Pop-ups sluiten",
+    "de": "Popups schließen",
+    "fr": "Fermer les pop-ups",
+    "it": "Chiudi i popup",
+    "sv": "Stäng popup-fönster",
+    "no": "Lukk popup-vinduer",
+    "es": "Cerrar ventanas emergentes",
+    "da": "Luk popups",
+    "ru": "Закрыть всплывающие окна",
+    "pl": "Zamknij okna wyskakujące",
+    "ko": "팝업 닫기",
+    "ar": "إغلاق النوافذ المنبثقة"
+  },
+  "titleFormatted": {
+    "en": "Close the popups on [[screen]]",
+    "nl": "Sluit de pop-ups op [[screen]]",
+    "de": "Die Popups auf [[screen]] schließen",
+    "fr": "Fermer les pop-ups sur [[screen]]",
+    "it": "Chiudi i popup su [[screen]]",
+    "sv": "Stäng popup-fönstren på [[screen]]",
+    "no": "Lukk popup-vinduene på [[screen]]",
+    "es": "Cerrar las ventanas emergentes en [[screen]]",
+    "da": "Luk popups på [[screen]]",
+    "ru": "Закрыть всплывающие окна на [[screen]]",
+    "pl": "Zamknij okna wyskakujące na [[screen]]",
+    "ko": "[[screen]]의 팝업 닫기",
+    "ar": "إغلاق النوافذ المنبثقة على [[screen]]"
+  },
+  "hint": {
+    "en": "Closes the messages and questions sent to that screen; Everywhere closes them all. An open question ends unanswered.",
+    "nl": "Sluit de berichten en vragen die naar dat scherm zijn gestuurd; Overal sluit ze allemaal. Een open vraag eindigt zonder antwoord.",
+    "de": "Schließt die Nachrichten und Fragen an diesen Bildschirm; Überall schließt alle. Eine offene Frage endet unbeantwortet.",
+    "fr": "Ferme les messages et questions envoyés à cet écran ; Partout les ferme tous. Une question ouverte se termine sans réponse.",
+    "it": "Chiude i messaggi e le domande inviati a quello schermo; Ovunque li chiude tutti. Una domanda aperta finisce senza risposta.",
+    "sv": "Stänger meddelanden och frågor som skickats till den skärmen; Överallt stänger alla. En öppen fråga slutar obesvarad.",
+    "no": "Lukker meldinger og spørsmål sendt til den skjermen; Overalt lukker alle. Et åpent spørsmål ender ubesvart.",
+    "es": "Cierra los mensajes y preguntas enviados a esa pantalla; En todas partes los cierra todos. Una pregunta abierta termina sin respuesta.",
+    "da": "Lukker beskeder og spørgsmål sendt til den skærm; Overalt lukker dem alle. Et åbent spørgsmål slutter ubesvaret.",
+    "ru": "Закрывает сообщения и вопросы, отправленные на этот экран; «Везде» закрывает все. Открытый вопрос завершается без ответа.",
+    "pl": "Zamyka wiadomości i pytania wysłane na ten ekran; Wszędzie zamyka wszystkie. Otwarte pytanie kończy się bez odpowiedzi.",
+    "ko": "그 화면으로 보낸 메시지와 질문을 닫습니다. 모든 곳은 전부 닫습니다. 열린 질문은 응답 없이 끝납니다.",
+    "ar": "تغلق الرسائل والأسئلة المرسلة إلى تلك الشاشة؛ في كل مكان تغلقها كلها. السؤال المفتوح ينتهي دون إجابة."
+  },
+  "args": [
+    {
+      "type": "autocomplete",
+      "name": "screen",
+      "title": {
+        "en": "Screen",
+        "nl": "Scherm",
+        "de": "Bildschirm",
+        "fr": "Écran",
+        "it": "Schermo",
+        "sv": "Skärm",
+        "no": "Skjerm",
+        "es": "Pantalla",
+        "da": "Skærm",
+        "ru": "Экран",
+        "pl": "Ekran",
+        "ko": "화면",
+        "ar": "الشاشة"
+      },
+      "placeholder": {
+        "en": "Screen",
+        "nl": "Scherm",
+        "de": "Bildschirm",
+        "fr": "Écran",
+        "it": "Schermo",
+        "sv": "Skärm",
+        "no": "Skjerm",
+        "es": "Pantalla",
+        "da": "Skærm",
+        "ru": "Экран",
+        "pl": "Ekran",
+        "ko": "화면",
+        "ar": "الشاشة"
+      }
+    }
+  ]
+}

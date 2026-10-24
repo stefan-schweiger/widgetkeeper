@@ -61,6 +61,41 @@ export async function fetchDeviceIcon(api: any, device: any, log: (...args: any[
   return fetchSvgIcon(api, device?.iconObj, device?.name, log);
 }
 
+/**
+ * Homey's zone icons (a zone's `icon`, e.g. `livingRoom`) → their file in the web app's library, as its own bundle
+ * maps them (`getIconForZone()` in my.homey.app's script, read 2026-10-23); anything else is its generic `zone`.
+ */
+const ZONE_ICON_FILES: Record<string, string> = {
+  firstFloor: 'first-floor', groundFloor: 'ground-floor', officeBuildings: 'office-buildings', singleFloor: 'single-floor',
+  topFloor: 'top-floor', home: 'home', 'stairs-down': 'basement', basement: 'basement', 'stairs-up': 'floor', floor: 'floor',
+  roof: 'attic', attic: 'attic', roofSolar: 'roof_solar_panels', garage: 'garage', pool: 'pool', garden: 'garden',
+  gardenShed: 'garden_shed', terrace: 'terrace', carport: 'carport', hallway: 'hallway', living: 'living_room',
+  livingRoom: 'living_room', kitchen: 'kitchen', diningRoom: 'dining_room', bedroomSingle: 'bedroom', bed: 'master_bedroom',
+  bedroomDouble: 'master_bedroom', bedroomKids: 'kinder_room', shower: 'bathroom', bathroom: 'bathroom', office: 'office',
+  gym: 'gym', toilet: 'toilet', entrance: 'entrance_front_door', books: 'study_room', studyRoom: 'study_room',
+  gameRoom: 'game_room', utilitiesRoom: 'utilities_room', recreationRoom: 'recreation_room', tipi: 'tipi_tent',
+  wardrobe: 'wardrobe', doorClosed: 'door-closed', lounge: 'lounge-chair', fuseBox: 'lightning-bolt',
+  laundryRoom: 'laundry-basket', phone: 'phone', coffeeMachine: 'coffee-machine', drinks: 'drinks', pantry: 'pantry',
+  suitcase: 'suitcase', door: 'door', toothbrush: 'toothbrush', sink: 'sink',
+};
+
+/** A zone icon's URL in Homey's library (my.homey.app/img/zones/<file>.svg): the generic zone for an unknown one. */
+export function zoneIconUrl(icon: unknown): string {
+  const file = typeof icon === 'string' && Object.prototype.hasOwnProperty.call(ZONE_ICON_FILES, icon) ? ZONE_ICON_FILES[icon] : 'zone';
+  return `https://my.homey.app/img/zones/${file}.svg`;
+}
+
+/** A zone's icon (its `icon` id) as an SVG data URL, or null when it can't be loaded (logged once a while). */
+export async function fetchZoneIcon(icon: unknown, log: (...args: any[]) => void): Promise<string | null> {
+  const url = zoneIconUrl(icon);
+  try {
+    return await cachedSvg(url);
+  } catch (err) {
+    if (!isRepeat(err)) log(`Could not load zone icon ${url}`, err);
+    return null;
+  }
+}
+
 /** A user-picked icon's URL in Homey's icon library (`iconOverride`, e.g. `lock`), or null. */
 export function libraryIconUrl(device: any): string | null {
   const override = device?.iconOverride;

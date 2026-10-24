@@ -2,6 +2,40 @@
 
 All notable changes to Widgetkeeper. The version numbers match the Homey app version.
 
+## 1.1.0
+
+### New: Pollen and UV
+- Today's pollen at your Homey's location, a row per type with a bar from low to very high, and the day's UV peak and when it comes. Pick any of alder, birch, olive, grass, mugwort and ragweed.
+- Detailed adds the grains per m³ and the next three days. Pollen forecasts cover Europe; elsewhere it shows the UV only.
+
+### New: Web Page
+- Any web page on the dashboard, drawn at the width and height you set and scaled to fill the widget at any size, so a page made in a fixed size has no white borders on a phone and isn't cut off on a tablet.
+- Links never open, and taps are ignored unless you let the page be tapped, so a swipe still scrolls the dashboard.
+- Up to four buttons under the page switch between addresses, such as a map's zoom levels. `{lat}` and `{lon}` in an address become the Homey's location. It can reload every few minutes, for a screen that's always on.
+
+### New: Popups
+- **Flow cards:** show a message for a number of seconds or minutes, or ask Yes or No, in front of everything on a web dashboard or on the phones and tablets with a Popups widget. The first answer from any screen closes the question everywhere and goes back to the Flow as the tags Answer and Answered (no answer in time). A picture can come along: a camera, refreshed while it's open, a picture address, or an image tag such as a doorbell's snapshot. A third card closes them early.
+- **Sound:** a popup can open with a chime, a doorbell or an alert, where the browser allows it (a web dashboard once it has been tapped).
+- **Popups widget:** blank itself; on a Homey dashboard it opens the popups sent to that name in the Homey app's built-in browser, as a widget can't draw over the dashboard. On a web dashboard it lets the same name reach that dashboard too. Put it at the bottom of a dashboard, so it doesn't push other widgets down.
+
+### New: Lights by Room
+- Every room's lights on a card: the room's own icon from Homey, its name and how many lights are on (*2 of 3 on · 55%*), a switch for the whole room and a bar that dims every light in it. Pick the lights in the settings; rooms follow the Homey's zones.
+- Tap a room's name to open it: the room's Moods, then a row per light with its brightness. A tap on a light's colour dot opens its colours and whites. Rooms start closed, and several can be open.
+
+### Web dashboards
+- **Wide widgets:** a widget can span two or more columns, such as a floor plan, a camera or a chart. Drag the handle on its right edge in edit mode, or set its Width in its settings. Each column it covers keeps its own widgets above and below it. Kept in duplicates and backups. The front page's miniatures show them across their columns.
+- **Sections on the front page:** group the dashboards under headings of your own. In the front page's edit mode, Add section, type its name, and drag dashboards into it, or make one there with its own New dashboard; ↑ ↓ move a section, and deleting one keeps its dashboards. Kept in duplicates and backups.
+- **Password:** changing or removing the web dashboards password now asks for the current one. A forgotten password is removed with the Flow card *Remove the web dashboards password*.
+
+### Charts and Sparklines
+- **Today and Yesterday** as time spans: a calendar day in the phone's own time. Today shows the whole day, 00–24, with the line up to now; Yesterday ends at midnight, and Charts' header shows the day's average.
+
+### Days Since
+- **Show:** only the counters that are amber and red, or only red, so counters due every month or so don't take room until they're due. A counter not started yet, or one just tapped, still shows; with none due it says *Nothing due.*
+
+### Spacer
+- At least 16 px high: at 0 px the iPhone app kept showing a loading indicator in its place. A spacer set to 0 is now 16 px.
+
 ## 1.0.3
 
 ### Web dashboards

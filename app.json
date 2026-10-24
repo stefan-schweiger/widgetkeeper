@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.thomassidor.widgetkeeper",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "compatibility": ">=12.6.0",
   "sdk": 3,
   "runtime": "nodejs",
@@ -136,6 +136,33 @@
     "postWebLogout": {
       "method": "POST",
       "path": "/web/logout"
+    },
+    "getWebPopups": {
+      "method": "GET",
+      "path": "/web/popups"
+    },
+    "getWebPopupImage": {
+      "method": "GET",
+      "path": "/web/popups/:id/image"
+    },
+    "postWebPopupAnswer": {
+      "method": "POST",
+      "path": "/web/popups/:id/answer"
+    },
+    "postPopup": {
+      "method": "POST",
+      "path": "/popup/:id",
+      "public": true
+    },
+    "postPopupImage": {
+      "method": "POST",
+      "path": "/popup/:id/image",
+      "public": true
+    },
+    "postPopupAnswer": {
+      "method": "POST",
+      "path": "/popup/:id/answer",
+      "public": true
     }
   },
   "esm": true,
@@ -144,19 +171,19 @@
       {
         "id": "dayssince_overdue",
         "title": {
-          "en": "A counter became overdue",
-          "nl": "Een teller is te laat geworden",
-          "de": "Ein Zähler ist überfällig geworden",
-          "fr": "Un compteur passe en retard",
-          "it": "Un contatore è appena scaduto",
-          "sv": "En räknare blev försenad",
-          "no": "En teller ble forsinket",
-          "es": "Un contador se ha retrasado",
-          "da": "En tæller er blevet forsinket",
-          "ru": "Счётчик стал просроченным",
-          "pl": "Licznik przekroczył termin",
-          "ko": "카운터 기한이 지났을 때",
-          "ar": "تأخر عداد"
+          "en": "A Days Since counter became overdue",
+          "nl": "Een Dagen geleden-teller is te laat geworden",
+          "de": "Ein Tage-seit-Zähler ist überfällig geworden",
+          "fr": "Un compteur Jours depuis passe en retard",
+          "it": "Un contatore di Giorni da è appena scaduto",
+          "sv": "En Dagar sedan-räknare blev försenad",
+          "no": "En Dager siden-teller ble forsinket",
+          "es": "Un contador de Días desde se ha retrasado",
+          "da": "En Dage siden-tæller er blevet forsinket",
+          "ru": "Счётчик «Дней прошло» стал просроченным",
+          "pl": "Licznik Dni od przekroczył termin",
+          "ko": "경과 일수 카운터 기한이 지났을 때",
+          "ar": "تأخر عداد «أيام منذ»"
         },
         "titleFormatted": {
           "en": "[[counter]] became overdue",
@@ -284,19 +311,19 @@
       {
         "id": "timers_finished",
         "title": {
-          "en": "A timer finished",
-          "nl": "Een timer is afgelopen",
-          "de": "Ein Timer ist abgelaufen",
-          "fr": "Un minuteur est terminé",
-          "it": "Un timer è terminato",
-          "sv": "En timer har gått ut",
-          "no": "En tidtaker er ferdig",
-          "es": "Un temporizador ha terminado",
-          "da": "En timer er færdig",
-          "ru": "Таймер завершён",
-          "pl": "Minutnik się skończył",
-          "ko": "타이머가 끝났을 때",
-          "ar": "انتهى مؤقت"
+          "en": "A timer on the Timers widget finished",
+          "nl": "Een timer van de Timers-widget is afgelopen",
+          "de": "Ein Timer des Timer-Widgets ist abgelaufen",
+          "fr": "Un minuteur du widget Minuteurs est terminé",
+          "it": "Un timer del widget Timer è terminato",
+          "sv": "En timer i Timers-widgeten har gått ut",
+          "no": "En tidtaker i Tidtakere-widgeten er ferdig",
+          "es": "Un temporizador del widget Temporizadores ha terminado",
+          "da": "En timer i Timere-widgetten er færdig",
+          "ru": "Таймер виджета «Таймеры» завершён",
+          "pl": "Minutnik z widżetu Minutniki się skończył",
+          "ko": "타이머 위젯의 타이머가 끝났을 때",
+          "ar": "انتهى مؤقت في عنصر «المؤقتات»"
         },
         "hint": {
           "en": "A timer started from the Timers widget ran out, even with no dashboard open.",
@@ -375,19 +402,19 @@
       {
         "id": "dayssince_is_overdue",
         "title": {
-          "en": "A counter is overdue",
-          "nl": "Een teller is te laat",
-          "de": "Ein Zähler ist überfällig",
-          "fr": "Un compteur est en retard",
-          "it": "Un contatore è scaduto",
-          "sv": "En räknare är försenad",
-          "no": "En teller er forsinket",
-          "es": "Un contador está retrasado",
-          "da": "En tæller er forsinket",
-          "ru": "Счётчик просрочен",
-          "pl": "Licznik jest po terminie",
-          "ko": "카운터 기한이 지났음",
-          "ar": "عداد متأخر"
+          "en": "A Days Since counter is overdue",
+          "nl": "Een Dagen geleden-teller is te laat",
+          "de": "Ein Tage-seit-Zähler ist überfällig",
+          "fr": "Un compteur Jours depuis est en retard",
+          "it": "Un contatore di Giorni da è scaduto",
+          "sv": "En Dagar sedan-räknare är försenad",
+          "no": "En Dager siden-teller er forsinket",
+          "es": "Un contador de Días desde está retrasado",
+          "da": "En Dage siden-tæller er forsinket",
+          "ru": "Счётчик «Дней прошло» просрочен",
+          "pl": "Licznik Dni od jest po terminie",
+          "ko": "경과 일수 카운터 기한이 지났음",
+          "ar": "عداد «أيام منذ» متأخر"
         },
         "titleFormatted": {
           "en": "[[counter]] !{{is|isn't}} overdue",
@@ -461,19 +488,19 @@
       {
         "id": "dayssince_reset",
         "title": {
-          "en": "Reset a counter",
-          "nl": "Een teller resetten",
-          "de": "Einen Zähler zurücksetzen",
-          "fr": "Remettre un compteur à zéro",
-          "it": "Azzera un contatore",
-          "sv": "Nollställ en räknare",
-          "no": "Nullstill en teller",
-          "es": "Reiniciar un contador",
-          "da": "Nulstil en tæller",
-          "ru": "Сбросить счётчик",
-          "pl": "Wyzeruj licznik",
-          "ko": "카운터 초기화",
-          "ar": "إعادة ضبط عداد"
+          "en": "Reset a Days Since counter",
+          "nl": "Een Dagen geleden-teller resetten",
+          "de": "Einen Tage-seit-Zähler zurücksetzen",
+          "fr": "Remettre à zéro un compteur Jours depuis",
+          "it": "Azzera un contatore di Giorni da",
+          "sv": "Nollställ en Dagar sedan-räknare",
+          "no": "Nullstill en Dager siden-teller",
+          "es": "Reiniciar un contador de Días desde",
+          "da": "Nulstil en Dage siden-tæller",
+          "ru": "Сбросить счётчик «Дней прошло»",
+          "pl": "Wyzeruj licznik Dni od",
+          "ko": "경과 일수 카운터 초기화",
+          "ar": "إعادة ضبط عداد «أيام منذ»"
         },
         "titleFormatted": {
           "en": "Reset [[counter]]",
@@ -545,19 +572,19 @@
       {
         "id": "dayssince_set",
         "title": {
-          "en": "Set a counter's days",
-          "nl": "De dagen van een teller instellen",
-          "de": "Die Tage eines Zählers setzen",
-          "fr": "Régler les jours d'un compteur",
-          "it": "Imposta i giorni di un contatore",
-          "sv": "Ställ in en räknares dagar",
-          "no": "Still inn dagene til en teller",
-          "es": "Ajustar los días de un contador",
-          "da": "Indstil en tællers dage",
-          "ru": "Задать дни счётчика",
-          "pl": "Ustaw dni licznika",
-          "ko": "카운터 일수 설정",
-          "ar": "ضبط أيام عداد"
+          "en": "Back-date a Days Since counter",
+          "nl": "Een Dagen geleden-teller terugdateren",
+          "de": "Einen Tage-seit-Zähler zurückdatieren",
+          "fr": "Antidater un compteur Jours depuis",
+          "it": "Retrodata un contatore di Giorni da",
+          "sv": "Bakdatera en Dagar sedan-räknare",
+          "no": "Tilbakedater en Dager siden-teller",
+          "es": "Antedatar un contador de Días desde",
+          "da": "Tilbagedater en Dage siden-tæller",
+          "ru": "Сдвинуть счётчик «Дней прошло» в прошлое",
+          "pl": "Przestaw wstecz licznik Dni od",
+          "ko": "경과 일수 카운터를 과거 날짜로 설정",
+          "ar": "تعيين تاريخ سابق لعداد «أيام منذ»"
         },
         "titleFormatted": {
           "en": "Set [[counter]] to [[days]] days ago",
@@ -666,19 +693,19 @@
       {
         "id": "flows_set_color",
         "title": {
-          "en": "Set the Flow Button colour",
-          "nl": "Kleur van de Flowknop instellen",
-          "de": "Farbe der Flow-Taste setzen",
-          "fr": "Définir la couleur du bouton de flow",
-          "it": "Imposta il colore del pulsante del flow",
-          "sv": "Ange flödesknappens färg",
-          "no": "Angi flytknappens farge",
-          "es": "Establecer el color del botón de flujo",
-          "da": "Angiv flowknappens farve",
-          "ru": "Задать цвет кнопки потока",
-          "pl": "Ustaw kolor przycisku Flow",
+          "en": "Colour a Flow Button",
+          "nl": "Een Flowknop kleuren",
+          "de": "Eine Flow-Taste einfärben",
+          "fr": "Colorer un bouton de flow",
+          "it": "Colora un pulsante del flow",
+          "sv": "Färga en flödesknapp",
+          "no": "Farg en flytknapp",
+          "es": "Colorear un botón de flujo",
+          "da": "Farv en flowknap",
+          "ru": "Окрасить кнопку потока",
+          "pl": "Pokoloruj przycisk Flow",
           "ko": "플로우 버튼 색상 설정",
-          "ar": "تعيين لون زر التدفق"
+          "ar": "تلوين زر تدفق"
         },
         "titleFormatted": {
           "en": "Set the button colour of [[flow]] to [[color]]",
@@ -888,6 +915,1356 @@
                   "pl": "Fioletowy",
                   "ko": "보라",
                   "ar": "بنفسجي"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "popup_ask",
+        "title": {
+          "en": "Ask Yes or No in a popup",
+          "nl": "Ja of Nee vragen in een pop-up",
+          "de": "Ja oder Nein in einem Popup fragen",
+          "fr": "Demander Oui ou Non dans une pop-up",
+          "it": "Chiedi Sì o No in un popup",
+          "sv": "Fråga Ja eller Nej i ett popup-fönster",
+          "no": "Spør Ja eller Nei i et popup-vindu",
+          "es": "Preguntar Sí o No en una ventana emergente",
+          "da": "Spørg Ja eller Nej i en popup",
+          "ru": "Спросить Да или Нет во всплывающем окне",
+          "pl": "Zapytaj Tak lub Nie w oknie wyskakującym",
+          "ko": "팝업으로 예/아니요 묻기",
+          "ar": "السؤال بنعم أو لا في نافذة منبثقة"
+        },
+        "titleFormatted": {
+          "en": "Ask [[question]] on [[screen]], picture: [[picture]], wait up to [[seconds]] seconds, sound: [[sound]]",
+          "nl": "Vraag [[question]] op [[screen]], afbeelding: [[picture]], wacht maximaal [[seconds]] seconden, geluid: [[sound]]",
+          "de": "[[question]] auf [[screen]] fragen, Bild: [[picture]], höchstens [[seconds]] Sekunden warten, Ton: [[sound]]",
+          "fr": "Demander [[question]] sur [[screen]], image : [[picture]], attendre au plus [[seconds]] secondes, son : [[sound]]",
+          "it": "Chiedi [[question]] su [[screen]], immagine: [[picture]], attendi al massimo [[seconds]] secondi, suono: [[sound]]",
+          "sv": "Fråga [[question]] på [[screen]], bild: [[picture]], vänta högst [[seconds]] sekunder, ljud: [[sound]]",
+          "no": "Spør [[question]] på [[screen]], bilde: [[picture]], vent høyst [[seconds]] sekunder, lyd: [[sound]]",
+          "es": "Preguntar [[question]] en [[screen]], imagen: [[picture]], esperar como máximo [[seconds]] segundos, sonido: [[sound]]",
+          "da": "Spørg [[question]] på [[screen]], billede: [[picture]], vent højst [[seconds]] sekunder, lyd: [[sound]]",
+          "ru": "Спросить [[question]] на [[screen]], изображение: [[picture]], ждать не дольше [[seconds]] с, звук: [[sound]]",
+          "pl": "Zapytaj [[question]] na [[screen]], obraz: [[picture]], czekaj najwyżej [[seconds]] s, dźwięk: [[sound]]",
+          "ko": "[[screen]]에서 [[question]] 묻기, 사진: [[picture]], 최대 [[seconds]]초 대기, 소리: [[sound]]",
+          "ar": "اسأل [[question]] على [[screen]]، الصورة: [[picture]]، وانتظر [[seconds]] ثانية على الأكثر، الصوت: [[sound]]"
+        },
+        "hint": {
+          "en": "Shows the question with Yes and No; the first answer from any screen closes it everywhere. Answer is the answer; Answered is no when nobody answered in time. Use it in an Advanced Flow to act on the tags.",
+          "nl": "Toont de vraag met Ja en Nee; het eerste antwoord van een scherm sluit hem overal. Antwoord is het antwoord; Beantwoord is nee als niemand op tijd antwoordde. Gebruik hem in een Advanced Flow om op de tags te reageren.",
+          "de": "Zeigt die Frage mit Ja und Nein; die erste Antwort eines Bildschirms schließt sie überall. Antwort ist die Antwort; Beantwortet ist Nein, wenn niemand rechtzeitig antwortete. In einem Advanced Flow kannst du auf die Tags reagieren.",
+          "fr": "Affiche la question avec Oui et Non ; la première réponse d'un écran la ferme partout. Réponse est la réponse ; Répondu vaut non si personne n'a répondu à temps. Utilisez-la dans un Advanced Flow pour agir selon les tags.",
+          "it": "Mostra la domanda con Sì e No; la prima risposta da uno schermo lo chiude ovunque. Risposta è la risposta; Risposto è no se nessuno ha risposto in tempo. Usalo in un Advanced Flow per agire sui tag.",
+          "sv": "Visar frågan med Ja och Nej; det första svaret från en skärm stänger den överallt. Svar är svaret; Besvarad är nej om ingen svarade i tid. Använd den i ett Advanced Flow för att agera på taggarna.",
+          "no": "Viser spørsmålet med Ja og Nei; det første svaret fra en skjerm lukker det overalt. Svar er svaret; Besvart er nei hvis ingen svarte i tide. Bruk det i en Advanced Flow for å handle på taggene.",
+          "es": "Muestra la pregunta con Sí y No; la primera respuesta de una pantalla la cierra en todas. Respuesta es la respuesta; Respondida es no si nadie respondió a tiempo. Úsala en un Advanced Flow para actuar según las etiquetas.",
+          "da": "Viser spørgsmålet med Ja og Nej; det første svar fra en skærm lukker det overalt. Svar er svaret; Besvaret er nej, hvis ingen svarede i tide. Brug det i et Advanced Flow til at handle på tags.",
+          "ru": "Показывает вопрос с кнопками Да и Нет; первый ответ с любого экрана закрывает его везде. «Ответ» — сам ответ; «Отвечено» — нет, если никто не ответил вовремя. Используйте в Advanced Flow, чтобы действовать по тегам.",
+          "pl": "Pokazuje pytanie z Tak i Nie; pierwsza odpowiedź z dowolnego ekranu zamyka je wszędzie. Odpowiedź to odpowiedź; Odpowiedziano to nie, gdy nikt nie odpowiedział na czas. Użyj w Advanced Flow, aby działać według tagów.",
+          "ko": "질문을 예와 아니요와 함께 표시하며, 어느 화면에서든 첫 답변이 모든 곳에서 닫습니다. 답변은 답이고, 아무도 제때 답하지 않으면 응답됨은 아니요입니다. 태그로 동작하려면 Advanced Flow에서 사용하세요.",
+          "ar": "تعرض السؤال مع نعم ولا؛ أول إجابة من أي شاشة تغلقه في كل مكان. الإجابة هي الجواب؛ وتمت الإجابة تكون لا إذا لم يجب أحد في الوقت. استخدمها في Advanced Flow للتصرف حسب الوسوم."
+        },
+        "tokens": [
+          {
+            "name": "answer",
+            "type": "boolean",
+            "title": {
+              "en": "Answer",
+              "nl": "Antwoord",
+              "de": "Antwort",
+              "fr": "Réponse",
+              "it": "Risposta",
+              "sv": "Svar",
+              "no": "Svar",
+              "es": "Respuesta",
+              "da": "Svar",
+              "ru": "Ответ",
+              "pl": "Odpowiedź",
+              "ko": "답변",
+              "ar": "الإجابة"
+            },
+            "example": true
+          },
+          {
+            "name": "answered",
+            "type": "boolean",
+            "title": {
+              "en": "Answered",
+              "nl": "Beantwoord",
+              "de": "Beantwortet",
+              "fr": "Répondu",
+              "it": "Risposto",
+              "sv": "Besvarad",
+              "no": "Besvart",
+              "es": "Respondida",
+              "da": "Besvaret",
+              "ru": "Отвечено",
+              "pl": "Odpowiedziano",
+              "ko": "응답됨",
+              "ar": "تمت الإجابة"
+            },
+            "example": true
+          }
+        ],
+        "args": [
+          {
+            "type": "text",
+            "name": "question",
+            "title": {
+              "en": "Question",
+              "nl": "Vraag",
+              "de": "Frage",
+              "fr": "Question",
+              "it": "Domanda",
+              "sv": "Fråga",
+              "no": "Spørsmål",
+              "es": "Pregunta",
+              "da": "Spørgsmål",
+              "ru": "Вопрос",
+              "pl": "Pytanie",
+              "ko": "질문",
+              "ar": "السؤال"
+            },
+            "placeholder": {
+              "en": "Open the garage door?",
+              "nl": "Garagedeur openen?",
+              "de": "Garagentor öffnen?",
+              "fr": "Ouvrir la porte du garage ?",
+              "it": "Aprire il garage?",
+              "sv": "Öppna garageporten?",
+              "no": "Åpne garasjeporten?",
+              "es": "¿Abrir la puerta del garaje?",
+              "da": "Åbn garageporten?",
+              "ru": "Открыть ворота гаража?",
+              "pl": "Otworzyć bramę garażu?",
+              "ko": "차고 문을 열까요?",
+              "ar": "هل أفتح باب المرآب؟"
+            }
+          },
+          {
+            "type": "autocomplete",
+            "name": "screen",
+            "title": {
+              "en": "Screen",
+              "nl": "Scherm",
+              "de": "Bildschirm",
+              "fr": "Écran",
+              "it": "Schermo",
+              "sv": "Skärm",
+              "no": "Skjerm",
+              "es": "Pantalla",
+              "da": "Skærm",
+              "ru": "Экран",
+              "pl": "Ekran",
+              "ko": "화면",
+              "ar": "الشاشة"
+            },
+            "placeholder": {
+              "en": "Screen",
+              "nl": "Scherm",
+              "de": "Bildschirm",
+              "fr": "Écran",
+              "it": "Schermo",
+              "sv": "Skärm",
+              "no": "Skjerm",
+              "es": "Pantalla",
+              "da": "Skærm",
+              "ru": "Экран",
+              "pl": "Ekran",
+              "ko": "화면",
+              "ar": "الشاشة"
+            }
+          },
+          {
+            "type": "autocomplete",
+            "name": "picture",
+            "title": {
+              "en": "Picture",
+              "nl": "Afbeelding",
+              "de": "Bild",
+              "fr": "Image",
+              "it": "Immagine",
+              "sv": "Bild",
+              "no": "Bilde",
+              "es": "Imagen",
+              "da": "Billede",
+              "ru": "Изображение",
+              "pl": "Obraz",
+              "ko": "사진",
+              "ar": "الصورة"
+            },
+            "placeholder": {
+              "en": "Picture",
+              "nl": "Afbeelding",
+              "de": "Bild",
+              "fr": "Image",
+              "it": "Immagine",
+              "sv": "Bild",
+              "no": "Bilde",
+              "es": "Imagen",
+              "da": "Billede",
+              "ru": "Изображение",
+              "pl": "Obraz",
+              "ko": "사진",
+              "ar": "الصورة"
+            }
+          },
+          {
+            "type": "number",
+            "name": "seconds",
+            "title": {
+              "en": "Wait (seconds)",
+              "nl": "Wachten (seconden)",
+              "de": "Warten (Sekunden)",
+              "fr": "Attente (secondes)",
+              "it": "Attesa (secondi)",
+              "sv": "Vänta (sekunder)",
+              "no": "Vent (sekunder)",
+              "es": "Espera (segundos)",
+              "da": "Vent (sekunder)",
+              "ru": "Ожидание (секунды)",
+              "pl": "Czekaj (sekundy)",
+              "ko": "대기 (초)",
+              "ar": "الانتظار (ثوانٍ)"
+            },
+            "placeholder": {
+              "en": "30",
+              "nl": "30",
+              "de": "30",
+              "fr": "30",
+              "it": "30",
+              "sv": "30",
+              "no": "30",
+              "es": "30",
+              "da": "30",
+              "ru": "30",
+              "pl": "30",
+              "ko": "30",
+              "ar": "30"
+            },
+            "min": 5,
+            "max": 85,
+            "step": 1
+          },
+          {
+            "type": "dropdown",
+            "name": "sound",
+            "title": {
+              "en": "Sound",
+              "nl": "Geluid",
+              "de": "Ton",
+              "fr": "Son",
+              "it": "Suono",
+              "sv": "Ljud",
+              "no": "Lyd",
+              "es": "Sonido",
+              "da": "Lyd",
+              "ru": "Звук",
+              "pl": "Dźwięk",
+              "ko": "소리",
+              "ar": "الصوت"
+            },
+            "values": [
+              {
+                "id": "none",
+                "title": {
+                  "en": "no sound",
+                  "nl": "geen geluid",
+                  "de": "kein Ton",
+                  "fr": "aucun son",
+                  "it": "nessun suono",
+                  "sv": "inget ljud",
+                  "no": "ingen lyd",
+                  "es": "sin sonido",
+                  "da": "ingen lyd",
+                  "ru": "без звука",
+                  "pl": "bez dźwięku",
+                  "ko": "소리 없음",
+                  "ar": "بلا صوت"
+                }
+              },
+              {
+                "id": "chime",
+                "title": {
+                  "en": "chime",
+                  "nl": "belletje",
+                  "de": "Klang",
+                  "fr": "carillon",
+                  "it": "rintocco",
+                  "sv": "pling",
+                  "no": "pling",
+                  "es": "campanilla",
+                  "da": "pling",
+                  "ru": "перезвон",
+                  "pl": "dzwoneczek",
+                  "ko": "차임",
+                  "ar": "رنين"
+                }
+              },
+              {
+                "id": "doorbell",
+                "title": {
+                  "en": "doorbell",
+                  "nl": "deurbel",
+                  "de": "Türklingel",
+                  "fr": "sonnette",
+                  "it": "campanello",
+                  "sv": "dörrklocka",
+                  "no": "dørklokke",
+                  "es": "timbre",
+                  "da": "dørklokke",
+                  "ru": "дверной звонок",
+                  "pl": "dzwonek do drzwi",
+                  "ko": "초인종",
+                  "ar": "جرس الباب"
+                }
+              },
+              {
+                "id": "alert",
+                "title": {
+                  "en": "alert",
+                  "nl": "alarm",
+                  "de": "Alarm",
+                  "fr": "alerte",
+                  "it": "allarme",
+                  "sv": "larm",
+                  "no": "alarm",
+                  "es": "alerta",
+                  "da": "alarm",
+                  "ru": "тревога",
+                  "pl": "alarm",
+                  "ko": "경고음",
+                  "ar": "تنبيه"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "popup_ask_image",
+        "title": {
+          "en": "Ask Yes or No in a popup with an image",
+          "nl": "Ja of Nee vragen in een pop-up met een afbeelding",
+          "de": "Ja oder Nein in einem Popup mit einem Bild fragen",
+          "fr": "Demander Oui ou Non dans une pop-up avec une image",
+          "it": "Chiedi Sì o No in un popup con un'immagine",
+          "sv": "Fråga Ja eller Nej i ett popup-fönster med en bild",
+          "no": "Spør Ja eller Nei i et popup-vindu med et bilde",
+          "es": "Preguntar Sí o No en una ventana emergente con una imagen",
+          "da": "Spørg Ja eller Nej i en popup med et billede",
+          "ru": "Спросить Да или Нет во всплывающем окне с изображением",
+          "pl": "Zapytaj Tak lub Nie w oknie wyskakującym z obrazem",
+          "ko": "이미지와 함께 팝업으로 예/아니요 묻기",
+          "ar": "السؤال بنعم أو لا في نافذة منبثقة مع صورة"
+        },
+        "titleFormatted": {
+          "en": "Ask [[question]] with [[droptoken]] on [[screen]], wait up to [[seconds]] seconds, sound: [[sound]]",
+          "nl": "Vraag [[question]] met [[droptoken]] op [[screen]], wacht maximaal [[seconds]] seconden, geluid: [[sound]]",
+          "de": "[[question]] mit [[droptoken]] auf [[screen]] fragen, höchstens [[seconds]] Sekunden warten, Ton: [[sound]]",
+          "fr": "Demander [[question]] avec [[droptoken]] sur [[screen]], attendre au plus [[seconds]] secondes, son : [[sound]]",
+          "it": "Chiedi [[question]] con [[droptoken]] su [[screen]], attendi al massimo [[seconds]] secondi, suono: [[sound]]",
+          "sv": "Fråga [[question]] med [[droptoken]] på [[screen]], vänta högst [[seconds]] sekunder, ljud: [[sound]]",
+          "no": "Spør [[question]] med [[droptoken]] på [[screen]], vent høyst [[seconds]] sekunder, lyd: [[sound]]",
+          "es": "Preguntar [[question]] con [[droptoken]] en [[screen]], esperar como máximo [[seconds]] segundos, sonido: [[sound]]",
+          "da": "Spørg [[question]] med [[droptoken]] på [[screen]], vent højst [[seconds]] sekunder, lyd: [[sound]]",
+          "ru": "Спросить [[question]] с [[droptoken]] на [[screen]], ждать не дольше [[seconds]] с, звук: [[sound]]",
+          "pl": "Zapytaj [[question]] z [[droptoken]] na [[screen]], czekaj najwyżej [[seconds]] s, dźwięk: [[sound]]",
+          "ko": "[[screen]]에서 [[droptoken]]와(과) 함께 [[question]] 묻기, 최대 [[seconds]]초 대기, 소리: [[sound]]",
+          "ar": "اسأل [[question]] مع [[droptoken]] على [[screen]]، وانتظر [[seconds]] ثانية على الأكثر، الصوت: [[sound]]"
+        },
+        "hint": {
+          "en": "As Ask Yes or No, with an image tag (or a text tag with a picture address) dropped on this card.",
+          "nl": "Zoals Ja of Nee vragen, met een afbeeldingstag (of een teksttag met een afbeeldingsadres) op deze kaart.",
+          "de": "Wie Ja oder Nein fragen, mit einem Bild-Tag (oder einem Text-Tag mit einer Bildadresse) auf dieser Karte.",
+          "fr": "Comme Demander Oui ou Non, avec un tag image (ou un tag texte avec l'adresse d'une image) déposé sur cette carte.",
+          "it": "Come Chiedi Sì o No, con un tag immagine (o un tag di testo con l'indirizzo di un'immagine) su questa scheda.",
+          "sv": "Som Fråga Ja eller Nej, med en bildtagg (eller en texttagg med en bildadress) på kortet.",
+          "no": "Som Spør Ja eller Nei, med en bildetagg (eller en teksttagg med en bildeadresse) på kortet.",
+          "es": "Como Preguntar Sí o No, con una etiqueta de imagen (o una etiqueta de texto con la dirección de una imagen) en esta tarjeta.",
+          "da": "Som Spørg Ja eller Nej, med et billedtag (eller et teksttag med en billedadresse) på kortet.",
+          "ru": "Как «Спросить Да или Нет», но с тегом изображения (или текстовым тегом с адресом изображения) на этой карточке.",
+          "pl": "Jak Zapytaj Tak lub Nie, z tagiem obrazu (albo tagiem tekstowym z adresem obrazu) na tej karcie.",
+          "ko": "예/아니요 묻기와 같으며, 이 카드에 이미지 태그(또는 사진 주소가 담긴 텍스트 태그)를 놓습니다.",
+          "ar": "مثل السؤال بنعم أو لا، مع وسم صورة (أو وسم نصي فيه عنوان صورة) على هذه البطاقة."
+        },
+        "droptoken": [
+          "image",
+          "string"
+        ],
+        "tokens": [
+          {
+            "name": "answer",
+            "type": "boolean",
+            "title": {
+              "en": "Answer",
+              "nl": "Antwoord",
+              "de": "Antwort",
+              "fr": "Réponse",
+              "it": "Risposta",
+              "sv": "Svar",
+              "no": "Svar",
+              "es": "Respuesta",
+              "da": "Svar",
+              "ru": "Ответ",
+              "pl": "Odpowiedź",
+              "ko": "답변",
+              "ar": "الإجابة"
+            },
+            "example": true
+          },
+          {
+            "name": "answered",
+            "type": "boolean",
+            "title": {
+              "en": "Answered",
+              "nl": "Beantwoord",
+              "de": "Beantwortet",
+              "fr": "Répondu",
+              "it": "Risposto",
+              "sv": "Besvarad",
+              "no": "Besvart",
+              "es": "Respondida",
+              "da": "Besvaret",
+              "ru": "Отвечено",
+              "pl": "Odpowiedziano",
+              "ko": "응답됨",
+              "ar": "تمت الإجابة"
+            },
+            "example": true
+          }
+        ],
+        "args": [
+          {
+            "type": "text",
+            "name": "question",
+            "title": {
+              "en": "Question",
+              "nl": "Vraag",
+              "de": "Frage",
+              "fr": "Question",
+              "it": "Domanda",
+              "sv": "Fråga",
+              "no": "Spørsmål",
+              "es": "Pregunta",
+              "da": "Spørgsmål",
+              "ru": "Вопрос",
+              "pl": "Pytanie",
+              "ko": "질문",
+              "ar": "السؤال"
+            },
+            "placeholder": {
+              "en": "Open the garage door?",
+              "nl": "Garagedeur openen?",
+              "de": "Garagentor öffnen?",
+              "fr": "Ouvrir la porte du garage ?",
+              "it": "Aprire il garage?",
+              "sv": "Öppna garageporten?",
+              "no": "Åpne garasjeporten?",
+              "es": "¿Abrir la puerta del garaje?",
+              "da": "Åbn garageporten?",
+              "ru": "Открыть ворота гаража?",
+              "pl": "Otworzyć bramę garażu?",
+              "ko": "차고 문을 열까요?",
+              "ar": "هل أفتح باب المرآب؟"
+            }
+          },
+          {
+            "type": "autocomplete",
+            "name": "screen",
+            "title": {
+              "en": "Screen",
+              "nl": "Scherm",
+              "de": "Bildschirm",
+              "fr": "Écran",
+              "it": "Schermo",
+              "sv": "Skärm",
+              "no": "Skjerm",
+              "es": "Pantalla",
+              "da": "Skærm",
+              "ru": "Экран",
+              "pl": "Ekran",
+              "ko": "화면",
+              "ar": "الشاشة"
+            },
+            "placeholder": {
+              "en": "Screen",
+              "nl": "Scherm",
+              "de": "Bildschirm",
+              "fr": "Écran",
+              "it": "Schermo",
+              "sv": "Skärm",
+              "no": "Skjerm",
+              "es": "Pantalla",
+              "da": "Skærm",
+              "ru": "Экран",
+              "pl": "Ekran",
+              "ko": "화면",
+              "ar": "الشاشة"
+            }
+          },
+          {
+            "type": "number",
+            "name": "seconds",
+            "title": {
+              "en": "Wait (seconds)",
+              "nl": "Wachten (seconden)",
+              "de": "Warten (Sekunden)",
+              "fr": "Attente (secondes)",
+              "it": "Attesa (secondi)",
+              "sv": "Vänta (sekunder)",
+              "no": "Vent (sekunder)",
+              "es": "Espera (segundos)",
+              "da": "Vent (sekunder)",
+              "ru": "Ожидание (секунды)",
+              "pl": "Czekaj (sekundy)",
+              "ko": "대기 (초)",
+              "ar": "الانتظار (ثوانٍ)"
+            },
+            "placeholder": {
+              "en": "30",
+              "nl": "30",
+              "de": "30",
+              "fr": "30",
+              "it": "30",
+              "sv": "30",
+              "no": "30",
+              "es": "30",
+              "da": "30",
+              "ru": "30",
+              "pl": "30",
+              "ko": "30",
+              "ar": "30"
+            },
+            "min": 5,
+            "max": 85,
+            "step": 1
+          },
+          {
+            "type": "dropdown",
+            "name": "sound",
+            "title": {
+              "en": "Sound",
+              "nl": "Geluid",
+              "de": "Ton",
+              "fr": "Son",
+              "it": "Suono",
+              "sv": "Ljud",
+              "no": "Lyd",
+              "es": "Sonido",
+              "da": "Lyd",
+              "ru": "Звук",
+              "pl": "Dźwięk",
+              "ko": "소리",
+              "ar": "الصوت"
+            },
+            "values": [
+              {
+                "id": "none",
+                "title": {
+                  "en": "no sound",
+                  "nl": "geen geluid",
+                  "de": "kein Ton",
+                  "fr": "aucun son",
+                  "it": "nessun suono",
+                  "sv": "inget ljud",
+                  "no": "ingen lyd",
+                  "es": "sin sonido",
+                  "da": "ingen lyd",
+                  "ru": "без звука",
+                  "pl": "bez dźwięku",
+                  "ko": "소리 없음",
+                  "ar": "بلا صوت"
+                }
+              },
+              {
+                "id": "chime",
+                "title": {
+                  "en": "chime",
+                  "nl": "belletje",
+                  "de": "Klang",
+                  "fr": "carillon",
+                  "it": "rintocco",
+                  "sv": "pling",
+                  "no": "pling",
+                  "es": "campanilla",
+                  "da": "pling",
+                  "ru": "перезвон",
+                  "pl": "dzwoneczek",
+                  "ko": "차임",
+                  "ar": "رنين"
+                }
+              },
+              {
+                "id": "doorbell",
+                "title": {
+                  "en": "doorbell",
+                  "nl": "deurbel",
+                  "de": "Türklingel",
+                  "fr": "sonnette",
+                  "it": "campanello",
+                  "sv": "dörrklocka",
+                  "no": "dørklokke",
+                  "es": "timbre",
+                  "da": "dørklokke",
+                  "ru": "дверной звонок",
+                  "pl": "dzwonek do drzwi",
+                  "ko": "초인종",
+                  "ar": "جرس الباب"
+                }
+              },
+              {
+                "id": "alert",
+                "title": {
+                  "en": "alert",
+                  "nl": "alarm",
+                  "de": "Alarm",
+                  "fr": "alerte",
+                  "it": "allarme",
+                  "sv": "larm",
+                  "no": "alarm",
+                  "es": "alerta",
+                  "da": "alarm",
+                  "ru": "тревога",
+                  "pl": "alarm",
+                  "ko": "경고음",
+                  "ar": "تنبيه"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "popup_close",
+        "title": {
+          "en": "Close popups",
+          "nl": "Pop-ups sluiten",
+          "de": "Popups schließen",
+          "fr": "Fermer les pop-ups",
+          "it": "Chiudi i popup",
+          "sv": "Stäng popup-fönster",
+          "no": "Lukk popup-vinduer",
+          "es": "Cerrar ventanas emergentes",
+          "da": "Luk popups",
+          "ru": "Закрыть всплывающие окна",
+          "pl": "Zamknij okna wyskakujące",
+          "ko": "팝업 닫기",
+          "ar": "إغلاق النوافذ المنبثقة"
+        },
+        "titleFormatted": {
+          "en": "Close the popups on [[screen]]",
+          "nl": "Sluit de pop-ups op [[screen]]",
+          "de": "Die Popups auf [[screen]] schließen",
+          "fr": "Fermer les pop-ups sur [[screen]]",
+          "it": "Chiudi i popup su [[screen]]",
+          "sv": "Stäng popup-fönstren på [[screen]]",
+          "no": "Lukk popup-vinduene på [[screen]]",
+          "es": "Cerrar las ventanas emergentes en [[screen]]",
+          "da": "Luk popups på [[screen]]",
+          "ru": "Закрыть всплывающие окна на [[screen]]",
+          "pl": "Zamknij okna wyskakujące na [[screen]]",
+          "ko": "[[screen]]의 팝업 닫기",
+          "ar": "إغلاق النوافذ المنبثقة على [[screen]]"
+        },
+        "hint": {
+          "en": "Closes the messages and questions sent to that screen; Everywhere closes them all. An open question ends unanswered.",
+          "nl": "Sluit de berichten en vragen die naar dat scherm zijn gestuurd; Overal sluit ze allemaal. Een open vraag eindigt zonder antwoord.",
+          "de": "Schließt die Nachrichten und Fragen an diesen Bildschirm; Überall schließt alle. Eine offene Frage endet unbeantwortet.",
+          "fr": "Ferme les messages et questions envoyés à cet écran ; Partout les ferme tous. Une question ouverte se termine sans réponse.",
+          "it": "Chiude i messaggi e le domande inviati a quello schermo; Ovunque li chiude tutti. Una domanda aperta finisce senza risposta.",
+          "sv": "Stänger meddelanden och frågor som skickats till den skärmen; Överallt stänger alla. En öppen fråga slutar obesvarad.",
+          "no": "Lukker meldinger og spørsmål sendt til den skjermen; Overalt lukker alle. Et åpent spørsmål ender ubesvart.",
+          "es": "Cierra los mensajes y preguntas enviados a esa pantalla; En todas partes los cierra todos. Una pregunta abierta termina sin respuesta.",
+          "da": "Lukker beskeder og spørgsmål sendt til den skærm; Overalt lukker dem alle. Et åbent spørgsmål slutter ubesvaret.",
+          "ru": "Закрывает сообщения и вопросы, отправленные на этот экран; «Везде» закрывает все. Открытый вопрос завершается без ответа.",
+          "pl": "Zamyka wiadomości i pytania wysłane na ten ekran; Wszędzie zamyka wszystkie. Otwarte pytanie kończy się bez odpowiedzi.",
+          "ko": "그 화면으로 보낸 메시지와 질문을 닫습니다. 모든 곳은 전부 닫습니다. 열린 질문은 응답 없이 끝납니다.",
+          "ar": "تغلق الرسائل والأسئلة المرسلة إلى تلك الشاشة؛ في كل مكان تغلقها كلها. السؤال المفتوح ينتهي دون إجابة."
+        },
+        "args": [
+          {
+            "type": "autocomplete",
+            "name": "screen",
+            "title": {
+              "en": "Screen",
+              "nl": "Scherm",
+              "de": "Bildschirm",
+              "fr": "Écran",
+              "it": "Schermo",
+              "sv": "Skärm",
+              "no": "Skjerm",
+              "es": "Pantalla",
+              "da": "Skærm",
+              "ru": "Экран",
+              "pl": "Ekran",
+              "ko": "화면",
+              "ar": "الشاشة"
+            },
+            "placeholder": {
+              "en": "Screen",
+              "nl": "Scherm",
+              "de": "Bildschirm",
+              "fr": "Écran",
+              "it": "Schermo",
+              "sv": "Skärm",
+              "no": "Skjerm",
+              "es": "Pantalla",
+              "da": "Skærm",
+              "ru": "Экран",
+              "pl": "Ekran",
+              "ko": "화면",
+              "ar": "الشاشة"
+            }
+          }
+        ]
+      },
+      {
+        "id": "popup_show",
+        "title": {
+          "en": "Show a popup",
+          "nl": "Een pop-up tonen",
+          "de": "Ein Popup zeigen",
+          "fr": "Afficher une pop-up",
+          "it": "Mostra un popup",
+          "sv": "Visa ett popup-fönster",
+          "no": "Vis et popup-vindu",
+          "es": "Mostrar una ventana emergente",
+          "da": "Vis en popup",
+          "ru": "Показать всплывающее окно",
+          "pl": "Pokaż okno wyskakujące",
+          "ko": "팝업 표시",
+          "ar": "إظهار نافذة منبثقة"
+        },
+        "titleFormatted": {
+          "en": "Show [[text]] on [[screen]] for [[duration]] [[unit]], picture: [[picture]], sound: [[sound]]",
+          "nl": "Toon [[text]] op [[screen]] gedurende [[duration]] [[unit]], afbeelding: [[picture]], geluid: [[sound]]",
+          "de": "[[text]] auf [[screen]] für [[duration]] [[unit]] zeigen, Bild: [[picture]], Ton: [[sound]]",
+          "fr": "Afficher [[text]] sur [[screen]] pendant [[duration]] [[unit]], image : [[picture]], son : [[sound]]",
+          "it": "Mostra [[text]] su [[screen]] per [[duration]] [[unit]], immagine: [[picture]], suono: [[sound]]",
+          "sv": "Visa [[text]] på [[screen]] i [[duration]] [[unit]], bild: [[picture]], ljud: [[sound]]",
+          "no": "Vis [[text]] på [[screen]] i [[duration]] [[unit]], bilde: [[picture]], lyd: [[sound]]",
+          "es": "Mostrar [[text]] en [[screen]] durante [[duration]] [[unit]], imagen: [[picture]], sonido: [[sound]]",
+          "da": "Vis [[text]] på [[screen]] i [[duration]] [[unit]], billede: [[picture]], lyd: [[sound]]",
+          "ru": "Показать [[text]] на [[screen]] на [[duration]] [[unit]], изображение: [[picture]], звук: [[sound]]",
+          "pl": "Pokaż [[text]] na [[screen]] przez [[duration]] [[unit]], obraz: [[picture]], dźwięk: [[sound]]",
+          "ko": "[[screen]]에 [[text]]을(를) [[duration]] [[unit]] 동안 표시, 사진: [[picture]], 소리: [[sound]]",
+          "ar": "إظهار [[text]] على [[screen]] لمدة [[duration]] [[unit]]، الصورة: [[picture]]، الصوت: [[sound]]"
+        },
+        "hint": {
+          "en": "In front of everything on the web dashboards and on the phones and tablets with a Popups widget of that screen name. A tap closes it on that screen.",
+          "nl": "Voor alles op de webdashboards en op de telefoons en tablets met een Pop-ups-widget met die schermnaam. Een tik sluit hem op dat scherm.",
+          "de": "Vor allem anderen auf den Web-Dashboards und auf den Handys und Tablets mit einem Popups-Widget mit diesem Bildschirmnamen. Ein Tippen schließt es auf diesem Bildschirm.",
+          "fr": "Au premier plan sur les tableaux de bord web et sur les téléphones et tablettes avec un widget Pop-ups de ce nom d'écran. Un appui la ferme sur cet écran.",
+          "it": "In primo piano sulle dashboard web e su telefoni e tablet con un widget Popup con quel nome di schermo. Un tocco lo chiude su quello schermo.",
+          "sv": "Framför allt annat på webbinstrumentpanelerna och på telefoner och surfplattor med en Popup-fönster-widget med det skärmnamnet. Ett tryck stänger det på den skärmen.",
+          "no": "Foran alt annet på nettdashbordene og på telefoner og nettbrett med en Popup-vinduer-widget med det skjermnavnet. Et trykk lukker det på den skjermen.",
+          "es": "Delante de todo en los paneles web y en los teléfonos y tabletas con un widget Ventanas emergentes con ese nombre de pantalla. Un toque la cierra en esa pantalla.",
+          "da": "Foran alt andet på webdashboards og på telefoner og tablets med en Popups-widget med det skærmnavn. Et tryk lukker den på den skærm.",
+          "ru": "Поверх всего на веб-панелях и на телефонах и планшетах с виджетом «Всплывающие окна» с этим именем экрана. Касание закрывает его на этом экране.",
+          "pl": "Na wierzchu na pulpitach webowych oraz na telefonach i tabletach z widżetem Okna wyskakujące o tej nazwie ekranu. Dotknięcie zamyka je na tym ekranie.",
+          "ko": "웹 대시보드와 그 화면 이름의 팝업 위젯이 있는 휴대폰과 태블릿에서 모든 것 위에 표시됩니다. 탭하면 그 화면에서 닫힙니다.",
+          "ar": "فوق كل شيء على لوحات الويب وعلى الهواتف والأجهزة اللوحية التي فيها أداة النوافذ المنبثقة باسم الشاشة هذا. النقر يغلقها على تلك الشاشة."
+        },
+        "args": [
+          {
+            "type": "text",
+            "name": "text",
+            "title": {
+              "en": "Text",
+              "nl": "Tekst",
+              "de": "Text",
+              "fr": "Texte",
+              "it": "Testo",
+              "sv": "Text",
+              "no": "Tekst",
+              "es": "Texto",
+              "da": "Tekst",
+              "ru": "Текст",
+              "pl": "Tekst",
+              "ko": "텍스트",
+              "ar": "النص"
+            },
+            "placeholder": {
+              "en": "Dinner is ready",
+              "nl": "Het eten is klaar",
+              "de": "Das Essen ist fertig",
+              "fr": "Le dîner est prêt",
+              "it": "La cena è pronta",
+              "sv": "Middagen är klar",
+              "no": "Middagen er klar",
+              "es": "La cena está lista",
+              "da": "Aftensmaden er klar",
+              "ru": "Ужин готов",
+              "pl": "Obiad gotowy",
+              "ko": "저녁 준비됐어요",
+              "ar": "العشاء جاهز"
+            }
+          },
+          {
+            "type": "autocomplete",
+            "name": "screen",
+            "title": {
+              "en": "Screen",
+              "nl": "Scherm",
+              "de": "Bildschirm",
+              "fr": "Écran",
+              "it": "Schermo",
+              "sv": "Skärm",
+              "no": "Skjerm",
+              "es": "Pantalla",
+              "da": "Skærm",
+              "ru": "Экран",
+              "pl": "Ekran",
+              "ko": "화면",
+              "ar": "الشاشة"
+            },
+            "placeholder": {
+              "en": "Screen",
+              "nl": "Scherm",
+              "de": "Bildschirm",
+              "fr": "Écran",
+              "it": "Schermo",
+              "sv": "Skärm",
+              "no": "Skjerm",
+              "es": "Pantalla",
+              "da": "Skærm",
+              "ru": "Экран",
+              "pl": "Ekran",
+              "ko": "화면",
+              "ar": "الشاشة"
+            }
+          },
+          {
+            "type": "number",
+            "name": "duration",
+            "title": {
+              "en": "Duration",
+              "nl": "Duur",
+              "de": "Dauer",
+              "fr": "Durée",
+              "it": "Durata",
+              "sv": "Tid",
+              "no": "Varighet",
+              "es": "Duración",
+              "da": "Varighed",
+              "ru": "Длительность",
+              "pl": "Czas",
+              "ko": "시간",
+              "ar": "المدة"
+            },
+            "placeholder": {
+              "en": "10",
+              "nl": "10",
+              "de": "10",
+              "fr": "10",
+              "it": "10",
+              "sv": "10",
+              "no": "10",
+              "es": "10",
+              "da": "10",
+              "ru": "10",
+              "pl": "10",
+              "ko": "10",
+              "ar": "10"
+            },
+            "min": 1,
+            "max": 1440,
+            "step": 1
+          },
+          {
+            "type": "dropdown",
+            "name": "unit",
+            "title": {
+              "en": "Unit",
+              "nl": "Eenheid",
+              "de": "Einheit",
+              "fr": "Unité",
+              "it": "Unità",
+              "sv": "Enhet",
+              "no": "Enhet",
+              "es": "Unidad",
+              "da": "Enhed",
+              "ru": "Единица",
+              "pl": "Jednostka",
+              "ko": "단위",
+              "ar": "الوحدة"
+            },
+            "values": [
+              {
+                "id": "seconds",
+                "title": {
+                  "en": "seconds",
+                  "nl": "seconden",
+                  "de": "Sekunden",
+                  "fr": "secondes",
+                  "it": "secondi",
+                  "sv": "sekunder",
+                  "no": "sekunder",
+                  "es": "segundos",
+                  "da": "sekunder",
+                  "ru": "секунд",
+                  "pl": "sekund",
+                  "ko": "초",
+                  "ar": "ثوانٍ"
+                }
+              },
+              {
+                "id": "minutes",
+                "title": {
+                  "en": "minutes",
+                  "nl": "minuten",
+                  "de": "Minuten",
+                  "fr": "minutes",
+                  "it": "minuti",
+                  "sv": "minuter",
+                  "no": "minutter",
+                  "es": "minutos",
+                  "da": "minutter",
+                  "ru": "минут",
+                  "pl": "minut",
+                  "ko": "분",
+                  "ar": "دقائق"
+                }
+              }
+            ]
+          },
+          {
+            "type": "autocomplete",
+            "name": "picture",
+            "title": {
+              "en": "Picture",
+              "nl": "Afbeelding",
+              "de": "Bild",
+              "fr": "Image",
+              "it": "Immagine",
+              "sv": "Bild",
+              "no": "Bilde",
+              "es": "Imagen",
+              "da": "Billede",
+              "ru": "Изображение",
+              "pl": "Obraz",
+              "ko": "사진",
+              "ar": "الصورة"
+            },
+            "placeholder": {
+              "en": "Picture",
+              "nl": "Afbeelding",
+              "de": "Bild",
+              "fr": "Image",
+              "it": "Immagine",
+              "sv": "Bild",
+              "no": "Bilde",
+              "es": "Imagen",
+              "da": "Billede",
+              "ru": "Изображение",
+              "pl": "Obraz",
+              "ko": "사진",
+              "ar": "الصورة"
+            }
+          },
+          {
+            "type": "dropdown",
+            "name": "sound",
+            "title": {
+              "en": "Sound",
+              "nl": "Geluid",
+              "de": "Ton",
+              "fr": "Son",
+              "it": "Suono",
+              "sv": "Ljud",
+              "no": "Lyd",
+              "es": "Sonido",
+              "da": "Lyd",
+              "ru": "Звук",
+              "pl": "Dźwięk",
+              "ko": "소리",
+              "ar": "الصوت"
+            },
+            "values": [
+              {
+                "id": "none",
+                "title": {
+                  "en": "no sound",
+                  "nl": "geen geluid",
+                  "de": "kein Ton",
+                  "fr": "aucun son",
+                  "it": "nessun suono",
+                  "sv": "inget ljud",
+                  "no": "ingen lyd",
+                  "es": "sin sonido",
+                  "da": "ingen lyd",
+                  "ru": "без звука",
+                  "pl": "bez dźwięku",
+                  "ko": "소리 없음",
+                  "ar": "بلا صوت"
+                }
+              },
+              {
+                "id": "chime",
+                "title": {
+                  "en": "chime",
+                  "nl": "belletje",
+                  "de": "Klang",
+                  "fr": "carillon",
+                  "it": "rintocco",
+                  "sv": "pling",
+                  "no": "pling",
+                  "es": "campanilla",
+                  "da": "pling",
+                  "ru": "перезвон",
+                  "pl": "dzwoneczek",
+                  "ko": "차임",
+                  "ar": "رنين"
+                }
+              },
+              {
+                "id": "doorbell",
+                "title": {
+                  "en": "doorbell",
+                  "nl": "deurbel",
+                  "de": "Türklingel",
+                  "fr": "sonnette",
+                  "it": "campanello",
+                  "sv": "dörrklocka",
+                  "no": "dørklokke",
+                  "es": "timbre",
+                  "da": "dørklokke",
+                  "ru": "дверной звонок",
+                  "pl": "dzwonek do drzwi",
+                  "ko": "초인종",
+                  "ar": "جرس الباب"
+                }
+              },
+              {
+                "id": "alert",
+                "title": {
+                  "en": "alert",
+                  "nl": "alarm",
+                  "de": "Alarm",
+                  "fr": "alerte",
+                  "it": "allarme",
+                  "sv": "larm",
+                  "no": "alarm",
+                  "es": "alerta",
+                  "da": "alarm",
+                  "ru": "тревога",
+                  "pl": "alarm",
+                  "ko": "경고음",
+                  "ar": "تنبيه"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "popup_show_image",
+        "title": {
+          "en": "Show a popup with an image",
+          "nl": "Een pop-up met een afbeelding tonen",
+          "de": "Ein Popup mit einem Bild zeigen",
+          "fr": "Afficher une pop-up avec une image",
+          "it": "Mostra un popup con un'immagine",
+          "sv": "Visa ett popup-fönster med en bild",
+          "no": "Vis et popup-vindu med et bilde",
+          "es": "Mostrar una ventana emergente con una imagen",
+          "da": "Vis en popup med et billede",
+          "ru": "Показать всплывающее окно с изображением",
+          "pl": "Pokaż okno wyskakujące z obrazem",
+          "ko": "이미지와 함께 팝업 표시",
+          "ar": "إظهار نافذة منبثقة مع صورة"
+        },
+        "titleFormatted": {
+          "en": "Show [[text]] with [[droptoken]] on [[screen]] for [[duration]] [[unit]], sound: [[sound]]",
+          "nl": "Toon [[text]] met [[droptoken]] op [[screen]] gedurende [[duration]] [[unit]], geluid: [[sound]]",
+          "de": "[[text]] mit [[droptoken]] auf [[screen]] für [[duration]] [[unit]] zeigen, Ton: [[sound]]",
+          "fr": "Afficher [[text]] avec [[droptoken]] sur [[screen]] pendant [[duration]] [[unit]], son : [[sound]]",
+          "it": "Mostra [[text]] con [[droptoken]] su [[screen]] per [[duration]] [[unit]], suono: [[sound]]",
+          "sv": "Visa [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]], ljud: [[sound]]",
+          "no": "Vis [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]], lyd: [[sound]]",
+          "es": "Mostrar [[text]] con [[droptoken]] en [[screen]] durante [[duration]] [[unit]], sonido: [[sound]]",
+          "da": "Vis [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]], lyd: [[sound]]",
+          "ru": "Показать [[text]] с [[droptoken]] на [[screen]] на [[duration]] [[unit]], звук: [[sound]]",
+          "pl": "Pokaż [[text]] z [[droptoken]] na [[screen]] przez [[duration]] [[unit]], dźwięk: [[sound]]",
+          "ko": "[[screen]]에 [[droptoken]]와(과) 함께 [[text]]을(를) [[duration]] [[unit]] 동안 표시, 소리: [[sound]]",
+          "ar": "إظهار [[text]] مع [[droptoken]] على [[screen]] لمدة [[duration]] [[unit]]، الصوت: [[sound]]"
+        },
+        "hint": {
+          "en": "Drop an image tag (a doorbell's or camera's snapshot) or a text tag with a picture address on this card. The picture is taken when the Flow runs.",
+          "nl": "Sleep een afbeeldingstag (de snapshot van een deurbel of camera) of een teksttag met een afbeeldingsadres op deze kaart. De afbeelding wordt genomen wanneer de Flow draait.",
+          "de": "Zieh ein Bild-Tag (den Schnappschuss einer Türklingel oder Kamera) oder ein Text-Tag mit einer Bildadresse auf diese Karte. Das Bild wird genommen, wenn der Flow läuft.",
+          "fr": "Déposez sur cette carte un tag image (l'instantané d'une sonnette ou d'une caméra) ou un tag texte avec l'adresse d'une image. L'image est prise quand le Flow s'exécute.",
+          "it": "Trascina su questa scheda un tag immagine (l'istantanea di un campanello o di una telecamera) o un tag di testo con l'indirizzo di un'immagine. L'immagine viene presa quando parte il Flow.",
+          "sv": "Dra en bildtagg (en ögonblicksbild från en dörrklocka eller kamera) eller en texttagg med en bildadress till kortet. Bilden tas när flödet körs.",
+          "no": "Dra en bildetagg (et øyeblikksbilde fra en dørklokke eller et kamera) eller en teksttagg med en bildeadresse til kortet. Bildet tas når Flowen kjører.",
+          "es": "Arrastra a esta tarjeta una etiqueta de imagen (la instantánea de un timbre o una cámara) o una etiqueta de texto con la dirección de una imagen. La imagen se toma cuando se ejecuta el Flow.",
+          "da": "Træk et billedtag (et øjebliksbillede fra en dørklokke eller et kamera) eller et teksttag med en billedadresse over på kortet. Billedet tages, når Flowet kører.",
+          "ru": "Перетащите на эту карточку тег изображения (снимок дверного звонка или камеры) или текстовый тег с адресом изображения. Изображение берётся в момент запуска Flow.",
+          "pl": "Przeciągnij na tę kartę tag obrazu (zdjęcie z dzwonka lub kamery) albo tag tekstowy z adresem obrazu. Obraz jest pobierany, gdy Flow się uruchamia.",
+          "ko": "이미지 태그(초인종이나 카메라의 스냅샷) 또는 사진 주소가 담긴 텍스트 태그를 이 카드에 놓으세요. 사진은 Flow가 실행될 때 가져옵니다.",
+          "ar": "اسحب إلى هذه البطاقة وسم صورة (لقطة من جرس الباب أو كاميرا) أو وسمًا نصيًا فيه عنوان صورة. تؤخذ الصورة عند تشغيل الـ Flow."
+        },
+        "droptoken": [
+          "image",
+          "string"
+        ],
+        "args": [
+          {
+            "type": "text",
+            "name": "text",
+            "title": {
+              "en": "Text",
+              "nl": "Tekst",
+              "de": "Text",
+              "fr": "Texte",
+              "it": "Testo",
+              "sv": "Text",
+              "no": "Tekst",
+              "es": "Texto",
+              "da": "Tekst",
+              "ru": "Текст",
+              "pl": "Tekst",
+              "ko": "텍스트",
+              "ar": "النص"
+            },
+            "placeholder": {
+              "en": "Dinner is ready",
+              "nl": "Het eten is klaar",
+              "de": "Das Essen ist fertig",
+              "fr": "Le dîner est prêt",
+              "it": "La cena è pronta",
+              "sv": "Middagen är klar",
+              "no": "Middagen er klar",
+              "es": "La cena está lista",
+              "da": "Aftensmaden er klar",
+              "ru": "Ужин готов",
+              "pl": "Obiad gotowy",
+              "ko": "저녁 준비됐어요",
+              "ar": "العشاء جاهز"
+            }
+          },
+          {
+            "type": "autocomplete",
+            "name": "screen",
+            "title": {
+              "en": "Screen",
+              "nl": "Scherm",
+              "de": "Bildschirm",
+              "fr": "Écran",
+              "it": "Schermo",
+              "sv": "Skärm",
+              "no": "Skjerm",
+              "es": "Pantalla",
+              "da": "Skærm",
+              "ru": "Экран",
+              "pl": "Ekran",
+              "ko": "화면",
+              "ar": "الشاشة"
+            },
+            "placeholder": {
+              "en": "Screen",
+              "nl": "Scherm",
+              "de": "Bildschirm",
+              "fr": "Écran",
+              "it": "Schermo",
+              "sv": "Skärm",
+              "no": "Skjerm",
+              "es": "Pantalla",
+              "da": "Skærm",
+              "ru": "Экран",
+              "pl": "Ekran",
+              "ko": "화면",
+              "ar": "الشاشة"
+            }
+          },
+          {
+            "type": "number",
+            "name": "duration",
+            "title": {
+              "en": "Duration",
+              "nl": "Duur",
+              "de": "Dauer",
+              "fr": "Durée",
+              "it": "Durata",
+              "sv": "Tid",
+              "no": "Varighet",
+              "es": "Duración",
+              "da": "Varighed",
+              "ru": "Длительность",
+              "pl": "Czas",
+              "ko": "시간",
+              "ar": "المدة"
+            },
+            "placeholder": {
+              "en": "10",
+              "nl": "10",
+              "de": "10",
+              "fr": "10",
+              "it": "10",
+              "sv": "10",
+              "no": "10",
+              "es": "10",
+              "da": "10",
+              "ru": "10",
+              "pl": "10",
+              "ko": "10",
+              "ar": "10"
+            },
+            "min": 1,
+            "max": 1440,
+            "step": 1
+          },
+          {
+            "type": "dropdown",
+            "name": "unit",
+            "title": {
+              "en": "Unit",
+              "nl": "Eenheid",
+              "de": "Einheit",
+              "fr": "Unité",
+              "it": "Unità",
+              "sv": "Enhet",
+              "no": "Enhet",
+              "es": "Unidad",
+              "da": "Enhed",
+              "ru": "Единица",
+              "pl": "Jednostka",
+              "ko": "단위",
+              "ar": "الوحدة"
+            },
+            "values": [
+              {
+                "id": "seconds",
+                "title": {
+                  "en": "seconds",
+                  "nl": "seconden",
+                  "de": "Sekunden",
+                  "fr": "secondes",
+                  "it": "secondi",
+                  "sv": "sekunder",
+                  "no": "sekunder",
+                  "es": "segundos",
+                  "da": "sekunder",
+                  "ru": "секунд",
+                  "pl": "sekund",
+                  "ko": "초",
+                  "ar": "ثوانٍ"
+                }
+              },
+              {
+                "id": "minutes",
+                "title": {
+                  "en": "minutes",
+                  "nl": "minuten",
+                  "de": "Minuten",
+                  "fr": "minutes",
+                  "it": "minuti",
+                  "sv": "minuter",
+                  "no": "minutter",
+                  "es": "minutos",
+                  "da": "minutter",
+                  "ru": "минут",
+                  "pl": "minut",
+                  "ko": "분",
+                  "ar": "دقائق"
+                }
+              }
+            ]
+          },
+          {
+            "type": "dropdown",
+            "name": "sound",
+            "title": {
+              "en": "Sound",
+              "nl": "Geluid",
+              "de": "Ton",
+              "fr": "Son",
+              "it": "Suono",
+              "sv": "Ljud",
+              "no": "Lyd",
+              "es": "Sonido",
+              "da": "Lyd",
+              "ru": "Звук",
+              "pl": "Dźwięk",
+              "ko": "소리",
+              "ar": "الصوت"
+            },
+            "values": [
+              {
+                "id": "none",
+                "title": {
+                  "en": "no sound",
+                  "nl": "geen geluid",
+                  "de": "kein Ton",
+                  "fr": "aucun son",
+                  "it": "nessun suono",
+                  "sv": "inget ljud",
+                  "no": "ingen lyd",
+                  "es": "sin sonido",
+                  "da": "ingen lyd",
+                  "ru": "без звука",
+                  "pl": "bez dźwięku",
+                  "ko": "소리 없음",
+                  "ar": "بلا صوت"
+                }
+              },
+              {
+                "id": "chime",
+                "title": {
+                  "en": "chime",
+                  "nl": "belletje",
+                  "de": "Klang",
+                  "fr": "carillon",
+                  "it": "rintocco",
+                  "sv": "pling",
+                  "no": "pling",
+                  "es": "campanilla",
+                  "da": "pling",
+                  "ru": "перезвон",
+                  "pl": "dzwoneczek",
+                  "ko": "차임",
+                  "ar": "رنين"
+                }
+              },
+              {
+                "id": "doorbell",
+                "title": {
+                  "en": "doorbell",
+                  "nl": "deurbel",
+                  "de": "Türklingel",
+                  "fr": "sonnette",
+                  "it": "campanello",
+                  "sv": "dörrklocka",
+                  "no": "dørklokke",
+                  "es": "timbre",
+                  "da": "dørklokke",
+                  "ru": "дверной звонок",
+                  "pl": "dzwonek do drzwi",
+                  "ko": "초인종",
+                  "ar": "جرس الباب"
+                }
+              },
+              {
+                "id": "alert",
+                "title": {
+                  "en": "alert",
+                  "nl": "alarm",
+                  "de": "Alarm",
+                  "fr": "alerte",
+                  "it": "allarme",
+                  "sv": "larm",
+                  "no": "alarm",
+                  "es": "alerta",
+                  "da": "alarm",
+                  "ru": "тревога",
+                  "pl": "alarm",
+                  "ko": "경고음",
+                  "ar": "تنبيه"
                 }
               }
             ]
@@ -1136,6 +2513,24 @@
                   "pl": "Prognoza pogody",
                   "ko": "일기 예보",
                   "ar": "توقعات الطقس"
+                }
+              },
+              {
+                "id": "pollen",
+                "title": {
+                  "en": "Pollen and UV",
+                  "nl": "Pollen en uv",
+                  "de": "Pollen und UV",
+                  "fr": "Pollen et UV",
+                  "it": "Pollini e UV",
+                  "sv": "Pollen och UV",
+                  "no": "Pollen og UV",
+                  "es": "Polen y UV",
+                  "da": "Pollen og UV",
+                  "ru": "Пыльца и УФ",
+                  "pl": "Pyłki i UV",
+                  "ko": "꽃가루와 자외선",
+                  "ar": "حبوب اللقاح والأشعة فوق البنفسجية"
                 }
               },
               {
@@ -1937,19 +3332,19 @@
       {
         "id": "values_set_color",
         "title": {
-          "en": "Set the tile colour",
-          "nl": "Tegelkleur instellen",
-          "de": "Kachelfarbe setzen",
-          "fr": "Définir la couleur de la tuile",
-          "it": "Imposta il colore del riquadro",
-          "sv": "Ange rutans färg",
-          "no": "Angi flisens farge",
-          "es": "Establecer el color del mosaico",
-          "da": "Angiv feltets farve",
-          "ru": "Задать цвет плитки",
-          "pl": "Ustaw kolor kafelka",
-          "ko": "타일 색상 설정",
-          "ar": "تعيين لون البلاطة"
+          "en": "Colour a Device Values tile",
+          "nl": "Een Apparaatwaarden-tegel kleuren",
+          "de": "Eine Gerätewerte-Kachel einfärben",
+          "fr": "Colorer une tuile Valeurs d'appareils",
+          "it": "Colora un riquadro di Valori dispositivi",
+          "sv": "Färga en Enhetsvärden-ruta",
+          "no": "Farg en Enhetsverdier-flis",
+          "es": "Colorear un mosaico de Valores de dispositivos",
+          "da": "Farv et Enhedsværdier-felt",
+          "ru": "Окрасить плитку «Значения устройств»",
+          "pl": "Pokoloruj kafelek Wartości urządzeń",
+          "ko": "기기 값 타일 색상 설정",
+          "ar": "تلوين بلاطة «قيم الأجهزة»"
         },
         "titleFormatted": {
           "en": "Set the tile colour of [[slot]] to [[color]]",
@@ -2164,6 +3559,39 @@
             ]
           }
         ]
+      },
+      {
+        "id": "web_password_remove",
+        "title": {
+          "en": "Remove the web dashboards password",
+          "nl": "Wachtwoord van de webdashboards verwijderen",
+          "de": "Passwort der Web-Dashboards entfernen",
+          "fr": "Supprimer le mot de passe des tableaux de bord web",
+          "it": "Rimuovi la password delle dashboard web",
+          "sv": "Ta bort webbinstrumentpanelernas lösenord",
+          "no": "Fjern passordet til nettdashbordene",
+          "es": "Quitar la contraseña de los paneles web",
+          "da": "Fjern webdashboardenes adgangskode",
+          "ru": "Удалить пароль веб-панелей",
+          "pl": "Usuń hasło pulpitów webowych",
+          "ko": "웹 대시보드 비밀번호 제거",
+          "ar": "إزالة كلمة مرور لوحات الويب"
+        },
+        "hint": {
+          "en": "For a forgotten password: removes it and signs every browser out. Set a new one in the app's settings.",
+          "nl": "Voor een vergeten wachtwoord: verwijdert het en meldt elke browser af. Stel een nieuw in bij de instellingen van de app.",
+          "de": "Für ein vergessenes Passwort: entfernt es und meldet jeden Browser ab. Ein neues legst du in den Einstellungen der App fest.",
+          "fr": "Pour un mot de passe oublié : le supprime et déconnecte chaque navigateur. Définissez-en un nouveau dans les réglages de l'app.",
+          "it": "Per una password dimenticata: la rimuove e disconnette ogni browser. Impostane una nuova nelle impostazioni dell'app.",
+          "sv": "För ett glömt lösenord: tar bort det och loggar ut alla webbläsare. Ange ett nytt i appens inställningar.",
+          "no": "For et glemt passord: fjerner det og logger ut alle nettlesere. Angi et nytt i appens innstillinger.",
+          "es": "Para una contraseña olvidada: la quita y cierra la sesión en cada navegador. Pon una nueva en los ajustes de la app.",
+          "da": "Til en glemt adgangskode: fjerner den og logger alle browsere ud. Angiv en ny i appens indstillinger.",
+          "ru": "Для забытого пароля: удаляет его и выходит из всех браузеров. Новый задайте в настройках приложения.",
+          "pl": "Na zapomniane hasło: usuwa je i wylogowuje każdą przeglądarkę. Nowe ustaw w ustawieniach aplikacji.",
+          "ko": "비밀번호를 잊었을 때: 제거하고 모든 브라우저를 로그아웃합니다. 새 비밀번호는 앱 설정에서 정하세요.",
+          "ar": "لكلمة مرور منسية: تزيلها وتسجّل خروج كل متصفح. عيّن كلمة جديدة في إعدادات التطبيق."
+        }
       }
     ]
   },
@@ -2771,19 +4199,19 @@
             "ar": "عرض القيم في الأعلى"
           },
           "hint": {
-            "en": "The latest value of each chart, in its colour. Tap a chart to see an earlier one.",
-            "nl": "De laatste waarde van elke grafiek, in zijn kleur. Tik op een grafiek voor een eerdere.",
-            "de": "Der letzte Wert jedes Diagramms, in seiner Farbe. Tippe auf ein Diagramm für einen früheren.",
-            "fr": "La dernière valeur de chaque graphique, dans sa couleur. Touchez un graphique pour une valeur antérieure.",
-            "it": "L'ultimo valore di ogni grafico, nel suo colore. Tocca un grafico per vederne uno precedente.",
-            "sv": "Det senaste värdet i varje diagram, i dess färg. Tryck på ett diagram för ett tidigare.",
-            "no": "Siste verdi i hvert diagram, i sin farge. Trykk på et diagram for en tidligere.",
-            "es": "El último valor de cada gráfico, en su color. Toca un gráfico para ver uno anterior.",
-            "da": "Den seneste værdi i hver graf, i dens farve. Tryk på en graf for en tidligere.",
-            "ru": "Последнее значение каждого графика, его цветом. Коснитесь графика, чтобы увидеть более раннее.",
-            "pl": "Ostatnia wartość każdego wykresu, w jego kolorze. Dotknij wykresu, aby zobaczyć wcześniejszą.",
-            "ko": "각 차트의 최신 값이 차트 색상으로 표시됩니다. 차트를 탭하면 이전 값을 볼 수 있습니다.",
-            "ar": "آخر قيمة لكل مخطط بلونه. المس المخطط لرؤية قيمة سابقة."
+            "en": "The latest value of each chart, in its colour. Tap a chart to see an earlier one. Yesterday shows the day's average.",
+            "nl": "De laatste waarde van elke grafiek, in zijn kleur. Tik op een grafiek voor een eerdere. Gisteren toont het daggemiddelde.",
+            "de": "Der letzte Wert jedes Diagramms, in seiner Farbe. Tippe auf ein Diagramm für einen früheren. Gestern zeigt den Tagesdurchschnitt.",
+            "fr": "La dernière valeur de chaque graphique, dans sa couleur. Touchez un graphique pour une valeur antérieure. Hier affiche la moyenne du jour.",
+            "it": "L'ultimo valore di ogni grafico, nel suo colore. Tocca un grafico per vederne uno precedente. Ieri mostra la media del giorno.",
+            "sv": "Det senaste värdet i varje diagram, i dess färg. Tryck på ett diagram för ett tidigare. I går visar dagens medelvärde.",
+            "no": "Siste verdi i hvert diagram, i sin farge. Trykk på et diagram for en tidligere. I går viser dagens gjennomsnitt.",
+            "es": "El último valor de cada gráfico, en su color. Toca un gráfico para ver uno anterior. Ayer muestra la media del día.",
+            "da": "Den seneste værdi i hver graf, i dens farve. Tryk på en graf for en tidligere. I går viser dagens gennemsnit.",
+            "ru": "Последнее значение каждого графика, его цветом. Коснитесь графика, чтобы увидеть более раннее. «Вчера» показывает среднее за день.",
+            "pl": "Ostatnia wartość każdego wykresu, w jego kolorze. Dotknij wykresu, aby zobaczyć wcześniejszą. Wczoraj pokazuje średnią z dnia.",
+            "ko": "각 차트의 최신 값이 차트 색상으로 표시됩니다. 차트를 탭하면 이전 값을 볼 수 있습니다. 어제는 하루 평균을 표시합니다.",
+            "ar": "آخر قيمة لكل مخطط بلونه. المس المخطط لرؤية قيمة سابقة. يعرض أمس متوسط اليوم."
           },
           "value": true
         },
@@ -2966,6 +4394,42 @@
                 "pl": "24 godziny",
                 "ko": "24시간",
                 "ar": "24 ساعة"
+              }
+            },
+            {
+              "id": "today",
+              "title": {
+                "en": "Today",
+                "nl": "Vandaag",
+                "de": "Heute",
+                "fr": "Aujourd'hui",
+                "it": "Oggi",
+                "sv": "I dag",
+                "no": "I dag",
+                "es": "Hoy",
+                "da": "I dag",
+                "ru": "Сегодня",
+                "pl": "Dziś",
+                "ko": "오늘",
+                "ar": "اليوم"
+              }
+            },
+            {
+              "id": "yesterday",
+              "title": {
+                "en": "Yesterday",
+                "nl": "Gisteren",
+                "de": "Gestern",
+                "fr": "Hier",
+                "it": "Ieri",
+                "sv": "I går",
+                "no": "I går",
+                "es": "Ayer",
+                "da": "I går",
+                "ru": "Вчера",
+                "pl": "Wczoraj",
+                "ko": "어제",
+                "ar": "أمس"
               }
             },
             {
@@ -3502,6 +4966,42 @@
                 "pl": "24 godziny",
                 "ko": "24시간",
                 "ar": "24 ساعة"
+              }
+            },
+            {
+              "id": "today",
+              "title": {
+                "en": "Today",
+                "nl": "Vandaag",
+                "de": "Heute",
+                "fr": "Aujourd'hui",
+                "it": "Oggi",
+                "sv": "I dag",
+                "no": "I dag",
+                "es": "Hoy",
+                "da": "I dag",
+                "ru": "Сегодня",
+                "pl": "Dziś",
+                "ko": "오늘",
+                "ar": "اليوم"
+              }
+            },
+            {
+              "id": "yesterday",
+              "title": {
+                "en": "Yesterday",
+                "nl": "Gisteren",
+                "de": "Gestern",
+                "fr": "Hier",
+                "it": "Ieri",
+                "sv": "I går",
+                "no": "I går",
+                "es": "Ayer",
+                "da": "I går",
+                "ru": "Вчера",
+                "pl": "Wczoraj",
+                "ko": "어제",
+                "ar": "أمس"
               }
             },
             {
@@ -4875,6 +6375,97 @@
                 "pl": "Tylko dni",
                 "ko": "일만",
                 "ar": "أيام فقط"
+              }
+            }
+          ]
+        },
+        {
+          "id": "show",
+          "type": "dropdown",
+          "title": {
+            "en": "Show",
+            "nl": "Tonen",
+            "de": "Anzeigen",
+            "fr": "Afficher",
+            "it": "Mostra",
+            "sv": "Visa",
+            "no": "Vis",
+            "es": "Mostrar",
+            "da": "Vis",
+            "ru": "Показывать",
+            "pl": "Pokazuj",
+            "ko": "표시",
+            "ar": "عرض"
+          },
+          "hint": {
+            "en": "A hidden counter shows again once it turns amber (or red). Counters not yet started always show.",
+            "nl": "Een verborgen teller verschijnt weer zodra hij geel (of rood) wordt. Niet gestarte tellers worden altijd getoond.",
+            "de": "Ein ausgeblendeter Zähler erscheint wieder, sobald er gelb (oder rot) wird. Nicht gestartete Zähler werden immer angezeigt.",
+            "fr": "Un compteur masqué réapparaît dès qu'il passe au jaune (ou au rouge). Les compteurs pas encore démarrés s'affichent toujours.",
+            "it": "Un contatore nascosto riappare quando diventa giallo (o rosso). I contatori non ancora avviati sono sempre visibili.",
+            "sv": "En dold räknare visas igen när den blir gul (eller röd). Räknare som inte har startats visas alltid.",
+            "no": "En skjult teller vises igjen når den blir gul (eller rød). Tellere som ikke er startet, vises alltid.",
+            "es": "Un contador oculto vuelve a mostrarse cuando se pone ámbar (o rojo). Los contadores sin iniciar se muestran siempre.",
+            "da": "En skjult tæller vises igen, når den bliver gul (eller rød). Tællere, der ikke er startet, vises altid.",
+            "ru": "Скрытый счётчик появится снова, когда станет жёлтым (или красным). Не запущенные счётчики видны всегда.",
+            "pl": "Ukryty licznik pojawi się znowu, gdy zmieni kolor na żółty (lub czerwony). Nieuruchomione liczniki są zawsze widoczne.",
+            "ko": "숨긴 카운터는 노란색(또는 빨간색)이 되면 다시 표시됩니다. 시작하지 않은 카운터는 항상 표시됩니다.",
+            "ar": "يظهر العداد المخفي مجددًا عندما يصبح كهرمانيًا (أو أحمر). تظهر العدادات التي لم تبدأ دائمًا."
+          },
+          "value": "all",
+          "values": [
+            {
+              "id": "all",
+              "title": {
+                "en": "All counters",
+                "nl": "Alle tellers",
+                "de": "Alle Zähler",
+                "fr": "Tous les compteurs",
+                "it": "Tutti i contatori",
+                "sv": "Alla räknare",
+                "no": "Alle tellere",
+                "es": "Todos los contadores",
+                "da": "Alle tællere",
+                "ru": "Все счётчики",
+                "pl": "Wszystkie liczniki",
+                "ko": "모든 카운터",
+                "ar": "كل العدادات"
+              }
+            },
+            {
+              "id": "due",
+              "title": {
+                "en": "Only amber and red",
+                "nl": "Alleen geel en rood",
+                "de": "Nur gelb und rot",
+                "fr": "Jaune et rouge seulement",
+                "it": "Solo giallo e rosso",
+                "sv": "Bara gul och röd",
+                "no": "Bare gul og rød",
+                "es": "Solo ámbar y rojo",
+                "da": "Kun gul og rød",
+                "ru": "Только жёлтые и красные",
+                "pl": "Tylko żółte i czerwone",
+                "ko": "노란색과 빨간색만",
+                "ar": "الكهرماني والأحمر فقط"
+              }
+            },
+            {
+              "id": "overdue",
+              "title": {
+                "en": "Only red",
+                "nl": "Alleen rood",
+                "de": "Nur rot",
+                "fr": "Rouge seulement",
+                "it": "Solo rosso",
+                "sv": "Bara röd",
+                "no": "Bare rød",
+                "es": "Solo rojo",
+                "da": "Kun rød",
+                "ru": "Только красные",
+                "pl": "Tylko czerwone",
+                "ko": "빨간색만",
+                "ar": "الأحمر فقط"
               }
             }
           ]
@@ -8741,6 +10332,326 @@
       },
       "id": "heatmap"
     },
+    "lightrooms": {
+      "name": {
+        "en": "Lights by Room",
+        "nl": "Licht per kamer",
+        "de": "Licht nach Raum",
+        "fr": "Lumières par pièce",
+        "it": "Luci per stanza",
+        "sv": "Ljus per rum",
+        "no": "Lys per rom",
+        "es": "Luces por habitación",
+        "da": "Lys pr. rum",
+        "ru": "Свет по комнатам",
+        "pl": "Światło według pokoi",
+        "ko": "방별 조명",
+        "ar": "الإضاءة حسب الغرفة"
+      },
+      "height": 160,
+      "transparent": true,
+      "devices": {
+        "type": "global",
+        "singular": false,
+        "filter": {
+          "class": "light|socket",
+          "capabilities": "onoff|dim"
+        }
+      },
+      "settings": [
+        {
+          "id": "showMoods",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Show the room’s Moods",
+            "nl": "Moods van de kamer tonen",
+            "de": "Moods des Raums zeigen",
+            "fr": "Afficher les Moods de la pièce",
+            "it": "Mostra i Mood della stanza",
+            "sv": "Visa rummets Moods",
+            "no": "Vis rommets Moods",
+            "es": "Mostrar los Moods de la habitación",
+            "da": "Vis rummets Moods",
+            "ru": "Показывать настроения комнаты",
+            "pl": "Pokaż nastroje pokoju",
+            "ko": "방의 무드 표시",
+            "ar": "إظهار أجواء الغرفة"
+          },
+          "hint": {
+            "en": "In an open room, its Homey Moods as a row of buttons; starting one needs the API key on the app’s settings page, with the Set Moods permission.",
+            "nl": "In een geopende kamer de Homey Moods van de kamer als rij knoppen; om er een te starten is de API-sleutel op de instellingenpagina van de app nodig, met het recht Moods zetten.",
+            "de": "In einem geöffneten Raum seine Homey Moods als Tastenreihe; zum Starten wird der API-Schlüssel auf der Einstellungsseite der App benötigt, mit dem Recht Moods festlegen.",
+            "fr": "Dans une pièce ouverte, ses Moods Homey en une rangée de boutons ; en lancer un nécessite la clé API dans les réglages de l'app, avec le droit Définir les Moods.",
+            "it": "In una stanza aperta, i suoi Mood di Homey come fila di pulsanti; per avviarne uno serve la chiave API nelle impostazioni dell'app, con il permesso Imposta Mood.",
+            "sv": "I ett öppnat rum visas dess Homey Moods som en rad knappar; för att starta en behövs API-nyckeln på appens inställningssida, med behörigheten Ställ in Moods.",
+            "no": "I et åpnet rom vises Homey Moods som en rad knapper; for å starte en trengs API-nøkkelen på appens innstillingsside, med tillatelsen Innstill Moods.",
+            "es": "En una habitación abierta, sus Moods de Homey como una fila de botones; para iniciar uno se necesita la clave API en los ajustes de la app, con el permiso Establecer Moods.",
+            "da": "I et åbnet rum vises dets Homey Moods som en række knapper; for at starte en skal API-nøglen på appens indstillingsside bruges, med tilladelsen Indstil Moods.",
+            "ru": "В открытой комнате — её Moods Homey в виде ряда кнопок; для запуска нужен API-ключ на странице настроек приложения с правом Настроить Moods.",
+            "pl": "W otwartym pokoju jego Moods Homey jako rząd przycisków; do uruchomienia potrzebny jest klucz API na stronie ustawień aplikacji, z uprawnieniem Ustaw Mood.",
+            "ko": "열린 방에 그 방의 Homey 무드를 버튼 한 줄로 표시합니다. 무드를 시작하려면 앱 설정 페이지에 Mood 설정 권한이 있는 API 키가 필요합니다.",
+            "ar": "في الغرفة المفتوحة، تظهر أجواء Homey الخاصة بها كصف من الأزرار؛ ويتطلب تشغيلها مفتاح API في صفحة إعدادات التطبيق مع إذن ضبط Moods."
+          }
+        },
+        {
+          "id": "palette",
+          "type": "dropdown",
+          "title": {
+            "en": "Colour palette",
+            "nl": "Kleurenpalet",
+            "de": "Farbpalette",
+            "fr": "Palette de couleurs",
+            "it": "Tavolozza colori",
+            "sv": "Färgpalett",
+            "no": "Fargepalett",
+            "es": "Paleta de colores",
+            "da": "Farvepalet",
+            "ru": "Палитра",
+            "pl": "Paleta kolorów",
+            "ko": "색상 팔레트",
+            "ar": "لوحة الألوان"
+          },
+          "hint": {
+            "en": "The colours offered by a light’s colour button.",
+            "nl": "De kleuren die de kleurknop van een lamp aanbiedt.",
+            "de": "Die Farben, die die Farbtaste einer Lampe anbietet.",
+            "fr": "Les couleurs proposées par le bouton couleur d'une lampe.",
+            "it": "I colori offerti dal pulsante colore di una luce.",
+            "sv": "Färgerna som en lampas färgknapp erbjuder.",
+            "no": "Fargene som en lampes fargeknapp tilbyr.",
+            "es": "Los colores que ofrece el botón de color de una luz.",
+            "da": "Farverne, som en lampes farveknap tilbyder.",
+            "ru": "Цвета, которые предлагает кнопка цвета светильника.",
+            "pl": "Kolory dostępne pod przyciskiem koloru lampy.",
+            "ko": "조명의 색상 버튼에 표시되는 색상입니다.",
+            "ar": "الألوان التي يعرضها زر لون المصباح."
+          },
+          "value": "default",
+          "values": [
+            {
+              "id": "default",
+              "title": {
+                "en": "Bright colours",
+                "nl": "Felle kleuren",
+                "de": "Kräftige Farben",
+                "fr": "Couleurs vives",
+                "it": "Colori vivaci",
+                "sv": "Klara färger",
+                "no": "Klare farger",
+                "es": "Colores vivos",
+                "da": "Klare farver",
+                "ru": "Яркие цвета",
+                "pl": "Żywe kolory",
+                "ko": "선명한 색상",
+                "ar": "ألوان زاهية"
+              }
+            },
+            {
+              "id": "warm",
+              "title": {
+                "en": "Warm: red to cool white",
+                "nl": "Warm: rood tot koel wit",
+                "de": "Warm: Rot bis Kaltweiß",
+                "fr": "Chaud : du rouge au blanc froid",
+                "it": "Caldo: dal rosso al bianco freddo",
+                "sv": "Varm: röd till kallvit",
+                "no": "Varm: rød til kaldhvit",
+                "es": "Cálido: del rojo al blanco frío",
+                "da": "Varm: rød til koldhvid",
+                "ru": "Тёплая: от красного до холодного белого",
+                "pl": "Ciepła: od czerwieni do zimnej bieli",
+                "ko": "따뜻한 색: 빨강에서 차가운 흰색까지",
+                "ar": "دافئة: من الأحمر إلى الأبيض البارد"
+              }
+            },
+            {
+              "id": "dusk",
+              "title": {
+                "en": "Dusk",
+                "nl": "Schemering",
+                "de": "Abenddämmerung",
+                "fr": "Crépuscule",
+                "it": "Crepuscolo",
+                "sv": "Skymning",
+                "no": "Skumring",
+                "es": "Atardecer",
+                "da": "Skumring",
+                "ru": "Сумерки",
+                "pl": "Zmierzch",
+                "ko": "해 질 녘",
+                "ar": "الغسق"
+              }
+            }
+          ]
+        },
+        {
+          "id": "barMin",
+          "type": "dropdown",
+          "title": {
+            "en": "Brightness bar at the far left",
+            "nl": "Helderheidsbalk helemaal links",
+            "de": "Helligkeitsbalken ganz links",
+            "fr": "Barre de luminosité tout à gauche",
+            "it": "Barra luminosità tutta a sinistra",
+            "sv": "Ljusstyrkereglaget längst till vänster",
+            "no": "Lysstyrkelinjen helt til venstre",
+            "es": "Barra de brillo a la izquierda del todo",
+            "da": "Lysstyrkebjælken helt til venstre",
+            "ru": "Ползунок яркости до упора влево",
+            "pl": "Pasek jasności maksymalnie w lewo",
+            "ko": "밝기 막대를 맨 왼쪽으로",
+            "ar": "شريط السطوع في أقصى اليسار"
+          },
+          "hint": {
+            "en": "With 1%, sliding all the way left dims the light as far as it goes without turning it off. A tap on the light or the room’s switch still turns it off.",
+            "nl": "Met 1% dimt helemaal naar links de lamp zo ver mogelijk zonder hem uit te zetten. Een tik op de lamp of de schakelaar van de kamer zet hem nog steeds uit.",
+            "de": "Mit 1 % dimmt ganz nach links die Lampe so weit wie möglich, ohne sie auszuschalten. Ein Tipp auf die Lampe oder den Schalter des Raums schaltet sie weiterhin aus.",
+            "fr": "Avec 1 %, glisser tout à gauche baisse la lampe au minimum sans l'éteindre. Un appui sur la lampe ou l'interrupteur de la pièce l'éteint toujours.",
+            "it": "Con 1%, scorrere tutto a sinistra abbassa la luce al minimo senza spegnerla. Un tocco sulla luce o sull'interruttore della stanza la spegne comunque.",
+            "sv": "Med 1 % dimmar längst till vänster lampan så långt det går utan att släcka den. Ett tryck på lampan eller rummets reglage släcker den fortfarande.",
+            "no": "Med 1 % dimmes lyset så langt det går uten å slå det av når du drar helt til venstre. Et trykk på lyset eller rommets bryter slår det fortsatt av.",
+            "es": "Con 1 %, deslizar del todo a la izquierda atenúa la luz al mínimo sin apagarla. Un toque en la luz o en el interruptor de la habitación la sigue apagando.",
+            "da": "Med 1 % dæmpes lyset så meget som muligt uden at slukke, når du trækker helt til venstre. Et tryk på lyset eller rummets kontakt slukker det stadig.",
+            "ru": "При 1 % движение до упора влево приглушает свет до минимума, не выключая его. Касание светильника или выключателя комнаты по-прежнему выключает свет.",
+            "pl": "Przy 1% przesunięcie maksymalnie w lewo przyciemnia światło najbardziej, jak się da, bez wyłączania. Dotknięcie światła lub przełącznika pokoju nadal je wyłącza.",
+            "ko": "1%로 설정하면 맨 왼쪽으로 밀어도 조명이 꺼지지 않고 최대한 어두워집니다. 조명이나 방의 스위치를 탭하면 여전히 꺼집니다.",
+            "ar": "مع 1%، يؤدي السحب إلى أقصى اليسار إلى خفض الضوء لأدنى حد دون إطفائه. النقر على الضوء أو مفتاح الغرفة لا يزال يطفئه."
+          },
+          "value": "0",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Turns the light off (0%)",
+                "nl": "Zet de lamp uit (0%)",
+                "de": "Schaltet die Lampe aus (0 %)",
+                "fr": "Éteint la lampe (0 %)",
+                "it": "Spegne la luce (0%)",
+                "sv": "Släcker lampan (0 %)",
+                "no": "Slår av lyset (0 %)",
+                "es": "Apaga la luz (0 %)",
+                "da": "Slukker lyset (0 %)",
+                "ru": "Выключает свет (0 %)",
+                "pl": "Wyłącza światło (0%)",
+                "ko": "조명 끄기 (0%)",
+                "ar": "يطفئ الضوء (0%)"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Dims to 1%, stays on",
+                "nl": "Dimt naar 1%, blijft aan",
+                "de": "Dimmt auf 1 %, bleibt an",
+                "fr": "Baisse à 1 %, reste allumée",
+                "it": "Abbassa all'1%, resta accesa",
+                "sv": "Dimmar till 1 %, förblir tänd",
+                "no": "Dimmer til 1 %, forblir på",
+                "es": "Atenúa al 1 %, sigue encendida",
+                "da": "Dæmper til 1 %, forbliver tændt",
+                "ru": "Приглушает до 1 %, не выключая",
+                "pl": "Przyciemnia do 1%, pozostaje włączone",
+                "ko": "1%로 어둡게, 켜진 상태 유지",
+                "ar": "يخفت إلى 1%، ويبقى مضاءً"
+              }
+            }
+          ]
+        },
+        {
+          "id": "colorStyle",
+          "type": "dropdown",
+          "title": {
+            "en": "Colour style",
+            "nl": "Kleurstijl",
+            "de": "Farbstil",
+            "fr": "Style de couleur",
+            "it": "Stile colori",
+            "sv": "Färgstil",
+            "no": "Fargestil",
+            "es": "Estilo de color",
+            "da": "Farvestil",
+            "ru": "Цветовой стиль",
+            "pl": "Styl kolorów",
+            "ko": "색상 스타일",
+            "ar": "نمط الألوان"
+          },
+          "hint": {
+            "en": "Vivid makes the colours of a lit room stronger at the top of its card.",
+            "nl": "Levendig maakt de kleuren van een verlichte kamer sterker bovenaan de kaart.",
+            "de": "Kräftig macht die Farben eines beleuchteten Raums oben auf seiner Karte stärker.",
+            "fr": "Vives renforce les couleurs d'une pièce allumée en haut de sa carte.",
+            "it": "Vivaci rende più intensi i colori di una stanza accesa in cima alla sua scheda.",
+            "sv": "Livfulla gör färgerna i ett tänt rum starkare överst på dess kort.",
+            "no": "Livlige gjør fargene i et opplyst rom sterkere øverst på kortet.",
+            "es": "Vivos hace más intensos los colores de una habitación encendida en la parte superior de su tarjeta.",
+            "da": "Livlige gør farverne i et oplyst rum stærkere øverst på kortet.",
+            "ru": "«Яркие» делают цвета освещённой комнаты насыщеннее в верхней части её карточки.",
+            "pl": "Żywe wzmacniają kolory oświetlonego pokoju u góry jego karty.",
+            "ko": "선명하게는 불이 켜진 방의 색을 카드 위쪽에서 더 진하게 표시합니다.",
+            "ar": "«زاهية» تجعل ألوان الغرفة المضاءة أقوى في أعلى بطاقتها."
+          },
+          "value": "soft",
+          "values": [
+            {
+              "id": "soft",
+              "title": {
+                "en": "Muted",
+                "nl": "Gedempt",
+                "de": "Gedämpft",
+                "fr": "Atténuées",
+                "it": "Smorzati",
+                "sv": "Dämpade",
+                "no": "Dempede",
+                "es": "Suaves",
+                "da": "Dæmpede",
+                "ru": "Приглушённые",
+                "pl": "Stonowane",
+                "ko": "차분하게",
+                "ar": "هادئة"
+              }
+            },
+            {
+              "id": "deep",
+              "title": {
+                "en": "Vivid",
+                "nl": "Levendig",
+                "de": "Kräftig",
+                "fr": "Vives",
+                "it": "Vivaci",
+                "sv": "Livfulla",
+                "no": "Livlige",
+                "es": "Vivos",
+                "da": "Livlige",
+                "ru": "Яркие",
+                "pl": "Żywe",
+                "ko": "선명하게",
+                "ar": "زاهية"
+              }
+            }
+          ]
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        },
+        "set": {
+          "method": "POST",
+          "path": "/set"
+        },
+        "getMoods": {
+          "method": "GET",
+          "path": "/moods"
+        },
+        "setMood": {
+          "method": "POST",
+          "path": "/mood"
+        }
+      },
+      "id": "lightrooms"
+    },
     "lights": {
       "name": {
         "en": "Light Controls",
@@ -10456,6 +12367,504 @@
         }
       },
       "id": "media"
+    },
+    "pollen": {
+      "name": {
+        "en": "Pollen and UV",
+        "nl": "Pollen en uv",
+        "de": "Pollen und UV",
+        "fr": "Pollen et UV",
+        "it": "Pollini e UV",
+        "sv": "Pollen och UV",
+        "no": "Pollen og UV",
+        "es": "Polen y UV",
+        "da": "Pollen og UV",
+        "ru": "Пыльца и УФ",
+        "pl": "Pyłki i UV",
+        "ko": "꽃가루와 자외선",
+        "ar": "حبوب اللقاح والأشعة فوق البنفسجية"
+      },
+      "height": 170,
+      "transparent": false,
+      "settings": [
+        {
+          "id": "density",
+          "type": "dropdown",
+          "title": {
+            "en": "Layout",
+            "nl": "Indeling",
+            "de": "Darstellung",
+            "fr": "Affichage",
+            "it": "Layout",
+            "sv": "Layout",
+            "no": "Oppsett",
+            "es": "Diseño",
+            "da": "Layout",
+            "ru": "Вид",
+            "pl": "Układ",
+            "ko": "레이아웃",
+            "ar": "التخطيط"
+          },
+          "hint": {
+            "en": "Detailed adds the grains per m³ and the next three days.",
+            "nl": "Gedetailleerd voegt de korrels per m³ en de komende drie dagen toe.",
+            "de": "Ausführlich zeigt zusätzlich die Pollen pro m³ und die nächsten drei Tage.",
+            "fr": "Détaillé ajoute les grains par m³ et les trois jours suivants.",
+            "it": "Dettagliato aggiunge i granuli per m³ e i prossimi tre giorni.",
+            "sv": "Detaljerad lägger till pollenkorn per m³ och de kommande tre dagarna.",
+            "no": "Detaljert legger til pollenkorn per m³ og de neste tre dagene.",
+            "es": "Detallado añade los granos por m³ y los próximos tres días.",
+            "da": "Detaljeret tilføjer pollenkorn pr. m³ og de næste tre dage.",
+            "ru": "Подробный добавляет зёрна на м³ и следующие три дня.",
+            "pl": "Szczegółowy dodaje ziarna na m³ i kolejne trzy dni.",
+            "ko": "자세히는 m³당 꽃가루 수와 앞으로 사흘을 더합니다.",
+            "ar": "المفصل يضيف عدد الحبوب لكل م³ والأيام الثلاثة القادمة."
+          },
+          "value": "compact",
+          "values": [
+            {
+              "id": "compact",
+              "title": {
+                "en": "Compact",
+                "nl": "Compact",
+                "de": "Kompakt",
+                "fr": "Compact",
+                "it": "Compatto",
+                "sv": "Kompakt",
+                "no": "Kompakt",
+                "es": "Compacto",
+                "da": "Kompakt",
+                "ru": "Компактный",
+                "pl": "Kompaktowy",
+                "ko": "간단히",
+                "ar": "مضغوط"
+              }
+            },
+            {
+              "id": "detailed",
+              "title": {
+                "en": "Detailed",
+                "nl": "Gedetailleerd",
+                "de": "Ausführlich",
+                "fr": "Détaillé",
+                "it": "Dettagliato",
+                "sv": "Detaljerad",
+                "no": "Detaljert",
+                "es": "Detallado",
+                "da": "Detaljeret",
+                "ru": "Подробный",
+                "pl": "Szczegółowy",
+                "ko": "자세히",
+                "ar": "مفصل"
+              }
+            }
+          ]
+        },
+        {
+          "id": "showUv",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Show the UV index",
+            "nl": "Uv-index tonen",
+            "de": "UV-Index zeigen",
+            "fr": "Afficher l'indice UV",
+            "it": "Mostra l'indice UV",
+            "sv": "Visa UV-index",
+            "no": "Vis UV-indeks",
+            "es": "Mostrar el índice UV",
+            "da": "Vis UV-indeks",
+            "ru": "Показывать УФ-индекс",
+            "pl": "Pokaż indeks UV",
+            "ko": "자외선 지수 표시",
+            "ar": "إظهار مؤشر الأشعة فوق البنفسجية"
+          }
+        },
+        {
+          "id": "showAlder",
+          "type": "checkbox",
+          "value": false,
+          "title": {
+            "en": "Pollen: alder",
+            "nl": "Pollen: els",
+            "de": "Pollen: Erle",
+            "fr": "Pollens : aulne",
+            "it": "Pollini: ontano",
+            "sv": "Pollen: al",
+            "no": "Pollen: or",
+            "es": "Polen: aliso",
+            "da": "Pollen: el",
+            "ru": "Пыльца: ольха",
+            "pl": "Pyłki: olsza",
+            "ko": "꽃가루: 오리나무",
+            "ar": "حبوب اللقاح: جار الماء"
+          },
+          "hint": {
+            "en": "Which pollen to show. Open-Meteo forecasts these six, for Europe only.",
+            "nl": "Welke pollen te tonen. Open-Meteo voorspelt deze zes, alleen voor Europa.",
+            "de": "Welche Pollen gezeigt werden. Open-Meteo sagt diese sechs vorher, nur für Europa.",
+            "fr": "Les pollens à afficher. Open-Meteo prévoit ces six, pour l'Europe seulement.",
+            "it": "Quali pollini mostrare. Open-Meteo prevede questi sei, solo per l'Europa.",
+            "sv": "Vilka pollen som visas. Open-Meteo förutsäger dessa sex, bara för Europa.",
+            "no": "Hvilke pollen som vises. Open-Meteo varsler disse seks, bare for Europa.",
+            "es": "Qué pólenes mostrar. Open-Meteo pronostica estos seis, solo para Europa.",
+            "da": "Hvilke pollen der vises. Open-Meteo varsler disse seks, kun for Europa.",
+            "ru": "Какую пыльцу показывать. Open-Meteo прогнозирует эти шесть, только для Европы.",
+            "pl": "Które pyłki pokazywać. Open-Meteo prognozuje tych sześć, tylko dla Europy.",
+            "ko": "표시할 꽃가루입니다. Open-Meteo는 유럽에 한해 이 여섯 가지를 예보합니다.",
+            "ar": "حبوب اللقاح التي تُعرض. يتنبأ Open-Meteo بهذه الستة، لأوروبا فقط."
+          }
+        },
+        {
+          "id": "showBirch",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "  – Birch",
+            "nl": "  – Berk",
+            "de": "  – Birke",
+            "fr": "  – Bouleau",
+            "it": "  – Betulla",
+            "sv": "  – Björk",
+            "no": "  – Bjørk",
+            "es": "  – Abedul",
+            "da": "  – Birk",
+            "ru": "  – Берёза",
+            "pl": "  – Brzoza",
+            "ko": "  – 자작나무",
+            "ar": "  – البتولا"
+          }
+        },
+        {
+          "id": "showOlive",
+          "type": "checkbox",
+          "value": false,
+          "title": {
+            "en": "  – Olive",
+            "nl": "  – Olijf",
+            "de": "  – Olive",
+            "fr": "  – Olivier",
+            "it": "  – Olivo",
+            "sv": "  – Oliv",
+            "no": "  – Oliven",
+            "es": "  – Olivo",
+            "da": "  – Oliven",
+            "ru": "  – Олива",
+            "pl": "  – Oliwka",
+            "ko": "  – 올리브",
+            "ar": "  – الزيتون"
+          }
+        },
+        {
+          "id": "showGrass",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "  – Grass",
+            "nl": "  – Gras",
+            "de": "  – Gräser",
+            "fr": "  – Graminées",
+            "it": "  – Graminacee",
+            "sv": "  – Gräs",
+            "no": "  – Gress",
+            "es": "  – Gramíneas",
+            "da": "  – Græs",
+            "ru": "  – Злаки",
+            "pl": "  – Trawy",
+            "ko": "  – 풀",
+            "ar": "  – الحشائش"
+          }
+        },
+        {
+          "id": "showMugwort",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "  – Mugwort",
+            "nl": "  – Bijvoet",
+            "de": "  – Beifuß",
+            "fr": "  – Armoise",
+            "it": "  – Artemisia",
+            "sv": "  – Gråbo",
+            "no": "  – Burot",
+            "es": "  – Artemisa",
+            "da": "  – Bynke",
+            "ru": "  – Полынь",
+            "pl": "  – Bylica",
+            "ko": "  – 쑥",
+            "ar": "  – الشيح"
+          }
+        },
+        {
+          "id": "showRagweed",
+          "type": "checkbox",
+          "value": false,
+          "title": {
+            "en": "  – Ragweed",
+            "nl": "  – Ambrosia",
+            "de": "  – Ambrosia",
+            "fr": "  – Ambroisie",
+            "it": "  – Ambrosia",
+            "sv": "  – Ambrosia",
+            "no": "  – Ambrosia",
+            "es": "  – Ambrosía",
+            "da": "  – Ambrosie",
+            "ru": "  – Амброзия",
+            "pl": "  – Ambrozja",
+            "ko": "  – 돼지풀",
+            "ar": "  – الأمبروسيا"
+          }
+        },
+        {
+          "id": "colorStyle",
+          "type": "dropdown",
+          "title": {
+            "en": "Colour style",
+            "nl": "Kleurstijl",
+            "de": "Farbstil",
+            "fr": "Style de couleur",
+            "it": "Stile colori",
+            "sv": "Färgstil",
+            "no": "Fargestil",
+            "es": "Estilo de color",
+            "da": "Farvestil",
+            "ru": "Цветовой стиль",
+            "pl": "Styl kolorów",
+            "ko": "색상 스타일",
+            "ar": "نمط الألوان"
+          },
+          "hint": {
+            "en": "Vivid shows the colours bright and at full strength.",
+            "nl": "Levendig toont de kleuren fel en op volle sterkte.",
+            "de": "Kräftig zeigt die Farben kräftig und in voller Stärke.",
+            "fr": "Vives affiche les couleurs vives, à pleine intensité.",
+            "it": "Vivaci mostra i colori vivaci e a piena intensità.",
+            "sv": "Livfulla visar färgerna klara och i full styrka.",
+            "no": "Livlige viser fargene klare og med full styrke.",
+            "es": "Vivos muestra los colores vivos y con toda su intensidad.",
+            "da": "Livlige viser farverne klare og i fuld styrke.",
+            "ru": "«Яркие» показывают цвета ярко и в полную силу.",
+            "pl": "Żywe pokazują kolory jaskrawo i w pełnej mocy.",
+            "ko": "선명하게는 색을 선명하고 진하게 표시합니다.",
+            "ar": "«زاهية» تعرض الألوان زاهية وبكامل قوتها."
+          },
+          "value": "soft",
+          "values": [
+            {
+              "id": "soft",
+              "title": {
+                "en": "Muted",
+                "nl": "Gedempt",
+                "de": "Gedämpft",
+                "fr": "Atténuées",
+                "it": "Smorzati",
+                "sv": "Dämpade",
+                "no": "Dempede",
+                "es": "Suaves",
+                "da": "Dæmpede",
+                "ru": "Приглушённые",
+                "pl": "Stonowane",
+                "ko": "차분하게",
+                "ar": "هادئة"
+              }
+            },
+            {
+              "id": "deep",
+              "title": {
+                "en": "Vivid",
+                "nl": "Levendig",
+                "de": "Kräftig",
+                "fr": "Vives",
+                "it": "Vivaci",
+                "sv": "Livfulla",
+                "no": "Livlige",
+                "es": "Vivos",
+                "da": "Livlige",
+                "ru": "Яркие",
+                "pl": "Żywe",
+                "ko": "선명하게",
+                "ar": "زاهية"
+              }
+            }
+          ]
+        },
+        {
+          "id": "timeFormat",
+          "type": "dropdown",
+          "title": {
+            "en": "Time format",
+            "nl": "Tijdnotatie",
+            "de": "Zeitformat",
+            "fr": "Format de l'heure",
+            "it": "Formato ora",
+            "sv": "Tidsformat",
+            "no": "Tidsformat",
+            "es": "Formato de hora",
+            "da": "Tidsformat",
+            "ru": "Формат времени",
+            "pl": "Format godziny",
+            "ko": "시간 형식",
+            "ar": "تنسيق الوقت"
+          },
+          "hint": {
+            "en": "Automatic follows the language of the phone or browser that shows it.",
+            "nl": "Automatisch volgt de taal van de telefoon of browser waarop het wordt getoond.",
+            "de": "Automatisch folgt der Sprache des Telefons oder Browsers, auf dem es angezeigt wird.",
+            "fr": "Automatique suit la langue du téléphone ou du navigateur qui l'affiche.",
+            "it": "Automatico segue la lingua del telefono o del browser che lo mostra.",
+            "sv": "Automatiskt följer språket i telefonen eller webbläsaren som visar den.",
+            "no": "Automatisk følger språket på telefonen eller nettleseren som viser den.",
+            "es": "Automático sigue el idioma del teléfono o del navegador que lo muestra.",
+            "da": "Automatisk følger sproget på telefonen eller browseren, der viser den.",
+            "ru": "«Автоматически» следует языку телефона или браузера, на котором он показан.",
+            "pl": "Automatycznie: według języka telefonu lub przeglądarki, która go wyświetla.",
+            "ko": "자동은 표시하는 휴대폰이나 브라우저의 언어를 따릅니다.",
+            "ar": "«تلقائي» يتبع لغة الهاتف أو المتصفح الذي يعرضه."
+          },
+          "value": "auto",
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Automatic",
+                "nl": "Automatisch",
+                "de": "Automatisch",
+                "fr": "Automatique",
+                "it": "Automatico",
+                "sv": "Automatiskt",
+                "no": "Automatisk",
+                "es": "Automático",
+                "da": "Automatisk",
+                "ru": "Автоматически",
+                "pl": "Automatycznie",
+                "ko": "자동",
+                "ar": "تلقائي"
+              }
+            },
+            {
+              "id": "24",
+              "title": {
+                "en": "24-hour",
+                "nl": "24-uurs",
+                "de": "24 Stunden",
+                "fr": "24 heures",
+                "it": "24 ore",
+                "sv": "24 timmar",
+                "no": "24 timer",
+                "es": "24 horas",
+                "da": "24 timer",
+                "ru": "24 часа",
+                "pl": "24-godzinny",
+                "ko": "24시간",
+                "ar": "24 ساعة"
+              }
+            },
+            {
+              "id": "12",
+              "title": {
+                "en": "12-hour",
+                "nl": "12-uurs",
+                "de": "12 Stunden",
+                "fr": "12 heures",
+                "it": "12 ore",
+                "sv": "12 timmar",
+                "no": "12 timer",
+                "es": "12 horas",
+                "da": "12 timer",
+                "ru": "12 часов",
+                "pl": "12-godzinny",
+                "ko": "12시간",
+                "ar": "12 ساعة"
+              }
+            }
+          ]
+        }
+      ],
+      "api": {
+        "getPollen": {
+          "method": "GET",
+          "path": "/pollen"
+        }
+      },
+      "id": "pollen"
+    },
+    "popups": {
+      "name": {
+        "en": "Popups",
+        "nl": "Pop-ups",
+        "de": "Popups",
+        "fr": "Pop-ups",
+        "it": "Popup",
+        "sv": "Popup-fönster",
+        "no": "Popup-vinduer",
+        "es": "Ventanas emergentes",
+        "da": "Popups",
+        "ru": "Всплывающие окна",
+        "pl": "Okna wyskakujące",
+        "ko": "팝업",
+        "ar": "النوافذ المنبثقة"
+      },
+      "height": 32,
+      "transparent": true,
+      "settings": [
+        {
+          "id": "name",
+          "type": "text",
+          "title": {
+            "en": "Screen name",
+            "nl": "Schermnaam",
+            "de": "Bildschirmname",
+            "fr": "Nom de l'écran",
+            "it": "Nome dello schermo",
+            "sv": "Skärmnamn",
+            "no": "Skjermnavn",
+            "es": "Nombre de la pantalla",
+            "da": "Skærmnavn",
+            "ru": "Имя экрана",
+            "pl": "Nazwa ekranu",
+            "ko": "화면 이름",
+            "ar": "اسم الشاشة"
+          },
+          "hint": {
+            "en": "The name the popup Flow cards send to; a message or question sent here opens over the dashboard on this phone or tablet. The widget itself is blank. Put it at the bottom of the dashboard, so it doesn't push other widgets down.",
+            "nl": "De naam waar de pop-up-Flowkaarten naartoe sturen; een bericht of vraag die hierheen gaat, opent over het dashboard op deze telefoon of tablet. De widget zelf is leeg. Zet hem onderaan het dashboard, zodat hij geen andere widgets omlaag duwt.",
+            "de": "Der Name, an den die Popup-Flow-Karten senden; eine Nachricht oder Frage hierher öffnet sich über dem Dashboard auf diesem Handy oder Tablet. Das Widget selbst ist leer. Setz es unten aufs Dashboard, damit es keine anderen Widgets nach unten schiebt.",
+            "fr": "Le nom auquel les cartes Flow de pop-up envoient ; un message ou une question envoyé ici s'ouvre par-dessus le tableau de bord sur ce téléphone ou cette tablette. Le widget lui-même est vide. Placez-le en bas du tableau de bord, pour qu'il ne pousse pas les autres widgets vers le bas.",
+            "it": "Il nome a cui inviano le schede Flow dei popup; un messaggio o una domanda inviati qui si aprono sopra la dashboard su questo telefono o tablet. Il widget in sé è vuoto. Mettilo in fondo alla dashboard, così non spinge in basso gli altri widget.",
+            "sv": "Namnet som popup-fönstrens Flow-kort skickar till; ett meddelande eller en fråga som skickas hit öppnas över instrumentpanelen på den här telefonen eller surfplattan. Själva widgeten är tom. Lägg den längst ner på instrumentpanelen, så att den inte trycker ner andra widgetar.",
+            "no": "Navnet popup-vinduenes Flow-kort sender til; en melding eller et spørsmål som sendes hit, åpnes over dashbordet på denne telefonen eller nettbrettet. Selve widgeten er tom. Legg den nederst på dashbordet, så den ikke skyver andre widgeter ned.",
+            "es": "El nombre al que envían las tarjetas Flow de ventanas emergentes; un mensaje o una pregunta enviados aquí se abren sobre el panel en este teléfono o tableta. El widget en sí está vacío. Ponlo al final del panel, para que no empuje hacia abajo los demás widgets.",
+            "da": "Navnet, som popup-Flowkortene sender til; en besked eller et spørgsmål sendt hertil åbner over dashboardet på denne telefon eller tablet. Selve widgetten er tom. Sæt den nederst på dashboardet, så den ikke skubber andre widgets ned.",
+            "ru": "Имя, на которое отправляют карточки Flow всплывающих окон; сообщение или вопрос, отправленные сюда, открываются поверх панели на этом телефоне или планшете. Сам виджет пустой. Разместите его внизу панели, чтобы он не сдвигал другие виджеты вниз.",
+            "pl": "Nazwa, do której wysyłają karty Flow okien wyskakujących; wiadomość lub pytanie wysłane tutaj otwiera się nad pulpitem na tym telefonie lub tablecie. Sam widżet jest pusty. Umieść go na dole pulpitu, aby nie przesuwał innych widżetów w dół.",
+            "ko": "팝업 Flow 카드가 보내는 이름이며, 여기로 보낸 메시지나 질문은 이 휴대폰이나 태블릿의 대시보드 위에 열립니다. 위젯 자체는 비어 있습니다. 다른 위젯을 아래로 밀지 않도록 대시보드 맨 아래에 두세요.",
+            "ar": "الاسم الذي ترسل إليه بطاقات Flow للنوافذ المنبثقة؛ الرسالة أو السؤال المرسل هنا يفتح فوق اللوحة على هذا الهاتف أو الجهاز اللوحي. الأداة نفسها فارغة. ضعها في أسفل اللوحة حتى لا تدفع الأدوات الأخرى إلى الأسفل."
+          },
+          "placeholder": {
+            "en": "Screen",
+            "nl": "Scherm",
+            "de": "Bildschirm",
+            "fr": "Écran",
+            "it": "Schermo",
+            "sv": "Skärm",
+            "no": "Skjerm",
+            "es": "Pantalla",
+            "da": "Skærm",
+            "ru": "Экран",
+            "pl": "Ekran",
+            "ko": "화면",
+            "ar": "الشاشة"
+          },
+          "value": "Screen"
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        }
+      },
+      "id": "popups"
     },
     "price": {
       "name": {
@@ -14168,7 +16577,7 @@
             "ar": "مساحة فارغة لمحاذاة الأدوات بين الأعمدة. يحتفظ Homey بالفراغ المعتاد فوقها وتحتها."
           },
           "value": 32,
-          "min": 0,
+          "min": 16,
           "max": 800
         }
       ],
@@ -14300,6 +16709,42 @@
                 "pl": "24 godziny",
                 "ko": "24시간",
                 "ar": "24 ساعة"
+              }
+            },
+            {
+              "id": "today",
+              "title": {
+                "en": "Today",
+                "nl": "Vandaag",
+                "de": "Heute",
+                "fr": "Aujourd'hui",
+                "it": "Oggi",
+                "sv": "I dag",
+                "no": "I dag",
+                "es": "Hoy",
+                "da": "I dag",
+                "ru": "Сегодня",
+                "pl": "Dziś",
+                "ko": "오늘",
+                "ar": "اليوم"
+              }
+            },
+            {
+              "id": "yesterday",
+              "title": {
+                "en": "Yesterday",
+                "nl": "Gisteren",
+                "de": "Gestern",
+                "fr": "Hier",
+                "it": "Ieri",
+                "sv": "I går",
+                "no": "I går",
+                "es": "Ayer",
+                "da": "I går",
+                "ru": "Вчера",
+                "pl": "Wczoraj",
+                "ko": "어제",
+                "ar": "أمس"
               }
             },
             {
@@ -16862,19 +19307,19 @@
             "ar": "  – الاسم"
           },
           "hint": {
-            "en": "Optional, such as Eggs. Shown on the button and sent to the Flow card “A timer finished”.",
-            "nl": "Optioneel, zoals Eieren. Getoond op de knop en meegegeven aan de Flow-kaart „Een timer is afgelopen”.",
-            "de": "Optional, etwa Eier. Steht auf der Taste und geht an die Flow-Karte „Ein Timer ist abgelaufen“.",
-            "fr": "Facultatif, par exemple Œufs. Affiché sur le bouton et transmis à la carte Flow « Un minuteur est terminé ».",
-            "it": "Facoltativo, ad esempio Uova. Mostrato sul pulsante e passato alla scheda Flow “Un timer è terminato”.",
-            "sv": "Valfritt, till exempel Ägg. Visas på knappen och skickas till flödeskortet ”En timer har gått ut”.",
-            "no": "Valgfritt, for eksempel Egg. Vises på knappen og sendes til Flyt-kortet «En tidtaker er ferdig».",
-            "es": "Opcional, por ejemplo Huevos. Se muestra en el botón y se pasa a la tarjeta de flujo «Un temporizador ha terminado».",
-            "da": "Valgfrit, fx Æg. Vises på knappen og sendes til Flow-kortet “En timer er færdig”.",
-            "ru": "Необязательно, например «Яйца». Показывается на кнопке и передаётся в карточку потока «Таймер завершён».",
-            "pl": "Opcjonalnie, np. Jajka. Widoczne na przycisku i przekazywane do karty Flow „Minutnik się skończył”.",
-            "ko": "선택 사항입니다(예: 달걀). 버튼에 표시되고 플로우 카드 “타이머가 끝났을 때”로 전달됩니다.",
-            "ar": "اختياري، مثل البيض. يظهر على الزر ويُرسل إلى بطاقة التدفق «انتهى مؤقت»."
+            "en": "Optional, such as Eggs. Shown on the button and sent to the Flow card “A timer on the Timers widget finished”.",
+            "nl": "Optioneel, zoals Eieren. Getoond op de knop en meegegeven aan de Flow-kaart „Een timer van de Timers-widget is afgelopen”.",
+            "de": "Optional, etwa Eier. Steht auf der Taste und geht an die Flow-Karte „Ein Timer des Timer-Widgets ist abgelaufen“.",
+            "fr": "Facultatif, par exemple Œufs. Affiché sur le bouton et transmis à la carte Flow « Un minuteur du widget Minuteurs est terminé ».",
+            "it": "Facoltativo, ad esempio Uova. Mostrato sul pulsante e passato alla scheda Flow “Un timer del widget Timer è terminato”.",
+            "sv": "Valfritt, till exempel Ägg. Visas på knappen och skickas till flödeskortet ”En timer i Timers-widgeten har gått ut”.",
+            "no": "Valgfritt, for eksempel Egg. Vises på knappen og sendes til Flyt-kortet «En tidtaker i Tidtakere-widgeten er ferdig».",
+            "es": "Opcional, por ejemplo Huevos. Se muestra en el botón y se pasa a la tarjeta de flujo «Un temporizador del widget Temporizadores ha terminado».",
+            "da": "Valgfrit, fx Æg. Vises på knappen og sendes til Flow-kortet “En timer i Timere-widgetten er færdig”.",
+            "ru": "Необязательно, например «Яйца». Показывается на кнопке и передаётся в карточку потока «Таймер виджета „Таймеры“ завершён».",
+            "pl": "Opcjonalnie, np. Jajka. Widoczne na przycisku i przekazywane do karty Flow „Minutnik z widżetu Minutniki się skończył”.",
+            "ko": "선택 사항입니다(예: 달걀). 버튼에 표시되고 플로우 카드 “타이머 위젯의 타이머가 끝났을 때”로 전달됩니다.",
+            "ar": "اختياري، مثل البيض. يظهر على الزر ويُرسل إلى بطاقة التدفق «انتهى مؤقت في عنصر المؤقتات»."
           },
           "value": ""
         },
@@ -19944,6 +22389,389 @@
         }
       },
       "id": "weather"
+    },
+    "webpage": {
+      "name": {
+        "en": "Web Page",
+        "nl": "Webpagina",
+        "de": "Webseite",
+        "fr": "Page web",
+        "it": "Pagina web",
+        "sv": "Webbsida",
+        "no": "Nettside",
+        "es": "Página web",
+        "da": "Webside",
+        "ru": "Веб-страница",
+        "pl": "Strona WWW",
+        "ko": "웹 페이지",
+        "ar": "صفحة ويب"
+      },
+      "height": 320,
+      "settings": [
+        {
+          "id": "url",
+          "type": "text",
+          "title": {
+            "en": "Address",
+            "nl": "Adres",
+            "de": "Adresse",
+            "fr": "Adresse",
+            "it": "Indirizzo",
+            "sv": "Adress",
+            "no": "Adresse",
+            "es": "Dirección",
+            "da": "Adresse",
+            "ru": "Адрес",
+            "pl": "Adres",
+            "ko": "주소",
+            "ar": "العنوان"
+          },
+          "hint": {
+            "en": "The page to show, starting with https://. {lat} and {lon} become the Homey's location. Some sites don't allow being shown inside another page.",
+            "nl": "De pagina om te tonen, beginnend met https://. {lat} en {lon} worden de locatie van de Homey. Sommige sites staan niet toe dat ze in een andere pagina worden getoond.",
+            "de": "Die anzuzeigende Seite, beginnend mit https://. {lat} und {lon} werden zum Standort des Homey. Manche Seiten lassen sich nicht in einer anderen Seite anzeigen.",
+            "fr": "La page à afficher, commençant par https://. {lat} et {lon} deviennent l'emplacement du Homey. Certains sites refusent d'être affichés dans une autre page.",
+            "it": "La pagina da mostrare, che inizia con https://. {lat} e {lon} diventano la posizione dell'Homey. Alcuni siti non si lasciano mostrare dentro un'altra pagina.",
+            "sv": "Sidan som ska visas, som börjar med https://. {lat} och {lon} blir Homeys plats. Vissa webbplatser tillåter inte att visas i en annan sida.",
+            "no": "Siden som skal vises, som starter med https://. {lat} og {lon} blir Homeys plassering. Noen nettsteder tillater ikke å bli vist i en annen side.",
+            "es": "La página que se muestra, empezando por https://. {lat} y {lon} se convierten en la ubicación del Homey. Algunos sitios no permiten mostrarse dentro de otra página.",
+            "da": "Siden, der skal vises, som starter med https://. {lat} og {lon} bliver Homeys placering. Nogle sider tillader ikke at blive vist i en anden side.",
+            "ru": "Страница для показа, начиная с https://. {lat} и {lon} заменяются местоположением Homey. Некоторые сайты не разрешают показывать себя внутри другой страницы.",
+            "pl": "Strona do wyświetlenia, zaczynająca się od https://. {lat} i {lon} zastępuje lokalizacja Homey. Niektóre strony nie pozwalają na wyświetlanie w innej stronie.",
+            "ko": "https://로 시작하는 표시할 페이지입니다. {lat}와 {lon}은 Homey의 위치로 바뀝니다. 일부 사이트는 다른 페이지 안에 표시되는 것을 허용하지 않습니다.",
+            "ar": "الصفحة المراد عرضها، وتبدأ بـ https://. يُستبدل {lat} و{lon} بموقع Homey. بعض المواقع لا تسمح بعرضها داخل صفحة أخرى."
+          },
+          "value": ""
+        },
+        {
+          "id": "pageWidth",
+          "type": "number",
+          "title": {
+            "en": "Page width (pixels)",
+            "nl": "Paginabreedte (pixels)",
+            "de": "Seitenbreite (Pixel)",
+            "fr": "Largeur de la page (pixels)",
+            "it": "Larghezza pagina (pixel)",
+            "sv": "Sidbredd (pixlar)",
+            "no": "Sidebredde (piksler)",
+            "es": "Ancho de página (píxeles)",
+            "da": "Sidebredde (pixels)",
+            "ru": "Ширина страницы (пиксели)",
+            "pl": "Szerokość strony (piksele)",
+            "ko": "페이지 너비(픽셀)",
+            "ar": "عرض الصفحة (بكسل)"
+          },
+          "hint": {
+            "en": "The page is drawn this wide, then scaled to fill the widget. 0 uses the widget's own width. For a gadget made in a fixed size, such as 550 × 512, use that size.",
+            "nl": "De pagina wordt zo breed getekend en dan geschaald om de widget te vullen. 0 gebruikt de breedte van de widget zelf. Gebruik voor een gadget met een vaste grootte, zoals 550 × 512, die grootte.",
+            "de": "Die Seite wird so breit gezeichnet und dann skaliert, bis sie das Widget füllt. 0 nimmt die Breite des Widgets selbst. Für ein Gadget mit fester Größe, etwa 550 × 512, nimm diese Größe.",
+            "fr": "La page est dessinée à cette largeur, puis mise à l'échelle pour remplir le widget. 0 utilise la largeur du widget. Pour un gadget de taille fixe, comme 550 × 512, utilisez cette taille.",
+            "it": "La pagina viene disegnata con questa larghezza, poi scalata per riempire il widget. 0 usa la larghezza del widget. Per un gadget di dimensioni fisse, come 550 × 512, usa quelle dimensioni.",
+            "sv": "Sidan ritas så här bred och skalas sedan för att fylla widgeten. 0 använder widgetens egen bredd. För en gadget med fast storlek, som 550 × 512, använd den storleken.",
+            "no": "Siden tegnes så bred og skaleres så for å fylle widgeten. 0 bruker widgetens egen bredde. For en gadget med fast størrelse, som 550 × 512, bruk den størrelsen.",
+            "es": "La página se dibuja con este ancho y luego se escala para llenar el widget. 0 usa el ancho del propio widget. Para un gadget de tamaño fijo, como 550 × 512, usa ese tamaño.",
+            "da": "Siden tegnes så bred og skaleres så, så den fylder widgeten. 0 bruger widgetens egen bredde. Til en gadget med fast størrelse, som 550 × 512, brug den størrelse.",
+            "ru": "Страница рисуется такой ширины, а затем масштабируется, чтобы заполнить виджет. 0 — ширина самого виджета. Для гаджета фиксированного размера, например 550 × 512, укажите этот размер.",
+            "pl": "Strona jest rysowana w tej szerokości, a potem skalowana, by wypełnić widżet. 0 używa szerokości widżetu. Dla gadżetu o stałym rozmiarze, np. 550 × 512, użyj tego rozmiaru.",
+            "ko": "페이지를 이 너비로 그린 뒤 위젯을 채우도록 확대·축소합니다. 0이면 위젯 자체의 너비를 씁니다. 550 × 512처럼 크기가 고정된 가젯이면 그 크기를 쓰세요.",
+            "ar": "تُرسم الصفحة بهذا العرض ثم تُكبَّر أو تُصغَّر لتملأ الأداة. 0 يستخدم عرض الأداة نفسها. لأداة بحجم ثابت، مثل 550 × 512، استخدم ذلك الحجم."
+          },
+          "value": 0,
+          "min": 0,
+          "max": 4000
+        },
+        {
+          "id": "pageHeight",
+          "type": "number",
+          "title": {
+            "en": "Page height (pixels)",
+            "nl": "Paginahoogte (pixels)",
+            "de": "Seitenhöhe (Pixel)",
+            "fr": "Hauteur de la page (pixels)",
+            "it": "Altezza pagina (pixel)",
+            "sv": "Sidhöjd (pixlar)",
+            "no": "Sidehøyde (piksler)",
+            "es": "Alto de página (píxeles)",
+            "da": "Sidehøjde (pixels)",
+            "ru": "Высота страницы (пиксели)",
+            "pl": "Wysokość strony (piksele)",
+            "ko": "페이지 높이(픽셀)",
+            "ar": "ارتفاع الصفحة (بكسل)"
+          },
+          "hint": {
+            "en": "The page's height at that width. The widget takes the same shape, so the page fills it without borders.",
+            "nl": "De hoogte van de pagina bij die breedte. De widget krijgt dezelfde vorm, zodat de pagina hem zonder randen vult.",
+            "de": "Die Höhe der Seite bei dieser Breite. Das Widget bekommt dieselbe Form, sodass die Seite es ohne Ränder füllt.",
+            "fr": "La hauteur de la page à cette largeur. Le widget prend la même forme, pour que la page le remplisse sans bordures.",
+            "it": "L'altezza della pagina a quella larghezza. Il widget prende la stessa forma, così la pagina lo riempie senza bordi.",
+            "sv": "Sidans höjd vid den bredden. Widgeten får samma form, så sidan fyller den utan kanter.",
+            "no": "Sidens høyde ved den bredden. Widgeten får samme form, så siden fyller den uten kanter.",
+            "es": "La altura de la página con ese ancho. El widget toma la misma forma, así la página lo llena sin bordes.",
+            "da": "Sidens højde ved den bredde. Widgeten får samme form, så siden fylder den uden kanter.",
+            "ru": "Высота страницы при этой ширине. Виджет принимает ту же форму, поэтому страница заполняет его без полей.",
+            "pl": "Wysokość strony przy tej szerokości. Widżet ma ten sam kształt, więc strona wypełnia go bez ramek.",
+            "ko": "그 너비에서 페이지의 높이입니다. 위젯이 같은 비율이 되어 페이지가 여백 없이 채웁니다.",
+            "ar": "ارتفاع الصفحة بذلك العرض. تأخذ الأداة الشكل نفسه، فتملؤها الصفحة بلا حواف."
+          },
+          "value": 320,
+          "min": 20,
+          "max": 4000
+        },
+        {
+          "id": "interactive",
+          "type": "checkbox",
+          "title": {
+            "en": "Let the page be tapped",
+            "nl": "Tikken op de pagina toestaan",
+            "de": "Tippen auf die Seite erlauben",
+            "fr": "Autoriser les appuis sur la page",
+            "it": "Consenti i tocchi sulla pagina",
+            "sv": "Tillåt tryck på sidan",
+            "no": "Tillat trykk på siden",
+            "es": "Permitir tocar la página",
+            "da": "Tillad tryk på siden",
+            "ru": "Разрешить нажатия на странице",
+            "pl": "Pozwól dotykać strony",
+            "ko": "페이지 탭 허용",
+            "ar": "السماح بالنقر على الصفحة"
+          },
+          "hint": {
+            "en": "Off, taps are ignored and a swipe scrolls the dashboard. Links never open other pages.",
+            "nl": "Uit worden tikken genegeerd en scrolt vegen het dashboard. Links openen nooit andere pagina's.",
+            "de": "Aus werden Tipps ignoriert und Wischen scrollt das Dashboard. Links öffnen nie andere Seiten.",
+            "fr": "Désactivé, les appuis sont ignorés et un glissement fait défiler le tableau de bord. Les liens n'ouvrent jamais d'autres pages.",
+            "it": "Disattivato, i tocchi vengono ignorati e uno scorrimento fa scorrere la dashboard. I link non aprono mai altre pagine.",
+            "sv": "Av ignoreras tryck och ett svep rullar instrumentpanelen. Länkar öppnar aldrig andra sidor.",
+            "no": "Av ignoreres trykk, og et sveip ruller dashbordet. Lenker åpner aldri andre sider.",
+            "es": "Desactivado, los toques se ignoran y deslizar desplaza el panel. Los enlaces nunca abren otras páginas.",
+            "da": "Fra ignoreres tryk, og et swipe ruller dashboardet. Links åbner aldrig andre sider.",
+            "ru": "Если выключено, нажатия игнорируются, а свайп прокручивает панель. Ссылки никогда не открывают другие страницы.",
+            "pl": "Wyłączone: dotknięcia są ignorowane, a przesunięcie przewija pulpit. Linki nigdy nie otwierają innych stron.",
+            "ko": "끄면 탭은 무시되고 스와이프하면 대시보드가 스크롤됩니다. 링크는 다른 페이지를 열지 않습니다.",
+            "ar": "عند الإيقاف تُتجاهل النقرات ويمرّر السحب لوحة المعلومات. لا تفتح الروابط صفحات أخرى أبدًا."
+          },
+          "value": false
+        },
+        {
+          "id": "refresh",
+          "type": "number",
+          "title": {
+            "en": "Reload every (minutes)",
+            "nl": "Herladen elke (minuten)",
+            "de": "Neu laden alle (Minuten)",
+            "fr": "Recharger toutes les (minutes)",
+            "it": "Ricarica ogni (minuti)",
+            "sv": "Ladda om var (minuter)",
+            "no": "Last inn på nytt hvert (minutter)",
+            "es": "Recargar cada (minutos)",
+            "da": "Genindlæs hvert (minutter)",
+            "ru": "Перезагружать каждые (минуты)",
+            "pl": "Odświeżaj co (minuty)",
+            "ko": "새로 고침 간격(분)",
+            "ar": "إعادة التحميل كل (دقائق)"
+          },
+          "hint": {
+            "en": "0 never reloads. A page with live data may need it on a screen that's always on.",
+            "nl": "0 herlaadt nooit. Een pagina met live gegevens heeft het misschien nodig op een scherm dat altijd aan staat.",
+            "de": "0 lädt nie neu. Eine Seite mit Live-Daten braucht es vielleicht auf einem Bildschirm, der immer an ist.",
+            "fr": "0 ne recharge jamais. Une page aux données en direct peut en avoir besoin sur un écran toujours allumé.",
+            "it": "0 non ricarica mai. Una pagina con dati in tempo reale può averne bisogno su uno schermo sempre acceso.",
+            "sv": "0 laddar aldrig om. En sida med livedata kan behöva det på en skärm som alltid är på.",
+            "no": "0 laster aldri inn på nytt. En side med sanntidsdata kan trenge det på en skjerm som alltid er på.",
+            "es": "0 nunca recarga. Una página con datos en directo puede necesitarlo en una pantalla siempre encendida.",
+            "da": "0 genindlæser aldrig. En side med live-data kan have brug for det på en skærm, der altid er tændt.",
+            "ru": "0 — никогда. Странице с живыми данными это может понадобиться на постоянно включённом экране.",
+            "pl": "0 nigdy nie odświeża. Strona z danymi na żywo może tego potrzebować na zawsze włączonym ekranie.",
+            "ko": "0이면 새로 고치지 않습니다. 실시간 데이터를 보여 주는 페이지는 항상 켜진 화면에서 필요할 수 있습니다.",
+            "ar": "0 لا يعيد التحميل أبدًا. قد تحتاجه صفحة ذات بيانات مباشرة على شاشة تبقى مضاءة دائمًا."
+          },
+          "value": 0,
+          "min": 0,
+          "max": 1440
+        },
+        {
+          "id": "b1Name",
+          "type": "text",
+          "title": {
+            "en": "Button 1: name",
+            "nl": "Knop 1: naam",
+            "de": "Button 1: Name",
+            "fr": "Bouton 1: nom",
+            "it": "Pulsante 1: nome",
+            "sv": "Knapp 1: namn",
+            "no": "Knapp 1: navn",
+            "es": "Botón 1: nombre",
+            "da": "Knap 1: navn",
+            "ru": "Кнопка 1: название",
+            "pl": "Przycisk 1: nazwa",
+            "ko": "버튼 1: 이름",
+            "ar": "الزر 1: الاسم"
+          },
+          "hint": {
+            "en": "Optional. With two or more buttons, a row under the page switches between their addresses, such as a map's zoom levels. The widget opens on the Address above.",
+            "nl": "Optioneel. Met twee of meer knoppen wisselt een rij onder de pagina tussen hun adressen, zoals de zoomniveaus van een kaart. De widget opent op het Adres hierboven.",
+            "de": "Optional. Ab zwei Buttons wechselt eine Reihe unter der Seite zwischen ihren Adressen, etwa den Zoomstufen einer Karte. Das Widget öffnet mit der Adresse oben.",
+            "fr": "Facultatif. À partir de deux boutons, une rangée sous la page passe d'une adresse à l'autre, comme les niveaux de zoom d'une carte. Le widget s'ouvre sur l'Adresse ci-dessus.",
+            "it": "Facoltativo. Con due o più pulsanti, una riga sotto la pagina passa da un indirizzo all'altro, come i livelli di zoom di una mappa. Il widget si apre sull'Indirizzo qui sopra.",
+            "sv": "Valfritt. Med två eller fler knappar växlar en rad under sidan mellan deras adresser, som en kartas zoomnivåer. Widgeten öppnas på Adress ovan.",
+            "no": "Valgfritt. Med to eller flere knapper bytter en rad under siden mellom adressene deres, som et karts zoomnivåer. Widgeten åpner på Adresse over.",
+            "es": "Opcional. Con dos o más botones, una fila bajo la página cambia entre sus direcciones, como los niveles de zoom de un mapa. El widget se abre en la Dirección de arriba.",
+            "da": "Valgfrit. Med to eller flere knapper skifter en række under siden mellem deres adresser, som et korts zoomniveauer. Widgeten åbner på Adresse ovenfor.",
+            "ru": "Необязательно. При двух и более кнопках ряд под страницей переключает их адреса, например уровни масштаба карты. Виджет открывается на Адресе выше.",
+            "pl": "Opcjonalnie. Przy dwóch lub więcej przyciskach rząd pod stroną przełącza ich adresy, np. poziomy powiększenia mapy. Widżet otwiera się na Adresie powyżej.",
+            "ko": "선택 사항입니다. 버튼이 두 개 이상이면 페이지 아래의 줄이 지도의 확대 수준처럼 각 주소로 전환합니다. 위젯은 위의 주소로 열립니다.",
+            "ar": "اختياري. مع زرّين أو أكثر، يبدّل صفّ أسفل الصفحة بين عناوينها، مثل مستويات تكبير خريطة. تفتح الأداة على العنوان أعلاه."
+          },
+          "value": ""
+        },
+        {
+          "id": "b1Url",
+          "type": "text",
+          "title": {
+            "en": "  – Address",
+            "nl": "  – Adres",
+            "de": "  – Adresse",
+            "fr": "  – Adresse",
+            "it": "  – Indirizzo",
+            "sv": "  – Adress",
+            "no": "  – Adresse",
+            "es": "  – Dirección",
+            "da": "  – Adresse",
+            "ru": "  – Адрес",
+            "pl": "  – Adres",
+            "ko": "  – 주소",
+            "ar": "  – العنوان"
+          },
+          "value": ""
+        },
+        {
+          "id": "b2Name",
+          "type": "text",
+          "title": {
+            "en": "Button 2: name",
+            "nl": "Knop 2: naam",
+            "de": "Button 2: Name",
+            "fr": "Bouton 2: nom",
+            "it": "Pulsante 2: nome",
+            "sv": "Knapp 2: namn",
+            "no": "Knapp 2: navn",
+            "es": "Botón 2: nombre",
+            "da": "Knap 2: navn",
+            "ru": "Кнопка 2: название",
+            "pl": "Przycisk 2: nazwa",
+            "ko": "버튼 2: 이름",
+            "ar": "الزر 2: الاسم"
+          },
+          "value": ""
+        },
+        {
+          "id": "b2Url",
+          "type": "text",
+          "title": {
+            "en": "  – Address",
+            "nl": "  – Adres",
+            "de": "  – Adresse",
+            "fr": "  – Adresse",
+            "it": "  – Indirizzo",
+            "sv": "  – Adress",
+            "no": "  – Adresse",
+            "es": "  – Dirección",
+            "da": "  – Adresse",
+            "ru": "  – Адрес",
+            "pl": "  – Adres",
+            "ko": "  – 주소",
+            "ar": "  – العنوان"
+          },
+          "value": ""
+        },
+        {
+          "id": "b3Name",
+          "type": "text",
+          "title": {
+            "en": "Button 3: name",
+            "nl": "Knop 3: naam",
+            "de": "Button 3: Name",
+            "fr": "Bouton 3: nom",
+            "it": "Pulsante 3: nome",
+            "sv": "Knapp 3: namn",
+            "no": "Knapp 3: navn",
+            "es": "Botón 3: nombre",
+            "da": "Knap 3: navn",
+            "ru": "Кнопка 3: название",
+            "pl": "Przycisk 3: nazwa",
+            "ko": "버튼 3: 이름",
+            "ar": "الزر 3: الاسم"
+          },
+          "value": ""
+        },
+        {
+          "id": "b3Url",
+          "type": "text",
+          "title": {
+            "en": "  – Address",
+            "nl": "  – Adres",
+            "de": "  – Adresse",
+            "fr": "  – Adresse",
+            "it": "  – Indirizzo",
+            "sv": "  – Adress",
+            "no": "  – Adresse",
+            "es": "  – Dirección",
+            "da": "  – Adresse",
+            "ru": "  – Адрес",
+            "pl": "  – Adres",
+            "ko": "  – 주소",
+            "ar": "  – العنوان"
+          },
+          "value": ""
+        },
+        {
+          "id": "b4Name",
+          "type": "text",
+          "title": {
+            "en": "Button 4: name",
+            "nl": "Knop 4: naam",
+            "de": "Button 4: Name",
+            "fr": "Bouton 4: nom",
+            "it": "Pulsante 4: nome",
+            "sv": "Knapp 4: namn",
+            "no": "Knapp 4: navn",
+            "es": "Botón 4: nombre",
+            "da": "Knap 4: navn",
+            "ru": "Кнопка 4: название",
+            "pl": "Przycisk 4: nazwa",
+            "ko": "버튼 4: 이름",
+            "ar": "الزر 4: الاسم"
+          },
+          "value": ""
+        },
+        {
+          "id": "b4Url",
+          "type": "text",
+          "title": {
+            "en": "  – Address",
+            "nl": "  – Adres",
+            "de": "  – Adresse",
+            "fr": "  – Adresse",
+            "it": "  – Indirizzo",
+            "sv": "  – Adress",
+            "no": "  – Adresse",
+            "es": "  – Dirección",
+            "da": "  – Adresse",
+            "ru": "  – Адрес",
+            "pl": "  – Adres",
+            "ko": "  – 주소",
+            "ar": "  – العنوان"
+          },
+          "value": ""
+        }
+      ],
+      "api": {
+        "getLocation": {
+          "method": "GET",
+          "path": "/location"
+        }
+      },
+      "id": "webpage"
     }
   }
 }

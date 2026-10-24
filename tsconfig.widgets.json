@@ -11,5 +11,5 @@
     "skipLibCheck": true
   },
   // Every widget's scripts (widget.js, mount.js, and the shared chart.js and presets.js), and the web dashboards page.
-  "include": ["types/widgets.d.ts", "widgets/*/public/*.js", "settings/dashboard.js"]
+  "include": ["types/widgets.d.ts", "widgets/*/public/*.js", "settings/dashboard.js", "settings/dashboard-layout.js"]
 }

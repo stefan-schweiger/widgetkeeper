@@ -1,6 +1,6 @@
 {
   "id": "com.thomassidor.widgetkeeper",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "compatibility": ">=12.6.0",
   "sdk": 3,
   "runtime": "nodejs",
@@ -135,6 +135,33 @@
     "postWebLogout": {
       "method": "POST",
       "path": "/web/logout"
+    },
+    "getWebPopups": {
+      "method": "GET",
+      "path": "/web/popups"
+    },
+    "getWebPopupImage": {
+      "method": "GET",
+      "path": "/web/popups/:id/image"
+    },
+    "postWebPopupAnswer": {
+      "method": "POST",
+      "path": "/web/popups/:id/answer"
+    },
+    "postPopup": {
+      "method": "POST",
+      "path": "/popup/:id",
+      "public": true
+    },
+    "postPopupImage": {
+      "method": "POST",
+      "path": "/popup/:id/image",
+      "public": true
+    },
+    "postPopupAnswer": {
+      "method": "POST",
+      "path": "/popup/:id/answer",
+      "public": true
     }
   }
 }

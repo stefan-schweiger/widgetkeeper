@@ -72,8 +72,8 @@ describe('copied widget helpers', () => {
     expectSame(['values', 'sparklines', 'variables'].map(id => source(id, 'nameKeys')));
   });
 
-  it('wireBar() is the same in Light Controls and Curtains', () => {
-    expectSame(['lights', 'curtains'].map(id => source(id, 'wireBar')));
+  it('wireBar() is the same in Light Controls, Lights by Room and Curtains', () => {
+    expectSame(['lights', 'lightrooms', 'curtains'].map(id => source(id, 'wireBar')));
   });
 
 
@@ -137,13 +137,20 @@ describe('shared files', () => {
 describe('fallback strings', () => {
   const en = JSON.parse(readFileSync('locales/en.json', 'utf8'));
   // The stack has no fallback table: it shows the key. The clock has no strings (its text is all Intl's), nor
-  // has the spacer.
-  it.each(WIDGETS.filter(id => id !== 'stack' && id !== 'clock' && id !== 'spacer'))("%s: DEFAULT_STRINGS are en.json's", (id) => {
+  // have the spacer and Popups (which draws nothing; its prompt page has its own table, checked below).
+  it.each(WIDGETS.filter(id => id !== 'stack' && id !== 'clock' && id !== 'spacer' && id !== 'popups'))("%s: DEFAULT_STRINGS are en.json's", (id) => {
     const js = readFileSync(`widgets/${id}/public/widget.js`, 'utf8').replace(/\r\n/g, '\n');
     const table = js.match(/\n( *)const DEFAULT_STRINGS = (\{[\s\S]*?\n\1\});/);
     const ns = js.match(/opts\.t\(`(\w+)\.\$\{/);
     expect(table && ns).toBeTruthy();
     const strings = new Function(`return ${table![2]}`)();
     for (const [key, value] of Object.entries(strings)) expect([key, value]).toEqual([key, en[ns![1]][key]]);
+  });
+
+  it("the popup prompt page's DEFAULT_STRINGS are en.json's popups", () => {
+    const js = readFileSync('settings/popup.js', 'utf8').replace(/\r\n/g, '\n');
+    const table = js.match(/\n( *)const DEFAULT_STRINGS = (\{[\s\S]*?\n\1\});/);
+    expect(table).toBeTruthy();
+    expect(new Function(`return ${table![2]}`)()).toEqual(en.popups);
   });
 });

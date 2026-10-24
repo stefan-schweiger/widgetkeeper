@@ -1,0 +1,324 @@
+{
+  "id": "popup_ask",
+  "title": {
+    "en": "Ask Yes or No in a popup",
+    "nl": "Ja of Nee vragen in een pop-up",
+    "de": "Ja oder Nein in einem Popup fragen",
+    "fr": "Demander Oui ou Non dans une pop-up",
+    "it": "Chiedi Sì o No in un popup",
+    "sv": "Fråga Ja eller Nej i ett popup-fönster",
+    "no": "Spør Ja eller Nei i et popup-vindu",
+    "es": "Preguntar Sí o No en una ventana emergente",
+    "da": "Spørg Ja eller Nej i en popup",
+    "ru": "Спросить Да или Нет во всплывающем окне",
+    "pl": "Zapytaj Tak lub Nie w oknie wyskakującym",
+    "ko": "팝업으로 예/아니요 묻기",
+    "ar": "السؤال بنعم أو لا في نافذة منبثقة"
+  },
+  "titleFormatted": {
+    "en": "Ask [[question]] on [[screen]], picture: [[picture]], wait up to [[seconds]] seconds, sound: [[sound]]",
+    "nl": "Vraag [[question]] op [[screen]], afbeelding: [[picture]], wacht maximaal [[seconds]] seconden, geluid: [[sound]]",
+    "de": "[[question]] auf [[screen]] fragen, Bild: [[picture]], höchstens [[seconds]] Sekunden warten, Ton: [[sound]]",
+    "fr": "Demander [[question]] sur [[screen]], image : [[picture]], attendre au plus [[seconds]] secondes, son : [[sound]]",
+    "it": "Chiedi [[question]] su [[screen]], immagine: [[picture]], attendi al massimo [[seconds]] secondi, suono: [[sound]]",
+    "sv": "Fråga [[question]] på [[screen]], bild: [[picture]], vänta högst [[seconds]] sekunder, ljud: [[sound]]",
+    "no": "Spør [[question]] på [[screen]], bilde: [[picture]], vent høyst [[seconds]] sekunder, lyd: [[sound]]",
+    "es": "Preguntar [[question]] en [[screen]], imagen: [[picture]], esperar como máximo [[seconds]] segundos, sonido: [[sound]]",
+    "da": "Spørg [[question]] på [[screen]], billede: [[picture]], vent højst [[seconds]] sekunder, lyd: [[sound]]",
+    "ru": "Спросить [[question]] на [[screen]], изображение: [[picture]], ждать не дольше [[seconds]] с, звук: [[sound]]",
+    "pl": "Zapytaj [[question]] na [[screen]], obraz: [[picture]], czekaj najwyżej [[seconds]] s, dźwięk: [[sound]]",
+    "ko": "[[screen]]에서 [[question]] 묻기, 사진: [[picture]], 최대 [[seconds]]초 대기, 소리: [[sound]]",
+    "ar": "اسأل [[question]] على [[screen]]، الصورة: [[picture]]، وانتظر [[seconds]] ثانية على الأكثر، الصوت: [[sound]]"
+  },
+  "hint": {
+    "en": "Shows the question with Yes and No; the first answer from any screen closes it everywhere. Answer is the answer; Answered is no when nobody answered in time. Use it in an Advanced Flow to act on the tags.",
+    "nl": "Toont de vraag met Ja en Nee; het eerste antwoord van een scherm sluit hem overal. Antwoord is het antwoord; Beantwoord is nee als niemand op tijd antwoordde. Gebruik hem in een Advanced Flow om op de tags te reageren.",
+    "de": "Zeigt die Frage mit Ja und Nein; die erste Antwort eines Bildschirms schließt sie überall. Antwort ist die Antwort; Beantwortet ist Nein, wenn niemand rechtzeitig antwortete. In einem Advanced Flow kannst du auf die Tags reagieren.",
+    "fr": "Affiche la question avec Oui et Non ; la première réponse d'un écran la ferme partout. Réponse est la réponse ; Répondu vaut non si personne n'a répondu à temps. Utilisez-la dans un Advanced Flow pour agir selon les tags.",
+    "it": "Mostra la domanda con Sì e No; la prima risposta da uno schermo lo chiude ovunque. Risposta è la risposta; Risposto è no se nessuno ha risposto in tempo. Usalo in un Advanced Flow per agire sui tag.",
+    "sv": "Visar frågan med Ja och Nej; det första svaret från en skärm stänger den överallt. Svar är svaret; Besvarad är nej om ingen svarade i tid. Använd den i ett Advanced Flow för att agera på taggarna.",
+    "no": "Viser spørsmålet med Ja og Nei; det første svaret fra en skjerm lukker det overalt. Svar er svaret; Besvart er nei hvis ingen svarte i tide. Bruk det i en Advanced Flow for å handle på taggene.",
+    "es": "Muestra la pregunta con Sí y No; la primera respuesta de una pantalla la cierra en todas. Respuesta es la respuesta; Respondida es no si nadie respondió a tiempo. Úsala en un Advanced Flow para actuar según las etiquetas.",
+    "da": "Viser spørgsmålet med Ja og Nej; det første svar fra en skærm lukker det overalt. Svar er svaret; Besvaret er nej, hvis ingen svarede i tide. Brug det i et Advanced Flow til at handle på tags.",
+    "ru": "Показывает вопрос с кнопками Да и Нет; первый ответ с любого экрана закрывает его везде. «Ответ» — сам ответ; «Отвечено» — нет, если никто не ответил вовремя. Используйте в Advanced Flow, чтобы действовать по тегам.",
+    "pl": "Pokazuje pytanie z Tak i Nie; pierwsza odpowiedź z dowolnego ekranu zamyka je wszędzie. Odpowiedź to odpowiedź; Odpowiedziano to nie, gdy nikt nie odpowiedział na czas. Użyj w Advanced Flow, aby działać według tagów.",
+    "ko": "질문을 예와 아니요와 함께 표시하며, 어느 화면에서든 첫 답변이 모든 곳에서 닫습니다. 답변은 답이고, 아무도 제때 답하지 않으면 응답됨은 아니요입니다. 태그로 동작하려면 Advanced Flow에서 사용하세요.",
+    "ar": "تعرض السؤال مع نعم ولا؛ أول إجابة من أي شاشة تغلقه في كل مكان. الإجابة هي الجواب؛ وتمت الإجابة تكون لا إذا لم يجب أحد في الوقت. استخدمها في Advanced Flow للتصرف حسب الوسوم."
+  },
+  "tokens": [
+    {
+      "name": "answer",
+      "type": "boolean",
+      "title": {
+        "en": "Answer",
+        "nl": "Antwoord",
+        "de": "Antwort",
+        "fr": "Réponse",
+        "it": "Risposta",
+        "sv": "Svar",
+        "no": "Svar",
+        "es": "Respuesta",
+        "da": "Svar",
+        "ru": "Ответ",
+        "pl": "Odpowiedź",
+        "ko": "답변",
+        "ar": "الإجابة"
+      },
+      "example": true
+    },
+    {
+      "name": "answered",
+      "type": "boolean",
+      "title": {
+        "en": "Answered",
+        "nl": "Beantwoord",
+        "de": "Beantwortet",
+        "fr": "Répondu",
+        "it": "Risposto",
+        "sv": "Besvarad",
+        "no": "Besvart",
+        "es": "Respondida",
+        "da": "Besvaret",
+        "ru": "Отвечено",
+        "pl": "Odpowiedziano",
+        "ko": "응답됨",
+        "ar": "تمت الإجابة"
+      },
+      "example": true
+    }
+  ],
+  "args": [
+    {
+      "type": "text",
+      "name": "question",
+      "title": {
+        "en": "Question",
+        "nl": "Vraag",
+        "de": "Frage",
+        "fr": "Question",
+        "it": "Domanda",
+        "sv": "Fråga",
+        "no": "Spørsmål",
+        "es": "Pregunta",
+        "da": "Spørgsmål",
+        "ru": "Вопрос",
+        "pl": "Pytanie",
+        "ko": "질문",
+        "ar": "السؤال"
+      },
+      "placeholder": {
+        "en": "Open the garage door?",
+        "nl": "Garagedeur openen?",
+        "de": "Garagentor öffnen?",
+        "fr": "Ouvrir la porte du garage ?",
+        "it": "Aprire il garage?",
+        "sv": "Öppna garageporten?",
+        "no": "Åpne garasjeporten?",
+        "es": "¿Abrir la puerta del garaje?",
+        "da": "Åbn garageporten?",
+        "ru": "Открыть ворота гаража?",
+        "pl": "Otworzyć bramę garażu?",
+        "ko": "차고 문을 열까요?",
+        "ar": "هل أفتح باب المرآب؟"
+      }
+    },
+    {
+      "type": "autocomplete",
+      "name": "screen",
+      "title": {
+        "en": "Screen",
+        "nl": "Scherm",
+        "de": "Bildschirm",
+        "fr": "Écran",
+        "it": "Schermo",
+        "sv": "Skärm",
+        "no": "Skjerm",
+        "es": "Pantalla",
+        "da": "Skærm",
+        "ru": "Экран",
+        "pl": "Ekran",
+        "ko": "화면",
+        "ar": "الشاشة"
+      },
+      "placeholder": {
+        "en": "Screen",
+        "nl": "Scherm",
+        "de": "Bildschirm",
+        "fr": "Écran",
+        "it": "Schermo",
+        "sv": "Skärm",
+        "no": "Skjerm",
+        "es": "Pantalla",
+        "da": "Skærm",
+        "ru": "Экран",
+        "pl": "Ekran",
+        "ko": "화면",
+        "ar": "الشاشة"
+      }
+    },
+    {
+      "type": "autocomplete",
+      "name": "picture",
+      "title": {
+        "en": "Picture",
+        "nl": "Afbeelding",
+        "de": "Bild",
+        "fr": "Image",
+        "it": "Immagine",
+        "sv": "Bild",
+        "no": "Bilde",
+        "es": "Imagen",
+        "da": "Billede",
+        "ru": "Изображение",
+        "pl": "Obraz",
+        "ko": "사진",
+        "ar": "الصورة"
+      },
+      "placeholder": {
+        "en": "Picture",
+        "nl": "Afbeelding",
+        "de": "Bild",
+        "fr": "Image",
+        "it": "Immagine",
+        "sv": "Bild",
+        "no": "Bilde",
+        "es": "Imagen",
+        "da": "Billede",
+        "ru": "Изображение",
+        "pl": "Obraz",
+        "ko": "사진",
+        "ar": "الصورة"
+      }
+    },
+    {
+      "type": "number",
+      "name": "seconds",
+      "title": {
+        "en": "Wait (seconds)",
+        "nl": "Wachten (seconden)",
+        "de": "Warten (Sekunden)",
+        "fr": "Attente (secondes)",
+        "it": "Attesa (secondi)",
+        "sv": "Vänta (sekunder)",
+        "no": "Vent (sekunder)",
+        "es": "Espera (segundos)",
+        "da": "Vent (sekunder)",
+        "ru": "Ожидание (секунды)",
+        "pl": "Czekaj (sekundy)",
+        "ko": "대기 (초)",
+        "ar": "الانتظار (ثوانٍ)"
+      },
+      "placeholder": {
+        "en": "30",
+        "nl": "30",
+        "de": "30",
+        "fr": "30",
+        "it": "30",
+        "sv": "30",
+        "no": "30",
+        "es": "30",
+        "da": "30",
+        "ru": "30",
+        "pl": "30",
+        "ko": "30",
+        "ar": "30"
+      },
+      "min": 5,
+      "max": 85,
+      "step": 1
+    },
+    {
+      "type": "dropdown",
+      "name": "sound",
+      "title": {
+        "en": "Sound",
+        "nl": "Geluid",
+        "de": "Ton",
+        "fr": "Son",
+        "it": "Suono",
+        "sv": "Ljud",
+        "no": "Lyd",
+        "es": "Sonido",
+        "da": "Lyd",
+        "ru": "Звук",
+        "pl": "Dźwięk",
+        "ko": "소리",
+        "ar": "الصوت"
+      },
+      "values": [
+        {
+          "id": "none",
+          "title": {
+            "en": "no sound",
+            "nl": "geen geluid",
+            "de": "kein Ton",
+            "fr": "aucun son",
+            "it": "nessun suono",
+            "sv": "inget ljud",
+            "no": "ingen lyd",
+            "es": "sin sonido",
+            "da": "ingen lyd",
+            "ru": "без звука",
+            "pl": "bez dźwięku",
+            "ko": "소리 없음",
+            "ar": "بلا صوت"
+          }
+        },
+        {
+          "id": "chime",
+          "title": {
+            "en": "chime",
+            "nl": "belletje",
+            "de": "Klang",
+            "fr": "carillon",
+            "it": "rintocco",
+            "sv": "pling",
+            "no": "pling",
+            "es": "campanilla",
+            "da": "pling",
+            "ru": "перезвон",
+            "pl": "dzwoneczek",
+            "ko": "차임",
+            "ar": "رنين"
+          }
+        },
+        {
+          "id": "doorbell",
+          "title": {
+            "en": "doorbell",
+            "nl": "deurbel",
+            "de": "Türklingel",
+            "fr": "sonnette",
+            "it": "campanello",
+            "sv": "dörrklocka",
+            "no": "dørklokke",
+            "es": "timbre",
+            "da": "dørklokke",
+            "ru": "дверной звонок",
+            "pl": "dzwonek do drzwi",
+            "ko": "초인종",
+            "ar": "جرس الباب"
+          }
+        },
+        {
+          "id": "alert",
+          "title": {
+            "en": "alert",
+            "nl": "alarm",
+            "de": "Alarm",
+            "fr": "alerte",
+            "it": "allarme",
+            "sv": "larm",
+            "no": "alarm",
+            "es": "alerta",
+            "da": "alarm",
+            "ru": "тревога",
+            "pl": "alarm",
+            "ko": "경고음",
+            "ar": "تنبيه"
+          }
+        }
+      ]
+    }
+  ]
+}

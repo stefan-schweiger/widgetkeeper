@@ -30,6 +30,8 @@
   <div class="col"><span>358 px · dark · 1 h, live every 2 s · tapped on load</span><div class="card homey-dark-mode" style="width:358px"><div id="w7"></div></div></div>
   <div class="col"><span>358 px · dark · no history · missing device</span><div class="card homey-dark-mode" style="width:358px"><div id="w8"></div></div></div>
   <div class="col"><span>358 px · nothing picked</span><div class="card homey-dark-mode" style="width:358px"><div id="w9"></div></div></div>
+  <div class="col"><span>358 px · dark · today · area + yesterday · bars</span><div class="card homey-dark-mode" style="width:358px"><div id="w10"></div></div></div>
+  <div class="col"><span>300 px · light · yesterday on one chart · area + line</span><div class="card light" style="width:300px"><div id="w11"></div></div></div>
 
   <script>
     const HOUR = 3600e3;
@@ -75,6 +77,10 @@
       { deviceId: 'g', capabilityId: 'measure_temperature', name: 'Garage', capability: cap({ title: 'Temperature', units: '°C', decimals: 1 }), value: null, points: [] },
       { deviceId: 'h', capabilityId: 'measure_temperature', missing: true },
     ]);
+    // Today and yesterday: 48 hours of history, which each cuts to its own day.
+    make('w10', { charts: [{ span: 'today' }, { span: 'yesterday', style: 'bars', color: 'green' }] }).setState([temp(48 * HOUR), power(48 * HOUR)]);
+    make('w11', { overlay: true, charts: [{ span: 'yesterday', color: 'purple' }, { style: 'line', smooth: true, color: 'orange' }] })
+      .setState([outdoor(48 * HOUR), power(48 * HOUR)]);
     const empty = make('w9', {});
     empty.setMessage(empty.t('selectChart'));
   </script>

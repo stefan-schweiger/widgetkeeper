@@ -2,19 +2,22 @@ import type { App } from 'homey';
 import type WidgetkeeperApp from './app.js';
 import { scopesAllow, type KeyUse } from './lib/PersonalApiKey.js';
 import { idList } from './lib/widgetApi.js';
-import { MAX_DASHBOARDS } from './lib/WebDashboardService.js';
+import { MAX_DASHBOARDS, MAX_SECTIONS } from './lib/WebDashboardService.js';
 import { autocompleteKeyUse, callWidgetRoute, routeKeyUse, type WidgetApis } from './lib/widgetRoutes.js';
 import dayssince from './widgets/dayssince/api.js';
+import lightrooms from './widgets/lightrooms/api.js';
+import popups from './widgets/popups/api.js';
 import shortcuts from './widgets/shortcuts/api.js';
 import stack, { PAGE_APIS } from './widgets/stack/api.js';
+import webpage from './widgets/webpage/api.js';
 
 type Homey = App['homey'];
 
 /**
- * Every widget's API, by widget id, for the web dashboards' frames (the Smart Stack's included, and Days Since and Dashboard
- * Shortcuts, which aren't stack pages).
+ * Every widget's API, by widget id, for the web dashboards' frames (the Smart Stack's included, and Days Since, Lights by
+ * Room, Dashboard Shortcuts, Web Page and Popups, which aren't stack pages; a Popups widget on a web dashboard never calls it).
  */
-const WEB_APIS: WidgetApis = { ...PAGE_APIS, stack, dayssince, shortcuts };
+export const WEB_APIS: WidgetApis = { ...PAGE_APIS, stack, dayssince, lightrooms, shortcuts, webpage, popups };
 
 /** Why the web page's own key (`key`) may not do what the app's stored key would do here, or null when it may. */
 async function pageKeyProblem(app: WidgetkeeperApp, key: unknown, use: KeyUse): Promise<'keyInvalid' | 'keyScope' | null> {
@@ -102,6 +105,8 @@ export default {
       dashboards: app.web.list(),
       front: app.web.front(),
       maxDashboards: MAX_DASHBOARDS,
+      maxSections: MAX_SECTIONS,
+      popups: app.popups.all(),
     };
   },
 
@@ -215,10 +220,13 @@ export default {
     return { set: app.webPassword.isSet };
   },
 
-  /** Used by the app settings page: sets the web dashboards' password (`{password: ''}` removes it). */
-  async putWebPassword({ homey, body }: { homey: Homey, body: { password?: unknown } }) {
+  /**
+   * Used by the app settings page: sets the web dashboards' password (`{password: ''}` removes it). While one is set,
+   * `current` must be it (anyone whose API key may call the app reaches this route, not only the owner).
+   */
+  async putWebPassword({ homey, body }: { homey: Homey, body: { password?: unknown, current?: unknown } }) {
     const app = homey.app as WidgetkeeperApp;
-    return app.webPassword.setPassword(typeof body?.password === 'string' ? body.password : '');
+    return app.webPassword.setPassword(typeof body?.password === 'string' ? body.password : '', body?.current);
   },
 
   /**
@@ -236,5 +244,52 @@ export default {
     const app = homey.app as WidgetkeeperApp;
     app.webPassword.logout(query?.session);
     return null;
+  },
+
+  /** The web dashboards page: the open popups (after a reconnect, so a screen that was offline catches up). */
+  async getWebPopups({ homey, query }: { homey: Homey, query?: Record<string, string> }) {
+    const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
+    return app.popups.all();
+  },
+
+  /** The web dashboards page: a popup's picture, `{type, data}` (a camera's is read again on every call). */
+  async getWebPopupImage({ homey, query, params }: { homey: Homey, query?: Record<string, string>, params: Record<string, string> }) {
+    const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
+    return app.popups.imageFromSession(params.id);
+  },
+
+  /** The web dashboards page: the answer to a question (`{answer: true|false}`); the first one from any screen wins. */
+  async postWebPopupAnswer({ homey, query, params, body }: {
+    homey: Homey, query?: Record<string, string>, params: Record<string, string>, body: { answer?: unknown },
+  }) {
+    const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
+    return app.popups.answerFromSession(params.id, body?.answer);
+  },
+
+  /**
+   * The prompt page a Popups widget opens in the phone app's in-app browser (`settings/popup.html`), which has no login:
+   * public, so only the popup's token (`{t}`, in the body) lets it read the popup, its picture or answer it. Its first
+   * call asks for the strings (`{strings: true}`); its polls don't.
+   */
+  async postPopup({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { t?: unknown, strings?: unknown } }) {
+    const app = homey.app as WidgetkeeperApp;
+    const popup = app.popups.page(params.id, body?.t);
+    if (body?.strings !== true) return popup;
+    const language = homey.i18n.getLanguage();
+    const strings = await app.web.appStrings(language);
+    return { ...popup, language, strings: (strings as any)?.popups ?? {} };
+  },
+
+  async postPopupImage({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { t?: unknown } }) {
+    const app = homey.app as WidgetkeeperApp;
+    return app.popups.imageWithToken(params.id, body?.t);
+  },
+
+  async postPopupAnswer({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { t?: unknown, answer?: unknown } }) {
+    const app = homey.app as WidgetkeeperApp;
+    return app.popups.answerWithToken(params.id, body?.answer, body?.t);
   },
 };

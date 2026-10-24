@@ -65,6 +65,10 @@ A week of one value (light, temperature, motion …) as a grid of weekdays and h
 <a href="#light-controls"><b>Light Controls</b></a><br>
 Compact light tiles with brightness, colour and colour temperature: six lights in the space of three<br clear="left"></p>
 
+<p><a href="#lights-by-room"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/lightrooms-dark.png"><img src="docs/previews/lightrooms-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#lights-by-room"><b>Lights by Room</b></a><br>
+Every room's lights on a card: switch and dim a room, or open it for each light and the room's Moods<br clear="left"></p>
+
 <p><a href="#locks-and-doors"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/locks-dark.png"><img src="docs/previews/locks-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#locks-and-doors"><b>Locks and Doors</b></a><br>
 One line that says whether every lock and door is locked and closed<br clear="left"></p>
@@ -76,6 +80,10 @@ A speaker with its album art, mute, a volume that never overshoots and buttons f
 <p><a href="#notes"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/textline-dark.png"><img src="docs/previews/textline-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#notes"><b>Notes</b></a><br>
 A note on a tile or a handwritten Post-it, typed in or written by your Flows<br clear="left"></p>
+
+<p><a href="#popups"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/popups-dark.png"><img src="docs/previews/popups-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#popups"><b>Popups</b></a><br>
+A Flow's message or Yes/No question, with a picture if you like, in front of everything on a phone, tablet or web dashboard<br clear="left"></p>
 
 <p><a href="#room-health"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/roomhealth-dark.png"><img src="docs/previews/roomhealth-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#room-health"><b>Room Health</b></a><br>
@@ -121,6 +129,14 @@ Compact rows to switch variables on and off or change a number or text, with the
 <a href="#weather-forecast"><b>Weather Forecast</b></a><br>
 The next 36 hours, hour by hour, from MET Norway (yr.no)<br clear="left"></p>
 
+<p><a href="#pollen-and-uv"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/pollen-dark.png"><img src="docs/previews/pollen-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#pollen-and-uv"><b>Pollen and UV</b></a><br>
+Today's pollen levels and the UV peak, in Europe<br clear="left"></p>
+
+<p><a href="#web-page"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/webpage-dark.png"><img src="docs/previews/webpage-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#web-page"><b>Web Page</b></a><br>
+Any web page, scaled to fill the widget, with buttons to switch between addresses<br clear="left"></p>
+
 <a name="sensor-dots"></a>
 
 ## Activity Dots
@@ -142,7 +158,7 @@ Your cameras as a grid of snapshots that refresh every few seconds (cameras with
 
 One chart, two stacked, or two values on one chart (each with its own scale), of any value that Homey logs in Insights, drawn like Electricity Overview's charts. The value now sits at the top in the chart's colour. Tap a chart to see the value at that moment.
 
-**Settings:** one chart, two stacked or two on one chart; for each, the value, the time span (1 hour to 7 days), line with area, line or bars, the colour, a scale that fits the values or starts at zero, below zero in yellow, a smooth line and a title. The values at the top can be turned off. [Colour style](#colour-style).
+**Settings:** one chart, two stacked or two on one chart; for each, the value, the time span (1 hour to 7 days, today or yesterday), line with area, line or bars, the colour, a scale that fits the values or starts at zero, below zero in yellow, a smooth line and a title. The values at the top can be turned off; yesterday shows its average there. [Colour style](#colour-style).
 
 ## Clock
 <img src="docs/screenshots/clock.png" alt="Clock on a Homey dashboard" width="358">
@@ -172,7 +188,7 @@ Counters for the things you do every so often: plants watered *6 days* ago, the 
 
 Flow cards: *Reset [counter]* (when the robot vacuum is done, for instance), *Set [counter] to [days] days ago* (for something done before you added the widget), the trigger *[counter] became overdue* (when it turns red, even with no dashboard open) and the condition *[counter] is overdue*; the last two also take *Any counter*.
 
-**Settings:** days only or days, weeks and months; [colour style](#colour-style); up to eight counters, each with a name, an icon and the days until amber and red.
+**Settings:** days only or days, weeks and months; all counters, or only those that are amber and red (or only red), so the ones far from due don't take up room; [colour style](#colour-style); up to eight counters, each with a name, an icon and the days until amber and red.
 
 ## Device Quick Actions
 <img src="docs/screenshots/quickactions.png" alt="Device Quick Actions on a Homey dashboard" width="358">
@@ -225,6 +241,11 @@ Six lights in the space of three of Homey's light cards. Tap a tile to switch it
 
 **Settings:** lights, group by room, widen the last tile, what the bar's far left does, colour palette, [colour style](#colour-style), [rename tiles](#tile-names).
 
+## Lights by Room
+For many lights in many rooms. The lights you pick are grouped by their Homey room, a card per room with the room's icon, how many lights are on and how bright, a switch for the whole room and a bar that dims every light in it. Tap a room's name to open it: its Homey Moods as a row of buttons, then a row per light. Tap a light's row to switch it, tap or drag its bar to dim it, and tap its colour button for colours and whites, as in Light Controls. Rooms start closed; open as many as you like. Starting a Mood needs an [API key](#api-key) with **Set Moods**.
+
+**Settings:** lights, show the room's Moods, colour palette, what the bar's far left does, [colour style](#colour-style).
+
 ## Locks and Doors
 <img src="docs/screenshots/locks.png" alt="Locks and Doors on a Homey dashboard" width="358">
 
@@ -245,6 +266,19 @@ One speaker as a card: album art, the track, play controls, mute, and a volume t
 A short message on the dashboard, as a tile with one line of text or as a Post-it note stuck on it, tilted, with a folded corner and written in handwriting. Type the message in the widget's settings, or let a Flow write it: *Write [text] on the note [name]*, optionally in a colour (red for *Dryer done*), and *Clear the note [name]*. Every Notes widget with that name shows it, on every screen, at once. It can show a Logic text variable instead. On the tile, long text is cut off or scrolls; the Post-it wraps it to three lines.
 
 **Settings:** style (tile or Post-it), text from (the message typed in the settings, a Flow card or a text variable), message, note name, variable, alignment, text size, long text, icon, colour, [colour style](#colour-style).
+
+## Popups
+A Flow shows a message, or asks a question with **Yes** and **No**, in front of everything on the screens you choose: a web dashboard, or the phones and tablets that show a Homey dashboard with a Popups widget.
+
+- *Show [text] on [screen] for [duration], picture: [picture], sound: [sound]*: the message, closed after the time or with a tap on that screen.
+- *Ask [question] on [screen], picture: [picture], wait up to [seconds] seconds, sound: [sound]*: the first answer from any screen closes it everywhere and goes back to the Flow as two tags, **Answer** (yes or no) and **Answered** (no when nobody answered in time). It waits at most 85 seconds, as Homey stops a Flow card after 90. Tags from a card only reach the next cards in an **Advanced Flow**.
+- The picture is a camera, refreshed while the popup is open, or a picture address typed in. The cards *with an image* take an image tag instead, such as a doorbell's snapshot from its own Flow, taken when the Flow runs (or a text tag holding a picture address).
+- A sound can come along too: a chime, a doorbell or an alert, where the browser allows it. Browsers only play sound on a page that has been tapped, so a wall tablet plays it once someone has used the web dashboard; on phones it may stay silent.
+- *Close the popups on [screen]* closes them early; an open question then ends unanswered.
+
+The screen is **Everywhere** or the name of a Popups widget. On a [web dashboard](#web-dashboards) with a Popups widget of that name, the popup covers the page in every browser showing that dashboard (Everywhere reaches every web dashboard). On Homey's own dashboards a widget can't draw over the dashboard, so the Popups widget, which is blank itself, opens the popup in the Homey app's built-in browser; close that window when you're done. Put one on each dashboard where you want popups, with the same name on every screen that should get the same ones, at the bottom of the dashboard, so it doesn't push other widgets down. Give a web dashboard one too, so a name such as *Hallway* reaches the phones and the hallway's wall tablet at once.
+
+**Settings:** screen name.
 
 ## Room Health
 <img src="docs/screenshots/roomhealth.png" alt="Room Health on a Homey dashboard: six rooms with their icons, the kitchen humid, the bedroom stuffy and the office's radon far over" width="358">
@@ -280,7 +314,7 @@ Widgetkeeper widgets from another dashboard, one at a time in the space of one. 
 **Settings:** dashboard, interval, smart rotate, pause after a swipe, dots.
 
 ## Spacer
-An empty widget of the height you set, in pixels, to line up widgets of different heights at the top or bottom across a dashboard's columns. It's transparent in light and dark mode, and Homey keeps its usual gap above and below it.
+An empty widget of the height you set, in pixels (16 at least), to line up widgets of different heights at the top or bottom across a dashboard's columns. It's transparent in light and dark mode, and Homey keeps its usual gap above and below it.
 
 **Settings:** height.
 
@@ -289,7 +323,7 @@ An empty widget of the height you set, in pixels, to line up widgets of differen
 
 Device Values' tiles with a small live chart of each value and its highest and lowest.
 
-**Settings:** up to six values, time span (1 hour to 7 days), 2 or 1 per row, [colour style](#colour-style), [rename tiles](#tile-names).
+**Settings:** up to six values, time span (1 hour to 7 days, today or yesterday), 2 or 1 per row, [colour style](#colour-style), [rename tiles](#tile-names).
 
 <a name="thermostat-shortcuts"></a>
 
@@ -303,7 +337,7 @@ Three one-tap presets for a thermostat, heat pump or air conditioner, such as *O
 ## Timers
 <img src="docs/clips/timers.webp" alt="Timers on a Homey dashboard: a pizza timer started from its preset, given a minute more, paused and resumed, then run out in red and dismissed" width="358">
 
-Up to four preset buttons, such as *Eggs · 7 min*. A started timer takes their place: tap to pause, **+1** for a minute more, **✕** to cancel. It beeps and turns red when done. The timer runs on Homey, so every screen sees it and the Flow card **A timer finished** fires with no dashboard open.
+Up to four preset buttons, such as *Eggs · 7 min*. A started timer takes their place: tap to pause, **+1** for a minute more, **✕** to cancel. It beeps and turns red when done. The timer runs on Homey, so every screen sees it and the Flow card **A timer on the Timers widget finished** fires with no dashboard open.
 
 **Settings:** colour, [colour style](#colour-style), four presets with minutes and an optional name, sound.
 
@@ -341,6 +375,20 @@ The next 36 hours from [MET Norway](https://www.met.no/en) ([yr.no](https://www.
 
 Weather data from MET Norway, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Icons: [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
 
+## Pollen and UV
+Today's pollen at the Homey's location, a row per type with a bar from low to very high, under the UV index's peak for the day and when it comes. The levels are the day's average in grains per m³: for birch, alder and olive low from 1, moderate from 30, high from 101 and very high from 1,001; for grass, mugwort and ragweed low from 1, moderate from 10, high from 51 and very high from 251 (Astma-Allergi Danmark's bands, with a very high band on top). The UV levels are the WHO's. Pollen forecasts cover Europe only; elsewhere the widget says so and shows the UV. Out of season it says there's no pollen in the air.
+
+**Settings:** compact or detailed (the grains per m³ and the next three days), the UV index, which pollen types (alder, birch, olive, grass, mugwort, ragweed; birch, grass and mugwort to begin with), [colour style](#colour-style), time format.
+
+Pollen and UV data from [Open-Meteo](https://open-meteo.com), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), generated using Copernicus Atmosphere Monitoring Service information.
+
+## Web Page
+A web page you pick, drawn at the width and height you set and scaled to fill the widget, so a gadget made for a fixed size fills it on a phone and a tablet alike, without borders. Links on the page never open, and unless you let the page be tapped, taps are ignored and a swipe scrolls the dashboard. With two to four buttons, a row under the page switches between their addresses; the widget always opens on the first address. `{lat}` and `{lon}` in an address become the Homey's location. Some sites don't allow being shown inside another page, and then it stays empty. You're responsible for following the terms of the site you show.
+
+**A gadget made in a fixed size:** set the page width and height to the gadget's size, and it fills the widget whatever its width. For a map with zoom levels, give each button the same address with another zoom. A reload every 15 minutes keeps live data current on a screen that's always on.
+
+**Settings:** address, page width and height, let the page be tapped, reload every, up to four buttons (a name and an address).
+
 ## Web dashboards
 <img src="docs/web/dashboard.png" alt="A web dashboard with Widgetkeeper widgets in a browser window, with Dashboard Shortcuts at the top as a menu" width="100%">
 
@@ -360,12 +408,14 @@ The front page shows every dashboard as a card with a miniature of its widgets, 
 <img src="docs/web/editor.png" alt="A web dashboard being edited in a browser window" width="100%">
 
 - **Columns and widgets:** one to six columns. Add widgets per column, move them by dragging their bar or with the arrows, and remove them with a second tap.
+- **Wide widgets:** drag the handle on a widget's right edge (or set **Width** in its settings) to make it span two or more columns, such as a large camera or chart. The columns it covers keep their own widgets above and below it: drag one above or under it. On a phone, where there's one column, it's as wide as the rest.
 - **Settings:** each widget has the same settings as on a Homey dashboard, in cards: the devices, the general settings, and a card per button, tile or column that folds and sums up what's set. Devices are picked from a list grouped by room, with a search; values (for Device Values, Sparklines and Charts) with their readings.
 - **Look:** light, dark or automatic, and a background per dashboard from calm tints (Default, Black or White, Slate, Ocean, Forest, Plum, Berry, Sand), each with a light and a dark shade. The sun button in the bar switches between light and dark in this browser only.
 - **Full screen:** the corner button gives the whole screen to the dashboard, for a wall tablet.
 - **Keep screen on:** turn it on in the front page's **Settings** (under the pen) to stop this tablet, phone or computer from sleeping while the page is open. Browsers only offer this properly over HTTPS, as through the [away from home](#away-from-home) address; on the home address the page plays a silent, invisible video instead, which works on iPads and iPhones but not in every browser. Where it doesn't, turn off sleep in the device's own settings.
 - **Dim:** the slider in the same **Settings** darkens the whole page in this browser, as if the screen were turned down, up to 80 %. Handy for a wall tablet at night.
 - **A menu:** put [Dashboard Shortcuts](#dashboard-shortcuts) on every dashboard to jump between them.
+- **Popups:** Flows can show a message or ask Yes or No over a dashboard, in every browser showing it, with a camera's picture if you like. See [Popups](#popups).
 
 <img src="docs/web/light.png" alt="A light web dashboard, the Kitchen on the Sand background, in a browser window" width="100%">
 
@@ -378,7 +428,7 @@ The front page shows every dashboard as a card with a miniature of its widgets, 
 Turn on **Remote access** under **Apps → Widgetkeeper → Configure** to use the web dashboards anywhere. Below it is a second address, `https://<your Homey's id>.connect.athom.com/app/com.thomassidor.widgetkeeper/settings/dashboard.html`, which goes through Homey's cloud as the Homey app does. Each address is its own site to a browser, so it asks for the API key again there. Anyone who has that address still needs a key, but a [password](#password) is worth setting too. With Remote access off, the page opened through the cloud only says so.
 
 ### Password
-On top of the API key, you can set a password for the web dashboards under **Apps → Widgetkeeper → Configure**. Every browser then asks for it once. Setting, changing or removing it signs every browser out, and wrong passwords in a row lock the sign-in for a while.
+On top of the API key, you can set a password for the web dashboards under **Apps → Widgetkeeper → Configure**. Every browser then asks for it once. Setting, changing or removing it signs every browser out, and wrong passwords in a row lock the sign-in for a while. Changing or removing it asks for the current one; if you forget it, the Flow card **Remove the web dashboards password** removes it.
 
 ### Backup
 Under **Settings** in the front page's edit mode (the pen), **Download backup** saves the web dashboards you tick (all of them, or just one) in one file: the layouts, the widgets and their settings and the names typed on tiles. **Restore backup** reads such a file and lists its dashboards; after a second tap, the ones you tick replace those they were saved from (or come back, if you deleted them), and every other dashboard stays as it is. Notes' texts and Days Since's counters aren't in it, as Homey's own dashboards share them.
@@ -445,6 +495,7 @@ Homey doesn't let apps change variables, start flows, read dashboards or start M
 | Media's buttons: a flow | **Start Flows** | `homey.flow.start` |
 | Media's buttons: the speaker's own actions, such as *Set source to TV*, and its app's | **Flows** (Start Flows isn't enough) | `homey.flow` |
 | Light Controls' Room's Moods: starting a Mood | **Set Moods** | `homey.mood.set` |
+| Lights by Room: starting a Mood | **Set Moods** | `homey.mood.set` |
 | Smart Stack: reading the dashboard | **Homey**: the API Keys page has no permission for dashboards alone, so it takes the top one, which allows everything | `homey` |
 
 Ticking a group's first box (**Flows**, **Moods**, **Homey**) includes the boxes under it. Everything else needs no key: the widgets read devices, Insights, variables, flows and Moods with Widgetkeeper's own permissions, and Variables' Read only shows values without one. The scopes are the ones Homey's Web API asks for (`updateVariable`, `triggerFlow`/`triggerAdvancedFlow`, `runFlowCardAction`, `setMood`, `getDashboards`); the API Keys page shows each one beside its box.

@@ -6,7 +6,7 @@
 <title>Widget Previews</title>
 <!--
   Source for the widget preview PNGs (from the "Widget Previews" Claude Design project).
-  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|sd-dark|sd-light|rh-dark|rh-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|spark-dark|spark-light|chart-dark|chart-light|var-dark|var-light|vp-dark|vp-light|sd-dark|sd-light|fb-dark|fb-light|pb-dark|pb-light|tm-dark|tm-light|lk-dark|lk-light|ct-dark|ct-light|mw-dark|mw-light|sk-dark|sk-light|ck-dark|ck-light|sp-dark|sp-light|tl-dark|tl-light|ds-dark|ds-light|sc-dark|sc-light`
+  Without a query it shows them all on a canvas; `?p=elec-dark|elec-light|thermo-dark|thermo-light|qa-dark|qa-light|sa-dark|sa-light|sd-dark|sd-light|rh-dark|rh-light|weather-dark|weather-light|hm-dark|hm-light|cam-dark|cam-light|val-dark|val-light|lc-dark|lc-light|lr-dark|lr-light|spark-dark|spark-light|chart-dark|chart-light|var-dark|var-light|vp-dark|vp-light|sd-dark|sd-light|fb-dark|fb-light|pb-dark|pb-light|tm-dark|tm-light|lk-dark|lk-light|ct-dark|ct-light|mw-dark|mw-light|sk-dark|sk-light|ck-dark|ck-light|sp-dark|sp-light|tl-dark|tl-light|ds-dark|ds-light|sc-dark|sc-light|wp-dark|wp-light|pw-dark|pw-light`
   renders that one 1024×1024 frame alone on a transparent page, for scripts/render-previews.mjs.
 -->
 <style>
@@ -197,6 +197,48 @@ function lightControls(t, theme) {
   const WARM = '#FFB054', COOL = '#D6E8FF';
   return `<div style="width:880px;display:grid;grid-template-columns:repeat(2,1fr);gap:32px">
     ${[[WARM, 35], [null, 0], [WARM, 80], [COOL, 60], [null, 0], [WARM, 20]].map(tile).join('')}
+  </div>`;
+}
+
+// Lights by Room is transparent: a card per room (icon, name, state, chevron, switch, the room's bar), lit rooms
+// tinted at the top; the second room open, with its lights as rows (chip, name, slim bar).
+function lightRooms(t, theme) {
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const mix = theme === 'dark' ? 26 : 22;
+  const track = theme === 'dark' ? '#2E2F37' : '#E6E7EA', muted = theme === 'dark' ? '#9C9DA5' : '#6B6C75';
+  const WARM = '#FFB054', VIOLET = '#A970FF';
+  const fillOf = light => light ? `color-mix(in srgb, ${light} 85%, white)` : muted;
+  const bar = (light, x, h = 16, knob = 40) => `<div style="position:relative;height:${knob}px">
+      <div style="position:absolute;left:0;right:0;top:${(knob - h) / 2}px;height:${h}px;border-radius:${h / 2}px;background:${track};overflow:hidden">
+        <div style="width:${x}%;height:100%;background:${fillOf(light)}"></div>
+      </div>
+      <div style="position:absolute;top:0;left:calc(${x / 100} * (100% - ${knob}px));width:${knob}px;height:${knob}px;border-radius:50%;background:${light ? '#FFFFFF' : track};box-shadow:${light ? '0 2px 6px rgba(0,0,0,.35)' : 'none'}"></div>
+    </div>`;
+  const toggle = light => `<div style="width:100px;height:60px;border-radius:30px;background:${light ? fillOf(light) : track};position:relative;flex-shrink:0">
+      <div style="position:absolute;top:8px;left:${light ? 48 : 8}px;width:44px;height:44px;border-radius:50%;background:#FFFFFF;box-shadow:0 2px 4px rgba(0,0,0,.3)"></div></div>`;
+  const chev = open => `<div style="width:22px;height:22px;border-right:6px solid ${muted};border-bottom:6px solid ${muted};transform:rotate(${open ? 45 : -45}deg);margin:${open ? '-8px 0 0' : '0'} 4px;flex-shrink:0"></div>`;
+  const row = (light, x) => `<div style="display:flex;align-items:center;gap:28px;height:84px">
+      <div style="width:44px;height:44px;border-radius:50%;border:6px solid ${light ? fillOf(light) : muted};background:linear-gradient(to right, transparent 50%, ${light ? fillOf(light) : muted} 50%);box-sizing:border-box;flex-shrink:0"></div>
+      ${pill(180, 26, light ? t.fg : muted, 'opacity:.85;flex-shrink:0')}
+      <div style="flex:1">${bar(light, x, 10, 30)}</div>
+    </div>`;
+  const card = (light, x, nameW, open = null) => {
+    const bg = light ? `linear-gradient(to bottom, transparent, ${tileBg} 240px), color-mix(in srgb, ${light} ${mix}%, ${tileBg})` : tileBg;
+    return `<div style="border-radius:32px;background:${bg};box-shadow:${shadow};padding:30px 36px 24px;box-sizing:border-box;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:20px">
+        <div style="width:50px;height:50px;border:7px solid ${light ? t.fg : muted};border-radius:14px;box-sizing:border-box;flex-shrink:0"></div>
+        ${pill(nameW, 32, light ? t.fg : muted)}${pill(110, 22, muted, 'opacity:.7')}${chev(!!open)}
+        <div style="flex:1"></div>${toggle(light)}
+      </div>
+      ${bar(light, x)}
+      ${open ? `<div style="height:3px;background:${track};margin:6px 0 4px"></div>${open.map(([l, v]) => row(l, v)).join('')}` : ''}
+    </div>`;
+  };
+  return `<div style="width:880px;display:flex;flex-direction:column;gap:28px">
+    ${card(WARM, 65, 200)}
+    ${card(VIOLET, 45, 260, [[WARM, 45], [VIOLET, 60]])}
+    ${card(null, 0, 170)}
   </div>`;
 }
 
@@ -607,6 +649,66 @@ function clock(t, theme) {
   </div>`;
 }
 
+// Pollen and UV: the UV line (the sun in its level's colour, the value, the level, when it peaks), then a row per pollen
+// type: its icon, the name, a four-step bar lit to its level (Muted's shades) and the level.
+function pollen(t, theme) {
+  const dark = theme === 'dark';
+  const track = dark ? '#34353F' : '#E4E5E9', line = dark ? 'rgba(255,255,255,.08)' : 'rgba(31,32,41,.08)';
+  const GREEN = '#267700', ORANGE_SHADE = '#A85700';
+  const icon = (d, color) => `<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+  const SUN = 'M8 12a4 4 0 1 0 8 0a4 4 0 1 0-8 0M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4';
+  const BIRCH = 'M3 5.5C9 4.5 15 4.5 21 6M7.5 6.5C8.9 6.5 9.2 8 9.2 9.5V17.5C9.2 19.5 8.5 21 7.5 21S5.8 19.5 5.8 17.5V9.5C5.8 8 6.1 6.5 7.5 6.5ZM5.8 11 7.5 12.3 9.2 11M5.8 15 7.5 16.3 9.2 15M16 5.5C13.5 9.7 15.1 15.2 18.2 17.8C20.1 14.3 19.8 8.6 16 5.5ZM16 5.5 17.6 14.5';
+  const GRASS = 'M12 22V4M12 5C13 4 12.8 2.4 12 1.5C11.2 2.4 11 4 12 5ZM12 7.5C12 5.9 10.7 4.7 9.4 4.4C9.5 5.7 10.5 7.2 12 7.5ZM12 7.5C13.5 7.2 14.5 5.7 14.6 4.4C13.3 4.7 12 5.9 12 7.5ZM12 10.5C12 8.9 10.7 7.7 9.4 7.4C9.5 8.7 10.5 10.2 12 10.5ZM12 10.5C13.5 10.2 14.5 8.7 14.6 7.4C13.3 7.7 12 8.9 12 10.5ZM12 13.5C12 11.9 10.7 10.7 9.4 10.4C9.5 11.7 10.5 13.2 12 13.5ZM12 13.5C13.5 13.2 14.5 11.7 14.6 10.4C13.3 10.7 12 11.9 12 13.5ZM12 22C10.5 19.5 8 18 4.5 17.5M12 22C13.5 19.5 16 18.5 19.5 18.5';
+  const MUGWORT = 'M12 2.5 13.2 6 17.5 4.5 14 8.5 19.5 9 14 12 18.5 14.5 13 15.5 12 17 11 15.5 5.5 14.5 10 12 4.5 9 10 8.5 6.5 4.5 10.8 6ZM12 6.5V21.5';
+  const row = (d, name, level, color) => `<div style="display:flex;align-items:center;gap:28px;height:96px">
+      ${icon(d, t.muted)}${pill(name, 30, t.fg, 'opacity:.85')}
+      <div style="flex:1;display:flex;gap:10px">${[0, 1, 2, 3].map(i => `<div class="pill" style="flex:1;height:16px;background:${i < level ? color : track}"></div>`).join('')}</div>
+      <div style="width:120px;display:flex;justify-content:flex-end">${pill(level ? 110 : 80, 30, level ? t.fg : t.muted)}</div>
+    </div>`;
+  return `<div class="card" style="gap:8px">
+    <div style="display:flex;align-items:center;gap:24px;height:96px">${icon(SUN, ORANGE_SHADE)}${pill(120, 44, t.fg)}${pill(100, 30, t.fg, 'opacity:.85')}${pill(190, 26, t.muted)}</div>
+    <div style="height:3px;background:${line};margin:8px 0"></div>
+    ${row(BIRCH, 110, 1, GREEN)}${row(GRASS, 120, 3, ORANGE_SHADE)}${row(MUGWORT, 150, 0, track)}
+  </div>`;
+}
+
+// Web Page: a page scaled to fill the card edge to edge, as a neutral wireframe (a header with a logo and links, a
+// picture placeholder, a heading and lines of text), over the row of buttons that switch between its addresses, the
+// second one lit.
+function webPage(t, theme) {
+  const dark = theme === 'dark';
+  const card = dark ? '#181920' : '#FFFFFF';
+  const shadow = dark ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const page = dark ? '#23242D' : '#F5F6F8', line = dark ? 'rgba(237,238,240,.12)' : 'rgba(31,32,41,.08)';
+  const text = dark ? 'rgba(237,238,240,.9)' : 'rgba(31,32,41,.85)', muted = dark ? 'rgba(237,238,240,.35)' : 'rgba(31,32,41,.25)';
+  const block = dark ? 'rgba(237,238,240,.08)' : 'rgba(31,32,41,.06)', glyph = dark ? 'rgba(237,238,240,.3)' : 'rgba(31,32,41,.22)';
+  const tile = `color-mix(in srgb, ${t.fg} 7%, ${card})`, lit = `color-mix(in srgb, ${t.fg} 24%, ${card})`;
+  const bar = (x, y, w, h, fill) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${h / 2}" fill="${fill}"/>`;
+  // A picture icon: a frame with a small sun and a hill, in the placeholder's middle.
+  const picture = `<g transform="translate(400 230)" fill="none" stroke="${glyph}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">
+        <rect x="-60" y="-46" width="120" height="92" rx="14"/><circle cx="24" cy="-14" r="10"/><path d="M-60 34l38-36 30 28 18-16 32 30"/>
+      </g>`;
+  const site = `<svg width="800" height="560" viewBox="0 0 800 560">
+      <rect width="800" height="560" fill="${page}"/>
+      <rect x="48" y="28" width="40" height="40" rx="10" fill="${BLUE}"/>
+      ${bar(104, 36, 150, 24, text)}
+      ${bar(500, 38, 70, 20, muted)}${bar(590, 38, 70, 20, muted)}${bar(680, 38, 72, 20, muted)}
+      <rect x="0" y="94" width="800" height="2" fill="${line}"/>
+      <rect x="48" y="120" width="704" height="220" rx="20" fill="${block}"/>
+      ${picture}
+      ${bar(48, 372, 420, 34, text)}
+      ${bar(48, 430, 704, 20, muted)}
+      ${bar(48, 466, 660, 20, muted)}
+      ${bar(48, 502, 500, 20, muted)}
+    </svg>`;
+  const radius = i => (i === 0 ? '36px 10px 10px 36px' : i === 3 ? '10px 36px 36px 10px' : '10px');
+  const btn = (w, i) => `<div style="flex:1;height:112px;border-radius:${radius(i)};background:${i === 1 ? lit : tile};display:flex;align-items:center;justify-content:center">${pill(w, 30, t.fg, i === 1 ? '' : 'opacity:.7')}</div>`;
+  return `<div style="width:800px;border-radius:48px;overflow:hidden;background:${card};box-shadow:${shadow}">
+    ${site}
+    <div style="display:flex;gap:6px;padding:24px">${[96, 120, 90, 80].map(btn).join('')}</div>
+  </div>`;
+}
+
 // Days Since: one card of chores, each a row of its icon (Flow Buttons' glyphs), the name and the time since (pills),
 // then a bar filling up towards the day it's due and a small label of the time left; amber when it's due soon, red
 // when overdue (the bar, the icon and the time in the colour), and one just reset with an empty bar and Undo.
@@ -659,6 +761,33 @@ function spacer(t, theme) {
     <div>${tile(180)}${gap}
       <div style="height:120px;border-radius:28px;border:5px dashed ${BLUE};box-sizing:border-box;display:flex;align-items:center;justify-content:center">${arrow}</div>
       ${gap}${tile(160)}</div>
+  </div>`;
+}
+
+// Popups: a Flow's question over a faded dashboard: a doorbell's picture (a drawn front door), the question as a
+// line, and No and Yes. The widget itself draws nothing; the popup is what it brings up.
+function popups(t, theme) {
+  const tileBg = theme === 'dark' ? '#181920' : '#FFFFFF';
+  const shadow = theme === 'dark' ? 'inset 0 2px 0 rgba(255,255,255,.06), 0 12px 40px rgba(0,0,0,.45)' : '0 12px 40px rgba(17,18,23,.12)';
+  const raised = theme === 'dark' ? '#2B2C36' : '#EAEAF1';
+  const faded = h => `<div style="height:${h}px;border-radius:28px;background:${tileBg};opacity:.35"></div>`;
+  const door = `<svg width="560" height="300" viewBox="0 0 560 300" style="display:block">
+      <rect width="560" height="300" fill="#2B3A4A"/><rect y="210" width="560" height="90" fill="#3D4A3A"/>
+      <rect x="205" y="56" width="150" height="196" rx="8" fill="#6B3E26"/><rect x="190" y="44" width="180" height="16" fill="#1C2733"/>
+      <circle cx="330" cy="160" r="9" fill="#E8C66A"/><circle cx="420" cy="96" r="18" fill="#FFE9A8"/></svg>`;
+  return `<div style="position:relative;width:880px;height:820px">
+    <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-content:start">
+      <div style="display:flex;flex-direction:column;gap:40px">${faded(300)}${faded(220)}${faded(220)}</div>
+      <div style="display:flex;flex-direction:column;gap:40px">${faded(200)}${faded(360)}${faded(180)}</div>
+    </div>
+    <div style="position:absolute;left:100px;top:70px;width:680px;border-radius:36px;background:${tileBg};box-shadow:${shadow};padding:60px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:44px">
+      <div style="border-radius:24px;overflow:hidden">${door}</div>
+      ${pill(400, 44, t.fg)}
+      <div style="width:100%;display:flex;gap:28px">
+        <div style="flex:1;height:112px;border-radius:56px;background:${raised};display:flex;align-items:center;justify-content:center">${pill(90, 30, t.fg)}</div>
+        <div style="flex:1;height:112px;border-radius:56px;background:${BLUE};display:flex;align-items:center;justify-content:center">${pill(90, 30, '#FFFFFF')}</div>
+      </div>
+    </div>
   </div>`;
 }
 
@@ -801,6 +930,8 @@ const PREVIEWS = [
   { id: 'val-light',    label: '1p · Device Values — preview-light.png',         theme: 'light', render: deviceValues },
   { id: 'lc-dark',      label: '1q · Light Controls — preview-dark.png',         theme: 'dark',  render: lightControls },
   { id: 'lc-light',     label: '1r · Light Controls — preview-light.png',        theme: 'light', render: lightControls },
+  { id: 'lr-dark',      label: '3o · Lights by Room — preview-dark.png',         theme: 'dark',  render: lightRooms },
+  { id: 'lr-light',     label: '3p · Lights by Room — preview-light.png',        theme: 'light', render: lightRooms },
   { id: 'spark-dark',   label: '1s · Sparklines — preview-dark.png',             theme: 'dark',  render: sparklines },
   { id: 'spark-light',  label: '1t · Sparklines — preview-light.png',            theme: 'light', render: sparklines },
   { id: 'chart-dark',   label: '2s · Charts — preview-dark.png',                 theme: 'dark',  render: charts },
@@ -833,6 +964,12 @@ const PREVIEWS = [
   { id: 'ds-light',     label: '3b · Days Since — preview-light.png',            theme: 'light', render: daysSince },
   { id: 'sc-dark',      label: '3g · Dashboard Shortcuts — preview-dark.png',    theme: 'dark',  render: dashboardShortcuts },
   { id: 'sc-light',     label: '3h · Dashboard Shortcuts — preview-light.png',   theme: 'light', render: dashboardShortcuts },
+  { id: 'wp-dark',      label: '3i · Web Page — preview-dark.png',             theme: 'dark',  render: webPage },
+  { id: 'wp-light',     label: '3j · Web Page — preview-light.png',            theme: 'light', render: webPage },
+  { id: 'pw-dark',      label: '3k · Pollen and UV — preview-dark.png',        theme: 'dark',  render: pollen },
+  { id: 'pw-light',     label: '3l · Pollen and UV — preview-light.png',       theme: 'light', render: pollen },
+  { id: 'pu-dark',      label: '3m · Popups — preview-dark.png',                 theme: 'dark',  render: popups },
+  { id: 'pu-light',     label: '3n · Popups — preview-light.png',                theme: 'light', render: popups },
 ];
 
 const solo = new URLSearchParams(location.search).get('p');

@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import type Homey from 'homey';
+import ForecastCache from './forecastCache.js';
 import Timings from './Timings.js';
 
 // MET's icons, shipped with the widget. Relative to the compiled lib/ (and to lib/ in the tests).
@@ -7,10 +8,7 @@ const ICON_DIR = new URL('../widgets/weather/public/icons/', import.meta.url);
 
 const MINUTE = 60e3;
 const HOUR = 60 * MINUTE;
-const TICK = MINUTE;
-const IDLE_TIMEOUT = 10 * MINUTE;
 const DEFAULT_TTL = 30 * MINUTE; // when MET sends no usable Expires
-const RETRY_AFTER_ERROR = 5 * MINUTE;
 /** A MET request that takes longer gives up (the Weather Forecast and the Clock's weather wait for it). */
 const FETCH_TIMEOUT = 15e3;
 const HOURS = 48; // the widget shows 36 from the current hour; the rest covers hours passing between fetches
@@ -53,62 +51,32 @@ type Cached = {
  */
 export default class WeatherService {
 
-  private cached: Cached | null = null;
-  private inflight: Promise<Cached> | null = null;
-  private lastRequested = 0;
-  private lastStatus: string | null = null;
-  private lastError: string | null = null;
-  private tickTimer: NodeJS.Timeout | null = null;
-  private onLocation = () => {
-    this.debug('Weather: Homey location changed, dropping the cached forecast');
-    this.cached = null;
-  };
+  private forecast: ForecastCache<Cached>;
 
   constructor(
     private homey: Homey.App['homey'],
     private log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
-  ) {}
+  ) {
+    this.forecast = new ForecastCache<Cached>(homey, {
+      name: 'Weather', log, debug, fetch: (key, stale) => this.fetchForecast(key, stale),
+    });
+  }
 
   start() {
-    this.tickTimer = this.homey.setInterval(() => this.tick(), TICK);
-    (this.homey.geolocation as any).on?.('location', this.onLocation);
+    this.forecast.start();
   }
 
   async stop() {
-    if (this.tickTimer) this.homey.clearInterval(this.tickTimer);
-    this.tickTimer = null;
-    (this.homey.geolocation as any).off?.('location', this.onLocation);
-    this.cached = null;
-  }
-
-  /**
-   * Drops the forecast once no widget has asked for 10 min and it has expired. One that's still valid is kept, so a
-   * dashboard opened again soon (a tablet waking up) is answered at once, with no request to MET.
-   */
-  private tick() {
-    const now = Date.now();
-    if (this.cached && now - this.lastRequested > IDLE_TIMEOUT && now >= this.cached.expires) {
-      this.debug('Weather: no widget asked for 10 min, dropping the expired forecast');
-      this.cached = null;
-    }
-  }
-
-  /** Rounded to 3 decimals (~100 m): within MET's 4-decimal limit, and caches better on their side. */
-  private location(): { lat: number, lon: number } | null {
-    const lat = Number(this.homey.geolocation.getLatitude());
-    const lon = Number(this.homey.geolocation.getLongitude());
-    if (!Number.isFinite(lat) || !Number.isFinite(lon) || (lat === 0 && lon === 0)) return null;
-    return { lat: Math.round(lat * 1000) / 1000, lon: Math.round(lon * 1000) / 1000 };
+    this.forecast.stop();
   }
 
   async getForecast(): Promise<Forecast> {
-    this.lastRequested = Date.now();
     const language = this.homey.i18n.getLanguage();
-    const loc = this.location();
+    const loc = this.forecast.location();
     if (!loc) return { hours: [], updatedAt: null, language, noLocation: true };
     const tm = new Timings();
-    const cached = await tm.time('met', () => this.load(`${loc.lat},${loc.lon}`, loc));
+    const cached = await tm.time('met', () => this.forecast.get(`${loc.lat},${loc.lon}`));
     const hours = hoursFrom(cached.body, Date.now());
     const icons = await tm.time('icons', () => this.iconsFor(hours));
     this.debug(`Weather forecast: ${tm.summary()}`);
@@ -136,60 +104,39 @@ export default class WeatherService {
     return out;
   }
 
-  private load(key: string, loc: { lat: number, lon: number }): Promise<Cached> {
-    const c = this.cached;
-    if (c && c.key === key && Date.now() < c.expires) return Promise.resolve(c);
-    if (!this.inflight) {
-      this.inflight = this.fetchForecast(key, loc, c && c.key === key ? c : null)
-        .finally(() => { this.inflight = null; });
-    }
-    return this.inflight;
-  }
-
-  private async fetchForecast(key: string, loc: { lat: number, lon: number }, stale: Cached | null): Promise<Cached> {
+  /** One request to MET (the key is `lat,lon`): a 304 only moves the expiry. Throws on failure (`ForecastCache` keeps the last one). */
+  private async fetchForecast(key: string, stale: Cached | null): Promise<Cached> {
     const headers: Record<string, string> = {
       'User-Agent': `Widgetkeeper/${this.homey.manifest?.version ?? '0'} github.com/thomassidor/widgetkeeper`,
       Accept: 'application/json',
     };
     if (stale?.lastModified) headers['If-Modified-Since'] = stale.lastModified;
-    try {
-      const signal = typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(FETCH_TIMEOUT) : undefined;
-      const res = await fetch(`${FORECAST_URL}?lat=${loc.lat}&lon=${loc.lon}`, { headers, signal });
-      this.lastStatus = `${res.status} at ${new Date().toISOString()}`;
-      const expires = expiry(res.headers.get('expires'));
-      if (res.status === 304 && stale) {
-        this.cached = { ...stale, expires };
-        this.debug(`Weather: not modified, next fetch after ${new Date(expires).toISOString()}`);
-      } else if (res.ok) {
-        const body: any = await res.json();
-        if (!Array.isArray(body?.properties?.timeseries)) throw new Error('Unexpected forecast response');
-        this.cached = { key, body, expires, lastModified: res.headers.get('last-modified'), fetchedAt: Date.now() };
-        this.debug(`Weather: fetched, next fetch after ${new Date(expires).toISOString()}`);
-      } else {
-        throw new Error(`MET forecast: HTTP ${res.status}`);
-      }
-      this.lastError = null;
-      return this.cached;
-    } catch (err) {
-      this.lastError = err instanceof Error ? err.message : String(err);
-      if (!stale) throw err;
-      this.log('Weather: fetch failed, showing the previous forecast', err);
-      // Don't hammer MET while it's failing.
-      this.cached = { ...stale, expires: Date.now() + RETRY_AFTER_ERROR };
-      return this.cached;
+    const [lat, lon] = key.split(',');
+    const signal = typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(FETCH_TIMEOUT) : undefined;
+    const res = await fetch(`${FORECAST_URL}?lat=${lat}&lon=${lon}`, { headers, signal });
+    this.forecast.lastStatus = `${res.status} at ${new Date().toISOString()}`;
+    const expires = expiry(res.headers.get('expires'));
+    if (res.status === 304 && stale) {
+      this.debug(`Weather: not modified, next fetch after ${new Date(expires).toISOString()}`);
+      return { ...stale, expires };
     }
+    if (!res.ok) throw new Error(`MET forecast: HTTP ${res.status}`);
+    const body: any = await res.json();
+    if (!Array.isArray(body?.properties?.timeseries)) throw new Error('Unexpected forecast response');
+    this.debug(`Weather: fetched, next fetch after ${new Date(expires).toISOString()}`);
+    return { key, body, expires, lastModified: res.headers.get('last-modified'), fetchedAt: Date.now() };
   }
 
   /** For the diagnostics report. */
   describe() {
-    const c = this.cached;
+    const c = this.forecast.cached;
     return {
-      location: this.location(),
+      location: this.forecast.location(),
       fetchedAt: c ? new Date(c.fetchedAt).toISOString() : null,
       expires: c ? new Date(c.expires).toISOString() : null,
       lastModified: c?.lastModified ?? null,
-      lastStatus: this.lastStatus,
-      lastError: this.lastError,
+      lastStatus: this.forecast.lastStatus,
+      lastError: this.forecast.lastError,
     };
   }
 

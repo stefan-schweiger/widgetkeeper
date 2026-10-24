@@ -1,0 +1,108 @@
+/*
+ * Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling).
+ * The fallbacks are the dark-theme values, used outside Homey (dev/pollen-preview.html).
+ */
+.pw {
+  --pw-card: var(--homey-background-color, #1F2029);
+  --pw-text: var(--homey-text-color, #EDEEF0);
+  --pw-muted: var(--homey-text-color-light, #9C9DA5);
+  --pw-line: var(--homey-line-color-light, #2B2C36);
+  --pw-track: color-mix(in srgb, var(--pw-text) 12%, var(--pw-card));
+  /*
+   * The levels, from kit.css: pollen low … very high are 1–4, UV low … extreme 1–5. The bars, cells and the sun are
+   * small and solid, so Muted draws them in Homey's darker shades and Vivid in the bright colours (as Heatmap and
+   * Activity Dots), each with the text that goes on it.
+   */
+  --pw-l1: var(--wk-green-shade); --pw-on-l1: var(--wk-on-green-shade);
+  --pw-l2: var(--wk-yellow-shade); --pw-on-l2: var(--wk-on-yellow-shade);
+  --pw-l3: var(--wk-orange-shade); --pw-on-l3: var(--wk-on-orange-shade);
+  --pw-l4: var(--wk-red-shade); --pw-on-l4: var(--wk-on-red-shade);
+  --pw-l5: var(--wk-purple-shade); --pw-on-l5: var(--wk-on-purple-shade);
+  /* Homey's type scale: only these size/line-height pairs, and the weights noted, are used natively. */
+  --pw-fs-small: var(--homey-font-size-small, 14px); --pw-lh-small: var(--homey-line-height-small, 20px);
+  --pw-fs-default: var(--homey-font-size-default, 17px); --pw-lh-default: var(--homey-line-height-default, 24px);
+  /* Grains, weekdays and the days' cells: a step below Homey's scale, like the other widgets' labels. */
+  --pw-fs-label: 12px; --pw-lh-label: 16px;
+  --pw-regular: var(--homey-font-weight-regular, 400);
+  --pw-medium: var(--homey-font-weight-medium, 500);
+  --pw-bold: var(--homey-font-weight-bold, 700);
+  container: pw / inline-size;
+}
+.pw.wk-deep {
+  --pw-l1: var(--wk-green-bright); --pw-on-l1: var(--wk-on-green-bright);
+  --pw-l2: var(--wk-yellow-bright); --pw-on-l2: var(--wk-on-yellow-bright);
+  --pw-l3: var(--wk-orange-bright); --pw-on-l3: var(--wk-on-orange-bright);
+  --pw-l4: var(--wk-red-bright); --pw-on-l4: var(--wk-on-red-bright);
+  --pw-l5: var(--wk-purple-bright); --pw-on-l5: var(--wk-on-purple-bright);
+}
+.pw [data-level="1"] { --pw-c: var(--pw-l1); --pw-on: var(--pw-on-l1); }
+.pw [data-level="2"] { --pw-c: var(--pw-l2); --pw-on: var(--pw-on-l2); }
+.pw [data-level="3"] { --pw-c: var(--pw-l3); --pw-on: var(--pw-on-l3); }
+.pw [data-level="4"] { --pw-c: var(--pw-l4); --pw-on: var(--pw-on-l4); }
+.pw [data-level="5"] { --pw-c: var(--pw-l5); --pw-on: var(--pw-on-l5); }
+
+/* On html, so a font Homey's widget stylesheet sets on body wins; this is the fallback outside Homey. */
+html { font-family: Roboto, -apple-system, system-ui, sans-serif; }
+html, body { margin: 0; }
+
+/* Dark mode: the frame looks like Homey's native device tiles (see the thermostat widget's .tw-frame). */
+.homey-dark-mode .pw-frame, .pw-frame.homey-dark-mode {
+  background-color: #181920;
+  border-radius: 10px;
+}
+.homey-dark-mode .pw-frame::after, .pw-frame.homey-dark-mode::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), inset 0 0 0 1px rgb(255 255 255 / .03);
+}
+.pw-frame { position: relative; }
+.homey-dark-mode body.pw-frame::after, body.pw-frame.homey-dark-mode::after { position: fixed; }
+
+.pw { display: flex; flex-direction: column; min-width: 0; color: var(--pw-text); font-size: var(--pw-fs-small); line-height: var(--pw-lh-small); }
+.pw [dir="auto"] { text-align: left; }
+.pw * { box-sizing: border-box; }
+.pw-icon { display: block; width: var(--homey-icon-size-medium, 20px); height: var(--homey-icon-size-medium, 20px); flex: 0 0 auto;
+  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.pw-message { color: var(--pw-muted); }
+.pw-note { color: var(--pw-muted); padding: var(--homey-su-1, 4px) 0; }
+.pw-sep { height: 1px; background: var(--pw-line); margin: var(--homey-su-1, 4px) 0; }
+
+/* Today's UV: the sun in its level's colour, the peak, its level and when. */
+.pw-uv { display: flex; align-items: center; gap: var(--homey-su-2, 8px); min-height: 32px; min-width: 0; white-space: nowrap; }
+.pw-uv .pw-sun { color: var(--pw-c); }
+.pw-uv-value { font-size: var(--pw-fs-default); line-height: var(--pw-lh-default); font-weight: var(--pw-bold); font-variant-numeric: tabular-nums; }
+.pw-uv-level { font-weight: var(--pw-medium); }
+.pw-uv-peak { color: var(--pw-muted); overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+
+/* A row per type: icon, name, a four-step bar lit up to its level, the level (and in Detailed the grains). */
+.pw-row { display: grid; grid-template-columns: var(--homey-icon-size-medium, 20px) 84px 1fr 72px; align-items: center;
+  gap: var(--homey-su-2, 8px); min-height: 32px; }
+.pw-detailed .pw-row { min-height: 40px; }
+.pw-row .pw-icon { color: var(--pw-muted); }
+.pw-name { font-weight: var(--pw-medium); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.pw-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+.pw-bar i { display: block; height: 6px; border-radius: 3px; background: var(--pw-track); }
+.pw-bar i.on { background: var(--pw-c); }
+.pw-level { display: flex; flex-direction: column; align-items: flex-end; min-width: 0; }
+.pw-level [dir="auto"] { text-align: right; }
+.pw-word { font-weight: var(--pw-medium); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.pw-row[data-level="0"] .pw-word { color: var(--pw-muted); font-weight: var(--pw-regular); }
+.pw-grains { font-size: var(--pw-fs-label); line-height: var(--pw-lh-label); color: var(--pw-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+@container pw (max-width: 300px) { .pw-row { grid-template-columns: var(--homey-icon-size-medium, 20px) 84px 1fr 64px; } }
+
+/*
+ * Detailed: the next days under the rows, kept quiet and unlike today's bars: small icons, a dot in the level's colour and
+ * the level in words per type and day, the UV peaks in the muted colour.
+ */
+.pw-days { display: grid; grid-template-columns: var(--homey-icon-size-medium, 20px) repeat(var(--pw-cols, 3), 1fr);
+  gap: 2px var(--homey-su-2, 8px); align-items: center; margin-top: var(--homey-su-2, 8px); padding-top: var(--homey-su-1, 4px);
+  border-top: 1px solid var(--pw-line); font-size: var(--pw-fs-label); line-height: var(--pw-lh-label); color: var(--pw-muted); }
+.pw-days .pw-day[dir="auto"] { text-align: left; padding-left: 12px; }
+.pw-days-icon { display: flex; justify-content: center; }
+.pw-days-icon .pw-icon { width: var(--homey-icon-size-small, 14px); height: var(--homey-icon-size-small, 14px); }
+.pw-cell { display: flex; align-items: center; gap: 6px; height: 18px; min-width: 0; }
+.pw-cell i { flex: 0 0 auto; width: 6px; height: 6px; border-radius: 50%; background: var(--pw-c); }
+.pw-cell[data-level="0"] i { background: var(--pw-track); }
+.pw-cell-word { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.pw-cell:not([data-level="0"]) .pw-cell-word { color: var(--pw-text); }
+.pw-cell-uv { height: 18px; padding-left: 12px; font-variant-numeric: tabular-nums; }

@@ -1,19 +1,19 @@
 {
   "id": "flows_set_color",
   "title": {
-    "en": "Set the Flow Button colour",
-    "nl": "Kleur van de Flowknop instellen",
-    "de": "Farbe der Flow-Taste setzen",
-    "fr": "Définir la couleur du bouton de flow",
-    "it": "Imposta il colore del pulsante del flow",
-    "sv": "Ange flödesknappens färg",
-    "no": "Angi flytknappens farge",
-    "es": "Establecer el color del botón de flujo",
-    "da": "Angiv flowknappens farve",
-    "ru": "Задать цвет кнопки потока",
-    "pl": "Ustaw kolor przycisku Flow",
+    "en": "Colour a Flow Button",
+    "nl": "Een Flowknop kleuren",
+    "de": "Eine Flow-Taste einfärben",
+    "fr": "Colorer un bouton de flow",
+    "it": "Colora un pulsante del flow",
+    "sv": "Färga en flödesknapp",
+    "no": "Farg en flytknapp",
+    "es": "Colorear un botón de flujo",
+    "da": "Farv en flowknap",
+    "ru": "Окрасить кнопку потока",
+    "pl": "Pokoloruj przycisk Flow",
     "ko": "플로우 버튼 색상 설정",
-    "ar": "تعيين لون زر التدفق"
+    "ar": "تلوين زر تدفق"
   },
   "titleFormatted": {
     "en": "Set the button colour of [[flow]] to [[color]]",

@@ -7,11 +7,12 @@ beforeAll(() => { win = loadWidget('spacer'); loadMount('spacer'); });
 afterEach(() => { document.body.innerHTML = ''; });
 
 describe('spacerHeight', () => {
-  it('takes whole px within 0–800', () => {
+  it('takes whole px within 16–800', () => {
     expect(win.spacerHeight(48)).toBe(48);
-    expect(win.spacerHeight(0)).toBe(0);
-    expect(win.spacerHeight(12.6)).toBe(13);
-    expect(win.spacerHeight(-5)).toBe(0);
+    expect(win.spacerHeight(0)).toBe(16); // 0 showed the iOS app's loading placeholder
+    expect(win.spacerHeight(20.6)).toBe(21);
+    expect(win.spacerHeight(12)).toBe(16);
+    expect(win.spacerHeight(-5)).toBe(16);
     expect(win.spacerHeight(5000)).toBe(800);
     expect(win.spacerHeight('24')).toBe(24);
   });
@@ -39,8 +40,8 @@ describe('Spacer widget', () => {
     expect(Homey.api).not.toHaveBeenCalled();
   });
 
-  it('takes 0, and the default without a setting', () => {
-    expect(mount({ height: 0 }).Homey.ready).toHaveBeenCalledWith({ height: 0 });
+  it('makes a 0 stored before 16 (0 showed the iOS app\'s loading placeholder), and the default without a setting', () => {
+    expect(mount({ height: 0 }).Homey.ready).toHaveBeenCalledWith({ height: 16 });
     expect(mount({}).Homey.ready).toHaveBeenCalledWith({ height: 32 });
     expect(mount(null).Homey.ready).toHaveBeenCalledWith({ height: 32 });
   });

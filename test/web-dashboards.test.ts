@@ -7,6 +7,7 @@ import WebDashboardService, { MAX_DASHBOARDS, passesDeviceFilter, settingSection
 import { widgetAutocompletes } from '../lib/widgetAutocompletes.js';
 import { routeKeyUse } from '../lib/widgetRoutes.js';
 import WebPassword from '../lib/WebPassword.js';
+import PopupService from '../lib/PopupService.js';
 import api from '../api.js';
 
 vi.mock('homey-api', () => homeyApiMock);
@@ -20,7 +21,8 @@ function setup(autocompletes = {}, enabled = true) {
   const log = vi.fn();
   const tileNames = new TileNameService(homey);
   const web = new WebDashboardService(homey, log, autocompletes, tileNames);
-  homey.app = { web, tileNames, webPassword: new WebPassword(homey, log), log, debug: vi.fn() };
+  const popups = new PopupService(homey, { cameras: {} as any, web }, log);
+  homey.app = { web, tileNames, webPassword: new WebPassword(homey, log), popups, log, debug: vi.fn() };
   return { homey, web, log, tileNames };
 }
 
@@ -109,6 +111,36 @@ describe('web dashboards: storage', () => {
     expect(web.remove('missing')).toEqual({ removed: false });
     expect(web.list().map(d => d.id)).toEqual([b.id]);
     expect(web.describe()).toEqual({ enabled: true, remote: false, dashboards: 1, widgets: 0 });
+  });
+
+  it("keeps a wide widget's span within the columns and its place in each column it covers", () => {
+    const { web } = setup();
+    const saved = web.save({
+      columns: [
+        [{ id: 'a', type: 'cameras', span: 2.2, at: [1] }, { id: 'b', type: 'timers', span: 9, at: ['x', -4, 99] }],
+        [{ id: 'c', type: 'clock' }, { id: 'd', type: 'clock' }],
+        [{ id: 'e', type: 'price', span: 3, at: [0, 0] }],
+      ],
+    });
+    const [[a, b], [c], [e]] = saved.columns;
+    expect(a).toMatchObject({ span: 2, at: [1] });
+    expect(b).toMatchObject({ span: 3, at: [1, 0] }); // three columns at most; a bad index is its own, a large one the end
+    expect(c).not.toHaveProperty('span');
+    expect(e).not.toHaveProperty('span'); // the last column: nothing to its right
+    expect(e).not.toHaveProperty('at');
+    expect(web.save({ columns: [[{ type: 'clock', span: 3 }], [], []] }).columns[0][0]).toMatchObject({ span: 3, at: [0, 0] });
+    expect(web.save({ columns: [[{ type: 'clock', span: 1, at: [0] }], []] }).columns[0][0]).not.toHaveProperty('at');
+  });
+
+  it('keeps a wide widget in a duplicate and a backup', () => {
+    const { web } = setup();
+    const d = web.save({ name: 'Wide', columns: [[{ id: 'a', type: 'cameras', span: 2, at: [1] }], [{ id: 'b', type: 'clock' }]] });
+    const { dashboard: copy } = web.duplicate(d.id);
+    expect(copy.columns[0][0]).toMatchObject({ span: 2, at: [1] });
+    const file = web.backup();
+    web.remove(d.id);
+    web.restore(file);
+    expect(web.list().find(x => x.id === d.id)!.columns[0][0]).toMatchObject({ span: 2, at: [1] });
   });
 
   it('has at least one column and at most six', () => {
@@ -290,7 +322,7 @@ describe('web dashboards: what the editor needs', () => {
     expect(barMin.values!.map(v => v.id)).toEqual(['0', '1']);
     expect(types.find(t => t.type === 'electricity')!.devices).toEqual({ singular: true });
     expect(types.find(t => t.type === 'timers')!.devices).toBeNull();
-    expect(types).toHaveLength(Object.keys(app.widgets).length);
+    expect(types.map(t => t.type).sort()).toEqual(Object.keys(app.widgets).sort());
   });
 
   it("groups the settings by their titles: a group's head, the rows under it, and numbered slots", () => {
@@ -503,15 +535,58 @@ describe('web dashboards: the front page', () => {
   it('reorders the dashboards and keeps whether the widgets show', async () => {
     const { homey, web } = setup();
     const [a, b, c] = ['A', 'B', 'C'].map(name => web.save({ name, columns: [[]] }));
-    expect(web.front()).toEqual({ widgets: true });
+    expect(web.front()).toEqual({ widgets: true, sections: [] });
     // Ids it doesn't name keep their order after the named ones; unknown and repeated ids are ignored.
     const res = await api.putWebFront({ homey, body: { order: [c.id, 'nope', a.id, c.id] } });
     expect(res.dashboards.map(d => d.name)).toEqual(['C', 'A', 'B']);
     expect(web.list().map(d => d.id)).toEqual([c.id, a.id, b.id]);
-    expect(res.front).toEqual({ widgets: true });
-    expect((await api.putWebFront({ homey, body: { widgets: false } })).front).toEqual({ widgets: false });
+    expect(res.front).toEqual({ widgets: true, sections: [] });
+    expect((await api.putWebFront({ homey, body: { widgets: false } })).front).toEqual({ widgets: false, sections: [] });
     expect(web.list().map(d => d.id)).toEqual([c.id, a.id, b.id]); // no order: left as it is
-    expect(web.front()).toEqual({ widgets: false });
+    expect(web.front()).toEqual({ widgets: false, sections: [] });
+  });
+
+  it('keeps sections, puts dashboards in them, and takes them out of one deleted', async () => {
+    const { homey, web } = setup();
+    const [a, b, c] = ['A', 'B', 'C'].map(name => web.save({ name, columns: [[]] }));
+    const res = await api.putWebFront({
+      homey,
+      body: {
+        sections: [{ id: 'tests', name: '  Tests  ' }, { id: 'tests', name: 'Again' }, { id: 'bad id!', name: 'X' }, { id: 'rooms', name: 7 }],
+        placement: { [a.id]: 'tests', [c.id]: 'nope', [b.id]: 'rooms' },
+        order: [b.id, c.id, a.id],
+      },
+    });
+    expect(res.front).toEqual({ widgets: true, sections: [{ id: 'tests', name: 'Tests' }, { id: 'rooms', name: '' }] });
+    expect(web.list().map(d => [d.name, d.section])).toEqual([['B', 'rooms'], ['C', undefined], ['A', 'tests']]);
+    expect(web.list()[1]).not.toHaveProperty('section');
+    // A save from the editor keeps it; a placement of null takes it out.
+    web.save({ ...web.list()[2], name: 'A2' });
+    expect(web.list()[2].section).toBe('tests');
+    web.saveFront({ placement: { [b.id]: null } });
+    expect(web.list()[0]).not.toHaveProperty('section');
+    // Deleting a section (the list without it) leaves its dashboards in none; the carousel's choice stays.
+    web.saveFront({ widgets: false });
+    expect(web.saveFront({ sections: [{ id: 'rooms', name: 'Rooms' }] }).front).toEqual({ widgets: false, sections: [{ id: 'rooms', name: 'Rooms' }] });
+    expect(web.list().map(d => d.section)).toEqual([undefined, undefined, undefined]);
+    // At most 20.
+    web.saveFront({ sections: Array.from({ length: 25 }, (_, i) => ({ id: `s${i}`, name: `S${i}` })) });
+    expect(web.front().sections).toHaveLength(20);
+  });
+
+  it('copies a dashboard into its section, and a restore brings the sections its dashboards are in', () => {
+    const { web } = setup();
+    const a = web.save({ name: 'A', columns: [[]] });
+    web.saveFront({ sections: [{ id: 'tests', name: 'Tests' }], placement: { [a.id]: 'tests' } });
+    expect(web.duplicate(a.id).dashboard.section).toBe('tests');
+    const backup = web.backup([a.id]);
+    expect(backup.front.sections).toEqual([{ id: 'tests', name: 'Tests' }]);
+    web.saveFront({ sections: [{ id: 'other', name: 'Other' }] });
+    web.restore(backup); // not `complete`: the section is added after those here
+    expect(web.front().sections).toEqual([{ id: 'other', name: 'Other' }, { id: 'tests', name: 'Tests' }]);
+    expect(web.list().find(d => d.id === a.id)!.section).toBe('tests');
+    web.restore({ ...backup, complete: true }); // the file's front page as it is
+    expect(web.front().sections).toEqual([{ id: 'tests', name: 'Tests' }]);
   });
 });
 
@@ -578,7 +653,7 @@ describe('web dashboards: backup and restore', () => {
     await expect(api.putWebBackup({ homey, body: { ...backup, complete: true } })).resolves.toEqual({ dashboards: 2, widgets: 2, skipped: 0 });
     expect(web.list().map(d => d.name)).toEqual(['Kitchen', 'New', 'Hall']); // Kitchen in place, Hall added
     expect(web.list().filter(d => d.id !== later.id)).toEqual(backup.dashboards);
-    expect(web.front()).toEqual({ widgets: false });
+    expect(web.front()).toEqual({ widgets: false, sections: [] });
     expect(tileNames.get(`web-${a.id}-w1`).names).toEqual({ d1: 'Porch' });
     expect(tileNames.get(`web-${b.id}-w1`).names).toEqual({});
     expect(tileNames.get(`web-${later.id}-w1`).names).toEqual({ d1: 'Since' });
@@ -607,7 +682,7 @@ describe('web dashboards: backup and restore', () => {
     expect(first.columns[0][0].settings).not.toHaveProperty('bogus');
     expect(second.id).not.toBe('one');
     expect(second.name).toBe('Second');
-    expect(web.front()).toEqual({ widgets: true }); // none in the file: the default
+    expect(web.front()).toEqual({ widgets: true, sections: [] }); // none in the file: the default
     expect(homey.settings.get(TILE_NAMES_SETTING)).toEqual({ 'web-one-w2': { names: { a: 'Tea' }, updatedAt: expect.any(Number) } });
     expect(tileNames.get(`web-${second.id}-w2`).names).toEqual({});
   });
@@ -665,7 +740,7 @@ describe('web dashboards: backup and restore', () => {
     expect(web.restore({ ...backup, front: { widgets: true } })).toEqual({ dashboards: 1, widgets: 1, skipped: 0 });
     expect(web.list().map(d => d.name)).toEqual(['Hall', 'Kitchen']);
     expect(web.list()[0]).toEqual(backup.dashboards[0]);
-    expect(web.front()).toEqual({ widgets: false }); // not `complete`
+    expect(web.front()).toEqual({ widgets: false, sections: [] }); // not `complete`
     expect(tileNames.get(`web-${a.id}-w1`).names).toEqual({ d1: 'Porch' });
     expect(tileNames.get(`web-${a.id}-w2`).names).toEqual({});
     expect(tileNames.get(`web-${b.id}-w1`).names).toEqual({ d1: 'Oven' });
@@ -789,5 +864,47 @@ return mockSettingSections;`)();
         expect(mock(widget.settings || [], lang), `${type} (${lang})`).toEqual(settingSections(widget.settings || [], lang));
       }
     }
+  });
+});
+
+describe('web dashboards: popups (wk-084)', () => {
+  it('lists, pictures and answers popups for the page, like its other routes', async () => {
+    const { homey } = setup();
+    homey.cloud = { getHomeyId: async () => 'homey-id' };
+    const asked = homey.app.popups.ask({ target: 'all', text: 'Open the garage?', seconds: 30 });
+    await new Promise(r => setTimeout(r, 0));
+    const listed = await api.getWebPopups({ homey, query: {} });
+    expect(listed.popups.map((p: any) => p.text)).toEqual(['Open the garage?']);
+    expect((await api.getWebSetup({ homey, query: {} })).popups!.popups).toHaveLength(1);
+    const { id } = listed.popups[0];
+    await expect(api.getWebPopupImage({ homey, query: {}, params: { id } })).rejects.toThrow('Not found'); // no picture
+    expect(await api.postWebPopupAnswer({ homey, query: {}, params: { id }, body: { answer: true } })).toEqual({ ok: true, answer: true });
+    await expect(asked).resolves.toEqual({ answer: true, answered: true });
+    // Turned off, the page's routes refuse as the rest do.
+    const off = setup({}, false);
+    await expect(api.getWebPopups({ homey: off.homey, query: {} })).rejects.toThrow(/turned off/);
+    await expect(api.postWebPopupAnswer({ homey: off.homey, query: {}, params: { id }, body: { answer: true } })).rejects.toThrow(/turned off/);
+  });
+
+  it('lets the prompt page in with the popup token only, web dashboards on or off', async () => {
+    const { homey } = setup({}, false);
+    await homey.app.popups.show({ target: 'name:hall', text: 'Dinner', seconds: 30 });
+    const { id, token } = homey.app.popups.forScreen('hall').popups[0];
+    const page = await api.postPopup({ homey, params: { id }, body: { t: token, strings: true } });
+    expect(page).toMatchObject({ closed: false, kind: 'message', text: 'Dinner', language: 'en' });
+    expect((page as any).strings.yes).toBe('Yes');
+    // A poll: how it stands, without the strings.
+    const poll = await api.postPopup({ homey, params: { id }, body: { t: token } });
+    expect(poll).toMatchObject({ closed: false, text: 'Dinner' });
+    expect(poll).not.toHaveProperty('strings');
+    await expect(api.postPopup({ homey, params: { id }, body: { t: 'nope' } })).rejects.toThrow('Not found');
+    await expect(api.postPopup({ homey, params: { id }, body: {} })).rejects.toThrow('Not found');
+    await expect(api.postPopupImage({ homey, params: { id }, body: {} })).rejects.toThrow('Not found');
+    await expect(api.postPopupAnswer({ homey, params: { id }, body: { answer: true } })).rejects.toThrow('Not found');
+  });
+
+  it('marks exactly the prompt page routes public', () => {
+    const publicRoutes = Object.entries(app.api).filter(([, r]: [string, any]) => r.public).map(([name]) => name).sort();
+    expect(publicRoutes).toEqual(['postPopup', 'postPopupAnswer', 'postPopupImage']);
   });
 });

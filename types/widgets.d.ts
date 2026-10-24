@@ -11,6 +11,13 @@ interface Window {
   /** settings/dashboard.js, the web dashboards page; `io` is the vendored socket.io-client (settings/socket.io.js). */
   mountWebDashboards: (root: HTMLElement) => void;
   io: (url: string, opts?: object) => any;
+  /** Wide widgets' columns on the web dashboards (settings/dashboard-layout.js). */
+  WidgetkeeperLayout: {
+    spanOf: (w: any, c: number, count: number) => number,
+    expand: (columns: any[][]) => any[][],
+    collapse: (columns: any[][]) => any[][],
+    place: (columns: any[][], heightOf: (entry: any) => number, gap: number) => { entry: any, top: number, margin: number, height: number, hidden: boolean }[][],
+  };
   createElectricityWidget: (root: HTMLElement, opts?: object) => any;
   /** The chart module shared by the Electricity Overview and Charts (widgets/electricity/public/chart.js). */
   WidgetkeeperChart: any;
@@ -29,10 +36,13 @@ interface Window {
   valueMatrixRows: (devices: object[], mode?: string) => { key: string, name?: string, missing?: true, devices: object[], values: Record<string, number | null> }[];
   roomHealthRooms: (devices: object[]) => { key: string, name?: string, missing?: true, sensors: object[], values: Record<string, number | null> }[];
   createWeatherWidget: (root: HTMLElement, opts?: object) => any;
+  createPollenWidget: (root: HTMLElement, opts?: object) => any;
+  pollenTypes: (settings: Record<string, unknown>) => string[];
   createCamerasWidget: (root: HTMLElement, opts?: object) => any;
   createHeatmapWidget: (root: HTMLElement, opts?: object) => any;
   createValuesWidget: (root: HTMLElement, opts?: object) => any;
   createLightsWidget: (root: HTMLElement, opts?: object) => any;
+  createLightRoomsWidget: (root: HTMLElement, opts?: object) => any;
   createSparklinesWidget: (root: HTMLElement, opts?: object) => any;
   createVariablesWidget: (root: HTMLElement, opts?: object) => any;
   variableNameKeys: (slots: { id: string }[]) => string[];
@@ -43,6 +53,15 @@ interface Window {
   /** The shared kit (widgets/spacer/public/kit.js), which every widget's index.html loads first. */
   WidgetkeeperKit: {
     icons: Record<string, { d: string, fill?: boolean }>,
+    /** Light Controls' and Lights by Room's colours: chip glyphs, swatch palettes, a light's, swatch's or Mood's colour. */
+    lights: {
+      glyphs: Record<'temp' | 'hue' | 'close' | 'pie', string>,
+      PALETTES: Record<string, { colors: number[][], whites: number[] }>,
+      temperatureColor: (k: number) => string,
+      hueColor: (hue: number, sat: number) => string,
+      lightColor: (caps: Record<string, { value: unknown }>) => string,
+      moodDot: (colors: ({ hue: number, saturation: number } | { temperature: number })[]) => string | null,
+    },
     TIGHT_UNITS: RegExp,
     KEY_PROBLEMS: string[],
     scaled: (cap: any, value: number) => number,
@@ -56,6 +75,8 @@ interface Window {
     formatSince: (ms: number, now: number, language?: string, locale?: string, timeFormat?: unknown) => string,
     baseTitle: (title: unknown) => string,
     lowestSlot: (slots: any[], from: number, hours: number) => number,
+    timeSpan: (span: string, at: number) => { from: number, to: number, end: number },
+    isTimeSpan: (span: unknown) => boolean,
     wireFrame: (Homey: any, frame: HTMLElement) => {
       height: () => number,
       setHeight: () => void,
@@ -77,11 +98,14 @@ interface Window {
       query?: () => string,
       need?: (ids: string[]) => string | null,
       watches?: (id: string) => boolean,
+      setState?: ((state: any) => void) | null,
       onState?: ((state: any) => void) | null,
     }) => { ids: () => string[], loaded: () => boolean },
     COLORS: string[],
     colorStyle: (value: unknown) => 'soft' | 'deep',
     applyColors: (root: HTMLElement, opts?: { style?: unknown, color?: unknown, fallback?: string | null }) => 'soft' | 'deep',
+    /** Timers' beep and the popups' sounds, through one AudioContext per page. */
+    sound: { names: string[], unlock: () => void, play: (name: unknown) => boolean },
   };
   createVarPresetsWidget: (root: HTMLElement, opts?: object) => any;
   varPresetsFromSettings: (settings: Record<string, any>) => { value: boolean | number | string, type: string, label: string }[];
@@ -100,6 +124,8 @@ interface Window {
   createClockWidget: (root: HTMLElement, opts?: object) => any;
   createTextLineWidget: (root: HTMLElement, opts?: object) => any;
   textLineBoardKey: (name: unknown) => string;
+  createPopupsWidget: (root: HTMLElement, opts?: object) => any;
+  popupsScreenKey: (name: unknown) => string;
   textLineTilt: (seed: unknown) => number;
   createDaysSinceWidget: (root: HTMLElement, opts?: object) => any;
   daysSinceCountersFromSettings: (settings: Record<string, any>) => { key: string, name: string, icon: string | null, amber: number | null, red: number | null }[];
@@ -110,6 +136,9 @@ interface Window {
   daysSinceProgress: (counter: { amber: number | null, red: number | null }, resetAt: number | null, now: number) => { fill: number, left: number | null, over: number | null } | null;
   createSpacerWidget: (root: HTMLElement, opts?: { height?: unknown }) => { height: number };
   spacerHeight: (value: unknown) => number;
+  createWebPageWidget: (root: HTMLElement, opts?: object) => any;
+  webPageAddress: (raw: unknown, loc?: { lat: number, lon: number } | null) => { url?: string, error?: string };
+  webPageBox: (width: number, pageWidth: number, pageHeight: number) => { width: number, height: number, scale: number, boxHeight: number };
   mediaSource: (caps: object) => 'tv' | 'lineIn' | null;
   mediaButtonsFromSettings: (settings: object) => { id: string, name: string, icon: string | null }[];
   sparkPath: (points: [number, number][], from: number, to: number, w: number, h: number) => { line: string, area: string, dot: { x: number, y: number }, min: number, max: number } | null;
@@ -122,11 +151,14 @@ interface Window {
   mountShortcutsWidget: MountWidget;
   mountHeatmapWidget: MountWidget;
   mountLightsWidget: MountWidget;
+  mountLightRoomsWidget: MountWidget;
   mountLocksWidget: MountWidget;
   mountMediaWidget: MountWidget;
   mountClockWidget: MountWidget;
   mountTextLineWidget: MountWidget;
+  mountPopupsWidget: MountWidget;
   mountSpacerWidget: MountWidget;
+  mountWebPageWidget: MountWidget;
   mountDaysSinceWidget: MountWidget;
   mountPriceWidget: MountWidget;
   mountQuickActionsWidget: MountWidget;
@@ -142,6 +174,7 @@ interface Window {
   mountVariablesWidget: MountWidget;
   mountVarPresetsWidget: MountWidget;
   mountWeatherWidget: MountWidget;
+  mountPollenWidget: MountWidget;
   mountStackWidget: MountWidget;
   createStackWidget: (root: HTMLElement, opts?: object) => any;
   createStackAttentionWatcher: (pages: any[], io: object) => { refresh: () => Promise<unknown>, attention: (id: string) => boolean };

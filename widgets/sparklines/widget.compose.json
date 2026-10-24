@@ -127,6 +127,42 @@
           }
         },
         {
+          "id": "today",
+          "title": {
+            "en": "Today",
+            "nl": "Vandaag",
+            "de": "Heute",
+            "fr": "Aujourd'hui",
+            "it": "Oggi",
+            "sv": "I dag",
+            "no": "I dag",
+            "es": "Hoy",
+            "da": "I dag",
+            "ru": "Сегодня",
+            "pl": "Dziś",
+            "ko": "오늘",
+            "ar": "اليوم"
+          }
+        },
+        {
+          "id": "yesterday",
+          "title": {
+            "en": "Yesterday",
+            "nl": "Gisteren",
+            "de": "Gestern",
+            "fr": "Hier",
+            "it": "Ieri",
+            "sv": "I går",
+            "no": "I går",
+            "es": "Ayer",
+            "da": "I går",
+            "ru": "Вчера",
+            "pl": "Wczoraj",
+            "ko": "어제",
+            "ar": "أمس"
+          }
+        },
+        {
           "id": "2d",
           "title": {
             "en": "2 days",

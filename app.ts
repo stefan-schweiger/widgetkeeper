@@ -13,6 +13,10 @@ import LightService from './lib/LightService.js';
 import LockService from './lib/LockService.js';
 import MediaService from './lib/MediaService.js';
 import PersonalApiKey from './lib/PersonalApiKey.js';
+import PollenService from './lib/PollenService.js';
+import PopupService, {
+  POPUP_ASK_CARD, POPUP_ASK_IMAGE_CARD, POPUP_CLOSE_CARD, POPUP_SHOW_CARD, POPUP_SHOW_IMAGE_CARD,
+} from './lib/PopupService.js';
 import QuickActionService from './lib/QuickActionService.js';
 import RoomHealthService from './lib/RoomHealthService.js';
 import ValueMatrixService from './lib/ValueMatrixService.js';
@@ -27,7 +31,7 @@ import ValueService from './lib/ValueService.js';
 import VariableService from './lib/VariableService.js';
 import WeatherService from './lib/WeatherService.js';
 import WebDashboardService from './lib/WebDashboardService.js';
-import WebPassword from './lib/WebPassword.js';
+import WebPassword, { WEB_PASSWORD_REMOVE_CARD } from './lib/WebPassword.js';
 import { widgetAutocompletes } from './lib/widgetAutocompletes.js';
 
 export default class WidgetkeeperApp extends Homey.App {
@@ -40,6 +44,7 @@ export default class WidgetkeeperApp extends Homey.App {
   roomHealth!: RoomHealthService;
   valueMatrix!: ValueMatrixService;
   weather!: WeatherService;
+  pollen!: PollenService;
   heatmap!: HeatmapService;
   cameras!: CameraService;
   values!: ValueService;
@@ -60,6 +65,8 @@ export default class WidgetkeeperApp extends Homey.App {
   web!: WebDashboardService;
   /** The web dashboards' optional password and the browsers signed in with it. */
   webPassword!: WebPassword;
+  /** Messages and Yes/No questions that Flows show on web dashboards and Popups widgets. */
+  popups!: PopupService;
   /** The user's personal API key, shared by Variables, Flow Buttons, Media and the Smart Stack (the app's token may only read). */
   apiKey!: PersonalApiKey;
 
@@ -84,6 +91,8 @@ export default class WidgetkeeperApp extends Homey.App {
     this.valueMatrix.start();
     this.weather = new WeatherService(this.homey, log, debug);
     this.weather.start();
+    this.pollen = new PollenService(this.homey, log, debug);
+    this.pollen.start();
     this.heatmap = new HeatmapService(this.homey, log, debug);
     this.heatmap.start();
     this.cameras = new CameraService(this.homey, log, debug);
@@ -118,6 +127,9 @@ export default class WidgetkeeperApp extends Homey.App {
     this.web = new WebDashboardService(this.homey, log, widgetAutocompletes(this), this.tileNames);
     this.adoptOldTileNames();
     this.webPassword = new WebPassword(this.homey, log);
+    this.homey.flow.getActionCard(WEB_PASSWORD_REMOVE_CARD).registerRunListener(async () => this.webPassword.clear());
+    this.popups = new PopupService(this.homey, { cameras: this.cameras, web: this.web }, log, debug);
+    this.registerPopupFlows();
     this.registerAutocompletes();
     this.debug('Widgetkeeper has been initialized');
   }
@@ -161,6 +173,7 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.roomHealth?.stop();
     await this.valueMatrix?.stop();
     await this.weather?.stop();
+    await this.pollen?.stop();
     await this.heatmap?.stop();
     await this.cameras?.stop();
     await this.values?.stop();
@@ -172,6 +185,7 @@ export default class WidgetkeeperApp extends Homey.App {
     await this.locks?.stop();
     await this.curtains?.stop();
     await this.media?.stop();
+    this.popups?.stop();
   }
 
   /** Every widget's autocomplete settings (`lib/widgetAutocompletes.ts`, which the web dashboards' editor uses too). */
@@ -246,12 +260,49 @@ export default class WidgetkeeperApp extends Homey.App {
     isOverdue.registerRunListener(async (args: Args) => this.daysSince.isOverdue(args.counter));
   }
 
+  /**
+   * The Popups cards: *Show …* and *Ask …* (with a camera or an address as the picture, or an image tag dropped on the
+   * `_image` ones; *Ask* waits for the answer and hands it back as tags), and *Close the popups on …*.
+   */
+  private registerPopupFlows() {
+    type Screen = { screen?: { id?: string } };
+    type Shown = Screen & { text: string, duration: number, unit: string, sound?: string };
+    type Asked = Screen & { question: string, seconds: number, sound?: string };
+    const screens = async (query: string) => this.popups.targetItems(query);
+    const pictures = async (query: string) => this.popups.pictureItems(query);
+    const seconds = (args: Shown) => args.duration * (args.unit === 'minutes' ? 60 : 1);
+    for (const id of [POPUP_SHOW_CARD, POPUP_ASK_CARD, POPUP_SHOW_IMAGE_CARD, POPUP_ASK_IMAGE_CARD, POPUP_CLOSE_CARD]) {
+      this.homey.flow.getActionCard(id).registerArgumentAutocompleteListener('screen', screens);
+    }
+    for (const id of [POPUP_SHOW_CARD, POPUP_ASK_CARD]) {
+      this.homey.flow.getActionCard(id).registerArgumentAutocompleteListener('picture', pictures);
+    }
+    this.homey.flow.getActionCard(POPUP_SHOW_CARD)
+      .registerRunListener(async (args: Shown & { picture?: { id?: string } }) => this.popups.show({
+        target: args.screen?.id, text: args.text, seconds: seconds(args), picture: PopupService.pictureArg(args.picture), sound: args.sound,
+      }));
+    this.homey.flow.getActionCard(POPUP_SHOW_IMAGE_CARD)
+      .registerRunListener(async (args: Shown & { droptoken?: unknown }) => this.popups.show({
+        target: args.screen?.id, text: args.text, seconds: seconds(args), picture: PopupService.droptokenArg(args.droptoken), sound: args.sound,
+      }));
+    this.homey.flow.getActionCard(POPUP_ASK_CARD)
+      .registerRunListener(async (args: Asked & { picture?: { id?: string } }) => this.popups.ask({
+        target: args.screen?.id, text: args.question, seconds: args.seconds, picture: PopupService.pictureArg(args.picture), sound: args.sound,
+      }));
+    this.homey.flow.getActionCard(POPUP_ASK_IMAGE_CARD)
+      .registerRunListener(async (args: Asked & { droptoken?: unknown }) => this.popups.ask({
+        target: args.screen?.id, text: args.question, seconds: args.seconds, picture: PopupService.droptokenArg(args.droptoken), sound: args.sound,
+      }));
+    this.homey.flow.getActionCard(POPUP_CLOSE_CARD)
+      .registerRunListener(async (args: Screen) => this.popups.close(args.screen?.id));
+  }
+
   /** The trigger *… became overdue*: the counter's name and its days since the reset; `state` picks the Flows of that counter. */
   private daysSinceOverdue(counter: OverdueCounter) {
     return this.homey.flow.getTriggerCard(DAYS_SINCE_OVERDUE_CARD).trigger({ counter: counter.name, days: counter.days }, { key: counter.key });
   }
 
-  /** The Flow card *A timer finished*: the timer's name (or its duration, as the widget shows it) and its minutes. */
+  /** The Flow card *A timer on the Timers widget finished*: the timer's name (or its duration, as the widget shows it) and its minutes. */
   private timerFinished(timer: Timer) {
     const minutes = Math.round(timer.duration / 6e3) / 10;
     const name = timer.label

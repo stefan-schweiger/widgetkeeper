@@ -50,6 +50,7 @@
     themeDark: 'Dark',
     themeLight: 'Light',
     darkLight: 'Dark or light',
+    darkLightText: "Automatic follows each dashboard's theme.",
     background: 'Background',
     bgDefault: 'Default',
     bgBlack: 'Black/White',
@@ -59,7 +60,12 @@
     bgPlum: 'Plum',
     bgBerry: 'Berry',
     bgSand: 'Sand',
-    arrangeHint: 'Drag the dashboards to change their order.',
+    arrangeHint: 'Drag the dashboards to change their order or section.',
+    addSection: 'Add section',
+    newSection: 'New section',
+    sectionName: 'Section name',
+    deleteSection: 'Delete section',
+    sectionEmpty: 'Drag dashboards here',
     showWidgets: 'Show on the front page',
     duplicate: 'Duplicate',
     copyName: '__name__ (copy)',
@@ -99,6 +105,9 @@
     remove: 'Remove',
     widgetTitle: 'Title',
     widgetTitleHint: 'Shown above the widget. Leave it empty for none.',
+    width: 'Width',
+    widthHint: 'How many columns it spans.',
+    resize: 'Drag to change the width',
     devices: 'Devices',
     device: 'Device',
     search: 'Search',
@@ -146,6 +155,13 @@
     notInstalled: '__name__ isn\'t installed.',
     trustTitle: 'Trust this widget',
     trustHint: 'Runs it outside the sandbox, for a widget that doesn\'t work in it. A trusted widget can read this browser\'s API key.',
+    popupYes: 'Yes',
+    popupNo: 'No',
+    popupElsewhereYes: 'Answered on another screen: Yes',
+    popupElsewhereNo: 'Answered on another screen: No',
+    popupClose: 'Close',
+    popupPictureFailed: 'The picture could not be loaded',
+    popupAnswerFailed: 'The answer didn\'t reach Homey',
     about: {
       electricity: 'Live power, the day\'s prices and your usage in charts.',
       thermostat: 'Three preset buttons for a thermostat or an aircon.',
@@ -155,10 +171,12 @@
       roomhealth: "Each room's temperature, humidity and air at a glance, yellow to red when one is off.",
       valuematrix: 'Devices or rooms against chosen values, green, orange or red by their range.',
       weather: 'The next 36 hours, hour by hour.',
+      pollen: "Today's pollen and the UV peak, for Europe.",
       heatmap: 'A week of any value as a weekday × hour heatmap.',
       cameras: 'Camera snapshots, with live video on a tap.',
       values: 'Any device value as a compact tile.',
       lights: 'Light tiles with brightness and colour at hand.',
+      lightrooms: "Every room's lights on a card: switch a room, or open it for its lights and Moods.",
       sparklines: 'Values with a small chart of their recent history.',
       charts: 'One or two charts of any value, like the electricity ones.',
       variables: 'Variables as rows you can switch or change.',
@@ -175,13 +193,15 @@
       dayssince: "Days since a chore was done, turning red when it's due.",
       stack: 'Widgets from another dashboard, taking turns.',
       shortcuts: 'Jump to your other web dashboards, in your colours and icons.',
+      webpage: 'Any web page, scaled to fill the widget.',
+      popups: 'Shows the popups that Flows send to its screen name here too.',
     },
   };
 
   const KEY_STORAGE = 'widgetkeeper.web.key';
   /** The session token from signing in with the web dashboards password (when one is set), on top of the key. */
   const SESSION_STORAGE = 'widgetkeeper.web.session';
-  /** This browser's own dark or light (the bar's button), over the dashboard's theme; none follows the dashboard. */
+  /** This browser's own dark or light (Settings, This browser), over the dashboard's theme; none follows the dashboard. */
   const THEME_STORAGE = 'widgetkeeper.web.theme';
   /** Keep screen on (`'1'`), this browser's choice in Settings; absent lets the screen sleep. */
   const AWAKE_STORAGE = 'widgetkeeper.web.awake';
@@ -194,10 +214,16 @@
   /** After a realtime outage this long, the frames reload: they may have missed changes (they re-read every 5 min). */
   const STALE_AFTER_MS = 30e3;
   const CONFIRM_MS = 3000;
+  /** A popup's camera picture is read again this often while it shows. */
+  const CAMERA_REFRESH_MS = 3000;
+  /** How long "Answered on another screen" shows before the popup closes. */
+  const ELSEWHERE_MS = 2000;
   /** A press on a widget's bar that moves this far is a drag. */
   const DRAG_SLOP = 6;
   /** Near the window's top or bottom edge, a drag scrolls the page. */
   const EDGE_PX = 64;
+  /** Wide widgets' columns (settings/dashboard-layout.js, loaded first). */
+  const LAYOUT = window.WidgetkeeperLayout;
 
   function storageGet(key) {
     try { return localStorage.getItem(key); } catch (e) { return null; }
@@ -277,8 +303,6 @@
     pen: 'M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16v4zM13.5 6.5l4 4',
     fullScreen: 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5',
     fullScreenExit: 'M9 4v5H4M15 4v5h5M20 15h-5v5M4 15h5v5',
-    moon: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
-    sun: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2.5v2M12 19.5v2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M2.5 12h2M19.5 12h2M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4',
     plus: 'M12 5v14M5 12h14',
     left: 'M15 5l-7 7 7 7',
     right: 'M9 5l7 7-7 7',
@@ -286,6 +310,13 @@
     grip: 'M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01',
     close: 'M6 6l12 12M18 6L6 18',
     down: 'M6 9l6 6 6-6',
+    up: 'M6 15l6-6 6 6',
+    columns: 'M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM9.5 4v16M14.5 4v16',
+    minus: 'M5 12h14',
+    // The Theme pill's: Automatic (a half-filled circle: `fill`), Dark, Light.
+    contrast: { d: 'M12 4a8 8 0 1 0 0 16a8 8 0 1 0 0-16z', fill: 'M12 4a8 8 0 0 1 0 16z' },
+    moon: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
+    sun: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2.5v2M12 19.5v2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M2.5 12h2M19.5 12h2M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4',
     sliders: 'M4 6h9M17 6h3M15 4v4M4 12h3M11 12h9M9 10v4M4 18h11M19 18h1M17 16v4',
     trash: 'M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3',
     copy: 'M10 9h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2zM16 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2',
@@ -320,9 +351,17 @@
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('aria-hidden', 'true');
+    const def = ICONS[name];
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', ICONS[name]);
+    path.setAttribute('d', typeof def === 'string' ? def : def.d);
     svg.append(path);
+    if (typeof def !== 'string' && def.fill) {
+      const solid = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      solid.setAttribute('d', def.fill);
+      solid.setAttribute('fill', 'currentColor');
+      solid.setAttribute('stroke', 'none');
+      svg.append(solid);
+    }
     return svg;
   }
 
@@ -490,16 +529,18 @@
   window.mountWebDashboards = function (root, opts = {}) {
     let key = storageGet(KEY_STORAGE);
     let session = storageGet(SESSION_STORAGE);
-    let setup = null; // `/web/setup`: {appId, homeyId, language, strings, widgets, dashboards, front, maxDashboards}
-    let maxDashboards = 64; // the most the app keeps (`/web/setup`'s, from lib/WebDashboardService.ts)
+    let setup = null; // `/web/setup`: {appId, homeyId, language, strings, widgets, dashboards, front, maxDashboards, maxSections, popups}
+    // The most dashboards and front page sections the app keeps (`/web/setup`'s, from lib/WebDashboardService.ts).
+    let maxDashboards = 64;
+    let maxSections = 20;
     let types = new Map(); // widget id → its type (name, settings, devices …)
     let foreign = new Map(); // another app's widget (`homey:app:<appId>:<id>`) → its type, from Homey's list
     let foreignState = null; // that list: 'ok', 'noScope' (this key may not read it) or 'failed'
     const appLocales = new Map(); // app id → Promise of its strings
     const typeOf = (type) => types.get(type) || foreign.get(type);
     let dashboards = [];
-    let frontPage = { widgets: true }; // the front page's choices (`/web/setup`'s `front`), made in its edit mode
-    let current = null; // {dashboard, editing, grid, columns: Map<widget id, {el, sig}>}
+    let frontPage = { widgets: true, sections: [] }; // the front page's choices (`/web/setup`'s `front`), made in its edit mode
+    let current = null; // {dashboard, editing, grid, widgets: Map<widget id, {el, sig}>, covers: Map<`<id>@<column>`, el>}
     let live = false;
     let socketStarted = false;
     const frames = new Set(); // {widget, iframe, subs: Map<callbackId, event>}
@@ -569,10 +610,12 @@
       setup = await request('GET', '/web/setup');
       types = new Map((setup.widgets || []).map(w => [w.type, w]));
       dashboards = setup.dashboards || [];
-      frontPage = setup.front || { widgets: true };
+      frontPage = { widgets: true, sections: [], ...setup.front };
       if (setup.maxDashboards > 0) maxDashboards = setup.maxDashboards;
+      if (setup.maxSections > 0) maxSections = setup.maxSections;
       if (setup.language) document.documentElement.lang = setup.language;
       if (setup.disabled || setup.passwordRequired) return; // turned off, or the password first: `route()` says so
+      setPopups(setup.popups && setup.popups.popups, setup.popups && setup.popups.now);
       if (!socketStarted) {
         socketStarted = true;
         connectSocket();
@@ -742,6 +785,7 @@
         retryMs = 2000;
         setLive(true);
         if (lostAt != null && Date.now() - lostAt > STALE_AFTER_MS) reloadFrames();
+        if (lostAt != null) refreshPopups();
         lostAt = null;
       } catch (err) {
         fail(err);
@@ -790,7 +834,7 @@
       post(frame, { type: 'cb', args: [error, result === undefined ? null : result], callbackId });
     }
 
-    /** This browser's own choice from the bar's button (`dark` or `light`), or null. */
+    /** This browser's own mode (`dark` or `light`, from Settings' This browser), or null. */
     function ownTheme() {
       const v = storageGet(THEME_STORAGE);
       return v === 'dark' || v === 'light' ? v : null;
@@ -801,15 +845,20 @@
       return theme === 'dark' || (theme !== 'light' && !!(darkQuery && darkQuery.matches));
     }
 
-    function isDark() {
+    /** Whether a dashboard of that theme shows dark in this browser (its own choice first). */
+    function showsDark(theme) {
       const own = ownTheme();
-      return own ? own === 'dark' : themeIsDark(current ? current.dashboard.theme : 'auto');
+      return own ? own === 'dark' : themeIsDark(theme);
     }
 
-    /** A backdrop's colour in the page's mode. */
-    function backdrop(background) {
+    function isDark() {
+      return showsDark(current ? current.dashboard.theme : 'auto');
+    }
+
+    /** A backdrop's colour in the page's mode, or in `dark`'s. */
+    function backdrop(background, dark = isDark()) {
       const pair = BACKGROUNDS[background] || BACKGROUNDS.default;
-      return pair[isDark() ? 1 : 0];
+      return pair[dark ? 1 : 0];
     }
 
     function setFrameHeight(frame, height) {
@@ -986,6 +1035,8 @@
 
     function clearRoot() {
       if (drag) endDrag(false);
+      if (resizing) endResize(false);
+      sizes.disconnect();
       setTitle(null);
       root.classList.remove('editing');
       root.textContent = '';
@@ -1004,18 +1055,7 @@
       else html.style.removeProperty('--wd-bg');
     }
 
-    /** The bar's dark/light button: this browser only; back to following the theme when that shows the same. */
-    function themeButton() {
-      const b = button('wd-icon', '', () => {
-        const dark = !isDark();
-        storageSet(THEME_STORAGE, dark === themeIsDark(current ? current.dashboard.theme : 'auto') ? null : (dark ? 'dark' : 'light'));
-        route(); // redraws the bar and the frames (their signature has the mode), or the front page's previews
-      }, t('darkLight'));
-      b.append(icon(isDark() ? 'sun' : 'moon'));
-      return b;
-    }
-
-    // Full screen: the dashboard's bar keeps only the exit button, the dark/light one and the live note (dashboard.css).
+    // Full screen: the dashboard's bar keeps only the exit button and the live note (dashboard.css).
     for (const type of ['fullscreenchange', 'webkitfullscreenchange']) {
       document.addEventListener(type, () => {
         const page = /** @type {any} */ (document);
@@ -1028,6 +1068,8 @@
     if (darkQuery && darkQuery.addEventListener) {
       darkQuery.addEventListener('change', () => {
         if (ownTheme() || (current && current.dashboard.theme !== 'auto')) return;
+        // The front page: its cards of Automatic dashboards change mode too.
+        if (root.querySelector(':scope > .wd-home')) { route(); return; }
         applyTheme(current ? current.dashboard.theme : 'auto');
         reloadFrames(); // a frame's dark mode is set when it starts
       });
@@ -1165,9 +1207,9 @@
     }
 
     /** A widget type's own preview (as Homey's widget picker shows it), served beside its files, in the page's theme. */
-    function preview(type, className) {
+    function preview(type, className, dark = isDark()) {
       const img = el('img', className);
-      img.src = `${widgetFolder(type)}/preview-${isDark() ? 'dark' : 'light'}.png`;
+      img.src = `${widgetFolder(type)}/preview-${dark ? 'dark' : 'light'}.png`;
       img.alt = '';
       img.loading = 'lazy';
       img.decoding = 'async';
@@ -1190,11 +1232,26 @@
       titles.append(el('h1', 'wd-h1', t('yourDashboards')));
       if (editing) titles.append(el('p', 'wd-muted', t('arrangeHint')));
       head.append(titles);
-      const grid = el('div', 'wd-dashboards');
-      for (const d of dashboards) grid.append(dashboardCard(d, editing));
+      // The dashboards in no section under Your dashboards, then each section under its heading, each ending in a
+      // New dashboard card that makes one there (not while editing).
+      const sections = frontPage.sections || [];
+      const sectionOf = d => (sections.some(x => x.id === d.section) ? d.section : '');
+      const grid = dashboardGrid('');
+      for (const d of dashboards) if (!sectionOf(d)) grid.append(dashboardCard(d, editing));
+      if (!editing) grid.append(newDashboardCard(''));
+      page.append(head, grid);
+      sections.forEach((section, i) => {
+        const g = dashboardGrid(section.id);
+        for (const d of dashboards) if (sectionOf(d) === section.id) g.append(dashboardCard(d, editing));
+        if (!editing) g.append(newDashboardCard(section.id));
+        page.append(editing ? sectionEditHead(section, i) : el('h2', 'wd-group-title', section.name || t('untitled')), g);
+      });
       if (editing) {
-        arrangeCards(grid);
-        page.append(head, grid);
+        const add = button('wd-btn wd-group-add', '', () => addSection(), t('addSection'));
+        add.append(icon('plus'), el('span', null, t('addSection')));
+        add.disabled = sections.length >= maxSections;
+        page.append(add);
+        arrangeCards(page);
         if (types.size) page.append(widgetCarousel(true));
         const settings = button('wd-btn quiet', '', () => pageSettings(), t('pageSettings'));
         settings.append(icon('sliders'), el('span', 'wd-bar-label', t('pageSettings')));
@@ -1203,10 +1260,22 @@
         root.append(bar(brand(), el('span', 'wd-spacer'), settings, done), page);
         return;
       }
+      if (types.size && frontPage.widgets) page.append(widgetCarousel());
+
+      const edit = el('a', 'wd-icon');
+      edit.href = '#/edit';
+      edit.title = t('edit');
+      edit.setAttribute('aria-label', t('edit'));
+      edit.append(icon('pen'));
+      root.append(bar(brand(), el('span', 'wd-spacer'), liveNote(), edit), page);
+    }
+
+    /** The New dashboard card: makes an empty dashboard in `section` (`''`: none) and opens its editor. */
+    function newDashboardCard(section) {
       const add = button('wd-dash wd-dash-new', '', async () => {
         add.disabled = true;
         try {
-          const saved = await request('PUT', '/web/dashboards', { name: t('untitled'), theme: 'auto', columns: [[], [], []] });
+          const saved = await request('PUT', '/web/dashboards', { name: t('untitled'), theme: 'auto', columns: [[], [], []], ...(section ? { section } : {}) });
           dashboards.push(saved);
           location.hash = `#/d/${saved.id}/edit`;
         } catch (err) {
@@ -1217,19 +1286,83 @@
       const plus = el('span', 'wd-dash-plus');
       plus.append(icon('plus'));
       add.append(plus, el('span', 'wd-dash-new-text', t('newDashboard')));
-      grid.append(add);
-      page.append(head, grid);
-      if (types.size && frontPage.widgets) page.append(widgetCarousel());
-
-      const edit = el('a', 'wd-icon');
-      edit.href = '#/edit';
-      edit.title = t('edit');
-      edit.setAttribute('aria-label', t('edit'));
-      edit.append(icon('pen'));
-      root.append(bar(brand(), el('span', 'wd-spacer'), liveNote(), themeButton(), edit), page);
+      return add;
     }
 
-    /** Saves the front page's choices (`order`, `widgets`) after the saves already queued; keeps what the app answers. */
+    /** A grid of dashboard cards, of one section (`''`: none); an empty one says to drag dashboards into it (edit mode). */
+    function dashboardGrid(section) {
+      const grid = el('div', 'wd-dashboards');
+      grid.dataset.section = section;
+      if (section) grid.append(el('p', 'wd-group-empty wd-muted', t('sectionEmpty')));
+      return grid;
+    }
+
+    /** A section's heading in edit mode: its name to type in, ↑ ↓ to move it, and delete (its dashboards stay, in none). */
+    function sectionEditHead(section, i) {
+      const head = el('div', 'wd-group-head');
+      const name = /** @type {HTMLInputElement} */ (el('input', 'wd-input wd-group-name'));
+      name.type = 'text';
+      name.value = section.name;
+      name.maxLength = 60;
+      name.placeholder = t('sectionName');
+      name.setAttribute('aria-label', t('sectionName'));
+      name.dataset.section = section.id;
+      name.addEventListener('keydown', (e) => { if (e.key === 'Enter') name.blur(); });
+      name.addEventListener('change', () => {
+        const value = name.value.trim();
+        if (value === section.name) return;
+        frontPage = { ...frontPage, sections: frontPage.sections.map(x => (x.id === section.id ? { ...x, name: value } : x)) };
+        saveFront({ sections: frontPage.sections });
+      });
+      const move = (step) => {
+        const list = [...frontPage.sections];
+        list.splice(i + step, 0, ...list.splice(i, 1));
+        frontPage = { ...frontPage, sections: list };
+        saveFront({ sections: list });
+        renderList(true);
+        const moved = /** @type {HTMLElement} */ (root.querySelector(`.wd-group-name[data-section="${section.id}"]`));
+        const b = moved && /** @type {HTMLButtonElement} */ (moved.parentElement.querySelector(step < 0 ? '.wd-group-up' : '.wd-group-down'));
+        if (b) (b.disabled ? moved : b).focus();
+      };
+      const up = button('wd-icon wd-group-up', '', () => move(-1), t('moveUp'));
+      up.append(icon('up'));
+      up.disabled = i === 0;
+      const down = button('wd-icon wd-group-down', '', () => move(1), t('moveDown'));
+      down.append(icon('down'));
+      down.disabled = i === frontPage.sections.length - 1;
+      const remove = confirmButton('wd-icon wd-group-delete', icon('trash'), () => {
+        frontPage = { ...frontPage, sections: frontPage.sections.filter(x => x.id !== section.id) };
+        dashboards = dashboards.map(d => (d.section === section.id ? withSection(d, '') : d));
+        saveFront({ sections: frontPage.sections });
+        renderList(true);
+      }, t('tapAgain'), t('deleteSection'));
+      head.append(name, up, down, remove);
+      return head;
+    }
+
+    /** Edit mode: a new section at the end, its name selected to type over. */
+    function addSection() {
+      if ((frontPage.sections || []).length >= maxSections) return;
+      const section = { id: newId(), name: t('newSection') };
+      frontPage = { ...frontPage, sections: [...(frontPage.sections || []), section] };
+      saveFront({ sections: frontPage.sections });
+      renderList(true);
+      const name = /** @type {HTMLInputElement} */ (root.querySelector(`.wd-group-name[data-section="${section.id}"]`));
+      if (!name) return;
+      name.scrollIntoView({ block: 'nearest' });
+      name.focus();
+      name.select();
+    }
+
+    /** A dashboard in a section (`''`: none). */
+    function withSection(d, section) {
+      const copy = { ...d };
+      delete copy.section;
+      if (section) copy.section = section;
+      return copy;
+    }
+
+    /** Saves the front page's choices (`sections`, `placement`, `order`, `widgets`) after the saves already queued; keeps what the app answers. */
     function saveFront(change) {
       saving = saving.then(async () => {
         try {
@@ -1300,8 +1433,16 @@
       const dim = setRow(t('dim'), t('dimText'), amount, slider.id);
       dim.classList.add('wd-dim-row');
       dim.append(slider);
+      // Dark or light: this browser's own mode for every dashboard, or each one's theme (Automatic). The front page
+      // behind redraws in it (the dialog is on body, so it stays).
+      const modes = [['auto', 'themeAuto'], ['dark', 'themeDark'], ['light', 'themeLight']].map(([id, key]) => ({ id, title: t(key) }));
+      const mode = choiceGroup(null, modes, ownTheme() || 'auto', (id) => {
+        storageSet(THEME_STORAGE, id === 'auto' ? null : id);
+        route();
+      }, false);
+      mode.setAttribute('aria-label', t('darkLight'));
       const card = el('div', 'wd-set-card');
-      card.append(awake, dim, setRow(t('keyPlaceholder'), t('forgetKeyText'), forget));
+      card.append(setRow(t('darkLight'), t('darkLightText'), mode), awake, dim, setRow(t('keyPlaceholder'), t('forgetKeyText'), forget));
       browser.append(el('h3', 'wd-h2', t('thisBrowser')), card);
       body.append(backupSection(), browser);
       d.showModal();
@@ -1573,13 +1714,27 @@
     }
 
     /**
-     * The front page's edit mode: a card is dragged (pointer events, so by touch too; the grid holds the capture, as
-     * the card itself moves) and the others make room at once; arrow keys move a focused one. Escape puts them back.
+     * The front page's edit mode: a card is dragged (pointer events, so by touch too; the page holds the capture, as
+     * the card itself moves), within its section or into another (`page`'s grids), and the others make room at once;
+     * arrow keys move a focused one, on into the next or previous section at either end. Escape puts them back.
      */
-    function arrangeCards(grid) {
-      const cards = () => [...grid.querySelectorAll('.wd-dash[data-id]')];
-      const order = () => cards().map(c => /** @type {HTMLElement} */ (c).dataset.id);
-      let move = null; // {card, pointerId, x0, y0, active, before: the order when it started}
+    function arrangeCards(page) {
+      const grids = () => /** @type {HTMLElement[]} */ ([...page.querySelectorAll('.wd-dashboards')]);
+      const cards = () => /** @type {HTMLElement[]} */ ([...page.querySelectorAll('.wd-dashboards > .wd-dash[data-id]')]);
+      // Where every card is, first to last: its id and section.
+      const arrangement = () => cards().map(c => ({ id: c.dataset.id, section: /** @type {HTMLElement} */ (c.parentElement).dataset.section }));
+      const save = () => {
+        const now = arrangement();
+        const placement = Object.fromEntries(now.map(x => [x.id, x.section || null]));
+        // The page's own copy at once, so a redraw before the app answers (a section added) keeps it.
+        const byId = new Map(dashboards.map(d => [d.id, d]));
+        dashboards = [
+          ...now.filter(x => byId.has(x.id)).map(x => withSection(byId.get(x.id), x.section)),
+          ...dashboards.filter(d => !(d.id in placement)),
+        ];
+        saveFront({ order: now.map(x => x.id), placement });
+      };
+      let move = null; // {card, pointerId, x0, y0, active, before: the arrangement when it started}
       const finish = (keep) => {
         if (!move) return;
         const { card, active, before } = move;
@@ -1587,22 +1742,26 @@
         if (!active) return;
         card.classList.remove('lifted');
         root.classList.remove('dragging');
-        const now = order();
         if (!keep) {
-          for (const id of before) grid.append(cards().find(c => /** @type {HTMLElement} */ (c).dataset.id === id));
-        } else if (now.join() !== before.join()) {
-          saveFront({ order: now });
+          for (const x of before) grids().find(g => g.dataset.section === x.section).append(cards().find(c => c.dataset.id === x.id));
+        } else if (JSON.stringify(arrangement()) !== JSON.stringify(before)) {
+          save();
         }
       };
-      grid.addEventListener('pointerdown', (e) => {
-        const card = /** @type {Element} */ (e.target).closest('.wd-dash[data-id]');
-        // A card's own button (Duplicate) is pressed, not dragged: the grid's capture would take its click.
-        if (move || !card || e.button !== 0 || /** @type {Element} */ (e.target).closest('button')) return;
-        move = { card, pointerId: e.pointerId, x0: e.clientX, y0: e.clientY, active: false, before: order() };
-        try { grid.setPointerCapture(e.pointerId); } catch (err) { /* moves still come while over the grid */ }
+      const under = (node, e) => {
+        const r = node.getBoundingClientRect();
+        return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      };
+      page.addEventListener('pointerdown', (e) => {
+        const card = /** @type {Element} */ (e.target).closest('.wd-dashboards > .wd-dash[data-id]');
+        // A card's own buttons (the pen, Duplicate) are pressed, not dragged: the page's capture would take their click.
+        // The card's own link has no href here.
+        if (move || !card || e.button !== 0 || /** @type {Element} */ (e.target).closest('button, a[href]')) return;
+        move = { card, pointerId: e.pointerId, x0: e.clientX, y0: e.clientY, active: false, before: arrangement() };
+        try { page.setPointerCapture(e.pointerId); } catch (err) { /* moves still come while over the page */ }
         e.preventDefault();
       });
-      grid.addEventListener('pointermove', (e) => {
+      page.addEventListener('pointermove', (e) => {
         if (!move || e.pointerId !== move.pointerId) return;
         if (!move.active) {
           if (Math.hypot(e.clientX - move.x0, e.clientY - move.y0) < DRAG_SLOP) return;
@@ -1614,53 +1773,70 @@
         if (e.clientY < EDGE_PX) window.scrollBy(0, -16);
         else if (e.clientY > h - EDGE_PX) window.scrollBy(0, 16);
         const all = cards();
-        const over = all.find((c) => {
-          if (c === move.card) return false;
-          const r = c.getBoundingClientRect();
-          return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
-        });
-        if (!over) return;
-        const after = all.indexOf(over) > all.indexOf(move.card);
-        grid.insertBefore(move.card, after ? over.nextSibling : over);
+        const over = all.find(c => c !== move.card && under(c, e));
+        if (over) {
+          const after = all.indexOf(over) > all.indexOf(move.card);
+          over.parentElement.insertBefore(move.card, after ? over.nextSibling : over);
+          return;
+        }
+        // Over another section with no card under the pointer (an empty one, or past its last card): at its end.
+        const grid = grids().find(g => g !== move.card.parentElement && under(g, e));
+        if (grid) grid.append(move.card);
       });
-      grid.addEventListener('pointerup', (e) => { if (move && e.pointerId === move.pointerId) finish(true); });
-      grid.addEventListener('pointercancel', () => finish(false));
-      grid.addEventListener('lostpointercapture', () => finish(true));
-      grid.addEventListener('keydown', (e) => {
+      page.addEventListener('pointerup', (e) => { if (move && e.pointerId === move.pointerId) finish(true); });
+      page.addEventListener('pointercancel', () => finish(false));
+      page.addEventListener('lostpointercapture', () => finish(true));
+      page.addEventListener('keydown', (e) => {
         const card = /** @type {HTMLElement} */ (e.target);
         const step = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
-        if (!step || !card.matches('.wd-dash[data-id]')) return;
+        if (!step || !card.matches('.wd-dashboards > .wd-dash[data-id]')) return;
         e.preventDefault();
-        const all = cards();
-        const other = all[all.indexOf(card) + step];
-        if (!other) return;
-        grid.insertBefore(card, step > 0 ? other.nextSibling : other);
+        const grid = /** @type {HTMLElement} */ (card.parentElement);
+        const mine = [...grid.querySelectorAll(':scope > .wd-dash[data-id]')];
+        const other = mine[mine.indexOf(card) + step];
+        if (other) {
+          grid.insertBefore(card, step > 0 ? other.nextSibling : other);
+        } else {
+          // Past either end: the next section's start, or the previous one's end.
+          const next = grids()[grids().indexOf(grid) + step];
+          if (!next) return;
+          if (step > 0) next.insertBefore(card, next.querySelector(':scope > .wd-dash[data-id]'));
+          else next.append(card);
+        }
         card.focus();
-        saveFront({ order: order() });
+        card.scrollIntoView({ block: 'nearest' });
+        save();
       });
       window.addEventListener('keydown', function escape(e) {
-        if (!grid.isConnected) { window.removeEventListener('keydown', escape); return; }
+        if (!page.isConnected) { window.removeEventListener('keydown', escape); return; }
         if (e.key === 'Escape' && move) finish(false);
       });
     }
 
     /**
-     * A dashboard's card: a miniature of its columns (each widget as its preview), its name and widget count. While
-     * the front page is edited it opens nothing: it's dragged (a grip in place of the pen), and it has Duplicate and Delete
-     * (a second tap).
+     * A dashboard's card: a miniature of its columns (each widget as its preview), its name and widget count; it opens
+     * the dashboard. While the front page is edited it opens nothing: it's dragged (a grip), and it has a pen (the
+     * dashboard's editor), Duplicate and Delete (a second tap).
      */
     function dashboardCard(d, editing = false) {
       const card = el('div', 'wd-dash');
       card.dataset.id = d.id;
-      const art = el('div', 'wd-dash-art');
-      if (d.background && d.background !== 'default') art.style.setProperty('--wd-bg', backdrop(d.background));
-      const columns = d.columns.length ? d.columns : [[]];
-      for (const column of columns) {
-        const col = el('div', 'wd-dash-col');
-        for (const w of column.slice(0, 3)) col.append(preview(w.type, 'wd-dash-thumb'));
-        if (!column.length) col.append(el('span', 'wd-dash-thumb empty'));
-        art.append(col);
-      }
+      // The miniature in the mode the dashboard shows in (a Dark one on a light page too), the page's for Automatic.
+      const dark = showsDark(d.theme);
+      const art = el('div', `wd-dash-art ${dark ? 'dark' : 'light'}`);
+      if (d.background && d.background !== 'default') art.style.setProperty('--wd-bg', backdrop(d.background, dark));
+      // A grid of the columns, a row per widget: the first three rows, a wide widget across the columns it covers
+      // (placed as on the dashboard, every widget one row high), an empty column dashed.
+      const columns = LAYOUT.expand(d.columns.length ? d.columns : [[]]);
+      art.style.setProperty('--cols', String(columns.length));
+      LAYOUT.place(columns, () => 1, 0).forEach((placed, c) => {
+        if (!columns[c].length) art.append(thumbAt(el('span', 'wd-dash-thumb empty'), c, 0, 1));
+        for (const { entry, top, hidden } of placed) {
+          if (hidden || entry.cover || top >= 3) continue;
+          const span = LAYOUT.spanOf(entry, c, columns.length);
+          art.append(thumbAt(preview(entry.type, `wd-dash-thumb${span > 1 ? ' wide' : ''}`, dark), c, top, span));
+        }
+      });
       const link = el('a', 'wd-dash-link');
       if (!editing) link.href = `#/d/${d.id}`;
       const count = d.columns.reduce((n, c) => n + c.length, 0);
@@ -1671,24 +1847,29 @@
         card.tabIndex = 0;
         card.setAttribute('aria-roledescription', t('drag'));
         card.setAttribute('aria-label', d.name || t('untitled'));
-        const grip = el('span', 'wd-icon wd-dash-edit');
+        const grip = el('span', 'wd-icon wd-dash-grip');
         grip.append(icon('grip'));
+        const edit = el('a', 'wd-icon wd-dash-edit');
+        edit.href = `#/d/${d.id}/edit`;
+        edit.title = t('edit');
+        edit.setAttribute('aria-label', t('edit'));
+        edit.append(icon('pen'));
         const copy = button('wd-icon wd-dash-copy', '', () => duplicate(d.id), t('duplicate'));
         copy.append(icon('copy'));
         copy.disabled = dashboards.length >= maxDashboards;
         const remove = confirmButton('wd-icon wd-dash-delete', icon('trash'), () => deleteDashboard(d.id, () => {
           if (location.hash === '#/edit') renderList(true);
         }), t('tapAgain'), t('deleteDashboard'));
-        card.append(art, link, remove, copy, grip);
+        card.append(art, link, remove, copy, edit, grip);
         return card;
       }
-      const edit = el('a', 'wd-icon wd-dash-edit');
-      edit.href = `#/d/${d.id}/edit`;
-      edit.title = t('edit');
-      edit.setAttribute('aria-label', t('edit'));
-      edit.append(icon('pen'));
-      card.append(art, link, edit);
+      card.append(art, link);
       return card;
+
+      function thumbAt(node, c, top, span) {
+        node.style.gridArea = `${top + 1} / ${c + 1} / auto / span ${span}`;
+        return node;
+      }
     }
 
     /**
@@ -1786,10 +1967,28 @@
       clearRoot();
       setTitle(dashboard);
       applyTheme(dashboard.theme, dashboard.background);
-      current = { dashboard: clone(dashboard), editing, widgets: new Map(), grid: el('main', 'wd-grid') };
+      current = { dashboard: editable(dashboard), editing, widgets: new Map(), covers: new Map(), grid: el('main', 'wd-grid') };
       root.classList.toggle('editing', editing);
       root.append(editing ? editBar() : viewBar(), current.grid);
+      sizes.observe(current.grid);
       syncGrid();
+    }
+
+    /**
+     * A dashboard as the page edits it: a cover (`{cover: <id>}`) in each column a wide widget covers, where it sits in
+     * that column (`settings/dashboard-layout.js`), so moving, adding and removing widgets carries them along.
+     */
+    function editable(d) {
+      const copy = clone(d);
+      copy.columns = LAYOUT.expand(copy.columns);
+      return copy;
+    }
+
+    /** And as it's stored: each wide widget's place in the columns it covers as its `at`. */
+    function stored(d) {
+      const copy = clone(d);
+      copy.columns = LAYOUT.collapse(copy.columns);
+      return copy;
     }
 
     function viewBar() {
@@ -1798,7 +1997,7 @@
       back.href = '#/';
       back.title = t('dashboards');
       back.setAttribute('aria-label', t('dashboards'));
-      const items = [back, el('span', 'wd-bar-title', d.name || t('untitled')), el('span', 'wd-spacer'), liveNote(), themeButton()];
+      const items = [back, el('span', 'wd-bar-title', d.name || t('untitled')), el('span', 'wd-spacer'), liveNote()];
       // Safari on an iPad only has the webkit-prefixed calls.
       const doc = /** @type {any} */ (document.documentElement);
       const page = /** @type {any} */ (document);
@@ -1831,16 +2030,16 @@
       // current.dashboard, not d, when it changes: a save the app corrected swaps it for the app's copy.
       name.addEventListener('change', () => { const dash = current.dashboard; dash.name = name.value.trim(); setTitle(dash); persist(); });
 
+      // The columns: one pill with its icon, − the count +.
       const cols = el('span', 'wd-stepper');
-      const count = el('span', 'wd-count', String(d.columns.length));
-      cols.append(
-        button('wd-btn small', '−', () => setColumns(current.dashboard.columns.length - 1), t('columns')),
-        count,
-        button('wd-btn small', '+', () => setColumns(current.dashboard.columns.length + 1), t('columns')),
-      );
+      const fewer = button('wd-step wd-fewer', '', () => setColumns(current.dashboard.columns.length - 1), t('columns'));
+      const more = button('wd-step wd-more', '', () => setColumns(current.dashboard.columns.length + 1), t('columns'));
+      fewer.append(icon('minus'));
+      more.append(icon('plus'));
+      cols.append(icon('columns'), fewer, el('span', 'wd-count', String(d.columns.length)), more);
       cols.title = t('columns');
 
-      const theme = el('select', 'wd-input wd-theme');
+      const theme = el('select', 'wd-theme');
       theme.setAttribute('aria-label', t('theme'));
       for (const [id, label] of [['auto', 'themeAuto'], ['dark', 'themeDark'], ['light', 'themeLight']]) {
         const o = el('option', null, t(label));
@@ -1848,7 +2047,14 @@
         theme.append(o);
       }
       theme.value = d.theme;
+      // In a pill with the theme's icon, as the columns' and the backdrop's have theirs.
+      const themePick = el('span', 'wd-themepick');
+      const themeIcon = el('span', 'wd-themepick-icon');
+      const drawThemeIcon = () => themeIcon.replaceChildren(icon({ dark: 'moon', light: 'sun' }[theme.value] || 'contrast'));
+      drawThemeIcon();
+      themePick.append(themeIcon, theme);
       theme.addEventListener('change', () => {
+        drawThemeIcon();
         current.dashboard.theme = theme.value;
         storageSet(THEME_STORAGE, null); // this browser's own dark or light would hide the choice
         applyTheme(theme.value, current.dashboard.background);
@@ -1859,7 +2065,7 @@
 
       // The backdrop: a button with the current one's swatch, opening the palette under it.
       const bgPick = el('span', 'wd-bgpick');
-      const bgButton = button('wd-btn small', '', () => (pop.hidden ? openPalette() : closePalette()), t('background'));
+      const bgButton = button('wd-btn wd-bgbutton', '', () => (pop.hidden ? openPalette() : closePalette()), t('background'));
       bgButton.setAttribute('aria-haspopup', 'true');
       bgButton.setAttribute('aria-expanded', 'false');
       const pop = el('div', 'wd-bgpop');
@@ -1867,7 +2073,7 @@
       bgPick.append(bgButton, pop);
       const backgrounds = Object.keys(BACKGROUNDS).map(id => ({ id, title: t(`bg${id[0].toUpperCase()}${id.slice(1)}`) }));
       function drawBackground() {
-        bgButton.replaceChildren(swatch(backdrop(current.dashboard.background), 'small'), t('background'));
+        bgButton.replaceChildren(swatch(backdrop(current.dashboard.background), 'small'), el('span', 'wd-bar-label', t('background')));
         // Each swatch shows both its shades (the dark tints alone look alike): the theme picks one.
         const colours = Object.fromEntries(backgrounds.map(b => [b.id, `linear-gradient(135deg, ${BACKGROUNDS[b.id][0]} 50%, ${BACKGROUNDS[b.id][1]} 50%)`]));
         pop.replaceChildren(choiceGroup(null, backgrounds, current.dashboard.background || 'default', (id) => {
@@ -1900,11 +2106,28 @@
       }
       drawBackground();
 
-      const remove = confirmButton('wd-btn danger', t('deleteDashboard'), () => deleteDashboard(d.id, () => { location.hash = '#/'; }), t('tapAgain'));
+      // A bin, as on the front page's cards: red once armed.
+      const remove = confirmButton('wd-icon wd-bar-delete', icon('trash'), () => deleteDashboard(d.id, () => { location.hash = '#/'; }), t('tapAgain'), t('deleteDashboard'));
 
       const done = el('a', 'wd-btn primary', t('done'));
       done.href = `#/d/${d.id}`;
-      return bar(name, cols, theme, bgPick, el('span', 'wd-spacer'), remove, done);
+      // The end of the bar stays together when a narrow window wraps it.
+      const end = el('span', 'wd-bar-end');
+      end.append(remove, done);
+      const b = bar(name, el('span', 'wd-bar-rule'), cols, themePick, bgPick, end);
+      stepColumns(b);
+      return b;
+    }
+
+    /** The columns' count and its − and + (one column at least, six at most). */
+    function stepColumns(scope) {
+      const n = current.dashboard.columns.length;
+      const count = scope.querySelector('.wd-count');
+      if (count) count.textContent = String(n);
+      const fewer = /** @type {HTMLButtonElement} */ (scope.querySelector('.wd-fewer'));
+      const more = /** @type {HTMLButtonElement} */ (scope.querySelector('.wd-more'));
+      if (fewer) fewer.disabled = n <= 1;
+      if (more) more.disabled = n >= 6;
     }
 
     function setColumns(n) {
@@ -1913,10 +2136,9 @@
       while (d.columns.length < n) d.columns.push([]);
       while (d.columns.length > n) {
         const last = d.columns.pop();
-        d.columns[d.columns.length - 1].push(...last); // its widgets stay, in the column before
+        d.columns[d.columns.length - 1].push(...last.filter(e => !e.cover)); // its widgets stay, in the column before
       }
-      const count = root.querySelector('.wd-count');
-      if (count) count.textContent = String(d.columns.length);
+      stepColumns(root);
       persist();
       syncGrid();
     }
@@ -1928,22 +2150,38 @@
     function syncGrid() {
       if (!current) return;
       if (drag) endDrag(false); // its widget may be rebuilt
-      const { dashboard, grid, widgets, editing } = current;
-      grid.style.setProperty('--cols', String(dashboard.columns.length));
-      while (grid.children.length < dashboard.columns.length) grid.append(el('section', 'wd-col'));
-      while (grid.children.length > dashboard.columns.length) grid.lastChild.remove();
+      if (resizing) endResize(false);
+      tidyCovers();
+      const { dashboard, grid, widgets, covers, editing } = current;
+      const count = dashboard.columns.length;
+      grid.style.setProperty('--cols', String(count));
+      while (grid.children.length < count) grid.append(el('section', 'wd-col'));
+      while (grid.children.length > count) grid.lastChild.remove();
       const seen = new Set();
+      const coversSeen = new Set();
       dashboard.columns.forEach((column, c) => {
         const col = grid.children[c];
         const nodes = column.map((w, i) => {
+          if (w.cover) {
+            // The room a wide widget from the left takes in this column (`layoutWide()` sizes it).
+            const key = `${w.cover}@${c}`;
+            coversSeen.add(key);
+            if (!covers.has(key)) covers.set(key, el('div', 'wd-cover'));
+            return covers.get(key);
+          }
           seen.add(w.id);
           const sig = signature(w);
           let entry = widgets.get(w.id);
           if (!entry || entry.sig !== sig) {
-            if (entry) entry.el.remove();
+            if (entry) { entry.el.remove(); sizes.unobserve(entry.el); }
             entry = { el: widgetElement(w), sig };
             widgets.set(w.id, entry);
+            sizes.observe(entry.el);
           }
+          const span = LAYOUT.spanOf(w, c, count);
+          entry.el.classList.toggle('wide', span > 1);
+          if (span > 1) entry.el.style.setProperty('--span', String(span));
+          else entry.el.style.removeProperty('--span');
           setTools(entry.el, w, c, i, column.length);
           return entry.el;
         });
@@ -1963,10 +2201,114 @@
       for (const [id, entry] of widgets) {
         if (seen.has(id)) continue;
         entry.el.remove();
+        sizes.unobserve(entry.el);
         widgets.delete(id);
       }
+      for (const key of covers.keys()) if (!coversSeen.has(key)) covers.delete(key);
       sweepFrames();
+      layoutWide();
     }
+
+    /**
+     * Keeps the covers in line with the widgets: a span no further than the last column, one cover in each column a
+     * wide widget covers (a missing one at the column's end), none elsewhere.
+     */
+    function tidyCovers() {
+      const columns = current.dashboard.columns;
+      const wide = new Map();
+      columns.forEach((column, c) => column.forEach((w) => {
+        if (w.cover) return;
+        const span = LAYOUT.spanOf(w, c, columns.length);
+        if (span > 1) { w.span = span; wide.set(w.id, { c, span }); } else { delete w.span; delete w.at; }
+      }));
+      columns.forEach((column, k) => {
+        const seen = new Set();
+        const keep = column.filter((e) => {
+          if (!e.cover) return true;
+          const o = wide.get(e.cover);
+          if (!o || k <= o.c || k >= o.c + o.span || seen.has(e.cover)) return false;
+          seen.add(e.cover);
+          return true;
+        });
+        for (const [id, o] of wide) if (k > o.c && k < o.c + o.span && !seen.has(id)) keep.push({ cover: id });
+        column.splice(0, column.length, ...keep);
+      });
+    }
+
+    // ---- Wide widgets: a cover in each column they cover takes their room; `place()` says how far down. --------
+
+    /** Sizes the dashboard as it is: what changed, a widget's height, the window's width (a wide widget's height). */
+    const sizes = new ResizeObserver(() => scheduleLayout());
+    let layoutQueued = false;
+    function scheduleLayout() {
+      if (layoutQueued) return;
+      layoutQueued = true;
+      requestAnimationFrame(() => { layoutQueued = false; layoutWide(); });
+    }
+
+    /**
+     * Moves the wide widgets and their covers down to where `place()` puts them (a top margin) and gives each cover
+     * its widget's height. In one column (a phone) the wide widgets are as wide as the rest and the covers hidden (the
+     * CSS), so the margins go.
+     */
+    function layoutWide() {
+      if (!current) return;
+      const { dashboard, grid, widgets, covers } = current;
+      const cols = [...grid.children];
+      const stacked = cols.length < 2 || /** @type {HTMLElement} */ (cols[1]).offsetLeft === /** @type {HTMLElement} */ (cols[0]).offsetLeft;
+      const any = dashboard.columns.some((col, c) => col.some(w => !w.cover && LAYOUT.spanOf(w, c, cols.length) > 1));
+      const nodeOf = (e, k) => (e.cover ? covers.get(`${e.cover}@${k}`) : widgets.get(e.id) && widgets.get(e.id).el);
+      if (stacked || !any) {
+        dashboard.columns.forEach((col, k) => col.forEach((e) => {
+          const node = nodeOf(e, k);
+          if (!node) return;
+          node.style.marginTop = '';
+          if (e.cover) node.style.height = '';
+        }));
+        return;
+      }
+      const gap = parseFloat(getComputedStyle(cols[0]).rowGap) || 0;
+      const placed = LAYOUT.place(dashboard.columns, (e) => { const node = nodeOf(e, 0); return node ? node.offsetHeight : 0; }, gap);
+      placed.forEach((col, k) => col.forEach(({ entry, margin, height, hidden }) => {
+        const node = nodeOf(entry, k);
+        if (!node) return;
+        node.hidden = hidden;
+        node.style.marginTop = margin ? `${margin}px` : '';
+        if (entry.cover) node.style.height = `${height}px`;
+      }));
+    }
+
+    /**
+     * Puts a wide widget's covers at `y` (a top, in the window): in each column it covers, under the entries whose
+     * middle is above it. From what's on screen, so every column agrees on which wide widget comes first.
+     */
+    function placeCovers(id, c, y) {
+      const columns = current.dashboard.columns;
+      const w = columns[c].find(e => e.id === id);
+      for (let k = 0; k < columns.length; k++) {
+        const i = columns[k].findIndex(e => e.cover === id);
+        if (i >= 0) columns[k].splice(i, 1);
+      }
+      const span = LAYOUT.spanOf(w, c, columns.length);
+      for (let k = c + 1; k < c + span; k++) columns[k].splice(indexAt(k, y, id), 0, { cover: id });
+    }
+
+    /** How many of column `k`'s entries (not `id`'s own) are above `y`: their middle is. */
+    function indexAt(k, y, id) {
+      const column = current.dashboard.columns[k];
+      let i = 0;
+      for (const e of column) {
+        if ((e.cover || e.id) === id) continue;
+        const node = e.cover ? current.covers.get(`${e.cover}@${k}`) : current.widgets.get(e.id) && current.widgets.get(e.id).el;
+        const r = node && !node.hidden ? node.getBoundingClientRect() : null;
+        if (r && r.top + r.height / 2 >= y) break;
+        i++;
+      }
+      return i;
+    }
+
+    /** A widget's top on screen (where its covers line up). */
+    const topOf = (id) => current.widgets.get(id).el.getBoundingClientRect().top;
 
     function widgetElement(w) {
       const app = appWidget(w.type);
@@ -1974,7 +2316,7 @@
       const def = typeOf(w.type) || (app && foreignState !== 'ok' ? { name: app.widgetId, height: null, transparent: false } : null);
       const node = el('article', 'wd-widget');
       node.dataset.id = w.id;
-      if (current.editing) node.append(dragHandle(el('div', 'wd-tools')));
+      if (current.editing) node.append(dragHandle(el('div', 'wd-tools')), resizeHandle(node));
       if (w.title) node.append(el('h2', 'wd-title', w.title));
       if (!def) {
         node.append(el('p', 'wd-error', app ? t('notInstalled', { name: app.appId }) : w.type));
@@ -2016,25 +2358,34 @@
       const def = typeOf(w.type);
       const cols = current.dashboard.columns.length;
       tools.textContent = '';
-      const grip = el('span', 'wd-grip', '⠿');
+      const grip = el('span', 'wd-grip');
       grip.title = t('drag');
-      grip.setAttribute('aria-hidden', 'true');
+      grip.append(icon('grip'));
+      const tool = (name, className, onClick, label) => {
+        const b = button(`wd-tool${className ? ` ${className}` : ''}`, '', onClick, label);
+        b.append(icon(name));
+        return b;
+      };
+      // The moves, then (past a rule) the widget's settings and remove.
       tools.append(
         grip,
         el('span', 'wd-tools-name', (def && def.name) || (appWidget(w.type) || { widgetId: w.type }).widgetId),
         el('span', 'wd-spacer'),
-        button('wd-tool', '⚙', () => editWidget(w.id), t('settings')),
-        button('wd-tool', '↑', () => move(w.id, 0, -1), t('moveUp')),
-        button('wd-tool', '↓', () => move(w.id, 0, 1), t('moveDown')),
-        button('wd-tool', '←', () => move(w.id, -1, 0), t('moveLeft')),
-        button('wd-tool', '→', () => move(w.id, 1, 0), t('moveRight')),
-        confirmButton('wd-tool danger', '✕', () => removeWidget(w.id), '✕?', t('remove')),
+        tool('up', 'wd-move', () => move(w.id, 0, -1), t('moveUp')),
+        tool('down', 'wd-move', () => move(w.id, 0, 1), t('moveDown')),
+        tool('left', 'wd-move', () => move(w.id, -1, 0), t('moveLeft')),
+        tool('right', 'wd-move', () => move(w.id, 1, 0), t('moveRight')),
+        el('span', 'wd-tools-rule'),
+        tool('sliders', 'wd-tool-settings', () => editWidget(w.id), t('settings')),
+        confirmButton('wd-tool danger', icon('close'), () => removeWidget(w.id), t('tapAgain'), t('remove')),
       );
-      const [, up, down, left, right] = tools.querySelectorAll('.wd-tool');
+      const [up, down, left, right] = tools.querySelectorAll('.wd-move');
       up.disabled = i === 0;
       down.disabled = i === n - 1;
       left.disabled = c === 0;
-      right.disabled = c === cols - 1;
+      right.disabled = c + LAYOUT.spanOf(w, c, cols) >= cols;
+      const handle = node.querySelector(':scope > .wd-resize');
+      if (handle) handle.hidden = cols - c < 2 && LAYOUT.spanOf(w, c, cols) < 2;
     }
 
     function find(id) {
@@ -2050,6 +2401,24 @@
       const at = find(id);
       if (!at) return;
       const columns = current.dashboard.columns;
+      if (LAYOUT.spanOf(at.widget, at.c, columns.length) > 1) {
+        // A wide widget: past the entry above or below it in its own column, its covers at that height; or a column
+        // over, lining up with its top.
+        if (dc) {
+          moveWide(id, at.c + dc, topOf(id));
+          return;
+        }
+        const past = columns[at.c][at.i + di];
+        if (!past) return;
+        const node = past.cover ? current.covers.get(`${past.cover}@${at.c}`) : current.widgets.get(past.id).el;
+        const r = node.getBoundingClientRect();
+        columns[at.c].splice(at.i, 1);
+        columns[at.c].splice(at.i + di, 0, at.widget);
+        placeCovers(id, at.c, di < 0 ? r.top : r.bottom);
+        persist();
+        syncGrid();
+        return;
+      }
       if (dc) {
         const to = at.c + dc;
         if (to < 0 || to >= columns.length) return;
@@ -2072,6 +2441,24 @@
       if (!at || !columns[c] || (at.c === c && at.i === index)) return;
       columns[at.c].splice(at.i, 1);
       columns[c].splice(Math.min(index, columns[c].length), 0, at.widget);
+      persist();
+      syncGrid();
+    }
+
+    /**
+     * Puts a wide widget in column `c` (moved left so its span fits) with its top at `y` (in the window): in each of its
+     * columns, under the entries whose middle is above `y`.
+     */
+    function moveWide(id, c, y) {
+      const at = find(id);
+      const columns = current.dashboard.columns;
+      if (!at) return;
+      const span = LAYOUT.spanOf(at.widget, at.c, columns.length);
+      const to = Math.max(0, Math.min(c, columns.length - span));
+      const i = indexAt(to, y, id);
+      columns[at.c].splice(at.i, 1);
+      columns[to].splice(Math.min(i, columns[to].length), 0, at.widget);
+      placeCovers(id, to, y);
       persist();
       syncGrid();
     }
@@ -2129,16 +2516,27 @@
         const dy = Math.max(r.top - drag.y, 0, drag.y - r.bottom);
         if (dx * dx + dy * dy < best) { best = dx * dx + dy * dy; c = n; }
       });
+      // A wide widget goes no further right than its span fits; the line is as wide as it.
+      const columns = current.dashboard.columns;
+      const at = find(drag.id);
+      const span = at ? LAYOUT.spanOf(at.widget, at.c, columns.length) : 1;
+      if (span > 1) c = Math.min(c, columns.length - span);
       const col = current.grid.children[c];
       if (!col) return;
-      const others = [...col.children].filter(n => n.classList.contains('wd-widget') && n !== drag.node);
+      // Its own covers aren't places to go; other wide widgets' covers are: above or below them in this column.
+      const own = [...current.covers.entries()].filter(([key]) => key.startsWith(`${drag.id}@`)).map(([, node]) => node);
+      const others = [...col.children].filter(n => (n.classList.contains('wd-widget') || (n.classList.contains('wd-cover') && !n.hidden))
+        && n !== drag.node && !own.includes(n));
       let i = 0;
       while (i < others.length) {
         const r = others[i].getBoundingClientRect();
         if (drag.y < r.top + r.height / 2) break;
         i++;
       }
-      drag.target = { c, i };
+      const prev = others[i - 1];
+      drag.target = { c, i, y: prev ? prev.getBoundingClientRect().bottom + 1 : col.getBoundingClientRect().top };
+      drag.marker.classList.toggle('wide', span > 1);
+      if (span > 1) drag.marker.style.setProperty('--span', String(span));
       const before = others[i] || col.querySelector(':scope > .wd-add');
       if (drag.marker.parentNode !== col || drag.marker.nextSibling !== before) col.insertBefore(drag.marker, before || null);
     }
@@ -2165,15 +2563,90 @@
         root.classList.remove('dragging');
       }
       drag = null;
-      if (drop && active && target && current) moveTo(id, target.c, target.i);
+      if (!drop || !active || !target || !current) return;
+      const at = find(id);
+      if (at && LAYOUT.spanOf(at.widget, at.c, current.dashboard.columns.length) > 1) moveWide(id, target.c, target.y);
+      else moveTo(id, target.c, target.i);
     }
 
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drag) endDrag(false); });
+    window.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (drag) endDrag(false);
+      if (resizing) endResize(false);
+    });
+
+    // ---- Resizing (editing): a handle on a widget's right edge sets how many columns it spans. The width follows
+    // the pointer a column at a time (a column counts once the pointer is past its middle); the covers follow on
+    // release, at the widget's top. ------------------------------------------------------------------------------
+
+    let resizing = null; // {id, node, pointerId, c, span, from}
+
+    function resizeHandle(node) {
+      const handle = el('div', 'wd-resize');
+      handle.title = t('resize');
+      handle.setAttribute('aria-hidden', 'true'); // the Width row in its settings is the keyboard's way
+      handle.addEventListener('pointerdown', (e) => {
+        if (drag || resizing || !current || !current.editing || e.button !== 0) return;
+        const at = find(node.dataset.id);
+        if (!at) return;
+        const span = LAYOUT.spanOf(at.widget, at.c, current.dashboard.columns.length);
+        resizing = { id: at.widget.id, node, pointerId: e.pointerId, c: at.c, span, from: span };
+        try { handle.setPointerCapture(e.pointerId); } catch (err) { /* moves still come while over the handle */ }
+        root.classList.add('resizing');
+        e.preventDefault();
+      });
+      handle.addEventListener('pointermove', (e) => {
+        if (!resizing || e.pointerId !== resizing.pointerId) return;
+        const cols = [...current.grid.children];
+        let span = 1;
+        for (let k = resizing.c + 1; k < cols.length; k++) {
+          const r = cols[k].getBoundingClientRect();
+          if (e.clientX > r.left + r.width / 2) span = k - resizing.c + 1;
+        }
+        if (span === resizing.span) return;
+        resizing.span = span;
+        node.classList.toggle('wide', span > 1);
+        node.style.setProperty('--span', String(span));
+      });
+      handle.addEventListener('pointerup', (e) => { if (resizing && e.pointerId === resizing.pointerId) endResize(true); });
+      handle.addEventListener('pointercancel', () => endResize(false));
+      handle.addEventListener('lostpointercapture', () => endResize(false));
+      return handle;
+    }
+
+    function endResize(keep) {
+      if (!resizing) return;
+      const { id, node, c, span, from } = resizing;
+      resizing = null;
+      root.classList.remove('resizing');
+      if (!keep || span === from) {
+        node.classList.toggle('wide', from > 1);
+        if (from > 1) node.style.setProperty('--span', String(from));
+        else node.style.removeProperty('--span');
+        return;
+      }
+      setSpan(id, c, span);
+    }
+
+    /** A widget's span (1: one column), its covers lined up with its top; saved. */
+    function setSpan(id, c, span) {
+      const at = find(id);
+      if (!at) return;
+      if (span > 1) at.widget.span = span;
+      else { delete at.widget.span; delete at.widget.at; }
+      placeCovers(id, c, topOf(id));
+      persist();
+      syncGrid();
+    }
 
     function removeWidget(id) {
       const at = find(id);
       if (!at) return;
       current.dashboard.columns[at.c].splice(at.i, 1);
+      for (const column of current.dashboard.columns) {
+        const i = column.findIndex(e => e.cover === id);
+        if (i >= 0) column.splice(i, 1);
+      }
       persist();
       syncGrid();
     }
@@ -2185,7 +2658,7 @@
      * takes the app's copy, so a value it corrected (a clamped number, a new widget id) shows and is sent on.
      */
     function persist() {
-      const snapshot = clone(current.dashboard);
+      const snapshot = stored(current.dashboard);
       saving = saving.then(async () => {
         if (deleted.has(snapshot.id)) return;
         try {
@@ -2194,9 +2667,9 @@
           const i = dashboards.findIndex(d => d.id === saved.id);
           if (i >= 0) dashboards[i] = saved; else dashboards.push(saved);
           if (current && current.dashboard.id === saved.id
-            && JSON.stringify(current.dashboard) === JSON.stringify(snapshot)
+            && JSON.stringify(stored(current.dashboard)) === JSON.stringify(snapshot)
             && JSON.stringify(saved) !== JSON.stringify(snapshot)) {
-            current.dashboard = clone(saved);
+            current.dashboard = editable(saved);
             syncGrid();
           }
         } catch (err) {
@@ -2329,6 +2802,20 @@
       titleText.append(titleLabel, el('p', 'wd-hint', t('widgetTitleHint')));
       titleRow.append(titleText, title);
 
+      // Its width in columns, as far as the columns to its right go (the resize handle's keyboard and touch twin).
+      const count = current.dashboard.columns.length;
+      const width = { span: LAYOUT.spanOf(w, at.c, count) };
+      let widthRow = null;
+      if (count - at.c > 1) {
+        widthRow = el('div', 'wd-set-row inline');
+        const widthText = el('div', 'wd-set-text');
+        widthText.append(el('span', 'wd-set-label', t('width')), el('p', 'wd-hint', t('widthHint')));
+        const spans = Array.from({ length: count - at.c }, (_, k) => ({ id: String(k + 1), title: String(k + 1) }));
+        const seg = choiceGroup(null, spans, String(width.span), (v) => { width.span = Number(v); }, false);
+        seg.setAttribute('aria-label', t('width'));
+        widthRow.append(widthText, seg);
+      }
+
       const sections = def.sections || [{ kind: 'plain', ids: def.settings.map(s => s.id) }];
       // A run of numbered groups (Flow Buttons' eight buttons) shares a card; one of more than two starts folded.
       const numbered = (sec) => sec && sec.kind === 'group' && sec.numbered;
@@ -2347,7 +2834,7 @@
         if (!numbered(sec)) stack = null;
         if (sec.kind === 'plain') {
           const c = card();
-          if (i === 0) { c.append(titleRow); general = c; }
+          if (i === 0) { c.append(titleRow); if (widthRow) c.append(widthRow); general = c; }
           c.append(...rows(sec.ids));
           body.append(c);
         } else if (sec.kind === 'slots') {
@@ -2379,6 +2866,7 @@
       if (!general) {
         general = card();
         general.append(titleRow);
+        if (widthRow) general.append(widthRow);
         body.insertBefore(general, body.querySelector(':scope > .wd-set-card:not(.wd-set-devices)') || null);
       }
       if (def.app) {
@@ -2456,6 +2944,11 @@
             now.widget.deviceIds = draft.deviceIds;
             if (trust.settings.trusted === true) now.widget.trusted = true;
             else delete now.widget.trusted;
+            if (width.span !== LAYOUT.spanOf(now.widget, now.c, current.dashboard.columns.length)) {
+              setSpan(id, now.c, width.span); // saves it all
+              d.close();
+              return;
+            }
             persist();
             syncGrid();
           }
@@ -3137,9 +3630,249 @@
       return wrap;
     }
 
+    // ---- Popups (wk-084): a Flow's message or Yes/No question, over everything ----------------------------------
+
+    /**
+     * The open popups (`lib/PopupService.ts`), oldest first, each with `localUntil` (its end on this browser's clock).
+     * One shows at a time, in a modal dialog (the top layer: above the dim layer, full screen and the frames): a
+     * dashboard shows those sent to it and to everywhere, the front page only everywhere's, the editor none.
+     */
+    const popups = new Map();
+    const dismissed = new Set(); // messages tapped away on this screen (the others keep theirs)
+    const sounded = new Set(); // popups whose sound played here, so going back to their dashboard doesn't play it again
+    let shownPopup = null; // {id, d, close(note)}
+    // A popup's sound (the kit's) needs the page used first: any tap or key wakes the audio.
+    for (const type of ['pointerdown', 'keydown']) {
+      document.addEventListener(type, () => window.WidgetkeeperKit.sound.unlock(), { capture: true, passive: true });
+    }
+
+    /** Takes the open popups as Homey lists them (`/web/setup`, `/web/popups`), its clock beside them. */
+    function setPopups(list, now) {
+      const skew = typeof now === 'number' ? now - Date.now() : 0;
+      const ids = new Set();
+      for (const p of Array.isArray(list) ? list : []) {
+        ids.add(p.id);
+        if (!popups.has(p.id)) addPopup(p, skew);
+      }
+      for (const id of [...popups.keys()]) if (!ids.has(id)) removePopup(id, null, 'closed');
+      syncPopups();
+    }
+
+    function addPopup(p, skew) {
+      const localUntil = p.until - skew;
+      if (localUntil <= Date.now()) return;
+      const timer = setTimeout(() => removePopup(p.id, null, 'expired'), localUntil - Date.now());
+      popups.set(p.id, Object.assign({}, p, { localUntil, timer }));
+    }
+
+    function removePopup(id, answer, reason) {
+      const p = popups.get(id);
+      if (p) clearTimeout(p.timer);
+      popups.delete(id);
+      dismissed.delete(id);
+      sounded.delete(id);
+      if (shownPopup && shownPopup.id === id) {
+        if (shownPopup.sending) {
+          // This screen's answer is on its way, so this close may be its own or another screen's: its reply says.
+          shownPopup.held = { answer, reason };
+        } else {
+          // Another screen's answer: said for a moment, so this screen sees what happened.
+          const note = reason === 'answered' && !shownPopup.answeredHere && answer != null
+            ? t(answer ? 'popupElsewhereYes' : 'popupElsewhereNo') : null;
+          shownPopup.close(note);
+        }
+      }
+      syncPopups();
+    }
+
+    /** Whether a popup belongs on the view now open. */
+    function popupHere(p) {
+      if (!setup || setup.disabled || setup.passwordRequired || !key) return false;
+      const m = location.hash.match(/^#\/d\/([A-Za-z0-9_-]+)(\/edit)?$/);
+      if (m) return !m[2] && (p.target === 'all' || p.target === `web:${m[1]}` || screenNamesOf(m[1]).has(p.target));
+      return p.target === 'all' && location.hash !== '#/edit';
+    }
+
+    /**
+     * The screen names of a dashboard's Popups widgets, as targets (`name:<key>`, keyed as `screenKey()` in
+     * lib/PopupService.ts and the widget's `popupsScreenKey()`): a popup sent to one shows on that dashboard too.
+     */
+    function screenNamesOf(dashboardId) {
+      const d = dashboards.find(x => x.id === dashboardId);
+      const names = new Set();
+      for (const column of (d && d.columns) || []) {
+        for (const w of column) {
+          if (w.type !== 'popups') continue;
+          const name = w.settings && typeof w.settings.name === 'string' ? w.settings.name.trim() : '';
+          names.add(`name:${(name || 'Screen').toLowerCase().slice(0, 60)}`);
+        }
+      }
+      return names;
+    }
+
+    /** Shows the oldest popup that belongs here, or closes the one shown when it no longer does (another view). */
+    function syncPopups() {
+      if (shownPopup) {
+        const p = popups.get(shownPopup.id);
+        if (p && !popupHere(p)) shownPopup.close(null);
+        return;
+      }
+      for (const p of popups.values()) {
+        if (!dismissed.has(p.id) && popupHere(p)) { showPopup(p); return; }
+      }
+    }
+
+    function showPopup(p) {
+      const d = el('dialog', 'wd-dialog wd-popup');
+      d.classList.toggle('ask', p.kind === 'ask');
+      const box = el('div', 'wd-popup-box');
+      d.append(box);
+      const timers = [];
+      let closed = false;
+      // `sending`: this screen's answer is on its way; `held`: how the popup closed meanwhile.
+      const shown = { id: p.id, d, answeredHere: false, sending: false, held: null, close: null };
+
+      if (p.picture) {
+        const frame = el('div', 'wd-popup-picture loading');
+        const img = el('img');
+        img.alt = '';
+        frame.append(img);
+        box.append(frame);
+        const load = async () => {
+          if (closed) return;
+          if (!document.hidden) {
+            try {
+              const res = await request('GET', `/web/popups/${encodeURIComponent(p.id)}/image`);
+              if (closed) return;
+              img.src = `data:${res.type};base64,${res.data}`;
+              frame.classList.remove('loading', 'failed');
+            } catch (err) {
+              if (closed) return;
+              if (frame.classList.contains('loading')) {
+                frame.classList.replace('loading', 'failed');
+                frame.append(el('p', 'wd-muted', t('popupPictureFailed')));
+              }
+            }
+          }
+          // A camera's snapshot is read again while it shows; a kept picture once.
+          if (p.picture.source === 'camera') timers.push(setTimeout(load, CAMERA_REFRESH_MS));
+        };
+        load();
+      }
+      if (p.text) {
+        const text = el('p', 'wd-popup-text', p.text);
+        text.dir = 'auto';
+        box.append(text);
+      }
+      const status = el('p', 'wd-popup-status');
+      status.setAttribute('role', 'status');
+
+      if (p.kind === 'ask') {
+        const actions = el('div', 'wd-popup-actions');
+        const send = async (answer) => {
+          for (const b of actions.querySelectorAll('button')) b.disabled = true;
+          shown.sending = true;
+          status.textContent = '';
+          let res;
+          try {
+            res = await request('POST', `/web/popups/${encodeURIComponent(p.id)}/answer`, { answer });
+          } catch (err) {
+            shown.sending = false;
+            // It closed meanwhile (another screen, or the time ran out): say how.
+            if (shown.held) { removePopup(p.id, shown.held.answer, shown.held.reason); return; }
+            status.textContent = t('popupAnswerFailed');
+            for (const b of actions.querySelectorAll('button')) b.disabled = false;
+            return;
+          }
+          shown.sending = false;
+          if (res && res.ok === false && res.reason === 'closed') {
+            // Someone else was first: say what they answered.
+            removePopup(p.id, res.answer, res.answer == null ? 'closed' : 'answered');
+          } else {
+            shown.answeredHere = true;
+            removePopup(p.id, answer, 'answered');
+          }
+        };
+        actions.append(
+          button('wd-btn wd-popup-no', t('popupNo'), () => send(false)),
+          button('wd-btn primary wd-popup-yes', t('popupYes'), () => send(true)),
+        );
+        box.append(actions, status);
+      } else {
+        // A message: a bar runs down to its end; a tap anywhere closes it on this screen.
+        const bar = el('div', 'wd-popup-bar');
+        const fill = el('span');
+        bar.append(fill);
+        box.append(bar);
+        const left = Math.max(0, p.localUntil - Date.now());
+        const total = Math.max(left, p.until - p.createdAt);
+        fill.style.transform = `scaleX(${left / total})`;
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          fill.style.transition = `transform ${left}ms linear`;
+          fill.style.transform = 'scaleX(0)';
+        }));
+        d.addEventListener('click', () => { dismissed.add(p.id); shown.close(null); });
+        d.setAttribute('aria-label', p.text || t('popupClose'));
+      }
+
+      // Escape closes it here (a question stays open on the other screens).
+      d.addEventListener('cancel', (e) => { e.preventDefault(); dismissed.add(p.id); shown.close(null); });
+      shown.close = (note) => {
+        if (closed) return;
+        closed = true;
+        for (const timer of timers) clearTimeout(timer);
+        const done = () => {
+          if (shownPopup === shown) shownPopup = null;
+          d.close();
+          d.remove();
+          syncPopups();
+        };
+        if (note) {
+          for (const b of d.querySelectorAll('button')) b.disabled = true;
+          status.textContent = note;
+          if (!status.isConnected) box.append(status);
+          setTimeout(done, ELSEWHERE_MS);
+        } else {
+          done();
+        }
+      };
+      shownPopup = shown;
+      document.body.append(d);
+      d.showModal();
+      if (p.sound && !sounded.has(p.id)) {
+        sounded.add(p.id);
+        window.WidgetkeeperKit.sound.play(p.sound);
+      }
+      const yes = d.querySelector('.wd-popup-yes');
+      if (yes) /** @type {HTMLElement} */ (yes).focus();
+    }
+
+    /** The open popups again, after a reconnect: a screen that was offline missed their events. */
+    function refreshPopups() {
+      request('GET', '/web/popups').then(res => setPopups(res && res.popups, res && res.now), () => { /* the next reconnect tries again */ });
+    }
+
+    {
+      const uri = `homey:app:${APP_ID}`;
+      const on = (event, fn) => {
+        const k = listenerKey(uri, event);
+        if (!listeners.has(k)) listeners.set(k, new Set());
+        listeners.get(k).add(fn);
+      };
+      on('popups:show', (data) => {
+        if (!data || typeof data.id !== 'string' || popups.has(data.id)) return;
+        addPopup(data, typeof data.now === 'number' ? data.now - Date.now() : 0);
+        syncPopups();
+      });
+      on('popups:close', (data) => {
+        if (data && typeof data.id === 'string') removePopup(data.id, data.answer == null ? null : data.answer === true, data.reason);
+      });
+    }
+
     // ---- Routing: #/ the list, #/d/<id> a dashboard, #/d/<id>/edit editing it ---------------------------------
 
     function route() {
+      queueMicrotask(syncPopups); // once this view is drawn: its popups show, another view's close
       if (!key) { renderKey(); return; }
       if (!setup) { start(); return; }
       if (setup.disabled) { renderOff(); return; }

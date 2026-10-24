@@ -94,6 +94,10 @@
       <!-- Optional: a password browsers sign in with instead of a personal API key. -->
       <p class="homey-form-help" data-i18n="webPasswordHelp"></p>
       <div class="key-state set" id="pwState" role="status" hidden><span></span></div>
+      <!-- While one is set, changing or removing it takes the current one: anyone whose key may call the app reaches the route. -->
+      <div class="homey-form-group" id="pwCurrentGroup" hidden>
+        <input class="homey-form-input" id="pwCurrent" type="password" autocomplete="current-password" spellcheck="false" data-i18n-label="webPasswordCurrent">
+      </div>
       <div class="homey-form-group">
         <input class="homey-form-input" id="webPassword" type="password" autocomplete="new-password" spellcheck="false" data-i18n-label="webPassword">
       </div>
@@ -102,6 +106,7 @@
         <button class="homey-button-secondary-shadow" id="pwRemove" data-i18n="webPasswordRemove" hidden>Remove password</button>
       </div>
       <p class="homey-form-help status" id="pwStatus" role="status"></p>
+      <p class="homey-form-help" id="pwForgot" data-i18n="webPasswordForgot" hidden></p>
     </div>
     <!-- The backup is on the web dashboards page: my.homey.app runs this page in a frame that can't download a file. -->
     <p class="homey-form-help backup-help" data-i18n="webBackupHelp"></p>
@@ -292,35 +297,56 @@
       const pwRemove = $('pwRemove');
       const pwStatus = $('pwStatus');
       const pwState = $('pwState');
+      const pwCurrent = $('pwCurrent');
       let pwBusy = false;
-      const syncPasswordButtons = () => { pwSave.disabled = pwBusy || !webPassword.value; pwRemove.disabled = pwBusy; };
+      let pwSet = false;
+      const syncPasswordButtons = () => {
+        const current = !pwSet || !!pwCurrent.value;
+        pwSave.disabled = pwBusy || !webPassword.value || !current;
+        pwRemove.disabled = pwBusy || !current;
+      };
       function showPasswordState() {
         Homey.api('GET', '/web/password', null, (err, res) => {
           if (err) return;
-          const set = !!(res && res.set);
-          pwRemove.hidden = !set;
-          pwState.hidden = !set;
+          pwSet = !!(res && res.set);
+          pwRemove.hidden = !pwSet;
+          pwState.hidden = !pwSet;
+          $('pwCurrentGroup').hidden = !pwSet;
+          $('pwForgot').hidden = !pwSet;
           pwState.firstChild.textContent = t('webPasswordIsSet');
+          syncPasswordButtons();
         });
+      }
+      /** Why the app didn't take it: the length, or (while one is set) a wrong current password or the lock. */
+      function passwordRefused(res) {
+        switch (res && res.reason) {
+          case 'tooLong': return t('webPasswordTooLong', { max: 200 });
+          case 'wrong': return t('webPasswordWrong');
+          case 'locked': return t('webPasswordLocked', { seconds: res.retryAfter || 30 });
+          default: return t('webPasswordTooShort', { min: 8 });
+        }
       }
       function savePassword(password) {
         pwBusy = true;
         syncPasswordButtons();
         pwStatus.textContent = '';
-        Homey.api('PUT', '/web/password', { password }, (err, res) => {
+        Homey.api('PUT', '/web/password', { password, current: pwCurrent.value }, (err, res) => {
           pwBusy = false;
           syncPasswordButtons();
           if (err) { pwStatus.textContent = err.message || String(err); return; }
           if (res && res.ok) {
             webPassword.value = '';
+            pwCurrent.value = '';
             syncPasswordButtons();
             pwStatus.textContent = t(password ? 'webPasswordSaved' : 'webPasswordRemoved');
             showPasswordState();
           } else {
-            pwStatus.textContent = res && res.reason === 'tooLong' ? t('webPasswordTooLong', { max: 200 }) : t('webPasswordTooShort', { min: 8 });
+            pwStatus.textContent = passwordRefused(res);
           }
         });
       }
+      pwCurrent.addEventListener('input', syncPasswordButtons);
+      pwCurrent.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !pwSave.disabled) pwSave.click(); });
       webPassword.addEventListener('input', syncPasswordButtons);
       webPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !pwSave.disabled) pwSave.click(); });
       pwSave.addEventListener('click', () => { if (webPassword.value) savePassword(webPassword.value); });

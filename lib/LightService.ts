@@ -2,6 +2,7 @@ import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import { capValuesText, copyCaps, presentCaps, readCaps, type CapState } from './capabilities.js';
 import DeviceTracker, { readZones, zoneRef, type TrackedEntry } from './DeviceTracker.js';
+import { fetchZoneIcon } from './deviceIcon.js';
 import PersonalApiKey from './PersonalApiKey.js';
 import { sharedCache } from './sharedCache.js';
 import Timings from './Timings.js';
@@ -181,6 +182,20 @@ export default class LightService {
       return entry;
     }));
     this.debug(`Lights state for ${deviceIds.length} devices: ${tm.summary()}`);
+    return out;
+  }
+
+  /**
+   * Each zone's icon as an SVG data URL, for Lights by Room's room cards: Homey's own (its library's, by the zone's
+   * `icon` id, `fetchZoneIcon()`). A zone that's unknown or whose icon didn't load is left out; a failed zones read
+   * gives the last zones read (`readZones()`).
+   */
+  async zoneIcons(zoneIds: string[]): Promise<Record<string, string>> {
+    const zones = await readZones(this.homey, new Timings(), this.log, 'Light');
+    const known = zoneIds.filter(id => Object.prototype.hasOwnProperty.call(zones, id));
+    const icons = await Promise.all(known.map(id => fetchZoneIcon(zones[id]?.icon, this.log)));
+    const out: Record<string, string> = {};
+    known.forEach((id, i) => { if (icons[i]) out[id] = icons[i]; });
     return out;
   }
 

@@ -178,6 +178,16 @@ describe('wireDeviceState()', () => {
     expect(widget.pushChange).toHaveBeenCalledTimes(1);
   });
 
+  it('`setState` takes an answer the widget wants in another shape', async () => {
+    const setState = vi.fn();
+    const onState = vi.fn();
+    const { widget } = setup({ setState, onState });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(setState).toHaveBeenCalledWith([{ id: 'a' }]);
+    expect(widget.setState).not.toHaveBeenCalled();
+    expect(onState).toHaveBeenCalledWith([{ id: 'a' }]);
+  });
+
   it('says what to pick without devices, or what `need()` says is missing', async () => {
     const none = setup({}, []);
     const columns = setup({ need: () => 'selectColumns' });

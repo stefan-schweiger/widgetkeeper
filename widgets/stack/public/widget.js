@@ -12,7 +12,7 @@
   const TYPES = {
     electricity: 'mountElectricityWidget', thermostat: 'mountThermostatWidget', quickactions: 'mountQuickActionsWidget',
     sensoralarms: 'mountSensorAlarmsWidget', sensordots: 'mountSensorDotsWidget', roomhealth: 'mountRoomHealthWidget',
-    valuematrix: 'mountValueMatrixWidget', weather: 'mountWeatherWidget',
+    valuematrix: 'mountValueMatrixWidget', weather: 'mountWeatherWidget', pollen: 'mountPollenWidget',
     heatmap: 'mountHeatmapWidget', cameras: 'mountCamerasWidget', values: 'mountValuesWidget', lights: 'mountLightsWidget',
     sparklines: 'mountSparklinesWidget', charts: 'mountChartsWidget', variables: 'mountVariablesWidget',
     varpresets: 'mountVarPresetsWidget', flows: 'mountFlowsWidget', price: 'mountPriceWidget',

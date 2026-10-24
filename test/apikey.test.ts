@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
 import PersonalApiKey, { API_KEY_SETTING } from '../lib/PersonalApiKey.js';
+import Secrets from '../lib/secrets.js';
 import VariableService from '../lib/VariableService.js';
 
 vi.mock('homey-api', () => homeyApiMock);
@@ -25,7 +26,7 @@ describe('save', () => {
     const { homey, key } = setup();
     keyApis.set('both', keyApi(['homey.logic', 'homey.flow.start']));
     expect(await key.save(' both ')).toEqual({ ok: true, variables: true, flows: true, dashboards: false, moods: false });
-    expect(homey.settings.get(API_KEY_SETTING)).toBe('both');
+    expect(Secrets.for(homey).get(API_KEY_SETTING)).toBe('both');
     expect(key.has()).toBe(true);
     expect(await key.save('')).toEqual({ ok: true, variables: false, flows: false, dashboards: false, moods: false });
     expect(key.has()).toBe(false);
@@ -83,10 +84,10 @@ describe('run', () => {
     const { homey, key } = setup();
     await expect(key.run(async () => 1)).rejects.toMatchObject({ reason: 'noKey' });
     keyApis.set('k', keyApi(['homey.logic']));
-    homey.settings.set(API_KEY_SETTING, 'k');
+    Secrets.for(homey).set(API_KEY_SETTING, 'k');
     await expect(key.run(async () => { throw new Error('Missing Scopes: homey.flow.start'); })).rejects.toMatchObject({ reason: 'keyScope' });
     await expect(key.run(async () => { throw Object.assign(new Error('Invalid Session'), { statusCode: 401 }); })).rejects.toMatchObject({ reason: 'keyInvalid' });
-    homey.settings.set(API_KEY_SETTING, 'unknown');
+    Secrets.for(homey).set(API_KEY_SETTING, 'unknown');
     await expect(key.run(async () => 1)).rejects.toMatchObject({ reason: 'keyInvalid' });
   });
 
@@ -94,7 +95,7 @@ describe('run', () => {
     const { homey, key } = setup();
     const busy = Object.assign(new Error('Timed out'), { statusCode: 408 });
     keyApis.set('k', busy);
-    homey.settings.set(API_KEY_SETTING, 'k');
+    Secrets.for(homey).set(API_KEY_SETTING, 'k');
     await expect(key.run(async () => 1)).rejects.toBe(busy);
     keyApis.set('k', keyApi(['homey.logic']));
     expect(await key.run(async () => 1)).toBe(1);
@@ -103,7 +104,7 @@ describe('run', () => {
   it('passes other errors on unchanged', async () => {
     const { homey, key } = setup();
     keyApis.set('k', keyApi(['homey.flow.start']));
-    homey.settings.set(API_KEY_SETTING, 'k');
+    Secrets.for(homey).set(API_KEY_SETTING, 'k');
     const err = new Error('Flow is disabled');
     await expect(key.run(async () => { throw err; })).rejects.toBe(err);
   });

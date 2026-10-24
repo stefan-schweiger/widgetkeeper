@@ -1,4 +1,5 @@
 import { vi } from 'vitest';
+import Secrets, { type SecretStorage } from '../../lib/secrets.js';
 
 /**
  * `lib/appApi.ts` calls `HomeyAPI.createAppAPI({ homey })`. Service tests mock `homey-api` with
@@ -174,9 +175,14 @@ export function fakeApi(opts: FakeApiOptions = {}) {
   };
 }
 
+/** The secrets file in memory (`text` is what was written last). */
+export function memoryStorage(text: string | null = null): SecretStorage & { text: string | null } {
+  return { text, read() { return this.text; }, write(t) { this.text = t; } };
+}
+
 export function fakeHomey(api: ReturnType<typeof fakeApi>) {
   const settings = new Map<string, unknown>();
-  return {
+  const homey = {
     fakeApi: api,
     setTimeout: (fn: () => void, ms: number) => setTimeout(fn, ms),
     clearTimeout: (t: any) => clearTimeout(t),
@@ -194,4 +200,6 @@ export function fakeHomey(api: ReturnType<typeof fakeApi>) {
     manifest: { id: 'com.thomassidor.widgetkeeper', version: '0.3.0' },
     __: () => undefined,
   } as any;
+  Secrets.for(homey, () => {}, memoryStorage());
+  return homey;
 }

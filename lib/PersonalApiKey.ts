@@ -1,13 +1,14 @@
 import type Homey from 'homey';
 import { HomeyAPI } from 'homey-api';
 import { isTransientError } from './DeviceTracker.js';
+import Secrets from './secrets.js';
 
 /**
- * The app setting with the user's personal API key. Homey gives an app's own token `homey.logic.readonly` and
- * `homey.flow.readonly`, but not `homey.logic` or `homey.flow.start` (checked on the Homey, 2026-10-07/08:
- * `Missing Scopes`), nor `homey.dashboard.readonly` (2026-10-10), so changing a variable, starting a flow or
- * reading a dashboard (the Smart Stack's pages) goes through a key the user makes.
- * The setting's name predates Flow Buttons; it's kept so saved keys still work.
+ * The secret (`Secrets`; an app setting until 1.1.0) with the user's personal API key. Homey gives an app's own
+ * token `homey.logic.readonly` and `homey.flow.readonly`, but not `homey.logic` or `homey.flow.start` (checked on
+ * the Homey, 2026-10-07/08: `Missing Scopes`), nor `homey.dashboard.readonly` (2026-10-10), so changing a variable,
+ * starting a flow or reading a dashboard (the Smart Stack's pages) goes through a key the user makes.
+ * The name predates Flow Buttons; it's kept so saved keys still work.
  */
 export const API_KEY_SETTING = 'variablesApiKey';
 
@@ -49,7 +50,7 @@ export type SaveResult = { ok: true, variables: boolean, flows: boolean, dashboa
 const shared = new WeakMap<object, PersonalApiKey>();
 
 /**
- * The user's personal API key (Variables, Variable Presets, Flow Buttons, Media's buttons and the Smart Stack): checked when saved, kept in the app settings,
+ * The user's personal API key (Variables, Variable Presets, Flow Buttons, Media's buttons and the Smart Stack): checked when saved, kept with the app's secrets (`Secrets`),
  * never sent back or logged. The services share one instance (`PersonalApiKey.for(homey)`), so a save resets
  * the API they all use.
  */
@@ -70,14 +71,18 @@ export default class PersonalApiKey {
   /** Other keys' scopes (`scopesOf()`), by key, for a minute. */
   private scopes = new Map<string, { at: number, scopes: Promise<string[] | null> }>();
 
+  private secrets: Secrets;
+
   constructor(
     private homey: Homey.App['homey'],
     private log: (...args: any[]) => void,
-  ) {}
+  ) {
+    this.secrets = Secrets.for(homey, log);
+  }
 
   /** Whether a key is saved. */
   has() {
-    const key = this.homey.settings.get(API_KEY_SETTING);
+    const key = this.secrets.get(API_KEY_SETTING);
     return typeof key === 'string' && key.length > 0;
   }
 
@@ -89,7 +94,7 @@ export default class PersonalApiKey {
   async save(key: string): Promise<SaveResult> {
     key = key.trim();
     if (!key) {
-      this.homey.settings.unset(API_KEY_SETTING);
+      this.secrets.unset(API_KEY_SETTING);
       this.cached = null;
       return { ok: true, variables: false, flows: false, dashboards: false, moods: false };
     }
@@ -108,7 +113,7 @@ export default class PersonalApiKey {
     const dashboards = may('dashboards');
     const moods = may('moods');
     if (!variables && !flows && !dashboards && !moods) return { ok: false, reason: 'keyScope' };
-    this.homey.settings.set(API_KEY_SETTING, key);
+    this.secrets.set(API_KEY_SETTING, key);
     this.cached = null;
     return { ok: true, variables, flows, dashboards, moods };
   }
@@ -125,7 +130,7 @@ export default class PersonalApiKey {
       const message = String((err as any)?.message ?? err);
       if (isMissingScopes(err)) throw new KeyError('keyScope', message);
       if (isUnauthorized(err)) {
-        if (this.cached?.key === this.homey.settings.get(API_KEY_SETTING)) this.cached = null;
+        if (this.cached?.key === this.secrets.get(API_KEY_SETTING)) this.cached = null;
         throw new KeyError('keyInvalid', message);
       }
       throw err;
@@ -155,7 +160,7 @@ export default class PersonalApiKey {
   }
 
   private api(): Promise<any> {
-    const key = this.homey.settings.get(API_KEY_SETTING);
+    const key = this.secrets.get(API_KEY_SETTING);
     if (typeof key !== 'string' || !key) return Promise.reject(new KeyError('noKey'));
     if (this.cached?.key !== key) {
       // A passing failure (Homey busy or slow) is thrown as it is, not as an invalid key, and tried again next time.
