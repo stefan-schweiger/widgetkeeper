@@ -1699,13 +1699,18 @@
       const dark = showsDark(d.theme);
       const art = el('div', `wd-dash-art ${dark ? 'dark' : 'light'}`);
       if (d.background && d.background !== 'default') art.style.setProperty('--wd-bg', backdrop(d.background, dark));
-      const columns = d.columns.length ? d.columns : [[]];
-      for (const column of columns) {
-        const col = el('div', 'wd-dash-col');
-        for (const w of column.slice(0, 3)) col.append(preview(w.type, 'wd-dash-thumb', dark));
-        if (!column.length) col.append(el('span', 'wd-dash-thumb empty'));
-        art.append(col);
-      }
+      // A grid of the columns, a row per widget: the first three rows, a wide widget across the columns it covers
+      // (placed as on the dashboard, every widget one row high), an empty column dashed.
+      const columns = LAYOUT.expand(d.columns.length ? d.columns : [[]]);
+      art.style.setProperty('--cols', String(columns.length));
+      LAYOUT.place(columns, () => 1, 0).forEach((placed, c) => {
+        if (!columns[c].length) art.append(thumbAt(el('span', 'wd-dash-thumb empty'), c, 0, 1));
+        for (const { entry, top, hidden } of placed) {
+          if (hidden || entry.cover || top >= 3) continue;
+          const span = LAYOUT.spanOf(entry, c, columns.length);
+          art.append(thumbAt(preview(entry.type, `wd-dash-thumb${span > 1 ? ' wide' : ''}`, dark), c, top, span));
+        }
+      });
       const link = el('a', 'wd-dash-link');
       if (!editing) link.href = `#/d/${d.id}`;
       const count = d.columns.reduce((n, c) => n + c.length, 0);
@@ -1734,6 +1739,11 @@
       }
       card.append(art, link);
       return card;
+
+      function thumbAt(node, c, top, span) {
+        node.style.gridArea = `${top + 1} / ${c + 1} / auto / span ${span}`;
+        return node;
+      }
     }
 
     /**

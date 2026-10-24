@@ -154,21 +154,27 @@ textarea.wd-input { width: 100%; resize: vertical; }
 .wd-dashboards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); grid-auto-rows: 1fr; gap: 16px; }
 .wd-dash {
   position: relative; display: flex; flex-direction: column; overflow: hidden; border-radius: 16px;
+  container-type: inline-size; /* the miniature's rows (cqw) */
   background: var(--wd-tile); color: var(--wd-text); box-shadow: 0 0 0 1px var(--wd-line);
   transition: transform .15s ease, box-shadow .15s ease;
 }
 .homey-dark-mode .wd-dash { box-shadow: 0 0 0 1px rgba(255, 255, 255, .06); }
 .wd-dash:hover, .wd-dash:focus-within { transform: translateY(-2px); box-shadow: 0 0 0 2px var(--wd-accent), 0 10px 28px rgba(0, 0, 0, .18); }
+/* The columns as a grid, each row a 4:3 thumb of a column's width (`--cols`; the card's width less the padding), so
+   a wide widget's thumb spans columns and keeps the row's height. */
 .wd-dash-art {
-  display: flex; gap: 6px; aspect-ratio: 16 / 9; padding: 10px; overflow: hidden; box-sizing: border-box;
+  display: grid; gap: 6px; aspect-ratio: 16 / 9; padding: 10px; overflow: hidden; box-sizing: border-box;
+  align-content: start; grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr));
+  grid-auto-rows: calc((100cqw - 20px - (var(--cols, 1) - 1) * 6px) / var(--cols, 1) * 3 / 4);
   background: linear-gradient(160deg, color-mix(in srgb, var(--wd-accent) 14%, var(--wd-bg)), var(--wd-bg) 70%);
 }
 /* A miniature in its dashboard's mode, whatever the page's: the dashboard's own colours (the fallbacks: Homey's
    tokens follow the page). */
 .wd-dash-art.light { --wd-bg: #F4F4FA; --wd-raised: #EAEAF1; --wd-line: #DADAE2; }
 .wd-dash-art.dark { --wd-bg: #111217; --wd-raised: #2B2C36; --wd-line: #383944; }
-.wd-dash-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-.wd-dash-thumb { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 6px; flex: none; background: var(--wd-raised); }
+.wd-dash-thumb { display: block; width: 100%; height: 100%; min-width: 0; object-fit: cover; border-radius: 6px; background: var(--wd-raised); }
+/* A wide widget's preview whole, in the middle of its row (cover would cut a band out of it). */
+.wd-dash-thumb.wide { object-fit: contain; }
 .wd-dash-thumb.empty { background: transparent; outline: 1px dashed var(--wd-line); outline-offset: -1px; }
 .wd-dash-link { display: block; padding: 12px 16px 14px; color: inherit; text-decoration: none; }
 .wd-dash-link::after { content: ""; position: absolute; inset: 0; } /* the whole card opens it */

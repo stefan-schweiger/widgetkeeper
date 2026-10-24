@@ -23,7 +23,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Tap a room's name to open it: the room's Moods, then a row per light with its brightness. A tap on a light's colour dot opens its colours and whites. Rooms start closed, and several can be open.
 
 ### Web dashboards
-- **Wide widgets:** a widget can span two or more columns, such as a floor plan, a camera or a chart. Drag the handle on its right edge in edit mode, or set its Width in its settings. Each column it covers keeps its own widgets above and below it. Kept in duplicates and backups.
+- **Wide widgets:** a widget can span two or more columns, such as a floor plan, a camera or a chart. Drag the handle on its right edge in edit mode, or set its Width in its settings. Each column it covers keeps its own widgets above and below it. Kept in duplicates and backups. The front page's miniatures show them across their columns.
 - **Password:** changing or removing the web dashboards password now asks for the current one. A forgotten password is removed with the Flow card *Remove the web dashboards password*.
 
 ### Charts and Sparklines
