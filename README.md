@@ -438,6 +438,7 @@ Each browser connects with a key of its own, which stays in that browser:
 
 - The page itself only talks to Widgetkeeper: its own API and its live updates. A key with the **Homey** permission works; whether a narrower key does hasn't been tried yet, as Homey doesn't document which permission an app's own API takes.
 - A widget that changes something also needs that permission in the browser's key, as in the [API key](#api-key) table, even though the change is made with the key in the app's settings. So a browser whose key may not start flows can't start them through the app's key either.
+- Likewise, switching a light, a lock, a curtain, a thermostat or a speaker needs permission to control devices in the browser's key (`homey.device.control`, under **Devices**), though Widgetkeeper makes the change. Reading doesn't: the widgets read devices, cameras, Insights and variables with Widgetkeeper's own permissions, so a browser that may open the page sees everything the widgets show, whatever its key.
 - The Smart Stack on a web dashboard reads its dashboard with the app's key, so the browser's key needs **Homey** too.
 - [Other apps' widgets](#widgets-from-other-apps) need **Homey** in the browser's key: Homey only lists them, and answers their settings' searches, with that.
 

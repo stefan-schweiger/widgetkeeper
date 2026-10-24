@@ -53,3 +53,33 @@ export function routeKeyUse(type: string, method: string, path: string, body: un
     default: return null;
   }
 }
+
+/**
+ * The widget routes that change a device with the app's own token (`setCapabilityValue`). Homey lets a personal key do
+ * that itself only with `homey.device.control`, so a web dashboards page's key is held to it too (`pageKeyUse()`).
+ */
+export const DEVICE_WRITES: readonly string[] = [
+  'quickactions POST /trigger',
+  'lights POST /set',
+  'lightrooms POST /set',
+  'curtains POST /set',
+  'locks POST /set',
+  'locks POST /open',
+  'thermostat POST /apply',
+  'media POST /set',
+];
+
+/**
+ * What a web dashboards page's own key must be allowed for a widget route (`/web/call`): the stored key's use
+ * (`routeKeyUse()`), `devices` for a device change (`DEVICE_WRITES`), or null. A Smart Stack's `/call` is its page's route.
+ */
+export function pageKeyUse(type: string, method: string, path: string, body: unknown): KeyUse | null {
+  const route = `${type} ${method} ${path}`;
+  if (route === 'stack POST /call') {
+    const b = (body && typeof body === 'object' ? body : {}) as Record<string, unknown>;
+    const [t, m, p] = [String(b.type ?? ''), String(b.method ?? ''), String(b.path ?? '')];
+    // A stack page can't reach the stack's own routes (`PAGE_APIS` has no stack), so there's one level only.
+    return t === 'stack' ? null : pageKeyUse(t, m, p, b.body);
+  }
+  return routeKeyUse(type, method, path, body) ?? (DEVICE_WRITES.includes(route) ? 'devices' : null);
+}
