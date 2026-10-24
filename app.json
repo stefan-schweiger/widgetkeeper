@@ -12856,6 +12856,41 @@
             "ar": "الشاشة"
           },
           "value": "Screen"
+        },
+        {
+          "id": "countdown",
+          "type": "checkbox",
+          "title": {
+            "en": "Countdown",
+            "nl": "Aftelling",
+            "de": "Countdown",
+            "fr": "Compte à rebours",
+            "it": "Conto alla rovescia",
+            "sv": "Nedräkning",
+            "no": "Nedtelling",
+            "es": "Cuenta atrás",
+            "da": "Nedtælling",
+            "ru": "Обратный отсчёт",
+            "pl": "Odliczanie",
+            "ko": "카운트다운",
+            "ar": "العد التنازلي"
+          },
+          "hint": {
+            "en": "A bar under a message that runs down to its end. The Homey app's browser window doesn't close by itself when the time is up, so it's off unless you want it. Web dashboards always show it, as they close the message.",
+            "nl": "Een balk onder een bericht die afloopt tot het einde. Het browservenster van de Homey-app sluit niet vanzelf als de tijd om is, dus hij staat uit tenzij je hem wilt. Webdashboards tonen hem altijd, omdat zij het bericht sluiten.",
+            "de": "Ein Balken unter einer Nachricht, der bis zu ihrem Ende abläuft. Das Browserfenster der Homey-App schließt sich nicht von selbst, wenn die Zeit um ist, daher ist er aus, außer du willst ihn. Web-Dashboards zeigen ihn immer, da sie die Nachricht schließen.",
+            "fr": "Une barre sous un message qui diminue jusqu'à sa fin. La fenêtre du navigateur de l'app Homey ne se ferme pas seule quand le temps est écoulé, elle est donc désactivée sauf si vous la voulez. Les tableaux de bord web l'affichent toujours, car ils ferment le message.",
+            "it": "Una barra sotto un messaggio che scorre fino alla sua fine. La finestra del browser dell'app Homey non si chiude da sola quando il tempo è scaduto, quindi è disattivata a meno che tu non la voglia. Le dashboard web la mostrano sempre, perché chiudono il messaggio.",
+            "sv": "En stapel under ett meddelande som räknar ner till slutet. Homey-appens webbläsarfönster stängs inte av sig självt när tiden är ute, så den är av om du inte vill ha den. Webbinstrumentpaneler visar den alltid, eftersom de stänger meddelandet.",
+            "no": "En stolpe under en melding som teller ned til slutten. Nettleservinduet i Homey-appen lukkes ikke av seg selv når tiden er ute, så den er av med mindre du vil ha den. Nettdashbord viser den alltid, siden de lukker meldingen.",
+            "es": "Una barra bajo un mensaje que se agota hasta su final. La ventana del navegador de la app Homey no se cierra sola cuando se acaba el tiempo, así que está desactivada salvo que la quieras. Los paneles web siempre la muestran, ya que cierran el mensaje.",
+            "da": "En bjælke under en besked, der tæller ned til slutningen. Homey-appens browservindue lukker ikke af sig selv, når tiden er gået, så den er slået fra, medmindre du vil have den. Webdashboards viser den altid, da de lukker beskeden.",
+            "ru": "Полоса под сообщением, убывающая до его конца. Окно браузера в приложении Homey не закрывается само по истечении времени, поэтому она выключена, если вы её не включите. Веб-панели показывают её всегда, так как сами закрывают сообщение.",
+            "pl": "Pasek pod wiadomością, który maleje do jej końca. Okno przeglądarki w aplikacji Homey nie zamyka się samo po upływie czasu, więc jest wyłączony, chyba że go chcesz. Pulpity webowe pokazują go zawsze, bo same zamykają wiadomość.",
+            "ko": "메시지 아래에서 끝날 때까지 줄어드는 막대입니다. Homey 앱의 브라우저 창은 시간이 다 되어도 저절로 닫히지 않으므로 원할 때만 켜세요. 웹 대시보드는 메시지를 닫으므로 항상 표시합니다.",
+            "ar": "شريط تحت الرسالة يتناقص حتى نهايتها. نافذة المتصفح في تطبيق Homey لا تُغلق وحدها عند انتهاء الوقت، لذا هو متوقف ما لم ترغب فيه. لوحات الويب تعرضه دائمًا لأنها تغلق الرسالة."
+          },
+          "value": false
         }
       ],
       "api": {

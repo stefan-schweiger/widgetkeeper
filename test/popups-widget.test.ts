@@ -32,6 +32,19 @@ describe('Popups widget', () => {
     expect(open).toHaveBeenCalledTimes(3);
   });
 
+  it('asks the page for the countdown only when its Countdown setting is on', async () => {
+    const win = loadWidget('popups');
+    const open = vi.fn();
+    win.createPopupsWidget(document.createElement('div'), { name: '', page: PAGE, open, storage: memoryStorage() })
+      .show({ ...popup('a', 'all'), now: Date.now() });
+    win.createPopupsWidget(document.createElement('div'), { name: '', page: PAGE, open, storage: memoryStorage(), countdown: true })
+      .show({ ...popup('b', 'all'), now: Date.now() });
+    expect(open.mock.calls.map(c => c[0])).toEqual([`${PAGE}#id=a&t=tok-a`, `${PAGE}#id=b&t=tok-b&countdown=1`]);
+    const manifest = JSON.parse(readFileSync('widgets/popups/widget.compose.json', 'utf8'));
+    expect(manifest.settings.find((s: any) => s.id === 'countdown')).toMatchObject({ type: 'checkbox', value: false });
+    expect(readFileSync('widgets/popups/public/mount.js', 'utf8')).toContain('countdown: settings.countdown === true,');
+  });
+
   it("skips a popup whose time is up, by Homey's clock", () => {
     const win = loadWidget('popups');
     const open = vi.fn();
@@ -150,6 +163,20 @@ describe('popup prompt page (settings/popup.js)', () => {
     expect(fetch.mock.calls[0][0]).toBe('/api/app/com.thomassidor.widgetkeeper/popup/p1');
     // The strings only on the first call.
     expect(JSON.parse(fetch.mock.calls[0][1].body)).toEqual({ t: 'secret', strings: true });
+  });
+
+  it("shows a message's bar running down only with the countdown asked for", async () => {
+    const win = load();
+    const fetch = fakeFetch({ '/': () => ({ body: { closed: false, kind: 'message', text: 'Dinner', picture: null, until: Date.now() + 30e3, now: Date.now() } }) });
+    const plain = document.createElement('main');
+    win.mountPopupPage(plain, { fetch, hash: '#id=p1&t=secret' });
+    const timed = document.createElement('main');
+    win.mountPopupPage(timed, { fetch, hash: '#id=p1&t=secret&countdown=1' });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(plain.querySelector('.pp-text')!.textContent).toBe('Dinner');
+    expect(plain.querySelector('.pp-bar')).toBeNull();
+    expect(plain.querySelector('.pp-status')).not.toBeNull();
+    expect(timed.querySelector('.pp-bar span')).not.toBeNull();
   });
 
   it('says when another screen answered first, from its poll', async () => {

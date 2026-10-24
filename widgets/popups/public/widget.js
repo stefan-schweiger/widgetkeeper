@@ -35,7 +35,8 @@
   };
 
   /**
-   * `opts`: `name` (the screen name), `page` (the prompt page's address, without the hash), `open(url)`, and for tests
+   * `opts`: `name` (the screen name), `page` (the prompt page's address, without the hash), `countdown` (the page
+   * shows a message's bar running down: off by default, as the in-app browser doesn't close by itself), `open(url)`, and for tests
    * `now()` and `storage`. Returns `setState({popups, now})` for `/state` and `show(popup)` for `popups:show`.
    * @param {HTMLElement} root
    * @param {any} opts
@@ -67,7 +68,7 @@
     function offer(p, skew) {
       if (!wanted(p, skew) || typeof p.token !== 'string') return;
       storage.setItem(OPENED_KEY, JSON.stringify(opened().concat(p.id).slice(-MAX_OPENED)));
-      opts.open(`${opts.page}#id=${encodeURIComponent(p.id)}&t=${encodeURIComponent(p.token)}`);
+      opts.open(`${opts.page}#id=${encodeURIComponent(p.id)}&t=${encodeURIComponent(p.token)}${opts.countdown ? '&countdown=1' : ''}`);
     }
 
     const skewOf = p => (p && typeof p.now === 'number' ? p.now - now() : 0);

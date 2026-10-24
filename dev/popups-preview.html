@@ -32,6 +32,7 @@
     const CASES = [
       { label: 'A question with a camera', popup: { kind: 'ask', text: 'Someone is at the front door. Unlock it?', picture: { source: 'camera' } } },
       { label: 'A message for 20 s', popup: { kind: 'message', text: 'Dinner is ready', picture: null, seconds: 20 } },
+      { label: 'A message for 20 s, with Countdown', popup: { kind: 'message', text: 'Dinner is ready', picture: null, seconds: 20 }, countdown: true },
       { label: 'Answered on another screen, 4 s in', popup: { kind: 'ask', text: 'Turn off the lights downstairs?', picture: null }, elsewhereAfter: 4000 },
     ];
 
@@ -71,7 +72,7 @@
         if (Date.now() > until) return json({ closed: true, kind: c.popup.kind, answer: null, reason: 'expired', now: Date.now(), language: lang, strings });
         return json(Object.assign({ closed: false, until, now: Date.now(), language: lang, strings }, c.popup));
       };
-      win.mountPopupPage(win.document.getElementById('app'), { fetch: fakeFetch, hash: '#id=p1&t=preview' });
+      win.mountPopupPage(win.document.getElementById('app'), { fetch: fakeFetch, hash: `#id=p1&t=preview${c.countdown ? '&countdown=1' : ''}` });
     }
   </script>
 </body>

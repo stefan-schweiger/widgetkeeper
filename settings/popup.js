@@ -2,8 +2,8 @@
  * The prompt page (popup.html, wk-084): a Flow's message or Yes/No question in the phone app's in-app browser, which a
  * Popups widget opened with `Homey.popup()`. It has no login: `#id=&t=` name the popup and its token, which the app's
  * public routes take in the body (`POST /api/app/<appId>/popup/:id`, `/image`, `/answer`); the first call also asks for
- * the strings (`strings: true`). It polls every 2 s, so it
- * says when another screen answered first or the time ran out; the in-app browser is closed by the user.
+ * the strings (`strings: true`). `&countdown=1` (the widget's Countdown) shows a message's bar running down. It polls
+ * every 2 s, so it says when another screen answered first or the time ran out; the in-app browser is closed by the user.
  */
 (function () {
   'use strict';
@@ -52,6 +52,9 @@
     const params = new URLSearchParams(String(opts.hash != null ? opts.hash : location.hash).replace(/^#/, ''));
     const id = params.get('id') || '';
     const token = params.get('t') || '';
+    // A message's bar running down to its end, only when the Popups widget's Countdown is on: this window doesn't
+    // close by itself when the time is up.
+    const countdown = params.get('countdown') === '1';
     const appId = (location.pathname.match(/\/app\/([^/]+)\//) || [])[1] || 'com.thomassidor.widgetkeeper';
     let strings = {};
     const t = key => (typeof strings[key] === 'string' && strings[key]) || DEFAULT_STRINGS[key] || key;
@@ -173,7 +176,7 @@
         yes.addEventListener('click', () => send(true));
         actions.append(no, yes);
         card.append(actions, status);
-      } else {
+      } else if (countdown) {
         const bar = el('div', 'pp-bar');
         const fill = el('span');
         bar.append(fill);
@@ -184,6 +187,8 @@
           fill.style.transition = `transform ${left}ms linear`;
           fill.style.transform = 'scaleX(0)';
         }));
+      } else {
+        card.append(status);
       }
       root.append(card);
     }

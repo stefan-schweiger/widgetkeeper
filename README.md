@@ -278,7 +278,7 @@ A Flow shows a message, or asks a question with **Yes** and **No**, in front of 
 
 The screen is **Everywhere** or the name of a Popups widget. On a [web dashboard](#web-dashboards) with a Popups widget of that name, the popup covers the page in every browser showing that dashboard (Everywhere reaches every web dashboard). On Homey's own dashboards a widget can't draw over the dashboard, so the Popups widget, which is blank itself, opens the popup in the Homey app's built-in browser; close that window when you're done. Put one on each dashboard where you want popups, with the same name on every screen that should get the same ones, at the bottom of the dashboard, so it doesn't push other widgets down. Give a web dashboard one too, so a name such as *Hallway* reaches the phones and the hallway's wall tablet at once.
 
-**Settings:** screen name.
+**Settings:** screen name, countdown (a bar under a message running down to its end; off, as the Homey app's browser window doesn't close by itself).
 
 ## Room Health
 <img src="docs/screenshots/roomhealth.png" alt="Room Health on a Homey dashboard: six rooms with their icons, the kitchen humid, the bedroom stuffy and the office's radon far over" width="358">

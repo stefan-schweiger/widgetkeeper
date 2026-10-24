@@ -13,6 +13,7 @@ window.mountPopupsWidget = function (Homey, { root, frame }) {
   const appId = (location.pathname.match(/\/app\/([^/]+)\//) || [])[1] || 'com.thomassidor.widgetkeeper';
   const widget = window.createPopupsWidget(root, {
     name: settings.name,
+    countdown: settings.countdown === true,
     page: `${location.origin}/app/${appId}/settings/popup.html`,
     open: (url) => { try { Homey.popup(url); } catch (err) { console.error(err); } },
   });
