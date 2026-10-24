@@ -5,14 +5,15 @@
 //
 //   npm run test-dashboards                 every widget type
 //   npm run test-dashboards -- lights media only those
-//   npm run test-dashboards -- --remove     removes the test dashboards
+//   npm run test-dashboards -- --remove     removes every test dashboard (`test-…` web ones, or `Test · …` with --native)
 //   npm run test-dashboards -- --native …   the same as native Homey dashboards (the Homey app's), instead of web ones
 //   npm run test-dashboards -- --apps "Widgey,Sun Times"   other apps' widgets instead: `Test · Other apps`, id `test-apps`
 //
 // It writes the app setting `webDashboards` through the Homey CLI's login (the web dashboards' own API wants the
 // password's session too), so the app's `normalize()` checks it on the next read, as for any saved dashboard.
 // The "Rename tiles" widgets get a name already typed on a tile, in the app setting `tileNames`.
-// Each type also gets a Vivid copy of its first plain widget (Colour style), one in purple where it has a colour setting.
+// Each type also gets a Vivid copy of its first plain widget (Colour style), one in purple where it has a colour setting,
+// and a Muted one in orange. A widget marked `wide()` spans two columns on the web dashboard (native ones can't).
 //
 // With --native they're Homey dashboards named `Test · <widget>` (the Homey picks a dashboard's id, so the name is the
 // marker), updated in place on a re-run. Their widget and column ids are derived from the type and position
@@ -22,50 +23,20 @@
 // those apps have, a column per app, each with its manifest's defaults and its first autocomplete setting filled
 // (a Homey variable where there is one, so a toggle switches no device).
 
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { createRequire } from 'node:module';
-import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
+import { APP_ID, WEB_SETTING as SETTING, DASHBOARDS, TILE_NAMES, MAX_WEB_DASHBOARDS, connect, widgetManifests } from './homey-session.mjs';
 
-const require = createRequire(import.meta.url);
-const APP_ID = JSON.parse(readFileSync(new URL('../.homeycompose/app.json', import.meta.url), 'utf8')).id;
 const EN = JSON.parse(readFileSync(new URL('../locales/en.json', import.meta.url), 'utf8'));
-const SETTING = `/api/manager/apps/app/${APP_ID}/setting/webDashboards`;
-const DASHBOARDS = '/api/manager/dashboards/dashboard/';
-/** The typed tile names (lib/TileNameService.ts), by widget instance: a web dashboard widget's is `web-<dashboard>-<widget>`. */
-const TILE_NAMES = `/api/manager/apps/app/${APP_ID}/setting/tileNames`;
 const PREFIX = 'test-';
+/** The name every native test dashboard starts with: the Homey picks their ids, so the name is the marker. */
+const NATIVE_PREFIX = 'Test · ';
 const MISSING = 'missing-device-0000'; // a device id that doesn't exist: the widgets' missing state
 
 const { values: opts, positionals } = parseArgs({ options: { remove: { type: 'boolean' }, native: { type: 'boolean' }, apps: { type: 'string' } }, allowPositionals: true });
 
-// One login through the Homey CLI's own code, reused for every request: `homey api raw` logs in anew each time, and
-// Homey answers a burst of logins with `Too many requests` for minutes.
-const { createHomeyApiClient, disposeHomeyApiClient } = await import(pathToFileURL(require.resolve('homey/lib/api/ApiCommandRuntime.mjs')).href);
-const client = await login();
-
-/**
- * The CLI's login (through Athom's cloud); while that says `Too many requests`, tries again every 10 minutes, for an
- * hour. `HOMEY_TOKEN` (a personal API key) and `HOMEY_ADDRESS` (`http://<the Homey's IP>`) skip the cloud.
- */
-async function login(tries = 7) {
-  const { HOMEY_TOKEN: token, HOMEY_ADDRESS: address } = process.env;
-  if (token && address) return createHomeyApiClient({ token, address });
-  try {
-    return await createHomeyApiClient({});
-  } catch (err) {
-    if (tries <= 1 || err?.statusCode !== 429) throw err;
-    console.log('The Athom cloud is rate limiting the login; trying again in 10 minutes.');
-    await new Promise(resolve => setTimeout(resolve, 600000));
-    return login(tries - 1);
-  }
-}
-
-/** A request to the Homey's web API, as the CLI's logged-in user. */
-async function homeyApi(method, path, body) {
-  return client.call({ method, path, ...(body === undefined ? {} : { body }) });
-}
+const { api: homeyApi, close } = await connect();
 
 /** A widget's autocomplete items, as Homey's widget settings ask for them (`settings` as `{key: id}`). */
 async function autocomplete(widget, settingId, settings = {}, query = '') {
@@ -77,9 +48,7 @@ async function autocomplete(widget, settingId, settings = {}, query = '') {
 
 // ---------------------------------------------------------------- the Homey's things
 
-const widgetDefs = Object.fromEntries(readdirSync(new URL('../widgets/', import.meta.url))
-  .filter(id => existsSync(new URL(`../widgets/${id}/widget.compose.json`, import.meta.url)))
-  .map(id => [id, JSON.parse(readFileSync(new URL(`../widgets/${id}/widget.compose.json`, import.meta.url), 'utf8'))]));
+const widgetDefs = widgetManifests();
 
 const devices = Object.values(await homeyApi('GET', '/api/manager/devices/device/'))
   .sort((a, b) => a.name.localeCompare(b.name));
@@ -98,21 +67,31 @@ function columns(widgets, n = 3) {
 const w = (type, title, settings = {}, deviceIds = []) => ({ type, title, settings, deviceIds });
 /** A widget in rename mode (`renameTiles`) with names already typed on its tiles (tile key → name; see TILE_NAMES). */
 const renaming = (type, title, settings, deviceIds, tileNames) => ({ ...w(type, title, { ...settings, renameTiles: true }, deviceIds), tileNames });
+/**
+ * A widget two columns wide on the web dashboard (`span`, wk-083). Put it first in the builder's list: it then heads the
+ * first two columns (`normalize()` gives it `at: [0]`). Native dashboards have no wide widgets, so there it's one column.
+ */
+const wide = x => ({ ...x, title: `Wide on the web · ${x.title}`, span: 2 });
 
 /**
- * Colour style (`colorStyle`): a Vivid copy of a type's first plain widget (not renaming, no deleted device), one more in purple
- * where the type has a colour setting, and Weather's Vivid theme.
+ * Colour style (`colorStyle`): a Vivid copy of a type's first plain widget (not renaming, no deleted device, not wide),
+ * one more in purple and a Muted one in orange where the type has a colour setting, and Weather's Vivid theme.
  */
 function deepVariants(type, widgets) {
-  const ids = (widgetDefs[type].settings || []).map(s => s.id);
-  const base = widgets.find(x => !x.tileNames && !x.settings?.renameTiles && !x.deviceIds?.includes(MISSING));
-  if (!base) return [];
+  const settings = widgetDefs[type].settings || [];
+  const ids = settings.map(s => s.id);
+  const plain = widgets.find(x => !x.tileNames && !x.settings?.renameTiles && !x.deviceIds?.includes(MISSING) && !x.span);
+  if (!plain) return [];
+  const { span, ...base } = plain;
   if (type === 'weather') return [{ ...base, title: `Vivid theme · ${base.title}`, settings: { ...base.settings, theme: 'card' } }];
   if (!ids.includes('colorStyle')) return [];
   const deep = { ...base, title: `Vivid · ${base.title}`, settings: { ...base.settings, colorStyle: 'deep' } };
-  return ids.includes('color')
-    ? [deep, { ...deep, title: `Vivid · purple · ${base.title}`, settings: { ...deep.settings, color: 'purple' } }]
-    : [deep];
+  const colors = settings.find(s => s.id === 'color')?.values?.map(v => v.id) ?? [];
+  return [
+    deep,
+    ...(colors.includes('purple') ? [{ ...deep, title: `Vivid · purple · ${base.title}`, settings: { ...deep.settings, color: 'purple' } }] : []),
+    ...(colors.includes('orange') ? [{ ...base, title: `Muted · orange · ${base.title}`, settings: { ...base.settings, color: 'orange' } }] : []),
+  ];
 }
 
 /** The first n autocomplete items that pass, `None` and the like left out. */
@@ -128,9 +107,12 @@ const BUILD = {
     const meter = where(d => has(d, 'measure_power') && d.class === 'sensor', 1).concat(where(d => has(d, 'measure_power'), 1))[0];
     const m = meter ? [meter] : [];
     return { cols: 3, widgets: [
+      wide(w('electricity', 'Separate usage · smooth', { separateUsage: true, smooth: true }, m)),
       w('electricity', 'Defaults', {}, m),
       w('electricity', 'Compact', { layout: 'compact' }, m),
       w('electricity', '60 min · smooth · separate usage · purple', { liveWindow: '60', smooth: true, separateUsage: true, usageColor: 'purple' }, m),
+      w('electricity', '30 min window', { liveWindow: '30' }, m),
+      w('electricity', '5 min window · compact', { liveWindow: '5', layout: 'compact' }, m),
       w('electricity', '1 min · lowest 12 and 24 h', { liveWindow: '1', nextLow: 'both' }, m),
       w('electricity', '30 s · no prices', { liveWindow: '0.5', showPrices: false }, m),
       w('electricity', 'No usage · no lowest price', { showUsage: false, nextLow: 'none' }, m),
@@ -219,6 +201,8 @@ const BUILD = {
       w('sensordots', 'Cameras · purple/yellow', { idleColor: 'purple', activeColor: 'yellow' }, cams),
       w('sensordots', 'Vibration sensors', { title: 'Vibration' }, vibration),
       w('sensordots', 'One dot', {}, motion.slice(0, 1)),
+      w('sensordots', '12-hour times (tap a dot)', { title: '12-hour', timeFormat: '12' }, [...contact.slice(0, 3), ...motion.slice(0, 3)]),
+      w('sensordots', '24-hour times (tap a dot)', { title: '24-hour', timeFormat: '24' }, [...contact.slice(0, 3), ...motion.slice(0, 3)]),
       w('sensordots', 'Grey active · with a deleted device', { title: 'Odd ones', idleColor: 'grey', activeColor: 'grey' }, [...motion.slice(0, 2), MISSING]),
     ] };
   },
@@ -237,6 +221,9 @@ const BUILD = {
         { tempMin: 21, tempMax: 22, humidityMin: 45, humidityMax: 50, co2Max: 600, radonMax: 40, vocMax: 200 }, [...air, ...climate].slice(0, 9)),
       w('roomhealth', 'Bars, green when fine, strict CO₂ 600 (yellow and red)',
         { layout: 'bars', greenWhenFine: true, co2Max: 600 }, [...air, ...climate].slice(0, 9)),
+      w('roomhealth', '2 per row · bars', { columns: '2', layout: 'bars' }, [...air, ...climate].slice(0, 9)),
+      w('roomhealth', '4 per row', { columns: '4' }, [...air, ...climate].slice(0, 12)),
+      w('roomhealth', 'Strict PM2.5 5 · PM10 10 (yellow and red where measured)', { pm25Max: 5, pm10Max: 10 }, air.slice(0, 6)),
       w('roomhealth', 'Temperature only', {}, tempOnly),
       w('roomhealth', "A heat pump's room temperature · deleted device", {}, [...roomSub, MISSING]),
       w('roomhealth', 'No devices picked'),
@@ -254,20 +241,26 @@ const BUILD = {
     const plugs = where(d => has(d, 'measure_power') && cls(d) === 'socket', 6);
     const batteries = where(d => has(d, 'measure_battery'), 6);
     const zoneOf = id => devices.find(d => d.id === id)?.zone;
+    const six = cols(temp, hum, co2, radon, power, battery);
+    const typed = { header1: 'Temp', range1: '20–23', header2: 'RH', range2: '35–55', header3: 'CO2', range3: '<800',
+      header4: 'Rn', range4: '<80', header5: 'W', range5: '-', header6: 'Batt', range6: '>20' };
     return { cols: 3, widgets: [
+      wide(w('valuematrix', 'Six columns · typed headers and ranges', { ...six, ...typed }, climate)),
       w('valuematrix', 'Rooms · °C, %, CO₂, radon (usual ranges)', cols(temp, hum, co2, radon), climate),
       w('valuematrix', 'Strict: 21–22 °C, 45–50 %, CO₂ <600 (orange and red)',
         { ...cols(temp, hum, co2), range1: '21–22', range2: '45-50', range3: '<600' }, climate),
       w('valuematrix', 'Devices · no legend', { ...cols(temp, hum, co2), rows: 'devices', showLegend: false }, climate.slice(0, 6)),
       w('valuematrix', 'Power (no range, header "Watt") · battery >30 · deleted device',
         { ...cols(power, battery), header1: 'Watt', range2: '>30', rows: 'devices' }, [...plugs.slice(0, 3), ...batteries.slice(0, 3), MISSING]),
-      w('valuematrix', 'Six columns', cols(temp, hum, co2, radon, power, battery), climate),
+      w('valuematrix', 'Six columns · typed headers and ranges (no range on W)', { ...six, ...typed }, climate),
+      w('valuematrix', 'Unreadable range (plain column)', { ...cols(temp, hum), range1: 'warm', range2: '–' }, climate.slice(0, 4)),
       w('valuematrix', 'No values picked', {}, climate.slice(0, 3)),
       renaming('valuematrix', 'Rename tiles', cols(temp, hum), climate.slice(0, 3), climate.length ? { [`zone:${zoneOf(climate[0])}`]: 'Typed room name' } : {}),
     ] };
   },
 
   weather: () => ({ cols: 3, widgets: [
+    wide(w('weather', 'Detailed · 2 rows', { density: 'detailed', rows: '2' })),
     w('weather', 'Defaults (compact, 1 row, 1 h)'),
     w('weather', 'Detailed', { density: 'detailed' }),
     w('weather', 'Compact · 2 rows', { rows: '2' }),
@@ -282,6 +275,7 @@ const BUILD = {
     w('pollen', 'All six types · 12-hour', { showAlder: true, showOlive: true, showRagweed: true, timeFormat: '12' }),
     w('pollen', 'Detailed · all six · no UV', { density: 'detailed', showAlder: true, showOlive: true, showRagweed: true, showUv: false }),
     w('pollen', 'UV only', { showBirch: false, showGrass: false, showMugwort: false }),
+    w('pollen', 'Detailed · 24-hour', { density: 'detailed', timeFormat: '24' }),
     w('pollen', 'Nothing chosen', { showUv: false, showBirch: false, showGrass: false, showMugwort: false }),
   ] }),
 
@@ -299,6 +293,7 @@ const BUILD = {
     const motion = await pair(() => true, 'alarm_motion');
     const contact = await pair(() => true, 'alarm_contact');
     const out = [
+      temp && wide(w('heatmap', 'Temperature · 14 days · 1 h', { ...temp, period: '14', step: '1' })),
       temp && w('heatmap', 'Temperature · defaults (week, 2 h, blue)', temp),
       temp2 && w('heatmap', 'Temperature · 3 days · 1 h · red', { ...temp2, period: '3', step: '1', color: 'red' }),
       power && w('heatmap', 'Power · 7 days · 3 h · yellow', { ...power, period: 'rolling', step: '3', color: 'yellow' }),
@@ -314,16 +309,18 @@ const BUILD = {
 
   async cameras() {
     const cams = where(d => ['camera', 'doorbell'].includes(cls(d)));
-    return { cols: 2, widgets: [
+    return { cols: 3, widgets: [
+      wide(w('cameras', 'Three · large on top', { layout: 'top' }, cams.slice(0, 3))),
       w('cameras', 'One · 5 s', { refresh: '5' }, cams.slice(0, 1)),
       w('cameras', 'Two · defaults (10 s)', {}, cams.slice(1, 3)),
       w('cameras', 'Three (odd last) · 30 s', { refresh: '30' }, cams.slice(0, 3)),
-      w('cameras', 'Three · large on top', { layout: 'top' }, cams.slice(0, 3)),
       w('cameras', 'Three · one per row', { layout: 'single' }, cams.slice(0, 3)),
       w('cameras', 'All · 60 s', { refresh: '60' }, cams),
       w('cameras', 'With a deleted camera', {}, [cams[0], MISSING].filter(Boolean)),
       w('cameras', 'Live until tapped', { liveFor: 'tap' }, cams.slice(0, 2)),
       w('cameras', 'Live 30 s', { liveFor: '30' }, cams.slice(0, 1)),
+      w('cameras', '12-hour times (a late snapshot shows its time) · 60 s', { refresh: '60', timeFormat: '12' }, cams.slice(0, 2)),
+      w('cameras', '24-hour times · 60 s', { refresh: '60', timeFormat: '24' }, cams.slice(0, 2)),
       renaming('cameras', 'Rename tiles', {}, cams.slice(0, 2), cams[0] ? { [cams[0]]: 'Typed name' } : {}),
     ] };
   },
@@ -435,7 +432,9 @@ const BUILD = {
     const other = pick(items, i => i !== temp && i !== power, 3);
     const missing = { id: `${MISSING}:measure_temperature`, name: 'Deleted device · Temperature' };
     return { cols: 3, widgets: [
+      wide(w('charts', 'On one chart · 7 days · bars + line', { charts: 'overlay', chart1: power, span1: '7d', style1: 'bars', chart2: temp, style2: 'line', color2: 'orange' })),
       w('charts', 'One chart (defaults)', { chart1: temp }),
+      w('charts', 'Two · chart 2: blue, own title, from zero, below zero yellow', { charts: '2', chart1: power, chart2: temp, color2: 'blue', title2: 'Typed title', range2: 'zero', negative2: true }),
       w('charts', 'Two · area + bars', { charts: '2', chart1: temp, chart2: power, style2: 'bars' }),
       w('charts', 'Two · line, smooth 6 h + bars 7 d', { charts: '2', chart1: power, span1: '6h', style1: 'line', smooth1: true, chart2: power, span2: '7d', style2: 'bars', color2: 'orange' }),
       w('charts', 'On one chart · area + line', { charts: 'overlay', chart1: temp, color1: 'purple', chart2: power, style2: 'line', smooth2: true, color2: 'orange' }),
@@ -576,6 +575,8 @@ const BUILD = {
       w('locks', 'Everything · list', { view: 'list' }, [...locks, ...garages, ...contacts]),
       w('locks', 'One lock · list', { view: 'list' }, locks.slice(0, 1)),
       w('locks', 'With a deleted device', {}, [...locks, MISSING]),
+      w('locks', 'Everything · 12-hour times', { timeFormat: '12' }, [...locks, ...garages, ...contacts]),
+      w('locks', 'Everything · list · 24-hour times', { view: 'list', timeFormat: '24' }, [...locks, ...garages, ...contacts]),
       renaming('locks', 'Rename tiles (the list shows)', {}, locks, locks[0] ? { [locks[0]]: 'Typed name' } : {}),
     ].filter(Boolean) };
   },
@@ -589,6 +590,8 @@ const BUILD = {
       w('curtains', `Reverse of last move · inverted${note}`, { between: 'reverse', invert: true }, set),
       w('curtains', `No state line${note}`, { showState: false }, set),
       w('curtains', `Exact ends (0%)${note}`, { ends: '0' }, set),
+      w('curtains', `Ends within 2%${note}`, { ends: '2' }, set),
+      w('curtains', `Ends within 10%${note}`, { ends: '10' }, set),
       w('curtains', `Wide ends (15%)${note}`, { ends: '15' }, set),
       w('curtains', `Open at 100%, also tilt-only blinds${note}`, { openAt: 'end' }, set),
       w('curtains', `Open at 50% (vertical blinds)${note}`, { openAt: 'middle' }, set),
@@ -617,6 +620,8 @@ const BUILD = {
       button2: card(/line_in/) ?? card(/:play$/), button2Icon: icon('speaker'),
       button3: flow, button3Icon: icon('music'),
     };
+    // Four, each named, the last without an icon.
+    const four = { ...buttons, button2Name: 'Line-in', button3Name: 'Music flow', button4: card(/:pause$|:stop$/) ?? card(/./), button4Name: 'Typed name' };
     return { cols: 3, widgets: [
       w('media', 'Defaults', { device: sp(0) }),
       w('media', 'Volume buttons · step 10 · max 40 %', { device: sp(1), volumeLayout: 'buttons', volumeStep: '10', maxVolume: 40 }),
@@ -626,6 +631,8 @@ const BUILD = {
       w('media', 'Step 2 · no progress · volume buttons', { device: sp(3), volumeStep: '2', showProgress: false, volumeLayout: 'buttons' }),
       w('media', 'Large', { device: sp(0), layout: 'large' }),
       w('media', 'Large · volume buttons · shuffle · buttons', { device: tv.device, layout: 'large', volumeLayout: 'buttons', showShuffle: true, ...buttons }),
+      w('media', 'Four named buttons (the last without an icon)', { device: tv.device, ...four }),
+      w('media', 'Large · tapping the art doesn\'t switch layout', { device: sp(1), layout: 'large', layoutTap: false }),
       w('media', 'Nothing picked'),
     ] };
   },
@@ -644,6 +651,7 @@ const BUILD = {
     const gadget = zoom => `https://gadgets.buienradar.nl/gadget/zoommap/?lat={lat}&lng={lon}&overname=2&zoom=${zoom}&naam=Home&size=3&voor=1`;
     const size = { pageWidth: 550, pageHeight: 512 };
     return { cols: 3, widgets: [
+      wide(w('webpage', 'Map gadget · 550 × 512', { url: gadget(8), ...size })),
       w('webpage', 'Defaults (no address)'),
       w('webpage', 'Map gadget · 550 × 512 · four zoom buttons', {
         url: gadget(8), ...size, refresh: 15,
@@ -665,6 +673,7 @@ const BUILD = {
     return { cols: 3, widgets: [
       w('textline', 'Defaults (nothing typed)'),
       w('textline', 'Typed · icon · blue', { message: 'Back at 5', icon: icon('bell'), color: 'blue' }),
+      w('textline', 'Typed · yellow tile', { message: 'Bins out tonight', icon: icon('home'), color: 'yellow' }),
       w('textline', 'Typed long · cut off · large · centred', { message: long, size: 'large', align: 'center' }),
       w('textline', 'Typed long · scroll · small', { message: long, overflow: 'scroll', size: 'small', icon: icon('home') }),
       ...['default', 'orange', 'red', 'purple', 'blue', 'green'].map(color =>
@@ -725,15 +734,20 @@ const BUILD = {
       w('stack', `${b(1).name} · 10 s · large dots above`, { dashboard: b(1), interval: '10', dotsPosition: 'above', dotsSize: 'large' }),
       w('stack', `${b(2).name} · never rotates · no smart · no dots`, { dashboard: b(2), interval: 'never', smart: false, showDots: false }),
       w('stack', `${b(0).name} · 15 s · resumes after 30 s · small above`, { dashboard: b(0), interval: '15', resumeAfter: '30', dotsPosition: 'above' }),
+      w('stack', `${b(1).name} · 1 min · resumes after 2 min`, { dashboard: b(1), interval: '60', resumeAfter: '120' }),
+      w('stack', `${b(2).name} · 5 min · resumes after 5 min · large dots`, { dashboard: b(2), interval: '300', resumeAfter: '300', dotsSize: 'large' }),
       w('stack', 'Nothing picked'),
     ] };
   },
 
-  // A Popups widget draws nothing, so a clock above and below shows where it is. Send a popup to the screen name
-  // "Test" from a Flow: it opens in the phone app's browser (--native) or over the web dashboard.
-  popups: () => ({ cols: 1, widgets: [
+  // A Popups widget is a quiet row, so a clock above and below shows where it is. Send a popup to the screen name
+  // "Test" (or "Screen") from a Flow: it opens in the phone app's browser (--native) or over the web dashboard.
+  popups: () => ({ cols: 2, widgets: [
     w('clock', 'Above: a Popups widget named Test', { showWeather: false }),
+    w('clock', 'Above: a Popups widget with the default name', { showWeather: false }),
     w('popups', '', { name: 'Test' }),
+    w('popups', ''),
+    w('clock', 'Below it', { showWeather: false }),
     w('clock', 'Below it', { showWeather: false }),
   ] }),
 };
@@ -752,7 +766,7 @@ if (missingBuilders.length) console.warn(`No test dashboard for: ${missingBuilde
 const replacing = type => types.includes(type) || (opts.remove && !positionals.length);
 
 function testName(type) {
-  return `Test · ${widgetDefs[type]?.name?.en ?? type}`;
+  return `${NATIVE_PREFIX}${widgetDefs[type]?.name?.en ?? type}`;
 }
 
 // ---------------------------------------------------------------- other apps' widgets
@@ -846,7 +860,7 @@ async function writeWeb(built) {
   const tests = [...current.filter(d => d.id.startsWith(PREFIX) && !replace.has(d.id)), ...dashboards]
     .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
   const next = [...current.filter(d => !d.id.startsWith(PREFIX)), ...tests];
-  if (next.length > 64) throw new Error(`That would make ${next.length} web dashboards; at most 64`);
+  if (next.length > MAX_WEB_DASHBOARDS) throw new Error(`That would make ${next.length} web dashboards; at most ${MAX_WEB_DASHBOARDS}`);
   await homeyApi('PUT', SETTING, { value: next });
   await writeTileNames(instance => [...replace].some(id => instance.startsWith(`web-${id}-`)), typed);
   console.log(`${opts.remove ? 'Removed' : 'Saved'}; ${next.length} web dashboards on the Homey now.`);
@@ -881,7 +895,10 @@ function nativeWidget(uuid, { type, title, settings, deviceIds }) {
 async function writeNative(built) {
   const all = Object.values(await homeyApi('GET', DASHBOARDS) ?? {});
   const typeOf = new Map(Object.keys(widgetDefs).map(t => [testName(t), t]));
-  const old = all.filter(d => typeOf.has(d.name) && replacing(typeOf.get(d.name)));
+  // Without widget types named, every `Test · …` dashboard goes or is replaced, also one of a type no longer built.
+  const old = all.filter(d => typeOf.has(d.name)
+    ? replacing(typeOf.get(d.name))
+    : !positionals.length && String(d.name ?? '').startsWith(NATIVE_PREFIX));
   const dropped = new Set(old.flatMap(d => (d.columns ?? []).flatMap(c => (c.widgets ?? []).map(x => x.id))));
   const typed = {};
   let count = all.length;
@@ -900,11 +917,16 @@ async function writeNative(built) {
     for (const d of extra) { await homeyApi('DELETE', `${DASHBOARDS}${d.id}`); count--; }
     console.log(`${name}: ${widgets.length} widgets (${existing ? 'updated' : 'created'})`);
   }
-  if (opts.remove) for (const d of old) { await homeyApi('DELETE', `${DASHBOARDS}${d.id}`); count--; }
+  for (const d of old) {
+    if (built.some(b => b.name === d.name)) continue;
+    await homeyApi('DELETE', `${DASHBOARDS}${d.id}`);
+    console.log(`${d.name}: removed`);
+    count--;
+  }
   await writeTileNames(instance => dropped.has(instance), typed);
   console.log(`${opts.remove ? 'Removed' : 'Saved'}; ${count} Homey dashboards now.`);
 }
 
 const built = opts.remove ? [] : opts.apps ? [await buildApps()] : await buildAll();
 await (opts.native ? writeNative(built) : writeWeb(built));
-await disposeHomeyApiClient(client);
+await close();
