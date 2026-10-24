@@ -87,7 +87,7 @@ A Flow's message or Yes/No question, with a picture if you like, in front of eve
 
 <p><a href="#room-health"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/roomhealth-dark.png"><img src="docs/previews/roomhealth-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#room-health"><b>Room Health</b></a><br>
-Each room's temperature, humidity, CO₂, radon and particles at a glance, as icons or bars that turn yellow to red<br clear="left"></p>
+Each room's temperature, humidity and air quality at a glance, turning yellow to red when something is off<br clear="left"></p>
 
 <p><a href="#sensor-alarms"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/sensoralarms-dark.png"><img src="docs/previews/sensoralarms-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#sensor-alarms"><b>Sensor Alarms</b></a><br>
@@ -115,7 +115,7 @@ Kitchen timers from one-tap presets, with a Flow card when one runs out<br clear
 
 <p><a href="#value-matrix"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/valuematrix-dark.png"><img src="docs/previews/valuematrix-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#value-matrix"><b>Value Matrix</b></a><br>
-Devices or rooms against the values you choose, in one table: green (OK) inside a value's range, orange (Warning) outside it, red (Alert) far outside<br clear="left"></p>
+Devices or rooms against the values you choose, in one table, each cell green, orange or red by its range<br clear="left"></p>
 
 <p><a href="#variable-presets"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/varpresets-dark.png"><img src="docs/previews/varpresets-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#variable-presets"><b>Variable Presets</b></a><br>
@@ -144,21 +144,21 @@ Any web page, scaled to fill the widget, with buttons to switch between addresse
 
 Motion, contact, vibration and camera sensors as a grid of dots that light up while active. Tap a dot for its name and since when, such as *Garage · Open since 18:17*.
 
-**Settings:** sensors, title, idle and active colours, [colour style](#colour-style), time format (automatic, 24-hour or 12-hour).
+**Settings:** sensors, title, idle and active colours, [colour style](#colour-style), time format.
 
 ## Cameras
 <img src="docs/screenshots/cameras.png" alt="Cameras on a Homey dashboard" width="358">
 
 Your cameras as a grid of snapshots that refresh every few seconds (cameras with only a video stream show a still from it). Tap one to watch it live.
 
-**Settings:** cameras, layout (the large camera at the top or the bottom, or one per row), refresh interval, how long live view stays on (30 seconds to 5 minutes, or until you tap it again), time format (automatic, 24-hour or 12-hour), [rename tiles](#tile-names).
+**Settings:** cameras, layout (a large camera at the top or bottom, or one per row), refresh interval, how long live view stays on, time format, [rename tiles](#tile-names).
 
 ## Charts
 <img src="docs/screenshots/charts.png" alt="Charts on a Homey dashboard: the outdoor temperature as a line, and the power use as bars" width="358">
 
 One chart, two stacked, or two values on one chart (each with its own scale), of any value that Homey logs in Insights, drawn like Electricity Overview's charts. The value now sits at the top in the chart's colour. Tap a chart to see the value at that moment.
 
-**Settings:** one chart, two stacked or two on one chart; for each, the value, the time span (1 hour to 7 days, today or yesterday), line with area, line or bars, the colour, a scale that fits the values or starts at zero, below zero in yellow, a smooth line and a title. The values at the top can be turned off; yesterday shows its average there. [Colour style](#colour-style).
+**Settings:** one chart, two stacked or two on one chart; per chart the value, time span (1 hour to 7 days, today or yesterday), style (line with area, line or bars), colour, scale (fitted or from zero), below zero in yellow, smooth line and title; the values at the top (yesterday shows its average there); [colour style](#colour-style).
 
 ## Clock
 <img src="docs/screenshots/clock.png" alt="Clock on a Homey dashboard" width="358">
@@ -177,16 +177,16 @@ Curtains and blinds as tiles: tap to open or close (the corner label says which)
 ## Dashboard Shortcuts
 <img src="docs/screenshots/shortcuts.png" alt="Dashboard Shortcuts on a web dashboard: Home ringed, with Energy, Security, Climate, Evening and Kitchen" width="358">
 
-For [web dashboards](#web-dashboards) only: your other web dashboards as buttons, each with a round icon in the colour and icon you pick; a tap opens that dashboard. The one you're on is ringed, so the same widget can go on every dashboard as a menu. Homey's own dashboards don't offer it.
+For [web dashboards](#web-dashboards) only: your other web dashboards as buttons, each with a round icon in the colour and icon you pick; a tap opens that dashboard. The one you're on is ringed, so the same widget can go on every dashboard as a menu.
 
 **Settings:** up to eight dashboards, each with a colour and an icon; 1 or 2 columns; [colour style](#colour-style); [rename tiles](#tile-names).
 
 ## Days Since
 <img src="docs/screenshots/dayssince.png" alt="Days Since on a Homey dashboard: a list of chores with a bar each, plants watered 6 days ago in amber with 1 day left, the vacuum filter 3 months in red and 2 days overdue, and the fish just fed with Undo" width="358">
 
-Counters for the things you do every so often: plants watered *6 days* ago, the vacuum filter changed *3 months* ago, the sheets *2 weeks*. They're a list on one card: each counter's bar fills up towards the day it's due, with the time left under it. A counter turns amber, then red, the number of days you set after it was last done, and then says how long it's overdue (*+2 d*). Tap a row when you've done it: it starts again from *Today*, with **Undo** for a few seconds. The counters are kept on Homey by name, so every widget (and every screen) with the same counter shows the same one.
+Counters for things you do every so often, such as watering the plants or changing the vacuum filter, in a list on one card. Each bar fills up towards the day the counter is due, with the time left under it; it turns amber, then red, after the days you set, and then shows how long it's overdue (*+2 d*). Tap a row when it's done to start again from *Today* (with **Undo** for a few seconds). Counters are kept on Homey by name, so every widget and screen with the same counter shows the same one.
 
-Flow cards: *Reset [counter]* (when the robot vacuum is done, for instance), *Set [counter] to [days] days ago* (for something done before you added the widget), the trigger *[counter] became overdue* (when it turns red, even with no dashboard open) and the condition *[counter] is overdue*; the last two also take *Any counter*.
+Flow cards: *Reset [counter]*, *Set [counter] to [days] days ago*, the trigger *[counter] became overdue* (even with no dashboard open) and the condition *[counter] is overdue*; the last two also take *Any counter*.
 
 **Settings:** days only or days, weeks and months; all counters, or only those that are amber and red (or only red), so the ones far from due don't take up room; [colour style](#colour-style); up to eight counters, each with a name, an icon and the days until amber and red.
 
@@ -200,9 +200,9 @@ Half-height tiles that run a device's quick action with one tap (on/off, lock, p
 ## Device Values
 <img src="docs/screenshots/values.png" alt="Device Values on a Homey dashboard" width="358">
 
-Half-height tiles that each show one live device value, and if you like a second value of the same device small beside the name, such as a room's humidity next to its temperature. Percentages can fill their tile by level, and the Flow card **Set the tile colour of … to …** colours a tile, such as a fridge going red when it's too warm.
+Half-height tiles that each show one live device value, optionally with a second value of the same device beside the name, such as a room's humidity next to its temperature. Percentages can fill their tile by level, and the Flow card **Set the tile colour of … to …** colours a tile, such as a fridge going red when it's too warm.
 
-**Settings:** up to six values, each with an optional second value, 3 or 2 per row, compact or pill tiles (pill tiles look like Sensor Alarms'), [colour style](#colour-style) (Vivid fills percentage fills and the colours a Flow sets), percentage fill and its limits, [rename tiles](#tile-names).
+**Settings:** up to six values, each with an optional second value; 3 or 2 per row; compact or pill tiles (like Sensor Alarms'); percentage fill and its limits; [colour style](#colour-style); [rename tiles](#tile-names).
 
 ## Electricity Overview
 <img src="docs/screenshots/electricity.png" alt="Electricity Overview on a Homey dashboard" width="358">
@@ -237,7 +237,7 @@ A week of one Insights value as a grid of days and hours: numbers such as light 
 ## Light Controls
 <img src="docs/clips/lights.webp" alt="Light Controls on a Homey dashboard: a light turned on, dimmed with the bar, and given a colour and a white" width="358">
 
-Six lights in the space of three of Homey's light cards. Tap a tile to switch it, drag or tap the bar to dim, and tap the colour button for colours and whites. Lights in a room can share one tile. The Room's Moods palette puts the room's Homey Moods on the colour button instead of the colours and whites; starting one needs an [API key](#api-key) with **Set Moods**.
+Six lights in the space of three of Homey's light cards. Tap a tile to switch it, drag or tap the bar to dim, and tap the colour button for colours and whites. Lights in a room can share one tile. With the *Room's Moods* palette, the colour button starts the room's Homey Moods instead (needs an [API key](#api-key) with **Set Moods**).
 
 **Settings:** lights, group by room, widen the last tile, what the bar's far left does, colour palette, [colour style](#colour-style), [rename tiles](#tile-names).
 
@@ -249,21 +249,21 @@ For many lights in many rooms. The lights you pick are grouped by their Homey ro
 ## Locks and Doors
 <img src="docs/screenshots/locks.png" alt="Locks and Doors on a Homey dashboard" width="358">
 
-Locks, doors, windows and garage doors in one line: *All locked and closed*, or what isn't, on a red tile. Tap it for the list, with **Lock** and **Close** buttons. A lock that can pull the latch can get an **Open** button too: pick the capability that does it (such as *open_lock* or *open*), and tap it twice to open the door.
+Locks, doors, windows and garage doors in one line: *All locked and closed*, or what isn't, on a red tile. Tap it for the list, with **Lock** and **Close** buttons. A lock that can pull the latch can also get an **Open** button (pick its capability, such as *open_lock* or *open*); tap it twice to open the door.
 
-**Settings:** devices, one line or the full list, allow unlocking, the open door button, [colour style](#colour-style), time format (automatic, 24-hour or 12-hour), [rename tiles](#tile-names).
+**Settings:** devices, one line or the full list, allow unlocking, the open door button, [colour style](#colour-style), time format, [rename tiles](#tile-names).
 
 ## Media
 <img src="docs/clips/media.webp" alt="Media on a Homey dashboard: the volume turned up, the next track, mute, the TV as the source from behind ⋯, and a switch to another speaker" width="358">
 
-One speaker as a card: album art, the track, play controls, mute, and a volume that moves on every tap but never overshoots or passes your maximum. Shows TV and line-in instead of old album art. Tap the name to switch speaker. Up to four buttons behind ⋯ run the speaker's own actions (such as *Set source to TV*), its app's (such as Sonos (LocalAPI)'s *Scan the music library*) or flows; they need an [API key](#api-key), with **Flows** for the actions and **Start Flows** for flows. A large layout puts the album art across the whole widget, with bigger text and buttons below it; tap the album art to switch between the two (each screen remembers its choice).
+One speaker as a card: album art, the track, play controls, mute, and a volume that moves on every tap but never overshoots or passes your maximum. TV and line-in show as such, not as old album art. Tap the name to switch speaker. Up to four buttons behind ⋯ run the speaker's own actions (such as *Set source to TV*), its app's, or flows; they need an [API key](#api-key) (**Flows** for actions, **Start Flows** for flows). The large layout puts the album art across the whole widget; tap the art to switch layout (each screen remembers its choice).
 
 **Settings:** layout (compact or large), tap the album art to switch layout, colour, [colour style](#colour-style), speaker, speaker switching, volume as a bar or buttons, volume step and maximum, progress, shuffle and repeat, four buttons with an icon and a name.
 
 ## Notes
 <img src="docs/screenshots/textline.png" alt="Notes on a Homey dashboard: a blue tile and a yellow Post-it note" width="358">
 
-A short message on the dashboard, as a tile with one line of text or as a Post-it note stuck on it, tilted, with a folded corner and written in handwriting. Type the message in the widget's settings, or let a Flow write it: *Write [text] on the note [name]*, optionally in a colour (red for *Dryer done*), and *Clear the note [name]*. Every Notes widget with that name shows it, on every screen, at once. It can show a Logic text variable instead. On the tile, long text is cut off or scrolls; the Post-it wraps it to three lines.
+A short message on the dashboard: a tile with one line of text, or a tilted, handwritten Post-it note. Type it in the settings, show a Logic text variable, or let a Flow write it with *Write [text] on the note [name]* (optionally in a colour, such as red for *Dryer done*) and *Clear the note [name]*; every Notes widget with that name shows it at once. On the tile, long text is cut off or scrolls; the Post-it wraps it to three lines.
 
 **Settings:** style (tile or Post-it), text from (the message typed in the settings, a Flow card or a text variable), message, note name, variable, alignment, text size, long text, icon, colour, [colour style](#colour-style).
 
@@ -283,7 +283,7 @@ The screen is **Everywhere** or the name of a Popups widget. On a [web dashboard
 ## Room Health
 <img src="docs/screenshots/roomhealth.png" alt="Room Health on a Homey dashboard: six rooms with their icons, the kitchen humid, the bedroom stuffy and the office's radon far over" width="358">
 
-The indoor climate of the whole house on one card. Pick the sensors, and they're grouped by their Homey room: each room shows its worst value large (else the temperature), its name, and a mark for every value it has: an icon, or a bar with the *Bars* layout. The marks line up from room to room in a fixed order (temperature, humidity, CO₂, radon, PM2.5, PM10, VOC). A value that's comfortable is grey, or green with *Green when fine*; outside its range it turns yellow, then red the further it is outside, and so does the large value. Tap a room to step through its other readings.
+The indoor climate of the whole house on one card. The sensors you pick are grouped by their Homey room: each room shows its worst value large (else the temperature), its name, and a mark per value (an icon, or a bar), lined up in the same order in every room. A comfortable value is grey, or green with *Green when fine*; outside its range it turns yellow, then red the further out it is. Tap a room to step through its readings.
 
 | Value | Comfortable by default | Red at |
 |---|---|---|
@@ -295,7 +295,7 @@ The indoor climate of the whole house on one card. Pick the sensors, and they're
 | PM10 | up to 45 μg/m³ (WHO's 24-hour guideline) | 1.5 × |
 | VOC | up to 1000 ppb | 1.5 × |
 
-A room shows whatever its sensors measure; a room with only a thermometer is judged on temperature. A heat pump's room temperature counts, its outdoor and water temperatures don't. Left out on purpose: carbon monoxide (a safety alarm: use [Sensor Alarms](#sensor-alarms)), air quality indexes and VOC in μg/m³ or as an index (their scales differ between devices), and PM1 (no guideline).
+A heat pump's room temperature counts; outdoor and water temperatures don't. Left out on purpose: carbon monoxide (a safety alarm: use [Sensor Alarms](#sensor-alarms)), air quality indexes and VOC in μg/m³ or as an index (their scales differ between devices), and PM1 (no guideline).
 
 **Settings:** sensors, [rename tiles](#tile-names), [colour style](#colour-style), icons or bars, green when fine, the comfortable range of each value (one range for every room).
 
@@ -314,7 +314,7 @@ Widgetkeeper widgets from another dashboard, one at a time in the space of one. 
 **Settings:** dashboard, interval, smart rotate, pause after a swipe, dots.
 
 ## Spacer
-An empty widget of the height you set, in pixels (16 at least), to line up widgets of different heights at the top or bottom across a dashboard's columns. It's transparent in light and dark mode, and Homey keeps its usual gap above and below it.
+Transparent empty space of the height you set, in pixels (16 at least), to line up widgets across a dashboard's columns. Homey keeps its usual gap above and below it.
 
 **Settings:** height.
 
@@ -344,16 +344,16 @@ Up to four preset buttons, such as *Eggs · 7 min*. A started timer takes their 
 ## Value Matrix
 <img src="docs/screenshots/valuematrix.png" alt="Value Matrix on a Homey dashboard: six rooms by temperature, humidity, CO₂ and radon, the kitchen humid and the office's radon far over" width="358">
 
-Any devices against any values, in one table. Pick the devices, then up to six values for the columns (temperature, humidity, CO₂, power, battery: any number a device has). The rows are the devices' Homey rooms, each value the average of the room's devices, or the devices themselves with *Rows: Devices*. A cell is green (OK) inside the column's range, orange (Warning) outside it, and red (Alert) once it's past by half the range (for a limit on one side, half the limit: 1.5 × a highest value). A device or room without that value gets a striped cell. A legend of the three colours is under the table.
+Any devices against any values, in one table. Pick the devices, then up to six values for the columns (temperature, humidity, CO₂, power, battery: any number a device has). The rows are the devices' Homey rooms, each cell the average of the room's devices, or the devices themselves with *Rows: Devices*. A cell is green (OK) inside the column's range, orange (Warning) outside it, and red (Alert) once it's past by half the range; it's striped where a row has no such value.
 
-Each column has an OK range, typed like `18–24`, `<1000` or `>10` in the value's unit. Left empty, temperature (°C), humidity, CO₂, radon (Bq/m³), PM2.5, PM10 and VOC (ppb) get [Room Health's](#room-health) usual ranges, and other values none (no colour). Type `–` for no range at all. The header is the unit (°C, %) or a short name, unless you type your own.
+Type a column's OK range in the value's unit, such as `18–24`, `<1000` or `>10`, or `–` for none. Left empty, the values Room Health knows (temperature in °C, humidity, CO₂, radon, PM2.5, PM10, VOC in ppb) get [its ranges](#room-health), and other values none. The header is the unit (°C, %) or a short name, unless you type your own.
 
 **Settings:** devices, [rename tiles](#tile-names), [colour style](#colour-style), rooms or devices as rows, show legend, and per column the value, its OK range and its header.
 
 ## Variable Presets
 <img src="docs/screenshots/varpresets.png" alt="Variable Presets on a Homey dashboard" width="358">
 
-One Logic variable with two to four buttons, each setting it to a value you pick, such as *Home*, *Away* and *Night* for a house mode, or two setpoints. It looks like Thermostat Presets: the button whose value the variable has lights up in your colour, and when none does, the name says what it is now. A yes/no variable without buttons set gets Yes and No. Needs an [API key](#api-key) with **Variables** to change the variable.
+One Logic variable with two to four buttons, each setting it to a value you pick, such as *Home*, *Away* and *Night* for a house mode, or two setpoints. It looks like Thermostat Presets: the button matching the variable lights up in your colour, and when none does, the name shows its value. A yes/no variable without buttons set gets Yes and No. Needs an [API key](#api-key) with **Variables** to change the variable.
 
 **Settings:** the variable, a title instead of its name, an icon, compact layout, the button colour, [colour style](#colour-style), and per button: the value (Yes or No, a number or a text, as the variable is; pick the variable first) and a label.
 
@@ -392,7 +392,7 @@ A web page you pick, drawn at the width and height you set and scaled to fill th
 ## Web dashboards
 <img src="docs/web/dashboard.png" alt="A web dashboard with Widgetkeeper widgets in a browser window, with Dashboard Shortcuts at the top as a menu" width="100%">
 
-Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an old iPad, a computer or a TV. They're the same widgets, with the same settings and live updates as on a Homey dashboard, on dashboards you build on the page itself. The dashboards are kept on your Homey, so every browser shows the same ones.
+Your Widgetkeeper widgets in any browser at home, or [away from home](#away-from-home): a wall tablet, an old iPad, a computer or a TV. They're the same widgets, with the same settings and live updates as on a Homey dashboard, on dashboards you build on the page itself. The dashboards are kept on your Homey, so every browser shows the same ones.
 
 ### Getting started
 1. Open **Apps → Widgetkeeper → Configure** in the Homey app and turn on **Web dashboards**.
@@ -402,18 +402,20 @@ Your Widgetkeeper widgets in any browser on your home network: a wall tablet, an
 ### Your dashboards
 <img src="docs/web/front.png" alt="The web dashboards front page in a browser window: seven dashboards as cards, and the widgets you can add" width="100%">
 
-The front page shows every dashboard as a card with a miniature of its widgets, then the widgets you can add, one at a time. The pen at the top puts it in edit mode: drag the dashboards into the order you like, duplicate one (the copy comes right after it, with the names typed on its tiles), delete one with a second tap, or hide the widgets. Its **Settings** has the backup, keeps this browser's screen on, dims it, and forgets its key.
+The front page shows every dashboard as a card with a miniature of its widgets, then the widgets you can add. The pen at the top puts it in edit mode: drag the dashboards into order, duplicate one (with its tile names), delete one with a second tap, or hide the widgets. Its **Settings** has the [backup](#backup) and, for this browser only:
+
+- **Keep screen on** while the page is open, for a wall tablet. Browsers only allow this over HTTPS, as on the [away from home](#away-from-home) address; elsewhere the page plays a silent video instead, which works on iPads and iPhones but not in every browser. Where it doesn't, turn off sleep in the device's own settings.
+- **Dim**: darkens the whole page, up to 80 %, for a wall tablet at night.
+- **Forget the key**.
 
 ### Building a dashboard
 <img src="docs/web/editor.png" alt="A web dashboard being edited in a browser window" width="100%">
 
 - **Columns and widgets:** one to six columns. Add widgets per column, move them by dragging their bar or with the arrows, and remove them with a second tap.
 - **Wide widgets:** drag the handle on a widget's right edge (or set **Width** in its settings) to make it span two or more columns, such as a large camera or chart. The columns it covers keep their own widgets above and below it: drag one above or under it. On a phone, where there's one column, it's as wide as the rest.
-- **Settings:** each widget has the same settings as on a Homey dashboard, in cards: the devices, the general settings, and a card per button, tile or column that folds and sums up what's set. Devices are picked from a list grouped by room, with a search; values (for Device Values, Sparklines and Charts) with their readings.
-- **Look:** light, dark or automatic, and a background per dashboard from calm tints (Default, Black or White, Slate, Ocean, Forest, Plum, Berry, Sand), each with a light and a dark shade. The sun button in the bar switches between light and dark in this browser only.
-- **Full screen:** the corner button gives the whole screen to the dashboard, for a wall tablet.
-- **Keep screen on:** turn it on in the front page's **Settings** (under the pen) to stop this tablet, phone or computer from sleeping while the page is open. Browsers only offer this properly over HTTPS, as through the [away from home](#away-from-home) address; on the home address the page plays a silent, invisible video instead, which works on iPads and iPhones but not in every browser. Where it doesn't, turn off sleep in the device's own settings.
-- **Dim:** the slider in the same **Settings** darkens the whole page in this browser, as if the screen were turned down, up to 80 %. Handy for a wall tablet at night.
+- **Settings:** the same as on a Homey dashboard, in cards: the devices, the general settings, and a folding card per button, tile or column that sums up what's set. Devices are picked from a list grouped by room, with a search.
+- **Look:** light, dark or automatic, and a background per dashboard (Default, Black or White, Slate, Ocean, Forest, Plum, Berry, Sand), each with a light and a dark shade. The sun button in the bar switches between light and dark in this browser only.
+- **Full screen:** the corner button gives the whole screen to the dashboard.
 - **A menu:** put [Dashboard Shortcuts](#dashboard-shortcuts) on every dashboard to jump between them.
 - **Popups:** Flows can show a message or ask Yes or No over a dashboard, in every browser showing it, with a camera's picture if you like. See [Popups](#popups).
 
@@ -422,28 +424,27 @@ The front page shows every dashboard as a card with a miniature of its widgets, 
 <img src="docs/web/settings.png" alt="A widget's settings on a web dashboard: Flow Buttons' settings in cards, the first button open" width="100%">
 
 ### Widgets from other apps
-*Add widget* also lists your other apps' widgets under **Other apps**, with their own settings. They need **Homey** in the browser's key, as Homey only lists them with that. They run sealed off from the page, so their code can't read the page or the key stored in the browser. A widget that doesn't work that way can be trusted in its settings (*Trust this widget*); it then runs as on a Homey dashboard and could read the key.
+*Add widget* also lists your other apps' widgets under **Other apps**, with their own settings. They need **Homey** in the browser's key, as Homey only lists them with that. They run sealed off, so their code can't read the page or the browser's key. A widget that doesn't work that way can be trusted in its settings (*Trust this widget*); it then runs as on a Homey dashboard and could read the key.
 
 ### Away from home
-Turn on **Remote access** under **Apps → Widgetkeeper → Configure** to use the web dashboards anywhere. Below it is a second address, `https://<your Homey's id>.connect.athom.com/app/com.thomassidor.widgetkeeper/settings/dashboard.html`, which goes through Homey's cloud as the Homey app does. Each address is its own site to a browser, so it asks for the API key again there. Anyone who has that address still needs a key, but a [password](#password) is worth setting too. With Remote access off, the page opened through the cloud only says so. Unlike the home address, this one is encrypted (HTTPS), so it's also the one to use at home on a network you don't fully trust (see [the key](#web-dashboards-key)).
+Turn on **Remote access** under **Apps → Widgetkeeper → Configure** for a second address, `https://<your Homey's id>.connect.athom.com/app/com.thomassidor.widgetkeeper/settings/dashboard.html`, through Homey's cloud like the Homey app. A browser asks for the API key again there, as each address is its own site. Anyone with the address still needs a key, but a [password](#password) is worth setting too. Unlike the home address, this one is encrypted (HTTPS), so it's also the one to use at home on a network you don't fully trust (see [the key](#web-dashboards-key)).
 
 ### Password
-On top of the API key, you can set a password for the web dashboards under **Apps → Widgetkeeper → Configure**. Every browser then asks for it once. Setting, changing or removing it signs every browser out, and wrong passwords in a row lock the sign-in for a while. Changing or removing it asks for the current one; if you forget it, the Flow card **Remove the web dashboards password** removes it.
+On top of the API key, you can set a password under **Apps → Widgetkeeper → Configure**; every browser then asks for it once. Setting, changing or removing it signs every browser out, and repeated wrong passwords lock the sign-in for a while. Changing or removing it asks for the current one; if you forget it, the Flow card **Remove the web dashboards password** removes it.
 
 ### Backup
-Under **Settings** in the front page's edit mode (the pen), **Download backup** saves the web dashboards you tick (all of them, or just one) in one file: the layouts, the widgets and their settings and the names typed on tiles. **Restore backup** reads such a file and lists its dashboards; after a second tap, the ones you tick replace those they were saved from (or come back, if you deleted them), and every other dashboard stays as it is. Notes' texts and Days Since's counters aren't in it, as Homey's own dashboards share them.
+In the front page's **Settings**, **Download backup** saves the dashboards you tick in one file: the layouts, the widgets, their settings and tile names. **Restore backup** lists a file's dashboards; after a second tap, the ones you tick replace those they were saved from (or come back, if deleted), and the others stay as they are. Notes' texts and Days Since's counters aren't included, as Homey's own dashboards share them.
 
 ### Web dashboards' key
-Each browser connects with a key of its own, which stays in that browser:
+Each browser connects with a key of its own, kept in that browser:
 
-- The page itself only talks to Widgetkeeper: its own API and its live updates. A key with the **Homey** permission works; whether a narrower key does hasn't been tried yet, as Homey doesn't document which permission an app's own API takes.
-- A widget that changes something also needs that permission in the browser's key, as in the [API key](#api-key) table, even though the change is made with the key in the app's settings. So a browser whose key may not start flows can't start them through the app's key either.
+- A key with the **Homey** permission works. A narrower one hasn't been tried, as Homey doesn't document which permission an app's own API takes.
+- A widget that changes something needs that permission in the browser's key too, as in the [API key](#api-key) table, even though the app's key makes the change.
 - Likewise, switching a light, a lock, a curtain, a thermostat or a speaker needs permission to control devices in the browser's key (`homey.device.control`, under **Devices**), though Widgetkeeper makes the change. Reading doesn't: the widgets read devices, cameras, Insights and variables with Widgetkeeper's own permissions, so a browser that may open the page sees everything the widgets show, whatever its key.
-- The Smart Stack on a web dashboard reads its dashboard with the app's key, so the browser's key needs **Homey** too.
-- [Other apps' widgets](#widgets-from-other-apps) need **Homey** in the browser's key: Homey only lists them, and answers their settings' searches, with that.
+- The Smart Stack and [other apps' widgets](#widgets-from-other-apps) need **Homey**.
 - The home address is plain HTTP, as the Homey serves it: the key (and the password's sign-in) goes unencrypted over your home network with every request, so anything that can watch that network could read it. On a network you don't fully trust, such as one guests share, use the [away from home](#away-from-home) address, which is encrypted, at home too. Give each browser its own key, so you can revoke a lost tablet's under **Settings → API Keys** without touching the others.
 
-Web dashboards work on your home network only for now. Turned off, the page only says so, and the dashboards stay on your Homey for when you turn them on again.
+Turning web dashboards off keeps them on your Homey for when you turn them on again.
 
 ## Dashboard examples
 **Home**
@@ -468,24 +469,22 @@ Web dashboards work on your home network only for now. Turned off, the page only
 <img src="docs/showcase/kitchen.png" alt="A kitchen dashboard with Widgetkeeper widgets on a tablet" width="100%">
 
 ## Colour style
-Every widget with a coloured state has a **Colour style** setting: *Muted* is the calmer look, *Vivid* the stronger one.
+Every widget with a coloured state has a **Colour style** setting: *Muted* is the calmer look, *Vivid* the stronger one, and a colour you pick in the widget follows it.
 
-- Where a colour is mixed softly into a tile (a Quick Actions tile that's on, a Sensor Alarms alarm, a Flow Buttons row, a coloured note, Curtains, Timers, Variables, Value Matrix's cells …), Vivid fills the tile with Homey's darker shade of the colour, with white text (dark on yellow). Lights take a darker shade of their own colour, and the charts get a stronger area under their lines.
-- Where the colour is already a small solid part (the lit button of Thermostat and Variable Presets, Insights Heatmap's cells, Media's play button and what's on, Activity Dots' dots), Muted uses Homey's darker shade and Vivid the full, bright colour.
-- Days Since shows the level only on its bars by default, and Vivid puts an overdue row on a solid block. Room Health's icons and bars are toned down by default and in full colour in Vivid. Weather Forecast has *Vivid* among its colour styles: the whole card on a gradient for the current weather.
-
-Where a widget lets you pick a colour (Flow Buttons, Device Values' Flow colours, Notes, Charts, Insights Heatmap, Activity Dots, Variable Presets, and now Device Quick Actions, Variables, Curtains, Media and Timers), the colour you pick follows the setting.
+- Where a colour tints a tile (a Quick Actions tile that's on, a Sensor Alarms alarm, a coloured note, Value Matrix's cells …), Vivid fills the tile with Homey's darker shade, with white text. The charts get a stronger area under their lines.
+- Where the colour is already a small solid part (a lit preset button, Insights Heatmap's cells, Media's play button, Activity Dots' dots), Muted uses the darker shade and Vivid the bright colour.
+- Days Since and Room Health are toned down in Muted and in full colour in Vivid. Weather Forecast's *Vivid* puts the card on a gradient for the current weather.
 
 ## Tile names
 <img src="docs/clips/rename.webp" alt="Rename tiles: the setting turned on, names typed on two Light Controls tiles, and the setting turned off again with the names kept" width="358">
 
-Give any tile a name of your own, such as *Sofa corner* for a room's lights grouped by room, instead of the device's or room's name. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Room Health, Value Matrix, Device Values, Sparklines, Locks and Doors, Cameras, Variables and (on web dashboards) Dashboard Shortcuts can do this.
+Give any tile a name of your own, such as *Sofa corner* for a room's lights, instead of the device's or room's name. Light Controls, Curtains, Device Quick Actions, Sensor Alarms, Room Health, Value Matrix, Device Values, Sparklines, Locks and Doors, Cameras, Variables and (on web dashboards) Dashboard Shortcuts have it.
 
 1. Edit the dashboard, edit the widget, turn on **Rename tiles** (the first setting) and save the widget.
-2. Leave the dashboard's edit mode. Each tile now shows a text field: type its name, or leave it empty to keep the device's (or room's) own name.
+2. Leave the dashboard's edit mode. Each tile now shows a text field: type its name, or leave it empty for the device's (or room's) own.
 3. Edit the widget again and turn **Rename tiles** off.
 
-The names belong to that widget: they stay with the right tiles when you rename or reorder devices, every screen showing the dashboard gets them, and a Smart Stack showing the widget does too. Sensor Alarms, Device Values and Variables used to name their tiles in the widget settings. Those settings are gone, so type the names on the tiles again (Variables' names were carried over on web dashboards and Smart Stacks).
+The names belong to that widget: they stay with the right tiles when you rename or reorder devices, and every screen and Smart Stack showing the widget gets them.
 
 ## API key
 Homey doesn't let apps change variables, start flows, read dashboards or start Moods on their own. For those, create a key in the Homey web app under **Settings → API Keys**, tick the permissions below for the widgets you use, and paste it under **Apps → Widgetkeeper → Configure**. The key stays on your Homey, and that page says what it may do once it's saved.
@@ -498,9 +497,9 @@ Homey doesn't let apps change variables, start flows, read dashboards or start M
 | Media's buttons: the speaker's own actions, such as *Set source to TV*, and its app's | **Flows** (Start Flows isn't enough) | `homey.flow` |
 | Light Controls' Room's Moods: starting a Mood | **Set Moods** | `homey.mood.set` |
 | Lights by Room: starting a Mood | **Set Moods** | `homey.mood.set` |
-| Smart Stack: reading the dashboard | **Homey**: the API Keys page has no permission for dashboards alone, so it takes the top one, which allows everything | `homey` |
+| Smart Stack: reading the dashboard | **Homey** (it allows everything, but there's no permission for dashboards alone) | `homey` |
 
-Ticking a group's first box (**Flows**, **Moods**, **Homey**) includes the boxes under it. Everything else needs no key: the widgets read devices, Insights, variables, flows and Moods with Widgetkeeper's own permissions, and Variables' Read only shows values without one. The scopes are the ones Homey's Web API asks for (`updateVariable`, `triggerFlow`/`triggerAdvancedFlow`, `runFlowCardAction`, `setMood`, `getDashboards`); the API Keys page shows each one beside its box.
+Ticking a group's first box (**Flows**, **Moods**, **Homey**) includes the boxes under it. Everything else needs no key: the widgets read devices, Insights, variables, flows and Moods with Widgetkeeper's own permissions.
 
 ## Languages
 English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Russian, Polish, Korean and Arabic, following Homey's language.
@@ -509,7 +508,7 @@ English, Dutch, German, French, Italian, Swedish, Norwegian, Spanish, Danish, Ru
 Install Widgetkeeper from the [Homey App Store](https://homey.app/a/com.thomassidor.widgetkeeper/). The [test version](https://homey.app/a/com.thomassidor.widgetkeeper/test/) has the next version's widgets before they go live. To install it from source with the Homey CLI, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Troubleshooting
-If a widget doesn't work as expected, open **Apps → Widgetkeeper → Configure** in the Homey app and pick the device. Include that report when you [open an issue](https://github.com/thomassidor/widgetkeeper/issues).
+If a widget doesn't work as expected, open **Apps → Widgetkeeper → Configure** in the Homey app: its **Diagnostics** report has a device's full details once you pick it, and no passwords, API keys or camera addresses. Include it when you [open an issue](https://github.com/thomassidor/widgetkeeper/issues).
 
 ## Changelog
 See [CHANGELOG.md](CHANGELOG.md).
