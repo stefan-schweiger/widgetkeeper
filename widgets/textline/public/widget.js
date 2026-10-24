@@ -1,7 +1,7 @@
 /*
  * Notes: a short text, typed in the widget's settings, written by a Flow card (a named note) or read from a Logic
- * text variable. As a tile (one line, cut off with … or scrolling) or as a Post-it note stuck on the dashboard, in
- * handwriting, wrapping up to three lines. Plain browser JS (served as-is).
+ * text variable. As a tile (one line, cut off with … or scrolling, or every line, the tile growing with them) or as a
+ * Post-it note stuck on the dashboard, in handwriting, wrapping up to three lines. Plain browser JS (served as-is).
  */
 (function () {
   const { el, COLORS, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
@@ -89,6 +89,8 @@
     const size = SIZES.includes(opts.size) ? opts.size : 'default';
     const align = ALIGNS.includes(opts.align) ? opts.align : 'left';
     const scroll = !postit && opts.overflow === 'scroll';
+    // Every line, with the typed line breaks: the tile grows (a user asked, for a text that stays up).
+    const allLines = !postit && opts.overflow === 'wrap';
     const ownColor = COLORS.includes(opts.color) ? opts.color : null;
     const icon = !postit && opts.icon && Object.prototype.hasOwnProperty.call(ICONS, opts.icon) ? ICONS[opts.icon] : null;
     const reducedMotion = opts.reducedMotion != null ? opts.reducedMotion
@@ -104,6 +106,7 @@
     root.dataset.style = postit ? 'postit' : 'tile';
     root.dataset.size = size;
     root.dataset.align = align;
+    if (allLines) root.dataset.overflow = 'wrap';
 
     const box = el('div', { class: postit ? 'tl-note' : 'tl-tile' }, root);
     if (postit) box.style.setProperty('--tl-tilt', `${noteTilt(opts.seed)}deg`);
@@ -207,8 +210,8 @@
         layout();
       }).observe(root);
     }
-    // The handwriting's metrics only count once the font is in.
-    if (postit && document.fonts && document.fonts.ready) document.fonts.ready.then(() => layout());
+    // The handwriting's metrics only count once the font is in; so do the wrapped tile's lines, and so its height.
+    if ((postit || allLines) && document.fonts && document.fonts.ready) document.fonts.ready.then(() => layout());
 
     render();
     return { setState, setError, render };

@@ -679,6 +679,8 @@ const BUILD = {
       w('textline', 'Typed · yellow tile', { message: 'Bins out tonight', icon: icon('home'), color: 'yellow' }),
       w('textline', 'Typed long · cut off · large · centred', { message: long, size: 'large', align: 'center' }),
       w('textline', 'Typed long · scroll · small', { message: long, overflow: 'scroll', size: 'small', icon: icon('home') }),
+      w('textline', 'Typed long · more lines · icon', { message: `${long}\nA second line typed`, overflow: 'wrap', icon: icon('home') }),
+      w('textline', 'Typed · more lines · large · centred · green', { message: 'Back at 5\nFeed the cat', overflow: 'wrap', size: 'large', align: 'center', color: 'green' }),
       ...['default', 'orange', 'red', 'purple', 'blue', 'green'].map(color =>
         w('textline', `Post-it · ${color}`, { style: 'postit', message: 'Buy milk,\neggs and rye bread', color })),
       w('textline', 'Post-it · long · right', { style: 'postit', message: long, align: 'right' }),

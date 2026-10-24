@@ -95,6 +95,15 @@ describe('tile', () => {
     expect(root.querySelector('.tl-wrap')!.classList.contains('scrolling')).toBe(false);
   });
 
+  it('shows every line on more lines, the line breaks kept, only on the tile', () => {
+    const { root, text } = widget({ source: 'typed', message: 'Back at 5\nFeed the cat', overflow: 'wrap', reducedMotion: false }, null);
+    expect(root.dataset.overflow).toBe('wrap');
+    expect(text()).toBe('Back at 5\nFeed the cat');
+    expect(root.querySelector('.tl-wrap')!.classList.contains('scrolling')).toBe(false);
+    expect(widget({ style: 'postit', overflow: 'wrap' }).root.dataset.overflow).toBeUndefined();
+    expect(widget({ overflow: 'scroll' }).root.dataset.overflow).toBeUndefined();
+  });
+
 });
 
 describe('Post-it', () => {

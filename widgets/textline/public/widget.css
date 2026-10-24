@@ -60,7 +60,7 @@ html, body { background: transparent !important; }
 
 /* ---------------------------------------------------------------- the tile */
 
-/* One line (48 px): the optional icon, then the text. */
+/* One line (48 px), or more on more lines: the optional icon, then the text. */
 .tl-tile {
   position: relative; display: flex; align-items: center; gap: var(--homey-su-2, 8px); min-width: 0; min-height: 48px;
   background: var(--tl-tile); border-radius: var(--tl-radius); padding: var(--homey-su-3, 12px) var(--homey-su-4, 16px);
@@ -104,6 +104,16 @@ html, body { background: transparent !important; }
 @media (prefers-reduced-motion: reduce) {
   .tl-tile .tl-wrap.scrolling .tl-text { animation: none; }
 }
+
+/*
+ * On more lines: every line, the typed line breaks kept, and the tile grows with them. The padding puts one line where
+ * the centred 48 px tile has it, and the icon stays by the first line.
+ */
+.tl[data-overflow="wrap"] .tl-tile { --tl-lh: var(--tl-lh-default); align-items: flex-start; padding-block: calc((48px - var(--tl-lh)) / 2); }
+.tl[data-overflow="wrap"][data-size="small"] .tl-tile { --tl-lh: var(--tl-lh-small); }
+.tl[data-overflow="wrap"][data-size="large"] .tl-tile { --tl-lh: var(--tl-lh-xlarge); }
+.tl[data-overflow="wrap"] .tl-icon { margin-block: calc((var(--tl-lh) - var(--homey-icon-size-medium, 20px)) / 2); }
+.tl[data-overflow="wrap"] .tl-tile .tl-text { white-space: pre-line; overflow-wrap: anywhere; text-overflow: clip; }
 
 /* A colour (the setting's, or a Flow's): Device Values' tint. */
 .tl-tile[data-color="red"] { --tl-color: var(--tl-red); }

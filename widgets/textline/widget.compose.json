@@ -426,19 +426,19 @@
         "ar": "النص الطويل"
       },
       "hint": {
-        "en": "On the tile. A Post-it note wraps up to three lines.",
-        "nl": "Op de tegel. Een Post-it-briefje loopt door tot drie regels.",
-        "de": "Auf der Kachel. Eine Haftnotiz bricht auf bis zu drei Zeilen um.",
-        "fr": "Sur la tuile. Un Post-it passe à la ligne, jusqu'à trois lignes.",
-        "it": "Sul riquadro. Un Post-it va a capo fino a tre righe.",
-        "sv": "På rutan. En Post-it-lapp radbryts till högst tre rader.",
-        "no": "På flisen. En Post-it-lapp brytes til høyst tre linjer.",
-        "es": "En el mosaico. Una nota Post-it ocupa hasta tres líneas.",
-        "da": "På feltet. En Post-it-seddel ombrydes til højst tre linjer.",
-        "ru": "На плитке. Стикер переносит текст максимум на три строки.",
-        "pl": "Na kafelku. Karteczka zawija tekst do trzech wierszy.",
-        "ko": "타일에 적용됩니다. 포스트잇은 최대 세 줄로 줄바꿈합니다.",
-        "ar": "على البلاطة. تلتف الملاحظة اللاصقة حتى ثلاثة أسطر."
+        "en": "On the tile. On more lines, the tile grows with the text. A Post-it note wraps up to three lines.",
+        "nl": "Op de tegel. Op meer regels groeit de tegel mee met de tekst. Een Post-it-briefje loopt door tot drie regels.",
+        "de": "Auf der Kachel. Mehrzeilig wächst die Kachel mit dem Text. Eine Haftnotiz bricht auf bis zu drei Zeilen um.",
+        "fr": "Sur la tuile. En passant à la ligne, la tuile grandit avec le texte. Un Post-it passe à la ligne, jusqu'à trois lignes.",
+        "it": "Sul riquadro. Andando a capo, il riquadro cresce con il testo. Un Post-it va a capo fino a tre righe.",
+        "sv": "På rutan. Radbruten växer rutan med texten. En Post-it-lapp radbryts till högst tre rader.",
+        "no": "På flisen. På flere linjer vokser flisen med teksten. En Post-it-lapp brytes til høyst tre linjer.",
+        "es": "En el mosaico. En varias líneas, el mosaico crece con el texto. Una nota Post-it ocupa hasta tres líneas.",
+        "da": "På feltet. På flere linjer vokser feltet med teksten. En Post-it-seddel ombrydes til højst tre linjer.",
+        "ru": "На плитке. С переносом строк плитка растёт вместе с текстом. Стикер переносит текст максимум на три строки.",
+        "pl": "Na kafelku. Przy zawijaniu kafelek rośnie razem z tekstem. Karteczka zawija tekst do trzech wierszy.",
+        "ko": "타일에 적용됩니다. 여러 줄로 표시하면 타일이 텍스트에 맞춰 커집니다. 포스트잇은 최대 세 줄로 줄바꿈합니다.",
+        "ar": "على البلاطة. عند العرض على عدة أسطر تكبر البلاطة مع النص. تلتف الملاحظة اللاصقة حتى ثلاثة أسطر."
       },
       "value": "ellipsis",
       "values": [
@@ -476,6 +476,24 @@
             "pl": "Przewijać",
             "ko": "스크롤",
             "ar": "تمرير"
+          }
+        },
+        {
+          "id": "wrap",
+          "title": {
+            "en": "Show on more lines",
+            "nl": "Op meer regels tonen",
+            "de": "Mehrzeilig zeigen",
+            "fr": "Passer à la ligne",
+            "it": "Andare a capo",
+            "sv": "Radbryt",
+            "no": "Vis på flere linjer",
+            "es": "Mostrar en varias líneas",
+            "da": "Vis på flere linjer",
+            "ru": "Переносить строки",
+            "pl": "Zawijać wiersze",
+            "ko": "여러 줄로 표시",
+            "ar": "عرض على عدة أسطر"
           }
         }
       ]
