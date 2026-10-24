@@ -39,13 +39,16 @@ describe('screenKey', () => {
 });
 
 describe('show (a message)', () => {
-  it('sends it to the screens with its token and end, lists it, and closes it when the time is up', async () => {
+  it('sends it to the screens with its end, lists it, and closes it when the time is up', async () => {
     const { service, events } = setup();
     await service.show({ target: { id: 'all' }, text: '  Dinner is ready ', seconds: 10 });
     const [shown] = events(POPUP_SHOW_EVENT);
     expect(shown).toMatchObject({ target: 'all', kind: 'message', text: 'Dinner is ready', picture: null, until: Date.now() + 10e3, now: Date.now() });
-    expect(shown.token).toMatch(/^[0-9a-f]{32}$/);
     expect(service.all().popups.map(p => p.id)).toEqual([shown.id]);
+    // The token answers it through the public routes, so only a Popups widget's /state (its own screen's) has it.
+    expect(shown).not.toHaveProperty('token');
+    expect(service.all().popups[0]).not.toHaveProperty('token');
+    expect(service.forScreen('Hall').popups[0].token).toMatch(/^[0-9a-f]{32}$/);
     await vi.advanceTimersByTimeAsync(10e3);
     expect(events(POPUP_CLOSE_EVENT)).toEqual([{ id: shown.id, answer: null, reason: 'expired' }]);
     expect(service.all().popups).toEqual([]);
@@ -161,10 +164,10 @@ describe('screens', () => {
 
 describe('the prompt page (public, by token)', () => {
   it('reads and answers a popup only with its token, and says how it ended', async () => {
-    const { service, events } = setup();
+    const { service } = setup();
     const asked = service.ask({ target: 'all', text: 'Q?', seconds: 30 });
     await vi.advanceTimersByTimeAsync(0);
-    const { id, token } = events(POPUP_SHOW_EVENT)[0];
+    const { id, token } = service.forScreen('').popups[0];
     expect(() => service.page(id, 'wrong')).toThrow('Not found');
     expect(() => service.page(id, undefined)).toThrow('Not found');
     expect(() => service.answerWithToken(id, true, 'wrong')).toThrow('Not found');
@@ -184,7 +187,8 @@ describe('pictures', () => {
   it('keeps an image tag as it was when the Flow ran', async () => {
     const { service, events } = setup();
     await service.show({ target: 'all', text: '', seconds: 5, picture: PopupService.droptokenArg(imageTag(Buffer.from('jpeg!'), 'image/png')) });
-    const { id, token, picture } = events(POPUP_SHOW_EVENT)[0];
+    const { id, picture } = events(POPUP_SHOW_EVENT)[0];
+    const { token } = service.forScreen('').popups[0];
     expect(picture).toEqual({ source: 'stored' });
     await expect(service.imageFromSession(id)).resolves.toEqual({ type: 'image/png', data: Buffer.from('jpeg!').toString('base64') });
     await expect(service.imageWithToken(id, token)).resolves.toMatchObject({ type: 'image/png' });
@@ -253,7 +257,7 @@ describe('pictures', () => {
     await service.show({ target: 'all', text: 'Dinner', seconds: 5, sound: 'chime' });
     await service.show({ target: 'all', text: 'Quiet', seconds: 5 });
     expect(service.all().popups.map(p => p.sound)).toEqual(['chime', null]);
-    const [loud] = service.all().popups;
+    const [loud] = service.forScreen('').popups;
     expect(service.page(loud.id, loud.token)).toMatchObject({ closed: false, sound: 'chime' });
     expect(homey.api.realtime).toHaveBeenCalledWith(POPUP_SHOW_EVENT, expect.objectContaining({ text: 'Dinner', sound: 'chime' }));
   });
