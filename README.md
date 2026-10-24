@@ -81,6 +81,10 @@ A speaker with its album art, mute, a volume that never overshoots and buttons f
 <a href="#notes"><b>Notes</b></a><br>
 A note on a tile or a handwritten Post-it, typed in or written by your Flows<br clear="left"></p>
 
+<p><a href="#pollen-and-uv"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/pollen-dark.png"><img src="docs/previews/pollen-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#pollen-and-uv"><b>Pollen and UV</b></a><br>
+Today's pollen levels and the UV peak, in Europe<br clear="left"></p>
+
 <p><a href="#popups"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/popups-dark.png"><img src="docs/previews/popups-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#popups"><b>Popups</b></a><br>
 A Flow's message or Yes/No question, with a picture if you like, in front of everything on a phone, tablet or web dashboard<br clear="left"></p>
@@ -128,10 +132,6 @@ Compact rows to switch variables on and off or change a number or text, with the
 <p><a href="#weather-forecast"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/weather-dark.png"><img src="docs/previews/weather-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#weather-forecast"><b>Weather Forecast</b></a><br>
 The next 36 hours, hour by hour, from MET Norway (yr.no)<br clear="left"></p>
-
-<p><a href="#pollen-and-uv"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/pollen-dark.png"><img src="docs/previews/pollen-light.png" alt="" width="120" align="left"></picture></a>
-<a href="#pollen-and-uv"><b>Pollen and UV</b></a><br>
-Today's pollen levels and the UV peak, in Europe<br clear="left"></p>
 
 <p><a href="#web-page"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/webpage-dark.png"><img src="docs/previews/webpage-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#web-page"><b>Web Page</b></a><br>
@@ -267,6 +267,20 @@ A short message on the dashboard: a tile with one line of text, or a tilted, han
 
 **Settings:** style (tile or Post-it), text from (the message typed in the settings, a Flow card or a text variable), message, note name, variable, alignment, text size, long text, icon, colour, [colour style](#colour-style).
 
+## Pollen and UV
+Today's pollen at the Homey's location, a row per type with a bar from low to very high, under the day's UV peak and when it comes. Pollen forecasts cover Europe only; elsewhere the widget says so and shows the UV. Out of season it says there's no pollen in the air.
+
+A level is the day's average in grains per m³, by Astma-Allergi Danmark's bands with a very high band on top. The UV levels are the WHO's.
+
+| From (grains per m³) | Low | Moderate | High | Very high |
+|---|---|---|---|---|
+| Birch, alder, olive | 1 | 30 | 101 | 1,001 |
+| Grass, mugwort, ragweed | 1 | 10 | 51 | 251 |
+
+**Settings:** compact or detailed (with the grains per m³ and the next three days), the UV index, the pollen types (alder, birch, olive, grass, mugwort, ragweed; birch, grass and mugwort by default), [colour style](#colour-style), time format.
+
+Pollen and UV data from [Open-Meteo](https://open-meteo.com), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), generated using Copernicus Atmosphere Monitoring Service information.
+
 ## Popups
 A Flow shows a message, or asks a question with **Yes** and **No**, in front of everything on the screens you choose: a web dashboard, or the phones and tablets showing a Homey dashboard with a Popups widget.
 
@@ -374,20 +388,6 @@ The next 36 hours from [MET Norway](https://www.met.no/en) ([yr.no](https://www.
 **Settings:** compact or detailed, one or two rows, 1–3 hours per column, colour style: Standard, Warm and cold (coloured temperatures) or [Vivid](#colour-style) (the card on a gradient for the current weather).
 
 Weather data from MET Norway, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Icons: [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
-
-## Pollen and UV
-Today's pollen at the Homey's location, a row per type with a bar from low to very high, under the day's UV peak and when it comes. Pollen forecasts cover Europe only; elsewhere the widget says so and shows the UV. Out of season it says there's no pollen in the air.
-
-A level is the day's average in grains per m³, by Astma-Allergi Danmark's bands with a very high band on top. The UV levels are the WHO's.
-
-| From (grains per m³) | Low | Moderate | High | Very high |
-|---|---|---|---|---|
-| Birch, alder, olive | 1 | 30 | 101 | 1,001 |
-| Grass, mugwort, ragweed | 1 | 10 | 51 | 251 |
-
-**Settings:** compact or detailed (with the grains per m³ and the next three days), the UV index, the pollen types (alder, birch, olive, grass, mugwort, ragweed; birch, grass and mugwort by default), [colour style](#colour-style), time format.
-
-Pollen and UV data from [Open-Meteo](https://open-meteo.com), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), generated using Copernicus Atmosphere Monitoring Service information.
 
 ## Web Page
 A web page you pick, drawn at the width and height you set and scaled to fill the widget without borders: set them to a fixed-size gadget's size, and it fills the widget on a phone and a tablet alike. Links on the page never open, and unless you let the page be tapped, taps are ignored and a swipe scrolls the dashboard. Two to four buttons in a row under the page switch between their addresses (for a map, the same address with another zoom on each); the widget always opens on the first. `{lat}` and `{lon}` in an address become the Homey's location. Sites that don't allow being shown inside another page stay empty. You're responsible for following the terms of the site you show.
