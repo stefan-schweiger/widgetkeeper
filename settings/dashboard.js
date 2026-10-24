@@ -1230,18 +1230,18 @@
       titles.append(el('h1', 'wd-h1', t('yourDashboards')));
       if (editing) titles.append(el('p', 'wd-muted', t('arrangeHint')));
       head.append(titles);
-      // The dashboards in no section under Your dashboards, then each section under its heading (an empty one only
-      // while editing, to drag dashboards into).
+      // The dashboards in no section under Your dashboards, then each section under its heading, each ending in a
+      // New dashboard card that makes one there (not while editing).
       const sections = frontPage.sections || [];
       const sectionOf = d => (sections.some(x => x.id === d.section) ? d.section : '');
       const grid = dashboardGrid('');
       for (const d of dashboards) if (!sectionOf(d)) grid.append(dashboardCard(d, editing));
+      if (!editing) grid.append(newDashboardCard(''));
       page.append(head, grid);
       sections.forEach((section, i) => {
-        const inside = dashboards.filter(d => sectionOf(d) === section.id);
-        if (!editing && !inside.length) return;
         const g = dashboardGrid(section.id);
-        for (const d of inside) g.append(dashboardCard(d, editing));
+        for (const d of dashboards) if (sectionOf(d) === section.id) g.append(dashboardCard(d, editing));
+        if (!editing) g.append(newDashboardCard(section.id));
         page.append(editing ? sectionEditHead(section, i) : el('h2', 'wd-group-title', section.name || t('untitled')), g);
       });
       if (editing) {
@@ -1258,10 +1258,22 @@
         root.append(bar(brand(), el('span', 'wd-spacer'), settings, done), page);
         return;
       }
+      if (types.size && frontPage.widgets) page.append(widgetCarousel());
+
+      const edit = el('a', 'wd-icon');
+      edit.href = '#/edit';
+      edit.title = t('edit');
+      edit.setAttribute('aria-label', t('edit'));
+      edit.append(icon('pen'));
+      root.append(bar(brand(), el('span', 'wd-spacer'), liveNote(), edit), page);
+    }
+
+    /** The New dashboard card: makes an empty dashboard in `section` (`''`: none) and opens its editor. */
+    function newDashboardCard(section) {
       const add = button('wd-dash wd-dash-new', '', async () => {
         add.disabled = true;
         try {
-          const saved = await request('PUT', '/web/dashboards', { name: t('untitled'), theme: 'auto', columns: [[], [], []] });
+          const saved = await request('PUT', '/web/dashboards', { name: t('untitled'), theme: 'auto', columns: [[], [], []], ...(section ? { section } : {}) });
           dashboards.push(saved);
           location.hash = `#/d/${saved.id}/edit`;
         } catch (err) {
@@ -1272,15 +1284,7 @@
       const plus = el('span', 'wd-dash-plus');
       plus.append(icon('plus'));
       add.append(plus, el('span', 'wd-dash-new-text', t('newDashboard')));
-      grid.append(add);
-      if (types.size && frontPage.widgets) page.append(widgetCarousel());
-
-      const edit = el('a', 'wd-icon');
-      edit.href = '#/edit';
-      edit.title = t('edit');
-      edit.setAttribute('aria-label', t('edit'));
-      edit.append(icon('pen'));
-      root.append(bar(brand(), el('span', 'wd-spacer'), liveNote(), edit), page);
+      return add;
     }
 
     /** A grid of dashboard cards, of one section (`''`: none); an empty one says to drag dashboards into it (edit mode). */
