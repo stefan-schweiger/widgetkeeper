@@ -268,6 +268,20 @@ describe('DebouncedSetting', () => {
     expect(log).toHaveBeenCalledWith('Could not save the things:', expect.any(Error));
   });
 
+  it('writes through `store` instead of a setting, logging a store that throws', () => {
+    const homey = fakeHomey(fakeApi({}));
+    const store = vi.fn().mockImplementationOnce(() => { throw new Error('No space left'); });
+    const log = vi.fn();
+    const saved = new DebouncedSetting({ homey, store, delay: 10, value: () => ({ a: 1 }), log, what: 'the file' });
+    saved.schedule();
+    vi.advanceTimersByTime(10);
+    expect(log).toHaveBeenCalledWith('Could not save the file:', expect.any(Error));
+    saved.schedule();
+    saved.flush();
+    expect(store.mock.calls).toEqual([[{ a: 1 }], [{ a: 1 }]]);
+    expect(homey.settings.set).not.toHaveBeenCalled();
+  });
+
   it('refuses the keys that reach Object.prototype', () => {
     expect(['__proto__', 'constructor', 'prototype'].map(isReservedKey)).toEqual([true, true, true]);
     expect(isReservedKey('kitchen')).toBe(false);

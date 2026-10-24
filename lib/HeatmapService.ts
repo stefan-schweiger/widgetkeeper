@@ -6,7 +6,8 @@ import { fetchDeviceIcon } from './deviceIcon.js';
 import { hourlyAverages, hourlyShareTrue, spanFor, type HeatmapDay, type Span } from './heatmap.js';
 import { limitInsights, readCapabilityLog } from './insightsLog.js';
 import { HOUR, MINUTE, parseInsightsEntries } from './series.js';
-import { DebouncedSetting } from './storedSetting.js';
+import { fileStorage, type SecretStorage } from './secrets.js';
+import { DebouncedSetting, isReservedKey } from './storedSetting.js';
 import Timings from './Timings.js';
 
 const TICK = MINUTE;
@@ -18,11 +19,22 @@ const IDLE_TIMEOUT = 10 * MINUTE;
 const RECORD_TIMEOUT = 8 * 24 * HOUR;
 /** Recorded changes older than this are pruned: enough for the longest span (14 days). */
 const KEEP = 15 * 24 * HOUR;
-/** Recorded changes are written to the app settings at most this often. */
-const SAVE_DELAY = MINUTE;
+/**
+ * Recorded changes are written this long after a change (a burst is one write; `stop()` writes at once). A crash loses at
+ * most this much, and the next backfill brings most of it back from Insights' last 50 changes.
+ */
+const SAVE_DELAY = 10 * MINUTE;
+/** A recording that's only being read (no changes) is written again this often, so its last request survives a restart. */
+const SEEN_SAVE = HOUR;
 /** Insights backfill for a recorded boolean: at most this often. */
 const BACKFILL_TTL = 5 * MINUTE;
 
+/**
+ * Where the recorded booleans are kept: a file in the app's own `/userdata`, which no API serves. They're presence data
+ * (when someone moved or opened a door), and an app setting can be read with a key's *Apps → Control*.
+ */
+export const HISTORY_FILE = '/userdata/heatmap-history.json';
+/** The app setting that held them until 1.1.0: moved into `HISTORY_FILE` at the first start, then unset. */
 export const HISTORY_SETTING = 'heatmapHistory';
 
 export type HeatmapCapability = {
@@ -65,6 +77,9 @@ export function heatmapCaps(device: any): HeatmapCapability[] {
     });
 }
 
+/** How close (ms) a recorded change and one read back from Insights must be to count as the same change. */
+const SAME_CHANGE_MS = 1000;
+
 /**
  * Both lists merged in time order. A change both have (recorded by the app and read back from Insights,
  * a few ms apart) is kept once; other repeats of a state are harmless to `hourlyShareTrue`.
@@ -74,8 +89,40 @@ export function mergeChanges(list: [number, 0 | 1][], incoming: [number, 0 | 1][
   const out: [number, 0 | 1][] = [];
   for (const c of all) {
     const prev = out[out.length - 1];
-    if (prev && Math.abs(prev[0] - c[0]) < 1000 && prev[1] === c[1]) continue; // the same change from both sources
+    if (prev && Math.abs(prev[0] - c[0]) < SAME_CHANGE_MS && prev[1] === c[1]) continue; // the same change from both sources
     out.push(c);
+  }
+  return out;
+}
+
+/**
+ * `incoming` merged into `list` (in time order, changed in place) as `mergeChanges()` does, but only the end of `list`
+ * that `incoming` reaches is merged: a backfill is Insights' last 50 changes, so a long recording isn't sorted again
+ * every time. Answers whether `list` changed.
+ */
+export function mergeInto(list: [number, 0 | 1][], incoming: [number, 0 | 1][]): boolean {
+  if (!incoming.length) return false;
+  let from = Infinity;
+  for (const [t] of incoming) if (t < from) from = t;
+  from -= SAME_CHANGE_MS;
+  let cut = list.length;
+  while (cut > 0 && list[cut - 1][0] >= from) cut--;
+  const tail = list.slice(cut);
+  const merged = mergeChanges(tail, incoming);
+  if (merged.length === tail.length && merged.every((c, i) => c[0] === tail[i][0] && c[1] === tail[i][1])) return false;
+  list.splice(cut, tail.length, ...merged);
+  return true;
+}
+
+/** The recordings in a stored object (the file's, or the old app setting's), each checked; anything else is left out. */
+function parseRecorded(saved: unknown): Recorded[] {
+  if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return [];
+  const out: Recorded[] = [];
+  for (const [k, r] of Object.entries(saved as Record<string, any>)) {
+    if (isReservedKey(k) || !r || typeof r.deviceId !== 'string' || typeof r.capabilityId !== 'string' || !Array.isArray(r.changes)) continue;
+    const changes = (r.changes as unknown[]).filter((c): c is [number, 0 | 1] => Array.isArray(c)
+      && typeof c[0] === 'number' && Number.isFinite(c[0]) && (c[1] === 0 || c[1] === 1));
+    out.push({ deviceId: r.deviceId, capabilityId: r.capabilityId, lastRequested: Number(r.lastRequested) || 0, changes });
   }
   return out;
 }
@@ -86,7 +133,7 @@ export function mergeChanges(list: [number, 0 | 1][], incoming: [number, 0 | 1][
  * Numbers come from Insights' `last7Days` or `last14Days` (hourly averages). Booleans can't: their log only ever returns
  * the last 50 changes, whatever the resolution (a motion sensor's are under a day). So a boolean is
  * recorded by the app from the first time a widget asks for it, backfilled from those 50 changes, and
- * kept in the app settings until no widget has asked for it for 8 days.
+ * kept in `HISTORY_FILE` until no widget has asked for it for 8 days.
  */
 export default class HeatmapService {
 
@@ -96,27 +143,50 @@ export default class HeatmapService {
   private recorded = new Map<string, Recorded>();
   private instances = new Map<string, any>();
   private backfilledAt = new Map<string, number>();
+  /** Each recording's `lastRequested` as last written, so a recording that's only read is written hourly, not on each read. */
+  private requestSaved = new Map<string, number>();
   private saved: DebouncedSetting;
   private tickTimer: NodeJS.Timeout | null = null;
+  /** The old app setting is still there: it's unset once the file has been written (`store()`). */
+  private legacySetting = false;
 
   constructor(
     private homey: Homey.App['homey'],
     private log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
+    /** The recordings' file (`HISTORY_FILE`; memory in the tests). */
+    private storage: SecretStorage = fileStorage(HISTORY_FILE),
   ) {
-    this.saved = new DebouncedSetting({ homey, setting: HISTORY_SETTING, delay: SAVE_DELAY, value: () => this.savedHistory(), log, what: 'the heatmap history' });
+    this.saved = new DebouncedSetting({ homey, store: v => this.store(v), delay: SAVE_DELAY, value: () => this.savedHistory(), log, what: 'the heatmap history' });
   }
 
-  /** Resumes recording the booleans that widgets asked for before the app restarted. */
+  /**
+   * Resumes recording the booleans that widgets asked for before the app restarted. Recordings still in the old app
+   * setting (before 1.1.0, or written by an older version since) are merged in and written to the file, and the
+   * setting is unset only once that write has worked, so nothing recorded is lost.
+   */
   start() {
-    const saved = this.homey.settings.get(HISTORY_SETTING);
-    if (saved && typeof saved === 'object') {
-      for (const r of Object.values(saved) as Recorded[]) {
-        if (r && typeof r.deviceId === 'string' && typeof r.capabilityId === 'string' && Array.isArray(r.changes)) {
-          this.recorded.set(key(r.deviceId, r.capabilityId), r);
+    for (const r of parseRecorded(this.readFile())) this.recorded.set(key(r.deviceId, r.capabilityId), r);
+    const setting = this.homey.settings.get(HISTORY_SETTING);
+    if (setting !== null && setting !== undefined) {
+      this.legacySetting = true;
+      for (const r of parseRecorded(setting)) {
+        const k = key(r.deviceId, r.capabilityId);
+        const have = this.recorded.get(k);
+        if (have) {
+          have.changes = mergeChanges(have.changes, r.changes);
+          have.lastRequested = Math.max(have.lastRequested, r.lastRequested);
+        } else {
+          this.recorded.set(k, r);
         }
       }
+      try {
+        this.store(this.savedHistory());
+      } catch (err) {
+        this.log('Could not move the heatmap history out of the app settings (kept there for now):', err);
+      }
     }
+    for (const [k, r] of this.recorded) this.requestSaved.set(k, r.lastRequested);
     for (const r of this.recorded.values()) {
       this.subscribe(r).catch(err => this.log(`Could not record ${r.capabilityId} of ${r.deviceId}:`, err));
     }
@@ -208,6 +278,8 @@ export default class HeatmapService {
       this.debug(`Recording ${capabilityId} of ${device.name} (${deviceId})`);
     }
     r.lastRequested = Date.now();
+    // Written only when something changed: a read alone would rewrite the whole history every few minutes.
+    let changed = r.lastRequested - (this.requestSaved.get(k) ?? 0) > SEEN_SAVE;
     if (Date.now() - (this.backfilledAt.get(k) ?? 0) > BACKFILL_TTL) {
       try {
         const res: any = await limitInsights(() => api.insights.getLogEntries({
@@ -217,7 +289,7 @@ export default class HeatmapService {
         const incoming = values
           .map((e): [number, 0 | 1] => [new Date(e.t).getTime(), e.v ? 1 : 0])
           .filter(([t]) => Number.isFinite(t));
-        r.changes = mergeChanges(r.changes, incoming);
+        if (mergeInto(r.changes, incoming)) changed = true;
         this.backfilledAt.set(k, Date.now());
       } catch (err) {
         this.log(`Insights backfill of ${capabilityId} of ${device.name} failed:`, err);
@@ -226,7 +298,7 @@ export default class HeatmapService {
     // After the backfill, so the state now only counts as a change if it differs from Insights' last.
     if (!this.instances.has(k)) await this.subscribe(r, device);
     this.prune(r);
-    this.saved.schedule();
+    if (changed) this.saved.schedule();
     return hourlyShareTrue(r.changes.map(([t, v]) => ({ t, v: v === 1 })), Date.now(), this.homey.clock.getTimezone(), span);
   }
 
@@ -272,8 +344,29 @@ export default class HeatmapService {
     for (const [k, r] of this.recorded) {
       this.prune(r);
       out[k] = r;
+      this.requestSaved.set(k, r.lastRequested);
     }
     return out;
+  }
+
+  /** The file's recordings, or null when there's none (or it can't be read: logged, and the next write replaces it). */
+  private readFile(): unknown {
+    try {
+      const text = this.storage.read();
+      return text === null ? null : JSON.parse(text);
+    } catch (err) {
+      this.log('The heatmap history file could not be read:', String((err as any)?.message ?? err));
+      return null;
+    }
+  }
+
+  /** Writes the recordings to the file (throws when it can't); the first write after the move unsets the old setting. */
+  private store(value: unknown) {
+    this.storage.write(JSON.stringify(value));
+    if (!this.legacySetting) return;
+    this.legacySetting = false;
+    this.homey.settings.unset(HISTORY_SETTING);
+    this.log('Moved the heatmap history out of the app settings');
   }
 
   private tick() {
@@ -286,6 +379,7 @@ export default class HeatmapService {
         this.unsubscribe(k);
         this.recorded.delete(k);
         this.backfilledAt.delete(k);
+        this.requestSaved.delete(k);
         this.debug(`Stopped recording ${r.capabilityId} of ${r.deviceId}`);
         this.saved.schedule();
       }
@@ -303,6 +397,8 @@ export default class HeatmapService {
         since: r.changes.length ? new Date(r.changes[0][0]).toISOString() : null,
         lastRequested: new Date(r.lastRequested).toISOString(),
       })),
+      /** The old app setting is still there (its move to the file failed so far). */
+      inSettings: this.legacySetting,
     };
   }
 
