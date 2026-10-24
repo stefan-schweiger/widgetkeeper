@@ -6,6 +6,8 @@ import Timings from './Timings.js';
 
 /** How long a read of the dashboards is reused. A widget re-reads its pages every 5 min. */
 const CACHE_MS = 60e3;
+/** And let go this long after it came in (every dashboard with every widget's settings), not kept between stack refreshes. */
+const KEEP_MS = 2 * 60e3;
 /** The settings' autocomplete reads fresher (a dashboard made a moment ago should be there), but not per keystroke. */
 const AUTOCOMPLETE_CACHE_MS = 5e3;
 /** How long the diagnostics report waits for its trial read of the dashboards. */
@@ -87,7 +89,7 @@ export default class StackService {
     .catch((err: unknown) => {
       this.lastError = String((err as any)?.reason ?? (err as any)?.message ?? err);
       throw err;
-    }));
+    }), { keepFor: KEEP_MS });
   private requests = new Map<StackType, number>();
   private lastError: string | null = null;
   private reads = 0;

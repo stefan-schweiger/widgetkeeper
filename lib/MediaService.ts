@@ -10,6 +10,8 @@ import { sharedCache } from './sharedCache.js';
 import Timings from './Timings.js';
 /** The flow card list is long (every device's cards); the settings' autocomplete reuses a read this long. */
 const CARDS_CACHE_MS = 60e3;
+/** And let go this long after it came in, so a speaker list's cards aren't held between rare uses. */
+const CARDS_KEEP_MS = 2 * 60e3;
 /**
  * After a track change the device is read again for its album art, which a driver often sets a moment after the
  * track: once soon, once later, sending the art only when it changed.
@@ -168,7 +170,7 @@ export default class MediaService {
     .catch((err: unknown) => {
       this.log('Could not read the Flow cards:', err);
       throw err;
-    }));
+    }), { keepFor: CARDS_KEEP_MS });
   private lastCardError: string | null = null;
 
   constructor(
