@@ -11,6 +11,9 @@ interface Window {
   /** settings/dashboard.js, the web dashboards page; `io` is the vendored socket.io-client (settings/socket.io.js). */
   mountWebDashboards: (root: HTMLElement) => void;
   io: (url: string, opts?: object) => any;
+  /** settings/popup.js, the prompt page a Popups widget opens: its fallback strings and its mount. */
+  POPUP_PAGE_STRINGS: Record<string, string>;
+  mountPopupPage: (root: HTMLElement, opts?: { fetch?: typeof fetch, hash?: string }) => void;
   /** Wide widgets' columns on the web dashboards (settings/dashboard-layout.js). */
   WidgetkeeperLayout: {
     spanOf: (w: any, c: number, count: number) => number,
