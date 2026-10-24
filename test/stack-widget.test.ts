@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadMount, loadWidget } from './helpers/loadWidget.js';
+import { touch } from './helpers/touch.js';
 
 let win: any;
 beforeAll(() => {
@@ -306,6 +307,7 @@ describe('mount', () => {
   beforeAll(() => {
     loadWidget('timers'); loadMount('timers');
     loadWidget('values'); loadMount('values');
+    loadWidget('dayssince'); loadMount('dayssince');
   });
   afterEach(() => { vi.restoreAllMocks(); });
 
@@ -400,6 +402,39 @@ describe('mount', () => {
     expect(root.querySelector('.sk-dot.on')).toBe(root.querySelectorAll('.sk-dot')[1]);
     Homey.emit('timers:state', { instance: 'w-timers', timers: [{ id: 't', label: '', duration: 60e3, endsAt: Date.now() + 60e3, remaining: null, doneAt: null }], now: Date.now() });
     expect(root.querySelector('.sk-dot.on')).toBe(root.querySelectorAll('.sk-dot')[0]);
+  });
+
+  it('shows Days Since as a page on a card, and its taps reach its API (issue #9)', async () => {
+    const Homey = fakeHomey({ dashboard: { id: 'd' } }, {
+      ok: true,
+      pages: [
+        page('w-days', 'dayssince', { settings: { counter1: { id: 'Plants', name: 'Plants' }, amber1: 5, red1: 7 } }),
+        page('w-values', 'values', { settings: { slot1: { id: 'dev:measure_temperature' } } }),
+      ],
+      requests: [],
+    }, {
+      'dayssince GET /state': { now: Date.now(), language: 'en', counters: [{ key: 'plants', name: 'Plants', resetAt: Date.now() - 2 * 864e5 }] },
+      'dayssince POST /reset': (b: any) => ({ now: Date.now(), counter: { key: 'plants', name: b.body.name, resetAt: Date.now() } }),
+      'values GET /state': [{ deviceId: 'dev', capabilityId: 'measure_temperature', name: 'Fridge', capability: { title: 'Temperature', type: 'number', units: '°C', decimals: 1 }, value: 4.2 }],
+    });
+    const root = mount(Homey);
+    await vi.advanceTimersByTimeAsync(3000);
+
+    const slides = root.querySelectorAll<HTMLElement>('.sk-slide');
+    expect(slides).toHaveLength(2);
+    expect(root.querySelectorAll('.sk-dot')).toHaveLength(2);
+    expect(slides[0].className).toContain('sk-card'); // Days Since sits on Homey's card
+    const row = slides[0].querySelector<HTMLElement>('.ds-row')!;
+    expect(row.textContent).toContain('Plants');
+
+    const bodies = () => Homey.api.mock.calls.filter(c => c[1] === '/call').map(c => c[2]);
+    // The counters' intervals reach the app decoded, as from the widget's own frame.
+    expect(JSON.parse(bodies().find(b => b.type === 'dayssince').query.counters)).toEqual([{ name: 'Plants', amber: 5, red: 7 }]);
+
+    touch(row, 'touchstart', 10, 10);
+    touch(row, 'touchend', 10, 10);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(bodies().find(b => b.type === 'dayssince' && b.method === 'POST')).toMatchObject({ path: '/reset', body: { name: 'Plants' } });
   });
 
   it("mounts the page on screen first, and reads a page's state once (smart rotate takes the page's own)", async () => {

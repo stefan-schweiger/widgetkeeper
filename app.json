@@ -2820,6 +2820,24 @@
                   "ko": "메모",
                   "ar": "ملاحظات"
                 }
+              },
+              {
+                "id": "dayssince",
+                "title": {
+                  "en": "Days Since",
+                  "nl": "Dagen geleden",
+                  "de": "Tage seit",
+                  "fr": "Jours depuis",
+                  "it": "Giorni da",
+                  "sv": "Dagar sedan",
+                  "no": "Dager siden",
+                  "es": "Días desde",
+                  "da": "Dage siden",
+                  "ru": "Дней прошло",
+                  "pl": "Dni od",
+                  "ko": "경과 일수",
+                  "ar": "أيام منذ"
+                }
               }
             ]
           },

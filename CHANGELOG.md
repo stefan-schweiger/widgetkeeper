@@ -34,6 +34,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Days Since
 - **Show:** only the counters that are amber and red, or only red, so counters due every month or so don't take room until they're due. A counter not started yet, or one just tapped, still shows; with none due it says *Nothing due.*
+- **Smart Stack:** Days Since can now be one of a stack's pages; it used to be left out, so a stack of it and one other widget showed a single page with no dots ([#9](https://github.com/thomassidor/widgetkeeper/issues/9)).
 
 ### Spacer
 - At least 16 px high: at 0 px the iPhone app kept showing a loading indicator in its place. A spacer set to 0 is now 16 px.

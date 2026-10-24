@@ -17,7 +17,7 @@
     sparklines: 'mountSparklinesWidget', charts: 'mountChartsWidget', variables: 'mountVariablesWidget',
     varpresets: 'mountVarPresetsWidget', flows: 'mountFlowsWidget', price: 'mountPriceWidget',
     timers: 'mountTimersWidget', locks: 'mountLocksWidget', curtains: 'mountCurtainsWidget', media: 'mountMediaWidget',
-    clock: 'mountClockWidget', textline: 'mountTextLineWidget',
+    clock: 'mountClockWidget', textline: 'mountTextLineWidget', dayssince: 'mountDaysSinceWidget',
   };
 
   /** A camera's detections that bring its page forward. */
