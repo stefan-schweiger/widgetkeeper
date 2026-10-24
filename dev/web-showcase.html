@@ -115,8 +115,9 @@
     const BOARD = VIEW === 'light' ? LIGHT_BOARD : params.get('d') || 'home';
     const HASH = VIEW === 'front' ? '#/' : VIEW === 'editor' || VIEW === 'settings' ? `#/d/${BOARD}/edit` : `#/d/${BOARD}`;
 
-    // The settings view: Home's Flow Buttons set up as the showcase draws them (four buttons), and the dialog drawn
-    // inside the window: shown non-modal over a backdrop of its own, since a modal one sits over the whole render.
+    // The settings view: Home's Flow Buttons with four buttons, in its settings and drawn alike behind the dialog (the
+    // showcase's has two), and the dialog drawn inside the window: shown non-modal over a backdrop of its own, since a
+    // modal one sits over the whole render.
     const SETTINGS_WIDGET = 'home-0-2';
     if (VIEW === 'settings') {
       const flows = BOARDS.find(b => b.id === 'home').columns.flat().find(w => w.id === SETTINGS_WIDGET);
@@ -126,6 +127,11 @@
         [`flow${i + 1}`]: { id: `flow:${i + 1}`, name }, [`color${i + 1}`]: color,
         [`icon${i + 1}`]: { id: icon, name: iconName }, [`name${i + 1}`]: '',
       }));
+      ENTRY.set(SETTINGS_WIDGET, {
+        ...ENTRY.get(SETTINGS_WIDGET),
+        opts: { columns: '2', buttons: buttons.map(([, color, icon], i) => ({ id: `flow:${i + 1}`, color, icon })) },
+        flows: buttons.map(([name], i) => ({ id: `flow:${i + 1}`, name, enabled: true, triggerable: true, advanced: false })),
+      });
       HTMLDialogElement.prototype.showModal = function () {
         this.show();
         const viewport = document.querySelector('.viewport');

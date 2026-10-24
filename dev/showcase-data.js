@@ -197,7 +197,8 @@
   const smokeAndWater = [
     { id: 's1', name: 'Kitchen', icon: icon('smoke-detector'), alarms: [alarm('alarm_smoke', false, 'Smoke alarm'), alarm('alarm_heat', false, 'Heat alarm')] },
     { id: 's2', name: 'Hallway', icon: icon('smoke-detector'), alarms: [alarm('alarm_smoke', false, 'Smoke alarm')] },
-    { id: 's3', name: "Emma's room", icon: icon('air-purifier'), alarms: [alarm('alarm_co2', true, 'CO₂ alarm'), alarm('alarm_radon', false, 'Radon alarm')] },
+    // The bedroom's CO₂ alarm: 1,210 ppm on the Climate dashboard (Emma's room's 783 ppm is fine).
+    { id: 's3', name: 'Bedroom', icon: icon('air-purifier'), alarms: [alarm('alarm_co2', true, 'CO₂ alarm'), alarm('alarm_radon', false, 'Radon alarm')] },
     { id: 's4', name: 'Utility room', icon: icon('washing-machine'), alarms: [alarm('alarm_water', false, 'Water alarm')] },
   ];
 
@@ -427,7 +428,7 @@
             { id: 'g2', name: 'Doorbell', icon: icon('doorbell'), quickAction: { capabilityId: 'button', value: true, actionable: true, momentary: true, icon: null } },
             { id: 'g3', name: 'Router', icon: icon('router'), quickAction: qa('onoff', true) },
           ] },
-          // The open garage is in the second row (7 or 8 dots per row), so its overlay leaves the hallway's red dot showing.
+          // The open garage is in the second row (7 or 8 dots per row), so its overlay leaves the hallway's blue dot showing.
           { type: 'sensordots', opts: { locale: 'en-GB', title: 'Doors and motion' }, open: 'd9', devices: [
             contactDot('d1', 'Front door', false, 52), motionDot('d2', 'Hallway', true, 1),
             contactDot('d3', 'Back door', false, 95), motionDot('d4', 'Kitchen', false, 6),
@@ -496,7 +497,7 @@
             { id: 'eq2', name: 'Speaker', icon: icon('speaker'), quickAction: qa('onoff', true) },
             { id: 'eq3', name: 'Kettle', icon: icon('kettle'), quickAction: qa('onoff', false) },
             { id: 'eq4', name: 'Front door', icon: icon('lock'), quickAction: qa('locked', true) },
-            { id: 'eq5', name: 'Back door', icon: icon('lock'), quickAction: qa('locked', false) },
+            { id: 'eq5', name: 'Back door', icon: icon('lock'), quickAction: qa('locked', true) },
             { id: 'eq6', name: 'Dishwasher', icon: icon('socket'), quickAction: qa('onoff', false) },
           ] },
           heatPump,
@@ -551,12 +552,16 @@
             ['flow:gb2', 'Mow the lawn', 'green', 'play'],
             ['flow:gb3', 'Garden lights for an hour', 'yellow', 'bulb'],
           ]),
-          // The driveway (a person, just now) has its overlay open; the open greenhouse stays blue below it.
-          { type: 'sensordots', opts: { locale: 'en-GB', title: 'Outside' }, open: 'gd3', devices: [
+          // The side path (a person, just now) has its overlay open. It covers the side path's row, so the side path is in the
+          // second row (7 or 8 dots per row) and the first still shows, the open greenhouse in blue. The driveway went quiet
+          // 9 minutes ago, as on Security.
+          { type: 'sensordots', opts: { locale: 'en-GB', title: 'Outside' }, open: 'gd5', devices: [
             contactDot('gd1', 'Gate', false, 47), motionDot('gd2', 'Terrace', false, 75),
-            { id: 'gd3', name: 'Driveway', icon: null, alarms: [sensor('alarm_motion', true, 'Motion alarm', 2), sensor('alarm_person', true, 'Person Detected', 2)] },
-            contactDot('gd4', 'Shed', false, 1500), motionDot('gd5', 'Side path', false, 33),
-            contactDot('gd6', 'Greenhouse', true, 260), contactDot('gd7', 'Carport', false, 1100),
+            { id: 'gd3', name: 'Driveway', icon: null, alarms: [sensor('alarm_motion', false, 'Motion alarm', 9), sensor('alarm_person', false, 'Person Detected', 9)] },
+            contactDot('gd4', 'Shed', false, 1500), contactDot('gd6', 'Greenhouse', true, 260),
+            contactDot('gd7', 'Carport', false, 1100), contactDot('gd8', 'Back gate', false, 380), motionDot('gd9', 'Garden path', false, 48),
+            { id: 'gd5', name: 'Side path', icon: null, alarms: [sensor('alarm_motion', true, 'Motion alarm', 2), sensor('alarm_person', true, 'Person Detected', 2)] },
+            contactDot('gd10', 'Letterbox', false, 320),
           ] },
         ],
       ],
