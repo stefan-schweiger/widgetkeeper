@@ -559,6 +559,7 @@
     "title": "웹 대시보드",
     "keyTitle": "Homey에 연결",
     "keyText": "개인 API 키를 붙여 넣으세요. Homey 웹 앱의 설정 → API 키에서 만들고, 무언가를 바꾸는 위젯에는 Widgetkeeper 앱 설정에 나온 권한을 선택하세요. 이 브라우저에만 저장됩니다.",
+    "keyPlain": "이 주소는 암호화되지 않습니다. 집 네트워크를 엿보는 누구나 키를 읽을 수 있습니다. 원격 접속 주소는 암호화됩니다.",
     "keyPlaceholder": "API 키",
     "connect": "연결",
     "keyRejected": "Homey가 이 키를 받아들이지 않았습니다.",

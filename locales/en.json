@@ -559,6 +559,7 @@
     "title": "Web Dashboards",
     "keyTitle": "Connect to your Homey",
     "keyText": "Paste a personal API key. Make one in the Homey web app under Settings → API Keys, with the permissions Widgetkeeper's app settings list for the widgets that change things. It stays in this browser.",
+    "keyPlain": "This address isn't encrypted: anything watching your home network could read the key. The Remote access address is encrypted.",
     "keyPlaceholder": "API key",
     "connect": "Connect",
     "keyRejected": "Homey didn't accept this key.",

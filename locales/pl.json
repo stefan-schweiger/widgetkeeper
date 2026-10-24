@@ -559,6 +559,7 @@
     "title": "Pulpity webowe",
     "keyTitle": "Połącz z Homey",
     "keyText": "Wklej osobisty klucz API. Utwórz go w aplikacji webowej Homey w Ustawienia → Klucze API, z uprawnieniami wymienionymi w ustawieniach aplikacji Widgetkeeper dla widżetów, które coś zmieniają. Zostaje w tej przeglądarce.",
+    "keyPlain": "Ten adres nie jest szyfrowany: wszystko, co podsłuchuje sieć domową, może odczytać klucz. Adres dostępu zdalnego jest szyfrowany.",
     "keyPlaceholder": "Klucz API",
     "connect": "Połącz",
     "keyRejected": "Homey nie przyjął tego klucza.",
