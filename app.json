@@ -24,19 +24,19 @@
     "ar": "Widgetkeeper"
   },
   "description": {
-    "en": "Custom dashboard widgets for your Homey.",
-    "nl": "Aangepaste dashboardwidgets voor je Homey.",
-    "de": "Eigene Dashboard-Widgets für dein Homey.",
-    "fr": "Des widgets de tableau de bord personnalisés pour votre Homey.",
-    "it": "Widget personalizzati per la dashboard del tuo Homey.",
-    "sv": "Anpassade widgets för instrumentpanelen i din Homey.",
-    "no": "Egne dashbord-widgeter for din Homey.",
-    "es": "Widgets personalizados para el panel de tu Homey.",
-    "da": "Egne dashboard-widgets til din Homey.",
-    "ru": "Пользовательские виджеты панели для вашего Homey.",
-    "pl": "Własne widżety pulpitu dla Twojego Homey.",
-    "ko": "Homey를 위한 맞춤형 대시보드 위젯.",
-    "ar": "أدوات مخصصة للوحة التحكم في Homey."
+    "en": "Custom widgets and dashboards in your browser",
+    "nl": "Aangepaste widgets en dashboards in je browser",
+    "de": "Eigene Widgets und Dashboards in deinem Browser",
+    "fr": "Des widgets personnalisés et des tableaux de bord dans votre navigateur",
+    "it": "Widget personalizzati e dashboard nel tuo browser",
+    "sv": "Anpassade widgets och instrumentpaneler i din webbläsare",
+    "no": "Egne widgeter og dashbord i nettleseren din",
+    "es": "Widgets personalizados y paneles en tu navegador",
+    "da": "Egne widgets og dashboards i din browser",
+    "ru": "Собственные виджеты и панели в вашем браузере",
+    "pl": "Własne widżety i pulpity w Twojej przeglądarce",
+    "ko": "맞춤형 위젯과 브라우저 속 대시보드",
+    "ar": "أدوات مخصصة ولوحات تحكم في متصفحك"
   },
   "category": [
     "tools"
