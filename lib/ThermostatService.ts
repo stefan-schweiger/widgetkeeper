@@ -262,7 +262,7 @@ export default class ThermostatService {
   }
 
   private async getDeviceForSettings(deviceId: string | undefined) {
-    if (!deviceId) throw new Error(this.homey.__('thermostat.selectDeviceFirst') || 'Select a device first');
+    if (!deviceId) throw new Error(this.homey.__('thermostat.selectDeviceFirst') || 'Select a thermostat first, then reopen this setting.');
     const api = await getAppApi(this.homey);
     return api.devices.getDevice({ id: deviceId });
   }

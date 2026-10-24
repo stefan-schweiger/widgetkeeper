@@ -148,7 +148,7 @@ export default {
     const [type, setting] = [String(body?.type ?? ''), String(body?.setting ?? '')];
     const use = autocompleteKeyUse(type, setting);
     const problem = use && await pageKeyProblem(app, body?.key, use);
-    if (problem) return [{ id: 'none', name: homey.__(`stack.${problem}`) || problem, description: homey.__('stack.keyHint') || '' }];
+    if (problem) return [{ id: 'none', name: homey.__(`stack.${problem}`) || problem, description: homey.__('stack.keyHint') || 'Widgetkeeper → Configure: an API key with the Homey permission.' }];
     return app.web.autocomplete(type, setting, String(body?.query ?? ''), body?.settings);
   },
 

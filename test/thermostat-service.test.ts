@@ -202,7 +202,7 @@ describe('listTemperatures', () => {
 
   it('needs a device', async () => {
     const { service } = setup();
-    await expect(service.listTemperatures(undefined, '')).rejects.toThrow('Select a device first');
+    await expect(service.listTemperatures(undefined, '')).rejects.toThrow('Select a thermostat first');
   });
 });
 

@@ -336,7 +336,7 @@ describe('web dashboards: Dashboard Shortcuts', () => {
     // `web-home-1-w-1` could split as home + 1-w-1 too: only Home has a shortcuts widget w-1.
     expect(web.shortcuts(['lights', 'gone', 'home'], 'web-home-1-w-1')).toEqual({
       current: 'home-1',
-      tiles: [{ id: 'lights', name: 'Lights' }, { id: 'gone', missing: true }, { id: 'home', name: 'Untitled' }],
+      tiles: [{ id: 'lights', name: 'Lights' }, { id: 'gone', missing: true }, { id: 'home', name: 'Dashboard' }],
     });
     expect(web.shortcuts(['lights'], 'web-home-1-w2').current).toBeNull(); // the clock, not a shortcuts widget
     expect(web.shortcuts(['lights'], 'a-homey-dashboard-widget').current).toBeNull();
@@ -357,9 +357,9 @@ describe('web dashboards: Dashboard Shortcuts', () => {
     homey.settings.set(WEB_DASHBOARDS_SETTING, saved);
     expect(web.dashboardItems('')).toEqual([
       { id: 'none', name: 'None' },
-      { id: 'home-1', name: 'Home', description: '2' },
-      { id: 'lights', name: 'Lights', description: '0' },
-      { id: 'home', name: 'Untitled', description: '1' },
+      { id: 'home', name: 'Dashboard', description: '1 widgets' }, // no name: en.json's "Dashboard"
+      { id: 'home-1', name: 'Home', description: '2 widgets' },
+      { id: 'lights', name: 'Lights', description: '0 widgets' },
     ]);
     expect(web.dashboardItems('lig').map(i => i.id)).toEqual(['lights']);
   });
