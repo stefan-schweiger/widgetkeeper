@@ -362,13 +362,10 @@ export default class ElectricityService {
     const days = new Set<string>();
     for (let t = firstSlot; t <= lastSlot; t += HOUR) days.add(this.localDate(t));
 
-    // A day that fails (e.g. tomorrow before publication) leaves its slots empty, not the others. The day after
-    // tomorrow (a 36-hour window) is rarely out, so its failure is only debug.
-    const tomorrow = this.localDate(floorTo(Date.now(), HOUR) + 24 * HOUR);
+    // A day that fails (e.g. tomorrow before publication) leaves its slots empty, not the others. Its fetch logged why
+    // (`getPriceDay()`); a snapshot that gets the remembered failure doesn't log it again.
     const [priceDays] = await Promise.all([
-      Promise.all([...days].map(day => tm.time(day, () => this.getPriceDay(day)).catch(err => {
-        if (day > tomorrow) this.debug(`No prices yet for ${day}`, err);
-        else this.log(`Price error for ${day}`, err);
+      Promise.all([...days].map(day => tm.time(day, () => this.getPriceDay(day)).catch((err) => {
         onDayError?.(day, err);
         return null;
       }))),
@@ -411,7 +408,9 @@ export default class ElectricityService {
 
   /**
    * One day's prices. Concurrent requests for a day (warm-up, several widgets) share one fetch. A day that failed fails
-   * again at once for a while (the day after tomorrow is rarely out, and every `/price` asked for it again).
+   * again at once for a while (the day after tomorrow is rarely out, and every `/price` asked for it again). A failed
+   * fetch is logged once, here: tomorrow's every morning until it's out (each 15 min), and the day after tomorrow (a
+   * 36-hour window), rarely out, only as debug. Logged on every snapshot, it filled the diagnostics log.
    */
   private getPriceDay(day: string): Promise<PriceDay> {
     const now = Date.now();
@@ -424,7 +423,12 @@ export default class ElectricityService {
     let p = this.pricePending.get(day);
     if (!p) {
       p = this.fetchPriceDay(day)
-        .catch((err: unknown) => { this.priceFailures.set(day, { at: Date.now(), err }); throw err; })
+        .catch((err: unknown) => {
+          this.priceFailures.set(day, { at: Date.now(), err });
+          if (day > this.localDate(floorTo(Date.now(), HOUR) + 24 * HOUR)) this.debug(`No prices yet for ${day}`, err);
+          else this.log(`Price error for ${day}`, err);
+          throw err;
+        })
         .finally(() => this.pricePending.delete(day));
       this.pricePending.set(day, p);
     }
