@@ -92,7 +92,7 @@ describe('footer', () => {
     const days = [...root.querySelectorAll('.wf-day')].map(d => d.textContent);
     // Today: 15:00-23:00 local (4° falling to 0°); tomorrow: 00:00-23:00 (0° to -12°).
     expect(days).toEqual(['Today↑4°↓0°', 'Tomorrow↑0°↓-12°']);
-    const ranges = [...root.querySelectorAll('.wf-range')];
+    const ranges = [...root.querySelectorAll<HTMLElement>('.wf-range')];
     expect(ranges[0].classList.contains('cold')).toBe(true); // 4°
     expect(ranges[1].style.getPropertyValue('--k')).toBe('0.71'); // 0°
   });

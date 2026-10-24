@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-// @ts-expect-error: a plain ESM script without types
 import { portDashboard } from '../scripts/port-dashboard.mjs';
 
 // `npm run port-dashboard` turns a Homey dashboard into a web dashboard (scripts/port-dashboard.mjs).

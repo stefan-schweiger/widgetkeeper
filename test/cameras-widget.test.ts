@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { loadMount, loadWidget } from './helpers/loadWidget.js';
 
 let win: any;
@@ -29,7 +29,7 @@ const cam = (id: string, opts: { image?: string | null, video?: string | null, v
   ...(opts.videos ? { videos: opts.videos, h265: opts.h265 ?? [] } : {}),
 });
 
-function widget(devices: any[], api = vi.fn(async (): Promise<any> => ({ type: 'image/jpeg', data: 'AQID' })), now = () => 1000, extra: object = {}) {
+function widget(devices: any[], api: Mock<(...args: any[]) => Promise<any>> = vi.fn(async (): Promise<any> => ({ type: 'image/jpeg', data: 'AQID' })), now = () => 1000, extra: object = {}) {
   const root = document.createElement('div');
   document.body.append(root);
   const report = vi.fn();

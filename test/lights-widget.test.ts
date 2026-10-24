@@ -361,7 +361,7 @@ describe('group by room', () => {
     expect(tile('zone:z1').classList.contains('on')).toBe(false);
     onSet.mockClear();
     tile('zone:z1').click();
-    expect(onSet.mock.calls.map(c => c[1])).toEqual([{ onoff: true }, { onoff: true }, { onoff: true }]);
+    expect(onSet.mock.calls.map((c: any[]) => c[1])).toEqual([{ onoff: true }, { onoff: true }, { onoff: true }]);
   });
 
   it('sets the brightness of every light from the bar', () => {

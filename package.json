@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit --noUnusedLocals && tsc -p tsconfig.widgets.json --noUnusedLocals",
+    "typecheck": "tsc --noEmit --noUnusedLocals && tsc -p tsconfig.widgets.json --noUnusedLocals && tsc -p tsconfig.test.json --noUnusedLocals",
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",

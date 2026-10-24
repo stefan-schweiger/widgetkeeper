@@ -6,6 +6,9 @@ import { thermostatState } from '../widgets/thermostat/api.js';
 
 vi.mock('homey-api', () => homeyApiMock);
 
+/** A device's state, not a missing one. */
+type ThermostatState = Exclude<Awaited<ReturnType<ThermostatService['getState']>>, { missing: true }>;
+
 const MODE = { type: 'enum', title: 'Mode', values: [{ id: 'heat', title: 'Heat' }, { id: 'cool', title: 'Cool' }, { id: 'dry', title: 'Dry' }, { id: 'off', title: 'Off' }] };
 const FAN = { type: 'enum', title: 'Fan speed', values: [{ id: 'auto', title: 'Auto' }, { id: 'low', title: 'Low' }, { id: 'high', title: 'High' }] };
 
@@ -242,7 +245,7 @@ describe('listDevices', () => {
 describe('state tracking', () => {
   it('returns the relevant capabilities and their info', async () => {
     const { service } = setup([aircon({ dim: { value: 1 } })]);
-    const state = await service.getState('dev1');
+    const state = await service.getState('dev1') as ThermostatState;
     expect(state.name).toBe('Aircon');
     expect(state.icon).toBeNull();
     expect(Object.keys(state.values).sort()).toEqual(['fan_speed', 'measure_temperature', 'onoff', 'target_temperature', 'thermostat_mode']);
@@ -260,7 +263,7 @@ describe('state tracking', () => {
     await service.getState('dev1');
     device.report('target_temperature', 24);
     expect(homey.api.realtime).toHaveBeenCalledWith(STATE_EVENT, { deviceId: 'dev1', capabilityId: 'target_temperature', value: 24 });
-    expect((await service.getState('dev1')).values.target_temperature).toBe(24);
+    expect((await service.getState('dev1') as ThermostatState).values.target_temperature).toBe(24);
   });
 
   it('re-reads a tracked device on each request', async () => {

@@ -30,7 +30,7 @@ describe('web dashboards: wide widgets', () => {
     ];
     expect(ids(expand(columns))).toEqual([['x', 'y'], ['^x', 'b', '^y'], ['^x', '^y']]);
     columns[1].length = 0;
-    columns[0][1].at = [0, 0];
+    (columns[0][1] as { at?: number[] }).at = [0, 0];
     expect(ids(expand(columns))).toEqual([['x', 'y'], ['^x', '^y'], ['^x', '^y']]);
   });
 

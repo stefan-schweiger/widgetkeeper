@@ -285,7 +285,7 @@ describe('rotation', () => {
 
 describe("attention watcher: the pages' own state", () => {
   it("takes a page's own /state for smart rotate, and doesn't read it again while it's fresh", async () => {
-    const call = vi.fn(async () => ({ devices: [] }));
+    const call = vi.fn(async (_type: string, ..._rest: unknown[]) => ({ devices: [] }));
     const onChange = vi.fn();
     const w = win.createStackAttentionWatcher([page('pl', 'locks', { deviceIds: ['l1'] }), page('pc', 'cameras', { deviceIds: ['c1'] })],
       { call, on: () => {}, onChange });
