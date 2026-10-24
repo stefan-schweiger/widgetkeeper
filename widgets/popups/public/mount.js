@@ -34,7 +34,8 @@ window.mountPopupsWidget = function (Homey, { root, frame }) {
         console.error(err);
       }
     }
-    Homey.on('popups:show', popup => widget.show(popup));
+    // The event has no token: `/state` has it for this screen's popups.
+    Homey.on('popups:show', (popup) => { if (widget.wants(popup)) load(); });
     load();
     setInterval(load, REFRESH_MS);
     document.addEventListener('visibilitychange', () => {

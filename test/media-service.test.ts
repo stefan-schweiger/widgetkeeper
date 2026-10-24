@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeDevice, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
 import FlowService from '../lib/FlowService.js';
-import MediaService, { MEDIA_ART_EVENT, MEDIA_STATE_EVENT, mediaArt, parseCardId } from '../lib/MediaService.js';
+import MediaService, { MEDIA_ART_EVENT, MEDIA_STATE_EVENT, cardIndex, mediaArt, parseCardId } from '../lib/MediaService.js';
 import { API_KEY_SETTING, KeyError } from '../lib/PersonalApiKey.js';
 import Secrets from '../lib/secrets.js';
 
@@ -290,6 +290,34 @@ describe('buttons', () => {
     expect(key.flow.runFlowCardAction).toHaveBeenCalledWith({
       uri: 'homey:device:tv', id: 'homey:device:tv:cloud_play_home_theater', args: {},
     });
+  });
+
+  it('keeps only the runnable cards, with the fields the buttons use', () => {
+    const extra = { ...CARDS.a, titleFormatted: 'Set source to [[device]]', droptoken: null, highlight: true };
+    const index = cardIndex({ ...CARDS, a: extra, x: { id: 'homey:device:tv:old', ownerUri: 'homey:device:tv', title: 'Old', deprecated: true } });
+    expect([...index.byOwner.keys()]).toEqual(['homey:device:tv', 'homey:device:kitchen', 'homey:app:nl.xiut.sonoslocal', 'homey:app:com.uc.heimdall']);
+    expect(index.byOwner.get('homey:device:tv')).toEqual([
+      { id: 'homey:device:tv:cloud_play_home_theater', title: 'Set source to TV', ownerUri: 'homey:device:tv' },
+      { id: 'homey:device:tv:cloud_leave_current_group', title: 'Leave current group', ownerUri: 'homey:device:tv' },
+      { id: 'homey:device:tv:volume_mute', title: 'Mute the volume', ownerUri: 'homey:device:tv' },
+    ]);
+    expect(index.byId.get('homey:app:nl.xiut.sonoslocal:scan_library'))
+      .toEqual({ id: 'homey:app:nl.xiut.sonoslocal:scan_library', title: 'Scan the music library', ownerUri: 'homey:app:nl.xiut.sonoslocal', ownerName: 'Sonos (LocalAPI)' });
+    expect(index.byId.has('homey:app:nl.xiut.sonoslocal:set_alarm')).toBe(false); // takes an argument
+  });
+
+  it('reads every Flow card at most once a minute for a switched speaker’s state', async () => {
+    const { service, api } = setup();
+    await service.getState('tv', { cards: true });
+    await service.getState('tv', { cards: true });
+    vi.advanceTimersByTime(59e3);
+    await service.getState('tv', { cards: true });
+    expect(api.flow.getFlowCardActions).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(2e3);
+    await service.getState('tv', { cards: true });
+    expect(api.flow.getFlowCardActions).toHaveBeenCalledTimes(2);
+    await service.getState('tv');
+    expect(api.flow.getFlowCardActions).toHaveBeenCalledTimes(2);
   });
 
   it('lists a speaker’s own cards with its state when asked', async () => {

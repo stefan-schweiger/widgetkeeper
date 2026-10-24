@@ -59,7 +59,8 @@ describe('Popups widget', () => {
   it('reads /state with the name as typed, opens with Homey.popup() and listens for new ones', async () => {
     loadWidget('popups');
     const win = loadMount('popups');
-    const Homey = fakeHomey('w1', [popup('a', 'name:hall')]);
+    const popups = [popup('a', 'name:hall')];
+    const Homey = fakeHomey('w1', popups);
     const root = document.createElement('div');
     document.body.append(root);
     win.mountPopupsWidget(Homey, { root, frame: document.body });
@@ -67,8 +68,19 @@ describe('Popups widget', () => {
     expect(Homey.ready).toHaveBeenCalledTimes(1);
     expect(Homey.api).toHaveBeenCalledWith('GET', expect.stringMatching(/^\/state\?name=Hall&perf=/));
     expect(Homey.popup).toHaveBeenCalledWith(expect.stringMatching(/\/app\/com\.thomassidor\.widgetkeeper\/settings\/popup\.html#id=a&t=tok-a$/));
-    Homey.handlers['popups:show']({ ...popup('b', 'all'), now: Date.now() });
+    expect(Homey.api).toHaveBeenCalledTimes(1);
+    // The realtime event has no token (anyone who may listen would get it), so a new one for this screen asks /state.
+    const shown = (p: ReturnType<typeof popup>) => ({ id: p.id, target: p.target, kind: p.kind, until: p.until, now: Date.now() });
+    Homey.handlers['popups:show'](shown(popup('k', 'name:kitchen')));
+    Homey.handlers['popups:show'](shown(popup('a', 'name:hall'))); // opened already
+    await vi.advanceTimersByTimeAsync(0);
+    expect(Homey.api).toHaveBeenCalledTimes(1);
+    popups.push(popup('b', 'all'));
+    Homey.handlers['popups:show'](shown(popup('b', 'all')));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(Homey.api).toHaveBeenCalledTimes(2);
     expect(Homey.popup).toHaveBeenCalledTimes(2);
+    expect(Homey.popup).toHaveBeenLastCalledWith(expect.stringMatching(/#id=b&t=tok-b$/));
   });
 
   it('is blank, but has a real height (iOS kept its loading placeholder over 0 or 1 px)', () => {

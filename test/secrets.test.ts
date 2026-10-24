@@ -67,11 +67,26 @@ describe('secrets', () => {
     const secrets = new Secrets(homey, log, storage);
     expect(secrets.get('variablesApiKey')).toBeNull();
     expect(log).toHaveBeenCalledWith(expect.stringMatching(/could not be read/), expect.any(String));
+    // Not rewritten at start: nothing needed moving.
+    expect(storage.text).toBe('{not json');
     secrets.set('variablesApiKey', 'k');
-    expect(JSON.parse(storage.text!)).toEqual({ variablesApiKey: 'k' });
+    expect(JSON.parse(storage.text!)).toEqual({ [MOVED_MARK]: true, variablesApiKey: 'k' });
     secrets.unset('variablesApiKey');
-    expect(JSON.parse(storage.text!)).toEqual({});
+    expect(JSON.parse(storage.text!)).toEqual({ [MOVED_MARK]: true });
     expect(secrets.get('__proto__')).toBeNull();
+  });
+
+  it('after a broken file, the first save keeps the mark, so a setting written later is never taken', () => {
+    const homey = fakeHomey(fakeApi({}));
+    const storage = memoryStorage('{not json');
+    new Secrets(homey, vi.fn(), storage).set('webSessions', []);
+    homey.settings.set('webPassword', { salt: 'aa', hash: 'bb' });
+    homey.settings.set('variablesApiKey', 'planted');
+    const secrets = new Secrets(homey, vi.fn(), storage);
+    expect(secrets.get('webPassword')).toBeNull();
+    expect(secrets.get('variablesApiKey')).toBeNull();
+    expect(homey.settings.get('webPassword')).toBeNull();
+    expect(homey.settings.get('variablesApiKey')).toBeNull();
   });
 
   describe('the file', () => {

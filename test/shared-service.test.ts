@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeDevice, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
-import { listCapabilitySlots, listDevicesWhere, matches, withNone } from '../lib/autocomplete.js';
+import { devicesAndZones, listCapabilitySlots, listDevicesWhere, matches, withNone } from '../lib/autocomplete.js';
 import { describeCapability, presentCaps, readCaps } from '../lib/capabilities.js';
 import DeviceTracker, { isTransientError, readZones, zoneRef, type TrackedEntry } from '../lib/DeviceTracker.js';
 import { deviceImage, fetchDeviceIcon, fetchImageBase64, homeyUrl } from '../lib/deviceIcon.js';
@@ -218,6 +218,20 @@ describe('autocomplete', () => {
       { name: 'Plug · Power', description: 'Stue · W', id: 'p:measure_power' },
     ]);
   });
+
+  it('shares every device for 5 s and lets go of them 30 s after the read', async () => {
+    const api = fakeApi({ devices: [fakeDevice({ id: 'p', name: 'Plug', caps: {} })] });
+    const homey = fakeHomey(api);
+    await devicesAndZones(homey);
+    await devicesAndZones(homey);
+    expect(api.devices.getDevices).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(5001);
+    await devicesAndZones(homey); // a new read, kept 30 s from now
+    expect(api.devices.getDevices).toHaveBeenCalledTimes(2);
+    vi.advanceTimersByTime(29e3);
+    await devicesAndZones(homey);
+    expect(api.devices.getDevices).toHaveBeenCalledTimes(3); // older than 5 s
+  });
 });
 
 describe('capabilities', () => {
@@ -268,6 +282,20 @@ describe('DebouncedSetting', () => {
     expect(log).toHaveBeenCalledWith('Could not save the things:', expect.any(Error));
   });
 
+  it('writes through `store` instead of a setting, logging a store that throws', () => {
+    const homey = fakeHomey(fakeApi({}));
+    const store = vi.fn().mockImplementationOnce(() => { throw new Error('No space left'); });
+    const log = vi.fn();
+    const saved = new DebouncedSetting({ homey, store, delay: 10, value: () => ({ a: 1 }), log, what: 'the file' });
+    saved.schedule();
+    vi.advanceTimersByTime(10);
+    expect(log).toHaveBeenCalledWith('Could not save the file:', expect.any(Error));
+    saved.schedule();
+    saved.flush();
+    expect(store.mock.calls).toEqual([[{ a: 1 }], [{ a: 1 }]]);
+    expect(homey.settings.set).not.toHaveBeenCalled();
+  });
+
   it('refuses the keys that reach Object.prototype', () => {
     expect(['__proto__', 'constructor', 'prototype'].map(isReservedKey)).toEqual([true, true, true]);
     expect(isReservedKey('kitchen')).toBe(false);
@@ -291,6 +319,45 @@ describe('sharedCache', () => {
     expect(await cache.get(100).catch(e => e.message)).toBe('down'); // older than 100 ms: read again
     expect(cache.cached).toBe(false);
     expect(await cache.get(1000)).toBe(3);
+  });
+
+  it('keeps the last read for good without keepFor', async () => {
+    const cache = sharedCache(async () => 'all');
+    await cache.get(1000);
+    vi.advanceTimersByTime(24 * 3600e3);
+    expect(cache.cached).toBe(true);
+  });
+
+  it('lets go of a read keepFor after it came in, not while it is on its way', async () => {
+    let finish: (v: string) => void = () => {};
+    const fetch = vi.fn(() => new Promise<string>((resolve) => { finish = resolve; }));
+    const cache = sharedCache(fetch, { keepFor: 1000 });
+    const first = cache.get(5000);
+    vi.advanceTimersByTime(3000); // still on its way
+    expect(cache.cached).toBe(true);
+    finish('a');
+    expect(await first).toBe('a');
+    vi.advanceTimersByTime(999);
+    expect(cache.cached).toBe(true);
+    expect(await cache.get(5000)).toBe('a');
+    vi.advanceTimersByTime(1);
+    expect(cache.cached).toBe(false);
+    const second = cache.get(5000);
+    expect(fetch).toHaveBeenCalledTimes(2);
+    finish('b');
+    expect(await second).toBe('b');
+  });
+
+  it("doesn't let go of a newer read when an older one's time is up", async () => {
+    let n = 0;
+    const cache = sharedCache(async () => ++n, { keepFor: 1000 });
+    await cache.get(100);
+    vi.advanceTimersByTime(500);
+    expect(await cache.get(100)).toBe(2); // replaced; the first one's timer runs out at 1000
+    vi.advanceTimersByTime(500);
+    expect(cache.cached).toBe(true);
+    vi.advanceTimersByTime(500);
+    expect(cache.cached).toBe(false);
   });
 });
 

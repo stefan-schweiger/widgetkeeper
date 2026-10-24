@@ -40,13 +40,17 @@ window.mountMediaWidget = function (Homey, { root, frame }) {
   const layout = stored === 'large' || stored === 'compact' ? stored : defaultLayout;
   let loadSeq = 0;
   const maxVolume = Number(settings.maxVolume);
+  const buttons = window.mediaButtonsFromSettings(settings);
+  // A switched-to speaker's `cards` only hide the buttons that are a speaker's own card: without one, they aren't asked
+  // for (the app then reads every Flow card on the Homey).
+  const deviceCardButtons = buttons.some(b => /^card:homey:device:/.test(b.id));
   let loaded = false;
 
   const widget = window.createMediaWidget(root, {
     colorStyle: settings.colorStyle,
     color: settings.color,
     t: (key, tokens) => Homey.__(key, tokens),
-    buttons: window.mediaButtonsFromSettings(settings),
+    buttons,
     volumeStep: Number(settings.volumeStep || 5) / 100,
     maxVolume: maxVolume > 0 && maxVolume < 100 ? maxVolume / 100 : 1,
     showShuffle: settings.showShuffle === true,
@@ -94,7 +98,7 @@ window.mountMediaWidget = function (Homey, { root, frame }) {
     const id = deviceId;
     try {
       // A switched-to speaker also says which of its own actions it has, for the buttons picked for the default.
-      const cards = id !== defaultId ? '&cards=1' : '';
+      const cards = id !== defaultId && deviceCardButtons ? '&cards=1' : '';
       const state = await Homey.api('GET', `/state?deviceId=${encodeURIComponent(id)}${cards}${link.perfParam()}`);
       if (seq !== loadSeq) return; // switched again meanwhile
       if (state && state.missing && id !== defaultId) {
@@ -126,6 +130,11 @@ window.mountMediaWidget = function (Homey, { root, frame }) {
 
   setInterval(load, REFRESH_MS);
   load();
+
+  return {
+    /** The Smart Stack: whether this page is the one on screen (the progress only counts on while it is). */
+    setVisible: v => widget.setVisible(v),
+  };
 };
 /** The classes index.html puts on its body; the Smart Stack puts them on the slide. */
 window.mountMediaWidget.frameClass = 'homey-widget mw-frame';

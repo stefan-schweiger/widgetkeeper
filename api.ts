@@ -3,7 +3,7 @@ import type WidgetkeeperApp from './app.js';
 import { scopesAllow, type KeyUse } from './lib/PersonalApiKey.js';
 import { idList } from './lib/widgetApi.js';
 import { MAX_DASHBOARDS, MAX_SECTIONS } from './lib/WebDashboardService.js';
-import { autocompleteKeyUse, callWidgetRoute, routeKeyUse, type WidgetApis } from './lib/widgetRoutes.js';
+import { autocompleteKeyUse, callWidgetRoute, pageKeyUse, type WidgetApis } from './lib/widgetRoutes.js';
 import dayssince from './widgets/dayssince/api.js';
 import lightrooms from './widgets/lightrooms/api.js';
 import popups from './widgets/popups/api.js';
@@ -198,7 +198,9 @@ export default {
    * in its frame), handed to that widget's API as if it came from a Homey dashboard. A route that acts with the
    * app's stored key (a variable, a flow, a speaker's card, a dashboard; `routeKeyUse()`) runs only when the page's
    * own `key` may do the same, so a weaker key can't borrow the stored one's permissions. Otherwise it answers
-   * `{ok: false, reason}`, as those routes do without a usable key.
+   * `{ok: false, reason}`, as those routes do without a usable key. Likewise a route that changes a device with the
+   * app's own token (`DEVICE_WRITES`) runs only when the page's key may control devices; otherwise it throws, and the
+   * widget shows its own failure.
    */
   async postWebCall({ homey, query, body }: {
     homey: Homey,
@@ -208,8 +210,9 @@ export default {
     const app = homey.app as WidgetkeeperApp;
     assertWebSession(app, query);
     const [type, method, path] = [String(body?.type ?? ''), String(body?.method ?? ''), String(body?.path ?? '')];
-    const use = routeKeyUse(type, method, path, body?.body);
+    const use = pageKeyUse(type, method, path, body?.body);
     const problem = use && await pageKeyProblem(app, body?.key, use);
+    if (problem && use === 'devices') throw new Error(`This browser's API key may not change devices (${problem})`);
     if (problem) return { ok: false, reason: problem };
     return callWidgetRoute(homey, WEB_APIS, type, method, path, body?.query, body?.body);
   },

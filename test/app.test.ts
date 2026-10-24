@@ -7,6 +7,14 @@ import { POPUP_NAMES_SETTING } from '../lib/PopupService.js';
 
 vi.mock('homey', () => import('./helpers/homeySdk.js').then(m => m.homeyMock));
 vi.mock('homey-api', () => homeyApiMock);
+// The app's own files (/userdata: the secrets, the heatmap history) are kept in memory here.
+vi.mock('../lib/secrets.js', async (importOriginal) => ({
+  ...await importOriginal<typeof import('../lib/secrets.js')>(),
+  fileStorage: () => {
+    let text: string | null = null;
+    return { read: () => text, write: (t: string) => { text = t; } };
+  },
+}));
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -22,6 +30,11 @@ describe('the app: start', () => {
     const { app } = await bootApp();
     expect(app.web).toBeTruthy();
     expect(app.popups).toBeTruthy();
+    // Its files are the memory ones above: the real ones would fail to write to /userdata here.
+    const { fileStorage } = await import('../lib/secrets.js');
+    const file = fileStorage('/userdata/not-here/test.json');
+    file.write('{}');
+    expect(file.read()).toBe('{}');
   });
 
   it('listens to every Flow card that runs, and to every autocomplete argument, and to nothing else', async () => {

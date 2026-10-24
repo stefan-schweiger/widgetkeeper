@@ -61,6 +61,11 @@ window.mountTimersWidget = function (Homey, { root, frame }) {
       setInterval(load, REFRESH_MS);
       load();
     });
+
+  return {
+    /** The Smart Stack: whether this page is the one on screen (the time left only ticks while it is). */
+    setVisible: v => widget.setVisible(v),
+  };
 };
 /** The classes index.html puts on its body; the Smart Stack puts them on the slide. */
 window.mountTimersWidget.frameClass = 'homey-widget-full';

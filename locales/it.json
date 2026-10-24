@@ -559,6 +559,7 @@
     "title": "Dashboard web",
     "keyTitle": "Connettiti al tuo Homey",
     "keyText": "Incolla una chiave API personale. Creala nell'app web Homey in Impostazioni → Chiavi API, con i permessi che le impostazioni dell'app Widgetkeeper elencano per i widget che modificano qualcosa. Resta in questo browser.",
+    "keyPlain": "Questo indirizzo non è cifrato: chi osserva la rete di casa può leggere la chiave. L'indirizzo dell'accesso remoto è cifrato.",
     "keyPlaceholder": "Chiave API",
     "connect": "Connetti",
     "keyRejected": "Homey non ha accettato questa chiave.",

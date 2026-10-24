@@ -45,6 +45,8 @@ const MEMBER_SKIP_MS = 10 * 60e3;
 
 /** How long the Moods read is shared: the widgets ask after every `/state`. */
 const MOODS_CACHE_MS = 60e3;
+/** And let go this long after it came in (the widgets ask again within their 5-min refresh, or not at all). */
+const MOODS_KEEP_MS = 2 * 60e3;
 /** At most this many colours per Mood (the pill's dot). */
 const MOOD_COLORS = 4;
 
@@ -102,7 +104,7 @@ export default class LightService {
   private moods = sharedCache(async () => {
     const api = await getAppApi(this.homey);
     return Object.values<any>(await (api as any).moods.getMoods() ?? {});
-  });
+  }, { keepFor: MOODS_KEEP_MS });
   private moodsStarted = 0;
   private lastMoodError: string | null = null;
   /** Group members left out until this time (`MEMBER_SKIP_MS`): not lights, or groups themselves. */

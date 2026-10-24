@@ -26,6 +26,7 @@ const deviceReads = new WeakMap<object, ReturnType<typeof sharedCache<[any[], Re
 export function devicesAndZones(homey: Homey.App['homey']): Promise<[any[], Record<string, any>]> {
   let cache = deviceReads.get(homey);
   if (!cache) {
+    // Every device and zone as homey-api Items: let go 30 s after the read, not kept until the next autocomplete.
     deviceReads.set(homey, cache = sharedCache(async () => {
       const api = await getAppApi(homey);
       const [devices, zones] = await Promise.all([
@@ -33,7 +34,7 @@ export function devicesAndZones(homey: Homey.App['homey']): Promise<[any[], Reco
         api.zones.getZones().catch(() => ({})),
       ]);
       return [Object.values(devices) as any[], zones as Record<string, any>];
-    }));
+    }, { keepFor: 30e3 }));
   }
   return cache.get(5e3);
 }

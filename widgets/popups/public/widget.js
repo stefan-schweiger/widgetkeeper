@@ -55,16 +55,22 @@
       }
     }
 
-    /** Opens a popup meant for this screen that's still open and wasn't opened on this device before. */
+    /** Whether a popup is meant for this screen, still open and not opened on this device before. */
+    function wanted(p, skew) {
+      if (!p || typeof p.id !== 'string') return false;
+      if (p.target !== 'all' && p.target !== `name:${key}`) return false;
+      if (typeof p.until === 'number' && p.until - skew <= now()) return false;
+      return !opened().includes(p.id);
+    }
+
+    /** Opens a wanted popup that came with its token (only `/state` sends it). */
     function offer(p, skew) {
-      if (!p || typeof p.id !== 'string' || typeof p.token !== 'string') return;
-      if (p.target !== 'all' && p.target !== `name:${key}`) return;
-      if (typeof p.until === 'number' && p.until - skew <= now()) return;
-      const seen = opened();
-      if (seen.includes(p.id)) return;
-      storage.setItem(OPENED_KEY, JSON.stringify(seen.concat(p.id).slice(-MAX_OPENED)));
+      if (!wanted(p, skew) || typeof p.token !== 'string') return;
+      storage.setItem(OPENED_KEY, JSON.stringify(opened().concat(p.id).slice(-MAX_OPENED)));
       opts.open(`${opts.page}#id=${encodeURIComponent(p.id)}&t=${encodeURIComponent(p.token)}`);
     }
+
+    const skewOf = p => (p && typeof p.now === 'number' ? p.now - now() : 0);
 
     return {
       key,
@@ -74,7 +80,14 @@
         for (const p of (state && Array.isArray(state.popups) ? state.popups : [])) offer(p, skew);
       },
       show(p) {
-        offer(p, p && typeof p.now === 'number' ? p.now - now() : 0);
+        offer(p, skewOf(p));
+      },
+      /**
+       * Whether a `popups:show` is one to open here. It carries no token (anyone who may listen to the app's realtime
+       * would get it), so the mount then asks `/state`, which has it.
+       */
+      wants(p) {
+        return wanted(p, skewOf(p));
       },
     };
   };

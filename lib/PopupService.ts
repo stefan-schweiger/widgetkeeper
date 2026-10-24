@@ -33,6 +33,11 @@ const MAX_NAME = 60;
 const MAX_NAMES = 50;
 /** Image tags and pictures from an address are kept in memory while their popup is open. */
 const MAX_PICTURE = 3 * 1024 * 1024;
+/**
+ * The stored pictures (image tags, addresses) of all open popups together, in base64 characters (about 12 MB of
+ * images): past it the oldest popups with one close (`replaced`), so 20 popups of 3 MB can't hold ~80 MB for hours.
+ */
+const MAX_PICTURES_TOTAL = 16 * 1024 * 1024;
 const FETCH_TIMEOUT = 10e3;
 /** A closed popup is remembered this long, so a prompt page still open says how it ended. */
 const CLOSED_KEPT = 10 * 60e3;
@@ -68,9 +73,12 @@ type PopupInput = { target: unknown, text: unknown, picture?: PictureInput, soun
 export type AskResult = { answer: boolean, answered: boolean };
 export type AnswerResult = { ok: true, answer: boolean } | { ok: false, reason: 'closed' | 'notAsk', answer: boolean | null };
 
-/** A popup as the screens get it (`popups:show`, `/web/popups`, the widget's `/state`): the picture's source only. */
+/**
+ * A popup as the screens get it (`popups:show`, `/web/popups`): the picture's source only, and never the token, which
+ * alone answers it through the public routes (anyone who may listen to the app's realtime would get it).
+ */
 export type PopupView = {
-  id: string, token: string, target: string, kind: PopupKind, text: string,
+  id: string, target: string, kind: PopupKind, text: string,
   picture: { source: 'camera' | 'stored' } | null, sound: PopupSound | null, createdAt: number, until: number,
 };
 
@@ -161,12 +169,15 @@ export default class PopupService {
     return { popups: [...this.open.values()].map(p => this.view(p)), now: Date.now() };
   }
 
-  /** A Popups widget's `/state`: the popups for everywhere and for its screen name, which is remembered for the Flow cards. */
-  forScreen(name: unknown): { popups: PopupView[], now: number } {
+  /**
+   * A Popups widget's `/state`: the popups for everywhere and for its screen name, which is remembered for the Flow
+   * cards, each with its token (the prompt page's way in): only here, so a screen gets the tokens of its own popups.
+   */
+  forScreen(name: unknown): { popups: (PopupView & { token: string })[], now: number } {
     const key = screenKey(name);
     if (key) this.remember(key, typeof name === 'string' && name.trim() ? name.trim().slice(0, MAX_NAME) : DEFAULT_SCREEN);
     const popups = [...this.open.values()].filter(p => p.target === 'all' || (key && p.target === `name:${key}`));
-    return { popups: popups.map(p => this.view(p)), now: Date.now() };
+    return { popups: popups.map(p => ({ ...this.view(p), token: p.token })), now: Date.now() };
   }
 
   /** The prompt page (no login, so the popup's token): the popup, or how it ended. */
@@ -268,7 +279,16 @@ export default class PopupService {
       })),
       recentlyClosed: [...this.closed.values()].map(c => c.reason),
       screens: Object.values(this.names).map(n => n.name),
+      /** The open popups' stored pictures, in base64 characters (at most `MAX_PICTURES_TOTAL`). */
+      pictureSize: this.storedPictureSize(),
     };
+  }
+
+  /** The open popups' stored pictures (image tags, addresses) together, in base64 characters. */
+  private storedPictureSize(): number {
+    let size = 0;
+    for (const p of this.open.values()) if (p.picture?.source === 'stored') size += p.picture.data.length;
+    return size;
   }
 
   // ---- Inside -----------------------------------------------------------------------------------------------
@@ -314,6 +334,12 @@ export default class PopupService {
     const picture = await this.picture(input.picture ?? null);
     if (!text && !picture) throw new Error(this.homey.__('popups.empty') || 'Nothing to show: no text or picture');
     while (this.open.size >= MAX_OPEN) this.finish(this.open.keys().next().value as string, null, 'replaced');
+    if (picture?.source === 'stored') {
+      for (const p of [...this.open.values()]) { // oldest first
+        if (this.storedPictureSize() + picture.data.length <= MAX_PICTURES_TOTAL) break;
+        if (p.picture?.source === 'stored') this.finish(p.id, null, 'replaced');
+      }
+    }
     const now = Date.now();
     const id = randomBytes(8).toString('hex');
     const popup: Popup = {
@@ -351,7 +377,7 @@ export default class PopupService {
 
   private view(p: Popup): PopupView {
     return {
-      id: p.id, token: p.token, target: p.target, kind: p.kind, text: p.text,
+      id: p.id, target: p.target, kind: p.kind, text: p.text,
       picture: p.picture ? { source: p.picture.source } : null, sound: p.sound, createdAt: p.createdAt, until: p.until,
     };
   }

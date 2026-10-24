@@ -26,6 +26,7 @@
     title: 'Web Dashboards',
     keyTitle: 'Connect to your Homey',
     keyText: 'Paste a personal API key. Make one in the Homey web app under Settings → API Keys, with the permissions Widgetkeeper\'s app settings list for the widgets that change things. It stays in this browser.',
+    keyPlain: 'This address isn\'t encrypted: anything watching your home network could read the key. The Remote access address is encrypted.',
     keyPlaceholder: 'API key',
     connect: 'Connect',
     keyRejected: 'Homey didn\'t accept this key.',
@@ -1110,7 +1111,9 @@
       input.addEventListener('keydown', (e) => { if (e.key === 'Enter') go.click(); });
       const form = el('div', 'wd-row');
       form.append(input, go);
-      root.append(centered(el('h1', 'wd-h1', t('keyTitle')), el('p', 'wd-muted', t('keyText')), form, error));
+      // The home address is plain HTTP: the key (sent with every request) can be read on the network.
+      const plain = location.protocol === 'http:' ? [el('p', 'wd-muted', t('keyPlain'))] : [];
+      root.append(centered(el('h1', 'wd-h1', t('keyTitle')), el('p', 'wd-muted', t('keyText')), ...plain, form, error));
       input.focus();
     }
 

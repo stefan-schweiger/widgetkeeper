@@ -10,6 +10,12 @@ const DONE_KEEP = 10 * MINUTE;
 const LATE_FIRE = 5 * MINUTE;
 export const MAX_MINUTES = 24 * 60;
 const SAVE_DELAY = 2 * SECOND;
+/**
+ * At most this many widget instances with timers (a home has a handful of Timers widgets). Nothing tells the app a
+ * widget was removed, and every start with a new instance id adds one (and a write), so past it the oldest goes: the
+ * oldest that has no running timer, else the oldest.
+ */
+export const MAX_INSTANCES = 100;
 
 export const TIMERS_SETTING = 'timers';
 export const TIMERS_STATE_EVENT = 'timers:state';
@@ -87,7 +93,8 @@ export default class TimerService {
     const saved = this.homey.settings.get(TIMERS_SETTING);
     const now = Date.now();
     if (saved && typeof saved === 'object') {
-      for (const [instance, list] of Object.entries(saved as Record<string, Timer[]>)) {
+      // The newest `MAX_INSTANCES` (an older version kept any number); the next write leaves the rest out.
+      for (const [instance, list] of Object.entries(saved as Record<string, Timer[]>).slice(-MAX_INSTANCES)) {
         if (!Array.isArray(list)) continue;
         const timers = list.filter(isTimer).map(t => ({ ...t, label: typeof t.label === 'string' ? t.label : '' }));
         if (timers.length) this.instances.set(instance, timers);
@@ -123,6 +130,7 @@ export default class TimerService {
       throw new Error(`Invalid minutes ${JSON.stringify(minutes)}`);
     }
     for (const old of this.instances.get(instance) ?? []) this.unschedule(old);
+    this.instances.delete(instance); // set again below, as the newest
     const duration = Math.round(minutes * MINUTE);
     const timer: Timer = {
       id: `${Date.now().toString(36)}${(this.nextId++).toString(36)}`,
@@ -135,6 +143,7 @@ export default class TimerService {
     this.instances.set(instance, [timer]);
     this.schedule(instance, timer);
     this.debug(`Timer ${timer.label || `${minutes} min`} started (${instance})`);
+    this.trim();
     return this.changed(instance);
   }
 
@@ -217,6 +226,18 @@ export default class TimerService {
     Promise.resolve()
       .then(() => this.onFinished({ ...timer }))
       .catch(err => this.log('Timer Flow card failed:', err));
+  }
+
+  /** Past `MAX_INSTANCES`, drops the oldest instance without a running timer (else the oldest), telling its screens. */
+  private trim() {
+    while (this.instances.size > MAX_INSTANCES) {
+      const ids = [...this.instances.keys()];
+      const drop = ids.find(id => !this.instances.get(id)!.some(t => t.endsAt != null && t.doneAt == null)) ?? ids[0];
+      for (const t of this.instances.get(drop)!) this.unschedule(t);
+      this.instances.delete(drop);
+      this.debug(`Timers of ${drop} dropped: over ${MAX_INSTANCES} widgets`);
+      this.changed(drop);
+    }
   }
 
   /** Drops timers that rang more than DONE_KEEP ago. */

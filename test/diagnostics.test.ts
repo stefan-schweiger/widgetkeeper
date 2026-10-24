@@ -8,6 +8,14 @@ import { WEB_PASSWORD_SETTING } from '../lib/WebPassword.js';
 
 vi.mock('homey', () => import('./helpers/homeySdk.js').then(m => m.homeyMock));
 vi.mock('homey-api', () => homeyApiMock);
+// The app's own files (/userdata: the secrets, the heatmap history) are kept in memory here.
+vi.mock('../lib/secrets.js', async (importOriginal) => ({
+  ...await importOriginal<typeof import('../lib/secrets.js')>(),
+  fileStorage: () => {
+    let text: string | null = null;
+    return { read: () => text, write: (t: string) => { text = t; } };
+  },
+}));
 
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });

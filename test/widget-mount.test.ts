@@ -37,6 +37,18 @@ describe('widget mount.js', () => {
     expect(Homey.ready).toHaveBeenCalledTimes(1);
     expect(root.childElementCount).toBeGreaterThan(0);
   });
+
+  // A Smart Stack keeps every page mounted: the ones that redraw or poll on a timer stop it while another page shows.
+  it.each(['cameras', 'charts', 'electricity', 'media', 'sparklines', 'timers'] as WidgetName[])("%s: answers the Smart Stack's setVisible", async (id) => {
+    const win = loadWidget(id);
+    loadMount(id);
+    const root = document.createElement('div');
+    document.body.append(root);
+    const page = win[mountName(id)](fakeFrame({ device: { id: 'd1' }, slot1: { id: 'd1:measure_temperature' } }), { root, frame: root });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(typeof page?.setVisible).toBe('function');
+    expect(() => { page.setVisible(false); page.setVisible(true); }).not.toThrow();
+  });
 });
 
 /**

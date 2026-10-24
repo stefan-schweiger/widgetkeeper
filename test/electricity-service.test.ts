@@ -110,17 +110,22 @@ describe('price slots', () => {
 
   it('remembers a day that failed: a coming one for 15 minutes, today for 1', async () => {
     let todayFails = true;
-    const { service, api } = setup({
+    const { homey, api } = setup({
       prices: ({ date }) => {
         if (date === '2026-01-16') throw new Error('Not published yet');
         if (date === '2026-01-15' && todayFails) throw new Error('Too many requests.');
         return dayPrices(date);
       },
     });
+    const log = vi.fn();
+    const service = new ElectricityService(homey, log);
+    const priceErrors = () => log.mock.calls.map(([msg]) => String(msg)).filter(msg => msg.startsWith('Price error'));
     expect((await service.getSnapshot(null)).priceError).toBe('Too many requests.');
     expect((await service.getSnapshot(null)).priceError).toBe('Too many requests.'); // from the failure kept
     expect(fetchesFor(api, '2026-01-15')).toBe(1);
     expect(fetchesFor(api, '2026-01-16')).toBe(1);
+    // Logged once per failed fetch, not for every snapshot that gets the remembered failure.
+    expect(priceErrors().sort()).toEqual(['Price error for 2026-01-15', 'Price error for 2026-01-16']);
     todayFails = false;
     vi.setSystemTime(NOW + MINUTE + 1);
     expect((await service.getSnapshot(null)).priceError).toBeNull();
@@ -129,6 +134,7 @@ describe('price slots', () => {
     vi.setSystemTime(NOW + 15 * MINUTE + 1);
     await service.getSnapshot(null);
     expect(fetchesFor(api, '2026-01-16')).toBe(2);
+    expect(priceErrors().filter(msg => msg.endsWith('2026-01-16'))).toHaveLength(2);
   });
 
   it('reads the usage history while the prices are still on their way', async () => {
