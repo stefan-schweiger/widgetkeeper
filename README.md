@@ -242,7 +242,7 @@ Six lights in the space of three of Homey's light cards. Tap a tile to switch it
 **Settings:** lights, group by room, widen the last tile, what the bar's far left does, colour palette, [colour style](#colour-style), [rename tiles](#tile-names).
 
 ## Lights by Room
-For many lights in many rooms. The lights you pick are grouped by their Homey room, a card per room with the room's icon, how many lights are on and how bright, a switch for the whole room and a bar that dims every light in it. Tap a room's name to open it: its Homey Moods as a row of buttons, then a row per light. Tap a light's row to switch it, tap or drag its bar to dim it, and tap its colour button for colours and whites, as in Light Controls. Rooms start closed; open as many as you like. Starting a Mood needs an [API key](#api-key) with **Set Moods**.
+For many lights in many rooms. The lights you pick are grouped by their Homey room, a card each with the room's icon, how many lights are on and how bright, a switch for the whole room and a bar that dims all of it. Tap a room's name to open it: its Homey Moods as a row of buttons, then a row per light that works as in Light Controls (tap to switch, tap or drag the bar to dim, the colour button for colours and whites). Rooms start closed; open as many as you like. Starting a Mood needs an [API key](#api-key) with **Set Moods**.
 
 **Settings:** lights, show the room's Moods, colour palette, what the bar's far left does, [colour style](#colour-style).
 
@@ -268,17 +268,17 @@ A short message on the dashboard: a tile with one line of text, or a tilted, han
 **Settings:** style (tile or Post-it), text from (the message typed in the settings, a Flow card or a text variable), message, note name, variable, alignment, text size, long text, icon, colour, [colour style](#colour-style).
 
 ## Popups
-A Flow shows a message, or asks a question with **Yes** and **No**, in front of everything on the screens you choose: a web dashboard, or the phones and tablets that show a Homey dashboard with a Popups widget.
+A Flow shows a message, or asks a question with **Yes** and **No**, in front of everything on the screens you choose: a web dashboard, or the phones and tablets showing a Homey dashboard with a Popups widget.
 
-- *Show [text] on [screen] for [duration], picture: [picture], sound: [sound]*: the message, closed after the time or with a tap on that screen.
-- *Ask [question] on [screen], picture: [picture], wait up to [seconds] seconds, sound: [sound]*: the first answer from any screen closes it everywhere and goes back to the Flow as two tags, **Answer** (yes or no) and **Answered** (no when nobody answered in time). It waits at most 85 seconds, as Homey stops a Flow card after 90. Tags from a card only reach the next cards in an **Advanced Flow**.
-- The picture is a camera, refreshed while the popup is open, or a picture address typed in. The cards *with an image* take an image tag instead, such as a doorbell's snapshot from its own Flow, taken when the Flow runs (or a text tag holding a picture address).
-- A sound can come along too: a chime, a doorbell or an alert, where the browser allows it. Browsers only play sound on a page that has been tapped, so a wall tablet plays it once someone has used the web dashboard; on phones it may stay silent.
+- *Show [text] on [screen] for [duration], picture: [picture], sound: [sound]*: closes after the time, or with a tap on that screen.
+- *Ask [question] on [screen], picture: [picture], wait up to [seconds] seconds, sound: [sound]*: the first answer from any screen closes it everywhere and goes back to the Flow as the tags **Answer** (yes or no) and **Answered** (no when nobody answered in time), which only reach the next cards in an **Advanced Flow**. It waits at most 85 seconds, as Homey stops a Flow card after 90.
 - *Close the popups on [screen]* closes them early; an open question then ends unanswered.
+- **Picture:** a camera (refreshed while the popup is open) or a picture address. The cards *with an image* take an image tag instead, such as a doorbell's snapshot from its own Flow, taken when the Flow runs, or a text tag holding a picture address.
+- **Sound:** a chime, a doorbell or an alert. Browsers only play sound on a page that has been tapped, so a wall tablet plays it once someone has used the web dashboard; on phones it may stay silent.
 
-The screen is **Everywhere** or the name of a Popups widget. On a [web dashboard](#web-dashboards) with a Popups widget of that name, the popup covers the page in every browser showing that dashboard (Everywhere reaches every web dashboard). On Homey's own dashboards a widget can't draw over the dashboard, so the Popups widget, which is blank itself, opens the popup in the Homey app's built-in browser; close that window when you're done. Put one on each dashboard where you want popups, with the same name on every screen that should get the same ones, at the bottom of the dashboard, so it doesn't push other widgets down. Give a web dashboard one too, so a name such as *Hallway* reaches the phones and the hallway's wall tablet at once.
+The screen is **Everywhere** or a Popups widget's name. On a [web dashboard](#web-dashboards), the popup covers the page in every browser showing a dashboard with a Popups widget of that name (Everywhere: every web dashboard). Homey's own dashboards don't let a widget draw over them, so there the Popups widget, blank itself, opens the popup in the Homey app's built-in browser; close that window when you're done. Put one at the bottom of each dashboard that should get popups, so it doesn't push other widgets down, with the same name on every screen that should get the same ones: *Hallway* on the phones' dashboard and on the hallway tablet's web dashboard reaches both at once.
 
-**Settings:** screen name, countdown (a bar under a message running down to its end; off, as the Homey app's browser window doesn't close by itself).
+**Settings:** screen name, countdown (a bar under a message running down to its end; off by default, as the Homey app's browser window doesn't close by itself).
 
 ## Room Health
 <img src="docs/screenshots/roomhealth.png" alt="Room Health on a Homey dashboard: six rooms with their icons, the kitchen humid, the bedroom stuffy and the office's radon far over" width="358">
@@ -376,18 +376,23 @@ The next 36 hours from [MET Norway](https://www.met.no/en) ([yr.no](https://www.
 Weather data from MET Norway, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Icons: [Yr's weather symbols](https://github.com/metno/weathericons) (MIT).
 
 ## Pollen and UV
-Today's pollen at the Homey's location, a row per type with a bar from low to very high, under the UV index's peak for the day and when it comes. The levels are the day's average in grains per m³: for birch, alder and olive low from 1, moderate from 30, high from 101 and very high from 1,001; for grass, mugwort and ragweed low from 1, moderate from 10, high from 51 and very high from 251 (Astma-Allergi Danmark's bands, with a very high band on top). The UV levels are the WHO's. Pollen forecasts cover Europe only; elsewhere the widget says so and shows the UV. Out of season it says there's no pollen in the air.
+Today's pollen at the Homey's location, a row per type with a bar from low to very high, under the day's UV peak and when it comes. Pollen forecasts cover Europe only; elsewhere the widget says so and shows the UV. Out of season it says there's no pollen in the air.
 
-**Settings:** compact or detailed (the grains per m³ and the next three days), the UV index, which pollen types (alder, birch, olive, grass, mugwort, ragweed; birch, grass and mugwort to begin with), [colour style](#colour-style), time format.
+A level is the day's average in grains per m³, by Astma-Allergi Danmark's bands with a very high band on top. The UV levels are the WHO's.
+
+| From (grains per m³) | Low | Moderate | High | Very high |
+|---|---|---|---|---|
+| Birch, alder, olive | 1 | 30 | 101 | 1,001 |
+| Grass, mugwort, ragweed | 1 | 10 | 51 | 251 |
+
+**Settings:** compact or detailed (with the grains per m³ and the next three days), the UV index, the pollen types (alder, birch, olive, grass, mugwort, ragweed; birch, grass and mugwort by default), [colour style](#colour-style), time format.
 
 Pollen and UV data from [Open-Meteo](https://open-meteo.com), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), generated using Copernicus Atmosphere Monitoring Service information.
 
 ## Web Page
-A web page you pick, drawn at the width and height you set and scaled to fill the widget, so a gadget made for a fixed size fills it on a phone and a tablet alike, without borders. Links on the page never open, and unless you let the page be tapped, taps are ignored and a swipe scrolls the dashboard. With two to four buttons, a row under the page switches between their addresses; the widget always opens on the first address. `{lat}` and `{lon}` in an address become the Homey's location. Some sites don't allow being shown inside another page, and then it stays empty. You're responsible for following the terms of the site you show.
+A web page you pick, drawn at the width and height you set and scaled to fill the widget without borders: set them to a fixed-size gadget's size, and it fills the widget on a phone and a tablet alike. Links on the page never open, and unless you let the page be tapped, taps are ignored and a swipe scrolls the dashboard. Two to four buttons in a row under the page switch between their addresses (for a map, the same address with another zoom on each); the widget always opens on the first. `{lat}` and `{lon}` in an address become the Homey's location. Sites that don't allow being shown inside another page stay empty. You're responsible for following the terms of the site you show.
 
-**A gadget made in a fixed size:** set the page width and height to the gadget's size, and it fills the widget whatever its width. For a map with zoom levels, give each button the same address with another zoom. A reload every 15 minutes keeps live data current on a screen that's always on.
-
-**Settings:** address, page width and height, let the page be tapped, reload every, up to four buttons (a name and an address).
+**Settings:** address, page width and height, let the page be tapped, reload every (15 minutes keeps live data current on a screen that's always on), up to four buttons (a name and an address).
 
 ## Web dashboards
 <img src="docs/web/dashboard.png" alt="A web dashboard with Widgetkeeper widgets in a browser window, with Dashboard Shortcuts at the top as a menu" width="100%">
