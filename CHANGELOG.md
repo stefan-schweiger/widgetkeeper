@@ -26,6 +26,8 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - **Wide widgets:** a widget can span two or more columns, such as a floor plan, a camera or a chart. Drag the handle on its right edge in edit mode, or set its Width in its settings. Each column it covers keeps its own widgets above and below it. Kept in duplicates and backups. The front page's miniatures show them across their columns.
 - **Sections on the front page:** group the dashboards under headings of your own. In the front page's edit mode, Add section, type its name, and drag dashboards into it, or make one there with its own New dashboard; ↑ ↓ move a section, and deleting one keeps its dashboards. Kept in duplicates and backups.
 - **Password:** changing or removing the web dashboards password now asks for the current one. A forgotten password is removed with the Flow card *Remove the web dashboards password*.
+- **Switching devices takes a key that may:** a browser's API key now needs permission to control devices to switch lights, open locks and the like through the widgets. A key without it still shows them.
+- **At home the address isn't encrypted:** the key screen says so, and that the Remote access address is.
 
 ### Charts and Sparklines
 - **Today and Yesterday** as time spans: a calendar day in the phone's own time. Today shows the whole day, 00–24, with the line up to now; Yesterday ends at midnight, and Charts' header shows the day's average.
@@ -35,6 +37,13 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Spacer
 - At least 16 px high: at 0 px the iPhone app kept showing a loading indicator in its place. A spacer set to 0 is now 16 px.
+
+### Lighter on the Homey
+- The Insights Heatmap's recorded on/off history (when motion or a door was seen) moved out of the app settings into the app's own storage, and is saved only when it changes, not every minute.
+- A Media widget switched to another speaker no longer reads every Flow card on each refresh, and large one-off reads, such as every device for a settings list, are let go after a while.
+- Smart Stack pages that aren't on screen pause Media's progress, Timers' countdown and Sparklines' scrolling.
+- Open popups keep at most 16 MB of pictures together, and Timers keeps the timers of at most 100 widgets.
+- The diagnostics no longer repeat a failed price day on every refresh, and show the Node.js version the app runs on.
 
 ## 1.0.3
 
