@@ -55,6 +55,9 @@
       },
       "external-editor": {
         "tmp": "^0.2.7"
+      },
+      "express": {
+        "body-parser": "^1.20.9"
       }
     }
   },
