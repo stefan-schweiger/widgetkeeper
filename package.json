@@ -25,6 +25,7 @@
     "web-socket": "node scripts/build-web-socket.mjs",
     "diagnostics": "node scripts/diagnostics.mjs",
     "test-dashboards": "node scripts/test-dashboards.mjs",
+    "port-dashboard": "node scripts/port-dashboard.mjs",
     "validate": "homey app validate --level debug",
     "start": "homey app run",
     "install-homey": "homey app install",
