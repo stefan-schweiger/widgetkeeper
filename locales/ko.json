@@ -533,7 +533,6 @@
   "popups": {
     "everywhere": "모든 곳",
     "everywhereHint": "모든 웹 대시보드와 팝업 위젯",
-    "webDashboard": "웹 대시보드",
     "screenName": "팝업 위젯",
     "screenNew": "새 화면 이름",
     "noPicture": "사진 없음",

@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadMount, loadWidget } from './helpers/loadWidget.js';
 
@@ -71,16 +71,14 @@ describe('Popups widget', () => {
     expect(Homey.popup).toHaveBeenCalledTimes(2);
   });
 
-  it('shows a bell and its screen name, so it has a real height (iOS kept its loading placeholder over 0 or 1 px)', () => {
+  it('is blank, but has a real height (iOS kept its loading placeholder over 0 or 1 px)', () => {
     const win = loadWidget('popups');
-    const named = document.createElement('div');
-    win.createPopupsWidget(named, { name: ' Hallway ', page: PAGE, open: vi.fn(), storage: memoryStorage() });
-    expect(named.querySelector('.pu-label svg.pu-icon path')!.getAttribute('d')).toBe(win.WidgetkeeperKit.icons.bell.d);
-    expect(named.querySelector('.pu-name')!.textContent).toBe('Hallway');
-    const unnamed = document.createElement('div');
-    win.createPopupsWidget(unnamed, { name: '', page: PAGE, open: vi.fn(), storage: memoryStorage() });
-    expect(unnamed.querySelector('.pu-name')!.textContent).toBe('Screen');
-    expect(readFileSync('widgets/popups/public/widget.css', 'utf8')).toContain('min-height: 32px');
+    const root = document.createElement('div');
+    win.createPopupsWidget(root, { name: ' Hallway ', page: PAGE, open: vi.fn(), storage: memoryStorage() });
+    expect(root.querySelector('.pu-blank')).not.toBeNull();
+    expect(root.textContent).toBe('');
+    expect(root.querySelector('svg')).toBeNull();
+    expect(readFileSync('widgets/popups/public/widget.css', 'utf8')).toMatch(/\.pu-blank \{ min-height: 32px; \}/);
   });
 
   it('does nothing on a web dashboard, where the page draws popups itself', async () => {
@@ -170,5 +168,84 @@ describe('popup prompt page (settings/popup.js)', () => {
     expect(a.querySelector('.pp-result')!.textContent).toBe('This popup is gone');
     expect(b.querySelector('.pp-result')!.textContent).toBe('This popup is gone');
     expect(fetch).toHaveBeenCalledTimes(1); // no token: not even asked
+  });
+});
+
+describe("sounds (the kit's `sound`)", () => {
+  /** A Web Audio stand-in that records the notes started; `state` as the browser would set it. */
+  function fakeAudio(state: string, resumeAfter = 0) {
+    const notes: number[] = [];
+    class FakeContext {
+      state = state;
+      currentTime = 0;
+      destination = {};
+      resume = vi.fn(() => new Promise<void>((done) => { setTimeout(() => { this.state = 'running'; done(); }, resumeAfter); }));
+      createOscillator() {
+        const osc = { type: '', frequency: { value: 0 }, connect: (g: any) => g, start: () => notes.push(osc.frequency.value), stop: () => {} };
+        return osc;
+      }
+      createGain() {
+        return { gain: { setValueAtTime: () => {}, exponentialRampToValueAtTime: () => {} }, connect: (d: any) => d };
+      }
+    }
+    (window as any).AudioContext = FakeContext;
+    new Function(readFileSync('widgets/spacer/public/kit.js', 'utf8'))();
+    return { notes, sound: (window as any).WidgetkeeperKit.sound };
+  }
+  afterEach(() => { delete (window as any).AudioContext; delete (window as any).WidgetkeeperKit; });
+
+  it("has the popup cards' sounds and Timers' beep, and plays one by name", () => {
+    const { notes, sound } = fakeAudio('running');
+    const card = JSON.parse(readFileSync('.homeycompose/flow/actions/popup_show.json', 'utf8'));
+    const ids = card.args.find((a: any) => a.name === 'sound').values.map((v: any) => v.id);
+    expect(['beep', ...ids.slice(1)]).toEqual(sound.names);
+    expect(ids[0]).toBe('none');
+    expect(readFileSync('lib/PopupService.ts', 'utf8')).toContain(`POPUP_SOUNDS = [${ids.slice(1).map((n: string) => `'${n}'`).join(', ')}]`);
+    expect(sound.play('doorbell')).toBe(true);
+    expect(notes).toEqual([659.25, 523.25]);
+    expect(sound.play('none')).toBe(false);
+    expect(sound.play('constructor')).toBe(false);
+  });
+
+  it('wakes a suspended audio first, and leaves out a sound the browser starts too late', async () => {
+    const { notes, sound } = fakeAudio('suspended');
+    expect(sound.play('chime')).toBe(true);
+    expect(notes).toEqual([]);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(notes).toEqual([880, 1318.5]);
+
+    // The browser only lets the audio start a second later (on the next tap, say): that sound is left out.
+    const late = fakeAudio('suspended', 1000);
+    expect(late.sound.play('alert')).toBe(true);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(late.notes).toEqual([]);
+    late.sound.play('beep');
+    expect(late.notes).toEqual([880, 880, 880]);
+  });
+
+  it('is the only Web Audio in the widgets and pages', () => {
+    const files = [
+      ...readdirSync('widgets').flatMap(id => (existsSync(`widgets/${id}/public`) ? readdirSync(`widgets/${id}/public`) : [])
+        .filter(f => f.endsWith('.js')).map(f => `widgets/${id}/public/${f}`)),
+      ...readdirSync('settings').filter(f => f.endsWith('.js') && f !== 'socket.io.js').map(f => `settings/${f}`),
+    ];
+    const users = files.filter(f => /AudioContext/.test(readFileSync(f, 'utf8')));
+    expect(users).toEqual(['widgets/spacer/public/kit.js']);
+    expect(readFileSync('widgets/timers/public/widget.js', 'utf8')).toContain("sound.play('beep')");
+  });
+
+  it('plays on the prompt page when the popup opens, not on its polls', async () => {
+    const { notes } = fakeAudio('running');
+    new Function(readFileSync('settings/popup.js', 'utf8'))();
+    const fetch = vi.fn(async () => new Response(JSON.stringify({ closed: false, kind: 'message', text: 'Dinner', picture: null, sound: 'chime', until: Date.now() + 30e3, now: Date.now() })));
+    (window as any).mountPopupPage(document.createElement('main'), { fetch, hash: '#id=p1&t=secret' });
+    await vi.advanceTimersByTimeAsync(4100);
+    expect(fetch.mock.calls.length).toBeGreaterThan(2);
+    expect(notes).toEqual([880, 1318.5]);
+  });
+
+  it("the prompt page loads the kit, and the web dashboards page plays a popup's sound once", () => {
+    expect(readFileSync('settings/popup.html', 'utf8')).toMatch(/<script src="\.\.\/widgets\/spacer\/kit\.js"><\/script>\s*<script src="popup\.js"><\/script>/);
+    expect(readFileSync('settings/dashboard.js', 'utf8')).toMatch(/if \(p\.sound && !sounded\.has\(p\.id\)\) \{\s*sounded\.add\(p\.id\);\s*window\.WidgetkeeperKit\.sound\.play\(p\.sound\);/);
   });
 });

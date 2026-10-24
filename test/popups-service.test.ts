@@ -132,7 +132,8 @@ describe('screens', () => {
     await vi.advanceTimersByTimeAsync(5000);
     expect(homey.settings.get(POPUP_NAMES_SETTING)).toEqual({ hall: { name: 'Hall', seenAt: Date.now() - 5000 } });
     const items = service.targetItems('');
-    expect(items.map(i => i.id)).toEqual(['all', 'web:kitchen', 'name:Hall', 'name:Screen']);
+    // No web dashboards: one is reached through its Popups widget's name (a `web:` chosen earlier still works).
+    expect(items.map(i => i.id)).toEqual(['all', 'name:Hall', 'name:Screen']);
     expect(service.targetItems('Garage').map(i => [i.id, i.description])).toEqual([['name:Garage', 'New screen name']]);
   });
 
@@ -243,6 +244,20 @@ describe('pictures', () => {
     expect(PopupService.droptokenArg(' https://a.test/x.jpg ')).toEqual({ url: 'https://a.test/x.jpg' });
   });
 
+  it('keeps the sound chosen, none for no sound or a card saved before it had one', async () => {
+    expect(PopupService.soundArg('doorbell')).toBe('doorbell');
+    expect(PopupService.soundArg('none')).toBeNull();
+    expect(PopupService.soundArg(undefined)).toBeNull();
+    expect(PopupService.soundArg('constructor')).toBeNull();
+    const { service, homey } = setup();
+    await service.show({ target: 'all', text: 'Dinner', seconds: 5, sound: 'chime' });
+    await service.show({ target: 'all', text: 'Quiet', seconds: 5 });
+    expect(service.all().popups.map(p => p.sound)).toEqual(['chime', null]);
+    const [loud] = service.all().popups;
+    expect(service.page(loud.id, loud.token)).toMatchObject({ closed: false, sound: 'chime' });
+    expect(homey.api.realtime).toHaveBeenCalledWith(POPUP_SHOW_EVENT, expect.objectContaining({ text: 'Dinner', sound: 'chime' }));
+  });
+
   it('lists no picture, the address typed, or the cameras', async () => {
     const { service } = setup();
     expect((await service.pictureItems('https://a.test/x.jpg')).map(i => i.id)).toEqual(['none', 'url:https://a.test/x.jpg']);
@@ -257,6 +272,6 @@ describe('describe', () => {
     service.forScreen('Hall');
     const report = JSON.stringify(service.describe());
     expect(report).not.toContain('Secret');
-    expect(service.describe()).toEqual({ open: [{ kind: 'message', target: 'name', picture: null, secondsLeft: 30 }], recentlyClosed: [], screens: ['Hall'] });
+    expect(service.describe()).toEqual({ open: [{ kind: 'message', target: 'name', picture: null, sound: null, secondsLeft: 30 }], recentlyClosed: [], screens: ['Hall'] });
   });
 });

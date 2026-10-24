@@ -19,25 +19,13 @@
   window.popupsScreenKey = popupsScreenKey;
 
   /**
-   * A quiet row, a bell and the screen name, so the widget has a real height (the iOS app kept its loading
-   * placeholder over a 0 or 1 px widget, 2026-10-23) and can be found on the dashboard. The name needs no translation.
+   * An empty row: nothing shows, but the widget has a real height (the iOS app kept its loading placeholder over a 0
+   * or 1 px widget, 2026-10-23). It showed a bell and the screen name until the user wanted it blank (2026-10-24).
    */
-  function drawLabel(root, name) {
-    const NS = 'http://www.w3.org/2000/svg';
+  function drawBlank(root) {
     const row = document.createElement('div');
-    row.className = 'pu-label';
-    const svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('viewBox', '0 0 24 24');
-    svg.setAttribute('class', 'pu-icon');
-    svg.setAttribute('aria-hidden', 'true');
-    const path = document.createElementNS(NS, 'path');
-    path.setAttribute('d', window.WidgetkeeperKit.icons.bell.d);
-    svg.appendChild(path);
-    const text = document.createElement('span');
-    text.className = 'pu-name';
-    text.dir = 'auto';
-    text.textContent = name;
-    row.append(svg, text);
+    row.className = 'pu-blank';
+    row.setAttribute('aria-hidden', 'true');
     root.replaceChildren(row);
   }
 
@@ -54,7 +42,7 @@
    */
   window.createPopupsWidget = function (root, opts) {
     const key = popupsScreenKey(opts.name);
-    drawLabel(root, typeof opts.name === 'string' && opts.name.trim() ? opts.name.trim() : DEFAULT_SCREEN);
+    drawBlank(root);
     const now = opts.now || (() => Date.now());
     const storage = opts.storage || localStore;
 

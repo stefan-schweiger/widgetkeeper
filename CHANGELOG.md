@@ -15,7 +15,8 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### New: Popups
 - **Flow cards:** show a message for a number of seconds or minutes, or ask Yes or No, in front of everything on a web dashboard or on the phones and tablets with a Popups widget. The first answer from any screen closes the question everywhere and goes back to the Flow as the tags Answer and Answered (no answer in time). A picture can come along: a camera, refreshed while it's open, a picture address, or an image tag such as a doorbell's snapshot. A third card closes them early.
-- **Popups widget:** a quiet row with a bell and its screen name; on a Homey dashboard it opens the popups sent to that name in the Homey app's built-in browser, as a widget can't draw over the dashboard. On a web dashboard it lets the same name reach that dashboard too. Put it at the bottom of a dashboard, so it doesn't push other widgets down.
+- **Sound:** a popup can open with a chime, a doorbell or an alert, where the browser allows it (a web dashboard once it has been tapped).
+- **Popups widget:** blank itself; on a Homey dashboard it opens the popups sent to that name in the Homey app's built-in browser, as a widget can't draw over the dashboard. On a web dashboard it lets the same name reach that dashboard too. Put it at the bottom of a dashboard, so it doesn't push other widgets down.
 
 ### New: Lights by Room
 - Every room's lights on a card: the room's own icon from Homey, its name and how many lights are on (*2 of 3 on · 55%*), a switch for the whole room and a bar that dims every light in it. Pick the lights in the settings; rooms follow the Homey's zones.

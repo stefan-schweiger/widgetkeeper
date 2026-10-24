@@ -3503,7 +3503,12 @@
      */
     const popups = new Map();
     const dismissed = new Set(); // messages tapped away on this screen (the others keep theirs)
+    const sounded = new Set(); // popups whose sound played here, so going back to their dashboard doesn't play it again
     let shownPopup = null; // {id, d, close(note)}
+    // A popup's sound (the kit's) needs the page used first: any tap or key wakes the audio.
+    for (const type of ['pointerdown', 'keydown']) {
+      document.addEventListener(type, () => window.WidgetkeeperKit.sound.unlock(), { capture: true, passive: true });
+    }
 
     /** Takes the open popups as Homey lists them (`/web/setup`, `/web/popups`), its clock beside them. */
     function setPopups(list, now) {
@@ -3529,6 +3534,7 @@
       if (p) clearTimeout(p.timer);
       popups.delete(id);
       dismissed.delete(id);
+      sounded.delete(id);
       if (shownPopup && shownPopup.id === id) {
         if (shownPopup.sending) {
           // This screen's answer is on its way, so this close may be its own or another screen's: its reply says.
@@ -3697,6 +3703,10 @@
       shownPopup = shown;
       document.body.append(d);
       d.showModal();
+      if (p.sound && !sounded.has(p.id)) {
+        sounded.add(p.id);
+        window.WidgetkeeperKit.sound.play(p.sound);
+      }
       const yes = d.querySelector('.wd-popup-yes');
       if (yes) /** @type {HTMLElement} */ (yes).focus();
     }

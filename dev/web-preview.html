@@ -77,13 +77,13 @@
       ];
 
       // `?popup=message|ask|picture|camera|elsewhere`: a Flow's popup on everywhere, open for 10 min (wk-084);
-      // `named`: one sent to the screen name Hallway, which only the Hallway dashboard's Popups widget has.
+      // `camera` has the doorbell sound; `named`: one sent to the screen name Hallway, which only the Hallway dashboard's Popups widget has.
       const kind = new URLSearchParams(location.search).get('popup');
       const POPUPS = {
         message: { kind: 'message', text: 'Dinner is ready', picture: null },
         ask: { kind: 'ask', text: 'Open the garage door?', picture: null },
         picture: { kind: 'message', text: 'Someone is at the front door', picture: { source: 'stored' } },
-        camera: { kind: 'ask', text: 'Someone is at the front door. Unlock it?', picture: { source: 'camera' } },
+        camera: { kind: 'ask', text: 'Someone is at the front door. Unlock it?', picture: { source: 'camera' }, sound: 'doorbell' },
         elsewhere: { kind: 'ask', text: 'Turn off the lights downstairs?', picture: null, elsewhere: true },
         named: { kind: 'message', text: 'The post has arrived', picture: null, target: 'name:hallway' },
       };

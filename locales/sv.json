@@ -533,7 +533,6 @@
   "popups": {
     "everywhere": "Överallt",
     "everywhereHint": "Varje webbinstrumentpanel och Popup-fönster-widget",
-    "webDashboard": "Webbinstrumentpanel",
     "screenName": "Popup-fönster-widget",
     "screenNew": "Nytt skärmnamn",
     "noPicture": "Ingen bild",

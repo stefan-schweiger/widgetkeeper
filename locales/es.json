@@ -533,7 +533,6 @@
   "popups": {
     "everywhere": "En todas partes",
     "everywhereHint": "Cada panel web y widget Ventanas emergentes",
-    "webDashboard": "Panel web",
     "screenName": "Widget Ventanas emergentes",
     "screenNew": "Nuevo nombre de pantalla",
     "noPicture": "Sin imagen",

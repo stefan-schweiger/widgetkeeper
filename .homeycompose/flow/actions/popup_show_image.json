@@ -16,19 +16,19 @@
     "ar": "إظهار نافذة منبثقة مع صورة"
   },
   "titleFormatted": {
-    "en": "Show [[text]] with [[droptoken]] on [[screen]] for [[duration]] [[unit]]",
-    "nl": "Toon [[text]] met [[droptoken]] op [[screen]] gedurende [[duration]] [[unit]]",
-    "de": "[[text]] mit [[droptoken]] auf [[screen]] für [[duration]] [[unit]] zeigen",
-    "fr": "Afficher [[text]] avec [[droptoken]] sur [[screen]] pendant [[duration]] [[unit]]",
-    "it": "Mostra [[text]] con [[droptoken]] su [[screen]] per [[duration]] [[unit]]",
-    "sv": "Visa [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]]",
-    "no": "Vis [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]]",
-    "es": "Mostrar [[text]] con [[droptoken]] en [[screen]] durante [[duration]] [[unit]]",
-    "da": "Vis [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]]",
-    "ru": "Показать [[text]] с [[droptoken]] на [[screen]] на [[duration]] [[unit]]",
-    "pl": "Pokaż [[text]] z [[droptoken]] na [[screen]] przez [[duration]] [[unit]]",
-    "ko": "[[screen]]에 [[droptoken]]와(과) 함께 [[text]]을(를) [[duration]] [[unit]] 동안 표시",
-    "ar": "إظهار [[text]] مع [[droptoken]] على [[screen]] لمدة [[duration]] [[unit]]"
+    "en": "Show [[text]] with [[droptoken]] on [[screen]] for [[duration]] [[unit]], sound: [[sound]]",
+    "nl": "Toon [[text]] met [[droptoken]] op [[screen]] gedurende [[duration]] [[unit]], geluid: [[sound]]",
+    "de": "[[text]] mit [[droptoken]] auf [[screen]] für [[duration]] [[unit]] zeigen, Ton: [[sound]]",
+    "fr": "Afficher [[text]] avec [[droptoken]] sur [[screen]] pendant [[duration]] [[unit]], son : [[sound]]",
+    "it": "Mostra [[text]] con [[droptoken]] su [[screen]] per [[duration]] [[unit]], suono: [[sound]]",
+    "sv": "Visa [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]], ljud: [[sound]]",
+    "no": "Vis [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]], lyd: [[sound]]",
+    "es": "Mostrar [[text]] con [[droptoken]] en [[screen]] durante [[duration]] [[unit]], sonido: [[sound]]",
+    "da": "Vis [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]], lyd: [[sound]]",
+    "ru": "Показать [[text]] с [[droptoken]] на [[screen]] на [[duration]] [[unit]], звук: [[sound]]",
+    "pl": "Pokaż [[text]] z [[droptoken]] na [[screen]] przez [[duration]] [[unit]], dźwięk: [[sound]]",
+    "ko": "[[screen]]에 [[droptoken]]와(과) 함께 [[text]]을(를) [[duration]] [[unit]] 동안 표시, 소리: [[sound]]",
+    "ar": "إظهار [[text]] مع [[droptoken]] على [[screen]] لمدة [[duration]] [[unit]]، الصوت: [[sound]]"
   },
   "hint": {
     "en": "Drop an image tag (a doorbell's or camera's snapshot) or a text tag with a picture address on this card. The picture is taken when the Flow runs.",
@@ -208,6 +208,99 @@
             "pl": "minut",
             "ko": "분",
             "ar": "دقائق"
+          }
+        }
+      ]
+    },
+    {
+      "type": "dropdown",
+      "name": "sound",
+      "title": {
+        "en": "Sound",
+        "nl": "Geluid",
+        "de": "Ton",
+        "fr": "Son",
+        "it": "Suono",
+        "sv": "Ljud",
+        "no": "Lyd",
+        "es": "Sonido",
+        "da": "Lyd",
+        "ru": "Звук",
+        "pl": "Dźwięk",
+        "ko": "소리",
+        "ar": "الصوت"
+      },
+      "values": [
+        {
+          "id": "none",
+          "title": {
+            "en": "no sound",
+            "nl": "geen geluid",
+            "de": "kein Ton",
+            "fr": "aucun son",
+            "it": "nessun suono",
+            "sv": "inget ljud",
+            "no": "ingen lyd",
+            "es": "sin sonido",
+            "da": "ingen lyd",
+            "ru": "без звука",
+            "pl": "bez dźwięku",
+            "ko": "소리 없음",
+            "ar": "بلا صوت"
+          }
+        },
+        {
+          "id": "chime",
+          "title": {
+            "en": "chime",
+            "nl": "belletje",
+            "de": "Klang",
+            "fr": "carillon",
+            "it": "rintocco",
+            "sv": "pling",
+            "no": "pling",
+            "es": "campanilla",
+            "da": "pling",
+            "ru": "перезвон",
+            "pl": "dzwoneczek",
+            "ko": "차임",
+            "ar": "رنين"
+          }
+        },
+        {
+          "id": "doorbell",
+          "title": {
+            "en": "doorbell",
+            "nl": "deurbel",
+            "de": "Türklingel",
+            "fr": "sonnette",
+            "it": "campanello",
+            "sv": "dörrklocka",
+            "no": "dørklokke",
+            "es": "timbre",
+            "da": "dørklokke",
+            "ru": "дверной звонок",
+            "pl": "dzwonek do drzwi",
+            "ko": "초인종",
+            "ar": "جرس الباب"
+          }
+        },
+        {
+          "id": "alert",
+          "title": {
+            "en": "alert",
+            "nl": "alarm",
+            "de": "Alarm",
+            "fr": "alerte",
+            "it": "allarme",
+            "sv": "larm",
+            "no": "alarm",
+            "es": "alerta",
+            "da": "alarm",
+            "ru": "тревога",
+            "pl": "alarm",
+            "ko": "경고음",
+            "ar": "تنبيه"
           }
         }
       ]

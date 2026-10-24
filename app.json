@@ -939,19 +939,19 @@
           "ar": "السؤال بنعم أو لا في نافذة منبثقة"
         },
         "titleFormatted": {
-          "en": "Ask [[question]] on [[screen]], picture: [[picture]], wait up to [[seconds]] seconds",
-          "nl": "Vraag [[question]] op [[screen]], afbeelding: [[picture]], wacht maximaal [[seconds]] seconden",
-          "de": "[[question]] auf [[screen]] fragen, Bild: [[picture]], höchstens [[seconds]] Sekunden warten",
-          "fr": "Demander [[question]] sur [[screen]], image : [[picture]], attendre au plus [[seconds]] secondes",
-          "it": "Chiedi [[question]] su [[screen]], immagine: [[picture]], attendi al massimo [[seconds]] secondi",
-          "sv": "Fråga [[question]] på [[screen]], bild: [[picture]], vänta högst [[seconds]] sekunder",
-          "no": "Spør [[question]] på [[screen]], bilde: [[picture]], vent høyst [[seconds]] sekunder",
-          "es": "Preguntar [[question]] en [[screen]], imagen: [[picture]], esperar como máximo [[seconds]] segundos",
-          "da": "Spørg [[question]] på [[screen]], billede: [[picture]], vent højst [[seconds]] sekunder",
-          "ru": "Спросить [[question]] на [[screen]], изображение: [[picture]], ждать не дольше [[seconds]] с",
-          "pl": "Zapytaj [[question]] na [[screen]], obraz: [[picture]], czekaj najwyżej [[seconds]] s",
-          "ko": "[[screen]]에서 [[question]] 묻기, 사진: [[picture]], 최대 [[seconds]]초 대기",
-          "ar": "اسأل [[question]] على [[screen]]، الصورة: [[picture]]، وانتظر [[seconds]] ثانية على الأكثر"
+          "en": "Ask [[question]] on [[screen]], picture: [[picture]], wait up to [[seconds]] seconds, sound: [[sound]]",
+          "nl": "Vraag [[question]] op [[screen]], afbeelding: [[picture]], wacht maximaal [[seconds]] seconden, geluid: [[sound]]",
+          "de": "[[question]] auf [[screen]] fragen, Bild: [[picture]], höchstens [[seconds]] Sekunden warten, Ton: [[sound]]",
+          "fr": "Demander [[question]] sur [[screen]], image : [[picture]], attendre au plus [[seconds]] secondes, son : [[sound]]",
+          "it": "Chiedi [[question]] su [[screen]], immagine: [[picture]], attendi al massimo [[seconds]] secondi, suono: [[sound]]",
+          "sv": "Fråga [[question]] på [[screen]], bild: [[picture]], vänta högst [[seconds]] sekunder, ljud: [[sound]]",
+          "no": "Spør [[question]] på [[screen]], bilde: [[picture]], vent høyst [[seconds]] sekunder, lyd: [[sound]]",
+          "es": "Preguntar [[question]] en [[screen]], imagen: [[picture]], esperar como máximo [[seconds]] segundos, sonido: [[sound]]",
+          "da": "Spørg [[question]] på [[screen]], billede: [[picture]], vent højst [[seconds]] sekunder, lyd: [[sound]]",
+          "ru": "Спросить [[question]] на [[screen]], изображение: [[picture]], ждать не дольше [[seconds]] с, звук: [[sound]]",
+          "pl": "Zapytaj [[question]] na [[screen]], obraz: [[picture]], czekaj najwyżej [[seconds]] s, dźwięk: [[sound]]",
+          "ko": "[[screen]]에서 [[question]] 묻기, 사진: [[picture]], 최대 [[seconds]]초 대기, 소리: [[sound]]",
+          "ar": "اسأل [[question]] على [[screen]]، الصورة: [[picture]]، وانتظر [[seconds]] ثانية على الأكثر، الصوت: [[sound]]"
         },
         "hint": {
           "en": "Shows the question with Yes and No; the first answer from any screen closes it everywhere. Answer is the answer; Answered is no when nobody answered in time. Use it in an Advanced Flow to act on the tags.",
@@ -1149,6 +1149,99 @@
             "min": 5,
             "max": 85,
             "step": 1
+          },
+          {
+            "type": "dropdown",
+            "name": "sound",
+            "title": {
+              "en": "Sound",
+              "nl": "Geluid",
+              "de": "Ton",
+              "fr": "Son",
+              "it": "Suono",
+              "sv": "Ljud",
+              "no": "Lyd",
+              "es": "Sonido",
+              "da": "Lyd",
+              "ru": "Звук",
+              "pl": "Dźwięk",
+              "ko": "소리",
+              "ar": "الصوت"
+            },
+            "values": [
+              {
+                "id": "none",
+                "title": {
+                  "en": "no sound",
+                  "nl": "geen geluid",
+                  "de": "kein Ton",
+                  "fr": "aucun son",
+                  "it": "nessun suono",
+                  "sv": "inget ljud",
+                  "no": "ingen lyd",
+                  "es": "sin sonido",
+                  "da": "ingen lyd",
+                  "ru": "без звука",
+                  "pl": "bez dźwięku",
+                  "ko": "소리 없음",
+                  "ar": "بلا صوت"
+                }
+              },
+              {
+                "id": "chime",
+                "title": {
+                  "en": "chime",
+                  "nl": "belletje",
+                  "de": "Klang",
+                  "fr": "carillon",
+                  "it": "rintocco",
+                  "sv": "pling",
+                  "no": "pling",
+                  "es": "campanilla",
+                  "da": "pling",
+                  "ru": "перезвон",
+                  "pl": "dzwoneczek",
+                  "ko": "차임",
+                  "ar": "رنين"
+                }
+              },
+              {
+                "id": "doorbell",
+                "title": {
+                  "en": "doorbell",
+                  "nl": "deurbel",
+                  "de": "Türklingel",
+                  "fr": "sonnette",
+                  "it": "campanello",
+                  "sv": "dörrklocka",
+                  "no": "dørklokke",
+                  "es": "timbre",
+                  "da": "dørklokke",
+                  "ru": "дверной звонок",
+                  "pl": "dzwonek do drzwi",
+                  "ko": "초인종",
+                  "ar": "جرس الباب"
+                }
+              },
+              {
+                "id": "alert",
+                "title": {
+                  "en": "alert",
+                  "nl": "alarm",
+                  "de": "Alarm",
+                  "fr": "alerte",
+                  "it": "allarme",
+                  "sv": "larm",
+                  "no": "alarm",
+                  "es": "alerta",
+                  "da": "alarm",
+                  "ru": "тревога",
+                  "pl": "alarm",
+                  "ko": "경고음",
+                  "ar": "تنبيه"
+                }
+              }
+            ]
           }
         ]
       },
@@ -1170,19 +1263,19 @@
           "ar": "السؤال بنعم أو لا في نافذة منبثقة مع صورة"
         },
         "titleFormatted": {
-          "en": "Ask [[question]] with [[droptoken]] on [[screen]], wait up to [[seconds]] seconds",
-          "nl": "Vraag [[question]] met [[droptoken]] op [[screen]], wacht maximaal [[seconds]] seconden",
-          "de": "[[question]] mit [[droptoken]] auf [[screen]] fragen, höchstens [[seconds]] Sekunden warten",
-          "fr": "Demander [[question]] avec [[droptoken]] sur [[screen]], attendre au plus [[seconds]] secondes",
-          "it": "Chiedi [[question]] con [[droptoken]] su [[screen]], attendi al massimo [[seconds]] secondi",
-          "sv": "Fråga [[question]] med [[droptoken]] på [[screen]], vänta högst [[seconds]] sekunder",
-          "no": "Spør [[question]] med [[droptoken]] på [[screen]], vent høyst [[seconds]] sekunder",
-          "es": "Preguntar [[question]] con [[droptoken]] en [[screen]], esperar como máximo [[seconds]] segundos",
-          "da": "Spørg [[question]] med [[droptoken]] på [[screen]], vent højst [[seconds]] sekunder",
-          "ru": "Спросить [[question]] с [[droptoken]] на [[screen]], ждать не дольше [[seconds]] с",
-          "pl": "Zapytaj [[question]] z [[droptoken]] na [[screen]], czekaj najwyżej [[seconds]] s",
-          "ko": "[[screen]]에서 [[droptoken]]와(과) 함께 [[question]] 묻기, 최대 [[seconds]]초 대기",
-          "ar": "اسأل [[question]] مع [[droptoken]] على [[screen]]، وانتظر [[seconds]] ثانية على الأكثر"
+          "en": "Ask [[question]] with [[droptoken]] on [[screen]], wait up to [[seconds]] seconds, sound: [[sound]]",
+          "nl": "Vraag [[question]] met [[droptoken]] op [[screen]], wacht maximaal [[seconds]] seconden, geluid: [[sound]]",
+          "de": "[[question]] mit [[droptoken]] auf [[screen]] fragen, höchstens [[seconds]] Sekunden warten, Ton: [[sound]]",
+          "fr": "Demander [[question]] avec [[droptoken]] sur [[screen]], attendre au plus [[seconds]] secondes, son : [[sound]]",
+          "it": "Chiedi [[question]] con [[droptoken]] su [[screen]], attendi al massimo [[seconds]] secondi, suono: [[sound]]",
+          "sv": "Fråga [[question]] med [[droptoken]] på [[screen]], vänta högst [[seconds]] sekunder, ljud: [[sound]]",
+          "no": "Spør [[question]] med [[droptoken]] på [[screen]], vent høyst [[seconds]] sekunder, lyd: [[sound]]",
+          "es": "Preguntar [[question]] con [[droptoken]] en [[screen]], esperar como máximo [[seconds]] segundos, sonido: [[sound]]",
+          "da": "Spørg [[question]] med [[droptoken]] på [[screen]], vent højst [[seconds]] sekunder, lyd: [[sound]]",
+          "ru": "Спросить [[question]] с [[droptoken]] на [[screen]], ждать не дольше [[seconds]] с, звук: [[sound]]",
+          "pl": "Zapytaj [[question]] z [[droptoken]] na [[screen]], czekaj najwyżej [[seconds]] s, dźwięk: [[sound]]",
+          "ko": "[[screen]]에서 [[droptoken]]와(과) 함께 [[question]] 묻기, 최대 [[seconds]]초 대기, 소리: [[sound]]",
+          "ar": "اسأل [[question]] مع [[droptoken]] على [[screen]]، وانتظر [[seconds]] ثانية على الأكثر، الصوت: [[sound]]"
         },
         "hint": {
           "en": "As Ask Yes or No, with an image tag (or a text tag with a picture address) dropped on this card.",
@@ -1350,6 +1443,99 @@
             "min": 5,
             "max": 85,
             "step": 1
+          },
+          {
+            "type": "dropdown",
+            "name": "sound",
+            "title": {
+              "en": "Sound",
+              "nl": "Geluid",
+              "de": "Ton",
+              "fr": "Son",
+              "it": "Suono",
+              "sv": "Ljud",
+              "no": "Lyd",
+              "es": "Sonido",
+              "da": "Lyd",
+              "ru": "Звук",
+              "pl": "Dźwięk",
+              "ko": "소리",
+              "ar": "الصوت"
+            },
+            "values": [
+              {
+                "id": "none",
+                "title": {
+                  "en": "no sound",
+                  "nl": "geen geluid",
+                  "de": "kein Ton",
+                  "fr": "aucun son",
+                  "it": "nessun suono",
+                  "sv": "inget ljud",
+                  "no": "ingen lyd",
+                  "es": "sin sonido",
+                  "da": "ingen lyd",
+                  "ru": "без звука",
+                  "pl": "bez dźwięku",
+                  "ko": "소리 없음",
+                  "ar": "بلا صوت"
+                }
+              },
+              {
+                "id": "chime",
+                "title": {
+                  "en": "chime",
+                  "nl": "belletje",
+                  "de": "Klang",
+                  "fr": "carillon",
+                  "it": "rintocco",
+                  "sv": "pling",
+                  "no": "pling",
+                  "es": "campanilla",
+                  "da": "pling",
+                  "ru": "перезвон",
+                  "pl": "dzwoneczek",
+                  "ko": "차임",
+                  "ar": "رنين"
+                }
+              },
+              {
+                "id": "doorbell",
+                "title": {
+                  "en": "doorbell",
+                  "nl": "deurbel",
+                  "de": "Türklingel",
+                  "fr": "sonnette",
+                  "it": "campanello",
+                  "sv": "dörrklocka",
+                  "no": "dørklokke",
+                  "es": "timbre",
+                  "da": "dørklokke",
+                  "ru": "дверной звонок",
+                  "pl": "dzwonek do drzwi",
+                  "ko": "초인종",
+                  "ar": "جرس الباب"
+                }
+              },
+              {
+                "id": "alert",
+                "title": {
+                  "en": "alert",
+                  "nl": "alarm",
+                  "de": "Alarm",
+                  "fr": "alerte",
+                  "it": "allarme",
+                  "sv": "larm",
+                  "no": "alarm",
+                  "es": "alerta",
+                  "da": "alarm",
+                  "ru": "тревога",
+                  "pl": "alarm",
+                  "ko": "경고음",
+                  "ar": "تنبيه"
+                }
+              }
+            ]
           }
         ]
       },
@@ -1455,34 +1641,34 @@
           "ar": "إظهار نافذة منبثقة"
         },
         "titleFormatted": {
-          "en": "Show [[text]] on [[screen]] for [[duration]] [[unit]], picture: [[picture]]",
-          "nl": "Toon [[text]] op [[screen]] gedurende [[duration]] [[unit]], afbeelding: [[picture]]",
-          "de": "[[text]] auf [[screen]] für [[duration]] [[unit]] zeigen, Bild: [[picture]]",
-          "fr": "Afficher [[text]] sur [[screen]] pendant [[duration]] [[unit]], image : [[picture]]",
-          "it": "Mostra [[text]] su [[screen]] per [[duration]] [[unit]], immagine: [[picture]]",
-          "sv": "Visa [[text]] på [[screen]] i [[duration]] [[unit]], bild: [[picture]]",
-          "no": "Vis [[text]] på [[screen]] i [[duration]] [[unit]], bilde: [[picture]]",
-          "es": "Mostrar [[text]] en [[screen]] durante [[duration]] [[unit]], imagen: [[picture]]",
-          "da": "Vis [[text]] på [[screen]] i [[duration]] [[unit]], billede: [[picture]]",
-          "ru": "Показать [[text]] на [[screen]] на [[duration]] [[unit]], изображение: [[picture]]",
-          "pl": "Pokaż [[text]] na [[screen]] przez [[duration]] [[unit]], obraz: [[picture]]",
-          "ko": "[[screen]]에 [[text]]을(를) [[duration]] [[unit]] 동안 표시, 사진: [[picture]]",
-          "ar": "إظهار [[text]] على [[screen]] لمدة [[duration]] [[unit]]، الصورة: [[picture]]"
+          "en": "Show [[text]] on [[screen]] for [[duration]] [[unit]], picture: [[picture]], sound: [[sound]]",
+          "nl": "Toon [[text]] op [[screen]] gedurende [[duration]] [[unit]], afbeelding: [[picture]], geluid: [[sound]]",
+          "de": "[[text]] auf [[screen]] für [[duration]] [[unit]] zeigen, Bild: [[picture]], Ton: [[sound]]",
+          "fr": "Afficher [[text]] sur [[screen]] pendant [[duration]] [[unit]], image : [[picture]], son : [[sound]]",
+          "it": "Mostra [[text]] su [[screen]] per [[duration]] [[unit]], immagine: [[picture]], suono: [[sound]]",
+          "sv": "Visa [[text]] på [[screen]] i [[duration]] [[unit]], bild: [[picture]], ljud: [[sound]]",
+          "no": "Vis [[text]] på [[screen]] i [[duration]] [[unit]], bilde: [[picture]], lyd: [[sound]]",
+          "es": "Mostrar [[text]] en [[screen]] durante [[duration]] [[unit]], imagen: [[picture]], sonido: [[sound]]",
+          "da": "Vis [[text]] på [[screen]] i [[duration]] [[unit]], billede: [[picture]], lyd: [[sound]]",
+          "ru": "Показать [[text]] на [[screen]] на [[duration]] [[unit]], изображение: [[picture]], звук: [[sound]]",
+          "pl": "Pokaż [[text]] na [[screen]] przez [[duration]] [[unit]], obraz: [[picture]], dźwięk: [[sound]]",
+          "ko": "[[screen]]에 [[text]]을(를) [[duration]] [[unit]] 동안 표시, 사진: [[picture]], 소리: [[sound]]",
+          "ar": "إظهار [[text]] على [[screen]] لمدة [[duration]] [[unit]]، الصورة: [[picture]]، الصوت: [[sound]]"
         },
         "hint": {
-          "en": "In front of everything on every screen showing that web dashboard, or on the phones and tablets with a Popups widget of that screen name. A tap closes it on that screen.",
-          "nl": "Voor alles op elk scherm dat dat webdashboard toont, of op de telefoons en tablets met een Pop-ups-widget met die schermnaam. Een tik sluit hem op dat scherm.",
-          "de": "Vor allem anderen auf jedem Bildschirm, der dieses Web-Dashboard zeigt, oder auf den Handys und Tablets mit einem Popups-Widget mit diesem Bildschirmnamen. Ein Tippen schließt es auf diesem Bildschirm.",
-          "fr": "Au premier plan sur chaque écran qui affiche ce tableau de bord web, ou sur les téléphones et tablettes avec un widget Pop-ups de ce nom d'écran. Un appui la ferme sur cet écran.",
-          "it": "In primo piano su ogni schermo che mostra quella dashboard web, o su telefoni e tablet con un widget Popup con quel nome di schermo. Un tocco lo chiude su quello schermo.",
-          "sv": "Framför allt annat på varje skärm som visar den webbinstrumentpanelen, eller på telefoner och surfplattor med en Popup-fönster-widget med det skärmnamnet. Ett tryck stänger det på den skärmen.",
-          "no": "Foran alt annet på hver skjerm som viser det nettdashbordet, eller på telefoner og nettbrett med en Popup-vinduer-widget med det skjermnavnet. Et trykk lukker det på den skjermen.",
-          "es": "Delante de todo en cada pantalla que muestre ese panel web, o en los teléfonos y tabletas con un widget Ventanas emergentes con ese nombre de pantalla. Un toque la cierra en esa pantalla.",
-          "da": "Foran alt andet på hver skærm, der viser det webdashboard, eller på telefoner og tablets med en Popups-widget med det skærmnavn. Et tryk lukker den på den skærm.",
-          "ru": "Поверх всего на каждом экране с этой веб-панелью или на телефонах и планшетах с виджетом «Всплывающие окна» с этим именем экрана. Касание закрывает его на этом экране.",
-          "pl": "Na wierzchu na każdym ekranie z tym pulpitem webowym albo na telefonach i tabletach z widżetem Okna wyskakujące o tej nazwie ekranu. Dotknięcie zamyka je na tym ekranie.",
-          "ko": "그 웹 대시보드를 보여주는 모든 화면, 또는 그 화면 이름의 팝업 위젯이 있는 휴대폰과 태블릿에서 모든 것 위에 표시됩니다. 탭하면 그 화면에서 닫힙니다.",
-          "ar": "فوق كل شيء على كل شاشة تعرض لوحة الويب هذه، أو على الهواتف والأجهزة اللوحية التي فيها أداة النوافذ المنبثقة باسم الشاشة هذا. النقر يغلقها على تلك الشاشة."
+          "en": "In front of everything on the web dashboards and on the phones and tablets with a Popups widget of that screen name. A tap closes it on that screen.",
+          "nl": "Voor alles op de webdashboards en op de telefoons en tablets met een Pop-ups-widget met die schermnaam. Een tik sluit hem op dat scherm.",
+          "de": "Vor allem anderen auf den Web-Dashboards und auf den Handys und Tablets mit einem Popups-Widget mit diesem Bildschirmnamen. Ein Tippen schließt es auf diesem Bildschirm.",
+          "fr": "Au premier plan sur les tableaux de bord web et sur les téléphones et tablettes avec un widget Pop-ups de ce nom d'écran. Un appui la ferme sur cet écran.",
+          "it": "In primo piano sulle dashboard web e su telefoni e tablet con un widget Popup con quel nome di schermo. Un tocco lo chiude su quello schermo.",
+          "sv": "Framför allt annat på webbinstrumentpanelerna och på telefoner och surfplattor med en Popup-fönster-widget med det skärmnamnet. Ett tryck stänger det på den skärmen.",
+          "no": "Foran alt annet på nettdashbordene og på telefoner og nettbrett med en Popup-vinduer-widget med det skjermnavnet. Et trykk lukker det på den skjermen.",
+          "es": "Delante de todo en los paneles web y en los teléfonos y tabletas con un widget Ventanas emergentes con ese nombre de pantalla. Un toque la cierra en esa pantalla.",
+          "da": "Foran alt andet på webdashboards og på telefoner og tablets med en Popups-widget med det skærmnavn. Et tryk lukker den på den skærm.",
+          "ru": "Поверх всего на веб-панелях и на телефонах и планшетах с виджетом «Всплывающие окна» с этим именем экрана. Касание закрывает его на этом экране.",
+          "pl": "Na wierzchu na pulpitach webowych oraz na telefonach i tabletach z widżetem Okna wyskakujące o tej nazwie ekranu. Dotknięcie zamyka je na tym ekranie.",
+          "ko": "웹 대시보드와 그 화면 이름의 팝업 위젯이 있는 휴대폰과 태블릿에서 모든 것 위에 표시됩니다. 탭하면 그 화면에서 닫힙니다.",
+          "ar": "فوق كل شيء على لوحات الويب وعلى الهواتف والأجهزة اللوحية التي فيها أداة النوافذ المنبثقة باسم الشاشة هذا. النقر يغلقها على تلك الشاشة."
         },
         "args": [
           {
@@ -1680,6 +1866,99 @@
               "ko": "사진",
               "ar": "الصورة"
             }
+          },
+          {
+            "type": "dropdown",
+            "name": "sound",
+            "title": {
+              "en": "Sound",
+              "nl": "Geluid",
+              "de": "Ton",
+              "fr": "Son",
+              "it": "Suono",
+              "sv": "Ljud",
+              "no": "Lyd",
+              "es": "Sonido",
+              "da": "Lyd",
+              "ru": "Звук",
+              "pl": "Dźwięk",
+              "ko": "소리",
+              "ar": "الصوت"
+            },
+            "values": [
+              {
+                "id": "none",
+                "title": {
+                  "en": "no sound",
+                  "nl": "geen geluid",
+                  "de": "kein Ton",
+                  "fr": "aucun son",
+                  "it": "nessun suono",
+                  "sv": "inget ljud",
+                  "no": "ingen lyd",
+                  "es": "sin sonido",
+                  "da": "ingen lyd",
+                  "ru": "без звука",
+                  "pl": "bez dźwięku",
+                  "ko": "소리 없음",
+                  "ar": "بلا صوت"
+                }
+              },
+              {
+                "id": "chime",
+                "title": {
+                  "en": "chime",
+                  "nl": "belletje",
+                  "de": "Klang",
+                  "fr": "carillon",
+                  "it": "rintocco",
+                  "sv": "pling",
+                  "no": "pling",
+                  "es": "campanilla",
+                  "da": "pling",
+                  "ru": "перезвон",
+                  "pl": "dzwoneczek",
+                  "ko": "차임",
+                  "ar": "رنين"
+                }
+              },
+              {
+                "id": "doorbell",
+                "title": {
+                  "en": "doorbell",
+                  "nl": "deurbel",
+                  "de": "Türklingel",
+                  "fr": "sonnette",
+                  "it": "campanello",
+                  "sv": "dörrklocka",
+                  "no": "dørklokke",
+                  "es": "timbre",
+                  "da": "dørklokke",
+                  "ru": "дверной звонок",
+                  "pl": "dzwonek do drzwi",
+                  "ko": "초인종",
+                  "ar": "جرس الباب"
+                }
+              },
+              {
+                "id": "alert",
+                "title": {
+                  "en": "alert",
+                  "nl": "alarm",
+                  "de": "Alarm",
+                  "fr": "alerte",
+                  "it": "allarme",
+                  "sv": "larm",
+                  "no": "alarm",
+                  "es": "alerta",
+                  "da": "alarm",
+                  "ru": "тревога",
+                  "pl": "alarm",
+                  "ko": "경고음",
+                  "ar": "تنبيه"
+                }
+              }
+            ]
           }
         ]
       },
@@ -1701,19 +1980,19 @@
           "ar": "إظهار نافذة منبثقة مع صورة"
         },
         "titleFormatted": {
-          "en": "Show [[text]] with [[droptoken]] on [[screen]] for [[duration]] [[unit]]",
-          "nl": "Toon [[text]] met [[droptoken]] op [[screen]] gedurende [[duration]] [[unit]]",
-          "de": "[[text]] mit [[droptoken]] auf [[screen]] für [[duration]] [[unit]] zeigen",
-          "fr": "Afficher [[text]] avec [[droptoken]] sur [[screen]] pendant [[duration]] [[unit]]",
-          "it": "Mostra [[text]] con [[droptoken]] su [[screen]] per [[duration]] [[unit]]",
-          "sv": "Visa [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]]",
-          "no": "Vis [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]]",
-          "es": "Mostrar [[text]] con [[droptoken]] en [[screen]] durante [[duration]] [[unit]]",
-          "da": "Vis [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]]",
-          "ru": "Показать [[text]] с [[droptoken]] на [[screen]] на [[duration]] [[unit]]",
-          "pl": "Pokaż [[text]] z [[droptoken]] na [[screen]] przez [[duration]] [[unit]]",
-          "ko": "[[screen]]에 [[droptoken]]와(과) 함께 [[text]]을(를) [[duration]] [[unit]] 동안 표시",
-          "ar": "إظهار [[text]] مع [[droptoken]] على [[screen]] لمدة [[duration]] [[unit]]"
+          "en": "Show [[text]] with [[droptoken]] on [[screen]] for [[duration]] [[unit]], sound: [[sound]]",
+          "nl": "Toon [[text]] met [[droptoken]] op [[screen]] gedurende [[duration]] [[unit]], geluid: [[sound]]",
+          "de": "[[text]] mit [[droptoken]] auf [[screen]] für [[duration]] [[unit]] zeigen, Ton: [[sound]]",
+          "fr": "Afficher [[text]] avec [[droptoken]] sur [[screen]] pendant [[duration]] [[unit]], son : [[sound]]",
+          "it": "Mostra [[text]] con [[droptoken]] su [[screen]] per [[duration]] [[unit]], suono: [[sound]]",
+          "sv": "Visa [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]], ljud: [[sound]]",
+          "no": "Vis [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]], lyd: [[sound]]",
+          "es": "Mostrar [[text]] con [[droptoken]] en [[screen]] durante [[duration]] [[unit]], sonido: [[sound]]",
+          "da": "Vis [[text]] med [[droptoken]] på [[screen]] i [[duration]] [[unit]], lyd: [[sound]]",
+          "ru": "Показать [[text]] с [[droptoken]] на [[screen]] на [[duration]] [[unit]], звук: [[sound]]",
+          "pl": "Pokaż [[text]] z [[droptoken]] na [[screen]] przez [[duration]] [[unit]], dźwięk: [[sound]]",
+          "ko": "[[screen]]에 [[droptoken]]와(과) 함께 [[text]]을(를) [[duration]] [[unit]] 동안 표시, 소리: [[sound]]",
+          "ar": "إظهار [[text]] مع [[droptoken]] على [[screen]] لمدة [[duration]] [[unit]]، الصوت: [[sound]]"
         },
         "hint": {
           "en": "Drop an image tag (a doorbell's or camera's snapshot) or a text tag with a picture address on this card. The picture is taken when the Flow runs.",
@@ -1893,6 +2172,99 @@
                   "pl": "minut",
                   "ko": "분",
                   "ar": "دقائق"
+                }
+              }
+            ]
+          },
+          {
+            "type": "dropdown",
+            "name": "sound",
+            "title": {
+              "en": "Sound",
+              "nl": "Geluid",
+              "de": "Ton",
+              "fr": "Son",
+              "it": "Suono",
+              "sv": "Ljud",
+              "no": "Lyd",
+              "es": "Sonido",
+              "da": "Lyd",
+              "ru": "Звук",
+              "pl": "Dźwięk",
+              "ko": "소리",
+              "ar": "الصوت"
+            },
+            "values": [
+              {
+                "id": "none",
+                "title": {
+                  "en": "no sound",
+                  "nl": "geen geluid",
+                  "de": "kein Ton",
+                  "fr": "aucun son",
+                  "it": "nessun suono",
+                  "sv": "inget ljud",
+                  "no": "ingen lyd",
+                  "es": "sin sonido",
+                  "da": "ingen lyd",
+                  "ru": "без звука",
+                  "pl": "bez dźwięku",
+                  "ko": "소리 없음",
+                  "ar": "بلا صوت"
+                }
+              },
+              {
+                "id": "chime",
+                "title": {
+                  "en": "chime",
+                  "nl": "belletje",
+                  "de": "Klang",
+                  "fr": "carillon",
+                  "it": "rintocco",
+                  "sv": "pling",
+                  "no": "pling",
+                  "es": "campanilla",
+                  "da": "pling",
+                  "ru": "перезвон",
+                  "pl": "dzwoneczek",
+                  "ko": "차임",
+                  "ar": "رنين"
+                }
+              },
+              {
+                "id": "doorbell",
+                "title": {
+                  "en": "doorbell",
+                  "nl": "deurbel",
+                  "de": "Türklingel",
+                  "fr": "sonnette",
+                  "it": "campanello",
+                  "sv": "dörrklocka",
+                  "no": "dørklokke",
+                  "es": "timbre",
+                  "da": "dørklokke",
+                  "ru": "дверной звонок",
+                  "pl": "dzwonek do drzwi",
+                  "ko": "초인종",
+                  "ar": "جرس الباب"
+                }
+              },
+              {
+                "id": "alert",
+                "title": {
+                  "en": "alert",
+                  "nl": "alarm",
+                  "de": "Alarm",
+                  "fr": "alerte",
+                  "it": "allarme",
+                  "sv": "larm",
+                  "no": "alarm",
+                  "es": "alerta",
+                  "da": "alarm",
+                  "ru": "тревога",
+                  "pl": "alarm",
+                  "ko": "경고음",
+                  "ar": "تنبيه"
                 }
               }
             ]
@@ -12454,19 +12826,19 @@
             "ar": "اسم الشاشة"
           },
           "hint": {
-            "en": "The name the popup Flow cards send to. The widget shows a bell and this name; a message or question sent here opens over the dashboard on this phone or tablet. Put it at the bottom of the dashboard, so it doesn't push other widgets down.",
-            "nl": "De naam waar de pop-up-Flowkaarten naartoe sturen. De widget toont een bel en deze naam; een bericht of vraag die hierheen gaat, opent over het dashboard op deze telefoon of tablet. Zet hem onderaan het dashboard, zodat hij geen andere widgets omlaag duwt.",
-            "de": "Der Name, an den die Popup-Flow-Karten senden. Das Widget zeigt eine Glocke und diesen Namen; eine Nachricht oder Frage hierher öffnet sich über dem Dashboard auf diesem Handy oder Tablet. Setz es unten aufs Dashboard, damit es keine anderen Widgets nach unten schiebt.",
-            "fr": "Le nom auquel les cartes Flow de pop-up envoient. Le widget affiche une cloche et ce nom ; un message ou une question envoyé ici s'ouvre par-dessus le tableau de bord sur ce téléphone ou cette tablette. Placez-le en bas du tableau de bord, pour qu'il ne pousse pas les autres widgets vers le bas.",
-            "it": "Il nome a cui inviano le schede Flow dei popup. Il widget mostra una campanella e questo nome; un messaggio o una domanda inviati qui si aprono sopra la dashboard su questo telefono o tablet. Mettilo in fondo alla dashboard, così non spinge in basso gli altri widget.",
-            "sv": "Namnet som popup-fönstrens Flow-kort skickar till. Widgeten visar en klocka och det här namnet; ett meddelande eller en fråga som skickas hit öppnas över instrumentpanelen på den här telefonen eller surfplattan. Lägg den längst ner på instrumentpanelen, så att den inte trycker ner andra widgetar.",
-            "no": "Navnet popup-vinduenes Flow-kort sender til. Widgeten viser en bjelle og dette navnet; en melding eller et spørsmål som sendes hit, åpnes over dashbordet på denne telefonen eller nettbrettet. Legg den nederst på dashbordet, så den ikke skyver andre widgeter ned.",
-            "es": "El nombre al que envían las tarjetas Flow de ventanas emergentes. El widget muestra una campana y este nombre; un mensaje o una pregunta enviados aquí se abren sobre el panel en este teléfono o tableta. Ponlo al final del panel, para que no empuje hacia abajo los demás widgets.",
-            "da": "Navnet, som popup-Flowkortene sender til. Widgetten viser en klokke og dette navn; en besked eller et spørgsmål sendt hertil åbner over dashboardet på denne telefon eller tablet. Sæt den nederst på dashboardet, så den ikke skubber andre widgets ned.",
-            "ru": "Имя, на которое отправляют карточки Flow всплывающих окон. Виджет показывает колокольчик и это имя; сообщение или вопрос, отправленные сюда, открываются поверх панели на этом телефоне или планшете. Разместите его внизу панели, чтобы он не сдвигал другие виджеты вниз.",
-            "pl": "Nazwa, do której wysyłają karty Flow okien wyskakujących. Widżet pokazuje dzwonek i tę nazwę; wiadomość lub pytanie wysłane tutaj otwiera się nad pulpitem na tym telefonie lub tablecie. Umieść go na dole pulpitu, aby nie przesuwał innych widżetów w dół.",
-            "ko": "팝업 Flow 카드가 보내는 이름입니다. 위젯에는 종 모양과 이 이름이 표시되며, 여기로 보낸 메시지나 질문은 이 휴대폰이나 태블릿의 대시보드 위에 열립니다. 다른 위젯을 아래로 밀지 않도록 대시보드 맨 아래에 두세요.",
-            "ar": "الاسم الذي ترسل إليه بطاقات Flow للنوافذ المنبثقة. تعرض الأداة جرسًا وهذا الاسم؛ الرسالة أو السؤال المرسل هنا يفتح فوق اللوحة على هذا الهاتف أو الجهاز اللوحي. ضعها في أسفل اللوحة حتى لا تدفع الأدوات الأخرى إلى الأسفل."
+            "en": "The name the popup Flow cards send to; a message or question sent here opens over the dashboard on this phone or tablet. The widget itself is blank. Put it at the bottom of the dashboard, so it doesn't push other widgets down.",
+            "nl": "De naam waar de pop-up-Flowkaarten naartoe sturen; een bericht of vraag die hierheen gaat, opent over het dashboard op deze telefoon of tablet. De widget zelf is leeg. Zet hem onderaan het dashboard, zodat hij geen andere widgets omlaag duwt.",
+            "de": "Der Name, an den die Popup-Flow-Karten senden; eine Nachricht oder Frage hierher öffnet sich über dem Dashboard auf diesem Handy oder Tablet. Das Widget selbst ist leer. Setz es unten aufs Dashboard, damit es keine anderen Widgets nach unten schiebt.",
+            "fr": "Le nom auquel les cartes Flow de pop-up envoient ; un message ou une question envoyé ici s'ouvre par-dessus le tableau de bord sur ce téléphone ou cette tablette. Le widget lui-même est vide. Placez-le en bas du tableau de bord, pour qu'il ne pousse pas les autres widgets vers le bas.",
+            "it": "Il nome a cui inviano le schede Flow dei popup; un messaggio o una domanda inviati qui si aprono sopra la dashboard su questo telefono o tablet. Il widget in sé è vuoto. Mettilo in fondo alla dashboard, così non spinge in basso gli altri widget.",
+            "sv": "Namnet som popup-fönstrens Flow-kort skickar till; ett meddelande eller en fråga som skickas hit öppnas över instrumentpanelen på den här telefonen eller surfplattan. Själva widgeten är tom. Lägg den längst ner på instrumentpanelen, så att den inte trycker ner andra widgetar.",
+            "no": "Navnet popup-vinduenes Flow-kort sender til; en melding eller et spørsmål som sendes hit, åpnes over dashbordet på denne telefonen eller nettbrettet. Selve widgeten er tom. Legg den nederst på dashbordet, så den ikke skyver andre widgeter ned.",
+            "es": "El nombre al que envían las tarjetas Flow de ventanas emergentes; un mensaje o una pregunta enviados aquí se abren sobre el panel en este teléfono o tableta. El widget en sí está vacío. Ponlo al final del panel, para que no empuje hacia abajo los demás widgets.",
+            "da": "Navnet, som popup-Flowkortene sender til; en besked eller et spørgsmål sendt hertil åbner over dashboardet på denne telefon eller tablet. Selve widgetten er tom. Sæt den nederst på dashboardet, så den ikke skubber andre widgets ned.",
+            "ru": "Имя, на которое отправляют карточки Flow всплывающих окон; сообщение или вопрос, отправленные сюда, открываются поверх панели на этом телефоне или планшете. Сам виджет пустой. Разместите его внизу панели, чтобы он не сдвигал другие виджеты вниз.",
+            "pl": "Nazwa, do której wysyłają karty Flow okien wyskakujących; wiadomość lub pytanie wysłane tutaj otwiera się nad pulpitem na tym telefonie lub tablecie. Sam widżet jest pusty. Umieść go na dole pulpitu, aby nie przesuwał innych widżetów w dół.",
+            "ko": "팝업 Flow 카드가 보내는 이름이며, 여기로 보낸 메시지나 질문은 이 휴대폰이나 태블릿의 대시보드 위에 열립니다. 위젯 자체는 비어 있습니다. 다른 위젯을 아래로 밀지 않도록 대시보드 맨 아래에 두세요.",
+            "ar": "الاسم الذي ترسل إليه بطاقات Flow للنوافذ المنبثقة؛ الرسالة أو السؤال المرسل هنا يفتح فوق اللوحة على هذا الهاتف أو الجهاز اللوحي. الأداة نفسها فارغة. ضعها في أسفل اللوحة حتى لا تدفع الأدوات الأخرى إلى الأسفل."
           },
           "placeholder": {
             "en": "Screen",

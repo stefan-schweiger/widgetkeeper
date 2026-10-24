@@ -533,7 +533,6 @@
   "popups": {
     "everywhere": "Everywhere",
     "everywhereHint": "Every web dashboard and Popups widget",
-    "webDashboard": "Web dashboard",
     "screenName": "Popups widget",
     "screenNew": "New screen name",
     "noPicture": "No picture",

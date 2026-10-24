@@ -16,19 +16,19 @@
     "ar": "السؤال بنعم أو لا في نافذة منبثقة مع صورة"
   },
   "titleFormatted": {
-    "en": "Ask [[question]] with [[droptoken]] on [[screen]], wait up to [[seconds]] seconds",
-    "nl": "Vraag [[question]] met [[droptoken]] op [[screen]], wacht maximaal [[seconds]] seconden",
-    "de": "[[question]] mit [[droptoken]] auf [[screen]] fragen, höchstens [[seconds]] Sekunden warten",
-    "fr": "Demander [[question]] avec [[droptoken]] sur [[screen]], attendre au plus [[seconds]] secondes",
-    "it": "Chiedi [[question]] con [[droptoken]] su [[screen]], attendi al massimo [[seconds]] secondi",
-    "sv": "Fråga [[question]] med [[droptoken]] på [[screen]], vänta högst [[seconds]] sekunder",
-    "no": "Spør [[question]] med [[droptoken]] på [[screen]], vent høyst [[seconds]] sekunder",
-    "es": "Preguntar [[question]] con [[droptoken]] en [[screen]], esperar como máximo [[seconds]] segundos",
-    "da": "Spørg [[question]] med [[droptoken]] på [[screen]], vent højst [[seconds]] sekunder",
-    "ru": "Спросить [[question]] с [[droptoken]] на [[screen]], ждать не дольше [[seconds]] с",
-    "pl": "Zapytaj [[question]] z [[droptoken]] na [[screen]], czekaj najwyżej [[seconds]] s",
-    "ko": "[[screen]]에서 [[droptoken]]와(과) 함께 [[question]] 묻기, 최대 [[seconds]]초 대기",
-    "ar": "اسأل [[question]] مع [[droptoken]] على [[screen]]، وانتظر [[seconds]] ثانية على الأكثر"
+    "en": "Ask [[question]] with [[droptoken]] on [[screen]], wait up to [[seconds]] seconds, sound: [[sound]]",
+    "nl": "Vraag [[question]] met [[droptoken]] op [[screen]], wacht maximaal [[seconds]] seconden, geluid: [[sound]]",
+    "de": "[[question]] mit [[droptoken]] auf [[screen]] fragen, höchstens [[seconds]] Sekunden warten, Ton: [[sound]]",
+    "fr": "Demander [[question]] avec [[droptoken]] sur [[screen]], attendre au plus [[seconds]] secondes, son : [[sound]]",
+    "it": "Chiedi [[question]] con [[droptoken]] su [[screen]], attendi al massimo [[seconds]] secondi, suono: [[sound]]",
+    "sv": "Fråga [[question]] med [[droptoken]] på [[screen]], vänta högst [[seconds]] sekunder, ljud: [[sound]]",
+    "no": "Spør [[question]] med [[droptoken]] på [[screen]], vent høyst [[seconds]] sekunder, lyd: [[sound]]",
+    "es": "Preguntar [[question]] con [[droptoken]] en [[screen]], esperar como máximo [[seconds]] segundos, sonido: [[sound]]",
+    "da": "Spørg [[question]] med [[droptoken]] på [[screen]], vent højst [[seconds]] sekunder, lyd: [[sound]]",
+    "ru": "Спросить [[question]] с [[droptoken]] на [[screen]], ждать не дольше [[seconds]] с, звук: [[sound]]",
+    "pl": "Zapytaj [[question]] z [[droptoken]] na [[screen]], czekaj najwyżej [[seconds]] s, dźwięk: [[sound]]",
+    "ko": "[[screen]]에서 [[droptoken]]와(과) 함께 [[question]] 묻기, 최대 [[seconds]]초 대기, 소리: [[sound]]",
+    "ar": "اسأل [[question]] مع [[droptoken]] على [[screen]]، وانتظر [[seconds]] ثانية على الأكثر، الصوت: [[sound]]"
   },
   "hint": {
     "en": "As Ask Yes or No, with an image tag (or a text tag with a picture address) dropped on this card.",
@@ -196,6 +196,99 @@
       "min": 5,
       "max": 85,
       "step": 1
+    },
+    {
+      "type": "dropdown",
+      "name": "sound",
+      "title": {
+        "en": "Sound",
+        "nl": "Geluid",
+        "de": "Ton",
+        "fr": "Son",
+        "it": "Suono",
+        "sv": "Ljud",
+        "no": "Lyd",
+        "es": "Sonido",
+        "da": "Lyd",
+        "ru": "Звук",
+        "pl": "Dźwięk",
+        "ko": "소리",
+        "ar": "الصوت"
+      },
+      "values": [
+        {
+          "id": "none",
+          "title": {
+            "en": "no sound",
+            "nl": "geen geluid",
+            "de": "kein Ton",
+            "fr": "aucun son",
+            "it": "nessun suono",
+            "sv": "inget ljud",
+            "no": "ingen lyd",
+            "es": "sin sonido",
+            "da": "ingen lyd",
+            "ru": "без звука",
+            "pl": "bez dźwięku",
+            "ko": "소리 없음",
+            "ar": "بلا صوت"
+          }
+        },
+        {
+          "id": "chime",
+          "title": {
+            "en": "chime",
+            "nl": "belletje",
+            "de": "Klang",
+            "fr": "carillon",
+            "it": "rintocco",
+            "sv": "pling",
+            "no": "pling",
+            "es": "campanilla",
+            "da": "pling",
+            "ru": "перезвон",
+            "pl": "dzwoneczek",
+            "ko": "차임",
+            "ar": "رنين"
+          }
+        },
+        {
+          "id": "doorbell",
+          "title": {
+            "en": "doorbell",
+            "nl": "deurbel",
+            "de": "Türklingel",
+            "fr": "sonnette",
+            "it": "campanello",
+            "sv": "dörrklocka",
+            "no": "dørklokke",
+            "es": "timbre",
+            "da": "dørklokke",
+            "ru": "дверной звонок",
+            "pl": "dzwonek do drzwi",
+            "ko": "초인종",
+            "ar": "جرس الباب"
+          }
+        },
+        {
+          "id": "alert",
+          "title": {
+            "en": "alert",
+            "nl": "alarm",
+            "de": "Alarm",
+            "fr": "alerte",
+            "it": "allarme",
+            "sv": "larm",
+            "no": "alarm",
+            "es": "alerta",
+            "da": "alarm",
+            "ru": "тревога",
+            "pl": "alarm",
+            "ko": "경고음",
+            "ar": "تنبيه"
+          }
+        }
+      ]
     }
   ]
 }

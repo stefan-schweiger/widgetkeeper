@@ -12,7 +12,6 @@
   const DEFAULT_STRINGS = {
     everywhere: 'Everywhere',
     everywhereHint: 'Every web dashboard and Popups widget',
-    webDashboard: 'Web dashboard',
     screenName: 'Popups widget',
     screenNew: 'New screen name',
     noPicture: 'No picture',
@@ -212,6 +211,8 @@
         useStrings(data);
         if (data.closed) { finish(ending(data)); return; }
         render(data);
+        // The in-app browser opens this page without a tap, so it may refuse the sound.
+        if (data.sound && window.WidgetkeeperKit) window.WidgetkeeperKit.sound.play(data.sound);
       } catch (err) {
         if (err.notFound) { finish(t('notFound')); return; }
         status = el('p', 'pp-status', t('failed'));

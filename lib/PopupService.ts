@@ -23,6 +23,9 @@ export const DEFAULT_SCREEN = 'Screen';
  */
 export const MAX_ASK_SECONDS = 85;
 export const MAX_SHOW_SECONDS = 24 * 3600;
+/** The sounds a popup can open with, the cards' `sound` dropdown (drawn by the kit's `sound`, widgets/spacer/public/kit.js). */
+export const POPUP_SOUNDS = ['chime', 'doorbell', 'alert'] as const;
+export type PopupSound = typeof POPUP_SOUNDS[number];
 
 const MAX_OPEN = 20;
 const MAX_TEXT = 500;
@@ -50,6 +53,7 @@ type Popup = {
   kind: PopupKind,
   text: string,
   picture: Picture | null,
+  sound: PopupSound | null,
   createdAt: number,
   until: number,
   timer: NodeJS.Timeout,
@@ -58,13 +62,16 @@ type Popup = {
 
 type Closed = { token: string, kind: PopupKind, answer: boolean | null, reason: CloseReason, closedAt: number };
 
+/** What a Flow card gives: the screen, the text, the picture and the sound (`soundArg()`). */
+type PopupInput = { target: unknown, text: unknown, picture?: PictureInput, sound?: unknown };
+
 export type AskResult = { answer: boolean, answered: boolean };
 export type AnswerResult = { ok: true, answer: boolean } | { ok: false, reason: 'closed' | 'notAsk', answer: boolean | null };
 
 /** A popup as the screens get it (`popups:show`, `/web/popups`, the widget's `/state`): the picture's source only. */
 export type PopupView = {
   id: string, token: string, target: string, kind: PopupKind, text: string,
-  picture: { source: 'camera' | 'stored' } | null, createdAt: number, until: number,
+  picture: { source: 'camera' | 'stored' } | null, sound: PopupSound | null, createdAt: number, until: number,
 };
 
 /** A screen name's key: trimmed and lower-cased, as Notes' `boardKey()`; a reserved name has none, `''`. */
@@ -111,7 +118,7 @@ export default class PopupService {
   }
 
   /** The Flow card *Show … on … for …*. */
-  async show(input: { target: unknown, text: unknown, seconds: number, picture?: PictureInput }): Promise<void> {
+  async show(input: PopupInput & { seconds: number }): Promise<void> {
     const seconds = Math.min(Math.max(Number(input.seconds) || 0, 1), MAX_SHOW_SECONDS);
     await this.add('message', input, seconds);
   }
@@ -120,7 +127,7 @@ export default class PopupService {
    * The Flow card *Ask … on …*: waits for the first answer from any screen, or until `seconds` (at most
    * `MAX_ASK_SECONDS`) have passed, which is `{answer: false, answered: false}`.
    */
-  async ask(input: { target: unknown, text: unknown, seconds: number, picture?: PictureInput }): Promise<AskResult> {
+  async ask(input: PopupInput & { seconds: number }): Promise<AskResult> {
     const seconds = Math.min(Math.max(Number(input.seconds) || 0, 5), MAX_ASK_SECONDS);
     let resolve!: (result: AskResult) => void;
     const answered = new Promise<AskResult>((r) => { resolve = r; });
@@ -167,7 +174,8 @@ export default class PopupService {
     const p = this.open.get(id);
     if (p && sameToken(p.token, token)) {
       return {
-        closed: false, kind: p.kind, text: p.text, picture: p.picture ? { source: p.picture.source } : null, until: p.until, now: Date.now(),
+        closed: false, kind: p.kind, text: p.text, picture: p.picture ? { source: p.picture.source } : null, sound: p.sound,
+        until: p.until, now: Date.now(),
       };
     }
     const c = this.closed.get(id);
@@ -186,8 +194,9 @@ export default class PopupService {
   }
 
   /**
-   * The Flow cards' screen argument: everywhere, then the web dashboards, then the Popups widgets' screen names (with
-   * `Screen`, the default), then what's typed as a new name.
+   * The Flow cards' screen argument: everywhere, then the Popups widgets' screen names (with `Screen`, the default; a
+   * web dashboard is reached through its Popups widget's name), then what's typed as a new name. A `web:<id>` chosen
+   * while the list still offered the web dashboards keeps working.
    */
   targetItems(query: string): AutocompleteItem[] {
     const q = (query || '').trim().slice(0, MAX_NAME);
@@ -195,7 +204,6 @@ export default class PopupService {
     const items: AutocompleteItem[] = [];
     const everywhere = t('popups.everywhere', 'Everywhere');
     if (matches(q, everywhere)) items.push({ id: 'all', name: everywhere, description: t('popups.everywhereHint', 'Every web dashboard and Popups widget') });
-    for (const d of this.deps.web.dashboardList(q)) items.push({ id: `web:${d.id}`, name: d.name, description: t('popups.webDashboard', 'Web dashboard') });
     const names = new Map<string, string>([[screenKey(DEFAULT_SCREEN), DEFAULT_SCREEN]]);
     for (const [key, n] of Object.entries(this.names)) names.set(key, n.name);
     // The web dashboards' Popups widgets, which never call `/state` (the page shows their popups itself).
@@ -235,6 +243,11 @@ export default class PopupService {
     return null;
   }
 
+  /** The sound dropdown's choice, or null for *no sound* (and for a card saved before it had one). */
+  static soundArg(value: unknown): PopupSound | null {
+    return (POPUP_SOUNDS as readonly unknown[]).includes(value) ? value as PopupSound : null;
+  }
+
   /** A card's droptoken: an image tag as it is, a text tag as an address. */
   static droptokenArg(token: unknown): PictureInput {
     if (token && typeof (token as any).getStream === 'function') return { image: token as { getStream: () => Promise<any> } };
@@ -250,6 +263,7 @@ export default class PopupService {
         kind: p.kind,
         target: p.target === 'all' ? 'all' : p.target.split(':')[0],
         picture: p.picture ? p.picture.source : null,
+        sound: p.sound,
         secondsLeft: Math.round((p.until - now) / 1000),
       })),
       recentlyClosed: [...this.closed.values()].map(c => c.reason),
@@ -294,7 +308,7 @@ export default class PopupService {
     return `name:${key}`;
   }
 
-  private async add(kind: PopupKind, input: { target: unknown, text: unknown, picture?: PictureInput }, seconds: number, resolve?: (r: AskResult) => void) {
+  private async add(kind: PopupKind, input: PopupInput, seconds: number, resolve?: (r: AskResult) => void) {
     const target = this.target(input.target);
     const text = String(input.text ?? '').trim().slice(0, MAX_TEXT);
     const picture = await this.picture(input.picture ?? null);
@@ -309,6 +323,7 @@ export default class PopupService {
       kind,
       text,
       picture,
+      sound: PopupService.soundArg(input.sound),
       createdAt: now,
       until: now + seconds * 1000,
       timer: this.homey.setTimeout(() => this.finish(id, null, 'expired'), seconds * 1000),
@@ -316,7 +331,7 @@ export default class PopupService {
     };
     this.open.set(id, popup);
     this.homey.api.realtime(POPUP_SHOW_EVENT, { ...this.view(popup), now });
-    this.debug(`Popup ${kind} on ${target === 'all' ? 'all' : target.split(':')[0]} for ${seconds} s${picture ? `, ${picture.source} picture` : ''}`);
+    this.debug(`Popup ${kind} on ${target === 'all' ? 'all' : target.split(':')[0]} for ${seconds} s${picture ? `, ${picture.source} picture` : ''}${popup.sound ? `, ${popup.sound}` : ''}`);
   }
 
   private finish(id: string, answer: boolean | null, reason: CloseReason) {
@@ -337,7 +352,7 @@ export default class PopupService {
   private view(p: Popup): PopupView {
     return {
       id: p.id, token: p.token, target: p.target, kind: p.kind, text: p.text,
-      picture: p.picture ? { source: p.picture.source } : null, createdAt: p.createdAt, until: p.until,
+      picture: p.picture ? { source: p.picture.source } : null, sound: p.sound, createdAt: p.createdAt, until: p.until,
     };
   }
 

@@ -16,34 +16,34 @@
     "ar": "إظهار نافذة منبثقة"
   },
   "titleFormatted": {
-    "en": "Show [[text]] on [[screen]] for [[duration]] [[unit]], picture: [[picture]]",
-    "nl": "Toon [[text]] op [[screen]] gedurende [[duration]] [[unit]], afbeelding: [[picture]]",
-    "de": "[[text]] auf [[screen]] für [[duration]] [[unit]] zeigen, Bild: [[picture]]",
-    "fr": "Afficher [[text]] sur [[screen]] pendant [[duration]] [[unit]], image : [[picture]]",
-    "it": "Mostra [[text]] su [[screen]] per [[duration]] [[unit]], immagine: [[picture]]",
-    "sv": "Visa [[text]] på [[screen]] i [[duration]] [[unit]], bild: [[picture]]",
-    "no": "Vis [[text]] på [[screen]] i [[duration]] [[unit]], bilde: [[picture]]",
-    "es": "Mostrar [[text]] en [[screen]] durante [[duration]] [[unit]], imagen: [[picture]]",
-    "da": "Vis [[text]] på [[screen]] i [[duration]] [[unit]], billede: [[picture]]",
-    "ru": "Показать [[text]] на [[screen]] на [[duration]] [[unit]], изображение: [[picture]]",
-    "pl": "Pokaż [[text]] na [[screen]] przez [[duration]] [[unit]], obraz: [[picture]]",
-    "ko": "[[screen]]에 [[text]]을(를) [[duration]] [[unit]] 동안 표시, 사진: [[picture]]",
-    "ar": "إظهار [[text]] على [[screen]] لمدة [[duration]] [[unit]]، الصورة: [[picture]]"
+    "en": "Show [[text]] on [[screen]] for [[duration]] [[unit]], picture: [[picture]], sound: [[sound]]",
+    "nl": "Toon [[text]] op [[screen]] gedurende [[duration]] [[unit]], afbeelding: [[picture]], geluid: [[sound]]",
+    "de": "[[text]] auf [[screen]] für [[duration]] [[unit]] zeigen, Bild: [[picture]], Ton: [[sound]]",
+    "fr": "Afficher [[text]] sur [[screen]] pendant [[duration]] [[unit]], image : [[picture]], son : [[sound]]",
+    "it": "Mostra [[text]] su [[screen]] per [[duration]] [[unit]], immagine: [[picture]], suono: [[sound]]",
+    "sv": "Visa [[text]] på [[screen]] i [[duration]] [[unit]], bild: [[picture]], ljud: [[sound]]",
+    "no": "Vis [[text]] på [[screen]] i [[duration]] [[unit]], bilde: [[picture]], lyd: [[sound]]",
+    "es": "Mostrar [[text]] en [[screen]] durante [[duration]] [[unit]], imagen: [[picture]], sonido: [[sound]]",
+    "da": "Vis [[text]] på [[screen]] i [[duration]] [[unit]], billede: [[picture]], lyd: [[sound]]",
+    "ru": "Показать [[text]] на [[screen]] на [[duration]] [[unit]], изображение: [[picture]], звук: [[sound]]",
+    "pl": "Pokaż [[text]] na [[screen]] przez [[duration]] [[unit]], obraz: [[picture]], dźwięk: [[sound]]",
+    "ko": "[[screen]]에 [[text]]을(를) [[duration]] [[unit]] 동안 표시, 사진: [[picture]], 소리: [[sound]]",
+    "ar": "إظهار [[text]] على [[screen]] لمدة [[duration]] [[unit]]، الصورة: [[picture]]، الصوت: [[sound]]"
   },
   "hint": {
-    "en": "In front of everything on every screen showing that web dashboard, or on the phones and tablets with a Popups widget of that screen name. A tap closes it on that screen.",
-    "nl": "Voor alles op elk scherm dat dat webdashboard toont, of op de telefoons en tablets met een Pop-ups-widget met die schermnaam. Een tik sluit hem op dat scherm.",
-    "de": "Vor allem anderen auf jedem Bildschirm, der dieses Web-Dashboard zeigt, oder auf den Handys und Tablets mit einem Popups-Widget mit diesem Bildschirmnamen. Ein Tippen schließt es auf diesem Bildschirm.",
-    "fr": "Au premier plan sur chaque écran qui affiche ce tableau de bord web, ou sur les téléphones et tablettes avec un widget Pop-ups de ce nom d'écran. Un appui la ferme sur cet écran.",
-    "it": "In primo piano su ogni schermo che mostra quella dashboard web, o su telefoni e tablet con un widget Popup con quel nome di schermo. Un tocco lo chiude su quello schermo.",
-    "sv": "Framför allt annat på varje skärm som visar den webbinstrumentpanelen, eller på telefoner och surfplattor med en Popup-fönster-widget med det skärmnamnet. Ett tryck stänger det på den skärmen.",
-    "no": "Foran alt annet på hver skjerm som viser det nettdashbordet, eller på telefoner og nettbrett med en Popup-vinduer-widget med det skjermnavnet. Et trykk lukker det på den skjermen.",
-    "es": "Delante de todo en cada pantalla que muestre ese panel web, o en los teléfonos y tabletas con un widget Ventanas emergentes con ese nombre de pantalla. Un toque la cierra en esa pantalla.",
-    "da": "Foran alt andet på hver skærm, der viser det webdashboard, eller på telefoner og tablets med en Popups-widget med det skærmnavn. Et tryk lukker den på den skærm.",
-    "ru": "Поверх всего на каждом экране с этой веб-панелью или на телефонах и планшетах с виджетом «Всплывающие окна» с этим именем экрана. Касание закрывает его на этом экране.",
-    "pl": "Na wierzchu na każdym ekranie z tym pulpitem webowym albo na telefonach i tabletach z widżetem Okna wyskakujące o tej nazwie ekranu. Dotknięcie zamyka je na tym ekranie.",
-    "ko": "그 웹 대시보드를 보여주는 모든 화면, 또는 그 화면 이름의 팝업 위젯이 있는 휴대폰과 태블릿에서 모든 것 위에 표시됩니다. 탭하면 그 화면에서 닫힙니다.",
-    "ar": "فوق كل شيء على كل شاشة تعرض لوحة الويب هذه، أو على الهواتف والأجهزة اللوحية التي فيها أداة النوافذ المنبثقة باسم الشاشة هذا. النقر يغلقها على تلك الشاشة."
+    "en": "In front of everything on the web dashboards and on the phones and tablets with a Popups widget of that screen name. A tap closes it on that screen.",
+    "nl": "Voor alles op de webdashboards en op de telefoons en tablets met een Pop-ups-widget met die schermnaam. Een tik sluit hem op dat scherm.",
+    "de": "Vor allem anderen auf den Web-Dashboards und auf den Handys und Tablets mit einem Popups-Widget mit diesem Bildschirmnamen. Ein Tippen schließt es auf diesem Bildschirm.",
+    "fr": "Au premier plan sur les tableaux de bord web et sur les téléphones et tablettes avec un widget Pop-ups de ce nom d'écran. Un appui la ferme sur cet écran.",
+    "it": "In primo piano sulle dashboard web e su telefoni e tablet con un widget Popup con quel nome di schermo. Un tocco lo chiude su quello schermo.",
+    "sv": "Framför allt annat på webbinstrumentpanelerna och på telefoner och surfplattor med en Popup-fönster-widget med det skärmnamnet. Ett tryck stänger det på den skärmen.",
+    "no": "Foran alt annet på nettdashbordene og på telefoner og nettbrett med en Popup-vinduer-widget med det skjermnavnet. Et trykk lukker det på den skjermen.",
+    "es": "Delante de todo en los paneles web y en los teléfonos y tabletas con un widget Ventanas emergentes con ese nombre de pantalla. Un toque la cierra en esa pantalla.",
+    "da": "Foran alt andet på webdashboards og på telefoner og tablets med en Popups-widget med det skærmnavn. Et tryk lukker den på den skærm.",
+    "ru": "Поверх всего на веб-панелях и на телефонах и планшетах с виджетом «Всплывающие окна» с этим именем экрана. Касание закрывает его на этом экране.",
+    "pl": "Na wierzchu na pulpitach webowych oraz na telefonach i tabletach z widżetem Okna wyskakujące o tej nazwie ekranu. Dotknięcie zamyka je na tym ekranie.",
+    "ko": "웹 대시보드와 그 화면 이름의 팝업 위젯이 있는 휴대폰과 태블릿에서 모든 것 위에 표시됩니다. 탭하면 그 화면에서 닫힙니다.",
+    "ar": "فوق كل شيء على لوحات الويب وعلى الهواتف والأجهزة اللوحية التي فيها أداة النوافذ المنبثقة باسم الشاشة هذا. النقر يغلقها على تلك الشاشة."
   },
   "args": [
     {
@@ -241,6 +241,99 @@
         "ko": "사진",
         "ar": "الصورة"
       }
+    },
+    {
+      "type": "dropdown",
+      "name": "sound",
+      "title": {
+        "en": "Sound",
+        "nl": "Geluid",
+        "de": "Ton",
+        "fr": "Son",
+        "it": "Suono",
+        "sv": "Ljud",
+        "no": "Lyd",
+        "es": "Sonido",
+        "da": "Lyd",
+        "ru": "Звук",
+        "pl": "Dźwięk",
+        "ko": "소리",
+        "ar": "الصوت"
+      },
+      "values": [
+        {
+          "id": "none",
+          "title": {
+            "en": "no sound",
+            "nl": "geen geluid",
+            "de": "kein Ton",
+            "fr": "aucun son",
+            "it": "nessun suono",
+            "sv": "inget ljud",
+            "no": "ingen lyd",
+            "es": "sin sonido",
+            "da": "ingen lyd",
+            "ru": "без звука",
+            "pl": "bez dźwięku",
+            "ko": "소리 없음",
+            "ar": "بلا صوت"
+          }
+        },
+        {
+          "id": "chime",
+          "title": {
+            "en": "chime",
+            "nl": "belletje",
+            "de": "Klang",
+            "fr": "carillon",
+            "it": "rintocco",
+            "sv": "pling",
+            "no": "pling",
+            "es": "campanilla",
+            "da": "pling",
+            "ru": "перезвон",
+            "pl": "dzwoneczek",
+            "ko": "차임",
+            "ar": "رنين"
+          }
+        },
+        {
+          "id": "doorbell",
+          "title": {
+            "en": "doorbell",
+            "nl": "deurbel",
+            "de": "Türklingel",
+            "fr": "sonnette",
+            "it": "campanello",
+            "sv": "dörrklocka",
+            "no": "dørklokke",
+            "es": "timbre",
+            "da": "dørklokke",
+            "ru": "дверной звонок",
+            "pl": "dzwonek do drzwi",
+            "ko": "초인종",
+            "ar": "جرس الباب"
+          }
+        },
+        {
+          "id": "alert",
+          "title": {
+            "en": "alert",
+            "nl": "alarm",
+            "de": "Alarm",
+            "fr": "alerte",
+            "it": "allarme",
+            "sv": "larm",
+            "no": "alarm",
+            "es": "alerta",
+            "da": "alarm",
+            "ru": "тревога",
+            "pl": "alarm",
+            "ko": "경고음",
+            "ar": "تنبيه"
+          }
+        }
+      ]
     }
   ]
 }

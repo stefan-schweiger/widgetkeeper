@@ -467,5 +467,75 @@
     return scheme;
   }
 
-  window.WidgetkeeperKit = { icons: ICONS, lights: LIGHTS, TIGHT_UNITS, KEY_PROBLEMS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, timeFormatter, formatSince, baseTitle, lowestSlot, timeSpan, isTimeSpan, wireFrame, getDeviceIds, wireTileNames, colorStyle, applyColors };
+  /**
+   * Short sounds drawn with Web Audio, so no sound files ship: Timers' `beep` and the popups' (the Flow cards' `sound`,
+   * `POPUP_SOUNDS` in lib/PopupService.ts). Each note is [frequency (Hz), start (s), length (s), wave, loudness].
+   */
+  const SOUNDS = {
+    beep: [[880, 0, 0.15, 'sine', 0.3], [880, 0.22, 0.15, 'sine', 0.3], [880, 0.44, 0.15, 'sine', 0.3]],
+    chime: [[880, 0, 0.7, 'sine', 0.3], [1318.5, 0.16, 1.1, 'sine', 0.3]],
+    doorbell: [[659.25, 0, 0.9, 'triangle', 0.4], [523.25, 0.5, 1.4, 'triangle', 0.4]],
+    alert: [[988, 0, 0.14, 'square', 0.12], [988, 0.22, 0.14, 'square', 0.12], [988, 0.44, 0.14, 'square', 0.12], [1319, 0.66, 0.3, 'square', 0.12]],
+  };
+  /** A sound the browser lets the page start this much later is still played; one that waited for a tap isn't. */
+  const LATE_MS = 300;
+  let audio = null;
+
+  /** The page's one AudioContext (every widget of a Smart Stack shares it); null where there's no Web Audio. */
+  function audioContext() {
+    if (audio) return audio;
+    try {
+      const Ctx = window.AudioContext || /** @type {any} */ (window).webkitAudioContext;
+      if (Ctx) audio = new Ctx();
+    } catch (err) { audio = null; }
+    return audio;
+  }
+
+  function playNotes(ctx, notes) {
+    try {
+      const t0 = ctx.currentTime + 0.01;
+      for (const [freq, at, length, wave, loud] of notes) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = wave;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, t0 + at);
+        gain.gain.exponentialRampToValueAtTime(loud, t0 + at + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + at + length);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t0 + at);
+        osc.stop(t0 + at + length + 0.01);
+      }
+    } catch (err) { /* no sound */ }
+  }
+
+  const sound = {
+    names: Object.keys(SOUNDS),
+    /**
+     * Wakes the audio from inside a tap or key press: a page (a WebView, Safari) only makes sound after it's been
+     * used, so a later sound can play.
+     */
+    unlock() {
+      const ctx = audioContext();
+      if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => { /* not a gesture the browser counts */ });
+    },
+    /**
+     * Plays a sound by name: at once, or as soon as the browser lets the audio start (within `LATE_MS`; a sound
+     * refused until the next tap is left out). False when it isn't a sound, or there's no Web Audio.
+     */
+    play(name) {
+      const notes = Object.prototype.hasOwnProperty.call(SOUNDS, name) ? SOUNDS[name] : null;
+      const ctx = notes && audioContext();
+      if (!ctx) return false;
+      if (ctx.state === 'running') {
+        playNotes(ctx, notes);
+      } else {
+        const asked = Date.now();
+        ctx.resume().then(() => { if (Date.now() - asked <= LATE_MS) playNotes(ctx, notes); }, () => { /* wants a tap first */ });
+      }
+      return true;
+    },
+  };
+
+  window.WidgetkeeperKit = { icons: ICONS, lights: LIGHTS, TIGHT_UNITS, KEY_PROBLEMS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, timeFormatter, formatSince, baseTitle, lowestSlot, timeSpan, isTimeSpan, wireFrame, getDeviceIds, wireTileNames, colorStyle, applyColors, sound };
 })();
