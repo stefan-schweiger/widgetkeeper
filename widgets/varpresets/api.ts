@@ -1,6 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { keyResult, logged, logPerf } from '../../lib/widgetApi.js';
+import { keyResult, logged, logPerf, requireId } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -12,9 +12,9 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    if (!query.id) throw new Error('Missing id');
+    const id = requireId(query.id, 'id');
     logPerf(app, 'Variable Presets', query);
-    const [entry] = await logged(app, 'Variable Presets state failed:', () => app.variables.getState([query.id]));
+    const [entry] = await logged(app, 'Variable Presets state failed:', () => app.variables.getState([id]));
     return entry;
   },
 
@@ -27,8 +27,7 @@ export default {
     body: { id?: unknown, value?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const id = body?.id;
-    if (typeof id !== 'string' || !id) throw new Error('Missing id');
+    const id = requireId(body?.id, 'id');
     return keyResult(app, 'Variable preset failed', () => app.variables.set(id, body.value));
   },
 };

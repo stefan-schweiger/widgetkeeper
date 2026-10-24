@@ -2,6 +2,7 @@ import type { App } from 'homey';
 import type WidgetkeeperApp from './app.js';
 import { scopesAllow, type KeyUse } from './lib/PersonalApiKey.js';
 import { idList } from './lib/widgetApi.js';
+import { MAX_DASHBOARDS } from './lib/WebDashboardService.js';
 import { autocompleteKeyUse, callWidgetRoute, routeKeyUse, type WidgetApis } from './lib/widgetRoutes.js';
 import dayssince from './widgets/dayssince/api.js';
 import shortcuts from './widgets/shortcuts/api.js';
@@ -100,6 +101,7 @@ export default {
       widgets: app.web.widgetTypes(language),
       dashboards: app.web.list(),
       front: app.web.front(),
+      maxDashboards: MAX_DASHBOARDS,
     };
   },
 

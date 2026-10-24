@@ -2,10 +2,14 @@
  * The widgets' shared front-end kit, `window.WidgetkeeperKit`: the helpers every widget used to copy. Homey serves
  * each widget's folder and has no shared one, so it lives in the Spacer's (it has no code of its own) and every
  * index.html loads it first as `../spacer/kit.js`, as Charts loads `../electricity/chart.js`. The Smart Stack's
- * pages use the stack's copy; the tests load it before a widget (`test/helpers/loadWidget.ts`).
+ * pages use the one its own frame loaded; the tests load it before a widget (`test/helpers/loadWidget.ts`).
  */
 (function () {
   const DAY = 864e5;
+  const TAP_SLOP = 10; // px a finger may move and still count as a tap
+  /** How long after a touch the browser's own click is ignored (it still sends one after a short swipe). */
+  const CLICK_AFTER_TOUCH_MS = 800;
+  const DEVICE_REFRESH_MS = 5 * 60e3; // keeps the app's device subscriptions alive and resyncs state
 
   /**
    * Flow Buttons' icons, also the icons of Days Since's tiles, Notes, Variable Presets and Media's buttons: drawn on a
@@ -340,12 +344,161 @@
     };
   }
 
-  /** The colour settings' names (Device Values' Flow colours), in kit.css's palette. */
+  /**
+   * When a widget's nodes last got a touch (`touched()`), so a click the browser sends after it is ignored
+   * (`recent()`). One per widget, shared by its taps and its bars: a touch on a bar mustn't come back as a tap on
+   * the tile under it.
+   */
+  function touchGuard() {
+    let at = 0;
+    return {
+      touched() { at = Date.now(); }, // the real clock: a widget's opts.now may be fixed
+      recent() { return Date.now() - at < CLICK_AFTER_TOUCH_MS; },
+    };
+  }
+
+  /**
+   * Taps (born in Quick Actions): a touch that ends within TAP_SLOP of where it started, so a drag is left to the
+   * dashboard and still scrolls it (on Android too, where the dashboard takes drags), with `click` kept for mouse and
+   * keyboard. `pressing` is on the node while a touch may still be a tap. Every touch goes to `guard`, not only taps,
+   * so the click a browser still sends after a short swipe is ignored. `fn(event)`.
+   * - `keys` (on): Enter and Space call it too, for a focusable non-button; off where keys inside it (a button, an
+   *   input) would bubble to it, or on a `<button>`, which clicks on them itself.
+   * - `stop`: the touch, click and keys stop at this node, so a button inside a row or tile doesn't press it too.
+   * - `guard`: the widget's `touchGuard()` (default: one of the node's own).
+   * @param {HTMLElement} node
+   * @param {(e: Event) => void} fn
+   * @param {{ keys?: boolean, stop?: boolean, guard?: { touched: () => void, recent: () => boolean } }} [opts]
+   */
+  function onTap(node, fn, { keys = true, stop = false, guard = touchGuard() } = {}) {
+    let start = null;
+    const unpress = () => { start = null; node.classList.remove('pressing'); };
+    node.addEventListener('touchstart', (e) => {
+      if (stop) e.stopPropagation();
+      const p = e.changedTouches[0];
+      start = { x: p.clientX, y: p.clientY };
+      node.classList.add('pressing');
+    }, { passive: true });
+    node.addEventListener('touchmove', (e) => {
+      const p = e.changedTouches[0];
+      if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
+    }, { passive: true });
+    node.addEventListener('touchend', (e) => {
+      const tap = !!start;
+      unpress();
+      // Every touch: one that moved past TAP_SLOP can still get the browser's click.
+      guard.touched();
+      if (!tap) return;
+      e.preventDefault(); // no click after it
+      if (stop) e.stopPropagation();
+      fn(e);
+    });
+    node.addEventListener('touchcancel', unpress);
+    node.addEventListener('click', (e) => {
+      if (stop) e.stopPropagation();
+      if (guard.recent()) return;
+      fn(e);
+    });
+    if (keys) {
+      node.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        if (stop) e.stopPropagation();
+        fn(e);
+      });
+    }
+  }
+
+  /**
+   * A widget's message line: `set(text, transient)` shows `text` (`text` is what shows, null for none). A transient
+   * one (a failed refresh or tap) goes by itself after `ms`; a lasting one (a failed first load) also runs `clear()`,
+   * which drops what the widget showed. `reset()` takes it away when fresh state comes; `reset({lastingOnly: true})`
+   * leaves a transient one to run out.
+   * @param {() => void} render
+   * @param {{ clear?: (() => void) | null, ms?: number }} [opts]
+   */
+  function messageLine(render, { clear = null, ms = 8000 } = {}) {
+    let text = null;
+    let timer = null;
+    return {
+      get text() { return text; },
+      set(value, transient) {
+        if (timer) clearTimeout(timer);
+        timer = null;
+        text = value;
+        if (transient) timer = setTimeout(() => { text = null; render(); }, ms);
+        else if (clear) clear();
+        render();
+      },
+      reset({ lastingOnly = false } = {}) {
+        if (!lastingOnly || !timer) text = null;
+      },
+    };
+  }
+
+  /**
+   * The usual device widget's loop (CLAUDE.md): the `devices` setting's ids, `/state?deviceIds=…` with them now and
+   * every 5 min (the app drops a device's tracking after 10 min without one), and the realtime `event`'s changes of
+   * those devices (`watches(id)` adds others, e.g. a group's lights). Without devices the widget says
+   * `selectDevices` (or what `need()` says is missing); a failed refresh keeps the tiles with a passing message, only
+   * a failed first load replaces them. `tileNames` (the mount's `wireTileNames()`) reads the names with it; `query()`
+   * adds to the request; `onState(state)` runs after each good one. Ready is told after the first load, once the
+   * text font is in (at most 1 s), so the names don't pop in after the icons.
+   * @param {any} Homey
+   * @param {{ ready: (opts?: object) => Promise<void>, perfParam: (sep?: string) => string }} link the mount's `wireFrame()`
+   * @param {any} widget
+   * @param {{ event?: string | null, tileNames?: { state: (path: string) => Promise<any> } | null, query?: () => string,
+   *   need?: (ids: string[]) => string | null, watches?: (id: string) => boolean, onState?: ((state: any) => void) | null }} [opts]
+   */
+  function wireDeviceState(Homey, link, widget, { event = null, tileNames = null, query = () => '', need = () => null, watches = () => false, onState = null } = {}) {
+    let deviceIds = [];
+    let loaded = false;
+    const ready = () => link.ready({ fonts: true });
+    async function load() {
+      const missing = deviceIds.length ? need(deviceIds) : 'selectDevices';
+      if (missing) {
+        widget.setMessage(widget.t(missing));
+        ready();
+        return;
+      }
+      try {
+        const path = `/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${query()}${link.perfParam()}`;
+        const state = await (tileNames ? tileNames.state(path) : Homey.api('GET', path));
+        widget.setState(state);
+        loaded = true;
+        if (onState) onState(state);
+      } catch (err) {
+        console.error(err);
+        // A failed refresh keeps the tiles; only a failed first load replaces them with the error.
+        widget.setMessage(widget.t('error'), loaded);
+      }
+      ready();
+    }
+    if (event) {
+      Homey.on(event, (data) => {
+        if (data && (deviceIds.includes(data.deviceId) || watches(data.deviceId))) widget.pushChange(data);
+      });
+    }
+    getDeviceIds(Homey)
+      .then((ids) => { deviceIds = ids; })
+      .then(() => {
+        setInterval(load, DEVICE_REFRESH_MS);
+        load();
+      });
+    return {
+      /** The `devices` setting's ids (empty until read). */
+      ids: () => deviceIds,
+      /** Whether a `/state` has come. */
+      loaded: () => loaded,
+    };
+  }
+
+  /** The colour settings' names (Device Values', Flow Buttons' and Notes' Flow colours, `TILE_COLORS` in lib/tileColors.ts), in kit.css's palette. */
   const COLORS = ['blue', 'red', 'orange', 'yellow', 'green', 'purple'];
 
   /**
-   * The `colorStyle` setting ("Colours"): 'deep' (Homey's darker shades as solid fills, white text) or 'soft' (the
-   * default). Device Values' old 'bright' reads as 'deep'; a missing or unknown value is the default.
+   * The `colorStyle` setting ("Colour style"): 'deep' ("Vivid": Homey's darker shades as solid fills, white text) or
+   * 'soft' ("Muted", the default). Device Values' old 'bright' reads as 'deep'; a missing or unknown value is the default.
    */
   function colorStyle(value) {
     return value === 'deep' || value === 'bright' ? 'deep' : 'soft';
@@ -367,5 +520,8 @@
     return scheme;
   }
 
-  window.WidgetkeeperKit = { icons: ICONS, TIGHT_UNITS, KEY_PROBLEMS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, timeFormatter, formatSince, baseTitle, lowestSlot, wireFrame, getDeviceIds, wireTileNames, colorStyle, applyColors };
+  window.WidgetkeeperKit = {
+    icons: ICONS, TIGHT_UNITS, KEY_PROBLEMS, COLORS, scaled, formatNumber, formatValue, undoTextZoom, el, setMask, tileNames, timeFormatter, formatSince,
+    baseTitle, lowestSlot, wireFrame, getDeviceIds, wireTileNames, touchGuard, onTap, messageLine, wireDeviceState, colorStyle, applyColors,
+  };
 })();

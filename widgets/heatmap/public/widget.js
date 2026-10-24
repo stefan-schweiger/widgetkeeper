@@ -3,7 +3,7 @@
  * lowest to the highest value shown, with a scale and a legend. Plain browser JS (served as-is).
  */
 (function () {
-  const { el, COLORS, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, COLORS, applyColors, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const LEVELS = 5;
@@ -98,8 +98,8 @@
     const title = typeof opts.title === 'string' ? opts.title.trim() : '';
 
     let data = null;
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { data = null; } });
     let lastHeight = 0;
 
     root.classList.add('hm');
@@ -116,18 +116,13 @@
 
     function setData(d) {
       data = d;
-      messageText = null;
+      message.reset();
       render();
     }
 
     /** A message in place of the subtitle. Persistent messages also clear the data. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else data = null;
-      render();
+      message.set(text, transient);
     }
 
     function numberFormat(cap, v, min, max) {
@@ -156,9 +151,9 @@
     function render() {
       nameEl.textContent = data ? title || data.name : '';
       nameEl.style.display = data ? '' : 'none';
-      const sub = messageText || (data ? data.capability.title : '');
+      const sub = message.text || (data ? data.capability.title : '');
       subEl.textContent = sub;
-      subEl.classList.toggle('error', !!messageText && !!data);
+      subEl.classList.toggle('error', !!message.text && !!data);
       header.classList.toggle('message-only', !data);
       iconBox.style.display = data ? '' : 'none';
       if (data && data.icon) {

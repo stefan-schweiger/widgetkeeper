@@ -32,7 +32,7 @@ describe('copied widget helpers', () => {
 
   it('no widget keeps a copy of a kit helper', () => {
     const kit = ['undoTextZoom', 'el', 'setMask', 'tileNames', 'timeFormatter', 'formatSince', 'baseTitle', 'lowestSlot', 'loadMarks', 'wireTileNames',
-      'wireFrame', 'getDeviceIds', 'perfParam', 'bodyHeight', 'frameHeight'];
+      'wireFrame', 'getDeviceIds', 'perfParam', 'bodyHeight', 'frameHeight', 'touchGuard', 'messageLine', 'wireDeviceState'];
     for (const id of WIDGETS) {
       for (const file of ['widget.js', 'mount.js', 'index.html']) {
         if (!existsSync(`widgets/${id}/public/${file}`)) continue;
@@ -53,12 +53,19 @@ describe('copied widget helpers', () => {
     }
   });
 
-  it('onTap() is the same in the widgets that share a version', () => {
-    // Deliberately different: Media's and Variables' have no keydown (their rows hold buttons and inputs
-    // whose keys would bubble to it), and the stack's is its own design.
-    expectSame(['lights', 'curtains'].map(id => source(id, 'onTap'))); // in the widget's closure
-    expectSame(['flows', 'sensordots', 'roomhealth', 'shortcuts'].map(id => source(id, 'onTap')));
-    expectSame(['timers', 'locks', 'dayssince'].map(id => source(id, 'onTap'))); // stops the tap at a button inside a row
+  it("taps go through the kit's onTap() (the stack's swipe-aware taps are its own design)", () => {
+    for (const id of WIDGETS.filter(w => w !== 'stack')) {
+      const js = read(id, 'widget.js');
+      expect(js, `${id}: tap logic of its own`).not.toMatch(/TAP_SLOP|lastTouchTap|Math\.hypot\(p\.clientX/);
+    }
+  });
+
+  it("transient messages go through the kit's messageLine()", () => {
+    // Charts keeps its message and its transient one apart; the thermostat's panel message is its own.
+    for (const id of WIDGETS.filter(w => w !== 'charts' && w !== 'thermostat')) {
+      expect(read(id, 'widget.js'), `${id}: a message timer of its own`).not.toMatch(/let message(Text|Timer)\b/);
+    }
+    expect(read('thermostat', 'presets.js')).not.toMatch(/let message(Text|Timer)\b/);
   });
 
   it('nameKeys() is the same in every widget with repeatable slots', () => {

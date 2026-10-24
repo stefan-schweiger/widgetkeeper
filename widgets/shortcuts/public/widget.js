@@ -4,10 +4,8 @@
  * marked and does nothing. Web dashboards only. Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, applyColors, onTap, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
-
-  const TAP_SLOP = 10; // px a finger may move and still count as a tap
 
   const DEFAULT_STRINGS = {
     selectSlots: 'Pick dashboards in the widget settings.',
@@ -48,44 +46,6 @@
   }
 
   /**
-   * A tap: a touch that ends within TAP_SLOP of where it started (a drag is left to the dashboard, so it
-   * still scrolls), or a click from a mouse or keyboard. Quick Actions' logic.
-   */
-  function onTap(node, fn) {
-    let start = null;
-    let lastTouchTap = 0;
-    const unpress = () => { start = null; node.classList.remove('pressing'); };
-    node.addEventListener('touchstart', (e) => {
-      const p = e.changedTouches[0];
-      start = { x: p.clientX, y: p.clientY };
-      node.classList.add('pressing');
-    }, { passive: true });
-    node.addEventListener('touchmove', (e) => {
-      const p = e.changedTouches[0];
-      if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
-    }, { passive: true });
-    node.addEventListener('touchend', (e) => {
-      const tap = !!start;
-      unpress();
-      // Every touch: one that moved past TAP_SLOP can still get the browser's click.
-      lastTouchTap = Date.now();
-      if (!tap) return;
-      e.preventDefault(); // no click after it
-      fn(e);
-    });
-    node.addEventListener('touchcancel', unpress);
-    node.addEventListener('click', (e) => {
-      if (Date.now() - lastTouchTap < 800) return;
-      fn(e);
-    });
-    node.addEventListener('keydown', (e) => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      e.preventDefault();
-      fn(e);
-    });
-  }
-
-  /**
    * @param {HTMLElement} root
    * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, columns?: number|string,
    *   tiles?: {id: string, color?: string, icon?: string}[],
@@ -105,8 +65,8 @@
 
     let dashboards = []; // [{ id, name } | { id, missing }], one per tile
     let current = null; // the id of the dashboard this widget is on
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { dashboards = []; } });
 
     root.classList.add('sc');
     applyColors(root, { style: opts.colorStyle });
@@ -127,18 +87,13 @@
       const s = state && typeof state === 'object' ? state : {};
       dashboards = (Array.isArray(s.tiles) ? s.tiles : []).filter(d => d && typeof d.id === 'string');
       current = typeof s.current === 'string' ? s.current : null;
-      messageText = null;
+      message.reset();
       render();
     }
 
     /** A message under the tiles. Persistent messages also clear the tiles. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else dashboards = [];
-      render();
+      message.set(text, transient);
     }
 
     function shake(index) {
@@ -206,9 +161,9 @@
         }
       });
       grid.style.display = dashboards.length ? '' : 'none';
-      messageEl.textContent = messageText || '';
-      messageEl.style.display = messageText ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && dashboards.length > 0);
+      messageEl.textContent = message.text || '';
+      messageEl.style.display = message.text ? '' : 'none';
+      messageEl.classList.toggle('error', !!message.text && dashboards.length > 0);
 
       const h = Math.ceil(root.getBoundingClientRect().height);
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }

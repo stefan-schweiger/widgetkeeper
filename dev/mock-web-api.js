@@ -4,6 +4,55 @@
 // `mockWebApi({lang, dashboards, zones, devices, readings})`: the dashboards, and for the device and value pickers a
 // made-up house (`zones`: id → [name, parent id]; `devices`: {id, name, zone, class, capabilities, icon};
 // `readings`: capability → {title, type, units, …, value (or a function of the device)}).
+
+// The editor's sections, as lib/WebDashboardService.ts's settingSections() makes them: test/web-dashboards.test.ts
+// checks the two agree on every widget's settings in every language.
+function mockSettingSections(settings, lang) {
+  const SUB_ROW = /^\s+–\s*/;
+  const NUMBERED = /^(.*\S)\s+\d+$/;
+  const capitalize = (text) => text.charAt(0).toLocaleUpperCase() + text.slice(1);
+  const loc = (text) => (text && typeof text === 'object' ? text[lang] || text.en : text) || '';
+  const en = settings.map(s => (s.title && s.title.en) || s.id);
+  const sub = en.map(t => SUB_ROW.test(t));
+  const labels = new Map();
+  const sections = [];
+  let plain = null;
+  for (let i = 0; i < settings.length;) {
+    const title = loc(settings[i].title) || settings[i].id;
+    let end = i + 1;
+    while (!sub[i] && end < settings.length && sub[end]) end++;
+    if (end > i + 1) {
+      const enColon = en[i].indexOf(':');
+      const colon = title.indexOf(':');
+      labels.set(settings[i].id, enColon < 0 || colon < 0 ? title : capitalize(title.slice(colon + 1).trim()));
+      for (let j = i + 1; j < end; j++) labels.set(settings[j].id, capitalize((loc(settings[j].title) || settings[j].id).replace(SUB_ROW, '')));
+      sections.push({ kind: 'group', title: enColon < 0 || colon < 0 ? title : title.slice(0, colon).trim(),
+        numbered: NUMBERED.test(enColon < 0 ? en[i] : en[i].slice(0, enColon)), ids: settings.slice(i, end).map(s => s.id) });
+      plain = null;
+      i = end;
+      continue;
+    }
+    const base = !sub[i] && !en[i].includes(':') ? (NUMBERED.exec(en[i]) || [])[1] : undefined;
+    let last = i;
+    if (base) {
+      while (last + 1 < settings.length && !sub[last + 1] && !sub[last + 2] && settings[last + 1].type === settings[i].type
+        && (NUMBERED.exec(en[last + 1]) || [])[1] === base) last++;
+    }
+    if (last > i) {
+      for (let j = i; j <= last; j++) labels.set(settings[j].id, loc(settings[j].title) || settings[j].id);
+      sections.push({ kind: 'slots', ids: settings.slice(i, last + 1).map(s => s.id) });
+      plain = null;
+      i = last + 1;
+      continue;
+    }
+    labels.set(settings[i].id, sub[i] ? capitalize(title.replace(SUB_ROW, '')) : title);
+    if (!plain) sections.push({ kind: 'plain', ids: plain = [] });
+    plain.push(settings[i].id);
+    i++;
+  }
+  return { sections, labels };
+}
+
 function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], readings = {} } = {}) {
   try { localStorage.setItem('widgetkeeper.web.key', 'preview'); } catch (e) { /* private mode */ }
   const loc = (text) => (text && typeof text === 'object' ? text[lang] || text.en : text) || '';
@@ -24,51 +73,6 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
     if (filter.capabilities && !any(filter.capabilities).some(c => d.capabilities.includes(c))) return false;
     return true;
   };
-  // The editor's sections, as lib/WebDashboardService.ts's settingSections() makes them (keep the two alike).
-  const SUB_ROW = /^\s+–\s*/;
-  const NUMBERED = /^(.*\S)\s+\d+$/;
-  const capitalize = (text) => text.charAt(0).toLocaleUpperCase() + text.slice(1);
-  function settingSections(settings) {
-    const en = settings.map(s => (s.title && s.title.en) || s.id);
-    const sub = en.map(t => SUB_ROW.test(t));
-    const labels = new Map();
-    const sections = [];
-    let plain = null;
-    for (let i = 0; i < settings.length;) {
-      const title = loc(settings[i].title) || settings[i].id;
-      let end = i + 1;
-      while (!sub[i] && end < settings.length && sub[end]) end++;
-      if (end > i + 1) {
-        const enColon = en[i].indexOf(':');
-        const colon = title.indexOf(':');
-        labels.set(settings[i].id, enColon < 0 || colon < 0 ? title : capitalize(title.slice(colon + 1).trim()));
-        for (let j = i + 1; j < end; j++) labels.set(settings[j].id, capitalize((loc(settings[j].title) || settings[j].id).replace(SUB_ROW, '')));
-        sections.push({ kind: 'group', title: enColon < 0 || colon < 0 ? title : title.slice(0, colon).trim(),
-          numbered: NUMBERED.test(enColon < 0 ? en[i] : en[i].slice(0, enColon)), ids: settings.slice(i, end).map(s => s.id) });
-        plain = null;
-        i = end;
-        continue;
-      }
-      const base = !sub[i] && !en[i].includes(':') ? (NUMBERED.exec(en[i]) || [])[1] : undefined;
-      let last = i;
-      if (base) {
-        while (last + 1 < settings.length && !sub[last + 1] && !sub[last + 2] && settings[last + 1].type === settings[i].type
-          && (NUMBERED.exec(en[last + 1]) || [])[1] === base) last++;
-      }
-      if (last > i) {
-        for (let j = i; j <= last; j++) labels.set(settings[j].id, loc(settings[j].title) || settings[j].id);
-        sections.push({ kind: 'slots', ids: settings.slice(i, last + 1).map(s => s.id) });
-        plain = null;
-        i = last + 1;
-        continue;
-      }
-      labels.set(settings[i].id, sub[i] ? capitalize(title.replace(SUB_ROW, '')) : title);
-      if (!plain) sections.push({ kind: 'plain', ids: plain = [] });
-      plain.push(settings[i].id);
-      i++;
-    }
-    return { sections, labels };
-  }
 
   async function answer(method, path, body) {
     await ready;
@@ -76,7 +80,7 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
     const q = new URLSearchParams(qs || '');
     if (p === '/web/setup') {
       const widgets = Object.entries(manifest.widgets).map(([type, w]) => {
-        const { sections, labels } = settingSections(w.settings || []);
+        const { sections, labels } = mockSettingSections(w.settings || [], lang);
         return {
           type,
           name: loc(w.name) || type,
@@ -93,7 +97,7 @@ function mockWebApi({ lang = 'en', dashboards = [], zones = {}, devices = [], re
           sections,
         };
       });
-      return { appId: 'com.thomassidor.widgetkeeper', homeyId: 'preview', language: lang, strings, widgets, dashboards, front };
+      return { appId: 'com.thomassidor.widgetkeeper', homeyId: 'preview', language: lang, strings, widgets, dashboards, front, maxDashboards: 64 };
     }
     if (p === '/web/devices') {
       // Another app's widget sends its filter (the made-up app has no devices of its own, so `app=1` is left out).

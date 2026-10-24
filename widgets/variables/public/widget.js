@@ -5,12 +5,11 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, applyColors, KEY_PROBLEMS } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, applyColors, KEY_PROBLEMS, onTap: kitOnTap, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a changed value shows while waiting for Homey's update
   const STEP_DELAY = 700; // ms after the last −/+ tap before the value is sent, so +++ sends once
-  const TAP_SLOP = 10; // px a finger may move and still count as a tap
 
   const DEFAULT_STRINGS = {
     selectSlots: 'Pick variables in the widget settings.',
@@ -59,39 +58,9 @@
     return typeof n === 'number' && isFinite(n) ? n.toLocaleString(undefined, { maximumFractionDigits: 3 }) : '–';
   }
 
-  /**
-   * A tap: a touch that ends within TAP_SLOP of where it started (a drag is left to the dashboard, so it
-   * still scrolls), or a click from a mouse or keyboard. Quick Actions' logic.
-   */
+  // Every tap stops at its node, so a button's tap doesn't press the row around it too.
   function onTap(node, fn) {
-    let start = null;
-    let lastTouchTap = 0;
-    const unpress = () => { start = null; node.classList.remove('pressing'); };
-    node.addEventListener('touchstart', (e) => {
-      const p = e.changedTouches[0];
-      start = { x: p.clientX, y: p.clientY };
-      node.classList.add('pressing');
-    }, { passive: true });
-    node.addEventListener('touchmove', (e) => {
-      const p = e.changedTouches[0];
-      if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
-    }, { passive: true });
-    node.addEventListener('touchend', (e) => {
-      const tap = !!start;
-      unpress();
-      // Every touch: one that moved past TAP_SLOP can still get the browser's click.
-      lastTouchTap = Date.now();
-      if (!tap) return;
-      e.preventDefault(); // no click after it
-      e.stopPropagation(); // a −/+ tap isn't also a tap on its row
-      fn(e);
-    });
-    node.addEventListener('touchcancel', unpress);
-    node.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (Date.now() - lastTouchTap < 800) return;
-      fn(e);
-    });
+    kitOnTap(node, fn, { stop: true, keys: false });
   }
 
   const keyOf = v => v.id;
@@ -137,8 +106,8 @@
     const stepTimers = new Map(); // variable id → timer of a pending −/+ send
     /** @type {{index: number, id: string, input: HTMLInputElement, cancelled: boolean} | null} */
     let editing = null;
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { vars = []; } });
 
     root.classList.add('vr');
     applyColors(root, { style: opts.colorStyle, color: opts.color, fallback: 'blue' });
@@ -159,7 +128,7 @@
 
     function setState(list) {
       vars = Array.isArray(list) ? list : [];
-      messageText = null;
+      message.reset();
       render();
     }
 
@@ -180,12 +149,7 @@
 
     /** A message under the rows. Persistent messages also clear the rows. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else vars = [];
-      render();
+      message.set(text, transient);
     }
 
     function shownValue(v) {
@@ -392,9 +356,9 @@
         }
       });
       grid.style.display = vars.length ? '' : 'none';
-      messageEl.textContent = messageText || '';
-      messageEl.style.display = messageText ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && vars.length > 0);
+      messageEl.textContent = message.text || '';
+      messageEl.style.display = message.text ? '' : 'none';
+      messageEl.classList.toggle('error', !!message.text && vars.length > 0);
 
       const h = Math.ceil(root.getBoundingClientRect().height);
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }

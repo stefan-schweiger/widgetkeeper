@@ -4,12 +4,11 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, applyColors, onTap, touchGuard, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a tapped tile shows its new state while waiting for the device
   const PRESS_MS = 600; // how long a momentary (button) action lights the tile
-  const TAP_SLOP = 10; // px a finger may move and still count as a tap
 
   const DEFAULT_STRINGS = {
     selectDevices: 'Select devices in the widget settings.',
@@ -61,8 +60,8 @@
     let devices = []; // [{ id, name, icon, quickAction } | { id, missing }]
     const optimistic = new Map(); // deviceId → { value, until }
     const pressed = new Map(); // deviceId → until (momentary actions)
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { devices = []; } });
 
     root.classList.add('qa');
     const names = tileNames(opts, () => render(), (key) => {
@@ -74,13 +73,13 @@
     applyColors(root, { style: opts.colorStyle, color: opts.color, fallback: 'blue' });
     const grid = el('div', { class: 'qa-grid' }, root);
     const messageEl = el('div', { class: 'qa-message', dir: 'auto' }, root);
-    let lastTouchTap = 0;
+    const touches = touchGuard(); // the tiles' taps
     /** @type {Map<string, {button: HTMLButtonElement, icon: HTMLElement, action: HTMLElement, name: HTMLElement}>} */
     const tiles = new Map();
 
     function setState(list) {
       devices = Array.isArray(list) ? list : [];
-      messageText = null;
+      message.reset();
       render();
     }
 
@@ -95,12 +94,7 @@
 
     /** A message under the tiles. Persistent messages also clear the tiles. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else devices = [];
-      render();
+      message.set(text, transient);
     }
 
     function shownValue(d) {
@@ -154,36 +148,10 @@
           action: el('span', { class: 'qa-action' }, top),
           name: el('span', { class: 'qa-name', dir: 'auto' }, button),
         };
-        // Taps are handled from the touch events, so the pressed state also shows on iOS (where :active
-        // needs a touch listener) and the dashboard's own touch handling can't swallow the click. A tap is
-        // a touch that ends within TAP_SLOP of where it started; a drag is left to the dashboard, so
-        // dragging over the tiles still scrolls it.
-        let start = null;
-        const unpress = () => { start = null; button.classList.remove('pressing'); };
-        button.addEventListener('touchstart', (e) => {
-          const p = e.changedTouches[0];
-          start = { x: p.clientX, y: p.clientY };
-          button.classList.add('pressing');
-        }, { passive: true });
-        button.addEventListener('touchmove', (e) => {
-          const p = e.changedTouches[0];
-          if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
-        }, { passive: true });
-        button.addEventListener('touchend', (e) => {
-          const tap = !!start;
-          unpress();
-          // Every touch: one that moved past TAP_SLOP can still get the browser's click.
-          lastTouchTap = Date.now();
-          if (!tap) return;
-          e.preventDefault(); // no click after it
-          press(id);
-        });
-        button.addEventListener('touchcancel', unpress);
-        // Mouse and keyboard.
-        button.addEventListener('click', () => {
-          if (Date.now() - lastTouchTap < 800) return;
-          press(id);
-        });
+        // Taps from the touch events (the kit's `onTap()`), so the pressed state also shows on iOS (where :active
+        // needs a touch listener) and the dashboard's own touch handling can't swallow the click; a drag is left
+        // to the dashboard, so dragging over the tiles still scrolls it. A button clicks on Enter and Space itself.
+        onTap(button, () => press(id), { keys: false, guard: touches });
         tiles.set(id, tile);
       }
       return tile;
@@ -225,9 +193,9 @@
         tile.button.dataset.capability = qa ? qa.capabilityId : '';
       }
       grid.style.display = devices.length ? '' : 'none';
-      messageEl.textContent = messageText || '';
-      messageEl.style.display = messageText ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && devices.length > 0);
+      messageEl.textContent = message.text || '';
+      messageEl.style.display = message.text ? '' : 'none';
+      messageEl.classList.toggle('error', !!message.text && devices.length > 0);
 
       const h = Math.ceil(root.getBoundingClientRect().height);
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }

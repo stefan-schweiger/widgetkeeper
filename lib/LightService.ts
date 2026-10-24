@@ -1,6 +1,6 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
-import { presentCaps, readCaps, type CapState } from './capabilities.js';
+import { capValuesText, copyCaps, presentCaps, readCaps, type CapState } from './capabilities.js';
 import DeviceTracker, { readZones, zoneRef, type TrackedEntry } from './DeviceTracker.js';
 import PersonalApiKey from './PersonalApiKey.js';
 import { sharedCache } from './sharedCache.js';
@@ -88,9 +88,6 @@ export function lightCaps(device: any): string[] {
 /** A device without `dim` or `onoff`: thrown by the tracker's `create()`, so a group member can be told from a failed read. */
 class NotALight extends Error {}
 
-/** A copy of an entry's capabilities, for one `/state` answer. */
-const copyCaps = (t: Tracked) => Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, { ...c }]));
-
 function fraction(v: unknown, what: string): number {
   if (typeof v !== 'number' || !Number.isFinite(v) || v < 0 || v > 1) throw new Error(`Invalid ${what} ${JSON.stringify(v)}`);
   return v;
@@ -134,7 +131,7 @@ export default class LightService {
           noteDim(t);
           this.homey.api.realtime(LIGHTS_STATE_EVENT, { deviceId: t.key, capabilityId: id, value });
         }));
-        this.debug(`Tracking light ${device.name} (${t.key}): ${JSON.stringify(Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, c.value])))}`);
+        this.debug(`Tracking light ${device.name} (${t.key}): ${capValuesText(t.caps)}`);
         return instances;
       },
       refresh: (t, device) => {
@@ -179,7 +176,7 @@ export default class LightService {
         this.log(`Light ${id} unavailable:`, err);
         return { id, missing: true };
       }
-      const entry: LightDevice = { id, name: t.name, icon: t.icon, zone: zoneRef(await zonesP, t.zone), caps: copyCaps(t) };
+      const entry: LightDevice = { id, name: t.name, icon: t.icon, zone: zoneRef(await zonesP, t.zone), caps: copyCaps(t.caps) };
       if (t.members) entry.groupLights = await this.groupLights(t.members, read);
       return entry;
     }));
@@ -206,7 +203,7 @@ export default class LightService {
           return null;
         }
         this.memberSkips.delete(id);
-        return { id: m.key, caps: copyCaps(m) };
+        return { id: m.key, caps: copyCaps(m.caps) };
       } catch (err) {
         if (err instanceof NotALight) skip(id, err.message);
         else if (this.memberErrors.has(id)) this.debug(`Light group member ${id} still unavailable:`, err);

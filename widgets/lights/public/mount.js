@@ -4,16 +4,12 @@
  * `frame` is the element whose height Homey gets (the body, or the slide).
  */
 window.mountLightsWidget = function (Homey, { root, frame }) {
-  const REFRESH_MS = 5 * 60e3; // keeps the app's device subscriptions alive and resyncs state
-
-  const { wireFrame, getDeviceIds, wireTileNames } = window.WidgetkeeperKit;
+  const { wireFrame, wireTileNames, wireDeviceState } = window.WidgetkeeperKit;
   // Homey's frame: ready, the height, and the load marks sent with the first request.
   const link = wireFrame(Homey, frame);
 
-  let deviceIds = [];
-  /** The lights whose realtime events count: the picked ones, and the lights in Homey group devices among them. */
-  let watched = new Set();
-  let loaded = false;
+  /** The lights in Homey group devices among the picked ones: their realtime events count too. */
+  let groupLights = new Set();
 
   const settings = Homey.getSettings() || {};
   const tileNames = wireTileNames(Homey, names => widget.setNames(names));
@@ -35,32 +31,6 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
     onHeight: link.setHeight,
   });
 
-  // Shown once the text font has loaded (at most 1 s), so the names don't pop in after the icons.
-  function ready() {
-    return link.ready({ fonts: true });
-  }
-
-  async function load() {
-    if (!deviceIds.length) {
-      widget.setMessage(widget.t('selectDevices'));
-      ready();
-      return;
-    }
-    try {
-      const state = await tileNames.state(`/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${link.perfParam()}`);
-      widget.setState(state);
-      watched = new Set(deviceIds);
-      for (const d of Array.isArray(state) ? state : []) for (const m of (d && d.groupLights) || []) watched.add(m.id);
-      loaded = true;
-      loadMoods(state);
-    } catch (err) {
-      console.error(err);
-      // A failed refresh keeps the tiles; only a failed first load replaces them with the error.
-      widget.setMessage(widget.t('error'), loaded);
-    }
-    ready();
-  }
-
   /** `palette: moods`: the Moods of the lights' rooms. A failed read keeps the last ones. */
   async function loadMoods(state) {
     if (settings.palette !== 'moods' || !Array.isArray(state)) return;
@@ -74,16 +44,17 @@ window.mountLightsWidget = function (Homey, { root, frame }) {
     }
   }
 
-  Homey.on('lights:state', (data) => {
-    if (data && (watched.has(data.deviceId) || deviceIds.includes(data.deviceId))) widget.pushChange(data);
+  // The lights' state with their tile names, now and every 5 min (then their rooms' Moods), and their realtime changes.
+  wireDeviceState(Homey, link, widget, {
+    event: 'lights:state',
+    tileNames,
+    watches: id => groupLights.has(id),
+    onState: (state) => {
+      groupLights = new Set();
+      for (const d of Array.isArray(state) ? state : []) for (const m of (d && d.groupLights) || []) groupLights.add(m.id);
+      loadMoods(state);
+    },
   });
-
-  getDeviceIds(Homey)
-    .then((ids) => { deviceIds = ids; })
-    .then(() => {
-      setInterval(load, REFRESH_MS);
-      load();
-    });
 };
 /** The classes index.html puts on its body; the Smart Stack puts them on the slide. */
 window.mountLightsWidget.frameClass = 'homey-widget-full';

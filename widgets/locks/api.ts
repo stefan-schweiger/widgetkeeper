@@ -1,6 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { idList, logged, logPerf } from '../../lib/widgetApi.js';
+import { idList, logged, logPerf, requireId } from '../../lib/widgetApi.js';
 import { tileNameRoutes, withTileNames } from '../../lib/TileNameService.js';
 
 type Homey = App['homey'];
@@ -29,10 +29,8 @@ export default {
     body: { deviceId?: unknown, capabilityId?: unknown, value?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const deviceId = body?.deviceId;
-    if (typeof deviceId !== 'string' || !deviceId) throw new Error('Missing deviceId');
     return logged(app, 'Lock change failed:', async () => {
-      await app.locks.set(deviceId, body.capabilityId, body.value);
+      await app.locks.set(requireId(body?.deviceId, 'deviceId'), body.capabilityId, body.value);
       return { ok: true };
     });
   },
@@ -43,10 +41,8 @@ export default {
     body: { deviceId?: unknown, capabilityId?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const deviceId = body?.deviceId;
-    if (typeof deviceId !== 'string' || !deviceId) throw new Error('Missing deviceId');
     return logged(app, 'Lock open failed:', async () => {
-      await app.locks.open(deviceId, body.capabilityId);
+      await app.locks.open(requireId(body?.deviceId, 'deviceId'), body.capabilityId);
       return { ok: true };
     });
   },

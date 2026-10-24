@@ -4,9 +4,7 @@
  * `frame` is the element whose height Homey gets (the body, or the slide).
  */
 window.mountLocksWidget = function (Homey, { root, frame }) {
-  const REFRESH_MS = 5 * 60e3; // keeps the app's device subscriptions alive and resyncs state
-
-  const { wireFrame, getDeviceIds, wireTileNames } = window.WidgetkeeperKit;
+  const { wireFrame, wireTileNames, wireDeviceState } = window.WidgetkeeperKit;
   // Homey's frame: ready, the height, and the load marks sent with the first request.
   const link = wireFrame(Homey, frame);
 
@@ -14,8 +12,6 @@ window.mountLocksWidget = function (Homey, { root, frame }) {
   // The capability that opens (unlatches) a lock, if one was picked ("None" is `none`).
   const pick = settings.openCapability;
   const openCap = pick && typeof pick.id === 'string' && pick.id !== 'none' ? pick.id : null;
-  let deviceIds = [];
-  let loaded = false;
 
   const tileNames = wireTileNames(Homey, names => widget.setNames(names));
   const widget = window.createLocksWidget(root, {
@@ -35,40 +31,13 @@ window.mountLocksWidget = function (Homey, { root, frame }) {
     onHeight: link.setHeight,
   });
 
-  // Shown once the text font has loaded (at most 1 s), so the text doesn't pop in after the icons.
-  function ready() {
-    return link.ready({ fonts: true });
-  }
-
-  async function load() {
-    if (!deviceIds.length) {
-      widget.setMessage(widget.t('selectDevices'));
-      ready();
-      return;
-    }
-    try {
-      const open = openCap ? `&open=${encodeURIComponent(openCap)}` : '';
-      const state = await tileNames.state(`/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${open}${link.perfParam()}`);
-      widget.setState(state);
-      loaded = true;
-    } catch (err) {
-      console.error(err);
-      // A failed refresh keeps the devices; only a failed first load replaces them with the error.
-      widget.setMessage(widget.t('error'), loaded);
-    }
-    ready();
-  }
-
-  Homey.on('locks:state', (data) => {
-    if (data && deviceIds.includes(data.deviceId)) widget.pushChange(data);
+  // The devices' state with their tile names (and which of them the Open capability opens), now and every 5 min,
+  // and their realtime changes.
+  wireDeviceState(Homey, link, widget, {
+    event: 'locks:state',
+    tileNames,
+    query: () => (openCap ? `&open=${encodeURIComponent(openCap)}` : ''),
   });
-
-  getDeviceIds(Homey)
-    .then((ids) => { deviceIds = ids; })
-    .then(() => {
-      setInterval(load, REFRESH_MS);
-      load();
-    });
 };
 /** The classes index.html puts on its body; the Smart Stack puts them on the slide. */
 window.mountLocksWidget.frameClass = 'homey-widget-full';

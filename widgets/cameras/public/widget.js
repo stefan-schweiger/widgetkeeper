@@ -9,10 +9,9 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, timeFormatter } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, timeFormatter, onTap, touchGuard, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
-  const TAP_SLOP = 10; // px a finger may move and still count as a tap
   const LIVE_MAX_MS = 5 * 60e3; // the default, and for a missing or unknown `liveFor`
   const LIVE_FOR = { 30: 30e3, 60: 60e3, 300: LIVE_MAX_MS, tap: null }; // `liveFor` → ms; null: until tapped
   const LIVE_TIMEOUT_MS = 15e3; // from the tap to the first frame, and between frames after that
@@ -107,9 +106,9 @@
     const liveMs = liveLimit(opts.liveFor);
 
     let devices = []; // [{ id, name, icon, image: { id, url, lastUpdated } | null, video, videos, h265 } | { id, missing }]
-    let messageText = null;
-    let messageTimer = null;
-    let lastTouchTap = 0;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { devices = []; resumeId = null; stopLive(); } });
+    const touches = touchGuard(); // the tiles' taps
     /**
      * How snapshots load, per camera: 'direct' (the image URL from the widget frame, as Homey's web server
      * serves it), or 'app' (base64 through the app's /snapshot, when the frame can't load that URL). Every
@@ -151,19 +150,14 @@
 
     function setState(list) {
       devices = Array.isArray(list) ? list : [];
-      messageText = null;
+      message.reset();
       if (live && !devices.some(d => d.id === live.id && d.video)) stopLive();
       render();
     }
 
     /** A message under the tiles. Persistent messages also clear the tiles. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else { devices = []; resumeId = null; stopLive(); }
-      render();
+      message.set(text, transient);
     }
 
     // ---------------------------------------------------------------- snapshots
@@ -595,31 +589,8 @@
         grabAt: null, grabFailed: false,
       };
 
-      // Taps come from the touch events, like Quick Actions: a touch that ends within TAP_SLOP of where it
-      // started. A drag is left to the dashboard, so it still scrolls.
-      let start = null;
-      node.addEventListener('touchstart', (e) => {
-        const p = e.changedTouches[0];
-        start = { x: p.clientX, y: p.clientY };
-      }, { passive: true });
-      node.addEventListener('touchmove', (e) => {
-        const p = e.changedTouches[0];
-        if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) start = null;
-      }, { passive: true });
-      node.addEventListener('touchend', (e) => {
-        const tap = !!start;
-        start = null;
-        // Every touch: one that moved past TAP_SLOP can still get the browser's click.
-        lastTouchTap = Date.now(); // the real clock: opts.now may be fixed
-        if (!tap) return;
-        e.preventDefault(); // no click after it
-        press(id);
-      });
-      node.addEventListener('touchcancel', () => { start = null; });
-      node.addEventListener('click', () => {
-        if (Date.now() - lastTouchTap < 800) return;
-        press(id);
-      });
+      // A tap (the kit's, as Quick Actions'): a drag is left to the dashboard, so it still scrolls.
+      onTap(node, () => press(id), { keys: false, guard: touches });
       tiles.set(id, tile);
       return tile;
     }
@@ -658,9 +629,9 @@
         tile.tile.setAttribute('data-empty', !empty ? '' : d.video && allH265(d) ? t('liveH265') : t('noImage'));
       });
       grid.style.display = devices.length ? '' : 'none';
-      messageEl.textContent = messageText || '';
-      messageEl.style.display = messageText ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && devices.length > 0);
+      messageEl.textContent = message.text || '';
+      messageEl.style.display = message.text ? '' : 'none';
+      messageEl.classList.toggle('error', !!message.text && devices.length > 0);
 
       reportHeight();
     }

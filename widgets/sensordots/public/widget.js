@@ -5,7 +5,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, formatSince, baseTitle, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, formatSince, baseTitle, applyColors, onTap, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -28,46 +28,6 @@
   /** A colour setting's id, or the fallback when it's unknown. */
   const colorOf = (id, fallback) => (COLORS.includes(id) ? id : fallback);
 
-  const TAP_SLOP = 10; // px a touch may move and still count as a tap
-
-  /**
-   * Taps from the touch events, as in Device Quick Actions: a touch that ends within TAP_SLOP of where it
-   * started. A drag is left to the dashboard, so it still scrolls. `click` is kept for mouse and keyboard.
-   */
-  function onTap(node, fn) {
-    let start = null;
-    let lastTouchTap = 0;
-    const unpress = () => { start = null; node.classList.remove('pressing'); };
-    node.addEventListener('touchstart', (e) => {
-      const p = e.changedTouches[0];
-      start = { x: p.clientX, y: p.clientY };
-      node.classList.add('pressing');
-    }, { passive: true });
-    node.addEventListener('touchmove', (e) => {
-      const p = e.changedTouches[0];
-      if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
-    }, { passive: true });
-    node.addEventListener('touchend', (e) => {
-      const tap = !!start;
-      unpress();
-      // Every touch: one that moved past TAP_SLOP can still get the browser's click.
-      lastTouchTap = Date.now();
-      if (!tap) return;
-      e.preventDefault(); // no click after it
-      fn(e);
-    });
-    node.addEventListener('touchcancel', unpress);
-    node.addEventListener('click', (e) => {
-      if (Date.now() - lastTouchTap < 800) return;
-      fn(e);
-    });
-    node.addEventListener('keydown', (e) => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      e.preventDefault();
-      fn(e);
-    });
-  }
-
   const baseId = a => String(a.capabilityId).split('.')[0];
 
   /**
@@ -84,8 +44,8 @@
 
     let devices = []; // [{ id, name, icon, alarms: [{ capabilityId, title, value, lastUpdated }] } | { id, missing }]
     let language = null;
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { devices = []; } });
     let openId = null; // the device whose overlay is open
 
     root.classList.add('sd');
@@ -115,7 +75,7 @@
       const list = Array.isArray(state) ? state : state && state.devices;
       devices = Array.isArray(list) ? list : [];
       if (state && typeof state.language === 'string') language = state.language;
-      messageText = null;
+      message.reset();
       render();
     }
 
@@ -130,12 +90,7 @@
 
     /** A message under the dots. Persistent messages also clear the dots. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else devices = [];
-      render();
+      message.set(text, transient);
     }
 
     const activeOf = d => (d.alarms || []).filter(a => a.value === true);
@@ -227,9 +182,9 @@
       }
       renderPanel();
       tileEl.style.display = devices.length ? '' : 'none';
-      messageEl.textContent = messageText || '';
-      messageEl.style.display = messageText ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && devices.length > 0);
+      messageEl.textContent = message.text || '';
+      messageEl.style.display = message.text ? '' : 'none';
+      messageEl.classList.toggle('error', !!message.text && devices.length > 0);
 
       const h = Math.ceil(root.getBoundingClientRect().height);
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }

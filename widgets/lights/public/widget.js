@@ -6,12 +6,11 @@
  * any drag. With `wideLast`, the last of an odd number of tiles spans the row. Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, applyColors, KEY_PROBLEMS } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, applyColors, KEY_PROBLEMS, onTap: kitOnTap, touchGuard, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a changed tile shows its new value while waiting for the device
   const PANEL_MS = 8e3; // the swatch panel closes after this long without a touch
-  const TAP_SLOP = 10; // px a finger may move and still count as a tap
 
   const DEFAULT_STRINGS = {
     selectDevices: 'Select lights in the widget settings.',
@@ -119,8 +118,8 @@
     let items = [];
     const optimistic = new Map(); // `${deviceId}:${capabilityId}` → { value, until }
     const drags = new Map(); // tile id → fraction, while a finger or the mouse is on the bar
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { devices = []; } });
 
     root.classList.add('lc');
     applyColors(root, { style: opts.colorStyle });
@@ -151,7 +150,7 @@
     let moodRow = null;
     for (const type of ['touchstart', 'pointerdown']) panel.addEventListener(type, () => armPanel(), { passive: true });
     const messageEl = el('div', { class: 'lc-message', dir: 'auto' }, root);
-    let lastTouchTap = 0;
+    const touches = touchGuard(); // the tiles' taps and the bars' touches
     /** @type {Map<string, {tile: HTMLElement, icon: HTMLElement, chip: HTMLButtonElement, chipGlyph: HTMLElement,
      *   name: HTMLElement, bar: HTMLElement, fill: HTMLElement, knob: HTMLElement}>} */
     const tiles = new Map();
@@ -164,7 +163,7 @@
 
     function setState(list) {
       devices = Array.isArray(list) ? list : [];
-      messageText = null;
+      message.reset();
       for (const d of devices) if (d.caps && d.caps.dim) noteDim(d.id, d.caps.dim.value);
       render();
     }
@@ -198,12 +197,7 @@
 
     /** A message under the tiles. Persistent messages also clear the tiles. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else devices = [];
-      render();
+      message.set(text, transient);
     }
 
     /** A capability's value, or the one just sent while the device hasn't confirmed it. */
@@ -485,45 +479,9 @@
       }
     }
 
-    /**
-     * Taps on the tile body: a touch that ends within TAP_SLOP, or a click. Drags scroll the dashboard.
-     * `stop` keeps a control's taps (and keys) from also reaching the tile around it.
-     */
+    /** Taps on the tile body; `stop` keeps a control's taps (and keys) from also reaching the tile around it. */
     function onTap(node, fn, { stop = false } = {}) {
-      let start = null;
-      const unpress = () => { start = null; node.classList.remove('pressing'); };
-      node.addEventListener('touchstart', (e) => {
-        if (stop) e.stopPropagation();
-        const p = e.changedTouches[0];
-        start = { x: p.clientX, y: p.clientY };
-        node.classList.add('pressing');
-      }, { passive: true });
-      node.addEventListener('touchmove', (e) => {
-        const p = e.changedTouches[0];
-        if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
-      }, { passive: true });
-      node.addEventListener('touchend', (e) => {
-        const isTap = !!start;
-        unpress();
-        // Every touch: one that moved past TAP_SLOP can still get the browser's click.
-        lastTouchTap = Date.now();
-        if (!isTap) return;
-        e.preventDefault(); // no click after it
-        if (stop) e.stopPropagation();
-        fn();
-      });
-      node.addEventListener('touchcancel', unpress);
-      node.addEventListener('click', (e) => {
-        if (stop) e.stopPropagation();
-        if (Date.now() - lastTouchTap < 800) return;
-        fn();
-      });
-      node.addEventListener('keydown', (e) => {
-        if (e.key !== 'Enter' && e.key !== ' ') return;
-        e.preventDefault();
-        if (stop) e.stopPropagation();
-        fn();
-      });
+      kitOnTap(node, fn, { stop, guard: touches });
     }
 
     /**
@@ -562,7 +520,7 @@
       bar.addEventListener('touchend', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        lastTouchTap = Date.now();
+        touches.touched();
         end(true);
       });
       bar.addEventListener('touchcancel', () => end(false));
@@ -724,9 +682,9 @@
       }
       renderPanel();
       grid.style.display = devices.length ? '' : 'none';
-      messageEl.textContent = messageText || '';
-      messageEl.style.display = messageText ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && devices.length > 0);
+      messageEl.textContent = message.text || '';
+      messageEl.style.display = message.text ? '' : 'none';
+      messageEl.classList.toggle('error', !!message.text && devices.length > 0);
 
       const h = Math.ceil(root.getBoundingClientRect().height);
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }

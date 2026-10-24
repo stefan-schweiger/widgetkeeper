@@ -1,6 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { keyResult, logged, logPerf } from '../../lib/widgetApi.js';
+import { keyResult, logged, logPerf, requireId } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -10,9 +10,9 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    if (!query.deviceId) throw new Error('Missing deviceId');
+    const deviceId = requireId(query.deviceId, 'deviceId');
     logPerf(app, 'Media', query);
-    return app.media.getState(query.deviceId, { cards: query.cards === '1' });
+    return app.media.getState(deviceId, { cards: query.cards === '1' });
   },
 
   /** Every speaker, for the widget's switcher. */
@@ -28,8 +28,7 @@ export default {
   }) {
     const app = homey.app as WidgetkeeperApp;
     return logged(app, () => `Media change failed, body: ${JSON.stringify(body)}`, async () => {
-      if (!body?.deviceId || !body.capabilityId) throw new Error('Missing deviceId or capabilityId');
-      await app.media.set(body.deviceId, body.capabilityId, body.value, body.maxVolume);
+      await app.media.set(requireId(body?.deviceId, 'deviceId'), requireId(body.capabilityId, 'capabilityId'), body.value, body.maxVolume);
       return { ok: true };
     });
   },
@@ -44,8 +43,10 @@ export default {
   }) {
     const app = homey.app as WidgetkeeperApp;
     const { deviceId, id } = body ?? {};
-    if (typeof deviceId !== 'string' || typeof id !== 'string' || !id) throw new Error('Missing deviceId or id');
-    return keyResult(app, 'Media button failed', () => app.media.runButton(deviceId, id));
+    // A flow button needs no speaker, so the deviceId may be empty.
+    if (typeof deviceId !== 'string') throw new Error('Missing deviceId');
+    const buttonId = requireId(id, 'id');
+    return keyResult(app, 'Media button failed', () => app.media.runButton(deviceId, buttonId));
   },
 
   /** The album art as base64, for a frame that can't load `/api/image/…` itself. */
@@ -54,8 +55,7 @@ export default {
     query: Record<string, string>,
   }) {
     const app = homey.app as WidgetkeeperApp;
-    if (!query.deviceId) throw new Error('Missing deviceId');
-    return app.media.getArt(query.deviceId);
+    return app.media.getArt(requireId(query.deviceId, 'deviceId'));
   },
 
   /** `{text}`: what the widget found (which album art route works), for the diagnostics log. */

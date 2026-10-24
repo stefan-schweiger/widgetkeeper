@@ -5,7 +5,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, applyColors, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -133,8 +133,8 @@
     const picked = Array.isArray(opts.columns) ? opts.columns.filter(c => c && c.capabilityId) : [];
     let described = []; // the app's column descriptions, by position: {capabilityId, title, units, decimals} | null
     let devices = []; // [{ id, name, zone, values: {[capabilityId]: number | null} } | { id, missing }]
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { devices = []; } });
 
     root.classList.add('vm');
     applyColors(root, { style: opts.colorStyle });
@@ -166,7 +166,7 @@
     function setState(state) {
       described = state && Array.isArray(state.columns) ? state.columns : [];
       devices = state && Array.isArray(state.devices) ? state.devices : [];
-      messageText = null;
+      message.reset();
       render();
     }
 
@@ -179,12 +179,7 @@
 
     /** A message under the table. Persistent messages also clear it. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else devices = [];
-      render();
+      message.set(text, transient);
     }
 
     /** Each picked column with what the app said about it, its range and its header. */
@@ -288,9 +283,9 @@
       }
       tileEl.style.display = devices.length && cols.length ? '' : 'none';
       legendEl.style.display = opts.showLegend !== false && cols.some(c => c.range) ? '' : 'none';
-      messageEl.textContent = messageText || '';
-      messageEl.style.display = messageText ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && devices.length > 0);
+      messageEl.textContent = message.text || '';
+      messageEl.style.display = message.text ? '' : 'none';
+      messageEl.classList.toggle('error', !!message.text && devices.length > 0);
       reportHeight();
     }
 

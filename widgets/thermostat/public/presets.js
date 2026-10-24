@@ -6,10 +6,9 @@
  */
 (function () {
   'use strict';
-  const { el } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
 
   const OPTIMISTIC_MS = 10e3; // how long a tapped button stays lit while waiting for the state to follow
-  const MESSAGE_MS = 8000; // how long a transient message stays
 
   /**
    * @param {HTMLElement} root
@@ -30,8 +29,8 @@
     let presets = [];
     let state = null;
     let optimistic = null; // { index, until }
-    let messageTimer = null;
-    let errorText = null;
+    // A message in place of the subtitle: a lasting one also clears the state, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { state = null; } });
 
     root.classList.add('tw');
     // Compact: a one-line header and one-line buttons; the markup is the same, only the CSS differs.
@@ -72,18 +71,13 @@
 
     function setState(s) {
       state = s;
-      errorText = null;
+      message.reset();
       render();
     }
 
     /** A message in place of the subtitle. Persistent messages also clear the state. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      errorText = text;
-      if (transient) messageTimer = setTimeout(() => { errorText = null; render(); }, MESSAGE_MS);
-      else state = null;
-      render();
+      message.set(text, transient);
     }
 
     async function press(index) {
@@ -131,11 +125,11 @@
       iconBox.style.display = state && (icon || hooks.fallbackIcon !== false) ? '' : 'none';
       nameEl.textContent = state ? state.name : '';
       nameEl.style.display = state ? '' : 'none';
-      const sub = errorText || (!state ? '' : !active.size ? hooks.current(state, presets) : hooks.lit ? hooks.lit(state, [...active]) : '');
+      const sub = message.text || (!state ? '' : !active.size ? hooks.current(state, presets) : hooks.lit ? hooks.lit(state, [...active]) : '');
       subEl.textContent = sub;
       subEl.style.display = sub ? '' : 'none';
-      subEl.classList.toggle('error', !!errorText && !!state);
-      header.classList.toggle('has-sub', !!sub && !errorText);
+      subEl.classList.toggle('error', !!message.text && !!state);
+      header.classList.toggle('has-sub', !!sub && !message.text);
       header.classList.toggle('message-only', !state);
       if (hooks.onHeader) header.classList.toggle('tw-tappable', !!state);
       if (asideEl) {
@@ -144,7 +138,7 @@
         asideEl.style.display = aside ? '' : 'none';
       }
 
-      row.style.display = state || !errorText ? '' : 'none';
+      row.style.display = state || !message.text ? '' : 'none';
       tiles.forEach((b, i) => {
         const text = hooks.text(presets[i], state);
         while (b.firstChild) b.removeChild(b.firstChild);

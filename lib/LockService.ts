@@ -1,7 +1,7 @@
 import type Homey from 'homey';
 import { getAppApi, lastUpdatedMs } from './appApi.js';
 import { devicesAndZones, matches, withNone, type AutocompleteItem } from './autocomplete.js';
-import { describeCapability, presentCaps, readCaps, type CapState } from './capabilities.js';
+import { capValuesText, copyCaps, describeCapability, presentCaps, readCaps, type CapState } from './capabilities.js';
 import DeviceTracker, { type TrackedEntry } from './DeviceTracker.js';
 import Timings from './Timings.js';
 
@@ -84,7 +84,7 @@ export default class LockService {
           }
           this.homey.api.realtime(LOCKS_STATE_EVENT, { deviceId: t.key, capabilityId: id, value, t: at });
         }));
-        this.debug(`Tracking lock ${device.name} (${t.key}): ${JSON.stringify(Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, c.value])))}`);
+        this.debug(`Tracking lock ${device.name} (${t.key}): ${capValuesText(t.caps)}`);
         return instances;
       },
       refresh: (t, device) => { t.caps = readLockCaps(device); t.buttons = lockButtons(device); },
@@ -108,7 +108,7 @@ export default class LockService {
   async getState(deviceIds: string[], openCap?: string | null): Promise<LockDevice[]> {
     const tm = new Timings();
     const out = await this.tracker.each(deviceIds, tm, this.log, 'Lock device', (t, id): LockDevice => ({
-      id, name: t.name, icon: t.icon, caps: Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, { ...c }])),
+      id, name: t.name, icon: t.icon, caps: copyCaps(t.caps),
       ...(openCap && t.buttons.includes(openCap) ? { open: openCap } : {}),
     }));
     this.debug(`Locks state for ${deviceIds.length} devices: ${tm.summary()}`);

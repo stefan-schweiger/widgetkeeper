@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeHomey, homeyApiMock, keyApis } from './helpers/fakeHomey.js';
 import PersonalApiKey from '../lib/PersonalApiKey.js';
 import TileNameService, { TILE_NAMES_EVENT, TILE_NAMES_SETTING } from '../lib/TileNameService.js';
-import WebDashboardService, { passesDeviceFilter, WEB_BACKUP_FORMAT, WEB_DASHBOARDS_SETTING, WEB_ENABLED_SETTING, WEB_FRONT_SETTING, WEB_REMOTE_SETTING } from '../lib/WebDashboardService.js';
+import WebDashboardService, { MAX_DASHBOARDS, passesDeviceFilter, settingSections, WEB_BACKUP_FORMAT, WEB_DASHBOARDS_SETTING, WEB_ENABLED_SETTING, WEB_FRONT_SETTING, WEB_REMOTE_SETTING } from '../lib/WebDashboardService.js';
 import { widgetAutocompletes } from '../lib/widgetAutocompletes.js';
 import { routeKeyUse } from '../lib/widgetRoutes.js';
 import WebPassword from '../lib/WebPassword.js';
@@ -725,8 +725,8 @@ describe('web dashboards: turned off', () => {
     expect((res as any).strings.web.offAway).toBeTruthy();
     await expect(api.getWebDevices({ homey, query: { type: 'lights', ...away } })).rejects.toThrow(/turned off away from home/);
     await expect(api.postWebLogin({ homey, query: away, body: { password: 'x' } })).rejects.toThrow(/turned off/);
-    // At home it works as before.
-    await expect(api.getWebSetup({ homey, query: {} })).resolves.toHaveProperty('dashboards');
+    // At home it works as before, with the limit the page keeps to.
+    await expect(api.getWebSetup({ homey, query: {} })).resolves.toMatchObject({ dashboards: expect.any(Array), maxDashboards: MAX_DASHBOARDS });
     expect(web.describe()).toMatchObject({ enabled: true, remote: false });
     homey.settings.set(WEB_REMOTE_SETTING, true);
     await expect(api.getWebSetup({ homey, query: away })).resolves.toHaveProperty('dashboards');
@@ -778,5 +778,16 @@ describe('web dashboards page', () => {
   it('bundles the socket.io-client version installed', () => {
     const { version } = JSON.parse(readFileSync('node_modules/socket.io-client/package.json', 'utf8'));
     expect(readFileSync('settings/socket.io.js', 'utf8').slice(0, 200)).toContain(`socket.io-client ${version} `);
+  });
+
+  // dev/mock-web-api.js answers the dev pages' /web/setup with its own copy of the editor's sections.
+  it("the dev mock's settingSections() agrees with the app's on every widget's settings in every language", () => {
+    const mock = new Function(`${readFileSync('dev/mock-web-api.js', 'utf8')}
+return mockSettingSections;`)();
+    for (const [type, widget] of Object.entries<any>(app.widgets)) {
+      for (const lang of ['en', 'nl', 'de', 'fr', 'it', 'sv', 'no', 'es', 'da', 'ru', 'pl', 'ko', 'ar']) {
+        expect(mock(widget.settings || [], lang), `${type} (${lang})`).toEqual(settingSections(widget.settings || [], lang));
+      }
+    }
   });
 });

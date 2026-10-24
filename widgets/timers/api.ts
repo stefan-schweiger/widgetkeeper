@@ -1,7 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
 import { TIMER_ACTIONS, type TimerAction } from '../../lib/TimerService.js';
-import { logPerf } from '../../lib/widgetApi.js';
+import { logPerf, requireId } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -37,8 +37,8 @@ export default {
     body: { instance?: unknown, id?: unknown, action?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    if (typeof body?.id !== 'string' || !body.id) throw new Error('Missing id');
-    if (!TIMER_ACTIONS.includes(body?.action as TimerAction)) throw new Error(`Unknown action ${JSON.stringify(body?.action)}`);
-    return app.timers.act(instanceOf(body.instance), body.id, body.action as TimerAction);
+    const id = requireId(body?.id, 'id');
+    if (!TIMER_ACTIONS.includes(body.action as TimerAction)) throw new Error(`Unknown action ${JSON.stringify(body.action)}`);
+    return app.timers.act(instanceOf(body.instance), id, body.action as TimerAction);
   },
 };

@@ -6,7 +6,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, applyColors, icons } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, applyColors, icons, onTap, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -33,7 +33,6 @@
     measureVoc: 'VOC',
   };
 
-  const TAP_SLOP = 10; // px a touch may move and still count as a tap
   const READOUT_MS = 6000; // how long a tapped room shows another reading
 
   /** The measures, in the marks' order, a tap's, and a tie's. */
@@ -169,44 +168,6 @@
     return read.includes('temperature') ? 'temperature' : read[0] || null;
   }
 
-  /**
-   * Taps from the touch events, as in Device Quick Actions: a touch that ends within TAP_SLOP of where it
-   * started. A drag is left to the dashboard, so it still scrolls. `click` is kept for mouse and keyboard.
-   */
-  function onTap(node, fn) {
-    let start = null;
-    let lastTouchTap = 0;
-    const unpress = () => { start = null; node.classList.remove('pressing'); };
-    node.addEventListener('touchstart', (e) => {
-      const p = e.changedTouches[0];
-      start = { x: p.clientX, y: p.clientY };
-      node.classList.add('pressing');
-    }, { passive: true });
-    node.addEventListener('touchmove', (e) => {
-      const p = e.changedTouches[0];
-      if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
-    }, { passive: true });
-    node.addEventListener('touchend', (e) => {
-      const tap = !!start;
-      unpress();
-      // Every touch: one that moved past TAP_SLOP can still get the browser's click.
-      lastTouchTap = Date.now();
-      if (!tap) return;
-      e.preventDefault(); // no click after it
-      fn(e);
-    });
-    node.addEventListener('touchcancel', unpress);
-    node.addEventListener('click', (e) => {
-      if (Date.now() - lastTouchTap < 800) return;
-      fn(e);
-    });
-    node.addEventListener('keydown', (e) => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      e.preventDefault();
-      fn(e);
-    });
-  }
-
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
   /**
@@ -227,8 +188,8 @@
     const layout = opts.layout === 'bars' ? 'bars' : 'icons';
     let devices = []; // [{ id, name, zone, measures: {[measure]: {capabilityId, value}} } | { id, missing }]
     let rooms = [];
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { devices = []; } });
     let pick = null; // { key, measure }: the reading a tap brought up in a room
     let pickTimer = null;
 
@@ -253,7 +214,7 @@
 
     function setState(list) {
       devices = Array.isArray(list) ? list : [];
-      messageText = null;
+      message.reset();
       render();
     }
 
@@ -267,12 +228,7 @@
 
     /** A message under the rooms. Persistent messages also clear the rooms. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else devices = [];
-      render();
+      message.set(text, transient);
     }
 
     /** A value in its measure's unit, in the device locale: temperature to a tenth, the rest whole. */
@@ -432,9 +388,9 @@
         cell.node.setAttribute('aria-label', missing ? t('unavailable') : [`${roomName(room)}: ${state}`, ...values].join(', '));
       }
       tileEl.style.display = devices.length ? '' : 'none';
-      messageEl.textContent = messageText || '';
-      messageEl.style.display = messageText ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && devices.length > 0);
+      messageEl.textContent = message.text || '';
+      messageEl.style.display = message.text ? '' : 'none';
+      messageEl.classList.toggle('error', !!message.text && devices.length > 0);
       reportHeight();
     }
 

@@ -1,7 +1,7 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
 import type { LightChange } from '../../lib/LightService.js';
-import { idList, keyResult, logged, logPerf } from '../../lib/widgetApi.js';
+import { idList, keyResult, logged, logPerf, requireId } from '../../lib/widgetApi.js';
 import { tileNameRoutes, withTileNames } from '../../lib/TileNameService.js';
 
 type Homey = App['homey'];
@@ -24,8 +24,7 @@ export default {
   }) {
     const app = homey.app as WidgetkeeperApp;
     return logged(app, () => `Light change failed, body: ${JSON.stringify(body)}`, async () => {
-      if (!body?.deviceId) throw new Error('Missing deviceId');
-      await app.lights.set(body.deviceId, { dim: body.dim, onoff: body.onoff, temperature: body.temperature, hue: body.hue, saturation: body.saturation });
+      await app.lights.set(requireId(body?.deviceId, 'deviceId'), { dim: body.dim, onoff: body.onoff, temperature: body.temperature, hue: body.hue, saturation: body.saturation });
       return { ok: true };
     });
   },

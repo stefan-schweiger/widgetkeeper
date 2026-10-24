@@ -1,6 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { idList, keyResult, logged, logPerf } from '../../lib/widgetApi.js';
+import { idList, keyResult, logged, logPerf, requireId } from '../../lib/widgetApi.js';
 
 type Homey = App['homey'];
 
@@ -24,8 +24,7 @@ export default {
     body: { id?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
-    const id = body?.id;
-    if (typeof id !== 'string' || !id) throw new Error('Missing id');
+    const id = requireId(body?.id, 'id');
     return keyResult(app, 'Flow start failed', () => app.flows.trigger(id));
   },
 };

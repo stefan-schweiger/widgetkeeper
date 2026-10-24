@@ -2,7 +2,7 @@ import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import { devicesAndZones, listDevicesWhere, matches, withNone, type AutocompleteItem } from './autocomplete.js';
 import { capabilityValues, presentCaps } from './capabilities.js';
-import DeviceTracker, { isTransientError, type TrackedEntry } from './DeviceTracker.js';
+import DeviceTracker, { isTransientError, readFresh, type TrackedEntry } from './DeviceTracker.js';
 import { deviceImage, fetchDeviceIcon, fetchImageBase64 } from './deviceIcon.js';
 import type FlowService from './FlowService.js';
 import PersonalApiKey from './PersonalApiKey.js';
@@ -370,8 +370,8 @@ export default class MediaService {
   private async speakerAppCard(cardId: string): Promise<any | null> {
     const card = (await this.readCards()).find(c => runnable(c) && c.id === cardId && String(c.ownerUri).startsWith('homey:app:'));
     if (!card) return null;
-    const api = await getAppApi(this.homey);
-    const devices = Object.values(await api.devices.getDevices()) as any[];
+    // Every device, shared for 5 s with the autocompletes (a tap mustn't read them all each time).
+    const [devices] = await devicesAndZones(this.homey);
     return devices.some(d => isSpeaker(d) && deviceApp(d) === card.ownerUri) ? card : null;
   }
 
@@ -388,7 +388,7 @@ export default class MediaService {
       if (!this.tracker.isCurrent(t)) return;
       try {
         const api = await getAppApi(this.homey);
-        const art = mediaArt(await api.devices.getDevice({ id: t.key, $cache: false }));
+        const art = mediaArt(await readFresh(api.devices, t.key)); // shared with a tracker's re-read of it
         if (sameArt(art, t.art)) return;
         t.art = art;
         this.homey.api.realtime(MEDIA_ART_EVENT, { deviceId: t.key, art });

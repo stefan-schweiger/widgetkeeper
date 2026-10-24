@@ -1,6 +1,6 @@
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
-import { presentCaps, readCaps, type CapState } from './capabilities.js';
+import { capValuesText, copyCaps, presentCaps, readCaps, type CapState } from './capabilities.js';
 import DeviceTracker, { readZones, zoneRef, type TrackedEntry } from './DeviceTracker.js';
 import Timings from './Timings.js';
 
@@ -67,7 +67,7 @@ export default class CurtainService {
           if (t.caps[id]) t.caps[id].value = value;
           this.homey.api.realtime(CURTAINS_STATE_EVENT, { deviceId: t.key, capabilityId: id, value });
         }));
-        this.debug(`Tracking curtain ${device.name} (${t.key}): ${JSON.stringify(Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, c.value])))}`);
+        this.debug(`Tracking curtain ${device.name} (${t.key}): ${capValuesText(t.caps)}`);
         return instances;
       },
       refresh: (t, device) => {
@@ -92,7 +92,7 @@ export default class CurtainService {
     const tm = new Timings();
     const zonesP = readZones(this.homey, tm, this.log, 'Curtain');
     const out = await this.tracker.each(deviceIds, tm, this.log, 'Curtain', async (t, id): Promise<CurtainDevice> => ({
-      id, name: t.name, kind: t.kind, zone: zoneRef(await zonesP, t.zone), caps: Object.fromEntries(Object.entries(t.caps).map(([k, c]) => [k, { ...c }])),
+      id, name: t.name, kind: t.kind, zone: zoneRef(await zonesP, t.zone), caps: copyCaps(t.caps),
     }));
     this.debug(`Curtains state for ${deviceIds.length} devices: ${tm.summary()}`);
     return out;

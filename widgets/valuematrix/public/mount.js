@@ -4,16 +4,13 @@
  * `frame` is the element whose height Homey gets (the body, or the slide).
  */
 window.mountValueMatrixWidget = function (Homey, { root, frame }) {
-  const REFRESH_MS = 5 * 60e3; // keeps the app's device subscriptions alive and resyncs state
   const COLUMNS = [1, 2, 3, 4, 5, 6];
 
-  const { wireFrame, getDeviceIds, wireTileNames } = window.WidgetkeeperKit;
+  const { wireFrame, wireTileNames, wireDeviceState } = window.WidgetkeeperKit;
   // Homey's frame: ready, the height, and the load marks sent with the first request.
   const link = wireFrame(Homey, frame);
 
   const settings = Homey.getSettings() || {};
-  let deviceIds = [];
-  let loaded = false;
 
   // The picked columns in order, skipping empty ones and `None`: the capability, its range and its header.
   const columns = [];
@@ -35,41 +32,13 @@ window.mountValueMatrixWidget = function (Homey, { root, frame }) {
     onHeight: link.setHeight,
   });
 
-  // Shown once the text font has loaded (at most 1 s), so the names don't pop in after the values.
-  function ready() {
-    return link.ready({ fonts: true });
-  }
-
-  async function load() {
-    if (!deviceIds.length || !columns.length) {
-      widget.setMessage(widget.t(deviceIds.length ? 'selectColumns' : 'selectDevices'));
-      ready();
-      return;
-    }
-    try {
-      const ids = deviceIds.map(encodeURIComponent).join(',');
-      const caps = columns.map(c => encodeURIComponent(c.capabilityId)).join(',');
-      const state = await tileNames.state(`/state?deviceIds=${ids}&capabilityIds=${caps}${link.perfParam()}`);
-      widget.setState(state);
-      loaded = true;
-    } catch (err) {
-      console.error(err);
-      // A failed refresh keeps the table; only a failed first load replaces it with the error.
-      widget.setMessage(widget.t('error'), loaded);
-    }
-    ready();
-  }
-
-  Homey.on('valuematrix:state', (data) => {
-    if (data && deviceIds.includes(data.deviceId)) widget.pushChange(data);
+  // The devices' values in the picked columns with the rows' names, now and every 5 min, and their realtime changes.
+  wireDeviceState(Homey, link, widget, {
+    event: 'valuematrix:state',
+    tileNames,
+    need: () => (columns.length ? null : 'selectColumns'),
+    query: () => `&capabilityIds=${columns.map(c => encodeURIComponent(c.capabilityId)).join(',')}`,
   });
-
-  getDeviceIds(Homey)
-    .then((ids) => { deviceIds = ids; })
-    .then(() => {
-      setInterval(load, REFRESH_MS);
-      load();
-    });
 };
 /** The classes index.html puts on its body; the Smart Stack puts them on the slide. */
 window.mountValueMatrixWidget.frameClass = 'homey-widget-full';

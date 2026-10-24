@@ -12,7 +12,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, applyColors, KEY_PROBLEMS } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, applyColors, KEY_PROBLEMS, onTap: kitOnTap, touchGuard, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const OPTIMISTIC_MS = 10e3; // how long a control shows its new value while waiting for the speaker
@@ -24,7 +24,6 @@
   const PANEL_IDLE_MS = 8e3; // the overlay closes after this long without a touch
   const PANEL_CLOSE_MS = 600; // after a button's check mark, the overlay closes this much later
   const SPEAKERS_IDLE_MS = 15e3; // the speaker list closes after this long without a touch
-  const TAP_SLOP = 10; // px a finger may move and still count as a tap
 
   const DEFAULT_STRINGS = {
     selectDevice: 'Select a speaker in the widget settings.',
@@ -207,9 +206,9 @@
     let speakersKey = null; // what the speaker rows show (`renderSpeakers()`)
     const busy = new Map(); // button index → 'running' | 'done'
     const flashes = new Set(); // 'next' / 'previous' while lit
-    let messageText = null;
-    let messageTimer = null;
-    let lastTouchTap = 0;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { device = null; } });
+    const touches = touchGuard(); // the taps' and the volume bar's touches
     let progressTimer = null;
 
     // Album art: the direct route (the frame loads `/api/image/…` itself), or the app's after it failed once.
@@ -338,7 +337,7 @@
       const reported = (dev) => (dev && dev.caps && dev.caps.speaker_position ? dev.caps.speaker_position.value : null);
       if (!device || !next || device.id !== next.id || reported(device) !== reported(next)) rebase(reported(next));
       device = next;
-      messageText = null;
+      message.reset();
       render();
     }
 
@@ -365,12 +364,7 @@
 
     /** A message under the card. Persistent messages also clear it. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else device = null;
-      render();
+      message.set(text, transient);
     }
 
     function shown(capabilityId) {
@@ -533,33 +527,9 @@
       }, DONE_MS);
     }
 
-    /** Taps: a touch that ends within TAP_SLOP, or a click (mouse, keyboard). Drags scroll the dashboard. */
+    /** Taps on the buttons (which click on Enter and Space themselves) and the panels. */
     function onTap(node, fn) {
-      let start = null;
-      const unpress = () => { start = null; node.classList.remove('pressing'); };
-      node.addEventListener('touchstart', (e) => {
-        const p = e.changedTouches[0];
-        start = { x: p.clientX, y: p.clientY };
-        node.classList.add('pressing');
-      }, { passive: true });
-      node.addEventListener('touchmove', (e) => {
-        const p = e.changedTouches[0];
-        if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
-      }, { passive: true });
-      node.addEventListener('touchend', (e) => {
-        const isTap = !!start;
-        unpress();
-        // Every touch: one that moved past TAP_SLOP can still get the browser's click.
-        lastTouchTap = Date.now();
-        if (!isTap) return;
-        e.preventDefault(); // no click after it
-        fn(e);
-      });
-      node.addEventListener('touchcancel', unpress);
-      node.addEventListener('click', (e) => {
-        if (Date.now() - lastTouchTap < 800) return;
-        fn(e);
-      });
+      kitOnTap(node, fn, { keys: false, guard: touches });
     }
 
     onTap(playBtn, togglePlay);
@@ -725,7 +695,7 @@
       }, { passive: false });
       bar.addEventListener('touchend', (e) => {
         e.preventDefault();
-        lastTouchTap = Date.now();
+        touches.touched();
         end(true);
       });
       bar.addEventListener('touchcancel', () => end(false));
@@ -837,9 +807,9 @@
       const ok = !!device && !device.missing && !!device.caps;
       card.style.display = device ? '' : 'none';
       card.classList.toggle('missing', !!device && !ok);
-      messageEl.textContent = messageText || '';
-      messageEl.style.display = messageText ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && !!device);
+      messageEl.textContent = message.text || '';
+      messageEl.style.display = message.text ? '' : 'none';
+      messageEl.classList.toggle('error', !!message.text && !!device);
       if (device && !ok) {
         // Kept for switching: a speaker that's gone can still be switched away from.
         nameEl.textContent = '';

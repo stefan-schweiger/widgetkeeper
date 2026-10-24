@@ -1,7 +1,7 @@
 import type Homey from 'homey';
 import { matches, type AutocompleteItem } from './autocomplete.js';
 import { isReservedKey } from './storedSetting.js';
-import { TILE_COLORS, type TileColor } from './ValueService.js';
+import { parseTileColor, type TileColor } from './tileColors.js';
 
 export const TEXTLINE_STATE_EVENT = 'textline:state';
 /** The app setting holding the boards' texts: `{ '<board key>': TextLine }`. */
@@ -61,8 +61,7 @@ export default class TextLineService {
    * Text past 500 characters is cut. A board that's cleared is forgotten.
    */
   set(board: unknown, text: unknown, color: string = 'default') {
-    const next = color === 'default' ? null : (TILE_COLORS as readonly string[]).includes(color) ? color as TileColor : undefined;
-    if (next === undefined) throw new Error(`Unknown colour: ${color}`);
+    const next = parseTileColor(color);
     const key = boardKey(board);
     if (!key) throw new Error(`Not a note name: ${String(board)}`);
     const name = typeof board === 'string' && board.trim() ? board.trim().slice(0, MAX_NAME) : DEFAULT_BOARD;

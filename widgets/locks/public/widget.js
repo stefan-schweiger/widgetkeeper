@@ -7,10 +7,9 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, formatSince, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, formatSince, applyColors, onTap: kitOnTap, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
-  const TAP_SLOP = 10; // px a finger may move and still count as a tap
   const BUSY_MS = 15e3; // how long a lock may take to report its new state before the button gives up
   const CONFIRM_MS = 3e3; // how long Open waits for its second tap
   const OPEN_MIN_MS = 1.5e3; // Open pulses at least this long: a button capability reports no value to wait for
@@ -68,46 +67,9 @@
     return svg;
   }
 
-  /**
-   * A tap: a touch that ends within TAP_SLOP of where it started (a drag is left to the dashboard, so it
-   * still scrolls), or a click from a mouse or keyboard. Quick Actions' logic; a button's tap isn't also its row's.
-   */
+  // Every tap stops at its node, so a button's tap doesn't press the row around it too.
   function onTap(node, fn) {
-    let start = null;
-    let lastTouchTap = 0;
-    const unpress = () => { start = null; node.classList.remove('pressing'); };
-    node.addEventListener('touchstart', (e) => {
-      e.stopPropagation(); // a tap on a button mustn't also press the row around it
-      const p = e.changedTouches[0];
-      start = { x: p.clientX, y: p.clientY };
-      node.classList.add('pressing');
-    }, { passive: true });
-    node.addEventListener('touchmove', (e) => {
-      const p = e.changedTouches[0];
-      if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
-    }, { passive: true });
-    node.addEventListener('touchend', (e) => {
-      const tap = !!start;
-      unpress();
-      // Every touch: one that moved past TAP_SLOP can still get the browser's click.
-      lastTouchTap = Date.now();
-      if (!tap) return;
-      e.preventDefault(); // no click after it
-      e.stopPropagation();
-      fn(e);
-    });
-    node.addEventListener('touchcancel', unpress);
-    node.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (Date.now() - lastTouchTap < 800) return;
-      fn(e);
-    });
-    node.addEventListener('keydown', (e) => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      e.preventDefault();
-      e.stopPropagation();
-      fn(e);
-    });
+    kitOnTap(node, fn, { stop: true });
   }
 
   /** The device's capabilities in a fixed order: `[[id, {value, setable, lastUpdated}]]`. */
@@ -154,8 +116,8 @@
     let devices = []; // [{ id, name, icon, caps: { locked?, alarm_contact?, garagedoor_closed? } } | { id, missing }]
     let language = null;
     let expanded = alwaysOpen;
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { devices = []; } });
     const busy = new Map(); // deviceId → {capabilityId, value, timer}, while a lock or close is on its way
     const opening = new Map(); // deviceId → {busy, timer}: waiting for Open's second tap, or opening
 
@@ -196,7 +158,7 @@
       const listIn = Array.isArray(state) ? state : state && state.devices;
       devices = Array.isArray(listIn) ? listIn : [];
       if (state && typeof state.language === 'string') language = state.language;
-      messageText = null;
+      message.reset();
       render();
     }
 
@@ -213,12 +175,7 @@
 
     /** A message under the tile. Persistent messages also clear it. */
     function setMessage(textIn, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = textIn;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else devices = [];
-      render();
+      message.set(textIn, transient);
     }
 
     function clearBusy(id) {
@@ -435,9 +392,9 @@
       allButton.style.display = expanded && securable > 1 ? '' : 'none';
       allButton.classList.toggle('busy', devices.some(d => busy.has(d.id)));
       tile.style.display = devices.length ? '' : 'none';
-      messageEl.textContent = messageText || '';
-      messageEl.style.display = messageText ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && devices.length > 0);
+      messageEl.textContent = message.text || '';
+      messageEl.style.display = message.text ? '' : 'none';
+      messageEl.classList.toggle('error', !!message.text && devices.length > 0);
 
       const h = Math.ceil(root.getBoundingClientRect().height);
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }

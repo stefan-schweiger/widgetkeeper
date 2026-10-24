@@ -1,7 +1,10 @@
 // Globals the widget scripts (widgets/*/public/widget.js and mount.js) put on `window` for their index.html.
 
 /** A widget's mount.js: wires it to a Homey (the frame's own, or the Smart Stack's stand-in for one). */
-type MountWidget = ((Homey: any, el: { root: HTMLElement, frame: HTMLElement }) => void | { setVisible?: (visible: boolean) => void })
+/** The kit's `touchGuard()`: when a widget's nodes last got a touch. */
+type TouchGuard = { touched: () => void, recent: () => boolean };
+
+type MountWidget =((Homey: any, el: { root: HTMLElement, frame: HTMLElement }) => void | { setVisible?: (visible: boolean) => void })
   & { frameClass?: string };
 
 interface Window {
@@ -61,6 +64,21 @@ interface Window {
     },
     getDeviceIds: (Homey: any) => Promise<string[]>,
     wireTileNames: (Homey: any, setNames: (names: any) => void) => { state: (path: string) => Promise<any>, rename: (key: string, name: string) => Promise<any> },
+    touchGuard: () => TouchGuard,
+    onTap: (node: Element, fn: (e: Event) => void, opts?: { keys?: boolean, stop?: boolean, guard?: TouchGuard }) => void,
+    messageLine: (render: () => void, opts?: { clear?: (() => void) | null, ms?: number }) => {
+      readonly text: string | null,
+      set: (text: string | null, transient?: boolean) => void,
+      reset: (opts?: { lastingOnly?: boolean }) => void,
+    },
+    wireDeviceState: (Homey: any, link: { ready: (opts?: object) => Promise<void>, perfParam: (sep?: string) => string }, widget: any, opts?: {
+      event?: string | null,
+      tileNames?: { state: (path: string) => Promise<any> } | null,
+      query?: () => string,
+      need?: (ids: string[]) => string | null,
+      watches?: (id: string) => boolean,
+      onState?: ((state: any) => void) | null,
+    }) => { ids: () => string[], loaded: () => boolean },
     COLORS: string[],
     colorStyle: (value: unknown) => 'soft' | 'deep',
     applyColors: (root: HTMLElement, opts?: { style?: unknown, color?: unknown, fallback?: string | null }) => 'soft' | 'deep',

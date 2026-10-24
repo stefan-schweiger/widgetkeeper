@@ -1,6 +1,6 @@
 import type { App } from 'homey';
 import type WidgetkeeperApp from '../../app.js';
-import { idList, logged, logPerf } from '../../lib/widgetApi.js';
+import { idList, logged, logPerf, requireId } from '../../lib/widgetApi.js';
 import { tileNameRoutes, withTileNames } from '../../lib/TileNameService.js';
 
 type Homey = App['homey'];
@@ -23,8 +23,7 @@ export default {
   }) {
     const app = homey.app as WidgetkeeperApp;
     return logged(app, () => `Curtain change failed, body: ${JSON.stringify(body)}`, async () => {
-      if (!body?.deviceId) throw new Error('Missing deviceId');
-      await app.curtains.set(body.deviceId, { action: body.action, position: body.position });
+      await app.curtains.set(requireId(body?.deviceId, 'deviceId'), { action: body.action, position: body.position });
       return { ok: true };
     });
   },

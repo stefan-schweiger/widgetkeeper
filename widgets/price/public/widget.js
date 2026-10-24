@@ -5,7 +5,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, lowestSlot, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, lowestSlot, applyColors, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const HOUR = 36e5;
@@ -85,8 +85,8 @@
     };
 
     let snapshot = null; // { prices: [{start, price}], fixedPrice, currency, language }
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { snapshot = null; } });
     let slotTimer = null;
 
     root.classList.add('pb');
@@ -116,18 +116,13 @@
     /** `/price`'s answer: `{prices, quarters, fixedPrice, currency, language}` (`quarters`: 15-minute prices or null). */
     function setState(state) {
       snapshot = state && Array.isArray(state.prices) ? state : null;
-      messageText = null;
+      message.reset();
       render();
     }
 
     /** A message under the tile. Persistent messages also clear the tile. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else snapshot = null;
-      render();
+      message.set(text, transient);
     }
 
     /** The prices of the local day holding `ms`, cached in `cache` by its midnight. */
@@ -220,10 +215,10 @@
         chart.style.display = m.bars ? '' : 'none';
         if (m.bars) renderBars(m);
       }
-      const text = messageText || (snapshot && !m ? t('noPrices') : null);
+      const text = message.text || (snapshot && !m ? t('noPrices') : null);
       messageEl.textContent = text || '';
       messageEl.style.display = text ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && !!m);
+      messageEl.classList.toggle('error', !!message.text && !!m);
       scheduleNext(now, m ? m.len : HOUR);
 
       const h = Math.ceil(root.getBoundingClientRect().height);

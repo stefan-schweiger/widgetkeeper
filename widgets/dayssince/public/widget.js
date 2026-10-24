@@ -7,10 +7,9 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, applyColors, onTap: kitOnTap, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
-  const TAP_SLOP = 10; // px a finger may move and still count as a tap
   const MINUTE = 60e3;
   const DAY = 24 * 60 * MINUTE;
   const UNDO_MS = 5000; // how long Undo shows after a tap
@@ -41,46 +40,9 @@
   const ICONS = window.WidgetkeeperKit.icons;
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
-  /**
-   * A tap: a touch that ends within TAP_SLOP of where it started (a drag is left to the dashboard, so it
-   * still scrolls), or a click from a mouse or keyboard. Quick Actions' logic; a button's tap isn't also its row's.
-   */
+  // Every tap stops at its node, so a button's tap doesn't press the row around it too.
   function onTap(node, fn) {
-    let start = null;
-    let lastTouchTap = 0;
-    const unpress = () => { start = null; node.classList.remove('pressing'); };
-    node.addEventListener('touchstart', (e) => {
-      e.stopPropagation(); // a tap on a button mustn't also press the row around it
-      const p = e.changedTouches[0];
-      start = { x: p.clientX, y: p.clientY };
-      node.classList.add('pressing');
-    }, { passive: true });
-    node.addEventListener('touchmove', (e) => {
-      const p = e.changedTouches[0];
-      if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
-    }, { passive: true });
-    node.addEventListener('touchend', (e) => {
-      const tap = !!start;
-      unpress();
-      // Every touch: one that moved past TAP_SLOP can still get the browser's click.
-      lastTouchTap = Date.now();
-      if (!tap) return;
-      e.preventDefault(); // no click after it
-      e.stopPropagation();
-      fn(e);
-    });
-    node.addEventListener('touchcancel', unpress);
-    node.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (Date.now() - lastTouchTap < 800) return;
-      fn(e);
-    });
-    node.addEventListener('keydown', (e) => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      e.preventDefault();
-      e.stopPropagation();
-      fn(e);
-    });
+    kitOnTap(node, fn, { stop: true });
   }
 
   /** A counter's key: its name trimmed and lower-cased (`counterKey()` in lib/DaysSinceService.ts); null without a name. */
@@ -243,8 +205,8 @@
     const undoable = new Map();
     /** Keys with an undo on its way: realtime doesn't overwrite them meanwhile. */
     const undoing = new Set();
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { if (!loaded) failed = true; }, ms: 6000 });
 
     root.classList.add('ds');
     applyColors(root, { style: opts.colorStyle });
@@ -298,7 +260,7 @@
       for (const entry of state.counters) apply(entry);
       loaded = true;
       failed = false;
-      if (!messageTimer) messageText = null; // a failed first load's message (a passing one runs out by itself)
+      message.reset({ lastingOnly: true }); // a failed first load's message (a passing one runs out by itself)
       render();
     }
 
@@ -311,12 +273,7 @@
 
     /** A message under the tiles; a persistent one (a failed first load) replaces them. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 6000);
-      else if (!loaded) failed = true;
-      render();
+      message.set(text, transient);
     }
 
     /** A tap: the counter starts again from now at once, with Undo; the app's answer replaces it. */
@@ -413,10 +370,10 @@
         tl.bar.style.setProperty('--ds-fill', p ? `${(p.fill * 100).toFixed(2)}%` : '0%');
         tl.tile.setAttribute('aria-label', t('resetLabel', { name: c.name, time: leftText ? `${text}, ${leftText}` : text }));
       }
-      const msg = messageText || (!counters.length ? t('setup') : null);
+      const msg = message.text || (!counters.length ? t('setup') : null);
       messageEl.textContent = msg || '';
       messageEl.style.display = msg ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText);
+      messageEl.classList.toggle('error', !!message.text);
       schedule(screenNow);
 
       const h = Math.ceil(root.getBoundingClientRect().height);

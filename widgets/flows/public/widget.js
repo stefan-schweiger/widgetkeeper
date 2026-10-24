@@ -4,10 +4,9 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, applyColors, KEY_PROBLEMS } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, applyColors, KEY_PROBLEMS, onTap, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
-  const TAP_SLOP = 10; // px a finger may move and still count as a tap
   const MIN_RUNNING_MS = 400; // the spinner shows at least this long, so a fast start still registers
   const DONE_MS = 1500; // how long the check mark shows after a start
 
@@ -62,44 +61,6 @@
   }
 
   /**
-   * A tap: a touch that ends within TAP_SLOP of where it started (a drag is left to the dashboard, so it
-   * still scrolls), or a click from a mouse or keyboard. Quick Actions' logic.
-   */
-  function onTap(node, fn) {
-    let start = null;
-    let lastTouchTap = 0;
-    const unpress = () => { start = null; node.classList.remove('pressing'); };
-    node.addEventListener('touchstart', (e) => {
-      const p = e.changedTouches[0];
-      start = { x: p.clientX, y: p.clientY };
-      node.classList.add('pressing');
-    }, { passive: true });
-    node.addEventListener('touchmove', (e) => {
-      const p = e.changedTouches[0];
-      if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
-    }, { passive: true });
-    node.addEventListener('touchend', (e) => {
-      const tap = !!start;
-      unpress();
-      // Every touch: one that moved past TAP_SLOP can still get the browser's click.
-      lastTouchTap = Date.now();
-      if (!tap) return;
-      e.preventDefault(); // no click after it
-      fn(e);
-    });
-    node.addEventListener('touchcancel', unpress);
-    node.addEventListener('click', (e) => {
-      if (Date.now() - lastTouchTap < 800) return;
-      fn(e);
-    });
-    node.addEventListener('keydown', (e) => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      e.preventDefault();
-      fn(e);
-    });
-  }
-
-  /**
    * @param {HTMLElement} root
    * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, columns?: number|string,
    *   buttons?: {id: string, color?: string, icon?: string, name?: string}[],
@@ -120,8 +81,8 @@
     let flows = []; // [{ id, name, enabled, triggerable, advanced, color? } | { id, missing }], one per button
     const flowColors = new Map(); // flow id → a colour set by the Flow card, which wins over the button's own
     const busy = new Map(); // button index → 'running' | 'done'
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { flows = []; } });
 
     root.classList.add('fb');
     applyColors(root, { style: opts.colorStyle });
@@ -135,7 +96,7 @@
       flows = (Array.isArray(list) ? list : []).map((f, i) => withName(f, buttons[i] && buttons[i].name));
       flowColors.clear();
       for (const f of flows) if (f && FLOW_COLORS.includes(f.color)) flowColors.set(f.id, f.color);
-      messageText = null;
+      message.reset();
       render();
     }
 
@@ -148,12 +109,7 @@
 
     /** A message under the rows. Persistent messages also clear the rows. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else flows = [];
-      render();
+      message.set(text, transient);
     }
 
     function shake(index) {
@@ -241,9 +197,9 @@
         r.row.setAttribute('aria-busy', String(state === 'running'));
       });
       grid.style.display = flows.length ? '' : 'none';
-      messageEl.textContent = messageText || '';
-      messageEl.style.display = messageText ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && flows.length > 0);
+      messageEl.textContent = message.text || '';
+      messageEl.style.display = message.text ? '' : 'none';
+      messageEl.classList.toggle('error', !!message.text && flows.length > 0);
 
       const h = Math.ceil(root.getBoundingClientRect().height);
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }

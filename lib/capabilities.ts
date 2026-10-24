@@ -51,3 +51,13 @@ export function readCaps(device: any, ids: readonly string[]): Record<string, Ca
   }
   return out;
 }
+
+/** A copy of an entry's tracked capabilities, for one `/state` answer: the tracker keeps changing its own. */
+export function copyCaps<T extends Record<string, object | undefined>>(caps: T): T {
+  return Object.fromEntries(Object.entries(caps).map(([k, c]) => [k, { ...c }])) as T;
+}
+
+/** Tracked capabilities' values as JSON, for the debug line saying what's tracked. */
+export function capValuesText(caps: Record<string, { value: unknown } | undefined>): string {
+  return JSON.stringify(Object.fromEntries(Object.entries(caps).map(([k, c]) => [k, c?.value])));
+}

@@ -198,8 +198,6 @@
   const DRAG_SLOP = 6;
   /** Near the window's top or bottom edge, a drag scrolls the page. */
   const EDGE_PX = 64;
-  /** The most dashboards the app keeps (`MAX_DASHBOARDS` in lib/WebDashboardService.ts). */
-  const MAX_DASHBOARDS = 64;
 
   function storageGet(key) {
     try { return localStorage.getItem(key); } catch (e) { return null; }
@@ -492,7 +490,8 @@
   window.mountWebDashboards = function (root, opts = {}) {
     let key = storageGet(KEY_STORAGE);
     let session = storageGet(SESSION_STORAGE);
-    let setup = null; // `/web/setup`: {appId, homeyId, language, strings, widgets, dashboards}
+    let setup = null; // `/web/setup`: {appId, homeyId, language, strings, widgets, dashboards, front, maxDashboards}
+    let maxDashboards = 64; // the most the app keeps (`/web/setup`'s, from lib/WebDashboardService.ts)
     let types = new Map(); // widget id → its type (name, settings, devices …)
     let foreign = new Map(); // another app's widget (`homey:app:<appId>:<id>`) → its type, from Homey's list
     let foreignState = null; // that list: 'ok', 'noScope' (this key may not read it) or 'failed'
@@ -571,6 +570,7 @@
       types = new Map((setup.widgets || []).map(w => [w.type, w]));
       dashboards = setup.dashboards || [];
       frontPage = setup.front || { widgets: true };
+      if (setup.maxDashboards > 0) maxDashboards = setup.maxDashboards;
       if (setup.language) document.documentElement.lang = setup.language;
       if (setup.disabled || setup.passwordRequired) return; // turned off, or the password first: `route()` says so
       if (!socketStarted) {
@@ -1392,7 +1392,7 @@
               if (seen.has(id) || !stored.has(id)) added++;
               seen.add(id);
             }
-            const over = added - (MAX_DASHBOARDS - dashboards.length);
+            const over = added - (maxDashboards - dashboards.length);
             return over > 0 ? t('backupTooMany', { count: over }) : '';
           },
           onCancel: () => { show(null); status.textContent = ''; },
@@ -1550,8 +1550,8 @@
      * it, with the widgets' tile names. The copy is then shown, focused and marked for a moment.
      */
     function duplicate(id) {
-      const tooMany = () => toast(t('tooManyDashboards', { max: MAX_DASHBOARDS }));
-      if (dashboards.length >= MAX_DASHBOARDS) { tooMany(); return; }
+      const tooMany = () => toast(t('tooManyDashboards', { max: maxDashboards }));
+      if (dashboards.length >= maxDashboards) { tooMany(); return; }
       for (const b of root.querySelectorAll('.wd-dash-copy')) /** @type {HTMLButtonElement} */ (b).disabled = true;
       saving = saving.then(async () => {
         try {
@@ -1675,7 +1675,7 @@
         grip.append(icon('grip'));
         const copy = button('wd-icon wd-dash-copy', '', () => duplicate(d.id), t('duplicate'));
         copy.append(icon('copy'));
-        copy.disabled = dashboards.length >= MAX_DASHBOARDS;
+        copy.disabled = dashboards.length >= maxDashboards;
         const remove = confirmButton('wd-icon wd-dash-delete', icon('trash'), () => deleteDashboard(d.id, () => {
           if (location.hash === '#/edit') renderList(true);
         }), t('tapAgain'), t('deleteDashboard'));

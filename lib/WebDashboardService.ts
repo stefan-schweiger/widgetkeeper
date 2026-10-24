@@ -26,7 +26,7 @@ export const WEB_FRONT_SETTING = 'webFront';
 const LOCALES_DIR = new URL('../locales/', import.meta.url);
 const LANGUAGES = ['en', 'nl', 'de', 'fr', 'it', 'sv', 'no', 'es', 'da', 'ru', 'pl', 'ko', 'ar'];
 
-const MAX_DASHBOARDS = 64;
+export const MAX_DASHBOARDS = 64;
 const MAX_COLUMNS = 6;
 const MAX_WIDGETS = 60; // per dashboard
 const MAX_DEVICES = 100; // per widget

@@ -4,16 +4,12 @@
  * `frame` is the element whose height Homey gets (the body, or the slide).
  */
 window.mountCamerasWidget = function (Homey, { root, frame }) {
-  const REFRESH_MS = 5 * 60e3; // re-reads the devices (names, image and video ids)
-
-  const { wireFrame, getDeviceIds, wireTileNames } = window.WidgetkeeperKit;
+  const { wireFrame, wireTileNames, wireDeviceState } = window.WidgetkeeperKit;
   // Homey's frame: ready, the height, and the load marks sent with the first request.
   const link = wireFrame(Homey, frame);
 
   const settings = Homey.getSettings() || {};
   const snapshotMs = (Number(settings.refresh) || 10) * 1000;
-  let deviceIds = [];
-  let loaded = false;
   let snapshotTimer = null;
   let visible = true; // false while the Smart Stack shows another page
 
@@ -31,14 +27,10 @@ window.mountCamerasWidget = function (Homey, { root, frame }) {
     onHeight: link.setHeight,
   });
 
-  function ready() {
-    return link.ready({ fonts: true });
-  }
-
   // Snapshots refresh on their own timer, and not while the dashboard is in the background (or the stack's
   // slide is off screen). Live view until tapped comes back first, so the refresh skips the tiles it covers.
   function startSnapshots() {
-    if (snapshotTimer || document.hidden || !visible || !loaded) return;
+    if (snapshotTimer || document.hidden || !visible || !cameras.loaded()) return;
     widget.resume();
     widget.refresh();
     snapshotTimer = setInterval(() => widget.refresh(), snapshotMs);
@@ -51,31 +43,8 @@ window.mountCamerasWidget = function (Homey, { root, frame }) {
     if (document.hidden) { stopSnapshots(); widget.pause(); } else startSnapshots();
   });
 
-  async function load() {
-    if (!deviceIds.length) {
-      widget.setMessage(widget.t('selectDevices'));
-      ready();
-      return;
-    }
-    try {
-      const state = await tileNames.state(`/state?deviceIds=${deviceIds.map(encodeURIComponent).join(',')}${link.perfParam()}`);
-      widget.setState(state);
-      loaded = true;
-      startSnapshots();
-    } catch (err) {
-      console.error(err);
-      // A failed refresh keeps the tiles; only a failed first load replaces them with the error.
-      widget.setMessage(widget.t('error'), loaded);
-    }
-    ready();
-  }
-
-  getDeviceIds(Homey)
-    .then((ids) => { deviceIds = ids; })
-    .then(() => {
-      setInterval(load, REFRESH_MS);
-      load();
-    });
+  // The cameras (names, image and video ids) with their tile names, now and every 5 min; snapshots start with the first.
+  const cameras = wireDeviceState(Homey, link, widget, { tileNames, onState: startSnapshots });
 
   return {
     /** The Smart Stack: whether this page is the one on screen. */

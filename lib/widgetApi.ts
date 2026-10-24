@@ -44,3 +44,9 @@ export async function keyResult<T extends object | void>(app: AppLog, label: str
     throw err;
   }
 }
+
+/** A request's id (`deviceId`, `id` …): a non-empty string, else it throws `Missing <what>`. */
+export function requireId(value: unknown, what: string): string {
+  if (typeof value !== 'string' || !value) throw new Error(`Missing ${what}`);
+  return value;
+}

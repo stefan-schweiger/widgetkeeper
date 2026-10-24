@@ -5,7 +5,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, baseTitle, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, baseTitle, applyColors, onTap, touchGuard, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -20,7 +20,6 @@
     renameFailed: 'Could not save the name.',
   };
 
-  const TAP_SLOP = 10; // px a touch may move and still count as a tap
 
   /**
    * @param {HTMLElement} root
@@ -36,10 +35,10 @@
     };
 
     let devices = []; // [{ id, name, icon, alarms: [{ capabilityId, title, value, state }] } | { id, missing }]
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { devices = []; } });
     let openId = null; // the device whose alarm panel is open
-    let lastTouchTap = 0;
+    const touches = touchGuard(); // the tiles' taps
 
     root.classList.add('sa');
     applyColors(root, { style: opts.colorStyle });
@@ -62,7 +61,7 @@
 
     function setState(list) {
       devices = Array.isArray(list) ? list : [];
-      messageText = null;
+      message.reset();
       render();
     }
 
@@ -76,12 +75,7 @@
 
     /** A message under the tiles. Persistent messages also clear the tiles. */
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else devices = [];
-      render();
+      message.set(text, transient);
     }
 
     /**
@@ -140,38 +134,8 @@
       let tile = tiles.get(id);
       if (!tile) {
         const node = el('div', { class: 'sa-tile', 'data-device': id, role: 'button', tabindex: '0' });
-        // Taps from the touch events, as in Device Quick Actions: a touch that ends within TAP_SLOP of where it
-        // started. A drag is left to the dashboard, so it still scrolls.
-        let start = null;
-        const unpress = () => { start = null; node.classList.remove('pressing'); };
-        node.addEventListener('touchstart', (e) => {
-          const p = e.changedTouches[0];
-          start = { x: p.clientX, y: p.clientY };
-          node.classList.add('pressing');
-        }, { passive: true });
-        node.addEventListener('touchmove', (e) => {
-          const p = e.changedTouches[0];
-          if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
-        }, { passive: true });
-        node.addEventListener('touchend', (e) => {
-          const tap = !!start;
-          unpress();
-          // Every touch: one that moved past TAP_SLOP can still get the browser's click.
-          lastTouchTap = Date.now();
-          if (!tap) return;
-          e.preventDefault(); // no click after it
-          toggle(id);
-        });
-        node.addEventListener('touchcancel', unpress);
-        node.addEventListener('click', () => {
-          if (Date.now() - lastTouchTap < 800) return;
-          toggle(id);
-        });
-        node.addEventListener('keydown', (e) => {
-          if (e.key !== 'Enter' && e.key !== ' ') return;
-          e.preventDefault();
-          toggle(id);
-        });
+        // A tap (the kit's, as Quick Actions'): a drag is left to the dashboard, so it still scrolls.
+        onTap(node, () => toggle(id), { guard: touches });
         const icon = el('span', { class: 'sa-icon' }, node);
         const text = el('div', { class: 'sa-text' }, node);
         tile = {
@@ -241,9 +205,9 @@
       }
       renderPanel();
       grid.style.display = devices.length ? '' : 'none';
-      messageEl.textContent = messageText || '';
-      messageEl.style.display = messageText ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && devices.length > 0);
+      messageEl.textContent = message.text || '';
+      messageEl.style.display = message.text ? '' : 'none';
+      messageEl.classList.toggle('error', !!message.text && devices.length > 0);
 
       const h = Math.ceil(root.getBoundingClientRect().height);
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }

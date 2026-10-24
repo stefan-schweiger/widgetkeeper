@@ -4,7 +4,7 @@
  * Plain browser JS (served as-is).
  */
 (function () {
-  const { el, tileNames, formatNumber, formatValue, applyColors } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
+  const { el, tileNames, formatNumber, formatValue, applyColors, messageLine } = window.WidgetkeeperKit; // ../spacer/kit.js, loaded first
   'use strict';
 
   const DEFAULT_STRINGS = {
@@ -105,8 +105,8 @@
     const spanMs = SPAN_MS[opts.span] || SPAN_MS['24h'];
 
     let slots = []; // [{ deviceId, capabilityId, name, capability, value, points } | { deviceId, capabilityId, missing }]
-    let messageText = null;
-    let messageTimer = null;
+    // What failed: a lasting message replaces the content, a transient one goes by itself.
+    const message = messageLine(() => render(), { clear: () => { slots = []; } });
 
     root.classList.add('sl');
     applyColors(root, { style: opts.colorStyle });
@@ -137,7 +137,7 @@
         const after = lastT(points);
         return { ...s, points: points.concat(old.filter(p => p[0] > after)) };
       });
-      messageText = null;
+      message.reset();
       render();
     }
 
@@ -157,12 +157,7 @@
     }
 
     function setMessage(text, transient) {
-      if (messageTimer) clearTimeout(messageTimer);
-      messageTimer = null;
-      messageText = text;
-      if (transient) messageTimer = setTimeout(() => { messageText = null; render(); }, 8000);
-      else slots = [];
-      render();
+      message.set(text, transient);
     }
 
     // The SVG and its shapes stay in place; only their attributes change.
@@ -236,9 +231,9 @@
         tile.tile.title = missing ? '' : s.capability.title;
       });
       grid.style.display = slots.length ? '' : 'none';
-      messageEl.textContent = messageText || '';
-      messageEl.style.display = messageText ? '' : 'none';
-      messageEl.classList.toggle('error', !!messageText && slots.length > 0);
+      messageEl.textContent = message.text || '';
+      messageEl.style.display = message.text ? '' : 'none';
+      messageEl.classList.toggle('error', !!message.text && slots.length > 0);
 
       const h = Math.ceil(root.getBoundingClientRect().height);
       if (h && h !== lastHeight) { lastHeight = h; if (opts.onHeight) opts.onHeight(h); }
