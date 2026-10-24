@@ -99,6 +99,17 @@ describe('web routes: the editor\'s autocompletes', () => {
     expect(flowList).toHaveBeenCalledWith('h', { a: 1 });
     await expect(ask({ type: 'flows', setting: 'nope' })).rejects.toThrow(/No autocomplete/);
   });
+
+  // Only the listeners' own names: an object's property (`constructor`, `__proto__` …) is no autocomplete, also beside the
+  // stored-key one (the security audit's S4; the service's own check is in web-dashboards.test.ts).
+  it("refuses a setting or widget that's only an object's property, with any key", async () => {
+    const { dashboards, flowList, ask } = setup();
+    for (const [type, setting] of [['stack', 'constructor'], ['stack', '__proto__'], ['__proto__', 'dashboard'], ['constructor', 'flow1'], ['flows', 'toString']]) {
+      await expect(ask({ type, setting, key: 'dashboards-key' })).rejects.toThrow(/No autocomplete/);
+    }
+    expect(dashboards).not.toHaveBeenCalled();
+    expect(flowList).not.toHaveBeenCalled();
+  });
 });
 
 describe('the personal API key routes', () => {
