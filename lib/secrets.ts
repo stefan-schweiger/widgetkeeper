@@ -95,7 +95,9 @@ export default class Secrets {
    * Moves what older versions kept in the app settings, once (`MOVED_MARK`): after that a setting of those names was
    * written by someone else (an *Apps → Control* key may write the settings), so it's only unset, even where the file
    * has none (a removed key or password). A setting is unset only once the file holds it, so a failed write loses
-   * nothing. One the file already has is just unset. An unreadable file isn't marked unless something is moved.
+   * nothing. One the file already has is just unset. An unreadable file isn't rewritten at start unless something is
+   * moved, but the mark is kept in memory, so the first save carries it: without it, a setting written later would be
+   * taken as a secret on the next start.
    */
   private moveSettings(readable: boolean) {
     const found = MOVED_SETTINGS.filter(key => this.homey.settings.get(key) !== null && this.homey.settings.get(key) !== undefined);
@@ -104,7 +106,10 @@ export default class Secrets {
       if (found.length) this.log(`Ignored and unset ${found.join(', ')} in the app settings (written after the move)`);
       return;
     }
-    if (!found.length && !readable) return;
+    if (!found.length && !readable) {
+      this.values[MOVED_MARK] = true;
+      return;
+    }
     for (const key of found) {
       if (Object.prototype.hasOwnProperty.call(this.values, key)) continue;
       this.values[key] = this.homey.settings.get(key);

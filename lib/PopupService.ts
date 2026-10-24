@@ -68,9 +68,12 @@ type PopupInput = { target: unknown, text: unknown, picture?: PictureInput, soun
 export type AskResult = { answer: boolean, answered: boolean };
 export type AnswerResult = { ok: true, answer: boolean } | { ok: false, reason: 'closed' | 'notAsk', answer: boolean | null };
 
-/** A popup as the screens get it (`popups:show`, `/web/popups`, the widget's `/state`): the picture's source only. */
+/**
+ * A popup as the screens get it (`popups:show`, `/web/popups`): the picture's source only, and never the token, which
+ * alone answers it through the public routes (anyone who may listen to the app's realtime would get it).
+ */
 export type PopupView = {
-  id: string, token: string, target: string, kind: PopupKind, text: string,
+  id: string, target: string, kind: PopupKind, text: string,
   picture: { source: 'camera' | 'stored' } | null, sound: PopupSound | null, createdAt: number, until: number,
 };
 
@@ -161,12 +164,15 @@ export default class PopupService {
     return { popups: [...this.open.values()].map(p => this.view(p)), now: Date.now() };
   }
 
-  /** A Popups widget's `/state`: the popups for everywhere and for its screen name, which is remembered for the Flow cards. */
-  forScreen(name: unknown): { popups: PopupView[], now: number } {
+  /**
+   * A Popups widget's `/state`: the popups for everywhere and for its screen name, which is remembered for the Flow
+   * cards, each with its token (the prompt page's way in): only here, so a screen gets the tokens of its own popups.
+   */
+  forScreen(name: unknown): { popups: (PopupView & { token: string })[], now: number } {
     const key = screenKey(name);
     if (key) this.remember(key, typeof name === 'string' && name.trim() ? name.trim().slice(0, MAX_NAME) : DEFAULT_SCREEN);
     const popups = [...this.open.values()].filter(p => p.target === 'all' || (key && p.target === `name:${key}`));
-    return { popups: popups.map(p => this.view(p)), now: Date.now() };
+    return { popups: popups.map(p => ({ ...this.view(p), token: p.token })), now: Date.now() };
   }
 
   /** The prompt page (no login, so the popup's token): the popup, or how it ended. */
@@ -351,7 +357,7 @@ export default class PopupService {
 
   private view(p: Popup): PopupView {
     return {
-      id: p.id, token: p.token, target: p.target, kind: p.kind, text: p.text,
+      id: p.id, target: p.target, kind: p.kind, text: p.text,
       picture: p.picture ? { source: p.picture.source } : null, sound: p.sound, createdAt: p.createdAt, until: p.until,
     };
   }

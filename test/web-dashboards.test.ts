@@ -5,7 +5,7 @@ import PersonalApiKey from '../lib/PersonalApiKey.js';
 import TileNameService, { TILE_NAMES_EVENT, TILE_NAMES_SETTING } from '../lib/TileNameService.js';
 import WebDashboardService, { MAX_DASHBOARDS, passesDeviceFilter, settingSections, WEB_BACKUP_FORMAT, WEB_DASHBOARDS_SETTING, WEB_ENABLED_SETTING, WEB_FRONT_SETTING, WEB_REMOTE_SETTING } from '../lib/WebDashboardService.js';
 import { widgetAutocompletes } from '../lib/widgetAutocompletes.js';
-import { routeKeyUse } from '../lib/widgetRoutes.js';
+import { DEVICE_WRITES, pageKeyUse, routeKeyUse } from '../lib/widgetRoutes.js';
 import WebPassword from '../lib/WebPassword.js';
 import PopupService from '../lib/PopupService.js';
 import api from '../api.js';
@@ -906,5 +906,78 @@ describe('web dashboards: popups (wk-084)', () => {
   it('marks exactly the prompt page routes public', () => {
     const publicRoutes = Object.entries(app.api).filter(([, r]: [string, any]) => r.public).map(([name]) => name).sort();
     expect(publicRoutes).toEqual(['postPopup', 'postPopupAnswer', 'postPopupImage']);
+  });
+});
+
+describe("web dashboards: a device change needs the page's own key to control devices", () => {
+  /** Routes that change something, but neither with the stored key nor on a device (app data, logs, a video stream). */
+  const NEUTRAL = new Set([
+    'cameras POST /video/offer', 'cameras POST /video/keepalive', 'cameras POST /report', 'media POST /report',
+    'timers POST /start', 'timers POST /action', 'dayssince POST /reset', 'dayssince POST /undo',
+  ]);
+
+  // A device change left out of DEVICE_WRITES would let a page whose key may not control devices do it with the app's token.
+  it('classifies every route that changes something: the stored key, a device, or neither', () => {
+    const unclassified: string[] = [];
+    const routes = new Set<string>();
+    for (const [id, w] of Object.entries(app.widgets) as [string, any][]) {
+      for (const r of Object.values(w.api ?? {}) as { method: string, path: string }[]) {
+        const route = `${id} ${r.method} ${r.path}`;
+        routes.add(route);
+        if (r.method === 'GET' || r.path === '/names' || route === 'stack POST /call') continue;
+        if (!routeKeyUse(id, r.method, r.path, { id: '' }) && !DEVICE_WRITES.includes(route) && !NEUTRAL.has(route)) unclassified.push(route);
+      }
+    }
+    expect(unclassified).toEqual([]);
+    for (const route of [...DEVICE_WRITES, ...NEUTRAL]) expect(routes).toContain(route);
+    expect(pageKeyUse('locks', 'POST', '/open', {})).toBe('devices');
+    expect(pageKeyUse('flows', 'POST', '/trigger', {})).toBe('flows');
+    expect(pageKeyUse('timers', 'POST', '/start', {})).toBe(null);
+    expect(pageKeyUse('stack', 'POST', '/call', { type: 'locks', method: 'POST', path: '/open' })).toBe('devices');
+    expect(pageKeyUse('stack', 'POST', '/call', { type: 'media', method: 'POST', path: '/button', body: { id: 'card:x' } })).toBe('cards');
+  });
+
+  it("refuses a device change unless the page's own key may control devices", async () => {
+    const { homey } = setup();
+    const open = vi.fn(async () => undefined);
+    const set = vi.fn(async () => undefined);
+    const trigger = vi.fn(async () => undefined);
+    homey.app.locks = { open, set };
+    homey.app.quickActions = { trigger };
+    homey.app.apiKey = new PersonalApiKey(homey, vi.fn());
+    keyApis.set('apps-only', { sessions: { getSessionMe: async () => ({ scopes: ['homey.app.control'] }) } });
+    keyApis.set('devices', { sessions: { getSessionMe: async () => ({ scopes: ['homey.device.control'] }) } });
+    keyApis.set('full', { sessions: { getSessionMe: async () => ({ scopes: ['homey'] }) } });
+    const call = (type: string, path: string, body: object, key?: string) =>
+      api.postWebCall({ homey, body: { type, method: 'POST', path, body, key } });
+    const lock = { deviceId: 'd', capabilityId: 'open_lock' };
+    await expect(call('locks', '/open', lock, 'apps-only')).rejects.toThrow(/may not change devices \(keyScope\)/);
+    await expect(call('locks', '/open', lock)).rejects.toThrow(/may not change devices \(keyInvalid\)/);
+    await expect(call('locks', '/open', lock, 'nope')).rejects.toThrow(/keyInvalid/);
+    await expect(call('quickactions', '/trigger', { deviceId: 'd' }, 'apps-only')).rejects.toThrow(/keyScope/);
+    // Through a Smart Stack on the page too; a stack inside a stack isn't a route at all.
+    await expect(call('stack', '/call', { type: 'locks', method: 'POST', path: '/open', body: lock }, 'apps-only')).rejects.toThrow(/keyScope/);
+    await expect(call('stack', '/call', { type: 'stack', method: 'POST', path: '/call', body: { type: 'locks', method: 'POST', path: '/open', body: lock } }, 'apps-only'))
+      .rejects.toThrow(/Not a widget route/);
+    expect(open).not.toHaveBeenCalled();
+    expect(trigger).not.toHaveBeenCalled();
+    await expect(call('locks', '/open', lock, 'devices')).resolves.toEqual({ ok: true });
+    await expect(call('stack', '/call', { type: 'locks', method: 'POST', path: '/set', body: { deviceId: 'd', capabilityId: 'locked', value: false } }, 'full'))
+      .resolves.toEqual({ ok: true });
+    expect(open).toHaveBeenCalledWith('d', 'open_lock');
+    expect(set).toHaveBeenCalledWith('d', 'locked', false);
+    for (const k of ['apps-only', 'devices', 'full']) keyApis.delete(k);
+  });
+});
+
+describe('web dashboards: autocompletes by their own names only', () => {
+  it("refuses a setting name that's only an object's property", async () => {
+    const listener = vi.fn(async () => [{ name: 'One', id: '1' }]);
+    const { homey, web } = setup({ values: { slot1: listener } });
+    for (const setting of ['__proto__', 'constructor', 'toString', 'hasOwnProperty']) {
+      await expect(web.autocomplete('values', setting, 'q', {})).rejects.toThrow(/No autocomplete/);
+      await expect(api.postWebAutocomplete({ homey, query: {}, body: { type: 'values', setting, query: 'q' } })).rejects.toThrow(/No autocomplete/);
+    }
+    expect(listener).not.toHaveBeenCalled();
   });
 });

@@ -21,6 +21,11 @@ const USES = {
   cards: ['homey.flow', 'homey'],
   /** Light Controls' Moods (`palette: moods`): `setMood` needs `homey.mood.set`. */
   moods: ['homey.mood.set', 'homey.mood', 'homey'],
+  /**
+   * Not the stored key's: a web dashboards page's own key, for a widget route that changes a device with the app's own
+   * token (`pageKeyUse()`), as Homey's `setCapabilityValue` needs `homey.device.control` of a key itself.
+   */
+  devices: ['homey.device.control', 'homey.device', 'homey'],
 } as const;
 
 export type KeyUse = keyof typeof USES;

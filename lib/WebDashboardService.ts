@@ -584,8 +584,9 @@ export default class WebDashboardService {
 
   /** An autocomplete setting's items, from the same listener Homey's widget settings use. */
   async autocomplete(type: string, setting: string, query: string, settings: Record<string, any> | undefined): Promise<SettingItem[]> {
-    const listener = Object.prototype.hasOwnProperty.call(this.autocompletes, type) ? this.autocompletes[type][setting] : undefined;
-    if (!listener) throw new Error(`No autocomplete: ${type} ${setting}`);
+    const own = (o: object, k: string) => Object.prototype.hasOwnProperty.call(o, k);
+    const listener = own(this.autocompletes, type) && own(this.autocompletes[type], setting) ? this.autocompletes[type][setting] : undefined;
+    if (typeof listener !== 'function') throw new Error(`No autocomplete: ${type} ${setting}`);
     return listener(String(query ?? ''), settings && typeof settings === 'object' ? settings : {});
   }
 
