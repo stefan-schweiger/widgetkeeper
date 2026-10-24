@@ -1,9 +1,9 @@
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { runFile } from './helpers/loadWidget.js';
 
 // settings/dashboard-layout.js as the page loads it: it puts WidgetkeeperLayout on window.
 const win: any = {};
-new Function('window', readFileSync('settings/dashboard-layout.js', 'utf8'))(win);
+runFile('settings/dashboard-layout.js', { window: win });
 const { expand, collapse, place } = win.WidgetkeeperLayout;
 
 const W = (id: string, extra = {}) => ({ id, type: 'clock', ...extra });

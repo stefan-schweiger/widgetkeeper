@@ -47,7 +47,8 @@ Areas: `tile-names.md` (Rename tiles in twelve widgets, `lib/TileNameService.ts`
 ## Commands
 - Use the **project-local Homey CLI v4**: `npx homey …` (the global `homey` is an old 3.7.x).
 - `npx homey app validate --level debug`: compiles the TS and validates.
-- `npm test`: vitest in `test/` (`npm run test:watch`), run in Europe/Copenhagen. Service tests mock `homey-api` with `test/helpers/fakeHomey.ts`; widget tests run the unchanged `public/widget.js` in happy-dom (`test/helpers/loadWidget.ts`). CI (`.github/workflows/ci.yml`): typecheck, tests, validate.
+- `npm test`: vitest in `test/` (`npm run test:watch`), run in Europe/Copenhagen. Service tests mock `homey-api` with `test/helpers/fakeHomey.ts`; widget tests run the unchanged `public/widget.js` in happy-dom (`test/helpers/loadWidget.ts`; load a script with its `runFile()`, so coverage counts it). CI (`.github/workflows/ci.yml`): typecheck, tests, validate.
+- `npm run coverage`: the same run with `@vitest/coverage-v8`, a report in `coverage/` (gitignored) and a summary; not a CI gate.
 - `npm run typecheck` (with `--noUnusedLocals`: an unused import, local or private member fails): `tsc` for the app plus a non-strict `checkJs` pass over every `widgets/*/public/*.js` (`tsconfig.widgets.json`, which sets `strict: false` explicitly since TypeScript 7 defaults to strict; the window globals are in `types/widgets.d.ts`).
 - `npm run diagnostics`: see Diagnostics.
 - `npx homey app install`: builds and installs on the active Homey (firmware 13.x). `npx homey app run` (live logs, hot reload) needs Docker Desktop, which usually isn't running.

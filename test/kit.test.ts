@@ -1,9 +1,9 @@
 // @vitest-environment happy-dom
-import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { runFile } from './helpers/loadWidget.js';
 
 // The kit's taps, message line and device loop (widgets/spacer/public/kit.js), which the widgets used to copy.
-new Function(readFileSync('widgets/spacer/public/kit.js', 'utf8'))();
+runFile('widgets/spacer/public/kit.js');
 const kit = (window as any).WidgetkeeperKit;
 
 function touch(node: Element, type: string, x = 0, y = 0) {
