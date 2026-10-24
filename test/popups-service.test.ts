@@ -192,6 +192,19 @@ describe('pictures', () => {
     await expect(service.imageWithToken(id, undefined)).rejects.toThrow('Not found');
   });
 
+  it('keeps at most 16 MB of stored pictures open: the oldest with one close', async () => {
+    const { service, events } = setup();
+    const tag = () => PopupService.droptokenArg(imageTag(Buffer.alloc(3 * 1024 * 1024))); // 4 MB in base64
+    await service.show({ target: 'all', text: 'camera', seconds: 600, picture: { camera: 'cam' } });
+    for (let i = 0; i < 4; i++) await service.show({ target: 'all', text: `p${i}`, seconds: 600, picture: tag() });
+    expect(service.describe().pictureSize).toBe(16 * 1024 * 1024);
+    expect(events(POPUP_CLOSE_EVENT)).toEqual([]);
+    await service.show({ target: 'all', text: 'p4', seconds: 600, picture: tag() });
+    expect(events(POPUP_CLOSE_EVENT)).toEqual([expect.objectContaining({ reason: 'replaced' })]);
+    expect(service.all().popups.map(p => p.text)).toEqual(['camera', 'p1', 'p2', 'p3', 'p4']); // a camera's is read when asked
+    expect(service.describe().pictureSize).toBe(16 * 1024 * 1024);
+  });
+
   it('refuses an image tag over 3 MB', async () => {
     const { service } = setup();
     const big = imageTag(Buffer.alloc(3 * 1024 * 1024 + 1));
@@ -272,6 +285,6 @@ describe('describe', () => {
     service.forScreen('Hall');
     const report = JSON.stringify(service.describe());
     expect(report).not.toContain('Secret');
-    expect(service.describe()).toEqual({ open: [{ kind: 'message', target: 'name', picture: null, sound: null, secondsLeft: 30 }], recentlyClosed: [], screens: ['Hall'] });
+    expect(service.describe()).toEqual({ open: [{ kind: 'message', target: 'name', picture: null, sound: null, secondsLeft: 30 }], recentlyClosed: [], screens: ['Hall'], pictureSize: 0 });
   });
 });
