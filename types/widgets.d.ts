@@ -89,7 +89,10 @@ interface Window {
     getDeviceIds: (Homey: any) => Promise<string[]>,
     wireTileNames: (Homey: any, setNames: (names: any) => void) => { state: (path: string) => Promise<any>, rename: (key: string, name: string) => Promise<any> },
     touchGuard: () => TouchGuard,
-    onTap: (node: Element, fn: (e: Event) => void, opts?: { keys?: boolean, stop?: boolean, guard?: TouchGuard }) => void,
+    onTap: (node: Element, fn: (e: Event) => void, opts?: {
+      keys?: boolean, stop?: boolean, guard?: TouchGuard,
+      hold?: { ms: number, when: () => boolean, act: () => void, start?: () => void },
+    }) => void,
     messageLine: (render: () => void, opts?: { clear?: (() => void) | null, ms?: number }) => {
       readonly text: string | null,
       set: (text: string | null, transient?: boolean) => void,

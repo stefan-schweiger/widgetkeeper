@@ -96,6 +96,119 @@ describe('onTap()', () => {
     expect(onRow).not.toHaveBeenCalled();
     expect(row.classList.contains('pressing')).toBe(false);
   });
+
+  describe('hold', () => {
+    const mouse = (node: Element, type: string) => node.dispatchEvent(new MouseEvent(type, { bubbles: true, button: 0 }));
+    const key = (node: Element, type: string, k = 'Enter', repeat = false) => {
+      const e = new KeyboardEvent(type, { bubbles: true, cancelable: true, key: k, repeat });
+      node.dispatchEvent(e);
+      return e;
+    };
+    function held(when = () => true) {
+      const node = document.createElement('button');
+      const fn = vi.fn();
+      const hold = { ms: 600, when, act: vi.fn(), start: vi.fn() };
+      kit.onTap(node, fn, { keys: false, hold });
+      return { node, fn, hold };
+    }
+
+    it('a touch held still acts once; the touch and click after it are no tap', () => {
+      const { node, fn, hold } = held();
+      touch(node, 'touchstart', 5, 5);
+      expect(node.classList.contains('holding')).toBe(true);
+      expect(hold.start).toHaveBeenCalledOnce();
+      vi.advanceTimersByTime(599);
+      expect(hold.act).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(1);
+      expect(hold.act).toHaveBeenCalledOnce();
+      expect(node.classList.contains('holding')).toBe(false);
+      touch(node, 'touchend', 5, 5);
+      node.click();
+      expect(fn).not.toHaveBeenCalled();
+    });
+
+    it('let go sooner, a touch is a tap; a drag or a cancel is neither', () => {
+      const { node, fn, hold } = held();
+      touch(node, 'touchstart', 5, 5);
+      vi.advanceTimersByTime(300);
+      touch(node, 'touchend', 5, 5);
+      expect(fn).toHaveBeenCalledOnce();
+      touch(node, 'touchstart', 0, 0);
+      touch(node, 'touchmove', 0, 11);
+      expect(node.classList.contains('holding')).toBe(false);
+      touch(node, 'touchstart', 0, 0);
+      touch(node, 'touchcancel', 0, 0);
+      vi.advanceTimersByTime(1000);
+      expect(hold.act).not.toHaveBeenCalled();
+      expect(fn).toHaveBeenCalledOnce();
+    });
+
+    it('the mouse: a click is a tap, a held button acts and its click is skipped', () => {
+      const { node, fn, hold } = held();
+      node.click();
+      expect(fn).toHaveBeenCalledOnce();
+      mouse(node, 'mousedown');
+      vi.advanceTimersByTime(300);
+      mouse(node, 'mouseup');
+      node.click();
+      expect(fn).toHaveBeenCalledTimes(2);
+      mouse(node, 'mousedown');
+      vi.advanceTimersByTime(600);
+      mouse(node, 'mouseup');
+      node.click();
+      expect(hold.act).toHaveBeenCalledOnce();
+      expect(fn).toHaveBeenCalledTimes(2);
+      mouse(node, 'mousedown');
+      mouse(node, 'mouseleave');
+      vi.advanceTimersByTime(1000);
+      expect(hold.act).toHaveBeenCalledOnce();
+    });
+
+    it('the mouse right after a touch is the browser’s, not a hold', () => {
+      const { node, hold } = held();
+      touch(node, 'touchstart', 0, 0);
+      touch(node, 'touchmove', 0, 20);
+      touch(node, 'touchend', 0, 20);
+      mouse(node, 'mousedown');
+      vi.advanceTimersByTime(1000);
+      expect(hold.act).not.toHaveBeenCalled();
+    });
+
+    it('Enter and Space hold too, keeping back their click; a short press is a tap', () => {
+      const { node, fn, hold } = held();
+      expect(key(node, 'keydown').defaultPrevented).toBe(true);
+      key(node, 'keydown', 'Enter', true);
+      vi.advanceTimersByTime(600);
+      expect(hold.act).toHaveBeenCalledOnce();
+      expect(key(node, 'keyup').defaultPrevented).toBe(true);
+      expect(fn).not.toHaveBeenCalled();
+      key(node, 'keydown', ' ');
+      expect(key(node, 'keyup', ' ').defaultPrevented).toBe(true);
+      expect(fn).toHaveBeenCalledOnce();
+    });
+
+    it('while when() says no, it is a plain tap: the button clicks on its keys itself', () => {
+      const { node, fn, hold } = held(() => false);
+      touch(node, 'touchstart', 5, 5);
+      expect(node.classList.contains('holding')).toBe(false);
+      vi.advanceTimersByTime(1000);
+      touch(node, 'touchend', 5, 5);
+      expect(fn).toHaveBeenCalledOnce();
+      expect(key(node, 'keydown').defaultPrevented).toBe(false);
+      const menu = new Event('contextmenu', { cancelable: true });
+      node.dispatchEvent(menu);
+      expect(menu.defaultPrevented).toBe(false);
+      expect(hold.act).not.toHaveBeenCalled();
+      expect(hold.start).not.toHaveBeenCalled();
+    });
+
+    it('prevents the long-press menu', () => {
+      const { node } = held();
+      const menu = new Event('contextmenu', { cancelable: true });
+      node.dispatchEvent(menu);
+      expect(menu.defaultPrevented).toBe(true);
+    });
+  });
 });
 
 describe('messageLine()', () => {
