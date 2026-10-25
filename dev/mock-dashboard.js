@@ -58,11 +58,11 @@
     variable: { id: 'm1', name: 'House mode', type: 'string', value: 'Away' },
   });
 
-  // A made-up alarm, armed: Arm and Night without the code, Disarm behind it (its code mark).
+  // A made-up alarm, armed, its keypad always shown with two digits typed: Arm and Night without the code, Disarm behind it.
   const alarmValue = (value, name) => ({ id: `string:${JSON.stringify(value)}`, name, value, type: 'string' });
   MOUNT.keypad(el('w-keypad'), {
     settings: {
-      state: { id: 'cap:alarm:homealarm_state' }, title: 'Alarm', code: { id: `code:v1:${'0'.repeat(8)}:${'0'.repeat(16)}:${'0'.repeat(32)}`, digits: 4 },
+      state: { id: 'cap:alarm:homealarm_state' }, title: 'Alarm', code: { id: 'c1', name: 'Alarm' }, keypad: 'always',
       value1: alarmValue('armed', 'Armed'), label1: 'Arm', icon1: { id: 'shield' }, color1: 'red', code1: false,
       value2: alarmValue('partially_armed', 'Partially armed'), label2: 'Night', icon2: { id: 'moon' }, color2: 'purple', code2: false,
       value3: alarmValue('disarmed', 'Disarmed'), label3: 'Disarm', icon3: { id: 'unlock' }, color3: 'green',
@@ -73,8 +73,10 @@
         capability: { title: 'Home Alarm state', type: 'enum', values: [{ id: 'armed', title: 'Armed' }, { id: 'disarmed', title: 'Disarmed' }, { id: 'partially_armed', title: 'Partially armed' }] },
       },
       flows: [],
+      code: { id: 'c1', name: 'Alarm', digits: 4 },
     },
   });
+  for (const k of ['1', '2']) [...el('w-keypad').querySelectorAll('.kp-key')].find(b => b.textContent === k).click();
 
   // Home's two flows side by side, and two more below them for the README.
   const flows = findWidget('flows');

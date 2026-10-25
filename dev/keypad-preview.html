@@ -18,11 +18,12 @@
 <body>
   <script>
     /*
-     * Made-up devices, variables and flows. The code is 1234: five wrong ones lock the pad for 30 s, as the app would.
-     * A set value is reported back after a moment; `Needs a key` fails with noKey. `?open=0,9` opens those cases' pads
-     * with two digits typed (for a headless screenshot).
+     * Made-up devices, variables and flows. The code ("Alarm", made on the app settings page) is 1234: five wrong ones lock
+     * the keypad for 30 s, as the app would. A set value is reported back after a moment; `Needs a key` fails with noKey.
+     * `?open=0,9` opens those cases' keypads with two digits typed (for a headless screenshot).
      */
-    const CODE = { id: `code:v1:${'0'.repeat(8)}:${'0'.repeat(16)}:${'0'.repeat(32)}`, name: '••••', digits: 4 };
+    const CODE = { id: 'c1', name: 'Alarm', description: 'A 4-digit code' };
+    const CODE_STATE = { id: 'c1', name: 'Alarm', digits: 4 };
     const value = (v, name) => ({ id: `${typeof v}:${JSON.stringify(v)}`, name, value: v, type: typeof v });
     const VALUES = [{ id: 'armed', title: 'Armed' }, { id: 'disarmed', title: 'Disarmed' }, { id: 'partially_armed', title: 'Partially armed' }];
     const ALARM = v => ({ kind: 'capability', deviceId: 'alarm', capabilityId: 'homealarm_state', name: 'Alarm system', capability: { title: 'Home Alarm state', type: 'enum', values: VALUES }, value: v });
@@ -60,6 +61,10 @@
       ['Compact · 340 px · alarm · armed', 340, '', { ...alarm, layout: 'compact' }, ALARM('armed')],
       ['Compact · 340 px · light · TV time', 340, 'light', { ...tv, layout: 'compact' }, TV(true)],
       ['Compact · 300 px · no buttons set up', 300, '', { state: alarm.state, code: CODE, layout: 'compact' }, ALARM('disarmed')],
+      ['Keypad always · 340 px · alarm · armed', 340, '', { ...alarm, keypad: 'always' }, ALARM('armed')],
+      ['Keypad always · 340 px · light · front door', 340, 'light', { title: 'Front door', code: CODE, keypad: 'always', flow1: { id: 'flow:door', name: 'Unlock the front door' }, label1: 'Unlock', icon1: { id: 'unlock' } }, null],
+      ['Keypad always · compact · 340 px · alarm', 340, '', { ...alarm, keypad: 'always', layout: 'compact' }, ALARM('armed')],
+      ['Keypad always · compact · 300 px · light · Vivid', 300, 'light', { ...alarm, keypad: 'always', layout: 'compact', colorStyle: 'deep' }, ALARM('disarmed')],
     ];
     const open = (new URLSearchParams(location.search).get('open') || '').split(',').filter(Boolean).map(Number);
 
@@ -87,7 +92,6 @@
       col.innerHTML = `<span></span><div class="card ${theme === 'light' ? 'light' : 'kp-frame homey-dark-mode'}" style="width:${width}px"><div></div></div>`;
       col.firstChild.textContent = label;
       document.body.appendChild(col);
-      const { sourceId, code, buttons } = keypadSettings(settings);
       let w;
       w = createKeypadWidget(col.querySelector('.card > div'), {
         locale: 'da-DK',
@@ -95,9 +99,7 @@
         layout: settings.layout,
         colorStyle: settings.colorStyle,
         title: settings.title,
-        sourceId,
-        code,
-        buttons,
+        ...keypadSettings(settings),
         onPress: body => new Promise(resolve => setTimeout(() => {
           const res = answer(body);
           if (res.result === 'done' && body.source) setTimeout(() => w.pushValue(body.value), 400);
@@ -105,13 +107,12 @@
           resolve(res);
         }, 500)),
       });
-      w.setState({ source, flows: FLOWS });
+      w.setState({ source, flows: FLOWS, code: settings.code ? CODE_STATE : null });
       if (open.includes(i)) {
-        const node = [...col.querySelectorAll('.kp-btn')].find(b => b.getAttribute('aria-label').includes('('));
-        if (node) {
-          node.click();
-          for (const k of ['1', '2']) [...col.querySelectorAll('.kp-key')].find(b => b.textContent === k).click();
-        }
+        // An always-shown keypad takes the digits as they are; else the first button behind the code opens it.
+        const node = settings.keypad === 'always' ? null : [...col.querySelectorAll('.kp-btn')].find(b => b.getAttribute('aria-label').includes('('));
+        if (node) node.click();
+        for (const k of ['1', '2']) [...col.querySelectorAll('.kp-key')].find(b => b.textContent === k).click();
       }
     });
   </script>

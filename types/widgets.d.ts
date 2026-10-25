@@ -113,7 +113,7 @@ interface Window {
   createVarPresetsWidget: (root: HTMLElement, opts?: object) => any;
   varPresetsFromSettings: (settings: Record<string, any>) => { value: boolean | number | string, type: string, label: string }[];
   createKeypadWidget: (root: HTMLElement, opts?: object) => any;
-  keypadSettings: (settings: Record<string, any>) => { sourceId: string | null, code: { id: string, digits: number } | null, buttons: any[] };
+  keypadSettings: (settings: Record<string, any>) => { sourceId: string | null, codeId: string | null, keypad: string, buttons: any[] };
   keypadBooleanWords: Record<string, string[]>;
   createFlowsWidget:(root: HTMLElement, opts?: object) => any;
   createShortcutsWidget:(root: HTMLElement, opts?: object) => any;

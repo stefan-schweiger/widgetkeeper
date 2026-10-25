@@ -106,10 +106,10 @@ const ROUTES: Route[] = [
   ['variables', 'POST', '/set', {}, { id: 'v1', value: true }, [['variables.set', ['v1', true]]]],
   setName('variables'),
   ['varpresets', 'GET', '/state', { id: 'v1' }, {}, [['variables.getState', [['v1']]]]],
-  ['keypad', 'GET', '/state', { source: 'cap:d1:homealarm_state', flows: 'flow:f1,,advanced:a2' }, {},
-    [['keypad.getState', ['cap:d1:homealarm_state', ['flow:f1', 'advanced:a2']]]]],
-  ['keypad', 'POST', '/press', {}, { flow: 'flow:f1', codeId: 'code:x', code: '1234' },
-    [['keypad.press', [{ flow: 'flow:f1', codeId: 'code:x', code: '1234' }]]]],
+  ['keypad', 'GET', '/state', { source: 'cap:d1:homealarm_state', flows: 'flow:f1,,advanced:a2', code: 'c1' }, {},
+    [['keypad.getState', ['cap:d1:homealarm_state', ['flow:f1', 'advanced:a2'], 'c1']]]],
+  ['keypad', 'POST', '/press', {}, { flow: 'flow:f1', codeId: 'c1', code: '1234' },
+    [['keypad.press', [{ flow: 'flow:f1', codeId: 'c1', code: '1234' }]]]],
   ['varpresets', 'POST', '/set', {}, { id: 'v1', value: 3 }, [['variables.set', ['v1', 3]]]],
   ['weather', 'GET', '/forecast', {}, {}, [['weather.getForecast', []]]],
   ['webpage', 'GET', '/location', {}, {}, []],
@@ -220,7 +220,9 @@ describe('the pages call routes that exist', () => {
 
   it('the app settings page (`Homey.api()`)', () => {
     const html = readFileSync('settings/index.html', 'utf8');
-    const used = [...html.matchAll(/Homey\.api\('(GET|POST|PUT|DELETE)', [`'](\/[^`'?$]*)/g)].map(m => route(m[1], m[2]));
+    // A path built with a template (`/keypad-codes/${id}`) counts a plain `${…}` as any value, as on the web page; one
+    // that adds a query (`/diagnostics${device ? `?…` : ''}`) ends the path.
+    const used = [...html.matchAll(/Homey\.api\('(GET|POST|PUT|DELETE)', [`'](\/(?:[^`'?$]|\$\{[^}`'?]*\})*)/g)].map(m => route(m[1], m[2]));
     expect(used.length).toBeGreaterThanOrEqual(6);
     expect(used.filter(r => !routes.includes(r))).toEqual([]);
   });

@@ -32,6 +32,13 @@
     .perms { margin: 0 0 var(--homey-su-3, 12px); padding-inline-start: 20px; }
     .perms li { margin: 2px 0; }
     .key-state.set::before { content: '✓'; }
+    /* The Keypad's codes: a row each, the name, its length, Change and Remove. */
+    .kp-codes { list-style: none; margin: 12px 0 4px; padding: 0; }
+    .kp-codes li { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--homey-line-color-light, rgba(0, 0, 0, .08)); }
+    .kp-code-name { flex: 1 1 auto; min-width: 0; font-weight: var(--homey-font-weight-medium, 500); overflow-wrap: anywhere; }
+    .kp-code-digits { flex: none; color: var(--homey-text-color-light, #8A8A8A); }
+    .kp-codes button { flex: none; }
+    .kp-changing { margin: 12px 0 0; font-weight: var(--homey-font-weight-medium, 500); }
   </style>
 </head>
 <body>
@@ -56,6 +63,33 @@
       <button class="homey-button-secondary-shadow" id="varRemove" data-i18n="varRemove" hidden>Remove</button>
     </div>
     <p class="homey-form-help status" id="varStatus" role="status"></p>
+  </fieldset>
+
+  <!-- The Keypad's codes: a name and the digits, typed twice; the app keeps only an HMAC of each and never sends it back. -->
+  <fieldset class="homey-form-fieldset">
+    <legend class="homey-form-legend" data-i18n="kpTitle">Keypad codes</legend>
+    <p class="homey-form-help" data-i18n="kpHelp"></p>
+    <ul class="kp-codes" id="kpList"></ul>
+    <p class="homey-form-help" id="kpEmpty" data-i18n="kpNone" hidden></p>
+    <p class="kp-changing" id="kpChanging" hidden></p>
+    <div class="homey-form-group" id="kpNameGroup">
+      <input class="homey-form-input" id="kpName" type="text" maxlength="40" autocomplete="off" spellcheck="false" data-i18n-label="kpName">
+    </div>
+    <!-- Changing a code takes its current one: anyone whose key may call the app reaches the route. -->
+    <div class="homey-form-group" id="kpCurrentGroup" hidden>
+      <input class="homey-form-input" id="kpCurrent" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" data-i18n-label="kpCurrent">
+    </div>
+    <div class="homey-form-group">
+      <input class="homey-form-input" id="kpCode" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" data-i18n-label="kpCode">
+    </div>
+    <div class="homey-form-group">
+      <input class="homey-form-input" id="kpAgain" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" data-i18n-label="kpAgain">
+    </div>
+    <div class="row">
+      <button class="homey-button-primary-shadow" id="kpSave" data-i18n="kpAdd" disabled>Add code</button>
+      <button class="homey-button-secondary-shadow" id="kpCancel" data-i18n="kpCancel" hidden>Cancel</button>
+    </div>
+    <p class="homey-form-help status" id="kpStatus" role="status"></p>
   </fieldset>
 
   <fieldset class="homey-form-fieldset">
@@ -215,6 +249,135 @@
       varSave.addEventListener('click', () => { if (varKey.value.trim()) saveKey(varKey.value.trim()); });
       varRemove.addEventListener('click', () => saveKey(''));
       showKeyState();
+
+      // ---- The Keypad's codes: checked and hashed by the app, never sent back. ----
+      const kpList = $('kpList');
+      const kpName = $('kpName');
+      const kpCurrent = $('kpCurrent');
+      const kpCode = $('kpCode');
+      const kpAgain = $('kpAgain');
+      const kpSave = $('kpSave');
+      const kpCancel = $('kpCancel');
+      const kpStatus = $('kpStatus');
+      const kpChanging = $('kpChanging');
+      let kpEditing = null; // the code whose digits are being changed
+      let kpBusy = false;
+      const isCode = v => /^\d{3,6}$/.test(v);
+      function syncCodeButtons() {
+        kpSave.disabled = kpBusy || !isCode(kpCode.value) || kpAgain.value.length < 3
+          || (kpEditing ? !kpCurrent.value : !kpName.value.trim());
+      }
+      // Digits only, at most six, as they're typed.
+      for (const field of [kpCurrent, kpCode, kpAgain]) {
+        field.addEventListener('input', () => {
+          const digits = field.value.replace(/\D/g, '').slice(0, 6);
+          if (digits !== field.value) field.value = digits;
+          syncCodeButtons();
+        });
+      }
+      kpName.addEventListener('input', syncCodeButtons);
+      for (const field of [kpName, kpCurrent, kpCode, kpAgain]) {
+        field.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !kpSave.disabled) kpSave.click(); });
+      }
+      /** Why the app didn't take it. */
+      function codeRefused(res) {
+        switch (res && res.reason) {
+          case 'name': return t('kpNeedName');
+          case 'nameTaken': return t('kpNameTaken');
+          case 'full': return t('kpFull');
+          case 'missing': return t('kpGone');
+          case 'wrongCode': return t('kpWrong');
+          case 'locked': return t('kpLocked', { seconds: res.retryAfter || 30 });
+          default: return t('kpBadCode');
+        }
+      }
+      function codeButton(key, onClick) {
+        const button = document.createElement('button');
+        button.className = 'homey-button-secondary-shadow';
+        button.textContent = t(key);
+        button.addEventListener('click', onClick);
+        return button;
+      }
+      function showCodes(codes) {
+        kpList.replaceChildren();
+        $('kpEmpty').hidden = codes.length > 0;
+        for (const c of codes) {
+          const row = document.createElement('li');
+          const name = document.createElement('span');
+          name.className = 'kp-code-name';
+          name.textContent = c.name;
+          const digits = document.createElement('span');
+          digits.className = 'kp-code-digits';
+          digits.textContent = t('kpDigits', { n: c.digits });
+          const remove = codeButton('kpRemove', () => removeCode(c, remove));
+          row.append(name, digits, codeButton('kpChange', () => startChange(c)), remove);
+          kpList.append(row);
+        }
+      }
+      function loadCodes() {
+        Homey.api('GET', '/keypad-codes', null, (err, res) => { if (!err && res) showCodes(res.codes || []); });
+      }
+      function resetCodeForm() {
+        kpEditing = null;
+        kpName.value = kpCurrent.value = kpCode.value = kpAgain.value = '';
+        $('kpNameGroup').hidden = false;
+        $('kpCurrentGroup').hidden = true;
+        kpChanging.hidden = true;
+        kpCancel.hidden = true;
+        kpSave.textContent = t('kpAdd');
+        syncCodeButtons();
+      }
+      function startChange(c) {
+        resetCodeForm();
+        kpEditing = c;
+        $('kpNameGroup').hidden = true;
+        $('kpCurrentGroup').hidden = false;
+        kpChanging.textContent = t('kpChanging', { name: c.name });
+        kpChanging.hidden = false;
+        kpCancel.hidden = false;
+        kpSave.textContent = t('kpSave');
+        kpStatus.textContent = '';
+        kpCurrent.focus();
+        syncCodeButtons();
+      }
+      function saveCode() {
+        if (kpCode.value !== kpAgain.value) { kpStatus.textContent = t('kpMismatch'); return; }
+        kpBusy = true;
+        syncCodeButtons();
+        const changing = !!kpEditing;
+        const done = (err, res) => {
+          kpBusy = false;
+          syncCodeButtons();
+          if (err) { kpStatus.textContent = err.message || String(err); return; }
+          if (res && res.ok) {
+            resetCodeForm();
+            showCodes(res.codes || []);
+            kpStatus.textContent = t(changing ? 'kpChanged' : 'kpAdded');
+          } else {
+            kpStatus.textContent = codeRefused(res);
+          }
+        };
+        if (changing) Homey.api('PUT', `/keypad-codes/${encodeURIComponent(kpEditing.id)}`, { current: kpCurrent.value, code: kpCode.value }, done);
+        else Homey.api('POST', '/keypad-codes', { name: kpName.value.trim(), code: kpCode.value }, done);
+      }
+      // A second tap within 4 s removes it (no browser dialogs).
+      function removeCode(c, button) {
+        if (!button.dataset.armed) {
+          button.dataset.armed = '1';
+          button.textContent = t('kpRemoveAgain');
+          setTimeout(() => { delete button.dataset.armed; button.textContent = t('kpRemove'); }, 4000);
+          return;
+        }
+        Homey.api('DELETE', `/keypad-codes/${encodeURIComponent(c.id)}`, null, (err, res) => {
+          if (err) { kpStatus.textContent = err.message || String(err); return; }
+          if (kpEditing && kpEditing.id === c.id) resetCodeForm();
+          if (res && res.ok) showCodes(res.codes || []);
+          kpStatus.textContent = t(res && res.ok ? 'kpRemoved' : 'kpGone');
+        });
+      }
+      kpSave.addEventListener('click', () => { if (!kpSave.disabled) saveCode(); });
+      kpCancel.addEventListener('click', () => { resetCodeForm(); kpStatus.textContent = ''; });
+      loadCodes();
 
       // ---- Web dashboards: on or off (the app setting), and the page's addresses on the home network and through
       // Homey's cloud (this settings page may be served through the cloud). ----

@@ -1,4 +1,4 @@
-import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import type Homey from 'homey';
 import { getAppApi } from './appApi.js';
 import { devicesAndZones, matches, withNone, type AutocompleteItem } from './autocomplete.js';
@@ -13,16 +13,16 @@ import { MAX_PRESET_TEXT, parseNumber, type VariableType } from './VariableServi
 
 /** The secret the codes are hashed with (`/userdata/secrets.json`), 32 random bytes as hex, made with the first code. */
 export const KEYPAD_SECRET = 'keypadKey';
+/** The codes, made on the app settings page: `[{id, name, digits, salt, mac}]`, in the secrets file, never the digits. */
+export const KEYPAD_CODES = 'keypadCodes';
 
 /** Wrong codes in a row before the pad locks, then 30 s, doubling with each further wrong one up to 15 min (the web password's rule). */
 const FREE_TRIES = 5;
 const LOCK_MS = 30e3;
 const MAX_LOCK_MS = 15 * 60e3;
-/** The codes whose wrong tries are counted, at most: the oldest goes first. */
-const MAX_COUNTED = 200;
-
-/** A code item's id: `code:v1:<key tag>:<salt>:<hmac>`, so a code made with another key (the app reinstalled) shows as such. */
-const CODE_ID = /^code:v1:([0-9a-f]{8}):([0-9a-f]{16}):([0-9a-f]{32})$/;
+/** The codes there may be, and the longest name. */
+export const MAX_CODES = 20;
+const MAX_NAME = 40;
 const CODE = /^\d{3,6}$/;
 
 /**
@@ -52,10 +52,16 @@ export type SourceState =
   | { kind: 'variable', id: string, missing: true }
   | { kind: 'capability', deviceId: string, capabilityId: string, missing: true };
 
-/** `/state`: the source (null without one) and the buttons' flows (null when they couldn't be read). */
-export type KeypadState = { source: SourceState | null, flows: FlowEntry[] | null };
+/** A code as the settings page and the widgets see it: never the digits or the hash. */
+export type CodeInfo = { id: string, name: string, digits: number };
 
-export type CodeRefusal = { result: 'wrongCode', left: number } | { result: 'locked', retryAfter: number } | { result: 'codeReset' };
+/**
+ * `/state`: the source (null without one), the buttons' flows (null when they couldn't be read) and the widget's code
+ * (its length, so the pad knows when it's complete; `missing` once removed; null without one).
+ */
+export type KeypadState = { source: SourceState | null, flows: FlowEntry[] | null, code: CodeInfo | { id: string, missing: true } | null };
+
+export type CodeRefusal = { result: 'wrongCode', left: number } | { result: 'locked', retryAfter: number } | { result: 'codeMissing' };
 
 /** What a press did: `done`, a refused code, or a capability that can't be set (the button wants a Flow). */
 export type PressResult = { result: 'done' } | { result: 'notSetable' } | CodeRefusal;
@@ -63,6 +69,12 @@ export type PressResult = { result: 'done' } | { result: 'notSetable' } | CodeRe
 /** A press: a Flow to start, or the source and the value to set it to; with the button's code when it wants one. */
 export type PressBody = { flow?: unknown, source?: unknown, value?: unknown, codeId?: unknown, code?: unknown };
 
+/** The settings page's answer: the codes, or why not. */
+export type CodesResult = { ok: true, codes: CodeInfo[] }
+  | { ok: false, reason: 'name' | 'nameTaken' | 'digits' | 'full' | 'missing' | 'wrongCode' }
+  | { ok: false, reason: 'locked', retryAfter: number };
+
+type StoredCode = CodeInfo & { salt: string, mac: string };
 type Item = AutocompleteItem & Record<string, unknown>;
 
 /** A value for a capability: its type's, an enum's own, a number within its range, a text of a sensible length; else it throws. */
@@ -87,13 +99,14 @@ export function checkCapabilityValue(cap: CapabilityDescription, value: unknown)
 
 /**
  * The Keypad widget: buttons behind an optional code that start a Flow or set the state the widget shows, a Logic
- * variable (Variables' service) or a device capability (Device Values' tracking). The code is never kept: the widget's
- * setting holds an HMAC of it, keyed with a secret only the app has, and the app checks it, counting wrong ones.
+ * variable (Variables' service) or a device capability (Device Values' tracking). The codes are made on the app settings
+ * page, each with a name the widget's setting picks; only an HMAC of each is kept, keyed with a secret only the app has,
+ * and the app checks a typed code, counting wrong ones.
  */
 export default class KeypadService {
 
   private secrets: Secrets;
-  /** Wrong tries in a row per code id, and until when it's locked. */
+  /** Wrong tries in a row per code, and until when it's locked. */
   private counted = new Map<string, { failures: number, lockedUntil: number }>();
   private pressed = 0;
   private wrongCodes = 0;
@@ -174,89 +187,127 @@ export default class KeypadService {
     return withNone(this.__('variables.none', 'None'), query, items);
   }
 
-  /**
-   * The `code` setting: typing 3–6 digits offers one item for them, named by dots only, whose id is the code's HMAC
-   * (`makeCodeId()`), with `digits` so the pad knows when it's complete. Anything else offers `None` with how to set one.
-   */
+  /** The `code` setting: `None`, then the codes made on the app settings page by name (`A 4-digit code`). */
   codeItems(query: string): Item[] {
-    const q = (query || '').trim();
-    if (!CODE.test(q)) return [{ name: this.__('variables.none', 'None'), description: this.__('keypad.codeHint', 'Type a code of 3 to 6 digits'), id: 'none' }];
-    return [{
-      name: '•'.repeat(q.length),
-      description: this.__('keypad.codeDigits', `A ${q.length}-digit code`, { n: q.length }),
-      id: this.makeCodeId(q),
-      digits: q.length,
-    }];
+    const none = this.__('variables.none', 'None');
+    const codes = this.stored();
+    if (!codes.length) return [{ name: none, description: this.__('keypad.codeNone', 'No codes yet: add one in the app settings'), id: 'none' }];
+    const items = codes.filter(c => matches(query, c.name)).map(c => ({
+      name: c.name, description: this.__('keypad.codeDigits', `A ${c.digits}-digit code`, { n: c.digits }), id: c.id,
+    }));
+    return withNone(none, query, items);
   }
 
-  // ---------------------------------------------------------------- the code
+  // ---------------------------------------------------------------- the codes (the app settings page)
 
-  /** The stored key, or null before the first code (or after the secrets file was lost). */
-  private storedKey(): Buffer | null {
-    const hex = this.secrets.get(KEYPAD_SECRET);
-    return typeof hex === 'string' && /^[0-9a-f]{64}$/.test(hex) ? Buffer.from(hex, 'hex') : null;
+  private stored(): StoredCode[] {
+    const list = this.secrets.get(KEYPAD_CODES);
+    return Array.isArray(list) ? list.filter((c): c is StoredCode => !!c && typeof c.id === 'string' && typeof c.mac === 'string') : [];
+  }
+
+  private store(codes: StoredCode[]) {
+    this.secrets.set(KEYPAD_CODES, codes);
   }
 
   private key(): Buffer {
-    const stored = this.storedKey();
-    if (stored) return stored;
+    const hex = this.secrets.get(KEYPAD_SECRET);
+    if (typeof hex === 'string' && /^[0-9a-f]{64}$/.test(hex)) return Buffer.from(hex, 'hex');
     const key = randomBytes(32);
     this.secrets.set(KEYPAD_SECRET, key.toString('hex'));
     return key;
   }
 
-  private static tag(key: Buffer): string {
-    return createHash('sha256').update(key).digest('hex').slice(0, 8);
+  private mac(salt: string, code: string): string {
+    return createHmac('sha256', this.key()).update(`${salt}:${code}`).digest('hex').slice(0, 32);
   }
 
-  private static mac(key: Buffer, salt: string, code: string): string {
-    return createHmac('sha256', key).update(`${salt}:${code}`).digest('hex').slice(0, 32);
+  /** The codes, by name, without their hashes. */
+  listCodes(): CodeInfo[] {
+    return this.stored().map(({ id, name, digits }) => ({ id, name, digits })).sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  /** A code's id for the widget's setting: the key's tag, a random salt and the HMAC; never the digits. */
-  makeCodeId(code: string): string {
-    const key = this.key();
+  /** A new code: a name of its own and 3–6 digits. */
+  addCode(name: unknown, code: unknown): CodesResult {
+    const codes = this.stored();
+    const n = typeof name === 'string' ? name.trim() : '';
+    if (!n || n.length > MAX_NAME) return { ok: false, reason: 'name' };
+    if (codes.some(c => c.name.toLowerCase() === n.toLowerCase())) return { ok: false, reason: 'nameTaken' };
+    if (typeof code !== 'string' || !CODE.test(code)) return { ok: false, reason: 'digits' };
+    if (codes.length >= MAX_CODES) return { ok: false, reason: 'full' };
     const salt = randomBytes(8).toString('hex');
-    return `code:v1:${KeypadService.tag(key)}:${salt}:${KeypadService.mac(key, salt, code)}`;
+    this.store([...codes, { id: randomBytes(6).toString('hex'), name: n, digits: code.length, salt, mac: this.mac(salt, code) }]);
+    this.debug(`Keypad code ${n} added`);
+    return { ok: true, codes: this.listCodes() };
   }
 
   /**
-   * Checks a typed code against its id: null when it's right (or there's no code to check), else why not. Wrong ones
-   * count per code id; the fifth in a row locks it. A code made with another key is `codeReset`: set it again.
+   * A code's new digits, which take its current ones: the settings page can't tell the owner from anyone whose key
+   * may call the app, and a changed code would let them in at the widget. Wrong ones count toward its lock.
+   */
+  changeCode(id: unknown, current: unknown, code: unknown): CodesResult {
+    const codes = this.stored();
+    const entry = codes.find(c => c.id === id);
+    if (!entry) return { ok: false, reason: 'missing' };
+    if (typeof code !== 'string' || !CODE.test(code)) return { ok: false, reason: 'digits' };
+    const refused = this.checkCode(entry.id, current);
+    if (refused) return refused.result === 'locked' ? { ok: false, reason: 'locked', retryAfter: refused.retryAfter } : { ok: false, reason: 'wrongCode' };
+    const salt = randomBytes(8).toString('hex');
+    this.store(codes.map(c => (c.id === entry.id ? { ...c, digits: code.length, salt, mac: this.mac(salt, code) } : c)));
+    this.debug(`Keypad code ${entry.name} changed`);
+    return { ok: true, codes: this.listCodes() };
+  }
+
+  /**
+   * Removes a code, without its digits: that only locks its buttons (a widget whose code is gone refuses them until
+   * another is picked in its settings), so a forgotten code can go.
+   */
+  removeCode(id: unknown): CodesResult {
+    const codes = this.stored();
+    if (!codes.some(c => c.id === id)) return { ok: false, reason: 'missing' };
+    this.store(codes.filter(c => c.id !== id));
+    this.counted.delete(String(id));
+    return { ok: true, codes: this.listCodes() };
+  }
+
+  /** A widget's code: its name and length, `missing` once removed, null without one. */
+  codeInfo(id: unknown): KeypadState['code'] {
+    if (typeof id !== 'string' || !id || id === 'none') return null;
+    const c = this.stored().find(x => x.id === id);
+    return c ? { id: c.id, name: c.name, digits: c.digits } : { id, missing: true };
+  }
+
+  /**
+   * Checks a typed code: null when it's right (or there's no code to check), else why not. Wrong ones count per code;
+   * the fifth in a row locks it. A code that was removed is `codeMissing`.
    */
   checkCode(codeId: unknown, code: unknown): CodeRefusal | null {
     if (codeId == null || codeId === '' || codeId === 'none') return null;
-    const m = CODE_ID.exec(String(codeId));
-    const key = this.storedKey();
-    if (!m || !key || KeypadService.tag(key) !== m[1]) return { result: 'codeReset' };
-    const id = String(codeId);
+    const entry = this.stored().find(c => c.id === codeId);
+    if (!entry) return { result: 'codeMissing' };
     const now = Date.now();
-    const entry = this.counted.get(id) ?? { failures: 0, lockedUntil: 0 };
-    if (now < entry.lockedUntil) return { result: 'locked', retryAfter: Math.ceil((entry.lockedUntil - now) / 1000) };
+    const count = this.counted.get(entry.id) ?? { failures: 0, lockedUntil: 0 };
+    if (now < count.lockedUntil) return { result: 'locked', retryAfter: Math.ceil((count.lockedUntil - now) / 1000) };
     const right = typeof code === 'string' && CODE.test(code)
-      && timingSafeEqual(Buffer.from(KeypadService.mac(key, m[2], code), 'hex'), Buffer.from(m[3], 'hex'));
+      && timingSafeEqual(Buffer.from(this.mac(entry.salt, code), 'hex'), Buffer.from(entry.mac, 'hex'));
     if (right) {
-      this.counted.delete(id);
+      this.counted.delete(entry.id);
       return null;
     }
     this.wrongCodes++;
-    entry.failures++;
-    // Kept newest last, so the oldest goes first when there are too many.
-    this.counted.delete(id);
-    this.counted.set(id, entry);
-    if (this.counted.size > MAX_COUNTED) this.counted.delete(this.counted.keys().next().value!);
-    if (entry.failures < FREE_TRIES) return { result: 'wrongCode', left: FREE_TRIES - entry.failures };
-    const wait = Math.min(LOCK_MS * 2 ** (entry.failures - FREE_TRIES), MAX_LOCK_MS);
-    entry.lockedUntil = now + wait;
+    count.failures++;
+    this.counted.set(entry.id, count);
+    if (count.failures < FREE_TRIES) return { result: 'wrongCode', left: FREE_TRIES - count.failures };
+    const wait = Math.min(LOCK_MS * 2 ** (count.failures - FREE_TRIES), MAX_LOCK_MS);
+    count.lockedUntil = now + wait;
     this.lockouts++;
-    this.log(`Keypad: ${entry.failures} wrong codes in a row, locked for ${wait / 1000} s`);
+    this.log(`Keypad: ${count.failures} wrong codes in a row, locked for ${wait / 1000} s`);
     return { result: 'locked', retryAfter: Math.ceil(wait / 1000) };
   }
 
   // ---------------------------------------------------------------- state and presses
 
-  /** The source's state and the buttons' flows. Flows that can't be read don't fail the state (`flows: null`). */
-  async getState(sourceId: string | null, flowIds: string[]): Promise<KeypadState> {
+  /** The source's state, the buttons' flows and the code's length. Flows that can't be read don't fail the state (`flows: null`). */
+  async getState(sourceId: string | null, flowIds: string[], codeId: string | null = null): Promise<KeypadState> {
     const source = parseSource(sourceId);
     const ids = flowIds.filter(id => parseFlowId(id));
     const [state, flows] = await Promise.all([
@@ -266,7 +317,7 @@ export default class KeypadService {
         return null;
       }) : [],
     ]);
-    return { source: state, flows };
+    return { source: state, flows, code: this.codeInfo(codeId) };
   }
 
   private async sourceState(source: KeypadSource): Promise<SourceState> {
@@ -321,11 +372,11 @@ export default class KeypadService {
     return { result: 'done' };
   }
 
-  /** For the diagnostics report: counts, never codes or their hashes. */
+  /** For the diagnostics report: counts, never codes, names or hashes. */
   describe() {
     const now = Date.now();
     return {
-      key: this.storedKey() !== null,
+      codes: this.stored().length,
       pressed: this.pressed,
       wrongCodes: this.wrongCodes,
       lockouts: this.lockouts,

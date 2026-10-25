@@ -12,7 +12,7 @@ window.mountKeypadWidget = function (Homey, { root, frame }) {
   const link = wireFrame(Homey, frame);
 
   const settings = Homey.getSettings() || {};
-  const { sourceId, code, buttons } = window.keypadSettings(settings);
+  const { sourceId, codeId, keypad, buttons } = window.keypadSettings(settings);
   const flowIds = [...new Set(buttons.map(b => b.flow).filter(Boolean))];
   // `cap:<deviceId>:<capabilityId>` or `var:<id>`
   const cap = sourceId && sourceId.startsWith('cap:') ? /^cap:([^:]+):(.+)$/.exec(sourceId) : null;
@@ -26,7 +26,8 @@ window.mountKeypadWidget = function (Homey, { root, frame }) {
     colorStyle: settings.colorStyle,
     title: settings.title,
     sourceId,
-    code,
+    codeId,
+    keypad, // tap unless always
     buttons,
     onPress: body => Homey.api('POST', '/press', body),
     onHaptic: () => {
@@ -37,13 +38,13 @@ window.mountKeypadWidget = function (Homey, { root, frame }) {
   });
 
   async function load() {
-    if (!sourceId && !flowIds.length) {
-      widget.setState({ source: null, flows: [] });
+    if (!sourceId && !flowIds.length && !codeId) {
+      widget.setState({ source: null, flows: [], code: null });
       link.ready();
       return;
     }
     try {
-      const query = `source=${encodeURIComponent(sourceId || '')}&flows=${encodeURIComponent(flowIds.join(','))}`;
+      const query = `source=${encodeURIComponent(sourceId || '')}&flows=${encodeURIComponent(flowIds.join(','))}&code=${encodeURIComponent(codeId || '')}`;
       const state = await Homey.api('GET', `/state?${query}${link.perfParam()}`);
       loadedAt = Date.now();
       loaded = true;
