@@ -22,6 +22,13 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - Every room's lights on a card: the room's own icon from Homey, its name and how many lights are on (*2 of 3 on · 55%*), a switch for the whole room and a bar that dims every light in it. Pick the lights in the settings; rooms follow the Homey's zones.
 - Tap a room's name to open it: the room's Moods, then a row per light with its brightness. A tap on a light's colour dot opens its colours and whites. Rooms start closed, and several can be open.
 
+### New: Keypad
+- Up to three buttons behind a code, each starting a Flow or setting the device or variable the widget shows: arm the alarm, unlock a door, allow TV time. The state shows beside the buttons; a list or yes/no state with no buttons set up gets a button per value.
+- **Codes** of 3 to 6 digits are made on the app settings page, under *Keypad codes*, and never stored as typed; changing one asks for the current code. Five wrong codes in a row lock it for 30 seconds, doubling up to 15 minutes. With *Any code*, every code works and its name comes along to your Flows.
+- **Show the keypad** only when a button needs it, or always, as on a phone's lock screen.
+- **Flow cards:** *A Keypad button was tapped by [code]*, with the code's name, the button and the keypad as tags, and *A wrong code was typed on a Keypad*.
+- **Web dashboards:** a dashboard can ask for a Keypad code before its editor opens or the page leaves it, so a wall tablet stays on its dashboard.
+
 ### Web dashboards
 - **Wide widgets:** a widget can span two or more columns, such as a floor plan, a camera or a chart. Drag the handle on its right edge in edit mode, or set its Width in its settings. Each column it covers keeps its own widgets above and below it. Kept in duplicates and backups. The front page's miniatures show them across their columns.
 - **Column width:** each dashboard's columns can be Narrow (a phone's width, as on a Homey dashboard), Normal, Wide, or Fit to window, where they share the window's width. In the editor's bar.
