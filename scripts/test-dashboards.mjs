@@ -103,6 +103,9 @@ const pick = (items, fn = () => true, n = 1) => items.filter(i => i.id !== 'none
 /** `{slot1: …, slot2: …}` from a list of items (null where a slot stays empty). */
 const slots = (prefix, items) => Object.fromEntries(items.map((item, i) => [`${prefix}${i + 1}`, item ?? null]));
 
+/** A flow that may not be harmless to start by hand (a tap starts it for real): security, alarm, lock or siren. */
+const RISKY_FLOW = /secur|alarm|siren|lock|fire|smoke|left|came home|restart|rstart/i;
+
 // ---------------------------------------------------------------- one builder per widget type
 
 const BUILD = {
@@ -512,9 +515,8 @@ const BUILD = {
   },
 
   async flows() {
-    // Only flows that look harmless to start by hand: no security, alarm, lock or siren flows.
-    const risky = /secur|alarm|siren|lock|fire|smoke|left|came home|restart|rstart/i;
-    const flows = pick(await autocomplete('flows', 'flow1'), i => !risky.test(`${i.name} ${i.description ?? ''}`), 8);
+    // Only flows that look harmless to start by hand.
+    const flows = pick(await autocomplete('flows', 'flow1'), i => !RISKY_FLOW.test(`${i.name} ${i.description ?? ''}`), 8);
     const icon = id => ({ id, name: EN.flows.icons[id] ?? id });
     const colours = ['blue', 'red', 'orange', 'yellow', 'green', 'purple', 'grey', 'blue'];
     const icons = ['sun', 'moon', 'music', 'bulb', 'bed', 'coffee', 'tv', 'sparkles'];
@@ -625,6 +627,13 @@ const BUILD = {
     };
     // Four, each named, the last without an icon.
     const four = { ...buttons, button2Name: 'Line-in', button3Name: 'Music flow', button4: card(/:pause$|:stop$/) ?? card(/./), button4Name: 'Typed name' };
+    // Eight: the four, then harmless flows (a tap starts them), with and without icons.
+    const more = pick(tv.buttons, b => b.id.startsWith('flow:') && b.id !== flow?.id && !RISKY_FLOW.test(`${b.name} ${b.description ?? ''}`), 4);
+    const eight = { ...four };
+    more.forEach((b, i) => {
+      eight[`button${i + 5}`] = b;
+      if (i % 2 === 0) eight[`button${i + 5}Icon`] = icon(i ? 'sun' : 'moon');
+    });
     return { cols: 3, widgets: [
       w('media', 'Defaults', { device: sp(0) }),
       w('media', 'Volume buttons · step 10 · max 40 %', { device: sp(1), volumeLayout: 'buttons', volumeStep: '10', maxVolume: 40 }),
@@ -635,6 +644,7 @@ const BUILD = {
       w('media', 'Large', { device: sp(0), layout: 'large' }),
       w('media', 'Large · volume buttons · shuffle · buttons', { device: tv.device, layout: 'large', volumeLayout: 'buttons', showShuffle: true, ...buttons }),
       w('media', 'Four named buttons (the last without an icon)', { device: tv.device, ...four }),
+      w('media', 'Eight buttons · volume buttons · shuffle', { device: tv.device, volumeLayout: 'buttons', showShuffle: true, ...eight }),
       w('media', 'Large · tapping the art doesn\'t switch layout', { device: sp(1), layout: 'large', layoutTap: false }),
       w('media', 'Nothing picked'),
     ] };

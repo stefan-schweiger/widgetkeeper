@@ -14,7 +14,7 @@ const VARIABLE_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const PRESET_SLOTS = [1, 2, 3, 4];
 const FLOW_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8];
 const SHORTCUT_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8];
-const MEDIA_BUTTONS = [1, 2, 3, 4];
+const MEDIA_BUTTONS = [1, 2, 3, 4, 5, 6, 7, 8];
 const DAYS_SINCE_COUNTERS = [1, 2, 3, 4, 5, 6, 7, 8];
 const MATRIX_COLUMNS = [1, 2, 3, 4, 5, 6];
 

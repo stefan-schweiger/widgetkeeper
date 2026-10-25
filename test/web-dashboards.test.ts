@@ -427,7 +427,7 @@ describe('web dashboards: what the editor needs', () => {
     expect(of('values').settings.filter(s => /^(slot|second)1$/.test(s.id)).map(s => s.label)).toEqual(['Value', 'Second value']);
     expect(groups('variables')).toEqual(['slots:10']);
     expect(of('variables').settings.find(s => s.id === 'slot3')!.label).toBe('Variable\u00A03');
-    expect(groups('media')).toEqual(Array.from({ length: 4 }, (_, i) => `Button\u00A0${i + 1}#:3`)); // heads without a colon
+    expect(groups('media')).toEqual(Array.from({ length: 8 }, (_, i) => `Button\u00A0${i + 1}#:3`)); // heads without a colon
     expect(groups('clock')).toEqual([]);
     for (const t of types) expect(t.sections.flatMap(s => s.ids), t.type).toEqual(t.settings.map(s => s.id));
   });

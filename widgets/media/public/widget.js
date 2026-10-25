@@ -123,7 +123,7 @@
    */
   function mediaButtonsFromSettings(settings) {
     const out = [];
-    for (let n = 1; n <= 4; n++) {
+    for (let n = 1; n <= 8; n++) {
       const b = settings && settings[`button${n}`];
       const id = b && typeof b.id === 'string' ? b.id : '';
       if (!id || id === 'none') continue;

@@ -39,6 +39,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - **Show:** only the counters that are amber and red, or only red, so counters due every month or so don't take room until they're due. A counter not started yet, or one just tapped, still shows; with none due it says *Nothing due.*
 - **Smart Stack:** Days Since can now be one of a stack's pages; it used to be left out, so a stack of it and one other widget showed a single page with no dots ([#9](https://github.com/thomassidor/widgetkeeper/issues/9)).
 
+### Media
+- **Eight buttons:** up to eight speaker actions or flows behind ⋯, up from four.
+
 ### Notes
 - **Long text on more lines:** the tile can show all of a long note, on as many lines as it needs, and keeps the line breaks you type; it grows with the text. Pick *Show on more lines* under Long text.
 

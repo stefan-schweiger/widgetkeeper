@@ -899,6 +899,238 @@
         "ar": "  – الاسم"
       },
       "value": ""
+    },
+    {
+      "id": "button5",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 5",
+        "nl": "Knop 5",
+        "de": "Button 5",
+        "fr": "Bouton 5",
+        "it": "Pulsante 5",
+        "sv": "Knapp 5",
+        "no": "Knapp 5",
+        "es": "Botón 5",
+        "da": "Knap 5",
+        "ru": "Кнопка 5",
+        "pl": "Przycisk 5",
+        "ko": "버튼 5",
+        "ar": "الزر 5"
+      }
+    },
+    {
+      "id": "button5Icon",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "button5Name",
+      "type": "text",
+      "title": {
+        "en": "  – Name",
+        "nl": "  – Naam",
+        "de": "  – Name",
+        "fr": "  – Nom",
+        "it": "  – Nome",
+        "sv": "  – Namn",
+        "no": "  – Navn",
+        "es": "  – Nombre",
+        "da": "  – Navn",
+        "ru": "  – Название",
+        "pl": "  – Nazwa",
+        "ko": "  – 이름",
+        "ar": "  – الاسم"
+      },
+      "value": ""
+    },
+    {
+      "id": "button6",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 6",
+        "nl": "Knop 6",
+        "de": "Button 6",
+        "fr": "Bouton 6",
+        "it": "Pulsante 6",
+        "sv": "Knapp 6",
+        "no": "Knapp 6",
+        "es": "Botón 6",
+        "da": "Knap 6",
+        "ru": "Кнопка 6",
+        "pl": "Przycisk 6",
+        "ko": "버튼 6",
+        "ar": "الزر 6"
+      }
+    },
+    {
+      "id": "button6Icon",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "button6Name",
+      "type": "text",
+      "title": {
+        "en": "  – Name",
+        "nl": "  – Naam",
+        "de": "  – Name",
+        "fr": "  – Nom",
+        "it": "  – Nome",
+        "sv": "  – Namn",
+        "no": "  – Navn",
+        "es": "  – Nombre",
+        "da": "  – Navn",
+        "ru": "  – Название",
+        "pl": "  – Nazwa",
+        "ko": "  – 이름",
+        "ar": "  – الاسم"
+      },
+      "value": ""
+    },
+    {
+      "id": "button7",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 7",
+        "nl": "Knop 7",
+        "de": "Button 7",
+        "fr": "Bouton 7",
+        "it": "Pulsante 7",
+        "sv": "Knapp 7",
+        "no": "Knapp 7",
+        "es": "Botón 7",
+        "da": "Knap 7",
+        "ru": "Кнопка 7",
+        "pl": "Przycisk 7",
+        "ko": "버튼 7",
+        "ar": "الزر 7"
+      }
+    },
+    {
+      "id": "button7Icon",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "button7Name",
+      "type": "text",
+      "title": {
+        "en": "  – Name",
+        "nl": "  – Naam",
+        "de": "  – Name",
+        "fr": "  – Nom",
+        "it": "  – Nome",
+        "sv": "  – Namn",
+        "no": "  – Navn",
+        "es": "  – Nombre",
+        "da": "  – Navn",
+        "ru": "  – Название",
+        "pl": "  – Nazwa",
+        "ko": "  – 이름",
+        "ar": "  – الاسم"
+      },
+      "value": ""
+    },
+    {
+      "id": "button8",
+      "type": "autocomplete",
+      "title": {
+        "en": "Button 8",
+        "nl": "Knop 8",
+        "de": "Button 8",
+        "fr": "Bouton 8",
+        "it": "Pulsante 8",
+        "sv": "Knapp 8",
+        "no": "Knapp 8",
+        "es": "Botón 8",
+        "da": "Knap 8",
+        "ru": "Кнопка 8",
+        "pl": "Przycisk 8",
+        "ko": "버튼 8",
+        "ar": "الزر 8"
+      }
+    },
+    {
+      "id": "button8Icon",
+      "type": "autocomplete",
+      "title": {
+        "en": "  – Icon",
+        "nl": "  – Pictogram",
+        "de": "  – Symbol",
+        "fr": "  – Icône",
+        "it": "  – Icona",
+        "sv": "  – Ikon",
+        "no": "  – Ikon",
+        "es": "  – Icono",
+        "da": "  – Ikon",
+        "ru": "  – Значок",
+        "pl": "  – Ikona",
+        "ko": "  – 아이콘",
+        "ar": "  – الأيقونة"
+      }
+    },
+    {
+      "id": "button8Name",
+      "type": "text",
+      "title": {
+        "en": "  – Name",
+        "nl": "  – Naam",
+        "de": "  – Name",
+        "fr": "  – Nom",
+        "it": "  – Nome",
+        "sv": "  – Namn",
+        "no": "  – Navn",
+        "es": "  – Nombre",
+        "da": "  – Navn",
+        "ru": "  – Название",
+        "pl": "  – Nazwa",
+        "ko": "  – 이름",
+        "ar": "  – الاسم"
+      },
+      "value": ""
     }
   ],
   "api": {

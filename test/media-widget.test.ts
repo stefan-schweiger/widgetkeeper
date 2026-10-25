@@ -66,6 +66,16 @@ describe('mediaButtonsFromSettings', () => {
     })).toEqual([{ id: 'card:homey:device:k:tv', name: 'TV', icon: null }, { id: 'flow:f1', name: 'Movie time', icon: null }]);
   });
 
+  it('takes all eight, in order', () => {
+    const settings: Record<string, any> = {};
+    for (let n = 1; n <= 9; n++) settings[`button${n}`] = { id: `flow:f${n}`, name: `Flow ${n}` };
+    settings.button8Name = 'Last';
+    settings.button8Icon = { id: 'moon', name: 'Moon' };
+    const buttons = win.mediaButtonsFromSettings(settings);
+    expect(buttons.map((b: any) => b.id)).toEqual(['flow:f1', 'flow:f2', 'flow:f3', 'flow:f4', 'flow:f5', 'flow:f6', 'flow:f7', 'flow:f8']);
+    expect(buttons[7]).toEqual({ id: 'flow:f8', name: 'Last', icon: 'moon' });
+  });
+
   it('takes an icon from the Flow Buttons set, and none for None or an unknown id', () => {
     const icons = (button1Icon: any) => win.mediaButtonsFromSettings({ button1: { id: 'flow:f1', name: 'Movie' }, button1Icon })[0].icon;
     expect(icons({ id: 'tv', name: 'TV' })).toBe('tv');
