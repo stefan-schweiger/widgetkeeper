@@ -1,10 +1,10 @@
 /*
  * Keypad: up to three buttons behind an optional code, each starting a Flow or setting the state the widget shows (a
- * Logic variable or a device value). The state is on the left, the buttons are stacked on the right, and a 3×4 keypad
- * takes the right half when a button wants the code (compact: the whole widget); or, with Show the keypad: Always, it
- * stays beside the state with the buttons under it. The codes are made on the app settings page and the app checks
- * them: the widget only knows its code's length, and sends what was typed with the code's id. Plain browser JS (served
- * as-is).
+ * Logic variable or a device value), or only firing the app's trigger. The state is on the left, the buttons are stacked
+ * on the right, and a 3×4 keypad takes the right half when a button wants the code (compact: the whole widget); or, with
+ * Show the keypad: Always, it stays beside the state with the buttons under it. The codes are made on the app settings
+ * page and the app checks them: the widget only knows its code's length (Any code's, while the codes share one; else
+ * the keypad has OK), and sends what was typed with the code's id. Plain browser JS (served as-is).
  */
 (function () {
   'use strict';
@@ -23,11 +23,13 @@
     triesLeft: 'Wrong code. Tries left: __n__',
     lockedOut: 'Too many tries. Try again in __s__ s.',
     codeMissing: 'This code was removed: pick one in the widget settings.',
+    noCodes: 'No codes yet: add one in the app settings.',
     enterCode: 'Enter the code',
     pickButton: 'Now tap a button',
     needsCode: 'Needs the code',
     close: 'Close',
     clear: 'Clear',
+    ok: 'OK',
     delete: 'Delete',
     yes: 'Yes',
     no: 'No',
@@ -77,8 +79,14 @@
   };
   const MAX_AUTO = 4;
 
-  /** The keys, a phone's: 1–9, then the bottom row (left: ✕ to clear when the keypad is always shown, else nothing). */
+  /**
+   * The keys, a phone's: 1–9, then the bottom row (left: OK while the code's length isn't known, else ✕ to clear when
+   * the keypad is always shown, else nothing).
+   */
   const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'left', '0', 'back'];
+  /** A code's digits, at least and at most. */
+  const MIN_DIGITS = 3;
+  const MAX_DIGITS = 6;
 
   const DONE_MS = 1500; // the tick after a button worked
   const MIN_BUSY_MS = 400; // the spinner, at least: a quick answer still shows something happened
@@ -106,8 +114,8 @@
 
   /**
    * The widget's settings: the state's id (`var:<id>` or `cap:<deviceId>:<capabilityId>`), the code's id (one made on the
-   * app settings page; its length comes with the state), when the keypad shows (`tap` or `always`), and the buttons with
-   * a Flow or a value, in order.
+   * app settings page, or `any`; its length comes with the state), when the keypad shows (`tap` or `always`), and the
+   * buttons with a Flow, a value or only a label (which fires the app's trigger alone), in order.
    */
   function keypadSettings(settings) {
     const s = settings || {};
@@ -120,8 +128,8 @@
       const v = s[`value${n}`];
       const value = v && typeof v === 'object' && v.id !== 'none' && TYPES.includes(v.type) && typeof v.value === v.type
         && (v.type !== 'number' || isFinite(v.value)) ? { value: v.value, type: v.type, name: typeof v.name === 'string' ? v.name : '' } : null;
-      if (!flow && !value) continue;
       const label = s[`label${n}`];
+      if (!flow && !value && !(typeof label === 'string' && label.trim())) continue;
       const icon = s[`icon${n}`] && typeof s[`icon${n}`].id === 'string' && Object.prototype.hasOwnProperty.call(ICONS, s[`icon${n}`].id) ? s[`icon${n}`].id : null;
       buttons.push({
         n,
@@ -166,7 +174,7 @@
     const busy = new Map(); // button n → 'running' | 'done'
     let lasting = null; // a message in place of everything
     let open = false; // the keypad, when it isn't always shown
-    const entry = { n: null, typed: '', checking: false, error: false }; // what's being typed, and for which button
+    const entry = { n: null, typed: '', checking: false, error: false, ok: false }; // what's being typed, for which button, OK tapped
     let lockedUntil = 0; // the app's lock after too many wrong codes
     let idleTimer = null;
     let lockTimer = null;
@@ -195,17 +203,16 @@
       close.appendChild(glyph({ d: MARKS.close }, ''));
       onTap(close, () => closePad(), { keys: false, guard });
     }
+    let leftKey = null; // OK, ✕ or nothing: `renderPad()` sets it
     for (const k of KEYS) {
-      if (k === 'left' && !always) {
-        el('span', { class: 'kp-key blank' }, keys);
-        continue;
-      }
-      const label = k === 'back' ? t('delete') : k === 'left' ? t('clear') : k;
-      const key = el('button', { type: 'button', class: k === 'back' || k === 'left' ? 'kp-key fn' : 'kp-key', 'aria-label': label }, keys);
+      const key = el('button', { type: 'button', class: k === 'back' ? 'kp-key fn' : 'kp-key', 'aria-label': k === 'back' ? t('delete') : k }, keys);
       if (k === 'back') key.appendChild(glyph({ d: MARKS.back }, ''));
-      else if (k === 'left') key.appendChild(glyph({ d: MARKS.close }, ''));
-      else key.textContent = k;
-      onTap(key, () => typeKey(k), { keys: false, guard });
+      else if (k !== 'left') key.textContent = k;
+      if (k === 'left') {
+        leftKey = key;
+        Object.assign(key, { className: 'kp-key blank', tabIndex: -1 }); // until the state says what it is
+      }
+      onTap(key, () => typeKey(k === 'left' ? key.dataset.k : k), { keys: false, guard });
     }
     if (always) doc.addEventListener('keydown', onKey);
 
@@ -228,7 +235,9 @@
     }
 
     const needsCode = b => !!codeId && b.needsCode;
-    const digits = () => (code && !code.missing ? code.digits : 0);
+    const ready = () => !!(code && !code.missing); // the code's length comes with the state
+    const digits = () => (ready() && code.digits) || 0; // 0: Any code's codes differ in length, so OK sends it
+    const complete = () => (digits() ? entry.typed.length === digits() : entry.typed.length >= MIN_DIGITS);
     const target = () => (entry.n == null ? null : buttons().find(b => b.n === entry.n) || null);
 
     /** What the state has now: a value just set until it's reported, else the state's; undefined when unknown. */
@@ -253,7 +262,7 @@
       if (b.label) return b.label;
       const f = b.flow ? flows.get(b.flow) : null;
       if (b.flow) return (f && !f.missing && f.name) || b.flowName || '–';
-      return b.value.name || valueText(b.value.value);
+      return b.value ? b.value.name || valueText(b.value.value) : '–';
     }
 
     function render() {
@@ -353,13 +362,13 @@
         run(b);
         return;
       }
-      if (code && code.missing) return refuse(b, t('codeMissing'));
-      if (!digits()) return; // the code's length comes with the state
+      if (code && code.missing) return refuse(b, codeGone());
+      if (!ready()) return;
       if (opts.onHaptic) opts.onHaptic();
       armIdle();
       if (!always) {
         // The keypad, for this button.
-        Object.assign(entry, { n: b.n, typed: '', error: false });
+        Object.assign(entry, { n: b.n, typed: '', error: false, ok: false });
         open = true;
         doc.addEventListener('keydown', onKey);
         message.set(null); // renders
@@ -367,7 +376,7 @@
         return;
       }
       // Always shown: the code typed first goes at once; else this button waits for it (a second tap lets go).
-      if (entry.typed.length === digits()) {
+      if (complete()) {
         submit(b);
         return;
       }
@@ -375,11 +384,19 @@
       render();
     }
 
-    /** The press's request: the Flow, or the state and the value to set it to; with the code when typed. */
+    /**
+     * The press's request: the Flow, the state and the value to set it to, or neither (the trigger only); with the code
+     * when typed, and the button's label and the widget's title for the trigger.
+     */
     function body(b, typed) {
-      const out = b.flow ? { flow: b.flow } : { source: sourceId, value: b.value.value };
+      const out = b.flow ? { flow: b.flow } : b.value ? { source: sourceId, value: b.value.value } : {};
       if (typed != null) Object.assign(out, { codeId, code: typed });
-      return out;
+      return Object.assign(out, { button: labelOf(b), title: title || (source && !source.missing && source.name) || '' });
+    }
+
+    /** Why a button behind the code can't be used: its code was removed, or Any code has none. */
+    function codeGone() {
+      return t(codeId === 'any' ? 'noCodes' : 'codeMissing');
     }
 
     async function send(b, typed) {
@@ -405,7 +422,7 @@
 
     function finish(b, res) {
       if (res && res.ok !== false && res.result === 'done') {
-        if (!b.flow) {
+        if (!b.flow && b.value) {
           optimistic = { value: b.value.value, until: Date.now() + OPTIMISTIC_MS };
           setTimeout(render, OPTIMISTIC_MS + 50);
         }
@@ -429,7 +446,7 @@
     function closePad() {
       if (!open || entry.checking) return;
       open = false;
-      Object.assign(entry, { n: null, typed: '', error: false });
+      Object.assign(entry, { n: null, typed: '', error: false, ok: false });
       clearTimeout(idleTimer);
       doc.removeEventListener('keydown', onKey);
       message.set(null); // renders
@@ -446,15 +463,27 @@
     }
 
     function clearEntry() {
-      Object.assign(entry, { n: null, typed: '', error: false });
+      Object.assign(entry, { n: null, typed: '', error: false, ok: false });
       render();
     }
 
+    /** The bottom row's left key: OK while the code's length isn't known, ✕ to clear when always shown, else nothing. */
+    function setLeftKey() {
+      const k = ready() && !digits() ? 'ok' : always ? 'clear' : '';
+      if (leftKey.dataset.k === k) return;
+      leftKey.dataset.k = k;
+      leftKey.className = k === 'ok' ? 'kp-key fn ok' : k ? 'kp-key fn' : 'kp-key blank';
+      leftKey.setAttribute('aria-label', k ? t(k) : '');
+      leftKey.tabIndex = k ? 0 : -1;
+      leftKey.replaceChildren(...(k ? [glyph({ d: k === 'ok' ? MARKS.check : MARKS.close }, '')] : []));
+    }
+
     function renderPad(list) {
+      setLeftKey();
       if (!always && !open) return;
       const b = target();
-      const full = digits() > 0 && entry.typed.length === digits();
-      const label = b ? labelOf(b) : code && code.missing ? t('codeMissing') : full ? t('pickButton') : t('enterCode');
+      const full = digits() ? entry.typed.length === digits() : entry.ok;
+      const label = b ? labelOf(b) : code && code.missing ? codeGone() : full ? t('pickButton') : t('enterCode');
       padTop.classList.toggle('missing', !!(code && code.missing));
       if (b && b.color !== 'grey') padTop.dataset.wkColor = b.color;
       else delete padTop.dataset.wkColor;
@@ -463,9 +492,11 @@
       // Compact (open, in place of the widget): the title or a message beside the label.
       padSub.textContent = message.text || title || (source && !source.missing && source.name) || '';
       padSub.classList.toggle('error', !!message.text);
-      const off = entry.checking || !digits() || Date.now() < lockedUntil || !list.some(needsCode);
-      for (const key of keys.querySelectorAll('button')) key.disabled = off;
-      padDots.replaceChildren(...Array.from({ length: digits() || 4 }, (_, i) => el('span', { class: i < entry.typed.length ? 'kp-dot f' : 'kp-dot' })));
+      const off = entry.checking || !ready() || Date.now() < lockedUntil || !list.some(needsCode);
+      for (const key of keys.querySelectorAll('button')) key.disabled = off || key.classList.contains('blank');
+      // The code's length in dots; while it isn't known, only the digits typed.
+      const shown = ready() ? digits() || entry.typed.length : 4;
+      padDots.replaceChildren(...Array.from({ length: shown }, (_, i) => el('span', { class: i < entry.typed.length ? 'kp-dot f' : 'kp-dot' })));
       padDots.classList.toggle('err', entry.error);
       padDots.classList.toggle('checking', entry.checking);
     }
@@ -473,6 +504,7 @@
     function onKey(e) {
       if (/^[0-9]$/.test(e.key)) typeKey(e.key);
       else if (e.key === 'Backspace') typeKey('back');
+      else if (e.key === 'Enter' && ready() && !digits()) typeKey('ok');
       else if (e.key === 'Escape') {
         if (always) clearEntry();
         else closePad();
@@ -481,10 +513,10 @@
     }
 
     function typeKey(k) {
-      if (entry.checking || !digits() || Date.now() < lockedUntil || (!always && !open)) return;
+      if (!k || entry.checking || !ready() || Date.now() < lockedUntil || (!always && !open)) return;
       armIdle();
       if (opts.onHaptic) opts.onHaptic();
-      if (k === 'left') {
+      if (k === 'clear') {
         clearEntry();
         return;
       }
@@ -492,11 +524,17 @@
         entry.error = false;
         entry.typed = '';
       }
-      if (k === 'back') entry.typed = entry.typed.slice(0, -1);
-      else if (entry.typed.length < digits()) entry.typed += k;
-      if (entry.typed.length < digits()) {
-        render();
-        return;
+      if (k === 'ok') {
+        if (!complete()) return render();
+        entry.ok = true;
+      } else {
+        entry.ok = false;
+        if (k === 'back') entry.typed = entry.typed.slice(0, -1);
+        else if (entry.typed.length < (digits() || MAX_DIGITS)) entry.typed += k;
+        if (!digits() || entry.typed.length < digits()) {
+          render();
+          return;
+        }
       }
       // The code is complete: its button's, the only button behind the code, or wait for a tap.
       const behind = buttons().filter(needsCode);
@@ -512,7 +550,7 @@
       const res = await send(b, entry.typed);
       entry.checking = false;
       if (res && res.ok !== false && refused(res)) return;
-      if (always) Object.assign(entry, { n: null, typed: '', error: false });
+      if (always) Object.assign(entry, { n: null, typed: '', error: false, ok: false });
       else closePad();
       finish(b, res);
     }
@@ -521,6 +559,7 @@
     function refused(res) {
       if (res.result === 'wrongCode') {
         entry.error = true;
+        entry.ok = false;
         message.set(res.left <= 2 ? t('triesLeft', { n: res.left }) : t('wrongCode'), true);
         setTimeout(() => {
           if (!entry.error) return;
@@ -539,7 +578,7 @@
       if (res.result === 'codeMissing') {
         code = { missing: true };
         entry.typed = '';
-        message.set(t('codeMissing'), true);
+        message.set(codeGone(), true);
         return true;
       }
       return false;

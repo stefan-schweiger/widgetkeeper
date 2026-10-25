@@ -34,6 +34,8 @@ const MAX_DEVICES = 100; // per widget
 const MAX_TEXT = 2000;
 const MAX_FOREIGN_SETTINGS = 60; // per widget of another app
 const ID = /^[A-Za-z0-9_-]{1,40}$/;
+/** A dashboard's Keypad code: Any code, or a code's id (`KeypadService`'s 12 hex digits). */
+const CODE_ID = /^(any|[0-9a-f]{12})$/;
 /**
  * Another app's widget type: its id on Homey's dashboards (`homey:app:<appId>:<widgetId>`). The app id never starts with
  * a dot: `.` or `..` would make the page's `/app/<appId>/widgets/…` frame point elsewhere on the Homey.
@@ -79,11 +81,12 @@ export type WebFront = { widgets: boolean, sections: WebSection[] };
 
 /**
  * A web dashboard: columns of widgets, top to bottom; `section`: the front page's section it's under; `columnWidth`: its
- * columns' width when not `normal`.
+ * columns' width when not `normal`; `code`: a Keypad code (one, or `any`) its editor and the way back to the front page
+ * take, as the page asks it (one that was removed, or Any code while there's none, no longer does).
  */
 export type WebDashboard = {
   id: string, name: string, theme: WebTheme, background: WebBackground, columns: WebWidget[][], section?: string,
-  columnWidth?: Exclude<WebColumnWidth, 'normal'>,
+  columnWidth?: Exclude<WebColumnWidth, 'normal'>, code?: { id: string, name: string },
 };
 
 /** What a web dashboards backup file is (`format`, `version`), as the web dashboards page downloads it. */
@@ -708,7 +711,12 @@ export default class WebDashboardService {
       });
     }));
     const section = typeof d.section === 'string' && ID.test(d.section) ? d.section : null;
-    return { id, name, theme, background, columns, ...(section ? { section } : {}), ...(width !== 'normal' ? { columnWidth: width } : {}) };
+    const code = d.code && typeof d.code.id === 'string' && CODE_ID.test(d.code.id)
+      ? { id: d.code.id, name: typeof d.code.name === 'string' ? d.code.name.slice(0, 40) : '' } : null;
+    return {
+      id, name, theme, background, columns,
+      ...(section ? { section } : {}), ...(width !== 'normal' ? { columnWidth: width } : {}), ...(code ? { code } : {}),
+    };
   }
 
   private normalizeWidget(input: unknown, ids: Set<string>): WebWidget | null {

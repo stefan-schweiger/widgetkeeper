@@ -9,7 +9,7 @@ import DaysSinceService, {
 import ElectricityService from './lib/ElectricityService.js';
 import FlowService from './lib/FlowService.js';
 import HeatmapService from './lib/HeatmapService.js';
-import KeypadService from './lib/KeypadService.js';
+import KeypadService, { KEYPAD_TAPPED_CARD, type PressArg, type PressState } from './lib/KeypadService.js';
 import LightService from './lib/LightService.js';
 import LockService from './lib/LockService.js';
 import MediaService from './lib/MediaService.js';
@@ -122,7 +122,13 @@ export default class WidgetkeeperApp extends Homey.App {
     this.curtains = new CurtainService(this.homey, log, debug);
     this.curtains.start();
     this.media = new MediaService(this.homey, this.flows, log, debug, this.apiKey);
-    this.keypad = new KeypadService(this.homey, { flows: this.flows, values: this.values, variables: this.variables }, log, debug);
+    this.keypad = new KeypadService(this.homey, {
+      flows: this.flows,
+      values: this.values,
+      variables: this.variables,
+      onPress: (tokens, state) => this.homey.flow.getTriggerCard(KEYPAD_TAPPED_CARD).trigger(tokens, state),
+    }, log, debug);
+    this.registerKeypadFlows();
     this.media.start();
     this.stack = new StackService(this.homey, log, debug, this.apiKey);
     this.registerStackFlows();
@@ -229,6 +235,13 @@ export default class WidgetkeeperApp extends Homey.App {
     card.registerRunListener(async (args: { flow?: { id?: string }, color: string }) => {
       this.flows.setColor(args.flow?.id ?? '', args.color);
     });
+  }
+
+  /** The Keypad's trigger, *A Keypad button was tapped by …*: anyone, anyone with a code, or one code by name. */
+  private registerKeypadFlows() {
+    const tapped = this.homey.flow.getTriggerCard(KEYPAD_TAPPED_CARD);
+    tapped.registerArgumentAutocompleteListener('code', async query => this.keypad.pressCodeItems(query));
+    tapped.registerRunListener(async (args: { code?: PressArg }, state: PressState) => this.keypad.pressMatches(args.code, state));
   }
 
   /**

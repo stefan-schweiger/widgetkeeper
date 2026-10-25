@@ -1,0 +1,188 @@
+{
+  "id": "keypad_tapped",
+  "title": {
+    "en": "A Keypad button was tapped",
+    "nl": "Op een knop van een Codepaneel is getikt",
+    "de": "Eine Taste eines Tastenfelds wurde angetippt",
+    "fr": "Un bouton d’un Clavier à code a été touché",
+    "it": "È stato toccato un pulsante di un Tastierino",
+    "sv": "En knapp i en Knappsats trycktes",
+    "no": "En knapp i et Kodepanel ble trykket",
+    "es": "Se tocó un botón de un Teclado de código",
+    "da": "Der blev trykket på en knap i et Kodepanel",
+    "ru": "Нажата кнопка «Кодовой панели»",
+    "pl": "Dotknięto przycisku Klawiatury kodowej",
+    "ko": "키패드 버튼을 눌렀을 때",
+    "ar": "تم النقر على زر من «لوحة الرمز»"
+  },
+  "titleFormatted": {
+    "en": "A Keypad button was tapped by [[code]]",
+    "nl": "[[code]] tikte op een knop van een Codepaneel",
+    "de": "[[code]] hat eine Taste eines Tastenfelds angetippt",
+    "fr": "[[code]] a touché un bouton d’un Clavier à code",
+    "it": "[[code]] ha toccato un pulsante di un Tastierino",
+    "sv": "[[code]] tryckte på en knapp i en Knappsats",
+    "no": "[[code]] trykket på en knapp i et Kodepanel",
+    "es": "[[code]] tocó un botón de un Teclado de código",
+    "da": "[[code]] trykkede på en knap i et Kodepanel",
+    "ru": "Кнопку «Кодовой панели» нажал: [[code]]",
+    "pl": "Przycisku Klawiatury kodowej dotknął: [[code]]",
+    "ko": "[[code]]이(가) 키패드 버튼을 눌렀을 때",
+    "ar": "نقر [[code]] على زر من «لوحة الرمز»"
+  },
+  "hint": {
+    "en": "When a Keypad button ran, on any dashboard. Code is the name of the code typed: with Any code, whose it was. Empty for a button without one.",
+    "nl": "Wanneer een knop van een Codepaneel is uitgevoerd, op elk dashboard. Code is de naam van de getypte code: bij Elke code van wie die was. Leeg bij een knop zonder code.",
+    "de": "Wenn eine Taste eines Tastenfelds ausgeführt wurde, auf jedem Dashboard. Code ist der Name des eingegebenen Codes: bei Jeder Code, wessen er war. Leer bei einer Taste ohne Code.",
+    "fr": "Quand un bouton d’un Clavier à code s’est exécuté, sur n’importe quel tableau de bord. Code est le nom du code saisi : avec N’importe quel code, à qui il était. Vide pour un bouton sans code.",
+    "it": "Quando un pulsante di un Tastierino è stato eseguito, su qualsiasi dashboard. Codice è il nome del codice inserito: con Qualsiasi codice, di chi era. Vuoto per un pulsante senza codice.",
+    "sv": "När en knapp i en Knappsats har körts, på vilken instrumentpanel som helst. Kod är namnet på koden som angavs: med Vilken kod som helst, vems den var. Tom för en knapp utan kod.",
+    "no": "Når en knapp i et Kodepanel har kjørt, på hvilket som helst dashbord. Kode er navnet på koden som ble tastet: med Hvilken som helst kode, hvem sin den var. Tom for en knapp uten kode.",
+    "es": "Cuando se ejecutó un botón de un Teclado de código, en cualquier panel. Código es el nombre del código introducido: con Cualquier código, de quién era. Vacío para un botón sin código.",
+    "da": "Når en knap i et Kodepanel er kørt, på ethvert dashboard. Kode er navnet på den indtastede kode: med Enhver kode, hvis den var. Tom for en knap uden kode.",
+    "ru": "Когда кнопка «Кодовой панели» сработала, на любой панели. Код — название введённого кода: при «Любой код» — чей он. Пусто для кнопки без кода.",
+    "pl": "Gdy przycisk Klawiatury kodowej zadziałał, na dowolnym pulpicie. Kod to nazwa wpisanego kodu: przy Dowolny kod — czyj był. Puste dla przycisku bez kodu.",
+    "ko": "모든 대시보드에서 키패드 버튼이 실행되었을 때. 코드는 입력한 코드의 이름으로, 모든 코드에서는 누구의 코드인지 알려 줍니다. 코드가 없는 버튼은 비어 있습니다.",
+    "ar": "عند تشغيل زر من «لوحة الرمز»، على أي لوحة تحكم. الرمز هو اسم الرمز المُدخل: مع أي رمز، لمن كان. فارغ لزر بلا رمز."
+  },
+  "tokens": [
+    {
+      "name": "code",
+      "type": "string",
+      "title": {
+        "en": "Code",
+        "nl": "Code",
+        "de": "Code",
+        "fr": "Code",
+        "it": "Codice",
+        "sv": "Kod",
+        "no": "Kode",
+        "es": "Código",
+        "da": "Kode",
+        "ru": "Код",
+        "pl": "Kod",
+        "ko": "코드",
+        "ar": "الرمز"
+      },
+      "example": {
+        "en": "Anna",
+        "nl": "Anna",
+        "de": "Anna",
+        "fr": "Anna",
+        "it": "Anna",
+        "sv": "Anna",
+        "no": "Anna",
+        "es": "Anna",
+        "da": "Anna",
+        "ru": "Anna",
+        "pl": "Anna",
+        "ko": "Anna",
+        "ar": "Anna"
+      }
+    },
+    {
+      "name": "button",
+      "type": "string",
+      "title": {
+        "en": "Button",
+        "nl": "Knop",
+        "de": "Taste",
+        "fr": "Bouton",
+        "it": "Pulsante",
+        "sv": "Knapp",
+        "no": "Knapp",
+        "es": "Botón",
+        "da": "Knap",
+        "ru": "Кнопка",
+        "pl": "Przycisk",
+        "ko": "버튼",
+        "ar": "الزر"
+      },
+      "example": {
+        "en": "Disarm",
+        "nl": "Uitschakelen",
+        "de": "Unscharf",
+        "fr": "Désarmer",
+        "it": "Disattiva",
+        "sv": "Larma av",
+        "no": "Deaktiver",
+        "es": "Desarmar",
+        "da": "Frakobl",
+        "ru": "Снять с охраны",
+        "pl": "Rozbrój",
+        "ko": "해제",
+        "ar": "إلغاء التسليح"
+      }
+    },
+    {
+      "name": "keypad",
+      "type": "string",
+      "title": {
+        "en": "Keypad",
+        "nl": "Codepaneel",
+        "de": "Tastenfeld",
+        "fr": "Clavier à code",
+        "it": "Tastierino",
+        "sv": "Knappsats",
+        "no": "Kodepanel",
+        "es": "Teclado de código",
+        "da": "Kodepanel",
+        "ru": "Кодовая панель",
+        "pl": "Klawiatura kodowa",
+        "ko": "키패드",
+        "ar": "لوحة الرمز"
+      },
+      "example": {
+        "en": "Alarm",
+        "nl": "Alarm",
+        "de": "Alarm",
+        "fr": "Alarme",
+        "it": "Allarme",
+        "sv": "Larm",
+        "no": "Alarm",
+        "es": "Alarma",
+        "da": "Alarm",
+        "ru": "Сигнализация",
+        "pl": "Alarm",
+        "ko": "경보",
+        "ar": "الإنذار"
+      }
+    }
+  ],
+  "args": [
+    {
+      "type": "autocomplete",
+      "name": "code",
+      "title": {
+        "en": "Code",
+        "nl": "Code",
+        "de": "Code",
+        "fr": "Code",
+        "it": "Codice",
+        "sv": "Kod",
+        "no": "Kode",
+        "es": "Código",
+        "da": "Kode",
+        "ru": "Код",
+        "pl": "Kod",
+        "ko": "코드",
+        "ar": "الرمز"
+      },
+      "placeholder": {
+        "en": "Anyone",
+        "nl": "Iedereen",
+        "de": "Jeder",
+        "fr": "N’importe qui",
+        "it": "Chiunque",
+        "sv": "Vem som helst",
+        "no": "Hvem som helst",
+        "es": "Cualquiera",
+        "da": "Hvem som helst",
+        "ru": "Кто угодно",
+        "pl": "Ktokolwiek",
+        "ko": "누구나",
+        "ar": "أي شخص"
+      }
+    }
+  ]
+}

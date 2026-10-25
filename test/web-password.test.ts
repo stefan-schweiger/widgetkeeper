@@ -19,7 +19,7 @@ function setup({ enabled = true, now = () => Date.now() } = {}) {
   const log = vi.fn();
   const web = new WebDashboardService(homey, log, {});
   const password = new WebPassword(homey, log, now);
-  homey.app = { web, webPassword: password, popups: new PopupService(homey, { cameras: {} as any, web }, log), log, debug: vi.fn() };
+  homey.app = { web, webPassword: password, popups: new PopupService(homey, { cameras: {} as any, web }, log), keypad: { listCodes: () => [] }, log, debug: vi.fn() };
   homey.cloud = { getHomeyId: async () => 'homey-id' };
   return { homey, web, password, log };
 }

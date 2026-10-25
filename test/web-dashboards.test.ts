@@ -8,6 +8,7 @@ import { widgetAutocompletes } from '../lib/widgetAutocompletes.js';
 import { DEVICE_WRITES, pageKeyUse, routeKeyUse } from '../lib/widgetRoutes.js';
 import WebPassword from '../lib/WebPassword.js';
 import PopupService from '../lib/PopupService.js';
+import KeypadService from '../lib/KeypadService.js';
 import api from '../api.js';
 
 vi.mock('homey-api', () => homeyApiMock);
@@ -22,8 +23,9 @@ function setup(autocompletes = {}, enabled = true) {
   const tileNames = new TileNameService(homey);
   const web = new WebDashboardService(homey, log, autocompletes, tileNames);
   const popups = new PopupService(homey, { cameras: {} as any, web }, log);
-  homey.app = { web, tileNames, webPassword: new WebPassword(homey, log), popups, log, debug: vi.fn() };
-  return { homey, web, log, tileNames };
+  const keypad = new KeypadService(homey, {} as any, log);
+  homey.app = { web, tileNames, webPassword: new WebPassword(homey, log), popups, keypad, log, debug: vi.fn() };
+  return { homey, web, log, tileNames, keypad };
 }
 
 describe('web dashboards: storage', () => {
@@ -63,6 +65,37 @@ describe('web dashboards: storage', () => {
     expect(web.save({ name: 'A', background: 'ocean', columns: [[]] }).background).toBe('ocean');
     expect(web.save({ name: 'B', background: 'neon', columns: [[]] }).background).toBe('default');
     expect(web.save({ name: 'C', background: '__proto__', columns: [[]] }).background).toBe('default');
+  });
+
+  it("keeps a Keypad code (Any code or a code's id) and drops anything else", () => {
+    const { web } = setup();
+    expect(web.save({ name: 'Hall', code: { id: 'any', name: 'Any code' }, columns: [[]] }).code).toEqual({ id: 'any', name: 'Any code' });
+    expect(web.save({ name: 'Hall', code: { id: '0123456789ab', name: 'x'.repeat(50) }, columns: [[]] }).code).toEqual({ id: '0123456789ab', name: 'x'.repeat(40) });
+    for (const code of [{ id: 'none' }, { id: '__proto__' }, { id: 'ABCDEF012345' }, 'any', null]) expect(web.save({ name: 'X', code, columns: [[]] })).not.toHaveProperty('code');
+    const kept = web.save({ name: 'Hall', code: { id: 'any' }, columns: [[]] });
+    expect(web.duplicate(kept.id).dashboard.code).toEqual({ id: 'any', name: '' }); // a copy keeps it
+  });
+
+  it("checks a dashboard's code for the page: counted as at a Keypad, and none once it no longer locks", async () => {
+    const { web, homey, keypad } = setup();
+    const added = keypad.addCode('Anna', '4711');
+    const anna = added.ok ? added.codes[0].id : '';
+    const open = web.save({ name: 'Open', columns: [[]] });
+    const hall = web.save({ name: 'Hall', code: { id: anna, name: 'Anna' }, columns: [[]] });
+    const any = web.save({ name: 'Any', code: { id: 'any', name: 'Any code' }, columns: [[]] });
+    const unlock = (id: string, code: unknown) => api.postWebDashboardUnlock({ homey, params: { id }, body: { code } } as any);
+    (homey as any).cloud = { getHomeyId: async () => 'homey-id' };
+    expect((await api.getWebSetup({ homey } as any) as any).codes).toEqual([{ id: anna, name: 'Anna', digits: 4 }]);
+    expect(await unlock(open.id, '')).toEqual({ ok: true });
+    expect(await unlock(hall.id, '0000')).toEqual({ ok: false, reason: 'wrongCode', left: 4 });
+    expect(await unlock(hall.id, '4711')).toEqual({ ok: true });
+    expect(await unlock(any.id, '4711')).toEqual({ ok: true });
+    expect(await unlock('gone', '4711')).toEqual({ ok: false, reason: 'missing' });
+    for (let i = 0; i < 4; i++) await unlock(hall.id, '0000');
+    expect(await unlock(hall.id, '0000')).toEqual({ ok: false, reason: 'locked', retryAfter: 30 });
+    keypad.removeCode(anna); // a forgotten code: removing it on the app settings page opens the dashboards
+    expect(await unlock(hall.id, '')).toEqual({ ok: true });
+    expect(await unlock(any.id, '')).toEqual({ ok: true });
   });
 
   it('keeps a known column width, but not normal (the default) or an unknown one', () => {

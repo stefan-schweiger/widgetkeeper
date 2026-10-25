@@ -526,6 +526,7 @@ const BUILD = {
     }
     const codeItem = async name => pick(await autocomplete('keypad', 'code', {}, name), i => i.name === name)[0] ?? null;
     const [code, code6] = await Promise.all([codeItem('Test 1234'), codeItem('Test 123456')]);
+    const anyCode = pick(await autocomplete('keypad', 'code', {}, ''), i => i.id === 'any')[0] ?? null;
     const sources = await autocomplete('keypad', 'state');
     const repeat = pick(sources, i => /:speaker_repeat$/.test(i.id))[0] ?? null;
     const yesNo = pick(sources, i => i.id.startsWith('var:') && i.type === 'boolean')[0] ?? null;
@@ -548,6 +549,10 @@ const BUILD = {
         w('keypad', 'Repeat · keypad always · compact · one button behind 1234', {
           state: repeat, code, keypad: 'always', layout: 'compact', value1: off, icon1: icon('power'), color1: 'grey', code1: false,
           value2: track, icon2: icon('music'), color2: 'green',
+        }),
+        w('keypad', 'Repeat · Any code (1234 or 123456: OK) · a button only for the Flow card', {
+          state: repeat, code: anyCode, value1: off, icon1: icon('power'), color1: 'grey', code1: false,
+          value2: track, icon2: icon('music'), color2: 'green', label3: 'Only the Flow card', icon3: icon('star'), color3: 'purple',
         }),
         w('keypad', 'Repeat · compact · Vivid · 123456 · title', {
           state: repeat, code: code6, layout: 'compact', colorStyle: 'deep', title: 'Typed title',

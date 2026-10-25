@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeDevice, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
-import KeypadService, { BOOLEAN_WORDS, KEYPAD_CODES, KEYPAD_SECRET, MAX_CODES, checkCapabilityValue, parseSource } from '../lib/KeypadService.js';
+import KeypadService, {
+  ANY_CODE, ANY_PRESS, BOOLEAN_WORDS, KEYPAD_CODES, KEYPAD_SECRET, MAX_CODES, checkCapabilityValue, parseSource,
+} from '../lib/KeypadService.js';
 import { KeyError } from '../lib/PersonalApiKey.js';
 import Secrets from '../lib/secrets.js';
 
@@ -47,8 +49,9 @@ function setup() {
     listPresetValues: vi.fn(async () => [{ name: 'Yes', id: 'boolean:true', value: true, type: 'boolean' }]),
   };
   const log = vi.fn();
-  const keypad = new KeypadService(homey, { flows, values, variables } as any, log);
-  return { homey, keypad, flows, values, variables, devs, log };
+  const onPress = vi.fn(async (_tokens: object, _state: object) => {});
+  const keypad = new KeypadService(homey, { flows, values, variables, onPress } as any, log);
+  return { homey, keypad, flows, values, variables, devs, log, onPress };
 }
 
 /** A code made on the app settings page; its id, as the `code` setting keeps it. */
@@ -170,8 +173,38 @@ describe('Keypad: the codes', () => {
     for (const bad of ['12', '1234567', '12a4', 1234, null]) expect(keypad.addCode('A', bad)).toEqual({ ok: false, reason: 'digits' });
     keypad.addCode('Alarm', '1234');
     expect(keypad.addCode('alarm', '5678')).toEqual({ ok: false, reason: 'nameTaken' });
-    for (let i = 1; i < MAX_CODES; i++) keypad.addCode(`C${i}`, '1234');
-    expect(keypad.addCode('One more', '1234')).toEqual({ ok: false, reason: 'full' });
+    vi.useFakeTimers();
+    for (let i = 1; i < MAX_CODES; i++) {
+      let res = keypad.addCode(`C${i}`, String(1000 + i));
+      while (!res.ok && res.reason === 'locked') { // ten edits in a row, then they wait
+        vi.advanceTimersByTime(res.retryAfter * 1000);
+        res = keypad.addCode(`C${i}`, String(1000 + i));
+      }
+      expect(res.ok).toBe(true);
+    }
+    expect(keypad.addCode('One more', '9999')).toEqual({ ok: false, reason: 'full' });
+  });
+
+  it("refuses digits another code has, so Any code knows whose was typed; adds and changes count, so it can't be used to guess", () => {
+    vi.useFakeTimers();
+    const { keypad } = setup();
+    const alarm = codeId(keypad, '4711', 'Alarm');
+    const kids = codeId(keypad, '1234', 'Kids');
+    expect(keypad.addCode('Anna', '4711')).toEqual({ ok: false, reason: 'codeTaken' });
+    expect(keypad.changeCode(kids, '1234', '4711')).toEqual({ ok: false, reason: 'codeTaken' });
+    expect(keypad.changeCode(kids, '1234', '1234')).toMatchObject({ ok: true }); // its own digits again
+    expect(keypad.addCode('Anna', '47110')).toMatchObject({ ok: true }); // another length is other digits
+    // Six edits so far; four more go, then the next waits 30 s, doubling.
+    for (let i = 0; i < 4; i++) expect(keypad.addCode('Bo', '4711')).toEqual({ ok: false, reason: 'codeTaken' });
+    expect(keypad.addCode('Bo', '2580')).toEqual({ ok: false, reason: 'locked', retryAfter: 30 });
+    expect(keypad.changeCode(alarm, '4711', '2580')).toEqual({ ok: false, reason: 'locked', retryAfter: 30 });
+    vi.advanceTimersByTime(30e3);
+    expect(keypad.addCode('Bo', '2580')).toMatchObject({ ok: true });
+    expect(keypad.addCode('Cy', '3690')).toEqual({ ok: false, reason: 'locked', retryAfter: 60 });
+    // An hour without one forgets them.
+    vi.advanceTimersByTime(60 * 60e3 + 1);
+    expect(keypad.addCode('Cy', '3690')).toMatchObject({ ok: true });
+    expect(keypad.checkCode(alarm, '4711')).toBeNull(); // the codes' own counts are apart
   });
 
   it("offers the codes by name in the widget's setting, or says where to make one", () => {
@@ -181,10 +214,27 @@ describe('Keypad: the codes', () => {
     codeId(keypad, '123456', 'Kids');
     expect(keypad.codeItems('')).toEqual([
       { name: 'None', id: 'none' },
+      { name: 'Any code', description: 'Any of the 2 codes', id: ANY_CODE },
       { name: 'Alarm', description: 'A 4-digit code', id },
       { name: 'Kids', description: 'A 6-digit code', id: expect.any(String) },
     ]);
     expect(keypad.codeItems('ala').map(i => i.name)).toEqual(['Alarm']);
+  });
+
+  it("takes any code for Any code, says whose it was, and counts Any code's wrong ones on their own", () => {
+    const { keypad } = setup();
+    expect(keypad.codeInfo(ANY_CODE)).toEqual({ id: ANY_CODE, missing: true }); // no codes yet
+    expect(keypad.checkCode(ANY_CODE, '4711')).toEqual({ result: 'codeMissing' });
+    const anna = codeId(keypad, '4711', 'Anna');
+    const bo = codeId(keypad, '2580', 'Bo');
+    expect(keypad.codeInfo(ANY_CODE)).toEqual({ id: ANY_CODE, name: 'Any code', digits: 4 });
+    expect(keypad.check(ANY_CODE, '2580')).toMatchObject({ result: 'right', entry: { id: bo, name: 'Bo' } });
+    expect(keypad.check(ANY_CODE, '4711')).toMatchObject({ result: 'right', entry: { id: anna, name: 'Anna' } });
+    for (let i = 0; i < 4; i++) keypad.checkCode(ANY_CODE, '0000');
+    expect(keypad.checkCode(ANY_CODE, '0000')).toEqual({ result: 'locked', retryAfter: 30 });
+    expect(keypad.checkCode(anna, '4711')).toBeNull(); // one code's own count is apart
+    codeId(keypad, '123456', 'Kids');
+    expect(keypad.codeInfo(ANY_CODE)).toEqual({ id: ANY_CODE, name: 'Any code', digits: null }); // lengths differ: OK sends
   });
 
   it('takes the right code, counts wrong ones, and locks the fifth for 30 s, doubling', () => {
@@ -283,9 +333,53 @@ describe('Keypad: a press', () => {
     expect(await keypad.press({ source: 'cap:door:locked', value: false })).toEqual({ result: 'notSetable' });
     await expect(keypad.press({ source: 'cap:alarm:homealarm_state', value: 'panic' })).rejects.toThrow(/Invalid value/);
     await expect(keypad.press({ source: 'cap:alarm:nope', value: 'x' })).rejects.toThrow(/has no nope/);
-    await expect(keypad.press({})).rejects.toThrow(/Nothing to do/);
+    await expect(keypad.press({ source: 'nope', value: 1 })).rejects.toThrow(/Nothing to do/);
     expect(devs.flatMap(d => d.sent)).toEqual([]);
     expect(keypad.describe().lastError).toMatch(/Nothing to do/);
+  });
+
+  it("fires the trigger after a press that worked: the code's name, the button and the widget", async () => {
+    const { keypad, onPress, flows } = setup();
+    const anna = codeId(keypad, '4711', 'Anna');
+    codeId(keypad, '2580', 'Bo');
+    await keypad.press({ flow: 'flow:f1', codeId: ANY_CODE, code: '0000', button: 'Disarm', title: 'Alarm' });
+    expect(onPress).not.toHaveBeenCalled(); // a wrong code
+    await keypad.press({ flow: 'flow:f1', codeId: ANY_CODE, code: '4711', button: ' Disarm ', title: 'Alarm' });
+    expect(onPress).toHaveBeenLastCalledWith({ code: 'Anna', button: 'Disarm', keypad: 'Alarm' }, { codeId: anna, name: 'Anna' });
+    await keypad.press({ button: 'x'.repeat(150), title: 7 }); // a button that only fires the trigger, without a code
+    expect(onPress).toHaveBeenLastCalledWith({ code: '', button: 'x'.repeat(100), keypad: '' }, { codeId: null, name: '' });
+    expect(flows.trigger).toHaveBeenCalledTimes(1);
+    flows.trigger.mockRejectedValueOnce(new Error('busy'));
+    await expect(keypad.press({ flow: 'flow:f1', button: 'Arm' })).rejects.toThrow('busy');
+    expect(onPress).toHaveBeenCalledTimes(2); // not for a press that failed
+  });
+
+  it("never fails a press for the trigger", async () => {
+    const { keypad, onPress, log } = setup();
+    onPress.mockRejectedValueOnce(new Error('No such card'));
+    expect(await keypad.press({ button: 'Arrive' })).toEqual({ result: 'done' });
+    await new Promise(r => setTimeout(r, 0));
+    expect(log).toHaveBeenCalledWith('Keypad: the trigger failed:', expect.any(Error));
+  });
+
+  it("matches the trigger's argument: Anyone, Anyone with a code, or a code by id or, once made again, by name", () => {
+    const { keypad } = setup();
+    const anna = codeId(keypad, '4711', 'Anna');
+    expect(keypad.pressCodeItems('')).toEqual([
+      { name: 'Anyone', id: ANY_PRESS },
+      { name: 'Anyone with a code', id: ANY_CODE },
+      { name: 'Anna', description: 'A 4-digit code', id: anna },
+    ]);
+    expect(keypad.pressCodeItems('ann').map(i => i.id)).toEqual([anna]);
+    const by = (codeId: string | null, name = '') => ({ codeId, name });
+    expect(keypad.pressMatches({ id: ANY_PRESS }, by(null))).toBe(true);
+    expect(keypad.pressMatches(undefined, by(null))).toBe(true);
+    expect(keypad.pressMatches({ id: ANY_CODE }, by(null))).toBe(false);
+    expect(keypad.pressMatches({ id: ANY_CODE }, by(anna, 'Anna'))).toBe(true);
+    expect(keypad.pressMatches({ id: anna, name: 'Anna' }, by(anna, 'Anna'))).toBe(true);
+    expect(keypad.pressMatches({ id: anna, name: 'Anna' }, by('other', 'Bo'))).toBe(false);
+    expect(keypad.pressMatches({ id: 'old', name: 'Anna' }, by('new', 'anna'))).toBe(true);
+    expect(keypad.pressMatches({ id: anna, name: 'Anna' }, by(null))).toBe(false);
   });
 
   it("passes a missing API key on, so the route can say so", async () => {

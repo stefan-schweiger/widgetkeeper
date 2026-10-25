@@ -713,3 +713,24 @@ textarea.wd-input { width: 100%; resize: vertical; }
   position: fixed; left: 50%; bottom: 24px; z-index: 10; transform: translateX(-50%); max-width: calc(100vw - 32px);
   padding: 10px 16px; border-radius: 20px; background: #2B2C36; color: #FFFFFF; font-size: 14px; line-height: 20px;
 }
+
+/* A dashboard's code (its editor and the way back to the dashboards): a phone's keypad in a dialog. */
+.wd-dialog.wd-code { width: min(340px, calc(100vw - 32px)); }
+.wd-code .wd-dialog-body { align-items: center; gap: 12px; padding-bottom: 20px; }
+.wd-code-prompt { margin: 0; color: var(--wd-muted); }
+.wd-code-dots { display: flex; gap: 10px; min-height: 12px; }
+.wd-code-dots span { box-sizing: border-box; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--wd-muted); }
+.wd-code-dots span.f { background: var(--wd-text); border-color: var(--wd-text); }
+.wd-code-dots.err span { border-color: var(--wd-red); }
+.wd-code-dots.err span.f { background: var(--wd-red); }
+.wd-code-dots.checking { animation: wd-code-pulse 1s ease-in-out infinite; }
+@keyframes wd-code-pulse { 50% { opacity: .35; } }
+.wd-code-note { margin: 0; min-height: 20px; font-size: 14px; line-height: 20px; color: var(--wd-red); text-align: center; }
+.wd-code-keys { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%; max-width: 264px; }
+.wd-code-key {
+  appearance: none; border: 0; border-radius: 12px; height: 52px; padding: 0; display: grid; place-items: center;
+  font: inherit; font-size: 22px; font-weight: 500; color: var(--wd-text); background: var(--wd-raised); cursor: pointer;
+}
+.wd-code-key.fn { color: var(--wd-muted); }
+.wd-code-key svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.wd-code-key:disabled { opacity: .35; cursor: default; }

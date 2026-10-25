@@ -56,12 +56,16 @@ function mockSettingSections(settings, lang) {
 
 // `popups`: the open popups (wk-084), as `/web/popups` lists them; their pictures are a drawn front door, never a real
 // camera image, and one with `elsewhere` answers as if another screen had been first.
-function mockWebApi({ lang = 'en', dashboards = [], front: frontIn = {}, zones = {}, devices = [], readings = {}, popups = [] } = {}) {
+/** Made-up Keypad codes for a dashboard's code (the app keeps only fingerprints; the preview knows the digits). */
+const MOCK_CODES = [{ id: '0a1b2c3d4e5f', name: 'Anna', digits: '1234' }, { id: 'f5e4d3c2b1a0', name: 'Kids', digits: '2580' }];
+
+function mockWebApi({ lang = 'en', dashboards = [], front: frontIn = {}, zones = {}, devices = [], readings = {}, popups = [], codes = MOCK_CODES } = {}) {
   try { localStorage.setItem('widgetkeeper.web.key', 'preview'); } catch (e) { /* private mode */ }
   const loc = (text) => (text && typeof text === 'object' ? text[lang] || text.en : text) || '';
 
   let manifest = null;
   let front = { widgets: true, sections: [], ...frontIn };
+  const codeLock = { wrong: 0, until: 0 };
   let strings = null;
   const ready = Promise.all([
     fetch('/app.json').then(r => r.json()).then((m) => { manifest = m; }),
@@ -103,6 +107,7 @@ function mockWebApi({ lang = 'en', dashboards = [], front: frontIn = {}, zones =
       return {
         appId: 'com.thomassidor.widgetkeeper', homeyId: 'preview', language: lang, strings, widgets, dashboards, front,
         maxDashboards: 64, maxSections: 20, popups: { popups, now: Date.now() },
+        codes: codes.map(({ id, name, digits }) => ({ id, name, digits: digits.length })),
       };
     }
     if (p === '/web/popups') return { popups, now: Date.now() };
@@ -181,6 +186,20 @@ function mockWebApi({ lang = 'en', dashboards = [], front: frontIn = {}, zones =
       }
       if (body.complete === true) front = { widgets: !(body.front && body.front.widgets === false), sections: (body.front && body.front.sections) || [] };
       return { dashboards: restored, widgets, skipped };
+    }
+    // A dashboard's code: the made-up codes' digits are in `MOCK_CODES`; five wrong ones in a row lock it 30 s.
+    const unlock = p.match(/^\/web\/dashboards\/([^/]+)\/unlock$/);
+    if (unlock && method === 'POST') {
+      const d = dashboards.find(x => x.id === decodeURIComponent(unlock[1]));
+      if (!d) return { ok: false, reason: 'missing' };
+      const wanted = !d.code ? [] : d.code.id === 'any' ? codes : codes.filter(c => c.id === d.code.id);
+      if (!wanted.length) return { ok: true };
+      if (Date.now() < codeLock.until) return { ok: false, reason: 'locked', retryAfter: Math.ceil((codeLock.until - Date.now()) / 1000) };
+      if (wanted.some(c => c.digits === body.code)) { codeLock.wrong = 0; return { ok: true }; }
+      codeLock.wrong += 1;
+      if (codeLock.wrong < 5) return { ok: false, reason: 'wrongCode', left: 5 - codeLock.wrong };
+      codeLock.until = Date.now() + 30e3;
+      return { ok: false, reason: 'locked', retryAfter: 30 };
     }
     const copy = p.match(/^\/web\/dashboards\/([^/]+)\/copy$/);
     if (copy && method === 'POST') {
