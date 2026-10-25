@@ -27,7 +27,8 @@
   <div class="col"><span>300 px · dark · volume as buttons, ⋯ open with shuffle</span><div class="card mw-frame homey-dark-mode" style="width:300px"><div id="w10"></div></div></div>
   <div class="col"><span>420 px · dark · volume as buttons, shuffle in the row</span><div class="card mw-frame homey-dark-mode" style="width:420px"><div id="w14"></div></div></div>
   <div class="col"><span>358 px · dark · eight buttons, ⋯ open</span><div class="card mw-frame homey-dark-mode" style="width:358px"><div id="w15"></div></div></div>
-  <div class="col"><span>300 px · dark · volume as buttons, eight buttons (the card grows to fit ⋯)</span><div class="card mw-frame homey-dark-mode" style="width:300px"><div id="w16"></div></div></div>
+  <div class="col"><span>300 px · dark · volume as buttons, eight buttons</span><div class="card mw-frame homey-dark-mode" style="width:300px"><div id="w16"></div></div></div>
+  <div class="col"><span>300 px · dark · volume as buttons, eight buttons, ⋯ open (grows while open)</span><div class="card mw-frame homey-dark-mode" style="width:300px"><div id="w17"></div></div></div>
   <div class="col"><span>358 px · dark · no progress</span><div class="card mw-frame homey-dark-mode" style="width:358px"><div id="w13"></div></div></div>
   <div class="col"><span>358 px · dark · speaker list open</span><div class="card mw-frame homey-dark-mode" style="width:358px"><div id="w11"></div></div></div>
   <div class="col"><span>300 px · light · speaker list open</span><div class="card light" style="width:300px"><div id="w12"></div></div></div>
@@ -57,6 +58,7 @@
     mountMockMedia(document.getElementById('w10'), mockSpeaker('Kitchen', 2), { buttons: SOURCES, volumeLayout: 'buttons', showShuffle: true, t: devT }).setPanel(true);
     mountMockMedia(document.getElementById('w15'), mockSpeaker('Kitchen', 0), { buttons: EIGHT, t: devT }).setPanel(true);
     mountMockMedia(document.getElementById('w16'), mockSpeaker('Kitchen', 0), { buttons: EIGHT, volumeLayout: 'buttons', t: devT });
+    mountMockMedia(document.getElementById('w17'), mockSpeaker('Kitchen', 0), { buttons: EIGHT, volumeLayout: 'buttons', t: devT }).setPanel(true);
     mountMockMedia(document.getElementById('w14'), mockSpeaker('Kitchen', 0), { volumeLayout: 'buttons', showShuffle: true, canSwitch: true, t: devT });
     mountMockMedia(document.getElementById('w13'), mockSpeaker('Kitchen', 0), { buttons: SOURCES, canSwitch: true, showProgress: false, volumeLayout: 'buttons', t: devT });
     mountMockMedia(document.getElementById('w11'), mockSpeaker('Kitchen', 0), { buttons: SOURCES, canSwitch: true, t: devT }).setSpeakers(true);

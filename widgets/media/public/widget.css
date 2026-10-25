@@ -46,8 +46,8 @@ html, body { margin: 0; }
 /* Text is dir="auto" so RTL names get their punctuation right; the layout itself stays LTR. */
 .mw [dir="auto"] { text-align: left; }
 
-/* The main view and the ⋯ overlay share one grid cell: the card is as tall as the taller of the two, so opening
-   the overlay never changes the widget's height. */
+/* The main view and the ⋯ overlay share one grid cell: while open, the card is as tall as the taller of the two, so
+   opening the overlay doesn't change the widget's height unless its buttons need more room (eight in a 300 px card). */
 .mw-card { display: grid; min-width: 0; }
 .mw-main, .mw-panel { grid-area: 1 / 1; min-width: 0; }
 .mw-main { display: flex; flex-direction: column; gap: var(--homey-su-2, 8px); }
@@ -190,6 +190,8 @@ button.mw-who.pressing { opacity: .6; }
   display: flex; align-items: flex-start; gap: var(--homey-su-2, 8px);
   visibility: hidden; opacity: 0; transition: opacity .15s, visibility 0s .15s;
 }
+/* Closed, it takes no height, so many buttons don't make the closed card taller. */
+.mw-card:not(.panel-open) .mw-panel { height: 0; overflow: hidden; }
 .mw-card.panel-open .mw-panel { visibility: visible; opacity: 1; transition: opacity .15s; }
 .mw-main { transition: opacity .15s; }
 .mw-card.panel-open .mw-main, .mw-card.speakers-open .mw-main, .mw-card.speakers-open .mw-panel { visibility: hidden; opacity: 0; }
