@@ -4,163 +4,240 @@
   <meta charset="utf-8">
   <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
   <style>
+    /* Homey's settings stylesheet frames no section and has no help-text style (no `homey-form-help`), so the page
+       draws its own: each section a card folded to its title and a line of where it stands. */
+    .card { margin: 0 0 var(--homey-su-2, 16px); border: 1px solid var(--homey-color-line, #DDDEE2); border-radius: var(--homey-border-radius, 10px); }
+    .card > summary {
+      display: flex; align-items: center; gap: 12px; padding: 16px; cursor: pointer; list-style: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .card > summary::-webkit-details-marker { display: none; }
+    .card > summary::after {
+      content: ''; flex: none; width: 9px; height: 9px; margin: 0 4px 4px 0;
+      border-right: 2px solid var(--homey-color-mono-40, #939496); border-bottom: 2px solid var(--homey-color-mono-40, #939496);
+      transform: rotate(45deg);
+    }
+    .card[open] > summary::after { margin: 4px 4px 0 0; transform: rotate(-135deg); }
+    .card-titles { flex: 1 1 auto; min-width: 0; }
+    .card-title { display: block; font-size: 17px; line-height: 24px; font-weight: var(--homey-font-weight-bold, 700); color: var(--homey-color-text, #1F2029); }
+    .card-line {
+      display: block; margin-top: 2px; font-size: 14px; line-height: 20px; color: var(--homey-color-mono-50, #7A7B7D);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .card-line.ok::before { content: '✓ '; font-weight: 700; color: #2B8A00; }
+    .card-body { padding: 0 16px 16px; }
+    .card-body > :first-child { margin-top: 0; }
+    /* A part of a card: a line above it and a heading. */
+    .sub { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--homey-color-mono-05, #E9EAEE); }
+    .sub-title { margin: 0; font-size: 15px; line-height: 20px; font-weight: var(--homey-font-weight-medium, 500); }
+    .help { margin: 8px 0 0; font-size: 14px; line-height: 20px; color: var(--homey-color-mono-50, #7A7B7D); }
     .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 0; }
     .row > * { flex: 1 1 auto; }
-    .status { min-height: 1.4em; margin-top: 8px; }
     .status:empty { display: none; }
-    .web-address { margin-top: var(--homey-su-4, 16px); }
-    .web-address-label { margin: 0; font-weight: var(--homey-font-weight-medium, 500); }
-    .web-url { display: block; margin-top: 4px; word-break: break-all; }
-    .web-remote { margin-top: var(--homey-su-6, 24px); }
-    .backup-help { margin-top: var(--homey-su-6, 24px); }
-    #report {
-      display: block; width: 100%; box-sizing: border-box; height: 50vh; margin-top: 12px;
-      font: 11px/1.4 ui-monospace, Menlo, Consolas, monospace; white-space: pre; overflow: auto; resize: vertical;
-    }
+    label.homey-form-checkbox { margin: 12px 0 0; }
+    .homey-form-group { margin: 12px 0 0; }
     [hidden] { display: none !important; }
-    /* Whether a key is saved: a badge that stands out from the help text. */
-    .key-state {
-      --ks: var(--homey-color-orange-500, #E58A00);
-      display: flex; align-items: center; gap: 10px; margin: 12px 0; padding: 10px 12px; border-radius: 10px;
-      font-weight: 500; line-height: 20px; color: var(--ks); background: color-mix(in srgb, var(--ks) 12%, transparent);
+    /* Homey greys only `disabled="disabled"`; a button disabled from script has `disabled=""`. */
+    [class*='homey-button']:disabled { filter: grayscale(1) opacity(0.5); cursor: not-allowed; }
+    /* Where a key or password stands: a tick, or ! while there's none. */
+    .state { display: flex; align-items: flex-start; gap: 8px; margin: 12px 0 0; font-size: 15px; line-height: 20px; font-weight: 500; }
+    .state::before {
+      content: '✓'; flex: none; width: 20px; height: 20px; border-radius: 10px; text-align: center; line-height: 20px;
+      font-size: 13px; font-weight: 700; color: #FFFFFF; background: var(--homey-color-green, #3FC700);
     }
-    .key-state::before {
-      content: '!'; flex: none; width: 22px; height: 22px; border-radius: 11px; text-align: center; line-height: 22px;
-      font-weight: 700; color: #FFFFFF; background: var(--ks);
+    .state.warn::before { content: '!'; background: var(--homey-color-orange-500, #FF8400); }
+    /* Each feature and the box to tick for it. */
+    .perms { list-style: none; margin: 8px 0 0; padding: 0; }
+    .perms li {
+      display: flex; align-items: baseline; gap: 12px; padding: 6px 0; font-size: 14px; line-height: 20px;
+      border-bottom: 1px solid var(--homey-color-mono-05, #E9EAEE);
     }
-    .key-state.set { --ks: var(--homey-color-green, #2DA94F); }
-    .perms { margin: 0 0 var(--homey-su-3, 12px); padding-inline-start: 20px; }
-    .perms li { margin: 2px 0; }
-    .key-state.set::before { content: '✓'; }
+    .perms li:last-child { border-bottom: 0; }
+    .perms span { flex: 1 1 auto; }
+    .perms strong {
+      flex: none; padding: 0 8px; border-radius: 5px; font-weight: var(--homey-font-weight-medium, 500);
+      background: var(--homey-color-mono-02, #F1F2F6);
+    }
     /* The Keypad's codes: a row each, the name, its length, Change and Remove. */
-    .kp-codes { list-style: none; margin: 12px 0 4px; padding: 0; }
-    .kp-codes li { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--homey-line-color-light, rgba(0, 0, 0, .08)); }
+    .kp-codes { list-style: none; margin: 8px 0 0; padding: 0; }
+    .kp-codes li { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--homey-color-mono-05, #E9EAEE); }
     .kp-code-name { flex: 1 1 auto; min-width: 0; font-weight: var(--homey-font-weight-medium, 500); overflow-wrap: anywhere; }
-    .kp-code-digits { flex: none; color: var(--homey-text-color-light, #8A8A8A); }
+    .kp-code-digits { flex: none; font-size: 14px; color: var(--homey-color-mono-50, #7A7B7D); }
     .kp-codes button { flex: none; }
     .kp-changing { margin: 12px 0 0; font-weight: var(--homey-font-weight-medium, 500); }
+    .web-url { display: block; margin-top: 4px; font-size: 14px; line-height: 20px; word-break: break-all; text-decoration: none; color: var(--homey-color-blue, #0082FA); }
+    #report {
+      display: block; width: 100%; box-sizing: border-box; height: 40vh; min-height: 180px; margin-top: 12px;
+      font: 11px/1.4 ui-monospace, Menlo, Consolas, monospace; white-space: pre; overflow: auto; resize: vertical;
+    }
   </style>
 </head>
 <body>
   <!-- The personal API key: what the app's own token may not do (variables, flows, speaker actions, dashboards, Moods). -->
-  <fieldset class="homey-form-fieldset">
-    <legend class="homey-form-legend" data-i18n="varTitle">API key</legend>
-    <p class="homey-form-help" data-i18n="varHelp"></p>
-    <!-- Each feature and the permission it needs, as the Homey web app's API Keys page names it (README: API key). -->
-    <ul class="homey-form-help perms">
-      <li><span data-i18n="varForVariables"></span> <strong data-i18n="varTickVariables"></strong></li>
-      <li><span data-i18n="varForFlows"></span> <strong data-i18n="varTickFlows"></strong></li>
-      <li><span data-i18n="varForCards"></span> <strong data-i18n="varTickCards"></strong></li>
-      <li><span data-i18n="varForMoods"></span> <strong data-i18n="varTickMoods"></strong></li>
-      <li><span data-i18n="varForStack"></span> <strong data-i18n="varTickStack"></strong></li>
-    </ul>
-    <div class="key-state" id="varState" role="status" hidden><span></span></div>
-    <div class="homey-form-group">
-      <input class="homey-form-input" id="varKey" type="password" autocomplete="off" spellcheck="false" data-i18n-label="varKey">
+  <details class="card" id="varCard">
+    <summary><span class="card-titles"><span class="card-title" data-i18n="varTitle">API key</span><span class="card-line" id="varLine"></span></span></summary>
+    <div class="card-body">
+      <p class="help" data-i18n="varHelp"></p>
+      <!-- Each feature and the permission it needs, as the Homey web app's API Keys page names it (README: API key). -->
+      <div class="sub">
+        <p class="sub-title" data-i18n="varPermsTitle"></p>
+        <ul class="perms">
+          <li><span data-i18n="varForVariables"></span> <strong data-i18n="varTickVariables"></strong></li>
+          <li><span data-i18n="varForFlows"></span> <strong data-i18n="varTickFlows"></strong></li>
+          <li><span data-i18n="varForCards"></span> <strong data-i18n="varTickCards"></strong></li>
+          <li><span data-i18n="varForMoods"></span> <strong data-i18n="varTickMoods"></strong></li>
+          <li><span data-i18n="varForStack"></span> <strong data-i18n="varTickStack"></strong></li>
+        </ul>
+        <p class="help" data-i18n="varNoKey"></p>
+      </div>
+      <!-- Without a key, the field; with one, Replace key (the field again) and Remove. -->
+      <div class="sub">
+        <p class="state warn" id="varState" role="status" hidden></p>
+        <div id="varForm" hidden>
+          <div class="homey-form-group">
+            <input class="homey-form-input" id="varKey" type="password" autocomplete="off" spellcheck="false" data-i18n-label="varKey">
+          </div>
+          <div class="row">
+            <button class="homey-button-primary-small-shadow" id="varSave" data-i18n="varSave" disabled>Save</button>
+            <button class="homey-button-secondary-small-shadow" id="varCancel" data-i18n="cancel" hidden>Cancel</button>
+          </div>
+        </div>
+        <div class="row" id="varActions" hidden>
+          <button class="homey-button-secondary-small-shadow" id="varReplace" data-i18n="varReplace">Replace key</button>
+          <button class="homey-button-danger-small-shadow" id="varRemove" data-i18n="varRemove">Remove</button>
+        </div>
+        <p class="help status" id="varStatus" role="status"></p>
+      </div>
     </div>
-    <div class="row">
-      <button class="homey-button-primary-shadow" id="varSave" data-i18n="varSave" disabled>Save</button>
-      <button class="homey-button-secondary-shadow" id="varRemove" data-i18n="varRemove" hidden>Remove</button>
-    </div>
-    <p class="homey-form-help status" id="varStatus" role="status"></p>
-  </fieldset>
+  </details>
 
   <!-- The Keypad's codes: a name and the digits, typed twice; the app keeps only an HMAC of each and never sends it back. -->
-  <fieldset class="homey-form-fieldset">
-    <legend class="homey-form-legend" data-i18n="kpTitle">Keypad codes</legend>
-    <p class="homey-form-help" data-i18n="kpHelp"></p>
-    <ul class="kp-codes" id="kpList"></ul>
-    <p class="homey-form-help" id="kpEmpty" data-i18n="kpNone" hidden></p>
-    <p class="kp-changing" id="kpChanging" hidden></p>
-    <div class="homey-form-group" id="kpNameGroup">
-      <input class="homey-form-input" id="kpName" type="text" maxlength="40" autocomplete="off" spellcheck="false" data-i18n-label="kpName">
+  <details class="card" id="kpCard">
+    <summary><span class="card-titles"><span class="card-title" data-i18n="kpTitle">Keypad codes</span><span class="card-line" id="kpLine"></span></span></summary>
+    <div class="card-body">
+      <p class="help" data-i18n="kpHelp"></p>
+      <ul class="kp-codes" id="kpList"></ul>
+      <div class="row" id="kpActions">
+        <button class="homey-button-primary-small-shadow" id="kpNew" data-i18n="kpAdd">Add code</button>
+      </div>
+      <!-- Add code or a row's Change opens it. -->
+      <div id="kpForm" hidden>
+        <p class="kp-changing" id="kpChanging" hidden></p>
+        <div class="homey-form-group" id="kpNameGroup">
+          <input class="homey-form-input" id="kpName" type="text" maxlength="40" autocomplete="off" spellcheck="false" data-i18n-label="kpName">
+        </div>
+        <!-- Changing a code takes its current one: anyone whose key may call the app reaches the route. -->
+        <div class="homey-form-group" id="kpCurrentGroup" hidden>
+          <input class="homey-form-input" id="kpCurrent" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" data-i18n-label="kpCurrent">
+        </div>
+        <div class="homey-form-group">
+          <input class="homey-form-input" id="kpCode" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" data-i18n-label="kpCode">
+        </div>
+        <div class="homey-form-group">
+          <input class="homey-form-input" id="kpAgain" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" data-i18n-label="kpAgain">
+        </div>
+        <div class="row">
+          <button class="homey-button-primary-small-shadow" id="kpSave" data-i18n="kpAdd" disabled>Add code</button>
+          <button class="homey-button-secondary-small-shadow" id="kpCancel" data-i18n="cancel">Cancel</button>
+        </div>
+      </div>
+      <p class="help status" id="kpStatus" role="status"></p>
     </div>
-    <!-- Changing a code takes its current one: anyone whose key may call the app reaches the route. -->
-    <div class="homey-form-group" id="kpCurrentGroup" hidden>
-      <input class="homey-form-input" id="kpCurrent" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" data-i18n-label="kpCurrent">
-    </div>
-    <div class="homey-form-group">
-      <input class="homey-form-input" id="kpCode" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" data-i18n-label="kpCode">
-    </div>
-    <div class="homey-form-group">
-      <input class="homey-form-input" id="kpAgain" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" data-i18n-label="kpAgain">
-    </div>
-    <div class="row">
-      <button class="homey-button-primary-shadow" id="kpSave" data-i18n="kpAdd" disabled>Add code</button>
-      <button class="homey-button-secondary-shadow" id="kpCancel" data-i18n="kpCancel" hidden>Cancel</button>
-    </div>
-    <p class="homey-form-help status" id="kpStatus" role="status"></p>
-  </fieldset>
+  </details>
 
-  <fieldset class="homey-form-fieldset">
-    <legend class="homey-form-legend" data-i18n="webTitle">Web dashboards</legend>
-    <p class="homey-form-help" data-i18n="webHelp"></p>
-    <label class="homey-form-checkbox">
-      <input class="homey-form-checkbox-input" id="webEnabled" type="checkbox" disabled>
-      <span class="homey-form-checkbox-checkmark"></span>
-      <span class="homey-form-checkbox-text" data-i18n="webEnable">Turn on web dashboards</span>
-    </label>
-    <div id="webOn" hidden>
-      <!-- The page's two addresses: on the home network, and away from home through Homey's cloud. -->
-      <div class="web-address" data-address="url">
-        <p class="web-address-label" data-i18n="webAddressHome">On your home network</p>
-        <a class="web-url" target="_blank" rel="noopener"></a>
-        <div class="row">
-          <button class="homey-button-primary-shadow" data-act="open" data-i18n="webOpen">Open</button>
-          <button class="homey-button-secondary-shadow" data-act="copy" data-i18n="copy">Copy</button>
-        </div>
-      </div>
-      <label class="homey-form-checkbox web-remote">
-        <input class="homey-form-checkbox-input" id="webRemote" type="checkbox" disabled>
+  <details class="card" id="webCard">
+    <summary><span class="card-titles"><span class="card-title" data-i18n="webTitle">Web dashboards</span><span class="card-line" id="webLine"></span></span></summary>
+    <div class="card-body">
+      <p class="help" data-i18n="webHelp"></p>
+      <label class="homey-form-checkbox">
+        <input class="homey-form-checkbox-input" id="webEnabled" type="checkbox" disabled>
         <span class="homey-form-checkbox-checkmark"></span>
-        <span class="homey-form-checkbox-text" data-i18n="webRemoteEnable">Allow remote access</span>
+        <span class="homey-form-checkbox-text" data-i18n="webEnable">Turn on web dashboards</span>
       </label>
-      <p class="homey-form-help" data-i18n="webRemoteHelp"></p>
-      <div class="web-address" data-address="remoteUrl" hidden>
-        <p class="web-address-label" data-i18n="webAddressAway">Away from home</p>
-        <a class="web-url" target="_blank" rel="noopener"></a>
-        <div class="row">
-          <button class="homey-button-primary-shadow" data-act="open" data-i18n="webOpen">Open</button>
-          <button class="homey-button-secondary-shadow" data-act="copy" data-i18n="copy">Copy</button>
+      <p class="help status" id="webStatus" role="status"></p>
+      <div id="webOn" hidden>
+        <!-- The page's two addresses: on the home network, and away from home through Homey's cloud. -->
+        <div class="sub">
+          <p class="sub-title" data-i18n="webAddressHome">On your home network</p>
+          <div class="web-address" data-address="url" hidden>
+            <a class="web-url" target="_blank" rel="noopener"></a>
+            <div class="row">
+              <button class="homey-button-primary-small-shadow" data-act="open" data-i18n="webOpen">Open</button>
+              <button class="homey-button-secondary-small-shadow" data-act="copy" data-i18n="copy">Copy</button>
+            </div>
+            <p class="help status" role="status"></p>
+          </div>
+        </div>
+        <div class="sub">
+          <p class="sub-title" data-i18n="webAddressAway">Away from home</p>
+          <label class="homey-form-checkbox">
+            <input class="homey-form-checkbox-input" id="webRemote" type="checkbox" disabled>
+            <span class="homey-form-checkbox-checkmark"></span>
+            <span class="homey-form-checkbox-text" data-i18n="webRemoteEnable">Allow remote access</span>
+          </label>
+          <p class="help" data-i18n="webRemoteHelp"></p>
+          <p class="help status" id="webRemoteStatus" role="status"></p>
+          <div class="web-address" data-address="remoteUrl" hidden>
+            <a class="web-url" target="_blank" rel="noopener"></a>
+            <div class="row">
+              <button class="homey-button-primary-small-shadow" data-act="open" data-i18n="webOpen">Open</button>
+              <button class="homey-button-secondary-small-shadow" data-act="copy" data-i18n="copy">Copy</button>
+            </div>
+            <p class="help status" role="status"></p>
+          </div>
+        </div>
+        <!-- Optional: a password browsers sign in with after their personal API key. -->
+        <div class="sub">
+          <p class="sub-title" data-i18n="webPassword">Password</p>
+          <p class="help" data-i18n="webPasswordHelp"></p>
+          <p class="state" id="pwState" role="status" data-i18n="webPasswordIsSet" hidden></p>
+          <!-- Set or Change password opens it for a new one; Remove password for the current one only. While one is set,
+               both take the current one: anyone whose key may call the app reaches the route. -->
+          <div id="pwForm" hidden>
+            <div class="homey-form-group" id="pwCurrentGroup" hidden>
+              <input class="homey-form-input" id="pwCurrent" type="password" autocomplete="current-password" spellcheck="false" data-i18n-label="webPasswordCurrent">
+            </div>
+            <div class="homey-form-group" id="pwNewGroup">
+              <input class="homey-form-input" id="webPassword" type="password" autocomplete="new-password" spellcheck="false" data-i18n-label="webPassword">
+            </div>
+            <div class="row">
+              <button class="homey-button-primary-small-shadow" id="pwSave" data-i18n="webPasswordSave" disabled>Set password</button>
+              <button class="homey-button-secondary-small-shadow" id="pwCancel" data-i18n="cancel">Cancel</button>
+            </div>
+          </div>
+          <div class="row" id="pwActions">
+            <button class="homey-button-secondary-small-shadow" id="pwSet" data-i18n="webPasswordSave">Set password</button>
+            <button class="homey-button-danger-small-shadow" id="pwRemove" data-i18n="webPasswordRemove" hidden>Remove password</button>
+          </div>
+          <p class="help status" id="pwStatus" role="status"></p>
+          <p class="help" id="pwForgot" data-i18n="webPasswordForgot" hidden></p>
         </div>
       </div>
-      <p class="homey-form-help status" id="webStatus" role="status"></p>
-      <!-- Optional: a password browsers sign in with instead of a personal API key. -->
-      <p class="homey-form-help" data-i18n="webPasswordHelp"></p>
-      <div class="key-state set" id="pwState" role="status" hidden><span></span></div>
-      <!-- While one is set, changing or removing it takes the current one: anyone whose key may call the app reaches the route. -->
-      <div class="homey-form-group" id="pwCurrentGroup" hidden>
-        <input class="homey-form-input" id="pwCurrent" type="password" autocomplete="current-password" spellcheck="false" data-i18n-label="webPasswordCurrent">
+      <!-- The backup is on the web dashboards page: my.homey.app runs this page in a frame that can't download a file. -->
+      <div class="sub">
+        <p class="sub-title" data-i18n="webBackupTitle">Backup</p>
+        <p class="help" data-i18n="webBackupHelp"></p>
       </div>
+    </div>
+  </details>
+
+  <details class="card" id="diagCard">
+    <summary><span class="card-titles"><span class="card-title" data-i18n="title">Diagnostics</span><span class="card-line" data-i18n="diagLine"></span></span></summary>
+    <div class="card-body">
+      <p class="help" data-i18n="subtitle"></p>
       <div class="homey-form-group">
-        <input class="homey-form-input" id="webPassword" type="password" autocomplete="new-password" spellcheck="false" data-i18n-label="webPassword">
+        <label class="homey-form-label" for="device" data-i18n="includeDevice">Include device details</label>
+        <select class="homey-form-select" id="device"><option value="" data-i18n="none">None</option></select>
       </div>
       <div class="row">
-        <button class="homey-button-primary-shadow" id="pwSave" data-i18n="webPasswordSave" disabled>Set password</button>
-        <button class="homey-button-secondary-shadow" id="pwRemove" data-i18n="webPasswordRemove" hidden>Remove password</button>
+        <button class="homey-button-primary-small-shadow" id="copy" data-i18n="copy">Copy</button>
+        <button class="homey-button-secondary-small-shadow" id="share" data-i18n="share" hidden>Share</button>
+        <button class="homey-button-secondary-small-shadow" id="refresh" data-i18n="refresh">Refresh</button>
       </div>
-      <p class="homey-form-help status" id="pwStatus" role="status"></p>
-      <p class="homey-form-help" id="pwForgot" data-i18n="webPasswordForgot" hidden></p>
+      <p class="help status" id="status" role="status"></p>
+      <textarea id="report" readonly></textarea>
     </div>
-    <!-- The backup is on the web dashboards page: my.homey.app runs this page in a frame that can't download a file. -->
-    <p class="homey-form-help backup-help" data-i18n="webBackupHelp"></p>
-  </fieldset>
-
-  <fieldset class="homey-form-fieldset">
-    <legend class="homey-form-legend" data-i18n="title">Diagnostics</legend>
-    <p class="homey-form-help" data-i18n="subtitle"></p>
-    <div class="homey-form-group">
-      <label class="homey-form-label" for="device" data-i18n="includeDevice">Include device details</label>
-      <select class="homey-form-select" id="device"><option value="" data-i18n="none">None</option></select>
-    </div>
-    <div class="row">
-      <button class="homey-button-primary-shadow" id="copy" data-i18n="copy">Copy</button>
-      <button class="homey-button-secondary-shadow" id="share" data-i18n="share" hidden>Share</button>
-      <button class="homey-button-secondary-shadow" id="refresh" data-i18n="refresh">Refresh</button>
-    </div>
-    <p class="homey-form-help status" id="status" role="status"></p>
-    <textarea id="report" readonly></textarea>
-  </fieldset>
+  </details>
 
   <script type="text/javascript">
     function onHomeyReady(Homey) {
@@ -170,6 +247,16 @@
       for (const node of document.querySelectorAll('[data-i18n-label]')) {
         node.setAttribute('aria-label', t(node.dataset.i18nLabel));
         node.placeholder = t(node.dataset.i18nLabel);
+      }
+      /** A card's line under its title, ticked when it's set up. */
+      function setLine(id, text, ok) {
+        $(id).textContent = text;
+        $(id).classList.toggle('ok', !!ok);
+      }
+      /** Opens a form in place of the buttons that open it, or closes it. */
+      function showForm(form, actions, on) {
+        form.hidden = !on;
+        actions.hidden = on;
       }
 
       /**
@@ -203,17 +290,26 @@
       const varSave = $('varSave');
       const varRemove = $('varRemove');
       const varStatus = $('varStatus');
-      const varState = $('varState');
+      const varForm = $('varForm');
+      const varActions = $('varActions');
       let busy = false;
+      let keySet = false;
       const syncKeyButtons = () => { varSave.disabled = busy || !varKey.value.trim(); varRemove.disabled = busy; };
+      // Without a key the field shows; with one, Replace key and Remove (Replace key opens the field with Cancel).
+      function showKeyForm(on) {
+        showForm(varForm, varActions, on);
+        $('varCancel').hidden = !keySet;
+        if (!on) varKey.value = '';
+        syncKeyButtons();
+      }
       function showKeyState(message) {
         Homey.api('GET', '/variables-key', null, (err, res) => {
-          if (err) return;
-          const set = !!(res && res.set);
-          varRemove.hidden = !set;
-          varState.hidden = false;
-          varState.classList.toggle('set', set);
-          varState.firstChild.textContent = t(set ? 'varIsSet' : 'varNotSet');
+          if (err) { showKeyForm(!keySet); return; }
+          keySet = !!(res && res.set);
+          $('varState').hidden = keySet;
+          $('varState').textContent = t('varNotSet');
+          setLine('varLine', t(keySet ? 'varIsSet' : 'varLineNone'), keySet);
+          showKeyForm(!keySet);
           if (!message) varStatus.textContent = '';
         });
       }
@@ -248,6 +344,8 @@
       varKey.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !varSave.disabled) varSave.click(); });
       varSave.addEventListener('click', () => { if (varKey.value.trim()) saveKey(varKey.value.trim()); });
       varRemove.addEventListener('click', () => saveKey(''));
+      $('varReplace').addEventListener('click', () => { showKeyForm(true); varStatus.textContent = ''; varKey.focus(); });
+      $('varCancel').addEventListener('click', () => { showKeyForm(false); varStatus.textContent = ''; });
       showKeyState();
 
       // ---- The Keypad's codes: checked and hashed by the app, never sent back. ----
@@ -257,7 +355,6 @@
       const kpCode = $('kpCode');
       const kpAgain = $('kpAgain');
       const kpSave = $('kpSave');
-      const kpCancel = $('kpCancel');
       const kpStatus = $('kpStatus');
       const kpChanging = $('kpChanging');
       let kpEditing = null; // the code whose digits are being changed
@@ -292,16 +389,16 @@
           default: return t('kpBadCode');
         }
       }
-      function codeButton(key, onClick) {
+      function codeButton(key, onClick, kind) {
         const button = document.createElement('button');
-        button.className = 'homey-button-secondary-shadow';
+        button.className = `homey-button-${kind || 'secondary'}-small-shadow`;
         button.textContent = t(key);
         button.addEventListener('click', onClick);
         return button;
       }
       function showCodes(codes) {
         kpList.replaceChildren();
-        $('kpEmpty').hidden = codes.length > 0;
+        setLine('kpLine', codes.length ? codes.map(c => c.name).join(', ') : t('kpNone'));
         for (const c of codes) {
           const row = document.createElement('li');
           const name = document.createElement('span');
@@ -310,7 +407,7 @@
           const digits = document.createElement('span');
           digits.className = 'kp-code-digits';
           digits.textContent = t('kpDigits', { n: c.digits });
-          const remove = codeButton('kpRemove', () => removeCode(c, remove));
+          const remove = codeButton('kpRemove', () => removeCode(c, remove), 'danger');
           row.append(name, digits, codeButton('kpChange', () => startChange(c)), remove);
           kpList.append(row);
         }
@@ -324,10 +421,10 @@
         $('kpNameGroup').hidden = false;
         $('kpCurrentGroup').hidden = true;
         kpChanging.hidden = true;
-        kpCancel.hidden = true;
         kpSave.textContent = t('kpAdd');
         syncCodeButtons();
       }
+      const showCodeForm = on => showForm($('kpForm'), $('kpActions'), on);
       function startChange(c) {
         resetCodeForm();
         kpEditing = c;
@@ -335,9 +432,9 @@
         $('kpCurrentGroup').hidden = false;
         kpChanging.textContent = t('kpChanging', { name: c.name });
         kpChanging.hidden = false;
-        kpCancel.hidden = false;
         kpSave.textContent = t('kpSave');
         kpStatus.textContent = '';
+        showCodeForm(true);
         kpCurrent.focus();
         syncCodeButtons();
       }
@@ -352,6 +449,7 @@
           if (err) { kpStatus.textContent = err.message || String(err); return; }
           if (res && res.ok) {
             resetCodeForm();
+            showCodeForm(false);
             showCodes(res.codes || []);
             kpStatus.textContent = t(changing ? 'kpChanged' : 'kpAdded');
           } else {
@@ -371,32 +469,41 @@
         }
         Homey.api('DELETE', `/keypad-codes/${encodeURIComponent(c.id)}`, null, (err, res) => {
           if (err) { kpStatus.textContent = err.message || String(err); return; }
-          if (kpEditing && kpEditing.id === c.id) resetCodeForm();
+          if (kpEditing && kpEditing.id === c.id) { resetCodeForm(); showCodeForm(false); }
           if (res && res.ok) showCodes(res.codes || []);
           kpStatus.textContent = t(res && res.ok ? 'kpRemoved' : 'kpGone');
         });
       }
+      $('kpNew').addEventListener('click', () => { resetCodeForm(); kpStatus.textContent = ''; showCodeForm(true); kpName.focus(); });
       kpSave.addEventListener('click', () => { if (!kpSave.disabled) saveCode(); });
-      kpCancel.addEventListener('click', () => { resetCodeForm(); kpStatus.textContent = ''; });
+      $('kpCancel').addEventListener('click', () => { resetCodeForm(); showCodeForm(false); kpStatus.textContent = ''; });
       loadCodes();
 
       // ---- Web dashboards: on or off (the app setting), and the page's addresses on the home network and through
       // Homey's cloud (this settings page may be served through the cloud). ----
       const webEnabled = $('webEnabled');
       const webRemote = $('webRemote');
-      const webStatus = $('webStatus');
       const webAddresses = [...document.querySelectorAll('.web-address')];
       let webLoaded = false;
+      let pwSet = false;
+      // Off, or on at home (and away), and whether a password is set.
+      function showWebLine() {
+        let line = t(!webEnabled.checked ? 'webLineOff' : webRemote.checked ? 'webLineAway' : 'webLineHome');
+        if (webEnabled.checked && pwSet) line += ` · ${t('webLinePassword')}`;
+        setLine('webLine', line, webEnabled.checked);
+      }
       // Each address once it's known; the one through the cloud only with Remote access on.
       function showAddresses() {
         for (const block of webAddresses) {
           const known = !!block.querySelector('.web-url').textContent;
           block.hidden = !known || (block.dataset.address === 'remoteUrl' && !webRemote.checked);
         }
+        showWebLine();
       }
       function showWeb(on) {
         webEnabled.checked = on;
         $('webOn').hidden = !on;
+        showWebLine();
         if (on && !webLoaded) {
           webLoaded = true;
           Homey.api('GET', '/web/address', null, (err, res) => {
@@ -420,22 +527,23 @@
         showAddresses();
       });
       // A checkbox for an app setting: saved at once, put back if saving fails.
-      function wireSwitch(box, setting, after) {
+      function wireSwitch(box, setting, status, after) {
         box.addEventListener('change', () => {
           const on = box.checked;
           box.disabled = true;
-          webStatus.textContent = '';
+          status.textContent = '';
           Homey.set(setting, on, (err) => {
             box.disabled = false;
-            if (err) { webStatus.textContent = err.message || String(err); after(!on); return; }
+            if (err) { status.textContent = err.message || String(err); after(!on); return; }
             after(on);
           });
         });
       }
-      wireSwitch(webEnabled, 'webDashboardsEnabled', showWeb);
-      wireSwitch(webRemote, 'webRemoteAccess', (on) => { webRemote.checked = on; showAddresses(); });
+      wireSwitch(webEnabled, 'webDashboardsEnabled', $('webStatus'), showWeb);
+      wireSwitch(webRemote, 'webRemoteAccess', $('webRemoteStatus'), (on) => { webRemote.checked = on; showAddresses(); });
       for (const block of webAddresses) {
         const link = block.querySelector('.web-url');
+        const status = block.querySelector('.status');
         block.querySelector('[data-act="open"]').addEventListener('click', () => {
           if (!link.textContent) return;
           if (typeof Homey.openURL === 'function') Homey.openURL(link.href); else window.open(link.href, '_blank');
@@ -443,14 +551,14 @@
         block.querySelector('[data-act="copy"]').addEventListener('click', async () => {
           if (!link.textContent) return;
           if (await copyText(link.href)) {
-            webStatus.textContent = t('copied');
+            status.textContent = t('copied');
           } else {
             // Not copied: the address selected, to copy by hand.
             const range = document.createRange();
             range.selectNodeContents(link);
             const sel = window.getSelection();
             if (sel) { sel.removeAllRanges(); sel.addRange(range); }
-            webStatus.textContent = '';
+            status.textContent = '';
           }
         });
       }
@@ -458,26 +566,35 @@
       // ---- The web dashboards' password: checked and hashed by the app, never sent back. ----
       const webPassword = $('webPassword');
       const pwSave = $('pwSave');
-      const pwRemove = $('pwRemove');
       const pwStatus = $('pwStatus');
-      const pwState = $('pwState');
       const pwCurrent = $('pwCurrent');
       let pwBusy = false;
-      let pwSet = false;
+      let pwMode = null; // 'set' (a new one) or 'remove', while the form is open
       const syncPasswordButtons = () => {
-        const current = !pwSet || !!pwCurrent.value;
-        pwSave.disabled = pwBusy || !webPassword.value || !current;
-        pwRemove.disabled = pwBusy || !current;
+        pwSave.disabled = pwBusy || (pwMode === 'set' && !webPassword.value) || (pwSet && !pwCurrent.value);
       };
+      // Set password (Change password while one is set) asks for a new one, Remove password only for the current one.
+      function openPasswordForm(mode) {
+        pwMode = mode;
+        webPassword.value = pwCurrent.value = '';
+        $('pwCurrentGroup').hidden = !pwSet;
+        $('pwNewGroup').hidden = mode !== 'set';
+        pwSave.textContent = t(mode === 'set' ? 'webPasswordSave' : 'webPasswordRemove');
+        pwSave.className = `homey-button-${mode === 'set' ? 'primary' : 'danger'}-small-shadow`;
+        pwStatus.textContent = '';
+        showForm($('pwForm'), $('pwActions'), !!mode);
+        if (mode) (pwSet ? pwCurrent : webPassword).focus();
+        syncPasswordButtons();
+      }
       function showPasswordState() {
         Homey.api('GET', '/web/password', null, (err, res) => {
           if (err) return;
           pwSet = !!(res && res.set);
-          pwRemove.hidden = !pwSet;
-          pwState.hidden = !pwSet;
-          $('pwCurrentGroup').hidden = !pwSet;
+          $('pwRemove').hidden = !pwSet;
+          $('pwState').hidden = !pwSet;
           $('pwForgot').hidden = !pwSet;
-          pwState.firstChild.textContent = t('webPasswordIsSet');
+          $('pwSet').textContent = t(pwSet ? 'webPasswordChange' : 'webPasswordSave');
+          showWebLine();
           syncPasswordButtons();
         });
       }
@@ -499,9 +616,7 @@
           syncPasswordButtons();
           if (err) { pwStatus.textContent = err.message || String(err); return; }
           if (res && res.ok) {
-            webPassword.value = '';
-            pwCurrent.value = '';
-            syncPasswordButtons();
+            openPasswordForm(null);
             pwStatus.textContent = t(password ? 'webPasswordSaved' : 'webPasswordRemoved');
             showPasswordState();
           } else {
@@ -509,20 +624,28 @@
           }
         });
       }
-      pwCurrent.addEventListener('input', syncPasswordButtons);
-      pwCurrent.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !pwSave.disabled) pwSave.click(); });
-      webPassword.addEventListener('input', syncPasswordButtons);
-      webPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !pwSave.disabled) pwSave.click(); });
-      pwSave.addEventListener('click', () => { if (webPassword.value) savePassword(webPassword.value); });
-      pwRemove.addEventListener('click', () => savePassword(''));
+      for (const field of [pwCurrent, webPassword]) {
+        field.addEventListener('input', syncPasswordButtons);
+        field.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !pwSave.disabled) pwSave.click(); });
+      }
+      pwSave.addEventListener('click', () => {
+        if (pwSave.disabled) return;
+        if (pwMode === 'set') savePassword(webPassword.value);
+        else if (pwMode === 'remove') savePassword('');
+      });
+      $('pwSet').addEventListener('click', () => openPasswordForm('set'));
+      $('pwRemove').addEventListener('click', () => openPasswordForm('remove'));
+      $('pwCancel').addEventListener('click', () => openPasswordForm(null));
       showPasswordState();
 
-      // ---- Diagnostics ----
+      // ---- Diagnostics: read when its card is first opened. ----
       const select = $('device');
       const report = $('report');
       const status = $('status');
       let devicesListed = false;
+      let diagLoaded = false;
       function load() {
+        diagLoaded = true;
         status.textContent = t('loading');
         const device = select.value;
         Homey.api('GET', `/diagnostics${device ? `?device=${encodeURIComponent(device)}` : ''}`, null, (err, result) => {
@@ -550,12 +673,12 @@
           navigator.share({ title: t('shareTitle'), text: report.value }).catch(() => {});
         });
       }
+      $('diagCard').addEventListener('toggle', () => { if ($('diagCard').open && !diagLoaded) load(); });
       select.addEventListener('change', load);
       $('refresh').addEventListener('click', load);
       $('copy').addEventListener('click', async () => {
         if (await copyText(report.value, report)) status.textContent = t('copied');
       });
-      load();
       Homey.ready();
     }
   </script>

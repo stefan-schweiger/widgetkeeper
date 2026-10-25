@@ -51,6 +51,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Thermostat Presets
 - **Flow cards:** *Run [button]* sets the thermostat as a tap on that button does; the condition *[button] is active* says whether the thermostat matches it, as when the widget lights it; and the trigger *[button] was tapped* starts a Flow once a tap's settings reached the thermostat, with the thermostat and the button's text as tags, also for *Any button*. Each card picks a button of a widget on one of your dashboards and follows its settings; buttons on Homey's own dashboards are listed with an API key that has the Homey permission.
 
+### App settings
+- **Tidier:** API key, Keypad codes, Web dashboards and Diagnostics are each a card folded to one line that says where it stands, such as *A key is saved* or *On · home and away · password set*; tap one to open it. Fields open only when needed (Add code, Replace key, Change password), and the API key's permissions are a short list, each feature beside the box to tick.
+
 ### Lighter on the Homey
 - The Insights Heatmap's recorded on/off history (when motion or a door was seen) moved out of the app settings into the app's own storage, and is saved only when it changes, not every minute.
 - A Media widget switched to another speaker no longer reads every Flow card on each refresh, and large one-off reads, such as every device for a settings list, are let go after a while.
