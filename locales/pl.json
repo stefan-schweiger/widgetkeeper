@@ -357,6 +357,8 @@
     "codeMissing": "Ten kod został usunięty: wybierz inny w ustawieniach widżetu.",
     "noCodes": "Brak kodów: dodaj kod w ustawieniach aplikacji.",
     "enterCode": "Wpisz kod",
+    "codeFor": "Wpisz kod dla: __name__",
+    "codeThenTap": "Wpisz kod, a potem dotknij przycisku",
     "pickButton": "Teraz dotknij przycisku",
     "needsCode": "Wymaga kodu",
     "close": "Zamknij",

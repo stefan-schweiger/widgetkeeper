@@ -357,6 +357,8 @@
     "codeMissing": "This code was removed: pick one in the widget settings.",
     "noCodes": "No codes yet: add one in the app settings.",
     "enterCode": "Enter the code",
+    "codeFor": "Enter the code for __name__",
+    "codeThenTap": "Enter the code, then tap a button",
     "pickButton": "Now tap a button",
     "needsCode": "Needs the code",
     "close": "Close",

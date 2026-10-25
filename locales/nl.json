@@ -357,6 +357,8 @@
     "codeMissing": "Deze code is verwijderd: kies er een in de widget-instellingen.",
     "noCodes": "Nog geen codes: voeg er een toe in de app-instellingen.",
     "enterCode": "Voer de code in",
+    "codeFor": "Voer de code in voor __name__",
+    "codeThenTap": "Voer de code in en tik dan op een knop",
     "pickButton": "Tik nu op een knop",
     "needsCode": "Code nodig",
     "close": "Sluiten",

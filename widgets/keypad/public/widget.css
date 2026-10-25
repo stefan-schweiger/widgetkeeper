@@ -133,6 +133,10 @@ html, body { margin: 0; }
 .kp-dots.err { animation: kp-shake .35s; }
 .kp-dots.checking { animation: kp-pulse 1s ease-in-out infinite; }
 @keyframes kp-pulse { 50% { opacity: .35; } }
+/* The dot the next digit fills, in the button's colour, pulsing while the keypad waits. */
+.kp-dot.next { border-color: var(--wk-c-bright, var(--kp-text)); animation: kp-next 1.2s ease-in-out infinite; }
+@keyframes kp-next { 50% { transform: scale(1.3); } }
+@media (prefers-reduced-motion: reduce) { .kp-dot.next { animation: none; } }
 .kp-close {
   appearance: none; border: 0; padding: 0; margin: 0 -4px 0 0; background: none; color: var(--kp-muted);
   width: 28px; height: 28px; display: grid; place-items: center; flex-shrink: 0; cursor: pointer; -webkit-tap-highlight-color: transparent;
@@ -158,10 +162,14 @@ html, body { margin: 0; }
 .kp-always .kp-stack { grid-column: 1; grid-row: 2; justify-content: flex-start; margin-top: 12px; }
 .kp-always .kp-pad { grid-column: 2; grid-row: 1 / span 2; padding-left: 14px; margin-left: 14px; border-left: 1px solid var(--kp-line); }
 .kp-btn.target { box-shadow: inset 0 0 0 2px var(--wk-c-bright, var(--kp-text)); }
-/* The keypad's half is narrow: the prompt on a line of its own, the dots centred over the keys. */
-.kp-always:not(.kp-compact) .kp-pad-top { flex-wrap: wrap; row-gap: 6px; }
-.kp-always:not(.kp-compact) .kp-pad-label { flex: 1 1 0; }
-.kp-always:not(.kp-compact) .kp-dots { flex: 1 0 100%; justify-content: center; margin-left: 0; }
+/*
+ * Always shown: the prompt (what the code is for) and the dots centred over the keys, as a phone's lock screen asks, the
+ * dots larger (the user found an open keypad didn't say plainly enough that it wanted the code, 2026-10-25).
+ */
+.kp-always .kp-pad-top { flex-wrap: wrap; justify-content: center; row-gap: 8px; margin-bottom: 12px; }
+.kp-always .kp-pad-label { flex: 0 1 auto; max-width: calc(100% - 24px); white-space: normal; text-align: center; } /* beside the icon */
+.kp-always .kp-dots { flex: 1 0 100%; justify-content: center; margin-left: 0; gap: 10px; min-height: 12px; }
+.kp-always .kp-dot { width: 12px; height: 12px; }
 
 /* A message in place of everything (nothing picked, a failed first load) */
 .kp-only { display: none; font-size: var(--kp-fs-small); line-height: var(--kp-lh-small); color: var(--kp-muted); grid-column: 1 / -1; }

@@ -357,6 +357,8 @@
     "codeMissing": "이 코드는 삭제되었습니다. 위젯 설정에서 코드를 선택하세요.",
     "noCodes": "아직 코드가 없습니다. 앱 설정에서 추가하세요.",
     "enterCode": "코드를 입력하세요",
+    "codeFor": "__name__ 코드를 입력하세요",
+    "codeThenTap": "코드를 입력한 다음 버튼을 누르세요",
     "pickButton": "이제 버튼을 누르세요",
     "needsCode": "코드 필요",
     "close": "닫기",

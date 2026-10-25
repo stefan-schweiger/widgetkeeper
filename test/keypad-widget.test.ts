@@ -49,7 +49,7 @@ function widget(settings: Record<string, unknown>, state: any, opts: Record<stri
   const keys = () => [...root.querySelectorAll<HTMLButtonElement>('.kp-key:not(.blank)')];
   const key = (k: string) => keys().find(b => b.getAttribute('aria-label') === ({ back: 'Delete', left: 'Clear' }[k] ?? k))!.click();
   const type = (digits: string) => { for (const k of digits) key(k); };
-  const dots = () => [...root.querySelectorAll('.kp-dot')].map(d => (d.classList.contains('f') ? '●' : '○')).join('');
+  const dots = () => [...root.querySelectorAll('.kp-dot')].map(d => (d.classList.contains('f') ? '●' : d.classList.contains('next') ? '◌' : '○')).join('');
   const label = () => root.querySelector('.kp-pad-label')!.textContent;
   return { w, root, onPress, left, buttons: buttonsShown, press, keys, key, type, dots, label, padOpen: () => root.classList.contains('pad-open') };
 }
@@ -159,9 +159,9 @@ describe('Keypad: Any code', () => {
     press(2);
     expect(padOpen()).toBe(true);
     expect(keys().map(k => k.getAttribute('aria-label'))).toEqual(['1', '2', '3', '4', '5', '6', '7', '8', '9', 'OK', '0', 'Delete']);
-    expect(dots()).toBe('');
+    expect(dots()).toBe('◌'); // the next one, pulsing
     type('47');
-    expect(dots()).toBe('●●');
+    expect(dots()).toBe('●●◌');
     keys().find(k => k.getAttribute('aria-label') === 'OK')!.click(); // under three digits: nothing yet
     expect(onPress).not.toHaveBeenCalled();
     type('1105');
@@ -178,7 +178,7 @@ describe('Keypad: Any code', () => {
     const { press, type, onPress, keys, dots } = widget(anyCode, alarm('armed', { code: { ...ANY, digits: 4 } }));
     press(2);
     expect(keys().map(k => k.getAttribute('aria-label'))).not.toContain('OK');
-    expect(dots()).toBe('○○○○');
+    expect(dots()).toBe('◌○○○');
     type('2580');
     expect(onPress).toHaveBeenCalledWith(expect.objectContaining({ codeId: 'any', code: '2580' }));
   });
@@ -188,7 +188,7 @@ describe('Keypad: Any code', () => {
     const { press, type, keys, label, onPress } = widget(settings, alarm('disarmed', { code: ANY }));
     type('47110');
     expect(onPress).not.toHaveBeenCalled();
-    expect(label()).toBe('Enter the code');
+    expect(label()).toBe('Enter the code, then tap a button');
     keys().find(k => k.getAttribute('aria-label') === 'OK')!.click();
     expect(label()).toBe('Now tap a button');
     press(0);
@@ -269,12 +269,12 @@ describe('Keypad: the keypad on a tap', () => {
     press(2);
     expect(padOpen()).toBe(true);
     expect(label()).toBe('Disarm alarm');
-    expect(dots()).toBe('○○○○');
+    expect(dots()).toBe('◌○○○');
     key('4');
     key('7');
     key('back');
     type('71');
-    expect(dots()).toBe('●●●○');
+    expect(dots()).toBe('●●●◌');
     expect(onPress).not.toHaveBeenCalled();
     key('1');
     expect(onPress).toHaveBeenCalledWith({ flow: 'flow:f1', codeId: 'c1', code: '4711', button: 'Disarm alarm', title: 'Surveillance' });
@@ -310,7 +310,7 @@ describe('Keypad: the keypad on a tap', () => {
     expect(left()[1]).toBe('Wrong code');
     expect(padOpen()).toBe(true);
     await vi.advanceTimersByTimeAsync(700);
-    expect(dots()).toBe('○○○○');
+    expect(dots()).toBe('◌○○○');
     onPress.mockResolvedValueOnce({ ok: true, result: 'wrongCode', left: 2 });
     type('1235');
     await vi.advanceTimersByTimeAsync(0);
@@ -357,14 +357,14 @@ describe('Keypad: the keypad on a tap', () => {
     const { press, dots, padOpen, root, onPress } = widget(ALARM, alarm('armed'));
     press(2);
     for (const k of ['4', '7', 'x']) document.dispatchEvent(new KeyboardEvent('keydown', { key: k }));
-    expect(dots()).toBe('●●○○');
+    expect(dots()).toBe('●●◌○');
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace' }));
-    expect(dots()).toBe('●○○○');
+    expect(dots()).toBe('●◌○○');
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(padOpen()).toBe(false);
     document.dispatchEvent(new KeyboardEvent('keydown', { key: '1' })); // closed: the keys are the page's again
     press(2);
-    expect(dots()).toBe('○○○○');
+    expect(dots()).toBe('◌○○○');
     root.querySelector<HTMLButtonElement>('.kp-close')!.click();
     expect(padOpen()).toBe(false);
     press(2);
@@ -381,7 +381,7 @@ describe('Keypad: the keypad always shown', () => {
     const { root, keys, label, buttons } = widget(always, alarm('armed'));
     expect(root.classList.contains('kp-always')).toBe(true);
     expect(root.classList.contains('pad-open')).toBe(false);
-    expect(label()).toBe('Enter the code');
+    expect(label()).toBe('Enter the code for Disarm alarm'); // the only button behind the code
     expect(root.querySelector('.kp-close')).toBeNull();
     expect(keys().map(k => k.getAttribute('aria-label'))).toEqual(['1', '2', '3', '4', '5', '6', '7', '8', '9', 'Clear', '0', 'Delete']);
     expect(buttons()).toEqual(['Arm on tick red', 'Night purple', 'Disarm alarm code green']);
@@ -392,7 +392,7 @@ describe('Keypad: the keypad always shown', () => {
     type('4711');
     expect(onPress).toHaveBeenCalledWith({ flow: 'flow:f1', codeId: 'c1', code: '4711', button: 'Disarm alarm', title: 'Surveillance' });
     await vi.waitFor(() => expect(buttons()[2]).toBe('Disarm alarm tick green'));
-    expect(dots()).toBe('○○○○');
+    expect(dots()).toBe('◌○○○');
   });
 
   it('with several, the code waits for a button, or a button for the code', async () => {
@@ -407,7 +407,7 @@ describe('Keypad: the keypad always shown', () => {
     const second = widget(settings, alarm('partially_armed'));
     second.press(2);
     expect(second.buttons()[2]).toBe('Disarm alarm target code green');
-    expect(second.label()).toBe('Disarm alarm');
+    expect(second.label()).toBe('Enter the code for Disarm alarm');
     second.press(2); // a second tap lets go
     expect(second.buttons()[2]).toBe('Disarm alarm code green');
     second.press(0);
@@ -420,7 +420,7 @@ describe('Keypad: the keypad always shown', () => {
     type('47');
     press(1);
     expect(onPress).toHaveBeenCalledWith({ source: 'cap:alarm:homealarm_state', value: 'partially_armed', button: 'Night', title: 'Surveillance' });
-    expect(dots()).toBe('●●○○');
+    expect(dots()).toBe('●●◌○');
   });
 
   it('✕ and Escape clear what was typed and the button waiting; so does being left alone', async () => {
@@ -429,13 +429,13 @@ describe('Keypad: the keypad always shown', () => {
     press(0);
     type('47');
     key('left');
-    expect([dots(), buttons()[0]]).toEqual(['○○○○', 'Arm on tick red']);
+    expect([dots(), buttons()[0]]).toEqual(['◌○○○', 'Arm on tick red']);
     type('4');
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-    expect(dots()).toBe('○○○○');
+    expect(dots()).toBe('◌○○○');
     type('47');
     await vi.advanceTimersByTimeAsync(30e3);
-    expect(dots()).toBe('○○○○');
+    expect(dots()).toBe('◌○○○');
   });
 
   it('a wrong code keeps the button waiting and empties the dots', async () => {
@@ -447,7 +447,7 @@ describe('Keypad: the keypad always shown', () => {
     await vi.advanceTimersByTimeAsync(0);
     expect(left()[1]).toBe('Wrong code');
     await vi.advanceTimersByTimeAsync(700);
-    expect([dots(), buttons()[2]]).toEqual(['○○○○', 'Disarm alarm target code green']);
+    expect([dots(), buttons()[2]]).toEqual(['◌○○○', 'Disarm alarm target code green']);
   });
 
   it('without a code picked, there is nothing to type: no keypad', () => {

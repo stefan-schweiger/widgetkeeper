@@ -357,6 +357,8 @@
     "codeMissing": "Koden er fjernet: velg en i widgetinnstillingene.",
     "noCodes": "Ingen koder ennå: legg til en i appinnstillingene.",
     "enterCode": "Tast inn koden",
+    "codeFor": "Tast inn koden for __name__",
+    "codeThenTap": "Tast inn koden, og trykk så på en knapp",
     "pickButton": "Trykk nå på en knapp",
     "needsCode": "Krever koden",
     "close": "Lukk",
