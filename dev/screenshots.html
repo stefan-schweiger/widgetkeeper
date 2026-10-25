@@ -75,6 +75,8 @@
   <script src="showcase-data.js"></script>
   <script src="showcase-mount.js"></script>
   <style>
+    /* Every render is byte-identical between runs: the Keypad's pulsing dot holds still. */
+    .kp-dot.next { animation: none; }
     /* Transparent: the render script screenshots with a transparent default background. */
     html, body { background: transparent !important; }
     body { width: 358px; margin: 0; font-family: Roboto, sans-serif; display: flex; flex-direction: column; gap: 32px; }

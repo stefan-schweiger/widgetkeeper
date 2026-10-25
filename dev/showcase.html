@@ -76,6 +76,8 @@
   <script src="showcase-data.js"></script>
   <script src="showcase-mount.js"></script>
   <style>
+    /* Every render is byte-identical between runs: the Keypad's pulsing dot holds still. */
+    .kp-dot.next { animation: none; }
     /* Transparent around the tablet: the render script screenshots with a transparent default background. */
     html { background: transparent !important; }
     body { margin: 0; padding: 20px 36px 56px; display: inline-block; background: transparent !important; font-family: Roboto, sans-serif; }
