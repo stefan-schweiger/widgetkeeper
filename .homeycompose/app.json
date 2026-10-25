@@ -104,6 +104,10 @@
       "method": "POST",
       "path": "/web/dashboards/:id/copy"
     },
+    "postWebDashboardUnlock": {
+      "method": "POST",
+      "path": "/web/dashboards/:id/unlock"
+    },
     "getWebBackup": {
       "method": "GET",
       "path": "/web/backup"

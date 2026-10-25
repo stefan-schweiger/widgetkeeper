@@ -106,6 +106,7 @@ export default {
       widgets: app.web.widgetTypes(language),
       dashboards: app.web.list(),
       front: app.web.front(),
+      codes: app.keypad.listCodes(), // names and lengths, for a dashboard's code
       maxDashboards: MAX_DASHBOARDS,
       maxSections: MAX_SECTIONS,
       popups: app.popups.all(),
@@ -172,6 +173,18 @@ export default {
     const app = homey.app as WidgetkeeperApp;
     assertWebSession(app, query);
     return app.web.remove(params?.id || '');
+  },
+
+  /**
+   * A dashboard's code (`{code}`), typed to edit it or go back to the front page: `{ok}`, or `{ok: false, reason:
+   * wrongCode (left) | locked (retryAfter) | missing}`. The page asks it; wrong ones count as at a Keypad.
+   */
+  async postWebDashboardUnlock({ homey, query, params, body }: { homey: Homey, query?: Record<string, string>, params: Record<string, string>, body: { code?: unknown } }) {
+    const app = homey.app as WidgetkeeperApp;
+    assertWebSession(app, query);
+    const dashboard = app.web.list().find(d => d.id === params?.id);
+    if (!dashboard) return { ok: false, reason: 'missing' };
+    return app.keypad.unlock(dashboard.code?.id ?? null, body?.code);
   },
 
   /** The front page's edit mode: copies a dashboard right after it; answers `{dashboard, dashboards}`. */

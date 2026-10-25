@@ -55,6 +55,16 @@
     columnNormal: 'Normal',
     columnWide: 'Wide',
     columnFit: 'Fit to window',
+    code: 'Code',
+    codeTitle: 'A Keypad code for editing this dashboard and going back to the dashboards',
+    codeNone: 'No code',
+    codeAny: 'Any code',
+    enterCode: 'Enter the code',
+    codeOk: 'OK',
+    codeDelete: 'Delete',
+    wrongCode: 'Wrong code',
+    triesLeft: 'Wrong code. Tries left: __n__',
+    codeLocked: 'Too many tries. Try again in __s__ s.',
     darkLight: 'Dark or light',
     darkLightText: "Automatic follows each dashboard's theme.",
     background: 'Background',
@@ -216,6 +226,8 @@
   const AWAKE_STORAGE = 'widgetkeeper.web.awake';
   /** Dim, this browser's choice in Settings: a percentage (5 … `MAX_DIM`); absent is off. */
   const DIM_STORAGE = 'widgetkeeper.web.dim';
+  /** A dashboard with a code this browser stays on (its id): going back to the dashboards takes its code first. */
+  const STAY_STORAGE = 'widgetkeeper.web.stay';
   /** The most the page dims: never black, so the bar's pen and Settings stay findable. */
   const MAX_DIM = 80;
   const PREFIX = 'CF2_MESSAGE';
@@ -310,6 +322,8 @@
   /** The bar's icons: 24 px paths, stroked in the text colour. */
   const ICONS = {
     pen: 'M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16v4zM13.5 6.5l4 4',
+    lock: 'M6.5 11h11a1.5 1.5 0 0 1 1.5 1.5v7a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19.5v-7A1.5 1.5 0 0 1 6.5 11zM8 11V7a4 4 0 0 1 8 0v4',
+    backspace: 'M9 6h10.5A1.5 1.5 0 0 1 21 7.5v9a1.5 1.5 0 0 1-1.5 1.5H9l-6-6 6-6zM12 9.5l5 5M17 9.5l-5 5',
     fullScreen: 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5',
     fullScreenExit: 'M9 4v5H4M15 4v5h5M20 15h-5v5M4 15h5v5',
     plus: 'M12 5v14M5 12h14',
@@ -563,6 +577,7 @@
     let dashboards = [];
     let frontPage = { widgets: true, sections: [] }; // the front page's choices (`/web/setup`'s `front`), made in its edit mode
     let current = null; // {dashboard, editing, grid, widgets: Map<widget id, {el, sig}>, covers: Map<`<id>@<column>`, el>}
+    const unlocked = new Set(); // dashboards whose code was typed for their editor, until it's left
     let live = false;
     let socketStarted = false;
     const frames = new Set(); // {widget, iframe, subs: Map<callbackId, event>}
@@ -2058,12 +2073,122 @@
       return copy;
     }
 
+    /**
+     * A dashboard's code, while it locks: `{digits}` (0 while Any code's codes differ in length: OK sends it), or null
+     * without one, or once it was removed (or Any code has none).
+     */
+    function lockOf(d) {
+      const id = d && d.code && d.code.id;
+      const codes = (setup && setup.codes) || [];
+      if (!id) return null;
+      if (id === 'any') return codes.length ? { digits: new Set(codes.map(c => c.digits)).size === 1 ? codes[0].digits : 0 } : null;
+      const c = codes.find(x => x.id === id);
+      return c ? { digits: c.digits } : null;
+    }
+
+    /**
+     * Asks a dashboard's code on a phone's keypad in a dialog, which the app checks, then `then()`. It sends on the last
+     * digit, or with OK while the length isn't known; wrong ones count as at a Keypad.
+     */
+    function askCode(dash, then) {
+      const lock = lockOf(dash);
+      if (!lock) { then(); return; }
+      for (const open of document.querySelectorAll('dialog.wd-code')) /** @type {HTMLDialogElement} */ (open).close(); // one at a time
+      const { d, body } = dialog(dash.name || t('untitled'));
+      d.classList.add('wd-code');
+      const dots = el('div', 'wd-code-dots');
+      dots.setAttribute('aria-hidden', 'true');
+      const note = el('p', 'wd-code-note');
+      note.setAttribute('role', 'status');
+      const keys = el('div', 'wd-code-keys');
+      body.append(el('p', 'wd-code-prompt', t('enterCode')), dots, note, keys);
+      let typed = '';
+      let busy = false;
+      let lockedUntil = 0;
+      let timer = null;
+      const buttons = [];
+      for (const k of ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'ok', '0', 'back']) {
+        if (k === 'ok' && lock.digits) { keys.append(el('span')); continue; }
+        const fn = k === 'ok' || k === 'back';
+        const b = button(fn ? 'wd-code-key fn' : 'wd-code-key', fn ? null : k, () => press(k), fn ? t(k === 'ok' ? 'codeOk' : 'codeDelete') : null);
+        if (fn) b.append(icon(k === 'ok' ? 'check' : 'backspace'));
+        buttons.push(b);
+        keys.append(b);
+      }
+      function draw(error = false) {
+        dots.replaceChildren(...Array.from({ length: lock.digits || typed.length }, (_, i) => el('span', i < typed.length ? 'f' : null)));
+        dots.classList.toggle('err', error);
+        dots.classList.toggle('checking', busy);
+        for (const b of buttons) b.disabled = busy || Date.now() < lockedUntil;
+      }
+      function tick() {
+        clearTimeout(timer);
+        const left = lockedUntil - Date.now();
+        note.textContent = left > 0 ? t('codeLocked', { s: Math.ceil(left / 1000) }) : '';
+        draw();
+        if (left > 0) timer = setTimeout(tick, Math.min(1000, left));
+      }
+      async function send() {
+        busy = true;
+        draw();
+        let res = null;
+        try {
+          res = await request('POST', `/web/dashboards/${encodeURIComponent(dash.id)}/unlock`, { code: typed });
+        } catch (err) {
+          failed(err, t('loadFailed'));
+        }
+        busy = false;
+        typed = '';
+        if (res && res.ok) {
+          d.close();
+          then();
+          return;
+        }
+        if (res && res.reason === 'locked') {
+          lockedUntil = Date.now() + (Number(res.retryAfter) || 30) * 1000;
+          tick();
+          return;
+        }
+        note.textContent = res && res.reason === 'wrongCode' ? (res.left <= 2 ? t('triesLeft', { n: res.left }) : t('wrongCode')) : '';
+        draw(true);
+        setTimeout(() => { if (!busy) draw(); }, 700);
+      }
+      function press(k) {
+        if (busy || Date.now() < lockedUntil) return;
+        if (k === 'ok') {
+          if (typed.length >= 3) send();
+          return;
+        }
+        if (k === 'back') typed = typed.slice(0, -1);
+        else if (typed.length < (lock.digits || 6)) typed += k;
+        note.textContent = '';
+        if (lock.digits && typed.length === lock.digits) send();
+        else draw();
+      }
+      d.addEventListener('keydown', (e) => {
+        if (/^[0-9]$/.test(e.key)) press(e.key);
+        else if (e.key === 'Backspace') press('back');
+        else if (e.key === 'Enter' && !lock.digits) press('ok');
+        else return;
+        e.preventDefault();
+      });
+      d.addEventListener('close', () => clearTimeout(timer));
+      draw();
+      d.showModal();
+    }
+
     function viewBar() {
       const d = current.dashboard;
       const back = el('a', 'wd-btn quiet wd-back', '‹');
       back.href = '#/';
       back.title = t('dashboards');
       back.setAttribute('aria-label', t('dashboards'));
+      // With a code, going back to the dashboards and editing take it first (`route()` holds to it for a typed address).
+      back.addEventListener('click', (e) => {
+        if (!lockOf(d)) return;
+        e.preventDefault();
+        askCode(d, () => { storageSet(STAY_STORAGE, null); location.hash = '#/'; });
+      });
       const items = [back, el('span', 'wd-bar-title', d.name || t('untitled')), el('span', 'wd-spacer'), liveNote()];
       // Safari on an iPad only has the webkit-prefixed calls.
       const doc = /** @type {any} */ (document.documentElement);
@@ -2084,6 +2209,11 @@
       edit.title = t('edit');
       edit.setAttribute('aria-label', t('edit'));
       edit.append(icon('pen'));
+      edit.addEventListener('click', (e) => {
+        if (!lockOf(d)) return;
+        e.preventDefault();
+        askCode(d, () => { unlocked.add(d.id); location.hash = `#/d/${d.id}/edit`; });
+      });
       items.push(edit);
       return bar(...items);
     }
@@ -2194,6 +2324,33 @@
       }
       drawBackground();
 
+      // The code editing and going back to the dashboards take: none, Any code or one of the Keypad codes (only once
+      // there are some, made on the app settings page).
+      const codes = (setup && setup.codes) || [];
+      const codePick = el('span', 'wd-themepick');
+      if (codes.length) {
+        const code = el('select', 'wd-theme');
+        code.setAttribute('aria-label', t('code'));
+        code.title = t('codeTitle');
+        for (const [id, label] of [['', t('codeNone')], ['any', t('codeAny')], ...codes.map(c => [c.id, c.name])]) {
+          const o = el('option', null, label);
+          o.value = id;
+          code.append(o);
+        }
+        code.value = lockOf(d) ? d.code.id : '';
+        const codeIcon = el('span', 'wd-themepick-icon');
+        codeIcon.append(icon('lock'));
+        codePick.append(codeIcon, code);
+        code.addEventListener('change', () => {
+          const c = codes.find(x => x.id === code.value);
+          if (code.value) current.dashboard.code = { id: code.value, name: c ? c.name : t('codeAny') };
+          else delete current.dashboard.code;
+          persist();
+        });
+      } else {
+        codePick.hidden = true;
+      }
+
       // A bin, as on the front page's cards: red once armed.
       const remove = confirmButton('wd-icon wd-bar-delete', icon('trash'), () => deleteDashboard(d.id, () => { location.hash = '#/'; }), t('tapAgain'), t('deleteDashboard'));
 
@@ -2202,7 +2359,7 @@
       // The end of the bar stays together when a narrow window wraps it.
       const end = el('span', 'wd-bar-end');
       end.append(remove, done);
-      const b = bar(name, el('span', 'wd-bar-rule'), cols, widthPick, themePick, bgPick, end);
+      const b = bar(name, el('span', 'wd-bar-rule'), cols, widthPick, themePick, bgPick, codePick, end);
       stepColumns(b);
       return b;
     }
@@ -3975,11 +4132,33 @@
       if (!setup) { start(); return; }
       if (setup.disabled) { renderOff(); return; }
       if (setup.passwordRequired) { renderPassword(); return; }
-      if (location.hash === '#/edit') { renderList(true); return; }
       const m = location.hash.match(/^#\/d\/([A-Za-z0-9_-]+)(\/edit)?$/);
+      // A browser on a dashboard with a code stays there: the dashboards, and its editor, take the code first.
+      const stay = dashboards.find(d => d.id === storageGet(STAY_STORAGE) && lockOf(d));
+      if (!stay && storageGet(STAY_STORAGE)) storageSet(STAY_STORAGE, null);
+      if (!m && stay) {
+        // Asked only for the dashboards themselves: a page opened without an address just shows its dashboard.
+        const to = ['#/', '#/edit'].includes(location.hash) ? location.hash : null;
+        history.replaceState(null, '', `#/d/${stay.id}`);
+        renderDashboard(stay, false);
+        if (to) askCode(stay, () => { storageSet(STAY_STORAGE, null); location.hash = to; });
+        return;
+      }
+      if (location.hash === '#/edit') { renderList(true); return; }
       if (!m) { renderList(); return; }
       const dashboard = dashboards.find(d => d.id === m[1]);
       if (!dashboard) { renderMissing(); return; }
+      if (m[2] && lockOf(dashboard) && !unlocked.has(dashboard.id)) {
+        history.replaceState(null, '', `#/d/${dashboard.id}`);
+        storageSet(STAY_STORAGE, dashboard.id);
+        renderDashboard(dashboard, false);
+        askCode(dashboard, () => { unlocked.add(dashboard.id); location.hash = `#/d/${dashboard.id}/edit`; });
+        return;
+      }
+      if (!m[2]) {
+        unlocked.delete(dashboard.id); // leaving its editor: the next time takes the code again
+        if (lockOf(dashboard)) storageSet(STAY_STORAGE, dashboard.id);
+      }
       renderDashboard(dashboard, !!m[2]);
     }
 

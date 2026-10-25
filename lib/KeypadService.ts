@@ -98,6 +98,9 @@ export type PressState = { codeId: string | null, name: string };
 /** The trigger's `code` argument: an item of `pressCodeItems()`. */
 export type PressArg = { id?: string, name?: string } | null | undefined;
 
+/** A web dashboard's code checked (`unlock()`). */
+export type UnlockResult = { ok: true } | { ok: false, reason: 'wrongCode', left: number } | { ok: false, reason: 'locked', retryAfter: number };
+
 /** The settings page's answer: the codes, or why not. */
 export type CodesResult = { ok: true, codes: CodeInfo[] }
   | { ok: false, reason: 'name' | 'nameTaken' | 'digits' | 'codeTaken' | 'full' | 'missing' | 'wrongCode' }
@@ -489,6 +492,18 @@ export default class KeypadService {
     await device.setCapabilityValue({ capabilityId: source.capabilityId, value });
     this.debug(`Keypad set ${source.capabilityId} of ${device.name} to ${JSON.stringify(value)}`);
     return { result: 'done' };
+  }
+
+  /**
+   * A web dashboard's code, typed to edit it or leave it for the front page: ok, or why not (counted as at a Keypad).
+   * One that no longer locks (removed, or Any code while there's none) lets anyone on.
+   */
+  unlock(codeId: unknown, code: unknown): UnlockResult {
+    const info = this.codeInfo(codeId);
+    if (!info || 'missing' in info) return { ok: true };
+    const refused = this.checkCode(codeId, code);
+    if (!refused || refused.result === 'codeMissing') return { ok: true };
+    return refused.result === 'locked' ? { ok: false, reason: 'locked', retryAfter: refused.retryAfter } : { ok: false, reason: 'wrongCode', left: refused.left };
   }
 
   /** The trigger, after a press that worked; it never fails the press. */
