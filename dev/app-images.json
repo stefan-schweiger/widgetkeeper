@@ -1,12 +1,24 @@
 {
   "theme": "dark",
   "columns": [
-    ["price", "thermostat", "flows"],
-    ["electricity", "timers", "curtains"],
-    ["lights", "media", "clock"],
-    ["weather", "charts", "locks"]
+    ["varpresets", "sensoralarms", "textline"],
+    ["price", "thermostat", "flows", "dayssince", "stack"],
+    [
+      ["keypad", "media"],
+      {
+        "theme": "light",
+        "browser": [
+          ["shortcuts", "electricity", "valuematrix"],
+          ["weather", "lights", "quickactions"],
+          ["cameras", "sparklines", "heatmap"]
+        ]
+      },
+      ["timers", "locks"]
+    ],
+    ["clock", "curtains", "charts", "values", "sensordots"],
+    ["webpage", "lightrooms", "roomhealth", "variables", "pollen"]
   ],
-  "columnWidth": 0.3,
+  "columnWidth": 0.22,
   "gap": 64,
   "stagger": 160,
   "tilt": -8,

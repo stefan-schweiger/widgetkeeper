@@ -3,13 +3,18 @@ import { describe, expect, it } from 'vitest';
 
 // The App Store images are rendered from the widget previews by `npm run app-images` (scripts/app-images.mjs).
 const config = JSON.parse(readFileSync('dev/app-images.json', 'utf8'));
+// A column's item: a widget id, a row of ids, or the browser window with columns of its own (and maybe its own theme).
+type Item = string | string[] | { browser: string[][], span?: number, theme?: string };
+const previews = (config.columns as Item[][]).flat().flatMap(item => typeof item === 'string' || Array.isArray(item)
+  ? [item].flat().map(id => ({ id, theme: config.theme }))
+  : item.browser.flat().map(id => ({ id, theme: item.theme ?? config.theme })));
 
 describe('app store images', () => {
   it('are made from widgets that have a preview, each once', () => {
-    const ids: string[] = config.columns.flat();
+    const ids = previews.map(p => p.id);
     expect(ids.length).toBeGreaterThan(0);
     expect(new Set(ids).size).toBe(ids.length);
-    for (const id of ids) expect(existsSync(`widgets/${id}/preview-${config.theme}.png`), id).toBe(true);
+    for (const { id, theme } of previews) expect(existsSync(`widgets/${id}/preview-${theme}.png`), id).toBe(true);
     expect(config.background.stops.length).toBeGreaterThanOrEqual(2);
   });
 
