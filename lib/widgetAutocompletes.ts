@@ -13,6 +13,7 @@ const VALUE_SLOTS = [1, 2, 3, 4, 5, 6];
 const VARIABLE_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const PRESET_SLOTS = [1, 2, 3, 4];
 const FLOW_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8];
+const KEYPAD_BUTTONS = [1, 2, 3];
 const SHORTCUT_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8];
 const MEDIA_BUTTONS = [1, 2, 3, 4, 5, 6, 7, 8];
 const DAYS_SINCE_COUNTERS = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -69,6 +70,16 @@ export function widgetAutocompletes(app: WidgetkeeperApp): Record<string, Record
   for (const n of FLOW_SLOTS) {
     add('flows', `flow${n}`, query => app.flows.listFlows(query));
     add('flows', `icon${n}`, async query => app.flows.listIcons(query));
+  }
+
+  // Keypad: the state (a variable or a device value), the code, then each button's Flow, its value (read from the state)
+  // and its icon.
+  add('keypad', 'state', query => app.keypad.listSources(query));
+  add('keypad', 'code', async query => app.keypad.codeItems(query));
+  for (const n of KEYPAD_BUTTONS) {
+    add('keypad', `flow${n}`, query => app.flows.listFlows(query));
+    add('keypad', `value${n}`, (query, settings) => app.keypad.listStateValues(settings?.state?.id, query));
+    add('keypad', `icon${n}`, async query => app.flows.listIcons(query, { none: true }));
   }
 
   // Dashboard Shortcuts: each tile's web dashboard and icon.

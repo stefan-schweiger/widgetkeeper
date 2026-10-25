@@ -106,6 +106,10 @@ const ROUTES: Route[] = [
   ['variables', 'POST', '/set', {}, { id: 'v1', value: true }, [['variables.set', ['v1', true]]]],
   setName('variables'),
   ['varpresets', 'GET', '/state', { id: 'v1' }, {}, [['variables.getState', [['v1']]]]],
+  ['keypad', 'GET', '/state', { source: 'cap:d1:homealarm_state', flows: 'flow:f1,,advanced:a2' }, {},
+    [['keypad.getState', ['cap:d1:homealarm_state', ['flow:f1', 'advanced:a2']]]]],
+  ['keypad', 'POST', '/press', {}, { flow: 'flow:f1', codeId: 'code:x', code: '1234' },
+    [['keypad.press', [{ flow: 'flow:f1', codeId: 'code:x', code: '1234' }]]]],
   ['varpresets', 'POST', '/set', {}, { id: 'v1', value: 3 }, [['variables.set', ['v1', 3]]]],
   ['weather', 'GET', '/forecast', {}, {}, [['weather.getForecast', []]]],
   ['webpage', 'GET', '/location', {}, {}, []],
@@ -167,7 +171,7 @@ describe('widget routes: from the request to the service', () => {
 
 describe('widget autocompletes: from the setting to the service', () => {
   const settings = {
-    device: { id: 'd1' }, variable: { id: 'v1' }, slot3: { id: 'd3:measure_power' },
+    device: { id: 'd1' }, variable: { id: 'v1' }, slot3: { id: 'd3:measure_power' }, state: { id: 'var:v1' },
   };
 
   /** Each listener whose list depends on another setting, and the call it makes. */
@@ -178,6 +182,7 @@ describe('widget autocompletes: from the setting to the service', () => {
     ['heatmap', 'capability', ['heatmap.listCapabilities', ['d1', 'q']]],
     ['values', 'second3', ['values.listSecondValues', ['d3:measure_power', 'q', 3]]],
     ['varpresets', 'value2', ['variables.listPresetValues', ['v1', 'q']]],
+    ['keypad', 'value3', ['keypad.listStateValues', ['var:v1', 'q']]],
     ['media', 'button2', ['media.listButtons', ['d1', 'q']]],
     ['textline', 'variable', ['variables.listVariables', ['q', { types: ['string'] }]]],
   ];

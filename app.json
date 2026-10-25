@@ -10692,6 +10692,1067 @@
       },
       "id": "heatmap"
     },
+    "keypad": {
+      "name": {
+        "en": "Keypad",
+        "nl": "Codepaneel",
+        "de": "Tastenfeld",
+        "fr": "Clavier à code",
+        "it": "Tastierino",
+        "sv": "Knappsats",
+        "no": "Kodepanel",
+        "es": "Teclado de código",
+        "da": "Kodepanel",
+        "ru": "Кодовая панель",
+        "pl": "Klawiatura kodowa",
+        "ko": "키패드",
+        "ar": "لوحة الرمز"
+      },
+      "height": 164,
+      "transparent": false,
+      "settings": [
+        {
+          "id": "title",
+          "type": "text",
+          "title": {
+            "en": "Title",
+            "nl": "Titel",
+            "de": "Titel",
+            "fr": "Titre",
+            "it": "Titolo",
+            "sv": "Rubrik",
+            "no": "Tittel",
+            "es": "Título",
+            "da": "Titel",
+            "ru": "Заголовок",
+            "pl": "Tytuł",
+            "ko": "제목",
+            "ar": "العنوان"
+          },
+          "hint": {
+            "en": "Shown in place of the device’s or variable’s name. Leave empty for the name.",
+            "nl": "Getoond in plaats van de naam van het apparaat of de variabele. Laat leeg voor de naam.",
+            "de": "Wird statt des Namens des Geräts oder der Variable angezeigt. Leer lassen für den Namen.",
+            "fr": "Affiché à la place du nom de l’appareil ou de la variable. Laissez vide pour le nom.",
+            "it": "Mostrato al posto del nome del dispositivo o della variabile. Lascia vuoto per il nome.",
+            "sv": "Visas i stället för enhetens eller variabelns namn. Lämna tomt för namnet.",
+            "no": "Vises i stedet for navnet på enheten eller variabelen. La stå tomt for navnet.",
+            "es": "Se muestra en lugar del nombre del dispositivo o de la variable. Déjalo vacío para el nombre.",
+            "da": "Vises i stedet for enhedens eller variablens navn. Lad den være tom for navnet.",
+            "ru": "Показывается вместо имени устройства или переменной. Оставьте пустым для имени.",
+            "pl": "Wyświetlany zamiast nazwy urządzenia lub zmiennej. Zostaw puste, aby była nazwa.",
+            "ko": "기기 또는 변수 이름 대신 표시됩니다. 비워 두면 이름이 표시됩니다.",
+            "ar": "يظهر بدل اسم الجهاز أو المتغير. اتركه فارغًا لإظهار الاسم."
+          },
+          "value": ""
+        },
+        {
+          "id": "state",
+          "type": "autocomplete",
+          "title": {
+            "en": "State from",
+            "nl": "Status van",
+            "de": "Zustand aus",
+            "fr": "État depuis",
+            "it": "Stato da",
+            "sv": "Läge från",
+            "no": "Tilstand fra",
+            "es": "Estado de",
+            "da": "Tilstand fra",
+            "ru": "Состояние из",
+            "pl": "Stan z",
+            "ko": "상태 가져오기",
+            "ar": "الحالة من"
+          },
+          "hint": {
+            "en": "Optional: a device value or a Logic variable, shown on the left. The button with its value is ticked. Pick this before the buttons’ values.",
+            "nl": "Optioneel: een apparaatwaarde of een Logica-variabele, links getoond. De knop met die waarde krijgt een vinkje. Kies dit vóór de waarden van de knoppen.",
+            "de": "Optional: ein Gerätewert oder eine Logik-Variable, links angezeigt. Die Taste mit diesem Wert bekommt ein Häkchen. Vor den Werten der Tasten auswählen.",
+            "fr": "Facultatif : une valeur d’appareil ou une variable Logique, affichée à gauche. Le bouton qui a cette valeur est coché. À choisir avant les valeurs des boutons.",
+            "it": "Facoltativo: un valore di un dispositivo o una variabile Logica, mostrato a sinistra. Il pulsante con quel valore ha la spunta. Sceglilo prima dei valori dei pulsanti.",
+            "sv": "Valfritt: ett enhetsvärde eller en Logik-variabel som visas till vänster. Knappen med det värdet bockas för. Välj det före knapparnas värden.",
+            "no": "Valgfritt: en enhetsverdi eller en Logikk-variabel, vist til venstre. Knappen med den verdien får en hake. Velg dette før knappenes verdier.",
+            "es": "Opcional: un valor de un dispositivo o una variable de Lógica, mostrado a la izquierda. El botón con ese valor queda marcado. Elígelo antes que los valores de los botones.",
+            "da": "Valgfrit: en enhedsværdi eller en Logik-variabel, vist til venstre. Knappen med den værdi får et flueben. Vælg den før knappernes værdier.",
+            "ru": "Необязательно: значение устройства или переменная Логики, показывается слева. Кнопка с этим значением отмечается галочкой. Выберите это до значений кнопок.",
+            "pl": "Opcjonalnie: wartość urządzenia lub zmienna Logiki, widoczna po lewej. Przycisk z tą wartością jest zaznaczony. Wybierz to przed wartościami przycisków.",
+            "ko": "선택 사항: 왼쪽에 표시할 기기 값 또는 로직 변수입니다. 이 값을 가진 버튼에 체크 표시가 됩니다. 버튼 값보다 먼저 선택하세요.",
+            "ar": "اختياري: قيمة جهاز أو متغير منطق، تظهر على اليسار. يُعلَّم الزر الذي يحمل قيمته. اختره قبل قيم الأزرار."
+          }
+        },
+        {
+          "id": "code",
+          "type": "autocomplete",
+          "title": {
+            "en": "Code",
+            "nl": "Code",
+            "de": "Code",
+            "fr": "Code",
+            "it": "Codice",
+            "sv": "Kod",
+            "no": "Kode",
+            "es": "Código",
+            "da": "Kode",
+            "ru": "Код",
+            "pl": "Kod",
+            "ko": "코드",
+            "ar": "الرمز"
+          },
+          "hint": {
+            "en": "Type 3 to 6 digits, then pick the code. Only a fingerprint of it is kept. Buttons with Needs the code on ask for it.",
+            "nl": "Typ 3 tot 6 cijfers en kies dan de code. Alleen een vingerafdruk ervan wordt bewaard. Knoppen met Code nodig aan vragen erom.",
+            "de": "Tippe 3 bis 6 Ziffern und wähle dann den Code. Nur ein Fingerabdruck davon wird gespeichert. Tasten mit eingeschaltetem Code nötig fragen danach.",
+            "fr": "Tapez 3 à 6 chiffres, puis choisissez le code. Seule une empreinte en est gardée. Les boutons avec Code requis activé le demandent.",
+            "it": "Digita da 3 a 6 cifre, poi scegli il codice. Ne viene conservata solo un’impronta. I pulsanti con Richiede il codice attivo lo chiedono.",
+            "sv": "Skriv 3 till 6 siffror och välj sedan koden. Bara ett fingeravtryck av den sparas. Knappar med Kräver koden på frågar efter den.",
+            "no": "Skriv 3 til 6 sifre, og velg deretter koden. Bare et fingeravtrykk av den lagres. Knapper med Krever koden på spør etter den.",
+            "es": "Escribe de 3 a 6 dígitos y elige el código. Solo se guarda una huella de él. Los botones con Pide el código activado lo piden.",
+            "da": "Skriv 3 til 6 cifre, og vælg derefter koden. Kun et fingeraftryk af den gemmes. Knapper med Kræver koden slået til beder om den.",
+            "ru": "Введите от 3 до 6 цифр и выберите код. Хранится только его отпечаток. Кнопки с включённым «Нужен код» запрашивают его.",
+            "pl": "Wpisz od 3 do 6 cyfr, a potem wybierz kod. Przechowywany jest tylko jego odcisk. Przyciski z włączonym Wymaga kodu o niego proszą.",
+            "ko": "숫자 3~6자리를 입력한 뒤 코드를 선택하세요. 코드의 지문만 저장됩니다. 코드 필요가 켜진 버튼에서 코드를 묻습니다.",
+            "ar": "اكتب من 3 إلى 6 أرقام ثم اختر الرمز. تُحفظ بصمته فقط. تطلبه الأزرار التي فُعّل فيها يتطلب الرمز."
+          }
+        },
+        {
+          "id": "layout",
+          "type": "dropdown",
+          "title": {
+            "en": "Layout",
+            "nl": "Indeling",
+            "de": "Layout",
+            "fr": "Disposition",
+            "it": "Layout",
+            "sv": "Layout",
+            "no": "Oppsett",
+            "es": "Diseño",
+            "da": "Layout",
+            "ru": "Макет",
+            "pl": "Układ",
+            "ko": "레이아웃",
+            "ar": "التخطيط"
+          },
+          "value": "standard",
+          "values": [
+            {
+              "id": "standard",
+              "title": {
+                "en": "Standard",
+                "nl": "Standaard",
+                "de": "Standard",
+                "fr": "Standard",
+                "it": "Standard",
+                "sv": "Standard",
+                "no": "Standard",
+                "es": "Estándar",
+                "da": "Standard",
+                "ru": "Стандартный",
+                "pl": "Standardowy",
+                "ko": "기본",
+                "ar": "قياسي"
+              }
+            },
+            {
+              "id": "compact",
+              "title": {
+                "en": "Compact",
+                "nl": "Compact",
+                "de": "Kompakt",
+                "fr": "Compacte",
+                "it": "Compatto",
+                "sv": "Kompakt",
+                "no": "Kompakt",
+                "es": "Compacto",
+                "da": "Kompakt",
+                "ru": "Компактный",
+                "pl": "Kompaktowy",
+                "ko": "컴팩트",
+                "ar": "مضغوط"
+              }
+            }
+          ]
+        },
+        {
+          "id": "colorStyle",
+          "type": "dropdown",
+          "title": {
+            "en": "Colour style",
+            "nl": "Kleurstijl",
+            "de": "Farbstil",
+            "fr": "Style de couleur",
+            "it": "Stile colori",
+            "sv": "Färgstil",
+            "no": "Fargestil",
+            "es": "Estilo de color",
+            "da": "Farvestil",
+            "ru": "Цветовой стиль",
+            "pl": "Styl kolorów",
+            "ko": "색상 스타일",
+            "ar": "نمط الألوان"
+          },
+          "hint": {
+            "en": "Vivid fills the ticked button with a darker shade of its colour and white text.",
+            "nl": "Levendig vult de aangevinkte knop met een donkerdere tint van zijn kleur en witte tekst.",
+            "de": "Kräftig füllt die abgehakte Taste mit einem dunkleren Ton ihrer Farbe und weißer Schrift.",
+            "fr": "Vives remplit le bouton coché d’une teinte plus foncée de sa couleur, avec un texte blanc.",
+            "it": "Vivaci riempie il pulsante spuntato con una tonalità più scura del suo colore e testo bianco.",
+            "sv": "Livfulla fyller den förbockade knappen med en mörkare nyans av dess färg och vit text.",
+            "no": "Livlige fyller den avhakede knappen med en mørkere nyanse av fargen og hvit tekst.",
+            "es": "Vivos rellena el botón marcado con un tono más oscuro de su color y texto blanco.",
+            "da": "Livlige fylder den afkrydsede knap med en mørkere nuance af dens farve og hvid tekst.",
+            "ru": "«Яркие» заливают отмеченную кнопку более тёмным оттенком её цвета с белым текстом.",
+            "pl": "Żywe wypełniają zaznaczony przycisk ciemniejszym odcieniem jego koloru z białym tekstem.",
+            "ko": "선명하게는 체크된 버튼을 그 색의 더 어두운 색조와 흰색 글자로 채웁니다.",
+            "ar": "«زاهية» تملأ الزر المعلَّم بدرجة أغمق من لونه ونص أبيض."
+          },
+          "value": "soft",
+          "values": [
+            {
+              "id": "soft",
+              "title": {
+                "en": "Muted",
+                "nl": "Gedempt",
+                "de": "Gedämpft",
+                "fr": "Atténuées",
+                "it": "Smorzati",
+                "sv": "Dämpade",
+                "no": "Dempede",
+                "es": "Suaves",
+                "da": "Dæmpede",
+                "ru": "Приглушённые",
+                "pl": "Stonowane",
+                "ko": "차분하게",
+                "ar": "هادئة"
+              }
+            },
+            {
+              "id": "deep",
+              "title": {
+                "en": "Vivid",
+                "nl": "Levendig",
+                "de": "Kräftig",
+                "fr": "Vives",
+                "it": "Vivaci",
+                "sv": "Livfulla",
+                "no": "Livlige",
+                "es": "Vivos",
+                "da": "Livlige",
+                "ru": "Яркие",
+                "pl": "Żywe",
+                "ko": "선명하게",
+                "ar": "زاهية"
+              }
+            }
+          ]
+        },
+        {
+          "id": "flow1",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 1: flow",
+            "nl": "Knop 1: flow",
+            "de": "Button 1: Flow",
+            "fr": "Bouton 1: flow",
+            "it": "Pulsante 1: flow",
+            "sv": "Knapp 1: flöde",
+            "no": "Knapp 1: flyt",
+            "es": "Botón 1: flujo",
+            "da": "Knap 1: flow",
+            "ru": "Кнопка 1: поток",
+            "pl": "Przycisk 1: flow",
+            "ko": "버튼 1: 플로우",
+            "ar": "الزر 1: التدفق"
+          },
+          "hint": {
+            "en": "A Flow to start. Without one, the button sets the state to its value below. To start Flows, add an API key with the Start Flows permission in Widgetkeeper’s app settings.",
+            "nl": "Een flow om te starten. Zonder flow zet de knop de status op zijn waarde hieronder. Om flows te starten, voeg je in de app-instellingen van Widgetkeeper een API-sleutel toe met het recht Flows starten.",
+            "de": "Ein Flow zum Starten. Ohne Flow setzt die Taste den Zustand auf ihren Wert darunter. Um Flows zu starten, füge in den App-Einstellungen von Widgetkeeper einen API-Schlüssel hinzu, mit dem Recht Flows starten.",
+            "fr": "Un flow à lancer. Sans flow, le bouton met l’état à sa valeur ci-dessous. Pour lancer des flows, ajoutez une clé API avec le droit Lancer les Flows dans les réglages de l’app Widgetkeeper.",
+            "it": "Un flow da avviare. Senza flow, il pulsante imposta lo stato al suo valore qui sotto. Per avviare i flow, aggiungi una chiave API con il permesso Avvia i Flow nelle impostazioni dell’app Widgetkeeper.",
+            "sv": "Ett flöde att starta. Utan flöde sätter knappen läget till sitt värde nedan. Lägg till en API-nyckel med behörigheten Starta Flows i Widgetkeepers appinställningar för att starta flöden.",
+            "no": "En flyt som skal startes. Uten flyt setter knappen tilstanden til verdien under. Legg til en API-nøkkel med tillatelsen Start Flows i Widgetkeepers appinnstillinger for å starte flyter.",
+            "es": "Un flujo que iniciar. Sin flujo, el botón pone el estado en su valor de abajo. Para iniciar flujos, añade una clave API con el permiso Iniciar Flows en los ajustes de la app Widgetkeeper.",
+            "da": "Et flow, der skal startes. Uden flow sætter knappen tilstanden til sin værdi nedenfor. Tilføj en API-nøgle med tilladelsen Start Flows i Widgetkeepers app-indstillinger for at starte flows.",
+            "ru": "Поток для запуска. Без него кнопка устанавливает состояние в своё значение ниже. Чтобы запускать потоки, добавьте ключ API с правом Запустить Flow в настройках приложения Widgetkeeper.",
+            "pl": "Flow do uruchomienia. Bez niego przycisk ustawia stan na swoją wartość poniżej. Aby uruchamiać Flow, dodaj klucz API z uprawnieniem Rozpoczynanie Flow w ustawieniach aplikacji Widgetkeeper.",
+            "ko": "시작할 플로우입니다. 없으면 버튼이 상태를 아래 값으로 설정합니다. 플로우를 시작하려면 Widgetkeeper 앱 설정에서 Flow 시작 권한이 있는 API 키를 추가하세요.",
+            "ar": "تدفق للتشغيل. بدونه يضبط الزر الحالة على قيمته أدناه. لتشغيل التدفقات، أضف مفتاح API بإذن بدء Flows في إعدادات تطبيق Widgetkeeper."
+          }
+        },
+        {
+          "id": "value1",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Value",
+            "nl": "  – Waarde",
+            "de": "  – Wert",
+            "fr": "  – Valeur",
+            "it": "  – Valore",
+            "sv": "  – Värde",
+            "no": "  – Verdi",
+            "es": "  – Valor",
+            "da": "  – Værdi",
+            "ru": "  – Значение",
+            "pl": "  – Wartość",
+            "ko": "  – 값",
+            "ar": "  – القيمة"
+          },
+          "hint": {
+            "en": "The state’s value this button stands for: it’s ticked while the state has it, and without a Flow it sets it. Pick State from first.",
+            "nl": "De waarde van de status waar deze knop voor staat: hij krijgt een vinkje zolang de status die heeft, en zonder flow stelt hij hem in. Kies eerst Status van.",
+            "de": "Der Wert des Zustands, für den diese Taste steht: Sie hat ein Häkchen, solange der Zustand ihn hat, und ohne Flow setzt sie ihn. Zuerst Zustand aus wählen.",
+            "fr": "La valeur de l’état que ce bouton représente : il est coché tant que l’état l’a, et sans flow il la règle. Choisissez d’abord État depuis.",
+            "it": "Il valore dello stato che questo pulsante rappresenta: ha la spunta finché lo stato ce l’ha e, senza flow, lo imposta. Scegli prima Stato da.",
+            "sv": "Värdet på läget som knappen står för: den bockas för så länge läget har det, och utan flöde sätter den det. Välj Läge från först.",
+            "no": "Verdien av tilstanden som knappen står for: den får hake så lenge tilstanden har den, og uten flyt setter den den. Velg Tilstand fra først.",
+            "es": "El valor del estado que representa este botón: queda marcado mientras el estado lo tenga y, sin flujo, lo pone. Elige primero Estado de.",
+            "da": "Værdien af tilstanden, som knappen står for: den har flueben, så længe tilstanden har den, og uden flow sætter den den. Vælg Tilstand fra først.",
+            "ru": "Значение состояния, которое обозначает эта кнопка: она отмечена, пока состояние его имеет, а без потока устанавливает его. Сначала выберите «Состояние из».",
+            "pl": "Wartość stanu, którą oznacza ten przycisk: jest zaznaczony, dopóki stan ją ma, a bez Flow ją ustawia. Najpierw wybierz Stan z.",
+            "ko": "이 버튼이 나타내는 상태 값입니다. 상태가 이 값이면 체크되고, 플로우가 없으면 이 값으로 설정합니다. 먼저 상태 가져오기를 선택하세요.",
+            "ar": "قيمة الحالة التي يمثّلها هذا الزر: يُعلَّم ما دامت الحالة عليها، ومن دون تدفق يضبطها. اختر الحالة من أولًا."
+          }
+        },
+        {
+          "id": "label1",
+          "type": "text",
+          "title": {
+            "en": "  – Label",
+            "nl": "  – Label",
+            "de": "  – Beschriftung",
+            "fr": "  – Libellé",
+            "it": "  – Etichetta",
+            "sv": "  – Etikett",
+            "no": "  – Etikett",
+            "es": "  – Etiqueta",
+            "da": "  – Etiket",
+            "ru": "  – Подпись",
+            "pl": "  – Etykieta",
+            "ko": "  – 레이블",
+            "ar": "  – التسمية"
+          },
+          "hint": {
+            "en": "Optional. Leave empty for the Flow’s name or the value.",
+            "nl": "Optioneel. Laat leeg voor de naam van de flow of de waarde.",
+            "de": "Optional. Leer lassen für den Namen des Flows oder den Wert.",
+            "fr": "Facultatif. Laissez vide pour le nom du flow ou la valeur.",
+            "it": "Facoltativo. Lascia vuoto per il nome del flow o il valore.",
+            "sv": "Valfritt. Lämna tomt för flödets namn eller värdet.",
+            "no": "Valgfritt. La stå tomt for flytens navn eller verdien.",
+            "es": "Opcional. Déjalo vacío para el nombre del flujo o el valor.",
+            "da": "Valgfrit. Lad den være tom for flowets navn eller værdien.",
+            "ru": "Необязательно. Оставьте пустым для имени потока или значения.",
+            "pl": "Opcjonalnie. Zostaw puste, aby była nazwa Flow lub wartość.",
+            "ko": "선택 사항입니다. 비워 두면 플로우 이름이나 값이 표시됩니다.",
+            "ar": "اختياري. اتركه فارغًا لإظهار اسم التدفق أو القيمة."
+          },
+          "value": ""
+        },
+        {
+          "id": "icon1",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
+          "id": "color1",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Colour",
+            "nl": "  – Kleur",
+            "de": "  – Farbe",
+            "fr": "  – Couleur",
+            "it": "  – Colore",
+            "sv": "  – Färg",
+            "no": "  – Farge",
+            "es": "  – Color",
+            "da": "  – Farve",
+            "ru": "  – Цвет",
+            "pl": "  – Kolor",
+            "ko": "  – 색상",
+            "ar": "  – اللون"
+          },
+          "value": "blue",
+          "values": [
+            {
+              "id": "blue",
+              "title": {
+                "en": "Blue",
+                "nl": "Blauw",
+                "de": "Blau",
+                "fr": "Bleu",
+                "it": "Blu",
+                "sv": "Blå",
+                "no": "Blå",
+                "es": "Azul",
+                "da": "Blå",
+                "ru": "Синий",
+                "pl": "Niebieski",
+                "ko": "파랑",
+                "ar": "أزرق"
+              }
+            },
+            {
+              "id": "red",
+              "title": {
+                "en": "Red",
+                "nl": "Rood",
+                "de": "Rot",
+                "fr": "Rouge",
+                "it": "Rosso",
+                "sv": "Röd",
+                "no": "Rød",
+                "es": "Rojo",
+                "da": "Rød",
+                "ru": "Красный",
+                "pl": "Czerwony",
+                "ko": "빨강",
+                "ar": "أحمر"
+              }
+            },
+            {
+              "id": "orange",
+              "title": {
+                "en": "Orange",
+                "nl": "Oranje",
+                "de": "Orange",
+                "fr": "Orange",
+                "it": "Arancione",
+                "sv": "Orange",
+                "no": "Oransje",
+                "es": "Naranja",
+                "da": "Orange",
+                "ru": "Оранжевый",
+                "pl": "Pomarańczowy",
+                "ko": "주황",
+                "ar": "برتقالي"
+              }
+            },
+            {
+              "id": "yellow",
+              "title": {
+                "en": "Yellow",
+                "nl": "Geel",
+                "de": "Gelb",
+                "fr": "Jaune",
+                "it": "Giallo",
+                "sv": "Gul",
+                "no": "Gul",
+                "es": "Amarillo",
+                "da": "Gul",
+                "ru": "Жёлтый",
+                "pl": "Żółty",
+                "ko": "노랑",
+                "ar": "أصفر"
+              }
+            },
+            {
+              "id": "green",
+              "title": {
+                "en": "Green",
+                "nl": "Groen",
+                "de": "Grün",
+                "fr": "Vert",
+                "it": "Verde",
+                "sv": "Grön",
+                "no": "Grønn",
+                "es": "Verde",
+                "da": "Grøn",
+                "ru": "Зелёный",
+                "pl": "Zielony",
+                "ko": "초록",
+                "ar": "أخضر"
+              }
+            },
+            {
+              "id": "purple",
+              "title": {
+                "en": "Purple",
+                "nl": "Paars",
+                "de": "Lila",
+                "fr": "Violet",
+                "it": "Viola",
+                "sv": "Lila",
+                "no": "Lilla",
+                "es": "Morado",
+                "da": "Lilla",
+                "ru": "Фиолетовый",
+                "pl": "Fioletowy",
+                "ko": "보라",
+                "ar": "بنفسجي"
+              }
+            },
+            {
+              "id": "grey",
+              "title": {
+                "en": "Grey",
+                "nl": "Grijs",
+                "de": "Grau",
+                "fr": "Gris",
+                "it": "Grigio",
+                "sv": "Grå",
+                "no": "Grå",
+                "es": "Gris",
+                "da": "Grå",
+                "ru": "Серый",
+                "pl": "Szary",
+                "ko": "회색",
+                "ar": "رمادي"
+              }
+            }
+          ]
+        },
+        {
+          "id": "code1",
+          "type": "checkbox",
+          "title": {
+            "en": "  – Needs the code",
+            "nl": "  – Code nodig",
+            "de": "  – Code nötig",
+            "fr": "  – Code requis",
+            "it": "  – Richiede il codice",
+            "sv": "  – Kräver koden",
+            "no": "  – Krever koden",
+            "es": "  – Pide el código",
+            "da": "  – Kræver koden",
+            "ru": "  – Нужен код",
+            "pl": "  – Wymaga kodu",
+            "ko": "  – 코드 필요",
+            "ar": "  – يتطلب الرمز"
+          },
+          "hint": {
+            "en": "Asks for the code first, when one is set above.",
+            "nl": "Vraagt eerst om de code, als er hierboven een is ingesteld.",
+            "de": "Fragt zuerst nach dem Code, wenn oben einer festgelegt ist.",
+            "fr": "Demande d’abord le code, s’il y en a un ci-dessus.",
+            "it": "Chiede prima il codice, se ne è impostato uno sopra.",
+            "sv": "Frågar först efter koden, om en är inställd ovan.",
+            "no": "Spør først etter koden, hvis en er satt over.",
+            "es": "Pide primero el código, si hay uno puesto arriba.",
+            "da": "Beder først om koden, hvis der er sat en ovenfor.",
+            "ru": "Сначала запрашивает код, если он задан выше.",
+            "pl": "Najpierw prosi o kod, jeśli jest ustawiony powyżej.",
+            "ko": "위에 코드가 설정되어 있으면 먼저 코드를 묻습니다.",
+            "ar": "يطلب الرمز أولًا إذا كان مضبوطًا أعلاه."
+          },
+          "value": true
+        },
+        {
+          "id": "flow2",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 2: flow",
+            "nl": "Knop 2: flow",
+            "de": "Button 2: Flow",
+            "fr": "Bouton 2: flow",
+            "it": "Pulsante 2: flow",
+            "sv": "Knapp 2: flöde",
+            "no": "Knapp 2: flyt",
+            "es": "Botón 2: flujo",
+            "da": "Knap 2: flow",
+            "ru": "Кнопка 2: поток",
+            "pl": "Przycisk 2: flow",
+            "ko": "버튼 2: 플로우",
+            "ar": "الزر 2: التدفق"
+          }
+        },
+        {
+          "id": "value2",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Value",
+            "nl": "  – Waarde",
+            "de": "  – Wert",
+            "fr": "  – Valeur",
+            "it": "  – Valore",
+            "sv": "  – Värde",
+            "no": "  – Verdi",
+            "es": "  – Valor",
+            "da": "  – Værdi",
+            "ru": "  – Значение",
+            "pl": "  – Wartość",
+            "ko": "  – 값",
+            "ar": "  – القيمة"
+          }
+        },
+        {
+          "id": "label2",
+          "type": "text",
+          "title": {
+            "en": "  – Label",
+            "nl": "  – Label",
+            "de": "  – Beschriftung",
+            "fr": "  – Libellé",
+            "it": "  – Etichetta",
+            "sv": "  – Etikett",
+            "no": "  – Etikett",
+            "es": "  – Etiqueta",
+            "da": "  – Etiket",
+            "ru": "  – Подпись",
+            "pl": "  – Etykieta",
+            "ko": "  – 레이블",
+            "ar": "  – التسمية"
+          },
+          "value": ""
+        },
+        {
+          "id": "icon2",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
+          "id": "color2",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Colour",
+            "nl": "  – Kleur",
+            "de": "  – Farbe",
+            "fr": "  – Couleur",
+            "it": "  – Colore",
+            "sv": "  – Färg",
+            "no": "  – Farge",
+            "es": "  – Color",
+            "da": "  – Farve",
+            "ru": "  – Цвет",
+            "pl": "  – Kolor",
+            "ko": "  – 색상",
+            "ar": "  – اللون"
+          },
+          "value": "blue",
+          "values": [
+            {
+              "id": "blue",
+              "title": {
+                "en": "Blue",
+                "nl": "Blauw",
+                "de": "Blau",
+                "fr": "Bleu",
+                "it": "Blu",
+                "sv": "Blå",
+                "no": "Blå",
+                "es": "Azul",
+                "da": "Blå",
+                "ru": "Синий",
+                "pl": "Niebieski",
+                "ko": "파랑",
+                "ar": "أزرق"
+              }
+            },
+            {
+              "id": "red",
+              "title": {
+                "en": "Red",
+                "nl": "Rood",
+                "de": "Rot",
+                "fr": "Rouge",
+                "it": "Rosso",
+                "sv": "Röd",
+                "no": "Rød",
+                "es": "Rojo",
+                "da": "Rød",
+                "ru": "Красный",
+                "pl": "Czerwony",
+                "ko": "빨강",
+                "ar": "أحمر"
+              }
+            },
+            {
+              "id": "orange",
+              "title": {
+                "en": "Orange",
+                "nl": "Oranje",
+                "de": "Orange",
+                "fr": "Orange",
+                "it": "Arancione",
+                "sv": "Orange",
+                "no": "Oransje",
+                "es": "Naranja",
+                "da": "Orange",
+                "ru": "Оранжевый",
+                "pl": "Pomarańczowy",
+                "ko": "주황",
+                "ar": "برتقالي"
+              }
+            },
+            {
+              "id": "yellow",
+              "title": {
+                "en": "Yellow",
+                "nl": "Geel",
+                "de": "Gelb",
+                "fr": "Jaune",
+                "it": "Giallo",
+                "sv": "Gul",
+                "no": "Gul",
+                "es": "Amarillo",
+                "da": "Gul",
+                "ru": "Жёлтый",
+                "pl": "Żółty",
+                "ko": "노랑",
+                "ar": "أصفر"
+              }
+            },
+            {
+              "id": "green",
+              "title": {
+                "en": "Green",
+                "nl": "Groen",
+                "de": "Grün",
+                "fr": "Vert",
+                "it": "Verde",
+                "sv": "Grön",
+                "no": "Grønn",
+                "es": "Verde",
+                "da": "Grøn",
+                "ru": "Зелёный",
+                "pl": "Zielony",
+                "ko": "초록",
+                "ar": "أخضر"
+              }
+            },
+            {
+              "id": "purple",
+              "title": {
+                "en": "Purple",
+                "nl": "Paars",
+                "de": "Lila",
+                "fr": "Violet",
+                "it": "Viola",
+                "sv": "Lila",
+                "no": "Lilla",
+                "es": "Morado",
+                "da": "Lilla",
+                "ru": "Фиолетовый",
+                "pl": "Fioletowy",
+                "ko": "보라",
+                "ar": "بنفسجي"
+              }
+            },
+            {
+              "id": "grey",
+              "title": {
+                "en": "Grey",
+                "nl": "Grijs",
+                "de": "Grau",
+                "fr": "Gris",
+                "it": "Grigio",
+                "sv": "Grå",
+                "no": "Grå",
+                "es": "Gris",
+                "da": "Grå",
+                "ru": "Серый",
+                "pl": "Szary",
+                "ko": "회색",
+                "ar": "رمادي"
+              }
+            }
+          ]
+        },
+        {
+          "id": "code2",
+          "type": "checkbox",
+          "title": {
+            "en": "  – Needs the code",
+            "nl": "  – Code nodig",
+            "de": "  – Code nötig",
+            "fr": "  – Code requis",
+            "it": "  – Richiede il codice",
+            "sv": "  – Kräver koden",
+            "no": "  – Krever koden",
+            "es": "  – Pide el código",
+            "da": "  – Kræver koden",
+            "ru": "  – Нужен код",
+            "pl": "  – Wymaga kodu",
+            "ko": "  – 코드 필요",
+            "ar": "  – يتطلب الرمز"
+          },
+          "value": true
+        },
+        {
+          "id": "flow3",
+          "type": "autocomplete",
+          "title": {
+            "en": "Button 3: flow",
+            "nl": "Knop 3: flow",
+            "de": "Button 3: Flow",
+            "fr": "Bouton 3: flow",
+            "it": "Pulsante 3: flow",
+            "sv": "Knapp 3: flöde",
+            "no": "Knapp 3: flyt",
+            "es": "Botón 3: flujo",
+            "da": "Knap 3: flow",
+            "ru": "Кнопка 3: поток",
+            "pl": "Przycisk 3: flow",
+            "ko": "버튼 3: 플로우",
+            "ar": "الزر 3: التدفق"
+          }
+        },
+        {
+          "id": "value3",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Value",
+            "nl": "  – Waarde",
+            "de": "  – Wert",
+            "fr": "  – Valeur",
+            "it": "  – Valore",
+            "sv": "  – Värde",
+            "no": "  – Verdi",
+            "es": "  – Valor",
+            "da": "  – Værdi",
+            "ru": "  – Значение",
+            "pl": "  – Wartość",
+            "ko": "  – 값",
+            "ar": "  – القيمة"
+          }
+        },
+        {
+          "id": "label3",
+          "type": "text",
+          "title": {
+            "en": "  – Label",
+            "nl": "  – Label",
+            "de": "  – Beschriftung",
+            "fr": "  – Libellé",
+            "it": "  – Etichetta",
+            "sv": "  – Etikett",
+            "no": "  – Etikett",
+            "es": "  – Etiqueta",
+            "da": "  – Etiket",
+            "ru": "  – Подпись",
+            "pl": "  – Etykieta",
+            "ko": "  – 레이블",
+            "ar": "  – التسمية"
+          },
+          "value": ""
+        },
+        {
+          "id": "icon3",
+          "type": "autocomplete",
+          "title": {
+            "en": "  – Icon",
+            "nl": "  – Pictogram",
+            "de": "  – Symbol",
+            "fr": "  – Icône",
+            "it": "  – Icona",
+            "sv": "  – Ikon",
+            "no": "  – Ikon",
+            "es": "  – Icono",
+            "da": "  – Ikon",
+            "ru": "  – Значок",
+            "pl": "  – Ikona",
+            "ko": "  – 아이콘",
+            "ar": "  – الأيقونة"
+          }
+        },
+        {
+          "id": "color3",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Colour",
+            "nl": "  – Kleur",
+            "de": "  – Farbe",
+            "fr": "  – Couleur",
+            "it": "  – Colore",
+            "sv": "  – Färg",
+            "no": "  – Farge",
+            "es": "  – Color",
+            "da": "  – Farve",
+            "ru": "  – Цвет",
+            "pl": "  – Kolor",
+            "ko": "  – 색상",
+            "ar": "  – اللون"
+          },
+          "value": "blue",
+          "values": [
+            {
+              "id": "blue",
+              "title": {
+                "en": "Blue",
+                "nl": "Blauw",
+                "de": "Blau",
+                "fr": "Bleu",
+                "it": "Blu",
+                "sv": "Blå",
+                "no": "Blå",
+                "es": "Azul",
+                "da": "Blå",
+                "ru": "Синий",
+                "pl": "Niebieski",
+                "ko": "파랑",
+                "ar": "أزرق"
+              }
+            },
+            {
+              "id": "red",
+              "title": {
+                "en": "Red",
+                "nl": "Rood",
+                "de": "Rot",
+                "fr": "Rouge",
+                "it": "Rosso",
+                "sv": "Röd",
+                "no": "Rød",
+                "es": "Rojo",
+                "da": "Rød",
+                "ru": "Красный",
+                "pl": "Czerwony",
+                "ko": "빨강",
+                "ar": "أحمر"
+              }
+            },
+            {
+              "id": "orange",
+              "title": {
+                "en": "Orange",
+                "nl": "Oranje",
+                "de": "Orange",
+                "fr": "Orange",
+                "it": "Arancione",
+                "sv": "Orange",
+                "no": "Oransje",
+                "es": "Naranja",
+                "da": "Orange",
+                "ru": "Оранжевый",
+                "pl": "Pomarańczowy",
+                "ko": "주황",
+                "ar": "برتقالي"
+              }
+            },
+            {
+              "id": "yellow",
+              "title": {
+                "en": "Yellow",
+                "nl": "Geel",
+                "de": "Gelb",
+                "fr": "Jaune",
+                "it": "Giallo",
+                "sv": "Gul",
+                "no": "Gul",
+                "es": "Amarillo",
+                "da": "Gul",
+                "ru": "Жёлтый",
+                "pl": "Żółty",
+                "ko": "노랑",
+                "ar": "أصفر"
+              }
+            },
+            {
+              "id": "green",
+              "title": {
+                "en": "Green",
+                "nl": "Groen",
+                "de": "Grün",
+                "fr": "Vert",
+                "it": "Verde",
+                "sv": "Grön",
+                "no": "Grønn",
+                "es": "Verde",
+                "da": "Grøn",
+                "ru": "Зелёный",
+                "pl": "Zielony",
+                "ko": "초록",
+                "ar": "أخضر"
+              }
+            },
+            {
+              "id": "purple",
+              "title": {
+                "en": "Purple",
+                "nl": "Paars",
+                "de": "Lila",
+                "fr": "Violet",
+                "it": "Viola",
+                "sv": "Lila",
+                "no": "Lilla",
+                "es": "Morado",
+                "da": "Lilla",
+                "ru": "Фиолетовый",
+                "pl": "Fioletowy",
+                "ko": "보라",
+                "ar": "بنفسجي"
+              }
+            },
+            {
+              "id": "grey",
+              "title": {
+                "en": "Grey",
+                "nl": "Grijs",
+                "de": "Grau",
+                "fr": "Gris",
+                "it": "Grigio",
+                "sv": "Grå",
+                "no": "Grå",
+                "es": "Gris",
+                "da": "Grå",
+                "ru": "Серый",
+                "pl": "Szary",
+                "ko": "회색",
+                "ar": "رمادي"
+              }
+            }
+          ]
+        },
+        {
+          "id": "code3",
+          "type": "checkbox",
+          "title": {
+            "en": "  – Needs the code",
+            "nl": "  – Code nodig",
+            "de": "  – Code nötig",
+            "fr": "  – Code requis",
+            "it": "  – Richiede il codice",
+            "sv": "  – Kräver koden",
+            "no": "  – Krever koden",
+            "es": "  – Pide el código",
+            "da": "  – Kræver koden",
+            "ru": "  – Нужен код",
+            "pl": "  – Wymaga kodu",
+            "ko": "  – 코드 필요",
+            "ar": "  – يتطلب الرمز"
+          },
+          "value": true
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        },
+        "press": {
+          "method": "POST",
+          "path": "/press"
+        }
+      },
+      "id": "keypad"
+    },
     "lightrooms": {
       "name": {
         "en": "Lights by Room",

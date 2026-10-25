@@ -189,6 +189,7 @@
       charts: 'One or two charts of any value, like the electricity ones.',
       variables: 'Variables as rows you can switch or change.',
       varpresets: 'Buttons that set a variable to preset values.',
+      keypad: 'Buttons behind an optional code that start Flows or set a state.',
       flows:'Start flows with a tap, in your colours and icons.',
       price: 'The electricity price now and in the coming hours.',
       timers: 'Kitchen timers that keep running on your Homey.',

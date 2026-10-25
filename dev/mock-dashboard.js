@@ -1,7 +1,7 @@
 // The widgets of dev/screenshots.html: the real widget code with the made-up home of showcase-data.js ("Solbakken",
 // the showcase dashboards' data, so no real home's names or readings end up in the README), mounted into the elements
 // with the ids w-elec, w-thermo, w-qa, w-sa, w-roomhealth, w-valuematrix, w-weather, w-heatmap, w-cameras, w-values, w-sparklines, w-charts, w-variables,
-// w-varpresets, w-flows, w-price, w-locks, w-clock, w-textline(-note), w-dayssince and w-shortcuts. Most go through showcase-mount.js's MOUNT with a
+// w-varpresets, w-keypad, w-flows, w-price, w-locks, w-clock, w-textline(-note), w-dayssince and w-shortcuts. Most go through showcase-mount.js's MOUNT with a
 // showcase entry (`findWidget()`); only the README's own changes are here. Needs the widget scripts,
 // temp/screenshot-icons.js, showcase-data.js and showcase-mount.js loaded first, and the showcase's fixed clock
 // (fixed-clock.js), so every render is the same.
@@ -56,6 +56,24 @@
     opts: { icon: 'home' },
     settings: { value1: mode('Home'), value2: mode('Away'), value3: mode('Night'), value4: mode('Holiday') },
     variable: { id: 'm1', name: 'House mode', type: 'string', value: 'Away' },
+  });
+
+  // A made-up alarm, armed: Arm and Night without the code, Disarm behind it (its code mark).
+  const alarmValue = (value, name) => ({ id: `string:${JSON.stringify(value)}`, name, value, type: 'string' });
+  MOUNT.keypad(el('w-keypad'), {
+    settings: {
+      state: { id: 'cap:alarm:homealarm_state' }, title: 'Alarm', code: { id: `code:v1:${'0'.repeat(8)}:${'0'.repeat(16)}:${'0'.repeat(32)}`, digits: 4 },
+      value1: alarmValue('armed', 'Armed'), label1: 'Arm', icon1: { id: 'shield' }, color1: 'red', code1: false,
+      value2: alarmValue('partially_armed', 'Partially armed'), label2: 'Night', icon2: { id: 'moon' }, color2: 'purple', code2: false,
+      value3: alarmValue('disarmed', 'Disarmed'), label3: 'Disarm', icon3: { id: 'unlock' }, color3: 'green',
+    },
+    state: {
+      source: {
+        kind: 'capability', deviceId: 'alarm', capabilityId: 'homealarm_state', name: 'Alarm system', value: 'armed',
+        capability: { title: 'Home Alarm state', type: 'enum', values: [{ id: 'armed', title: 'Armed' }, { id: 'disarmed', title: 'Disarmed' }, { id: 'partially_armed', title: 'Partially armed' }] },
+      },
+      flows: [],
+    },
   });
 
   // Home's two flows side by side, and two more below them for the README.

@@ -49,6 +49,7 @@ export default class Diagnostics {
       sparklines: (this.homey.app as any)?.sparklines?.describe?.() ?? null,
       variables: (this.homey.app as any)?.variables?.describe?.() ?? null,
       flows: (this.homey.app as any)?.flows?.describe?.() ?? null,
+      keypad: (this.homey.app as any)?.keypad?.describe?.() ?? null,
       moods: await (this.homey.app as any)?.lights?.describeMoods?.().catch((err: unknown) => String(err)) ?? null,
       timers: (this.homey.app as any)?.timers?.describe?.() ?? null,
       textLines: (this.homey.app as any)?.textLines?.describe?.() ?? null,
