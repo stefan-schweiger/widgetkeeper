@@ -392,7 +392,7 @@ describe('Keypad: the keypad always shown', () => {
     type('4711');
     expect(onPress).toHaveBeenCalledWith({ flow: 'flow:f1', codeId: 'c1', code: '4711', button: 'Disarm alarm', title: 'Surveillance' });
     await vi.waitFor(() => expect(buttons()[2]).toBe('Disarm alarm tick green'));
-    expect(dots()).toBe('◌○○○');
+    expect(dots()).toBe('○○○○'); // left alone beside buttons that need no code: it doesn't ask
   });
 
   it('with several, the code waits for a button, or a button for the code', async () => {
@@ -415,12 +415,26 @@ describe('Keypad: the keypad always shown', () => {
     expect(second.onPress).toHaveBeenCalledWith({ source: 'cap:alarm:homealarm_state', value: 'armed', codeId: 'c1', code: '4711', button: 'Arm', title: 'Surveillance' });
   });
 
-  it('a button without the code runs at once, whatever was typed', () => {
-    const { type, press, onPress, dots } = widget(always, alarm('armed'));
+  it('a button without the code runs at once, and lets go of the button waiting and what was typed', () => {
+    const { type, press, onPress, dots, buttons, label } = widget({ ...always, code1: true }, alarm('partially_armed'));
+    press(2); // Disarm waits for the code
     type('47');
-    press(1);
+    expect([label(), dots()]).toEqual(['Enter the code for Disarm alarm', '●●◌○']);
+    press(1); // Night needs no code
     expect(onPress).toHaveBeenCalledWith({ source: 'cap:alarm:homealarm_state', value: 'partially_armed', button: 'Night', title: 'Surveillance' });
-    expect(dots()).toBe('●●◌○');
+    expect([label(), dots(), buttons()[2]]).toEqual(['Enter the code, then tap a button', '○○○○', 'Disarm alarm code green']);
+  });
+
+  it('pulses the next dot only while it waits for the code', () => {
+    const mixed = widget(always, alarm('armed')); // Arm and Night need no code
+    expect(mixed.dots()).toBe('○○○○');
+    mixed.press(2);
+    expect(mixed.dots()).toBe('◌○○○');
+    mixed.press(2); // let go
+    mixed.type('4');
+    expect(mixed.dots()).toBe('●◌○○');
+    const all = widget({ ...always, code1: true, code2: true }, alarm('armed')); // nothing to tap without it
+    expect(all.dots()).toBe('◌○○○');
   });
 
   it('✕ and Escape clear what was typed and the button waiting; so does being left alone', async () => {
@@ -429,13 +443,13 @@ describe('Keypad: the keypad always shown', () => {
     press(0);
     type('47');
     key('left');
-    expect([dots(), buttons()[0]]).toEqual(['◌○○○', 'Arm on tick red']);
+    expect([dots(), buttons()[0]]).toEqual(['○○○○', 'Arm on tick red']);
     type('4');
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-    expect(dots()).toBe('◌○○○');
+    expect(dots()).toBe('○○○○');
     type('47');
     await vi.advanceTimersByTimeAsync(30e3);
-    expect(dots()).toBe('◌○○○');
+    expect(dots()).toBe('○○○○');
   });
 
   it('a wrong code keeps the button waiting and empties the dots', async () => {

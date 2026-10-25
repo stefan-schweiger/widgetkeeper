@@ -361,6 +361,8 @@
       if (f && !f.triggerable) return refuse(b, t('flowNotTriggerable', { name: labelOf(b) }));
       if (!needsCode(b)) {
         if (opts.onHaptic) opts.onHaptic();
+        // Another button, without the code: the one waiting for it, and what was typed for it, go.
+        if (always) Object.assign(entry, { n: null, typed: '', error: false, ok: false });
         run(b);
         return;
       }
@@ -509,9 +511,12 @@
       padSub.classList.toggle('error', !!message.text);
       const off = entry.checking || !ready() || Date.now() < lockedUntil || !list.some(needsCode);
       for (const key of keys.querySelectorAll('button')) key.disabled = off || key.classList.contains('blank');
-      // The code's length in dots; while it isn't known, the digits typed and one more. The next one pulses while it waits.
+      // The code's length in dots; while it isn't known, the digits typed and one more. The next one pulses while the
+      // keypad waits for the code: a button waiting for it, digits typed, or no button to tap without it (always shown,
+      // a keypad left alone beside buttons that need no code doesn't ask).
       const shown = ready() ? digits() || Math.min(entry.typed.length + 1, MAX_DIGITS) : 4;
-      const next = off || entry.error || full ? -1 : entry.typed.length;
+      const asking = !always || entry.n != null || entry.typed.length > 0 || list.every(needsCode);
+      const next = off || entry.error || full || !asking ? -1 : entry.typed.length;
       padDots.replaceChildren(...Array.from({ length: shown }, (_, i) => el('span', { class: i < entry.typed.length ? 'kp-dot f' : i === next ? 'kp-dot next' : 'kp-dot' })));
       padDots.classList.toggle('err', entry.error);
       padDots.classList.toggle('checking', entry.checking);
