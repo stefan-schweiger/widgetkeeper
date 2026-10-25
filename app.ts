@@ -9,7 +9,7 @@ import DaysSinceService, {
 import ElectricityService from './lib/ElectricityService.js';
 import FlowService from './lib/FlowService.js';
 import HeatmapService from './lib/HeatmapService.js';
-import KeypadService, { KEYPAD_TAPPED_CARD, type PressArg, type PressState } from './lib/KeypadService.js';
+import KeypadService, { KEYPAD_TAPPED_CARD, KEYPAD_WRONG_CARD, type PressArg, type PressState } from './lib/KeypadService.js';
 import LightService from './lib/LightService.js';
 import LockService from './lib/LockService.js';
 import MediaService from './lib/MediaService.js';
@@ -127,6 +127,7 @@ export default class WidgetkeeperApp extends Homey.App {
       values: this.values,
       variables: this.variables,
       onPress: (tokens, state) => this.homey.flow.getTriggerCard(KEYPAD_TAPPED_CARD).trigger(tokens, state),
+      onWrong: tokens => this.homey.flow.getTriggerCard(KEYPAD_WRONG_CARD).trigger(tokens),
     }, log, debug);
     this.registerKeypadFlows();
     this.media.start();
@@ -237,7 +238,7 @@ export default class WidgetkeeperApp extends Homey.App {
     });
   }
 
-  /** The Keypad's trigger, *A Keypad button was tapped by …*: anyone, anyone with a code, or one code by name. */
+  /** The Keypad's *A Keypad button was tapped by …*: anyone, anyone with a code, or one code by name (the wrong-code trigger has no argument). */
   private registerKeypadFlows() {
     const tapped = this.homey.flow.getTriggerCard(KEYPAD_TAPPED_CARD);
     tapped.registerArgumentAutocompleteListener('code', async query => this.keypad.pressCodeItems(query));

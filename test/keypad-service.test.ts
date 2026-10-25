@@ -50,8 +50,9 @@ function setup() {
   };
   const log = vi.fn();
   const onPress = vi.fn(async (_tokens: object, _state: object) => {});
-  const keypad = new KeypadService(homey, { flows, values, variables, onPress } as any, log);
-  return { homey, keypad, flows, values, variables, devs, log, onPress };
+  const onWrong = vi.fn(async (_tokens: object) => {});
+  const keypad = new KeypadService(homey, { flows, values, variables, onPress, onWrong } as any, log);
+  return { homey, keypad, flows, values, variables, devs, log, onPress, onWrong };
 }
 
 /** A code made on the app settings page; its id, as the `code` setting keeps it. */
@@ -352,6 +353,27 @@ describe('Keypad: a press', () => {
     flows.trigger.mockRejectedValueOnce(new Error('busy'));
     await expect(keypad.press({ flow: 'flow:f1', button: 'Arm' })).rejects.toThrow('busy');
     expect(onPress).toHaveBeenCalledTimes(2); // not for a press that failed
+  });
+
+  it('fires the wrong-code trigger for each code checked and wrong, saying when it locked; not while locked', async () => {
+    const { keypad, onWrong, onPress } = setup();
+    const id = codeId(keypad, '4711');
+    const press = (code: string) => keypad.press({ flow: 'flow:f1', codeId: id, code, button: 'Disarm', title: 'Alarm' });
+    await press('0000');
+    expect(onWrong).toHaveBeenLastCalledWith({ button: 'Disarm', keypad: 'Alarm', locked: false, left: 4 });
+    for (let i = 0; i < 3; i++) await press('0000');
+    await press('0000');
+    expect(onWrong).toHaveBeenLastCalledWith({ button: 'Disarm', keypad: 'Alarm', locked: true, left: 0 });
+    expect(await press('4711')).toEqual({ result: 'locked', retryAfter: 30 }); // refused unchecked: no trigger
+    expect(onWrong).toHaveBeenCalledTimes(5);
+    expect(onPress).not.toHaveBeenCalled();
+    // A web dashboard's code: its name, no button.
+    const kids = codeId(keypad, '2580', 'Kids');
+    expect(keypad.unlock(kids, '1111', 'Hallway')).toEqual({ ok: false, reason: 'wrongCode', left: 4 });
+    expect(onWrong).toHaveBeenLastCalledWith({ button: '', keypad: 'Hallway', locked: false, left: 4 });
+    expect(keypad.unlock(kids, '2580', 'Hallway')).toEqual({ ok: true });
+    expect(keypad.unlock(null, '', 'Open')).toEqual({ ok: true });
+    expect(onWrong).toHaveBeenCalledTimes(6);
   });
 
   it("never fails a press for the trigger", async () => {
