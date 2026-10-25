@@ -22,10 +22,33 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 /**
  * Each clip: what the finger does, step by step. `tap`/`drag` take a CSS selector and the match's index (`i`), and
  * points as fractions of its box (`x`, `y`, default the middle). `say` sets the callout under the widget (with an
- * `icon`: rotate, swipe, tap, drag, colour, bell, volume, next, mute, more, plus, pause, dots, speaker, pen, text or check); `run`
- * calls a page control. `type` types text into the focused field a key at a time, then presses Enter.
+ * `icon`: rotate, swipe, tap, drag, colour, bell, volume, next, mute, more, plus, pause, dots, speaker, pen, text, check,
+ * lock or flow); `run` calls a page control. `type` types text into the focused field a key at a time, then presses Enter.
  */
+/** The Keypad's keys typed, a tap each (`.kp-key` in a phone's order: 1–9, the left key, 0, delete). */
+const keys = digits => [...digits].flatMap(d => [{ tap: '.kp-key', i: d === '0' ? 10 : Number(d) - 1 }, { wait: 280 }]);
+
 const CLIPS = {
+  keypad: [
+    { say: 'Disarm needs the code: tap it', icon: 'tap' },
+    { wait: 1100 },
+    { tap: '.kp-btn', i: 2 },
+    { wait: 900 },
+    { say: 'A wrong code is turned down', icon: 'lock' },
+    { wait: 600 },
+    ...keys('5580'),
+    { wait: 1700 },
+    { say: 'The right one disarms the alarm', icon: 'check' },
+    { wait: 600 },
+    ...keys('1234'),
+    { wait: 2400 },
+    { say: 'Arm needs no code: one tap', icon: 'tap' },
+    { wait: 900 },
+    { tap: '.kp-btn', i: 0 },
+    { wait: 2200 },
+    { say: 'Flows can tell whose code it was', icon: 'flow' },
+    { wait: 2600 },
+  ],
   lights: [
     { say: 'Tap a light to turn it on or off', icon: 'tap' },
     { wait: 900 },

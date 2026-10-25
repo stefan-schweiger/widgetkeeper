@@ -239,11 +239,13 @@ A week of one Insights value as a grid of days and hours: numbers such as light 
 **Settings:** device and value, a title in place of the device's name, this week or the last 3–14 days, hours per column, colour, [colour style](#colour-style), scale, legend.
 
 ## Keypad
-<img src="docs/screenshots/keypad.png" alt="Keypad on a Homey dashboard: an alarm shown as Armed with Arm ticked, Night, and Disarm behind the code, beside a keypad with two digits typed" width="358">
+<img src="docs/clips/keypad.webp" alt="Keypad on a Homey dashboard: a tap on Disarm opens a keypad, a wrong code is turned down, the right one disarms the alarm, and Arm runs at once without a code" width="358">
 
 Up to three buttons, each behind an optional 3–6 digit code: arm an alarm, unlock a door, allow an hour of TV. A button starts a Flow, or, without one, sets the widget's state to its value; a button with only a label just starts the Keypad's Flow card (below). The state is a device value or a Logic variable, shown on the left; the button with its value is ticked. A list value, such as an alarm's *Armed*, *Partially armed* and *Disarmed*, or a yes/no one, gets a button per value when none is set up, all behind the code.
 
 A tap on a button that wants the code opens a phone's keypad beside the state (in compact, in place of the widget); it sends the code with the last digit. With **Show the keypad: Always**, the keypad stays beside the state with the buttons under it: type the code, then tap the button, or tap the button first. With just one button behind the code, the code alone runs it.
+
+<img src="docs/screenshots/keypad.png" alt="Keypad with Show the keypad: Always: an alarm shown as Armed with Arm ticked, Night, and Disarm behind the code, beside a keypad with two digits typed" width="358">
 
 The codes are made under **Apps → Widgetkeeper → Configure → Keypad codes**: a name, such as *Alarm* or *Kids*, and the digits, typed twice. A widget's **Code** setting picks one by name, so several widgets can share a code and you change it in one place (changing it takes the current code; removing it doesn't, and its widgets then refuse their buttons until another is picked). Or it picks **Any code**: then everyone's code works, and the Flow card tells whose it was, so give each person their own (no two codes can share digits). While the codes have different lengths, the keypad has an OK key. Widgetkeeper checks the code on your Homey and keeps only a fingerprint of it, made with a secret only the app has, so the digits are never stored or shown. Five wrong codes in a row lock that code for 30 s, doubling each time up to 15 min. The code guards the dashboard (a wall tablet, the children, guests), not your Homey: anyone who can open the Homey app can still start the Flow or change the device there.
 

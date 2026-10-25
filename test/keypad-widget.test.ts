@@ -311,8 +311,10 @@ describe('Keypad: the keypad on a tap', () => {
     expect(padOpen()).toBe(true);
     await vi.advanceTimersByTimeAsync(700);
     expect(dots()).toBe('◌○○○');
+    type('1');
+    expect(left()[1]).toBe('Surveillance'); // a new try: the message goes
     onPress.mockResolvedValueOnce({ ok: true, result: 'wrongCode', left: 2 });
-    type('1235');
+    type('235');
     await vi.advanceTimersByTimeAsync(0);
     expect(left()[1]).toBe('Wrong code. Tries left: 2');
   });
