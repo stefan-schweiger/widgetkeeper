@@ -18,7 +18,12 @@ window.mountQuickActionsWidget = function (Homey, { root, frame }) {
     activeStyle: settings.activeStyle,
     color: settings.color,
     colorStyle: settings.colorStyle,
+    press: settings.press,
+    pressFor: settings.pressFor,
     onTrigger: (deviceId, value) => Homey.api('POST', '/trigger', { deviceId, value }),
+    onHaptic: () => {
+      try { if (Homey.hapticFeedback) Homey.hapticFeedback(); } catch (e) { /* not on every platform */ }
+    },
     onHeight: link.setHeight,
   });
 

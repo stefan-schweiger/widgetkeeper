@@ -195,7 +195,7 @@ Flow cards: *Reset [counter]*, *Set [counter] to [days] days ago*, the trigger *
 
 Half-height tiles that run a device's quick action with one tap (on/off, lock, play/pause, a button), highlighted while it's on.
 
-**Settings:** devices, active style, colour, [colour style](#colour-style), [rename tiles](#tile-names).
+**Settings:** devices, active style, colour, [colour style](#colour-style), single, double or long press (for every tile, or only locks and garage doors, so a stray tap can't unlock a door), [rename tiles](#tile-names).
 
 ## Device Values
 <img src="docs/screenshots/values.png" alt="Device Values on a Homey dashboard" width="358">

@@ -40,7 +40,9 @@
     "error": "تعذر تحميل الأجهزة.",
     "failed": "تعذر تغيير __name__.",
     "unavailable": "غير متاح",
-    "renameFailed": "تعذّر حفظ الاسم."
+    "renameFailed": "تعذّر حفظ الاسم.",
+    "tapAgain": "اضغط مرة أخرى",
+    "hold": "اضغط مطولًا"
   },
   "sensoralarms": {
     "selectDevices": "اختر المستشعرات في إعدادات الأداة.",

@@ -18,10 +18,10 @@
   </style>
 </head>
 <body>
-  <div class="col"><span>358 px (phone) · dark · blue tint</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
-  <div class="col"><span>358 px · dark · lighter tile</span><div class="dash homey-dark-mode" style="width:358px"><div id="w2"></div></div></div>
-  <div class="col"><span>358 px · light · blue tint</span><div class="dash light" style="width:358px"><div id="w3"></div></div></div>
-  <div class="col"><span>358 px · light · lighter tile</span><div class="dash light" style="width:358px"><div id="w4"></div></div></div>
+  <div class="col"><span>358 px (phone) · dark · blue tint · doors: double press</span><div class="dash homey-dark-mode" style="width:358px"><div id="w1"></div></div></div>
+  <div class="col"><span>358 px · dark · lighter tile · doors: long press</span><div class="dash homey-dark-mode" style="width:358px"><div id="w2"></div></div></div>
+  <div class="col"><span>358 px · light · blue tint · doors: double press</span><div class="dash light" style="width:358px"><div id="w3"></div></div></div>
+  <div class="col"><span>358 px · light · lighter tile · doors: long press</span><div class="dash light" style="width:358px"><div id="w4"></div></div></div>
   <div class="col"><span>358 px · no devices</span><div class="dash homey-dark-mode" style="width:358px"><div id="w5"></div></div></div>
 
   <script>
@@ -40,11 +40,13 @@
       { id: 'g', name: 'Back Door Sensor', icon: null, quickAction: null },
       { id: 'h', missing: true },
     ];
-    for (const [id, activeStyle] of [['w1', 'tint'], ['w2', 'lighter'], ['w3', 'tint'], ['w4', 'lighter']]) {
+    for (const [id, activeStyle, press] of [['w1', 'tint', 'double'], ['w2', 'lighter', 'long'], ['w3', 'tint', 'double'], ['w4', 'lighter', 'long']]) {
       let w;
       w = createQuickActionsWidget(document.getElementById(id), {
         t: devT,
         activeStyle,
+        press,
+        pressFor: 'locks', // only the doors
         // Simulate the device confirming after a moment.
         onTrigger: (deviceId, value) => new Promise(r => setTimeout(() => {
           const d = list.find(x => x.id === deviceId);

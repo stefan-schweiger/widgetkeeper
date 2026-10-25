@@ -40,7 +40,9 @@
     "error": "Kunne ikke laste inn enhetene.",
     "failed": "Kunne ikke endre __name__.",
     "unavailable": "Utilgjengelig",
-    "renameFailed": "Kunne ikke lagre navnet."
+    "renameFailed": "Kunne ikke lagre navnet.",
+    "tapAgain": "Trykk igjen",
+    "hold": "Hold inne"
   },
   "sensoralarms": {
     "selectDevices": "Velg sensorer i widgetinnstillingene.",

@@ -40,7 +40,9 @@
     "error": "Impossibile caricare i dispositivi.",
     "failed": "Impossibile modificare __name__.",
     "unavailable": "Non disponibile",
-    "renameFailed": "Impossibile salvare il nome."
+    "renameFailed": "Impossibile salvare il nome.",
+    "tapAgain": "Tocca di nuovo",
+    "hold": "Tieni premuto"
   },
   "sensoralarms": {
     "selectDevices": "Scegli i sensori nelle impostazioni del widget.",

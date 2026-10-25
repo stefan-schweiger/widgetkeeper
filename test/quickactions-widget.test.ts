@@ -14,10 +14,10 @@ const door = (value = true) => ({ id: 'door', name: 'Door', icon: null, quickAct
 const alarm = () => ({ id: 'alarm', name: 'Alarm', icon: null, quickAction: qa('button', false, { momentary: true }) });
 const sensor = () => ({ id: 'sensor', name: 'Sensor', icon: null, quickAction: null });
 
-function widget(devices: any[], onTrigger: any = vi.fn(async () => {}), activeStyle?: string) {
+function widget(devices: any[], onTrigger: any = vi.fn(async () => {}), activeStyle?: string, options: object = {}) {
   const root = document.createElement('div');
   document.body.append(root);
-  const w = win.createQuickActionsWidget(root, { onTrigger, activeStyle });
+  const w = win.createQuickActionsWidget(root, { onTrigger, activeStyle, ...options });
   w.setState(devices);
   const tile = (id: string) => root.querySelector<HTMLButtonElement>(`.qa-tile[data-device="${id}"]`)!;
   const tiles = () => [...root.querySelectorAll<HTMLButtonElement>('.qa-tile')];
@@ -136,5 +136,182 @@ describe('tap', () => {
     const { tile, onTrigger } = widget([sensor()]);
     tile('sensor').click();
     expect(onTrigger).not.toHaveBeenCalled();
+  });
+});
+
+describe('double press', () => {
+  const garage = () => ({ id: 'garage', name: 'Garage', icon: null, quickAction: qa('garagedoor_closed', true) });
+  const name = (tile: HTMLElement) => tile.querySelector('.qa-name')!.textContent;
+
+  it('asks locks and garage doors for a second tap, and switches others at once', () => {
+    const { tile, onTrigger } = widget([door(true), garage(), lamp(false)], undefined, undefined, { press: 'double', pressFor: 'locks' });
+    tile('door').click();
+    tile('garage').click();
+    expect(onTrigger).not.toHaveBeenCalled();
+    expect(tile('door').classList.contains('confirm')).toBe(true);
+    expect(tile('door').classList.contains('active')).toBe(false); // red, not the on tint
+    expect(name(tile('door'))).toBe('Tap again');
+    tile('lamp').click();
+    expect(onTrigger).toHaveBeenCalledWith('lamp', true);
+    tile('door').click();
+    expect(onTrigger).toHaveBeenCalledWith('door', false);
+    expect(tile('door').classList.contains('confirm')).toBe(false);
+    expect(name(tile('door'))).toBe('Door');
+    expect(tile('garage').classList.contains('confirm')).toBe(true);
+  });
+
+  it('shows what the second tap will do', () => {
+    const { tile } = widget([door(true)], undefined, undefined, { press: 'double', pressFor: 'locks' });
+    const mask = () => (tile('door').querySelector('.qa-action') as HTMLElement).style.getPropertyValue('--qa-mask');
+    const locked = mask();
+    tile('door').click();
+    expect(mask()).not.toBe(locked);
+  });
+
+  it('asks every tile by default, a momentary button too', () => {
+    const { tile, onTrigger } = widget([lamp(false), alarm()], undefined, undefined, { press: 'double' });
+    tile('lamp').click();
+    tile('alarm').click();
+    expect(onTrigger).not.toHaveBeenCalled();
+    tile('alarm').click();
+    expect(onTrigger).toHaveBeenCalledWith('alarm', true);
+  });
+
+  it('never asks on a single press', () => {
+    const { tile, onTrigger } = widget([door(true)], undefined, undefined, { press: 'single', pressFor: 'locks' });
+    tile('door').click();
+    expect(onTrigger).toHaveBeenCalledWith('door', false);
+  });
+
+  it('forgets the first tap after 3 s', async () => {
+    const { tile, onTrigger } = widget([door(true)], undefined, undefined, { press: 'double', pressFor: 'locks' });
+    tile('door').click();
+    await vi.advanceTimersByTimeAsync(3100);
+    expect(tile('door').classList.contains('confirm')).toBe(false);
+    expect(tile('door').classList.contains('active')).toBe(true);
+    tile('door').click();
+    expect(onTrigger).not.toHaveBeenCalled();
+    expect(tile('door').classList.contains('confirm')).toBe(true);
+  });
+
+  it('asks again when the state changes in between', () => {
+    const { w, tile, onTrigger } = widget([door(true)], undefined, undefined, { press: 'double', pressFor: 'locks' });
+    tile('door').click();
+    w.pushChange({ deviceId: 'door', capabilityId: 'locked', value: false }); // unlocked elsewhere
+    expect(tile('door').classList.contains('confirm')).toBe(false);
+    tile('door').click();
+    expect(onTrigger).not.toHaveBeenCalled();
+    tile('door').click();
+    expect(onTrigger).toHaveBeenCalledWith('door', true);
+  });
+
+  it('takes two touch taps', () => {
+    const { tile, onTrigger } = widget([door(true)], undefined, undefined, { press: 'double', pressFor: 'locks' });
+    const tap = () => { fireTouch(tile('door'), 'touchstart', 10, 10); fireTouch(tile('door'), 'touchend', 10, 10); };
+    tap();
+    expect(onTrigger).not.toHaveBeenCalled();
+    tap();
+    expect(onTrigger).toHaveBeenCalledExactlyOnceWith('door', false);
+  });
+});
+
+describe('long press', () => {
+  const LOCKS = { press: 'long', pressFor: 'locks' };
+  const name = (tile: HTMLElement) => tile.querySelector('.qa-name')!.textContent;
+  const mouse = (target: HTMLElement, type: string) => target.dispatchEvent(new MouseEvent(type, { bubbles: true, button: 0 }));
+  const key = (target: HTMLElement, type: string, k = 'Enter', repeat = false) => {
+    const e = new KeyboardEvent(type, { bubbles: true, cancelable: true, key: k, repeat });
+    target.dispatchEvent(e);
+    return e;
+  };
+
+  it('acts once the tile has been held for 600 ms, with a haptic', async () => {
+    const onHaptic = vi.fn();
+    const { tile, onTrigger } = widget([door(true)], undefined, undefined, { ...LOCKS, onHaptic });
+    fireTouch(tile('door'), 'touchstart', 10, 10);
+    expect(tile('door').classList.contains('holding')).toBe(true);
+    await vi.advanceTimersByTimeAsync(550);
+    expect(onTrigger).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(60);
+    expect(onTrigger).toHaveBeenCalledExactlyOnceWith('door', false);
+    expect(onHaptic).toHaveBeenCalledOnce();
+    expect(tile('door').classList.contains('holding')).toBe(false);
+    fireTouch(tile('door'), 'touchend', 10, 10);
+    tile('door').click(); // the click a browser may still send
+    expect(onTrigger).toHaveBeenCalledOnce();
+  });
+
+  it('says Hold after a short tap, and does nothing', async () => {
+    const { tile, onTrigger } = widget([door(true)], undefined, undefined, LOCKS);
+    fireTouch(tile('door'), 'touchstart', 10, 10);
+    await vi.advanceTimersByTimeAsync(200);
+    fireTouch(tile('door'), 'touchend', 10, 10);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(onTrigger).not.toHaveBeenCalled();
+    expect(name(tile('door'))).toBe('Hold');
+    await vi.advanceTimersByTimeAsync(600);
+    expect(name(tile('door'))).toBe('Door');
+  });
+
+  it('leaves a drag to the dashboard', async () => {
+    const { tile, onTrigger } = widget([door(true)], undefined, undefined, LOCKS);
+    fireTouch(tile('door'), 'touchstart', 10, 10);
+    fireTouch(tile('door'), 'touchmove', 10, 40);
+    await vi.advanceTimersByTimeAsync(1000);
+    fireTouch(tile('door'), 'touchend', 10, 40);
+    expect(onTrigger).not.toHaveBeenCalled();
+    expect(tile('door').classList.contains('holding')).toBe(false);
+    fireTouch(tile('door'), 'touchstart', 10, 10);
+    fireTouch(tile('door'), 'touchcancel', 10, 10); // Android's dashboard took it
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(onTrigger).not.toHaveBeenCalled();
+  });
+
+  it('only for locks and garage doors: other tiles act on a tap', () => {
+    const { tile, onTrigger } = widget([door(true), lamp(false)], undefined, undefined, LOCKS);
+    fireTouch(tile('lamp'), 'touchstart', 10, 10);
+    expect(tile('lamp').classList.contains('holding')).toBe(false);
+    fireTouch(tile('lamp'), 'touchend', 10, 10);
+    expect(onTrigger).toHaveBeenCalledExactlyOnceWith('lamp', true);
+  });
+
+  it('every tile by default', () => {
+    const { tile, onTrigger } = widget([lamp(false)], undefined, undefined, { press: 'long' });
+    tile('lamp').click();
+    expect(onTrigger).not.toHaveBeenCalled();
+    expect(name(tile('lamp'))).toBe('Hold');
+  });
+
+  it('holds with the mouse', async () => {
+    const { tile, onTrigger } = widget([door(true)], undefined, undefined, LOCKS);
+    mouse(tile('door'), 'mousedown');
+    await vi.advanceTimersByTimeAsync(300);
+    mouse(tile('door'), 'mouseup');
+    tile('door').click();
+    expect(onTrigger).not.toHaveBeenCalled();
+    expect(name(tile('door'))).toBe('Hold');
+    mouse(tile('door'), 'mousedown');
+    expect(name(tile('door'))).toBe('Door');
+    await vi.advanceTimersByTimeAsync(600);
+    mouse(tile('door'), 'mouseup');
+    tile('door').click();
+    expect(onTrigger).toHaveBeenCalledExactlyOnceWith('door', false);
+    mouse(tile('door'), 'mousedown');
+    mouse(tile('door'), 'mouseleave'); // dragged off: nothing
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(onTrigger).toHaveBeenCalledOnce();
+  });
+
+  it('holds with Enter or Space, keeping back their click', async () => {
+    const { tile, onTrigger } = widget([door(true)], undefined, undefined, LOCKS);
+    expect(key(tile('door'), 'keydown').defaultPrevented).toBe(true);
+    key(tile('door'), 'keydown', 'Enter', true); // the key's repeats don't restart it
+    await vi.advanceTimersByTimeAsync(600);
+    expect(onTrigger).toHaveBeenCalledExactlyOnceWith('door', false);
+    expect(key(tile('door'), 'keyup').defaultPrevented).toBe(true);
+    key(tile('door'), 'keydown', ' ');
+    expect(key(tile('door'), 'keyup', ' ').defaultPrevented).toBe(true);
+    expect(onTrigger).toHaveBeenCalledOnce();
+    expect(name(tile('door'))).toBe('Hold');
   });
 });

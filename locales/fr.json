@@ -40,7 +40,9 @@
     "error": "Impossible de charger les appareils.",
     "failed": "Impossible de modifier __name__.",
     "unavailable": "Indisponible",
-    "renameFailed": "Impossible d'enregistrer le nom."
+    "renameFailed": "Impossible d'enregistrer le nom.",
+    "tapAgain": "Touchez encore",
+    "hold": "Maintenez"
   },
   "sensoralarms": {
     "selectDevices": "Choisissez des capteurs dans les réglages.",

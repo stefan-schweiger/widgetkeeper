@@ -14,10 +14,12 @@
   --qa-fs-small: var(--homey-font-size-small, 14px); --qa-lh-small: var(--homey-line-height-small, 20px);
   --qa-bold: var(--homey-font-weight-bold, 700);
   --qa-radius: 10px; /* Homey's native device tiles, measured from a phone screenshot */
+  --qa-red-text: #D93B37; /* Sensor Alarms' red text on a red-tinted light tile (Locks' Tap to open) */
 }
 /* Dark mode: each tile looks like a native device tile, darker than the default widget background. */
 .homey-dark-mode .qa, .qa.homey-dark-mode {
   --qa-tile: #181920; --qa-accent-icon: color-mix(in oklab, var(--qa-accent) 72%, #FFFFFF); --qa-lighter: #2E3039;
+  --qa-red-text: var(--wk-red);
 }
 /* Blue keeps the lighter blue measured from the native tiles. */
 .homey-dark-mode .qa[data-wk-color="blue"], .qa.homey-dark-mode[data-wk-color="blue"] { --qa-accent-icon: #5AA6FF; }
@@ -43,6 +45,7 @@ html, body { background: transparent !important; }
   display: flex; flex-direction: column; align-items: stretch; gap: 6px; text-align: left;
   cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
   transition: background-color .15s, color .15s, transform .1s;
+  isolation: isolate; -webkit-touch-callout: none; /* the long press's fill sits under the content; no iOS callout */
 }
 /* The native tiles' 1px rim, brightest along the top. */
 .homey-dark-mode .qa-tile::after, .qa.homey-dark-mode .qa-tile::after {
@@ -88,6 +91,20 @@ html, body { background: transparent !important; }
 }
 .qa[data-active-style="lighter"] .qa-tile.active .qa-icon,
 .qa[data-active-style="lighter"] .qa-tile.active .qa-action { color: inherit; }
+
+/* A long press (`press: long`): the tile fills from the left while held, and acts once full (--qa-hold, from widget.js). */
+.qa-tile::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit;
+  background: color-mix(in srgb, var(--qa-text) 18%, transparent); transform: scaleX(0); transform-origin: left center;
+}
+.qa-tile.holding::before { transform: scaleX(1); transition: transform var(--qa-hold, 600ms) linear; }
+
+/* Waiting for the second tap (`press: double`): Locks' red-tinted Tap to open, whatever the active style; Vivid
+   the red shade, solid. A tile that's on drops .active meanwhile. */
+.qa-tile.confirm { background: color-mix(in srgb, var(--wk-red) 22%, var(--qa-tile)); }
+.qa-tile.confirm, .qa-tile.confirm .qa-icon, .qa-tile.confirm .qa-action { color: var(--qa-red-text); }
+.qa.wk-deep .qa-tile.confirm { background: var(--wk-red); }
+.qa.wk-deep .qa-tile.confirm, .qa.wk-deep .qa-tile.confirm .qa-icon, .qa.wk-deep .qa-tile.confirm .qa-action { color: var(--wk-on-red); }
 
 .qa-message { font-size: var(--qa-fs-small); line-height: var(--qa-lh-small); color: var(--qa-muted); }
 .qa-message.error { color: var(--homey-color-red, #F25F5C); }

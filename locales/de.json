@@ -40,7 +40,9 @@
     "error": "Geräte konnten nicht geladen werden.",
     "failed": "__name__ konnte nicht geändert werden.",
     "unavailable": "Nicht verfügbar",
-    "renameFailed": "Der Name konnte nicht gespeichert werden."
+    "renameFailed": "Der Name konnte nicht gespeichert werden.",
+    "tapAgain": "Erneut tippen",
+    "hold": "Halten"
   },
   "sensoralarms": {
     "selectDevices": "Wähle Sensoren in den Widget-Einstellungen.",

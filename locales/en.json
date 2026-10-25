@@ -40,7 +40,9 @@
     "error": "Could not load the devices.",
     "failed": "Could not change __name__.",
     "unavailable": "Unavailable",
-    "renameFailed": "Could not save the name."
+    "renameFailed": "Could not save the name.",
+    "tapAgain": "Tap again",
+    "hold": "Hold"
   },
   "sensoralarms": {
     "selectDevices": "Select sensors in the widget settings.",
