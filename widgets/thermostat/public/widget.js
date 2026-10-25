@@ -58,7 +58,7 @@
   /**
    * @param {HTMLElement} root
    * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string,
-   *   onApply?: (values: {capabilityId: string, value: any}[]) => Promise<any>,
+   *   onApply?: (values: {capabilityId: string, value: any}[], press?: { button: number }) => Promise<any>,
    *   onHeight?: (h: number) => void, layout?: string, title?: string }} opts `title` replaces the device's name.
    *   Without `onApply` there's no controls panel.
    */
@@ -80,7 +80,8 @@
       text: p => presetText(p),
       matches: (p, state) => presetMatches(state.values, deviceValues(p)),
       usable: p => deviceValues(p).length > 0,
-      apply: opts.onApply ? p => opts.onApply(deviceValues(p)) : null,
+      // A button's values with its number (1–3), for the Flow card *… was tapped*; the panel's changes send none.
+      apply: opts.onApply ? (p, s, i) => opts.onApply(deviceValues(p), { button: i + 1 }) : null,
       failed: err => `${t('applyFailed')} ${(err && err.message) || ''}`.trim(),
       current: () => currentText(),
       lit: (state, active) => setpointText(state, active),

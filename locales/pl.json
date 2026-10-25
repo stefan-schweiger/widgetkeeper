@@ -29,7 +29,11 @@
     "setpoint": "Ustawiono __temp__",
     "power": "Zasilanie",
     "controls": "Pokaż sterowanie",
-    "close": "Zamknij"
+    "close": "Zamknij",
+    "anyButton": "Dowolny przycisk",
+    "button": "Przycisk __n__",
+    "web": "__name__ (web)",
+    "keyItem": "Przyciski na pulpitach Homey wymagają klucza API"
   },
   "quickactions": {
     "selectDevices": "Wybierz urządzenia w ustawieniach widżetu.",

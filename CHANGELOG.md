@@ -48,6 +48,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 ### Spacer
 - At least 16 px high: at 0 px the iPhone app kept showing a loading indicator in its place. A spacer set to 0 is now 16 px.
 
+### Thermostat Presets
+- **Flow cards:** *Run [button]* sets the thermostat as a tap on that button does; the condition *[button] is active* says whether the thermostat matches it, as when the widget lights it; and the trigger *[button] was tapped* starts a Flow once a tap's settings reached the thermostat, with the thermostat and the button's text as tags, also for *Any button*. Each card picks a button of a widget on one of your dashboards and follows its settings; buttons on Homey's own dashboards are listed with an API key that has the Homey permission.
+
 ### Lighter on the Homey
 - The Insights Heatmap's recorded on/off history (when motion or a door was seen) moved out of the app settings into the app's own storage, and is saved only when it changes, not every minute.
 - A Media widget switched to another speaker no longer reads every Flow card on each refresh, and large one-off reads, such as every device for a settings list, are let go after a while.

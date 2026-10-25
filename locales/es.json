@@ -29,7 +29,11 @@
     "setpoint": "Fijado en __temp__",
     "power": "Encendido",
     "controls": "Mostrar los controles",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "anyButton": "Cualquier botón",
+    "button": "Botón __n__",
+    "web": "__name__ (web)",
+    "keyItem": "Los botones de los paneles de Homey necesitan una clave API"
   },
   "quickactions": {
     "selectDevices": "Elige dispositivos en los ajustes del widget.",

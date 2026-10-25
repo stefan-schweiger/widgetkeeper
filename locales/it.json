@@ -29,7 +29,11 @@
     "setpoint": "Impostato a __temp__",
     "power": "Accensione",
     "controls": "Mostra i comandi",
-    "close": "Chiudi"
+    "close": "Chiudi",
+    "anyButton": "Qualsiasi pulsante",
+    "button": "Pulsante __n__",
+    "web": "__name__ (web)",
+    "keyItem": "I pulsanti nelle dashboard di Homey richiedono una chiave API"
   },
   "quickactions": {
     "selectDevices": "Scegli i dispositivi nelle impostazioni.",

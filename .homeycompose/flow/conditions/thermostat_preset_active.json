@@ -1,0 +1,84 @@
+{
+  "id": "thermostat_preset_active",
+  "title": {
+    "en": "A Thermostat Presets button is active",
+    "nl": "Een knop van Thermostaatstanden is actief",
+    "de": "Eine Taste von Thermostat-Presets ist aktiv",
+    "fr": "Un bouton de Préréglages thermostat est actif",
+    "it": "Un pulsante di Preimpostazioni termostato è attivo",
+    "sv": "En knapp i Termostatlägen är aktiv",
+    "no": "En knapp i Termostatinnstillinger er aktiv",
+    "es": "Un botón de Ajustes del termostato está activo",
+    "da": "En knap i Termostatindstillinger er aktiv",
+    "ru": "Кнопка «Пресетов термостата» активна",
+    "pl": "Przycisk Ustawień termostatu jest aktywny",
+    "ko": "온도 조절기 프리셋 버튼이 활성 상태임",
+    "ar": "زر من «إعدادات منظم الحرارة» نشط"
+  },
+  "titleFormatted": {
+    "en": "[[preset]] !{{is|isn't}} active",
+    "nl": "[[preset]] !{{is|is niet}} actief",
+    "de": "[[preset]] !{{ist|ist nicht}} aktiv",
+    "fr": "[[preset]] !{{est|n'est pas}} actif",
+    "it": "[[preset]] !{{è|non è}} attivo",
+    "sv": "[[preset]] !{{är|är inte}} aktiv",
+    "no": "[[preset]] !{{er|er ikke}} aktiv",
+    "es": "[[preset]] !{{está|no está}} activo",
+    "da": "[[preset]] !{{er|er ikke}} aktiv",
+    "ru": "[[preset]] !{{активна|не активна}}",
+    "pl": "[[preset]] !{{jest|nie jest}} aktywny",
+    "ko": "[[preset]] !{{활성 상태임|활성 상태가 아님}}",
+    "ar": "[[preset]] !{{نشط|غير نشط}}"
+  },
+  "hint": {
+    "en": "Whether the thermostat matches everything the button sets, as when the widget lights it.",
+    "nl": "Of de thermostaat overeenkomt met alles wat de knop instelt, zoals wanneer de widget hem oplicht.",
+    "de": "Ob das Thermostat allem entspricht, was die Taste einstellt, wie wenn das Widget sie hervorhebt.",
+    "fr": "Si le thermostat correspond à tout ce que règle le bouton, comme quand le widget l'allume.",
+    "it": "Se il termostato corrisponde a tutto ciò che imposta il pulsante, come quando il widget lo illumina.",
+    "sv": "Om termostaten stämmer med allt knappen ställer in, som när widgeten tänder den.",
+    "no": "Om termostaten stemmer med alt knappen stiller inn, som når widgeten lyser den opp.",
+    "es": "Si el termostato coincide con todo lo que ajusta el botón, como cuando el widget lo ilumina.",
+    "da": "Om termostaten svarer til alt, hvad knappen indstiller, som når widgetten lyser den op.",
+    "ru": "Совпадает ли термостат со всем, что задаёт кнопка, как когда виджет её подсвечивает.",
+    "pl": "Czy termostat odpowiada wszystkiemu, co ustawia przycisk, jak wtedy, gdy widżet go podświetla.",
+    "ko": "위젯이 버튼을 강조할 때처럼 온도 조절기가 버튼의 모든 설정과 일치하는지 여부입니다.",
+    "ar": "هل يطابق منظم الحرارة كل ما يضبطه الزر، كما عندما يضيئه العنصر."
+  },
+  "args": [
+    {
+      "type": "autocomplete",
+      "name": "preset",
+      "title": {
+        "en": "Button",
+        "nl": "Knop",
+        "de": "Taste",
+        "fr": "Bouton",
+        "it": "Pulsante",
+        "sv": "Knapp",
+        "no": "Knapp",
+        "es": "Botón",
+        "da": "Knap",
+        "ru": "Кнопка",
+        "pl": "Przycisk",
+        "ko": "버튼",
+        "ar": "الزر"
+      },
+      "placeholder": {
+        "en": "Button",
+        "nl": "Knop",
+        "de": "Taste",
+        "fr": "Bouton",
+        "it": "Pulsante",
+        "sv": "Knapp",
+        "no": "Knapp",
+        "es": "Botón",
+        "da": "Knap",
+        "ru": "Кнопка",
+        "pl": "Przycisk",
+        "ko": "버튼",
+        "ar": "الزر"
+      }
+    }
+  ]
+}

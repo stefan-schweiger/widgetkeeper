@@ -34,15 +34,18 @@ export default {
     return logged(app, 'Thermostat state failed:', () => thermostatState(app, deviceId, query.sensor));
   },
 
+  /** `deviceId`, `values`, and for a button's tap `instance` (the widget's) and `button` (1–3): the Flow card *… was tapped*. */
   async apply({ homey, body }: {
     homey: Homey,
-    body: { deviceId?: string, values?: CapValue[] },
+    body: { deviceId?: string, values?: CapValue[], instance?: unknown, button?: unknown },
   }) {
     const app = homey.app as WidgetkeeperApp;
     return logged(app, () => `Thermostat apply failed, body: ${JSON.stringify(body)}`, async () => {
       const deviceId = requireId(body?.deviceId, 'deviceId');
       if (!Array.isArray(body.values)) throw new Error('Missing values');
       await app.thermostat.apply(deviceId, body.values);
+      // Not awaited: the tap's answer doesn't wait for the Flows (`tapped()` never throws).
+      if (body.instance != null) void app.thermostatPresets.tapped({ instance: body.instance, button: body.button, deviceId, values: body.values });
       return { ok: true };
     });
   },

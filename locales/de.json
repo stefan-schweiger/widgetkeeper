@@ -29,7 +29,11 @@
     "setpoint": "Eingestellt auf __temp__",
     "power": "Ein/Aus",
     "controls": "Steuerung anzeigen",
-    "close": "Schließen"
+    "close": "Schließen",
+    "anyButton": "Beliebige Taste",
+    "button": "Taste __n__",
+    "web": "__name__ (Web)",
+    "keyItem": "Tasten auf Homey-Dashboards brauchen einen API-Schlüssel"
   },
   "quickactions": {
     "selectDevices": "Wähle Geräte in den Widget-Einstellungen.",

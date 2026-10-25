@@ -29,7 +29,11 @@
     "setpoint": "Set to __temp__",
     "power": "Power",
     "controls": "Show the controls",
-    "close": "Close"
+    "close": "Close",
+    "anyButton": "Any button",
+    "button": "Button __n__",
+    "web": "__name__ (web)",
+    "keyItem": "Buttons on Homey's dashboards need an API key"
   },
   "quickactions": {
     "selectDevices": "Select devices in the widget settings.",
