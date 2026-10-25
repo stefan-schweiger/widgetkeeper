@@ -25,6 +25,8 @@
     codeMissing: 'This code was removed: pick one in the widget settings.',
     noCodes: 'No codes yet: add one in the app settings.',
     enterCode: 'Enter the code',
+    codeFor: 'Enter the code for __name__',
+    codeThenTap: 'Enter the code, then tap a button',
     pickButton: 'Now tap a button',
     needsCode: 'Needs the code',
     close: 'Close',
@@ -478,25 +480,39 @@
       leftKey.replaceChildren(...(k ? [glyph({ d: k === 'ok' ? MARKS.check : MARKS.close }, '')] : []));
     }
 
+    /**
+     * What the keypad asks: on a tap, the button's label (it was just tapped); always shown, what the code is for (the
+     * button waiting, or the only one behind the code) or that a button comes after it.
+     */
+    function prompt(list, b, full) {
+      if (code && code.missing) return codeGone();
+      if (!always) return b ? labelOf(b) : t('enterCode');
+      if (b) return t('codeFor', { name: labelOf(b) });
+      if (full) return t('pickButton');
+      return list.filter(needsCode).length > 1 ? t('codeThenTap') : t('enterCode');
+    }
+
     function renderPad(list) {
       setLeftKey();
       if (!always && !open) return;
-      const b = target();
+      const behind = list.filter(needsCode);
+      // Always shown, the only button behind the code is what it's for, as if it were waiting.
+      const b = target() || (always && behind.length === 1 ? behind[0] : null);
       const full = digits() ? entry.typed.length === digits() : entry.ok;
-      const label = b ? labelOf(b) : code && code.missing ? codeGone() : full ? t('pickButton') : t('enterCode');
       padTop.classList.toggle('missing', !!(code && code.missing));
       if (b && b.color !== 'grey') padTop.dataset.wkColor = b.color;
       else delete padTop.dataset.wkColor;
       padGlyph.replaceChildren(...(b && b.icon ? [glyph(ICONS[b.icon], '')] : []));
-      padLabel.textContent = label;
+      padLabel.textContent = prompt(list, b, full);
       // Compact (open, in place of the widget): the title or a message beside the label.
       padSub.textContent = message.text || title || (source && !source.missing && source.name) || '';
       padSub.classList.toggle('error', !!message.text);
       const off = entry.checking || !ready() || Date.now() < lockedUntil || !list.some(needsCode);
       for (const key of keys.querySelectorAll('button')) key.disabled = off || key.classList.contains('blank');
-      // The code's length in dots; while it isn't known, only the digits typed.
-      const shown = ready() ? digits() || entry.typed.length : 4;
-      padDots.replaceChildren(...Array.from({ length: shown }, (_, i) => el('span', { class: i < entry.typed.length ? 'kp-dot f' : 'kp-dot' })));
+      // The code's length in dots; while it isn't known, the digits typed and one more. The next one pulses while it waits.
+      const shown = ready() ? digits() || Math.min(entry.typed.length + 1, MAX_DIGITS) : 4;
+      const next = off || entry.error || full ? -1 : entry.typed.length;
+      padDots.replaceChildren(...Array.from({ length: shown }, (_, i) => el('span', { class: i < entry.typed.length ? 'kp-dot f' : i === next ? 'kp-dot next' : 'kp-dot' })));
       padDots.classList.toggle('err', entry.error);
       padDots.classList.toggle('checking', entry.checking);
     }

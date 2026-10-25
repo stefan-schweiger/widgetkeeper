@@ -368,6 +368,8 @@
     "codeMissing": "Dieser Code wurde entfernt: Wähle einen in den Widget-Einstellungen.",
     "noCodes": "Noch keine Codes: Füge einen in den App-Einstellungen hinzu.",
     "enterCode": "Code eingeben",
+    "codeFor": "Code für __name__ eingeben",
+    "codeThenTap": "Code eingeben, dann eine Taste antippen",
     "pickButton": "Jetzt eine Taste tippen",
     "needsCode": "Code nötig",
     "close": "Schließen",
