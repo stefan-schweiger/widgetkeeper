@@ -482,4 +482,23 @@ describe('Keypad: mount', () => {
     expect(Homey.hapticFeedback).toHaveBeenCalled();
     expect(api).toHaveBeenCalledWith('POST', '/press', { source: 'cap:alarm:homealarm_state', value: 'armed', button: 'Arm', title: 'Surveillance' });
   });
+
+  it("still works where Homey's haptic feedback throws: a mouse click or a key, on a web dashboard", async () => {
+    const api = vi.fn(async (method: string, _path: string) => (method === 'GET' ? alarm('armed') : { ok: true, result: 'done' }));
+    const Homey = {
+      getSettings: () => ALARM, __: () => undefined, api, on: () => {}, ready: vi.fn(), setHeight: vi.fn(),
+      // As Homey's SDK does without a touch in the last 0.5 s.
+      hapticFeedback: () => { throw new Error('shortPressHapticFeedback can only be called during a user touch or click event.'); },
+    };
+    const root = document.createElement('div');
+    document.body.append(root);
+    win.mountKeypadWidget(Homey, { root, frame: document.body });
+    await vi.waitFor(() => expect(Homey.ready).toHaveBeenCalled());
+    root.querySelectorAll<HTMLElement>('.kp-btn')[1].click(); // Night, without the code
+    expect(api).toHaveBeenCalledWith('POST', '/press', expect.objectContaining({ value: 'partially_armed' }));
+    root.querySelectorAll<HTMLElement>('.kp-btn')[2].click(); // Disarm: the keypad opens, and takes keys
+    expect(root.classList.contains('pad-open')).toBe(true);
+    for (const k of '4711') document.dispatchEvent(new KeyboardEvent('keydown', { key: k }));
+    expect(api).toHaveBeenCalledWith('POST', '/press', expect.objectContaining({ flow: 'flow:f1', codeId: 'c1', code: '4711' }));
+  });
 });

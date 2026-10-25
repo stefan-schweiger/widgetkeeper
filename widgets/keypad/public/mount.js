@@ -30,8 +30,9 @@ window.mountKeypadWidget = function (Homey, { root, frame }) {
     keypad, // tap unless always
     buttons,
     onPress: body => Homey.api('POST', '/press', body),
+    // Homey's SDK throws unless a touch ended in the last 0.5 s: a mouse click or a key on a web dashboard.
     onHaptic: () => {
-      if (typeof Homey.hapticFeedback === 'function') Homey.hapticFeedback();
+      try { if (Homey.hapticFeedback) Homey.hapticFeedback(); } catch (e) { /* not on every platform */ }
     },
     // The widget's height changes with the pad; Homey needs the frame's, which adds the widget padding.
     onHeight: link.setHeight,
