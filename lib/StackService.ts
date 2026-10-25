@@ -191,6 +191,14 @@ export default class StackService {
     };
   }
 
+  /**
+   * Every dashboard, through the key (a `KeyError` without a usable one): the stack's own read, shared with Thermostat
+   * Presets' Flow cards. `fresh` for an autocomplete.
+   */
+  dashboards(fresh = false): Promise<any[]> {
+    return this.read(fresh ? AUTOCOMPLETE_CACHE_MS : CACHE_MS);
+  }
+
   /** A read (or one on its way) is shared while it's at most `maxAge` old. */
   private read(maxAge: number): Promise<any[]> {
     return this.cache.get(maxAge);

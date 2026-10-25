@@ -1,0 +1,84 @@
+{
+  "id": "thermostat_run_preset",
+  "title": {
+    "en": "Run a Thermostat Presets button",
+    "nl": "Een knop van Thermostaatstanden uitvoeren",
+    "de": "Eine Taste von Thermostat-Presets ausführen",
+    "fr": "Exécuter un bouton de Préréglages thermostat",
+    "it": "Esegui un pulsante di Preimpostazioni termostato",
+    "sv": "Kör en knapp i Termostatlägen",
+    "no": "Kjør en knapp i Termostatinnstillinger",
+    "es": "Ejecutar un botón de Ajustes del termostato",
+    "da": "Kør en knap i Termostatindstillinger",
+    "ru": "Выполнить кнопку «Пресетов термостата»",
+    "pl": "Uruchom przycisk Ustawień termostatu",
+    "ko": "온도 조절기 프리셋 버튼 실행",
+    "ar": "تشغيل زر من «إعدادات منظم الحرارة»"
+  },
+  "titleFormatted": {
+    "en": "Run [[preset]]",
+    "nl": "Voer [[preset]] uit",
+    "de": "[[preset]] ausführen",
+    "fr": "Exécuter [[preset]]",
+    "it": "Esegui [[preset]]",
+    "sv": "Kör [[preset]]",
+    "no": "Kjør [[preset]]",
+    "es": "Ejecutar [[preset]]",
+    "da": "Kør [[preset]]",
+    "ru": "Выполнить [[preset]]",
+    "pl": "Uruchom [[preset]]",
+    "ko": "[[preset]] 실행",
+    "ar": "تشغيل [[preset]]"
+  },
+  "hint": {
+    "en": "Sets the thermostat as a tap on the button does, with the button's settings as they are now. Buttons on Homey's own dashboards need an API key with the Homey permission.",
+    "nl": "Stelt de thermostaat in zoals een tik op de knop, met de huidige instellingen van de knop. Knoppen op Homey's eigen dashboards hebben een API-sleutel met het recht Homey nodig.",
+    "de": "Stellt das Thermostat ein wie ein Tippen auf die Taste, mit ihren aktuellen Einstellungen. Tasten auf Homeys eigenen Dashboards brauchen einen API-Schlüssel mit dem Recht Homey.",
+    "fr": "Règle le thermostat comme un appui sur le bouton, avec ses réglages actuels. Les boutons des tableaux de bord de Homey demandent une clé API avec le droit Homey.",
+    "it": "Imposta il termostato come un tocco sul pulsante, con le sue impostazioni attuali. I pulsanti nelle dashboard di Homey richiedono una chiave API con il permesso Homey.",
+    "sv": "Ställer in termostaten som ett tryck på knappen, med knappens nuvarande inställningar. Knappar på Homeys egna instrumentpaneler kräver en API-nyckel med behörigheten Homey.",
+    "no": "Stiller inn termostaten som et trykk på knappen, med knappens nåværende innstillinger. Knapper på Homeys egne dashbord trenger en API-nøkkel med tillatelsen Homey.",
+    "es": "Ajusta el termostato como un toque en el botón, con sus ajustes actuales. Los botones de los paneles de Homey necesitan una clave API con el permiso Homey.",
+    "da": "Indstiller termostaten som et tryk på knappen, med knappens nuværende indstillinger. Knapper på Homeys egne dashboards kræver en API-nøgle med tilladelsen Homey.",
+    "ru": "Настраивает термостат так же, как нажатие кнопки, с её текущими настройками. Для кнопок на панелях Homey нужен API-ключ с правом Homey.",
+    "pl": "Ustawia termostat tak jak dotknięcie przycisku, z jego obecnymi ustawieniami. Przyciski na pulpitach Homey wymagają klucza API z uprawnieniem Homey.",
+    "ko": "버튼을 누른 것처럼 버튼의 현재 설정으로 온도 조절기를 설정합니다. Homey 대시보드의 버튼에는 Homey 권한이 있는 API 키가 필요합니다.",
+    "ar": "يضبط منظم الحرارة كما لو نُقر على الزر، بإعداداته الحالية. أزرار لوحات Homey تحتاج إلى مفتاح API بإذن Homey."
+  },
+  "args": [
+    {
+      "type": "autocomplete",
+      "name": "preset",
+      "title": {
+        "en": "Button",
+        "nl": "Knop",
+        "de": "Taste",
+        "fr": "Bouton",
+        "it": "Pulsante",
+        "sv": "Knapp",
+        "no": "Knapp",
+        "es": "Botón",
+        "da": "Knap",
+        "ru": "Кнопка",
+        "pl": "Przycisk",
+        "ko": "버튼",
+        "ar": "الزر"
+      },
+      "placeholder": {
+        "en": "Button",
+        "nl": "Knop",
+        "de": "Taste",
+        "fr": "Bouton",
+        "it": "Pulsante",
+        "sv": "Knapp",
+        "no": "Knapp",
+        "es": "Botón",
+        "da": "Knap",
+        "ru": "Кнопка",
+        "pl": "Przycisk",
+        "ko": "버튼",
+        "ar": "الزر"
+      }
+    }
+  ]
+}

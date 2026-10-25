@@ -29,7 +29,11 @@
     "setpoint": "Satt til __temp__",
     "power": "Av/på",
     "controls": "Vis kontrollene",
-    "close": "Lukk"
+    "close": "Lukk",
+    "anyButton": "Hvilken som helst knapp",
+    "button": "Knapp __n__",
+    "web": "__name__ (nett)",
+    "keyItem": "Knapper på Homey-dashbord trenger en API-nøkkel"
   },
   "quickactions": {
     "selectDevices": "Velg enheter i widgetinnstillingene.",

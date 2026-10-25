@@ -1,0 +1,174 @@
+{
+  "id": "thermostat_preset_tapped",
+  "title": {
+    "en": "A Thermostat Presets button was tapped",
+    "nl": "Op een knop van Thermostaatstanden is getikt",
+    "de": "Eine Taste von Thermostat-Presets wurde angetippt",
+    "fr": "Un bouton de Préréglages thermostat a été touché",
+    "it": "È stato toccato un pulsante di Preimpostazioni termostato",
+    "sv": "En knapp i Termostatlägen trycktes",
+    "no": "En knapp i Termostatinnstillinger ble trykket",
+    "es": "Se tocó un botón de Ajustes del termostato",
+    "da": "Der blev trykket på en knap i Termostatindstillinger",
+    "ru": "Нажата кнопка «Пресетов термостата»",
+    "pl": "Dotknięto przycisku Ustawień termostatu",
+    "ko": "온도 조절기 프리셋 버튼을 눌렀을 때",
+    "ar": "تم النقر على زر من «إعدادات منظم الحرارة»"
+  },
+  "titleFormatted": {
+    "en": "[[preset]] was tapped",
+    "nl": "Op [[preset]] is getikt",
+    "de": "[[preset]] wurde angetippt",
+    "fr": "[[preset]] a été touché",
+    "it": "[[preset]] è stato toccato",
+    "sv": "[[preset]] trycktes",
+    "no": "[[preset]] ble trykket",
+    "es": "Se tocó [[preset]]",
+    "da": "Der blev trykket på [[preset]]",
+    "ru": "Нажата [[preset]]",
+    "pl": "Dotknięto [[preset]]",
+    "ko": "[[preset]]을(를) 눌렀을 때",
+    "ar": "تم النقر على [[preset]]"
+  },
+  "hint": {
+    "en": "Once a tapped button's settings reached the thermostat, on any screen. Not for the controls, or a Flow running the button.",
+    "nl": "Zodra de instellingen van een aangetikte knop de thermostaat bereikten, op elk scherm. Niet voor de bediening of een Flow die de knop uitvoert.",
+    "de": "Sobald die Einstellungen einer angetippten Taste beim Thermostat angekommen sind, auf jedem Bildschirm. Nicht für die Steuerung oder einen Flow, der die Taste ausführt.",
+    "fr": "Dès que les réglages d'un bouton touché ont atteint le thermostat, sur n'importe quel écran. Pas pour les commandes, ni pour un Flow qui exécute le bouton.",
+    "it": "Quando le impostazioni di un pulsante toccato arrivano al termostato, su qualsiasi schermo. Non per i comandi o per un Flow che esegue il pulsante.",
+    "sv": "När en tryckt knapps inställningar har nått termostaten, på vilken skärm som helst. Inte för reglagen eller ett Flow som kör knappen.",
+    "no": "Når innstillingene til en trykket knapp har nådd termostaten, på hvilken som helst skjerm. Ikke for kontrollene eller en Flow som kjører knappen.",
+    "es": "Cuando los ajustes de un botón tocado llegan al termostato, en cualquier pantalla. No para los controles ni para un Flow que ejecuta el botón.",
+    "da": "Når en trykket knaps indstillinger er nået frem til termostaten, på enhver skærm. Ikke for betjeningen eller et Flow, der kører knappen.",
+    "ru": "Когда настройки нажатой кнопки дошли до термостата, на любом экране. Не для элементов управления и не для Flow, выполняющего кнопку.",
+    "pl": "Gdy ustawienia dotkniętego przycisku dotrą do termostatu, na dowolnym ekranie. Nie dla sterowania ani dla Flow uruchamiającego przycisk.",
+    "ko": "누른 버튼의 설정이 온도 조절기에 적용되었을 때, 모든 화면에서. 컨트롤이나 버튼을 실행하는 Flow에는 해당되지 않습니다.",
+    "ar": "بعد وصول إعدادات الزر الذي نُقر عليه إلى منظم الحرارة، على أي شاشة. ليس للتحكم أو لـ Flow يشغّل الزر."
+  },
+  "tokens": [
+    {
+      "name": "device",
+      "type": "string",
+      "title": {
+        "en": "Thermostat",
+        "nl": "Thermostaat",
+        "de": "Thermostat",
+        "fr": "Thermostat",
+        "it": "Termostato",
+        "sv": "Termostat",
+        "no": "Termostat",
+        "es": "Termostato",
+        "da": "Termostat",
+        "ru": "Термостат",
+        "pl": "Termostat",
+        "ko": "온도 조절기",
+        "ar": "منظم الحرارة"
+      },
+      "example": {
+        "en": "Living room",
+        "nl": "Woonkamer",
+        "de": "Wohnzimmer",
+        "fr": "Salon",
+        "it": "Soggiorno",
+        "sv": "Vardagsrum",
+        "no": "Stue",
+        "es": "Salón",
+        "da": "Stue",
+        "ru": "Гостиная",
+        "pl": "Salon",
+        "ko": "거실",
+        "ar": "غرفة المعيشة"
+      }
+    },
+    {
+      "name": "preset",
+      "type": "string",
+      "title": {
+        "en": "Preset",
+        "nl": "Stand",
+        "de": "Preset",
+        "fr": "Préréglage",
+        "it": "Preimpostazione",
+        "sv": "Läge",
+        "no": "Innstilling",
+        "es": "Ajuste",
+        "da": "Indstilling",
+        "ru": "Пресет",
+        "pl": "Ustawienie",
+        "ko": "프리셋",
+        "ar": "الإعداد"
+      },
+      "example": {
+        "en": "21° · Heat",
+        "nl": "21° · Verwarmen",
+        "de": "21° · Heizen",
+        "fr": "21° · Chauffage",
+        "it": "21° · Riscaldamento",
+        "sv": "21° · Värme",
+        "no": "21° · Varme",
+        "es": "21° · Calor",
+        "da": "21° · Varme",
+        "ru": "21° · Нагрев",
+        "pl": "21° · Grzanie",
+        "ko": "21° · 난방",
+        "ar": "21° · تدفئة"
+      }
+    },
+    {
+      "name": "button",
+      "type": "number",
+      "title": {
+        "en": "Button",
+        "nl": "Knop",
+        "de": "Taste",
+        "fr": "Bouton",
+        "it": "Pulsante",
+        "sv": "Knapp",
+        "no": "Knapp",
+        "es": "Botón",
+        "da": "Knap",
+        "ru": "Кнопка",
+        "pl": "Przycisk",
+        "ko": "버튼",
+        "ar": "الزر"
+      },
+      "example": 2
+    }
+  ],
+  "args": [
+    {
+      "type": "autocomplete",
+      "name": "preset",
+      "title": {
+        "en": "Button",
+        "nl": "Knop",
+        "de": "Taste",
+        "fr": "Bouton",
+        "it": "Pulsante",
+        "sv": "Knapp",
+        "no": "Knapp",
+        "es": "Botón",
+        "da": "Knap",
+        "ru": "Кнопка",
+        "pl": "Przycisk",
+        "ko": "버튼",
+        "ar": "الزر"
+      },
+      "placeholder": {
+        "en": "Button",
+        "nl": "Knop",
+        "de": "Taste",
+        "fr": "Bouton",
+        "it": "Pulsante",
+        "sv": "Knapp",
+        "no": "Knapp",
+        "es": "Botón",
+        "da": "Knap",
+        "ru": "Кнопка",
+        "pl": "Przycisk",
+        "ko": "버튼",
+        "ar": "الزر"
+      }
+    }
+  ]
+}

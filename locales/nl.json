@@ -29,7 +29,11 @@
     "setpoint": "Ingesteld op __temp__",
     "power": "Aan/uit",
     "controls": "Bediening tonen",
-    "close": "Sluiten"
+    "close": "Sluiten",
+    "anyButton": "Elke knop",
+    "button": "Knop __n__",
+    "web": "__name__ (web)",
+    "keyItem": "Knoppen op Homey-dashboards hebben een API-sleutel nodig"
   },
   "quickactions": {
     "selectDevices": "Kies apparaten in de widgetinstellingen.",

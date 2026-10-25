@@ -29,7 +29,11 @@
     "setpoint": "Réglé sur __temp__",
     "power": "Marche/arrêt",
     "controls": "Afficher les commandes",
-    "close": "Fermer"
+    "close": "Fermer",
+    "anyButton": "N'importe quel bouton",
+    "button": "Bouton __n__",
+    "web": "__name__ (web)",
+    "keyItem": "Les boutons des tableaux de bord Homey demandent une clé API"
   },
   "quickactions": {
     "selectDevices": "Choisissez des appareils dans les réglages.",

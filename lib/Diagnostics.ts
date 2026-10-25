@@ -53,6 +53,7 @@ export default class Diagnostics {
       timers: (this.homey.app as any)?.timers?.describe?.() ?? null,
       textLines: (this.homey.app as any)?.textLines?.describe?.() ?? null,
       daysSince: (this.homey.app as any)?.daysSince?.describe?.() ?? null,
+      thermostatPresets: (this.homey.app as any)?.thermostatPresets?.describe?.() ?? null,
       tileNames: (this.homey.app as any)?.tileNames?.describe?.() ?? null,
       media: (this.homey.app as any)?.media?.describe?.() ?? null,
       stack: await (this.homey.app as any)?.stack?.describe?.().catch((err: unknown) => String(err)) ?? null,

@@ -29,7 +29,11 @@
     "setpoint": "Inställd på __temp__",
     "power": "På/av",
     "controls": "Visa reglagen",
-    "close": "Stäng"
+    "close": "Stäng",
+    "anyButton": "Valfri knapp",
+    "button": "Knapp __n__",
+    "web": "__name__ (webb)",
+    "keyItem": "Knappar på Homeys instrumentpaneler kräver en API-nyckel"
   },
   "quickactions": {
     "selectDevices": "Välj enheter i widgetinställningarna.",

@@ -14,7 +14,7 @@
    * @param {HTMLElement} root
    * @param {{ text: (preset: any, state: any) => { big: string, mode?: string | null, kind?: string, extras?: string[] },
    *   matches: (preset: any, state: any) => boolean, usable?: (preset: any, state: any) => boolean,
-   *   apply?: ((preset: any, state: any) => Promise<any>) | null, failed: (err: any) => string,
+   *   apply?: ((preset: any, state: any, index: number) => Promise<any>) | null, failed: (err: any) => string,
    *   current: (state: any, presets: any[]) => string, lit?: (state: any, active: number[]) => string,
    *   aside?: (state: any) => string, onHeader?: (() => void) | null, headerLabel?: string, layout?: string,
    *   fallbackIcon?: boolean, onHeight?: (h: number) => void }} hooks `state` has the header's `name` and `icon` (a URL
@@ -87,7 +87,7 @@
       render();
       setTimeout(render, OPTIMISTIC_MS + 50);
       try {
-        await hooks.apply(preset, state);
+        await hooks.apply(preset, state, index);
       } catch (err) {
         console.error(err);
         optimistic = null;

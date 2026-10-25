@@ -14,6 +14,9 @@ window.mountThermostatWidget = function (Homey, { root, frame }) {
   const deviceId = (settings.device && settings.device.id) || null;
   // The value beside the name: a Device Values slot `<deviceId>:<capabilityId>` (`None`'s id has no colon).
   const sensor = settings.sensor && String(settings.sensor.id || '').includes(':') ? settings.sensor.id : null;
+  // Sent with a button's tap, so the Flow card *… was tapped* knows the button (a stack page has the original's id).
+  let instance = '';
+  try { instance = typeof Homey.getWidgetInstanceId === 'function' ? Homey.getWidgetInstanceId() || '' : ''; } catch (e) { /* none */ }
   let loaded = false;
 
   const widget = window.createThermostatWidget(root, {
@@ -21,8 +24,10 @@ window.mountThermostatWidget = function (Homey, { root, frame }) {
     t: (key, tokens) => Homey.__(key, tokens),
     layout: settings.layout, // missing on widgets placed before the setting: standard
     title: settings.title, // empty or missing: the device's name
-    onApply: (values) => Homey.api('POST', '/apply', {
-      deviceId, values: values.map(({ capabilityId, value }) => ({ capabilityId, value })),
+    onApply: (values, press) => Homey.api('POST', '/apply', {
+      deviceId,
+      values: values.map(({ capabilityId, value }) => ({ capabilityId, value })),
+      ...(press && instance ? { instance, button: press.button } : {}),
     }),
     // The widget reports its own height; Homey needs the body's, which adds the widget padding.
     onHeight: link.setHeight,

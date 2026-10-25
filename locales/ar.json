@@ -29,7 +29,11 @@
     "setpoint": "مضبوط على __temp__",
     "power": "التشغيل",
     "controls": "إظهار عناصر التحكم",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "anyButton": "أي زر",
+    "button": "الزر __n__",
+    "web": "__name__ (ويب)",
+    "keyItem": "أزرار لوحات Homey تحتاج إلى مفتاح API"
   },
   "quickactions": {
     "selectDevices": "اختر الأجهزة في إعدادات الأداة.",

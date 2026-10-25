@@ -24,6 +24,9 @@ import SensorAlarmService from './lib/SensorAlarmService.js';
 import SparklineService from './lib/SparklineService.js';
 import StackService, { STACK_RESUME_CARD, STACK_SHOW_CARD } from './lib/StackService.js';
 import TextLineService, { TEXTLINE_CLEAR_CARD, TEXTLINE_SET_CARD, TEXTLINE_SET_COLOR_CARD } from './lib/TextLineService.js';
+import ThermostatPresetService, {
+  THERMOSTAT_ACTIVE_CARD, THERMOSTAT_RUN_CARD, THERMOSTAT_TAPPED_CARD, type ButtonArg,
+} from './lib/ThermostatPresetService.js';
 import ThermostatService from './lib/ThermostatService.js';
 import TileNameService from './lib/TileNameService.js';
 import TimerService, { TIMER_FINISHED_CARD, timerDurationText, type Timer } from './lib/TimerService.js';
@@ -39,6 +42,8 @@ export default class WidgetkeeperApp extends Homey.App {
   diagnostics!: Diagnostics;
   electricity!: ElectricityService;
   thermostat!: ThermostatService;
+  /** Thermostat Presets' Flow cards: run a button, whether it's lit, and its taps. */
+  thermostatPresets!: ThermostatPresetService;
   quickActions!: QuickActionService;
   sensorAlarms!: SensorAlarmService;
   roomHealth!: RoomHealthService;
@@ -126,6 +131,13 @@ export default class WidgetkeeperApp extends Homey.App {
     this.tileNames = new TileNameService(this.homey, debug);
     this.web = new WebDashboardService(this.homey, log, widgetAutocompletes(this), this.tileNames);
     this.adoptOldTileNames();
+    this.thermostatPresets = new ThermostatPresetService(this.homey, {
+      thermostat: this.thermostat,
+      stack: this.stack,
+      web: this.web,
+      onTap: (tokens, state) => this.homey.flow.getTriggerCard(THERMOSTAT_TAPPED_CARD).trigger(tokens, state),
+    }, log, debug);
+    this.registerThermostatFlows();
     this.webPassword = new WebPassword(this.homey, log);
     this.homey.flow.getActionCard(WEB_PASSWORD_REMOVE_CARD).registerRunListener(async () => this.webPassword.clear());
     this.popups = new PopupService(this.homey, { cameras: this.cameras, web: this.web }, log, debug);
@@ -214,6 +226,24 @@ export default class WidgetkeeperApp extends Homey.App {
     card.registerRunListener(async (args: { flow?: { id?: string }, color: string }) => {
       this.flows.setColor(args.flow?.id ?? '', args.color);
     });
+  }
+
+  /**
+   * Thermostat Presets' Flow cards: *Run …*, the condition *… is active* and the trigger *… was tapped* (filtered to
+   * its button, or any). Each button argument lists the widgets' buttons on Homey's and the web dashboards.
+   */
+  private registerThermostatFlows() {
+    type Args = { preset?: ButtonArg };
+    const list = (any: boolean) => async (query: string) => this.thermostatPresets.listButtons(query, { any });
+    const run = this.homey.flow.getActionCard(THERMOSTAT_RUN_CARD);
+    run.registerArgumentAutocompleteListener('preset', list(false));
+    run.registerRunListener(async (args: Args) => this.thermostatPresets.run(args.preset));
+    const active = this.homey.flow.getConditionCard(THERMOSTAT_ACTIVE_CARD);
+    active.registerArgumentAutocompleteListener('preset', list(false));
+    active.registerRunListener(async (args: Args) => this.thermostatPresets.isActive(args.preset));
+    const tapped = this.homey.flow.getTriggerCard(THERMOSTAT_TAPPED_CARD);
+    tapped.registerArgumentAutocompleteListener('preset', list(true));
+    tapped.registerRunListener(async (args: Args, state: { id?: string }) => this.thermostatPresets.matches(args.preset, state?.id));
   }
 
   /** The Flow cards that bring a widget forward on every Smart Stack, and that end it. */

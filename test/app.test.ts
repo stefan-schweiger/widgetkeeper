@@ -83,6 +83,7 @@ describe('the app: Flow cards', () => {
     ['stack_resume', 'stack', 'resume', {}, []],
     ['values_set_color', 'values', 'setColor', { slot: { id: 'd1:measure_temperature' }, color: 'red' }, ['d1:measure_temperature', 'red']],
     ['values_set_color', 'values', 'setColor', { color: 'red' }, ['', 'red']],
+    ['thermostat_run_preset', 'thermostatPresets', 'run', { preset: { id: 'w1:2' } }, [{ id: 'w1:2' }]],
     ['flows_set_color', 'flows', 'setColor', { flow: { id: 'flow:f1' }, color: 'blue' }, ['flow:f1', 'blue']],
     // A counter argument is its id, or the name typed for a new one.
     ['dayssince_set', 'daysSince', 'setDaysAgo', { counter: { id: 'filter', name: 'Filter' }, days: 3 }, ['filter', 3]],
@@ -129,6 +130,38 @@ describe('the app: Flow cards', () => {
     const isOverdue = vi.spyOn(app.daysSince, 'isOverdue').mockReturnValue(false);
     await expect(flow.cards.get('conditions:dayssince_is_overdue')!.run!({ counter: { id: 'filter' } })).resolves.toBe(false);
     expect(isOverdue).toHaveBeenCalledWith({ id: 'filter' });
+  });
+});
+
+describe('the app: Thermostat Presets cards', () => {
+  it("says when a Thermostat Presets button was tapped, for that button's Flows, and whether one is active", async () => {
+    const { app, flow } = await bootApp();
+    vi.spyOn(app.thermostat, 'getState').mockResolvedValue({ name: 'Aircon', icon: null, values: {}, caps: {} });
+    await app.thermostatPresets.tapped({ instance: 'w1', button: 2, deviceId: 'd1', values: [{ capabilityId: 'target_temperature', value: 21 }] });
+    const card = flow.cards.get('triggers:thermostat_preset_tapped')!;
+    expect(card.trigger).toHaveBeenCalledWith({ device: 'Aircon', preset: '21°', button: 2 }, { id: 'w1:2' });
+    await expect(card.run!({ preset: { id: 'w1:2' } }, { id: 'w1:2' })).resolves.toBe(true);
+    await expect(card.run!({ preset: { id: 'w1:1' } }, { id: 'w1:2' })).resolves.toBe(false);
+    const isActive = vi.spyOn(app.thermostatPresets, 'isActive').mockResolvedValue(true);
+    await expect(flow.cards.get('conditions:thermostat_preset_active')!.run!({ preset: { id: 'w1:2' } })).resolves.toBe(true);
+    expect(isActive).toHaveBeenCalledWith({ id: 'w1:2' });
+  });
+
+  it("lists the web dashboards' buttons, and says the key is missing for Homey's", async () => {
+    const { app, flow, homey } = await bootApp();
+    homey.settings.set('webDashboardsEnabled', true);
+    homey.settings.set('webDashboards', [{
+      id: 'wd', name: 'Hall', columns: [[{ id: 'x1', type: 'thermostat', settings: { device: { id: 'ac', name: 'Aircon' }, b1Power: 'off' } }]],
+    }]);
+    // The web dashboards fill a missing setting with the manifest's default: buttons 2 and 3 turn the device on.
+    const items = await flow.cards.get('actions:thermostat_run_preset')!.autocompletes.preset('') as any[];
+    expect(items.map(i => [i.id, i.name])).toEqual([
+      ['web-wd-x1:1', 'Aircon · Off'], ['web-wd-x1:2', 'Aircon · On'], ['web-wd-x1:3', 'Aircon · On'],
+      ['none', "Buttons on Homey's dashboards need an API key"],
+    ]);
+    const any = await flow.cards.get('triggers:thermostat_preset_tapped')!.autocompletes.preset('') as any[];
+    expect(any[0]).toMatchObject({ any: true });
+    expect((await app.diagnostics.report(undefined)).thermostatPresets).toEqual({ runs: 0, saved: 0, taps: 0, lastError: null });
   });
 });
 
