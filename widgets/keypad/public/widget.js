@@ -545,6 +545,8 @@
         entry.error = false;
         entry.typed = '';
       }
+      // A new try: the last one's message (Wrong code) goes. The keys are off while locked, so its countdown stays.
+      if (k !== 'ok' && message.text) message.set(null);
       if (k === 'ok') {
         if (!complete()) return render();
         entry.ok = true;
