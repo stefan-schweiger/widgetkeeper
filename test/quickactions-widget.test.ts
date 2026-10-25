@@ -225,7 +225,7 @@ describe('long press', () => {
     return e;
   };
 
-  it('acts once the tile has been held for 600 ms, with a haptic', async () => {
+  it('acts once the tile has been held for 600 ms, and vibrates as the finger lifts', async () => {
     const onHaptic = vi.fn();
     const { tile, onTrigger } = widget([door(true)], undefined, undefined, { ...LOCKS, onHaptic });
     fireTouch(tile('door'), 'touchstart', 10, 10);
@@ -234,10 +234,12 @@ describe('long press', () => {
     expect(onTrigger).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(60);
     expect(onTrigger).toHaveBeenCalledExactlyOnceWith('door', false);
-    expect(onHaptic).toHaveBeenCalledOnce();
+    expect(onHaptic).not.toHaveBeenCalled(); // Homey's haptic throws until a touch ends
     expect(tile('door').classList.contains('holding')).toBe(false);
     fireTouch(tile('door'), 'touchend', 10, 10);
     tile('door').click(); // the click a browser may still send
+    await vi.advanceTimersByTimeAsync(0);
+    expect(onHaptic).toHaveBeenCalledOnce();
     expect(onTrigger).toHaveBeenCalledOnce();
   });
 

@@ -107,7 +107,7 @@ describe('onTap()', () => {
     function held(when = () => true) {
       const node = document.createElement('button');
       const fn = vi.fn();
-      const hold = { ms: 600, when, act: vi.fn(), start: vi.fn() };
+      const hold = { ms: 600, when, act: vi.fn(), start: vi.fn(), done: vi.fn() };
       kit.onTap(node, fn, { keys: false, hold });
       return { node, fn, hold };
     }
@@ -122,7 +122,12 @@ describe('onTap()', () => {
       vi.advanceTimersByTime(1);
       expect(hold.act).toHaveBeenCalledOnce();
       expect(node.classList.contains('holding')).toBe(false);
+      vi.advanceTimersByTime(1000);
+      expect(hold.done).not.toHaveBeenCalled(); // the finger is still down: Homey's haptic would throw
       touch(node, 'touchend', 5, 5);
+      expect(hold.done).not.toHaveBeenCalled(); // a tick later, once Homey has seen the touch end
+      vi.advanceTimersByTime(0);
+      expect(hold.done).toHaveBeenCalledOnce();
       node.click();
       expect(fn).not.toHaveBeenCalled();
     });
@@ -140,6 +145,7 @@ describe('onTap()', () => {
       touch(node, 'touchcancel', 0, 0);
       vi.advanceTimersByTime(1000);
       expect(hold.act).not.toHaveBeenCalled();
+      expect(hold.done).not.toHaveBeenCalled();
       expect(fn).toHaveBeenCalledOnce();
     });
 
@@ -162,6 +168,7 @@ describe('onTap()', () => {
       mouse(node, 'mouseleave');
       vi.advanceTimersByTime(1000);
       expect(hold.act).toHaveBeenCalledOnce();
+      expect(hold.done).not.toHaveBeenCalled(); // no touch, no haptic
     });
 
     it('the mouse right after a touch is the browser’s, not a hold', () => {

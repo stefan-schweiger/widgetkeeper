@@ -39,6 +39,9 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 - **Show:** only the counters that are amber and red, or only red, so counters due every month or so don't take room until they're due. A counter not started yet, or one just tapped, still shows; with none due it says *Nothing due.*
 - **Smart Stack:** Days Since can now be one of a stack's pages; it used to be left out, so a stack of it and one other widget showed a single page with no dots ([#9](https://github.com/thomassidor/widgetkeeper/issues/9)).
 
+### Device Quick Actions
+- **Activate with:** a double or a long press, so a stray tap can't unlock a door. A double press turns the tile red and asks *Tap again* for 3 seconds; a long press fills the tile while you hold it. For every tile, or only locks and garage doors. By Stefan Schweiger ([#8](https://github.com/thomassidor/widgetkeeper/issues/8)).
+
 ### Media
 - **Eight buttons:** up to eight speaker actions or flows behind ⋯, up from four.
 

@@ -207,6 +207,7 @@
         // needs a touch listener) and the dashboard's own touch handling can't swallow the click; a drag is left
         // to the dashboard, so dragging over the tiles still scrolls it. A button clicks on Enter and Space itself.
         // A long press (`press: long`): the tile fills while held and acts once full; let go sooner, it's a tap.
+        // It vibrates as the finger lifts: Homey's haptic only works right after a touch ends.
         onTap(button, () => tap(id), {
           keys: false,
           guard: touches,
@@ -214,7 +215,8 @@
             ms: HOLD_MS,
             when: () => holds(id),
             start: () => { clearTimeout(hints.get(id)); hints.delete(id); render(); },
-            act: () => { if (opts.onHaptic) opts.onHaptic(); press(id); },
+            act: () => press(id),
+            done: () => { if (opts.onHaptic) opts.onHaptic(); },
           },
         });
         tiles.set(id, tile);

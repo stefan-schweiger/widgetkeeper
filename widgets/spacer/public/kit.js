@@ -395,10 +395,12 @@
    * - `hold` (Quick Actions' `press: long`): while `hold.when()` says so, a touch held still, the left mouse button or
    *   Enter/Space (whose own click is kept back) held for `hold.ms` calls `hold.act()`; let go sooner and it's a tap.
    *   `holding` is on the node meanwhile, `hold.start()` is called as it begins, and the long-press menu is prevented.
+   *   `hold.done()` is called a tick after the finger that held lifts: `Homey.hapticFeedback()` throws unless a touch
+   *   has just ended, so the vibration goes there (the tick lets Homey's own touchend listener note the time first).
    * @param {HTMLElement} node
    * @param {(e: Event) => void} fn
    * @param {{ keys?: boolean, stop?: boolean, guard?: { touched: () => void, recent: () => boolean },
-   *   hold?: { ms: number, when: () => boolean, act: () => void, start?: () => void } }} [opts]
+   *   hold?: { ms: number, when: () => boolean, act: () => void, start?: () => void, done?: () => void } }} [opts]
    */
   function onTap(node, fn, { keys = true, stop = false, guard = touchGuard(), hold = null } = {}) {
     let start = null;
@@ -435,6 +437,7 @@
     }, { passive: true });
     node.addEventListener('touchend', (e) => {
       const tap = !!start; // not after a drag, or a long press that acted
+      if (held && hold.done) setTimeout(hold.done, 0);
       unpress();
       held = false;
       // Every touch: one that moved past TAP_SLOP can still get the browser's click.

@@ -174,6 +174,8 @@ const BUILD = {
       w('quickactions', 'Lighter · lights and plugs', { activeStyle: 'lighter' }, [...lights.slice(0, 3), ...sockets]),
       w('quickactions', 'Locks · other on/off · own icons', {}, [...locks, ...others, ...custom]),
       w('quickactions', 'Lighter · locks and others', { activeStyle: 'lighter' }, [...locks, ...others]),
+      w('quickactions', 'Double press · locks only', { press: 'double', pressFor: 'locks' }, [...locks, ...others]),
+      w('quickactions', 'Long press · every tile', { press: 'long' }, [...lights.slice(0, 3), ...locks]),
       w('quickactions', 'One device', {}, lights.slice(0, 1)),
       w('quickactions', 'Two + a deleted device', {}, [...lights.slice(1, 3), MISSING]),
       renaming('quickactions', 'Rename tiles', {}, [...lights.slice(0, 3), MISSING], lights[0] ? { [lights[0]]: 'Typed name' } : {}),

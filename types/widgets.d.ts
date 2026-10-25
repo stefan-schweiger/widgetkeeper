@@ -91,7 +91,7 @@ interface Window {
     touchGuard: () => TouchGuard,
     onTap: (node: Element, fn: (e: Event) => void, opts?: {
       keys?: boolean, stop?: boolean, guard?: TouchGuard,
-      hold?: { ms: number, when: () => boolean, act: () => void, start?: () => void },
+      hold?: { ms: number, when: () => boolean, act: () => void, start?: () => void, done?: () => void },
     }) => void,
     messageLine: (render: () => void, opts?: { clear?: (() => void) | null, ms?: number }) => {
       readonly text: string | null,
