@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Keypad widget preview</title>
+  <link rel="stylesheet" href="../widgets/spacer/public/kit.css">
+  <link rel="stylesheet" href="../widgets/keypad/public/widget.css">
+  <script src="../widgets/spacer/public/kit.js"></script>
+  <script src="../widgets/keypad/public/widget.js"></script>
+  <script src="i18n.js"></script>
+  <link rel="stylesheet" href="preview.css">
+  <style>
+    .card { background: var(--homey-background-color, #1F2029); border-radius: 20px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.3); box-sizing: border-box; }
+    .light { color: var(--kp-text); }
+  </style>
+</head>
+<body>
+  <script>
+    /*
+     * Made-up devices, variables and flows. The code is 1234: five wrong ones lock the pad for 30 s, as the app would.
+     * A set value is reported back after a moment; `Needs a key` fails with noKey. `?open=0,9` opens those cases' pads
+     * with two digits typed (for a headless screenshot).
+     */
+    const CODE = { id: `code:v1:${'0'.repeat(8)}:${'0'.repeat(16)}:${'0'.repeat(32)}`, name: '••••', digits: 4 };
+    const value = (v, name) => ({ id: `${typeof v}:${JSON.stringify(v)}`, name, value: v, type: typeof v });
+    const VALUES = [{ id: 'armed', title: 'Armed' }, { id: 'disarmed', title: 'Disarmed' }, { id: 'partially_armed', title: 'Partially armed' }];
+    const ALARM = v => ({ kind: 'capability', deviceId: 'alarm', capabilityId: 'homealarm_state', name: 'Alarm system', capability: { title: 'Home Alarm state', type: 'enum', values: VALUES }, value: v });
+    const DOOR = v => ({ kind: 'capability', deviceId: 'door', capabilityId: 'locked', name: 'Front door', capability: { title: 'Locked', type: 'boolean' }, value: v });
+    const TV = v => ({ kind: 'variable', id: 'tv', name: 'TV time', type: 'boolean', value: v });
+    const FLOWS = [
+      { id: 'flow:disarm', name: 'Disarm the alarm', enabled: true, triggerable: true, advanced: false },
+      { id: 'flow:door', name: 'Unlock the front door', enabled: true, triggerable: true, advanced: false },
+      { id: 'flow:tv', name: 'TV for an hour', enabled: true, triggerable: true, advanced: false },
+      { id: 'flow:off', name: 'Old flow', enabled: false, triggerable: true, advanced: false },
+      { id: 'flow:broken', name: 'Needs a key', enabled: true, triggerable: true, advanced: false },
+    ];
+    const alarm = {
+      state: { id: 'cap:alarm:homealarm_state' }, code: CODE,
+      value1: value('armed', 'Armed'), label1: 'Arm', icon1: { id: 'shield' }, color1: 'red', code1: false,
+      value2: value('partially_armed', 'Partially armed'), label2: 'Night', icon2: { id: 'moon' }, color2: 'purple', code2: false,
+      value3: value('disarmed', 'Disarmed'), label3: 'Disarm', icon3: { id: 'unlock' }, color3: 'green',
+    };
+    const tv = {
+      state: { id: 'var:tv' }, title: 'TV time', code: CODE,
+      flow1: { id: 'flow:tv', name: 'TV for an hour' }, value1: value(true, 'Yes'), label1: '1 hour', icon1: { id: 'tv' }, color1: 'purple',
+      value2: value(false, 'No'), label2: 'Stop', icon2: { id: 'power' }, color2: 'grey', code2: false,
+    };
+    const CASES = [
+      ['340 px · alarm · armed', 340, '', alarm, ALARM('armed')],
+      ['340 px · light · alarm · night', 340, 'light', alarm, ALARM('partially_armed')],
+      ['340 px · Vivid · alarm · disarmed', 340, '', { ...alarm, colorStyle: 'deep' }, ALARM('disarmed')],
+      ['340 px · a list capability, no buttons set up', 340, '', { state: alarm.state, code: CODE }, ALARM('armed')],
+      ['340 px · front door · one Flow, no state', 340, '', { title: 'Front door', code: CODE, flow1: { id: 'flow:door', name: 'Unlock the front door' }, label1: 'Unlock', icon1: { id: 'unlock' } }, null],
+      ['340 px · a lock, no buttons set up', 340, '', { state: { id: 'cap:door:locked' }, code: CODE }, DOOR(true)],
+      ['300 px · TV time · a variable and a Flow', 300, '', tv, TV(false)],
+      ['300 px · light · Vivid · TV time', 300, 'light', { ...tv, colorStyle: 'deep' }, TV(true)],
+      ['340 px · a Flow that is off · one that fails (noKey)', 340, '', { title: 'Broken', flow1: { id: 'flow:off', name: 'Old flow' }, flow2: { id: 'flow:broken', name: 'Needs a key' }, color2: 'orange' }, null],
+      ['340 px · deleted device', 340, '', alarm, { kind: 'capability', deviceId: 'alarm', capabilityId: 'homealarm_state', missing: true }],
+      ['Compact · 340 px · alarm · armed', 340, '', { ...alarm, layout: 'compact' }, ALARM('armed')],
+      ['Compact · 340 px · light · TV time', 340, 'light', { ...tv, layout: 'compact' }, TV(true)],
+      ['Compact · 300 px · no buttons set up', 300, '', { state: alarm.state, code: CODE, layout: 'compact' }, ALARM('disarmed')],
+    ];
+    const open = (new URLSearchParams(location.search).get('open') || '').split(',').filter(Boolean).map(Number);
+
+    // The app's side: the code, its lock, and the device or variable reporting what was set.
+    let wrong = 0;
+    let lockedUntil = 0;
+    function answer(body) {
+      if (body.flow === 'flow:broken') return { ok: false, reason: 'noKey' };
+      if (body.codeId) {
+        if (Date.now() < lockedUntil) return { ok: true, result: 'locked', retryAfter: Math.ceil((lockedUntil - Date.now()) / 1000) };
+        if (body.code !== '1234') {
+          wrong++;
+          if (wrong < 5) return { ok: true, result: 'wrongCode', left: 5 - wrong };
+          lockedUntil = Date.now() + 30e3;
+          return { ok: true, result: 'locked', retryAfter: 30 };
+        }
+        wrong = 0;
+      }
+      return { ok: true, result: 'done' };
+    }
+
+    CASES.forEach(([label, width, theme, settings, source], i) => {
+      const col = document.createElement('div');
+      col.className = 'col';
+      col.innerHTML = `<span></span><div class="card ${theme === 'light' ? 'light' : 'kp-frame homey-dark-mode'}" style="width:${width}px"><div></div></div>`;
+      col.firstChild.textContent = label;
+      document.body.appendChild(col);
+      const { sourceId, code, buttons } = keypadSettings(settings);
+      let w;
+      w = createKeypadWidget(col.querySelector('.card > div'), {
+        locale: 'da-DK',
+        t: devT,
+        layout: settings.layout,
+        colorStyle: settings.colorStyle,
+        title: settings.title,
+        sourceId,
+        code,
+        buttons,
+        onPress: body => new Promise(resolve => setTimeout(() => {
+          const res = answer(body);
+          if (res.result === 'done' && body.source) setTimeout(() => w.pushValue(body.value), 400);
+          if (res.result === 'done' && body.flow === 'flow:tv') setTimeout(() => w.pushValue(true), 400);
+          resolve(res);
+        }, 500)),
+      });
+      w.setState({ source, flows: FLOWS });
+      if (open.includes(i)) {
+        const node = [...col.querySelectorAll('.kp-btn')].find(b => b.getAttribute('aria-label').includes('('));
+        if (node) {
+          node.click();
+          for (const k of ['1', '2']) [...col.querySelectorAll('.kp-key')].find(b => b.textContent === k).click();
+        }
+      }
+    });
+  </script>
+</body>
+</html>

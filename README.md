@@ -61,6 +61,10 @@ Start flows with one tap: a round button in the colour and icon you pick, with t
 <a href="#insights-heatmap"><b>Insights Heatmap</b></a><br>
 A week of one value (light, temperature, motion …) as a grid of weekdays and hours<br clear="left"></p>
 
+<p><a href="#keypad"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/keypad-dark.png"><img src="docs/previews/keypad-light.png" alt="" width="120" align="left"></picture></a>
+<a href="#keypad"><b>Keypad</b></a><br>
+Up to three buttons behind an optional code that start Flows or set a device or variable, with its state beside them<br clear="left"></p>
+
 <p><a href="#light-controls"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/previews/lights-dark.png"><img src="docs/previews/lights-light.png" alt="" width="120" align="left"></picture></a>
 <a href="#light-controls"><b>Light Controls</b></a><br>
 Compact light tiles with brightness, colour and colour temperature: six lights in the space of three<br clear="left"></p>
@@ -233,6 +237,17 @@ Flows and Advanced Flows as rows with a round button in your colour and icon. Ta
 A week of one Insights value as a grid of days and hours: numbers such as light or temperature, or how much of each hour a sensor was on.
 
 **Settings:** device and value, a title in place of the device's name, this week or the last 3–14 days, hours per column, colour, [colour style](#colour-style), scale, legend.
+
+## Keypad
+<img src="docs/screenshots/keypad.png" alt="Keypad on a Homey dashboard: an alarm shown as Armed, with Arm ticked, Night, and Disarm behind the code" width="358">
+
+Up to three buttons, each behind an optional 3–6 digit code: arm an alarm, unlock a door, allow an hour of TV. A button starts a Flow, or, without one, sets the widget's state to its value. The state is a device value or a Logic variable, shown on the left; the button with its value is ticked. A list value, such as an alarm's *Armed*, *Partially armed* and *Disarmed*, or a yes/no one, gets a button per value when none is set up, all behind the code. A tap on a button that wants the code opens a keypad beside the state (in compact, in place of the widget); it sends the code with the last digit.
+
+The code is checked by Widgetkeeper on your Homey: the widget's setting only holds a fingerprint of it, made with a secret only the app has, so the digits are never stored or shown. Five wrong codes in a row lock that code for 30 s, doubling each time up to 15 min. The code guards the dashboard (a wall tablet, the children, guests), not your Homey: anyone who can open the Homey app can still start the Flow or change the device there.
+
+Starting a Flow needs an [API key](#api-key) with **Start Flows**, setting a variable one with **Variables**; setting a device needs no key.
+
+**Settings:** a title, the state (a device value or a variable), the code, compact layout, [colour style](#colour-style), and per button: a Flow, the state's value it stands for, a label, an icon, a colour and whether it needs the code.
 
 ## Light Controls
 <img src="docs/clips/lights.webp" alt="Light Controls on a Homey dashboard: a light turned on, dimmed with the bar, and given a colour and a white" width="358">
@@ -503,6 +518,8 @@ Homey doesn't let apps change variables, start flows, read dashboards or start M
 |---|---|---|
 | Variables and Variable Presets: changing a value | **Variables** (View Variables isn't enough) | `homey.logic` |
 | Flow Buttons | **Start Flows** | `homey.flow.start` |
+| Keypad: a button with a Flow | **Start Flows** | `homey.flow.start` |
+| Keypad: a button that sets a variable | **Variables** | `homey.logic` |
 | Media's buttons: a flow | **Start Flows** | `homey.flow.start` |
 | Media's buttons: the speaker's own actions, such as *Set source to TV*, and its app's | **Flows** (Start Flows isn't enough) | `homey.flow` |
 | Light Controls' Room's Moods: starting a Mood | **Set Moods** | `homey.mood.set` |

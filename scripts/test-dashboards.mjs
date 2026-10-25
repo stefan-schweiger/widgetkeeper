@@ -514,6 +514,56 @@ const BUILD = {
     return { cols: 3, widgets: out };
   },
 
+  async keypad() {
+    // The state from a speaker's repeat mode, a list like an alarm's state that's harmless to change (never an alarm's
+    // or a lock's: a tap sets it for real), a yes/no variable (a tap sets it, as on the Variables dashboard), and flows
+    // that look harmless to start by hand. The code is 1234, or 123456 where it says so: the code autocomplete makes the
+    // setting from the digits typed, so the dashboards hold only its fingerprint.
+    const sources = await autocomplete('keypad', 'state');
+    const repeat = pick(sources, i => /:speaker_repeat$/.test(i.id))[0] ?? null;
+    const yesNo = pick(sources, i => i.id.startsWith('var:') && i.type === 'boolean')[0] ?? null;
+    const [code] = await autocomplete('keypad', 'code', {}, '1234');
+    const [code6] = await autocomplete('keypad', 'code', {}, '123456');
+    const flows = pick(await autocomplete('keypad', 'flow1'), i => !RISKY_FLOW.test(`${i.name} ${i.description ?? ''}`), 2);
+    const icon = id => ({ id, name: EN.flows.icons[id] ?? id });
+    const values = async state => pick(await autocomplete('keypad', 'value1', { state: state.id }), () => true, 4);
+    const out = [];
+    if (repeat) {
+      const [off, track, playlist] = await values(repeat);
+      out.push(
+        w('keypad', 'Repeat · no buttons set up: one per value, all behind 1234', { state: repeat, code }),
+        w('keypad', 'Repeat · Off without the code · icons · colours', {
+          state: repeat, code, value1: off, label1: 'Off', icon1: icon('power'), color1: 'grey', code1: false,
+          value2: track, icon2: icon('music'), value3: playlist, icon3: icon('star'), color3: 'purple',
+        }),
+        w('keypad', 'Repeat · compact · Vivid · 123456 · title', {
+          state: repeat, code: code6, layout: 'compact', colorStyle: 'deep', title: 'Typed title',
+          value1: off, icon1: icon('power'), color1: 'grey', code1: false, value2: track, icon2: icon('music'), color2: 'green', value3: playlist, icon3: icon('star'), color3: 'orange',
+        }),
+      );
+    }
+    if (yesNo) {
+      const [yes, no] = await values(yesNo);
+      out.push(
+        w('keypad', 'Yes/No variable · Yes and No · no code set', { state: yesNo }),
+        w('keypad', 'Yes/No variable · labels · Yes behind 1234 · red', { state: yesNo, code, value1: yes, label1: 'Allow', icon1: icon('tv'), color1: 'red', value2: no, label2: 'Stop', icon2: icon('power'), color2: 'grey', code2: false }),
+      );
+    }
+    if (flows.length) {
+      out.push(w('keypad', 'Flows · no state · the first behind 1234', {
+        title: 'Flows', code, flow1: flows[0], icon1: icon('play'), color1: 'blue', ...(flows[1] ? { flow2: flows[1], color2: 'orange', code2: false } : {}),
+      }));
+    }
+    out.push(
+      w('keypad', 'Deleted device', {
+        state: { id: `cap:${MISSING}:speaker_repeat`, name: 'Deleted device · Repeat' }, code,
+        value1: { id: 'string:"none"', name: 'Off', value: 'none', type: 'string' },
+      }),
+      w('keypad', 'Nothing picked'),
+    );
+    return { cols: 3, widgets: out };
+  },
+
   async flows() {
     // Only flows that look harmless to start by hand.
     const flows = pick(await autocomplete('flows', 'flow1'), i => !RISKY_FLOW.test(`${i.name} ${i.description ?? ''}`), 8);

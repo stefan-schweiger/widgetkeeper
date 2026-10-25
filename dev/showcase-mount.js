@@ -22,6 +22,11 @@ const MOUNT = {
   values: (el, w) => createValuesWidget(el, w.opts || {}).setState(w.slots),
   variables: (el, w) => createVariablesWidget(el, w.opts || {}).setState(w.vars),
   varpresets: (el, w) => { const x = createVarPresetsWidget(el, { locale: LOCALE, ...w.opts }); x.setPresets(varPresetsFromSettings(w.settings)); x.setState(w.variable); },
+  // Keypad: `w.settings` as the widget's settings, `w.state` its `/state` (`{source, flows}`).
+  keypad: (el, w) => {
+    const x = createKeypadWidget(el, { locale: LOCALE, ...keypadSettings(w.settings), title: w.settings.title, layout: w.settings.layout, ...w.opts });
+    x.setState(w.state);
+  },
   flows: (el, w) => createFlowsWidget(el, w.opts || {}).setState(w.flows),
   price: (el, w) => createPriceWidget(el, { locale: LOCALE, ...w.opts }).setState(w.state),
   timers: (el, w) => createTimersWidget(el, { sound: false, now: () => SHOWCASE_NOW, presets: w.presets, ...w.opts }).setState({ timers: w.timers, now: SHOWCASE_NOW }),

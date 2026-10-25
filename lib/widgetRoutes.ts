@@ -45,6 +45,12 @@ export function routeKeyUse(type: string, method: string, path: string, body: un
     case 'variables POST /set': return 'variables';
     case 'varpresets POST /set': return 'variables';
     case 'flows POST /trigger': return 'flows';
+    case 'keypad POST /press': {
+      // A Keypad button starts a Flow, or sets its state: a variable through the key, a capability with the app's own
+      // token (`DEVICE_WRITES`).
+      const source = b.flow ? '' : String(b.source ?? '');
+      return source.startsWith('cap:') ? null : source.startsWith('var:') ? 'variables' : 'flows';
+    }
     case 'media POST /button': return String(b.id ?? '').startsWith('card:') ? 'cards' : 'flows';
     case 'stack GET /pages': return 'dashboards';
     case 'lights POST /mood': return 'moods';
@@ -67,6 +73,7 @@ export const DEVICE_WRITES: readonly string[] = [
   'locks POST /open',
   'thermostat POST /apply',
   'media POST /set',
+  'keypad POST /press',
 ];
 
 /**

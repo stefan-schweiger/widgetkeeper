@@ -87,7 +87,7 @@ describe('copied widget helpers', () => {
       return m ? m[0].replace(/\n+/g, '\n') : null;
     };
     // Thermostat Presets' is in the presets module, which Variable Presets loads too.
-    expectSame([['thermostat', 'tw', 'presets.css'], ['heatmap', 'hm'], ['media', 'mw'], ['weather', 'wf']].map(([id, p, file]) => frame(id, p, file)));
+    expectSame([['thermostat', 'tw', 'presets.css'], ['heatmap', 'hm'], ['media', 'mw'], ['weather', 'wf'], ['keypad', 'kp']].map(([id, p, file]) => frame(id, p, file)));
   });
 
   it("the native tiles' rim is the same everywhere", () => {

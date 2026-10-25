@@ -9,6 +9,7 @@ import DaysSinceService, {
 import ElectricityService from './lib/ElectricityService.js';
 import FlowService from './lib/FlowService.js';
 import HeatmapService from './lib/HeatmapService.js';
+import KeypadService from './lib/KeypadService.js';
 import LightService from './lib/LightService.js';
 import LockService from './lib/LockService.js';
 import MediaService from './lib/MediaService.js';
@@ -44,6 +45,7 @@ export default class WidgetkeeperApp extends Homey.App {
   thermostat!: ThermostatService;
   /** Thermostat Presets' Flow cards: run a button, whether it's lit, and its taps. */
   thermostatPresets!: ThermostatPresetService;
+  keypad!: KeypadService;
   quickActions!: QuickActionService;
   sensorAlarms!: SensorAlarmService;
   roomHealth!: RoomHealthService;
@@ -120,6 +122,7 @@ export default class WidgetkeeperApp extends Homey.App {
     this.curtains = new CurtainService(this.homey, log, debug);
     this.curtains.start();
     this.media = new MediaService(this.homey, this.flows, log, debug, this.apiKey);
+    this.keypad = new KeypadService(this.homey, { flows: this.flows, values: this.values, variables: this.variables }, log, debug);
     this.media.start();
     this.stack = new StackService(this.homey, log, debug, this.apiKey);
     this.registerStackFlows();

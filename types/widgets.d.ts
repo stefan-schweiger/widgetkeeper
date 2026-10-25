@@ -112,6 +112,9 @@ interface Window {
   };
   createVarPresetsWidget: (root: HTMLElement, opts?: object) => any;
   varPresetsFromSettings: (settings: Record<string, any>) => { value: boolean | number | string, type: string, label: string }[];
+  createKeypadWidget: (root: HTMLElement, opts?: object) => any;
+  keypadSettings: (settings: Record<string, any>) => { sourceId: string | null, code: { id: string, digits: number } | null, buttons: any[] };
+  keypadBooleanWords: Record<string, string[]>;
   createFlowsWidget:(root: HTMLElement, opts?: object) => any;
   createShortcutsWidget:(root: HTMLElement, opts?: object) => any;
   createPriceWidget: (root: HTMLElement, opts?: object) => any;
@@ -176,6 +179,7 @@ interface Window {
   mountValuesWidget: MountWidget;
   mountVariablesWidget: MountWidget;
   mountVarPresetsWidget: MountWidget;
+  mountKeypadWidget: MountWidget;
   mountWeatherWidget: MountWidget;
   mountPollenWidget: MountWidget;
   mountStackWidget: MountWidget;
