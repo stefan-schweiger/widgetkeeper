@@ -1,8 +1,8 @@
 /*
- * Keypad: the state on the left, the buttons stacked on the right, and the code pad in the right half (compact: in
- * place of the whole widget). Colours map to Homey widget tokens (https://apps.developer.homey.app/the-basics/widgets/styling);
- * the fallbacks are the dark-theme values, used outside Homey (dev/keypad-preview.html). A button's colour is kit.css's
- * `data-wk-color`; grey has none and keeps the key's own.
+ * Keypad: the state on the left, the buttons stacked on the right, and a 3×4 keypad in the right half when a button wants
+ * the code (compact: in place of the whole widget), or always beside the state. Colours map to Homey widget tokens
+ * (https://apps.developer.homey.app/the-basics/widgets/styling); the fallbacks are the dark-theme values, used outside
+ * Homey (dev/keypad-preview.html). A button's colour is kit.css's `data-wk-color`; grey has none and keeps the key's own.
  */
 .kp {
   --kp-card: var(--homey-background-color, #1F2029);
@@ -110,17 +110,20 @@ html, body { margin: 0; }
   40%, 80% { transform: translateX(4px); }
 }
 
-/* The code pad, in place of the buttons */
+/* The keypad: in place of the buttons when one wants the code, or always (below) */
 .kp-pad { display: none; flex-direction: column; min-width: 0; }
 .kp.pad-open .kp-stack { display: none; }
-.kp.pad-open .kp-pad { display: flex; }
+.kp.pad-open .kp-pad, .kp.kp-always .kp-pad { display: flex; }
 .kp-pad-top { display: flex; align-items: center; gap: 8px; min-height: 24px; margin-bottom: 8px; min-width: 0; }
-.kp-pad-glyph {
-  width: 16px; height: 16px; flex-shrink: 0; color: var(--wk-c-bright, var(--kp-muted));
-  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+.kp-pad-glyph { display: flex; flex-shrink: 0; color: var(--wk-c-bright, var(--kp-muted)); }
+.kp-pad-glyph:empty { display: none; }
+.kp-pad-glyph svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.kp-pad-label {
+  font-size: var(--kp-fs-small); line-height: var(--kp-lh-small); font-weight: var(--kp-bold);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
 }
-.kp-pad-label { font-size: var(--kp-fs-small); line-height: var(--kp-lh-small); font-weight: var(--kp-bold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-/* The title or a message beside the label: compact only, where the state isn't shown. */
+.kp-pad-top.missing .kp-pad-label { color: var(--kp-red); font-weight: var(--kp-regular); white-space: normal; }
+/* The title or a message beside the label: only where the keypad takes the whole widget (compact), as the state is hidden. */
 .kp-pad-sub { display: none; }
 .kp-dots { display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; }
 .kp-dot { width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--kp-muted); }
@@ -135,6 +138,7 @@ html, body { margin: 0; }
   width: 28px; height: 28px; display: grid; place-items: center; flex-shrink: 0; cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
 .kp-close svg, .kp-key svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* A phone's keypad: 1–9 in three rows, then ✕ (or nothing), 0 and ⌫. */
 .kp-keys { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
 .kp-key {
   appearance: none; border: 0; margin: 0; height: 34px; border-radius: 8px; background: var(--kp-key); color: var(--kp-text);
@@ -147,6 +151,18 @@ html, body { margin: 0; }
 .kp-key.blank { visibility: hidden; }
 .kp-key:disabled { cursor: default; opacity: .35; }
 
+/* Always shown: the state with the buttons under it on the left, the keypad on the right; a button waiting for the code is ringed. */
+.kp.kp-always { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); grid-template-rows: auto 1fr; }
+.kp-always .kp-left { grid-column: 1; grid-row: 1; justify-content: flex-start; border-right: 0; padding-right: 0; margin-right: 0; }
+.kp-always .kp-icon { width: 28px; height: 28px; margin-bottom: 6px; }
+.kp-always .kp-stack { grid-column: 1; grid-row: 2; justify-content: flex-start; margin-top: 12px; }
+.kp-always .kp-pad { grid-column: 2; grid-row: 1 / span 2; padding-left: 14px; margin-left: 14px; border-left: 1px solid var(--kp-line); }
+.kp-btn.target { box-shadow: inset 0 0 0 2px var(--wk-c-bright, var(--kp-text)); }
+/* The keypad's half is narrow: the prompt on a line of its own, the dots centred over the keys. */
+.kp-always:not(.kp-compact) .kp-pad-top { flex-wrap: wrap; row-gap: 6px; }
+.kp-always:not(.kp-compact) .kp-pad-label { flex: 1 1 0; }
+.kp-always:not(.kp-compact) .kp-dots { flex: 1 0 100%; justify-content: center; margin-left: 0; }
+
 /* A message in place of everything (nothing picked, a failed first load) */
 .kp-only { display: none; font-size: var(--kp-fs-small); line-height: var(--kp-lh-small); color: var(--kp-muted); grid-column: 1 / -1; }
 .kp.kp-message-only > :not(.kp-only) { display: none; }
@@ -154,7 +170,8 @@ html, body { margin: 0; }
 
 /*
  * Compact: the state on one line beside its icon, and square icon buttons, the code mark as a pip on the corner. The
- * pad takes the whole widget: the label, the title or a message, the dots and ✕ on top, then two rows of six keys.
+ * keypad takes the whole widget (the label, the title or a message, the dots and ✕ on top), or, always shown, sits under
+ * the state and the buttons; it keeps a phone's 3×4, its keys taller and no wider than a phone's.
  */
 .kp.kp-compact { grid-template-columns: minmax(0, 1fr) auto; }
 .kp-compact .kp-left { flex-direction: row; justify-content: flex-start; align-items: center; gap: 8px; padding-right: 10px; margin-right: 10px; }
@@ -171,13 +188,17 @@ html, body { margin: 0; }
 .kp-compact .kp-end:empty { display: none; }
 .kp-compact .kp-mark { width: 12px; height: 12px; }
 .kp-compact .kp-mark.code { width: 10px; height: 10px; }
+.kp-compact .kp-keys { gap: 6px; width: 100%; max-width: 264px; margin: 0 auto; }
+.kp-compact .kp-key { height: 44px; }
 .kp-compact.pad-open { grid-template-columns: minmax(0, 1fr); }
 .kp-compact.pad-open .kp-left { display: none; }
-.kp-compact .kp-pad-sub {
+.kp-compact.pad-open .kp-pad-sub {
   display: block; flex: 1 1 0; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   font-size: var(--kp-fs-small); line-height: var(--kp-lh-small); color: var(--kp-muted);
 }
-.kp-compact .kp-pad-sub:not(:empty)::before { content: '·\00a0'; }
-.kp-compact .kp-pad-sub.error { color: var(--kp-red); }
-.kp-compact .kp-keys { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
-.kp-compact .kp-key { height: 40px; }
+.kp-compact.pad-open .kp-pad-sub:not(:empty)::before { content: '·\00a0'; }
+.kp-compact.pad-open .kp-pad-sub.error { color: var(--kp-red); }
+.kp-compact.kp-always { grid-template-rows: auto auto; }
+.kp-compact.kp-always .kp-left { border-right: 1px solid var(--kp-line); padding-right: 10px; margin-right: 10px; }
+.kp-compact.kp-always .kp-stack { grid-column: 2; grid-row: 1; margin-top: 0; }
+.kp-compact.kp-always .kp-pad { grid-column: 1 / -1; grid-row: 2; padding-left: 0; margin-left: 0; border-left: 0; margin-top: 12px; }

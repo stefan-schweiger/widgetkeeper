@@ -517,13 +517,18 @@ const BUILD = {
   async keypad() {
     // The state from a speaker's repeat mode, a list like an alarm's state that's harmless to change (never an alarm's
     // or a lock's: a tap sets it for real), a yes/no variable (a tap sets it, as on the Variables dashboard), and flows
-    // that look harmless to start by hand. The code is 1234, or 123456 where it says so: the code autocomplete makes the
-    // setting from the digits typed, so the dashboards hold only its fingerprint.
+    // that look harmless to start by hand. The codes are made on the app's side as on its settings page, once: Test 1234
+    // and Test 123456, their digits in their names.
+    const codes = `/api/app/${APP_ID}/keypad-codes`;
+    const have = (await homeyApi('GET', codes)).codes.map(c => c.name);
+    for (const digits of ['1234', '123456']) {
+      if (!have.includes(`Test ${digits}`)) await homeyApi('POST', codes, { name: `Test ${digits}`, code: digits });
+    }
+    const codeItem = async name => pick(await autocomplete('keypad', 'code', {}, name), i => i.name === name)[0] ?? null;
+    const [code, code6] = await Promise.all([codeItem('Test 1234'), codeItem('Test 123456')]);
     const sources = await autocomplete('keypad', 'state');
     const repeat = pick(sources, i => /:speaker_repeat$/.test(i.id))[0] ?? null;
     const yesNo = pick(sources, i => i.id.startsWith('var:') && i.type === 'boolean')[0] ?? null;
-    const [code] = await autocomplete('keypad', 'code', {}, '1234');
-    const [code6] = await autocomplete('keypad', 'code', {}, '123456');
     const flows = pick(await autocomplete('keypad', 'flow1'), i => !RISKY_FLOW.test(`${i.name} ${i.description ?? ''}`), 2);
     const icon = id => ({ id, name: EN.flows.icons[id] ?? id });
     const values = async state => pick(await autocomplete('keypad', 'value1', { state: state.id }), () => true, 4);
@@ -535,6 +540,14 @@ const BUILD = {
         w('keypad', 'Repeat · Off without the code · icons · colours', {
           state: repeat, code, value1: off, label1: 'Off', icon1: icon('power'), color1: 'grey', code1: false,
           value2: track, icon2: icon('music'), value3: playlist, icon3: icon('star'), color3: 'purple',
+        }),
+        w('keypad', 'Repeat · keypad always · Off without the code', {
+          state: repeat, code, keypad: 'always', value1: off, label1: 'Off', icon1: icon('power'), color1: 'grey', code1: false,
+          value2: track, icon2: icon('music'), value3: playlist, icon3: icon('star'), color3: 'purple',
+        }),
+        w('keypad', 'Repeat · keypad always · compact · one button behind 1234', {
+          state: repeat, code, keypad: 'always', layout: 'compact', value1: off, icon1: icon('power'), color1: 'grey', code1: false,
+          value2: track, icon2: icon('music'), color2: 'green',
         }),
         w('keypad', 'Repeat · compact · Vivid · 123456 · title', {
           state: repeat, code: code6, layout: 'compact', colorStyle: 'deep', title: 'Typed title',
@@ -558,6 +571,10 @@ const BUILD = {
       w('keypad', 'Deleted device', {
         state: { id: `cap:${MISSING}:speaker_repeat`, name: 'Deleted device · Repeat' }, code,
         value1: { id: 'string:"none"', name: 'Off', value: 'none', type: 'string' },
+      }),
+      w('keypad', 'A code that was removed · keypad always', {
+        title: 'Removed code', code: { id: 'removed-code-0000', name: 'Removed' }, keypad: 'always',
+        ...(flows[0] ? { flow1: flows[0] } : {}),
       }),
       w('keypad', 'Nothing picked'),
     );

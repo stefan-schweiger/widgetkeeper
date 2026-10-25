@@ -124,31 +124,41 @@ function varPresets(t) {
   ]);
 }
 
-// Keypad: the state on the left (the lit button's red shield over a large pill and a small one), a line, then three
-// stacked buttons: the one the state matches tinted in its red with a tick, the last with the code's keypad dots.
+// Keypad: the state on the left (the lit button's red shield over a large pill and a small one, two buttons under
+// them), a line, then the keypad: two of four dots filled over a phone's 3×4 keys (✕, 0 and ⌫ on the last row).
 function keypad(t, theme) {
-  const RED = '#F25F5C', GREEN = '#71D51B', PURPLE = '#9033FC';
+  const RED = '#F25F5C', GREEN = '#71D51B';
   const card = theme === 'dark' ? '#1F2029' : '#FFFFFF';
   const key = theme === 'dark' ? '#2B2C36' : '#F0F1F4';
   const line = theme === 'dark' ? 'rgba(237,238,240,.09)' : 'rgba(31,32,41,.09)';
   const stroke = (d, color, size, w = 2) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="flex:none"><path d="${d}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const SHIELD = 'M12 3 5 6v5.5c0 4.3 3 8 7 9.5 4-1.5 7-5.2 7-9.5V6l-7-3z';
-  const MOON = 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z';
   const UNLOCK = 'M6.5 11h11a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 18.5v-6A1.5 1.5 0 0 1 6.5 11zM8 11V7a4 4 0 0 1 8 0';
-  const CHECK = 'M5 12.5l4.5 4.5L19 7.5';
-  const DOTS = 'M6 6.5h.01M12 6.5h.01M18 6.5h.01M6 12h.01M12 12h.01M18 12h.01M12 17.5h.01';
-  const button = (bg, icon, color, w, end = '') => `<div style="height:96px;border-radius:24px;background:${bg};display:flex;align-items:center;gap:20px;padding:0 28px">
-        ${stroke(icon, color, 42)}${pill(w, 26, t.fg, 'opacity:.85')}<div style="margin-left:auto;display:flex">${end}</div>
+  const CLOSE = 'M6 6l12 12M18 6L6 18';
+  const BACK = 'M9 6h10.5A1.5 1.5 0 0 1 21 7.5v9a1.5 1.5 0 0 1-1.5 1.5H9l-6-6 6-6zM12 9.5l5 5M17 9.5l-5 5';
+  const button = (bg, icon, color, w) => `<div style="height:76px;border-radius:20px;background:${bg};display:flex;align-items:center;gap:16px;padding:0 22px">
+        ${stroke(icon, color, 34)}${pill(w, 22, t.fg, 'opacity:.85')}
       </div>`;
-  return `<div class="card" style="flex-direction:row;align-items:center">
-    <div style="flex:1;display:flex;flex-direction:column;gap:18px;padding-right:36px;margin-right:36px;border-right:2px solid ${line}">
-      ${stroke(SHIELD, RED, 88, 1.8)}
-      ${pill(220, 44, t.fg)}${pill(140, 26, t.muted)}
+  const dot = full => `<div style="width:22px;height:22px;border-radius:50%;box-sizing:border-box;border:5px solid ${full ? t.fg : t.tileText};background:${full ? t.fg : 'transparent'}"></div>`;
+  const digit = '<div style="height:66px;border-radius:16px;background:KEY;display:flex;align-items:center;justify-content:center">PILL</div>';
+  const keys = [...Array(9).keys()].map(() => digit.replace('KEY', key).replace('PILL', pill(22, 30, t.fg, 'border-radius:6px;opacity:.85')))
+    .concat([
+      `<div style="height:66px;display:flex;align-items:center;justify-content:center">${stroke(CLOSE, t.tileText, 34)}</div>`,
+      digit.replace('KEY', key).replace('PILL', pill(22, 30, t.fg, 'border-radius:6px;opacity:.85')),
+      `<div style="height:66px;display:flex;align-items:center;justify-content:center">${stroke(BACK, t.tileText, 38)}</div>`,
+    ]);
+  return `<div class="card" style="flex-direction:row;align-items:stretch">
+    <div style="flex:1;display:flex;flex-direction:column;gap:16px;padding-right:36px;margin-right:36px;border-right:2px solid ${line}">
+      ${stroke(SHIELD, RED, 72, 1.8)}
+      ${pill(200, 42, t.fg)}${pill(130, 24, t.muted)}
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:14px">
+        ${button(`color-mix(in srgb, ${RED} 22%, ${card})`, SHIELD, RED, 90)}
+        ${button(key, UNLOCK, GREEN, 120)}
+      </div>
     </div>
-    <div style="flex:1.3;display:flex;flex-direction:column;gap:14px">
-      ${button(`color-mix(in srgb, ${RED} 22%, ${card})`, SHIELD, RED, 110, stroke(CHECK, RED, 38))}
-      ${button(key, MOON, PURPLE, 130)}
-      ${button(key, UNLOCK, GREEN, 150, stroke(DOTS, t.tileText, 34, 3.6))}
+    <div style="flex:1.1;display:flex;flex-direction:column;gap:22px;justify-content:center">
+      <div style="display:flex;gap:16px;justify-content:center">${dot(true)}${dot(true)}${dot(false)}${dot(false)}</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">${keys.join('')}</div>
     </div>
   </div>`;
 }

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fakeApi, fakeDevice, fakeHomey, homeyApiMock } from './helpers/fakeHomey.js';
-import KeypadService, { BOOLEAN_WORDS, KEYPAD_SECRET, checkCapabilityValue, parseSource } from '../lib/KeypadService.js';
+import KeypadService, { BOOLEAN_WORDS, KEYPAD_CODES, KEYPAD_SECRET, MAX_CODES, checkCapabilityValue, parseSource } from '../lib/KeypadService.js';
 import { KeyError } from '../lib/PersonalApiKey.js';
 import Secrets from '../lib/secrets.js';
 
@@ -51,10 +51,11 @@ function setup() {
   return { homey, keypad, flows, values, variables, devs, log };
 }
 
-/** A code's id as the `code` setting keeps it. */
-function codeId(keypad: KeypadService, digits: string) {
-  const [item] = keypad.codeItems(digits);
-  return item.id;
+/** A code made on the app settings page; its id, as the `code` setting keeps it. */
+function codeId(keypad: KeypadService, digits: string, name = `Code ${digits}`) {
+  const res = keypad.addCode(name, digits);
+  if (!res.ok) throw new Error(res.reason);
+  return res.codes.find(c => c.name === name)!.id;
 }
 
 afterEach(() => { vi.useRealTimers(); });
@@ -77,14 +78,22 @@ describe('Keypad: the state source', () => {
 
   it("answers the variable's or the capability's state, and the flows", async () => {
     const { keypad, flows } = setup();
-    expect(await keypad.getState('var:v1', [])).toEqual({ source: { kind: 'variable', id: 'v1', name: 'TV time', type: 'boolean', value: false }, flows: [] });
+    expect(await keypad.getState('var:v1', [])).toEqual({ source: { kind: 'variable', id: 'v1', name: 'TV time', type: 'boolean', value: false }, flows: [], code: null });
     const state = await keypad.getState('cap:alarm:homealarm_state', ['flow:f1', 'nope']);
     expect(state.source).toMatchObject({ kind: 'capability', deviceId: 'alarm', capabilityId: 'homealarm_state', name: 'Surveillance', value: 'armed' });
     expect(flows.getState).toHaveBeenCalledWith(['flow:f1']); // only flow ids
     expect(state.flows).toEqual([{ id: 'flow:f1', name: 'Flow flow:f1', enabled: true, triggerable: true, advanced: false }]);
     expect((await keypad.getState('var:gone', [])).source).toEqual({ kind: 'variable', id: 'gone', missing: true });
     expect((await keypad.getState('cap:alarm:nope', [])).source).toEqual({ kind: 'capability', deviceId: 'alarm', capabilityId: 'nope', missing: true });
-    expect(await keypad.getState(null, [])).toEqual({ source: null, flows: [] });
+    expect(await keypad.getState(null, [])).toEqual({ source: null, flows: [], code: null });
+  });
+
+  it("answers the widget's code by its name and length, or that it's gone", async () => {
+    const { keypad } = setup();
+    const id = codeId(keypad, '4711', 'Alarm');
+    expect((await keypad.getState(null, [], id)).code).toEqual({ id, name: 'Alarm', digits: 4 });
+    expect((await keypad.getState(null, [], 'gone')).code).toEqual({ id: 'gone', missing: true });
+    expect((await keypad.getState(null, [], 'none')).code).toBeNull();
   });
 
   it("keeps the state when the flows can't be read", async () => {
@@ -139,22 +148,43 @@ describe("Keypad: the buttons' values", () => {
   });
 });
 
-describe('Keypad: the code', () => {
-  it('offers typed digits as dots, never keeping them; anything else offers None with how', () => {
+describe('Keypad: the codes', () => {
+  it('keeps a code by name, never its digits, and lists them by name', () => {
     const { keypad, homey } = setup();
     const secrets = Secrets.for(homey);
-    expect(keypad.codeItems('')).toEqual([{ name: 'None', description: 'Type a code of 3 to 6 digits', id: 'none' }]);
-    expect(keypad.codeItems('12')).toEqual([{ name: 'None', description: 'Type a code of 3 to 6 digits', id: 'none' }]);
-    expect(keypad.codeItems('12a4')[0].id).toBe('none');
-    expect(keypad.codeItems('1234567')[0].id).toBe('none');
     expect(secrets.get(KEYPAD_SECRET)).toBeNull(); // no key until the first code
-    const [item] = keypad.codeItems(' 4711 ');
-    expect(item).toMatchObject({ name: '••••', description: 'A 4-digit code', digits: 4 });
-    expect(item.id).toMatch(/^code:v1:[0-9a-f]{8}:[0-9a-f]{16}:[0-9a-f]{32}$/);
-    expect(JSON.stringify(item)).not.toContain('4711');
+    const res = keypad.addCode(' Alarm ', '4711');
+    expect(res).toEqual({ ok: true, codes: [{ id: expect.stringMatching(/^[0-9a-f]{12}$/), name: 'Alarm', digits: 4 }] });
+    keypad.addCode('Kids', '123456');
+    expect(keypad.listCodes().map(c => [c.name, c.digits])).toEqual([['Alarm', 4], ['Kids', 6]]);
     expect(secrets.get(KEYPAD_SECRET)).toMatch(/^[0-9a-f]{64}$/);
-    // A salt each time: the same code twice gives two ids.
-    expect(codeId(keypad, '4711')).not.toBe(item.id);
+    const stored = JSON.stringify(secrets.get(KEYPAD_CODES));
+    expect(stored).not.toContain('4711');
+    expect(stored).not.toContain('123456');
+  });
+
+  it('wants a name of its own and 3–6 digits, and at most twenty codes', () => {
+    const { keypad } = setup();
+    expect(keypad.addCode('', '1234')).toEqual({ ok: false, reason: 'name' });
+    expect(keypad.addCode('x'.repeat(41), '1234')).toEqual({ ok: false, reason: 'name' });
+    for (const bad of ['12', '1234567', '12a4', 1234, null]) expect(keypad.addCode('A', bad)).toEqual({ ok: false, reason: 'digits' });
+    keypad.addCode('Alarm', '1234');
+    expect(keypad.addCode('alarm', '5678')).toEqual({ ok: false, reason: 'nameTaken' });
+    for (let i = 1; i < MAX_CODES; i++) keypad.addCode(`C${i}`, '1234');
+    expect(keypad.addCode('One more', '1234')).toEqual({ ok: false, reason: 'full' });
+  });
+
+  it("offers the codes by name in the widget's setting, or says where to make one", () => {
+    const { keypad } = setup();
+    expect(keypad.codeItems('')).toEqual([{ name: 'None', description: 'No codes yet: add one in the app settings', id: 'none' }]);
+    const id = codeId(keypad, '4711', 'Alarm');
+    codeId(keypad, '123456', 'Kids');
+    expect(keypad.codeItems('')).toEqual([
+      { name: 'None', id: 'none' },
+      { name: 'Alarm', description: 'A 4-digit code', id },
+      { name: 'Kids', description: 'A 6-digit code', id: expect.any(String) },
+    ]);
+    expect(keypad.codeItems('ala').map(i => i.name)).toEqual(['Alarm']);
   });
 
   it('takes the right code, counts wrong ones, and locks the fifth for 30 s, doubling', () => {
@@ -176,7 +206,7 @@ describe('Keypad: the code', () => {
     expect(keypad.checkCode(id, '4711')).toBeNull();
     // The right one starts the count again.
     expect(keypad.checkCode(id, '1234')).toEqual({ result: 'wrongCode', left: 4 });
-    expect(keypad.describe()).toMatchObject({ key: true, wrongCodes: 7, lockouts: 2, lockedNow: 0 });
+    expect(keypad.describe()).toMatchObject({ codes: 1, wrongCodes: 7, lockouts: 2, lockedNow: 0 });
   });
 
   it('counts each code apart, and takes no code for a button without one', () => {
@@ -190,21 +220,41 @@ describe('Keypad: the code', () => {
     expect(keypad.checkCode('none', '')).toBeNull();
   });
 
-  it("wants the code set again when it was made with another key, or isn't one", () => {
-    const { keypad, homey } = setup();
-    const id = codeId(keypad, '4711');
-    expect(keypad.checkCode('code:v1:nonsense', '4711')).toEqual({ result: 'codeReset' });
-    Secrets.for(homey).unset(KEYPAD_SECRET); // the app reinstalled: a new key with the next code
-    expect(keypad.checkCode(id, '4711')).toEqual({ result: 'codeReset' });
-    codeId(keypad, '123');
-    expect(keypad.checkCode(id, '4711')).toEqual({ result: 'codeReset' });
-  });
-
   it('turns down what isn\'t 3–6 digits as a wrong code', () => {
     const { keypad } = setup();
     const id = codeId(keypad, '4711');
     expect(keypad.checkCode(id, 4711)).toEqual({ result: 'wrongCode', left: 4 });
     expect(keypad.checkCode(id, '47110000')).toEqual({ result: 'wrongCode', left: 3 });
+  });
+
+  it('changes the digits only with the current code, which counts toward the lock', () => {
+    const { keypad } = setup();
+    const id = codeId(keypad, '4711', 'Alarm');
+    expect(keypad.changeCode(id, '0000', '2468')).toEqual({ ok: false, reason: 'wrongCode' });
+    expect(keypad.changeCode(id, '4711', '12')).toEqual({ ok: false, reason: 'digits' });
+    expect(keypad.changeCode('gone', '4711', '2468')).toEqual({ ok: false, reason: 'missing' });
+    expect(keypad.changeCode(id, '4711', '246810')).toEqual({ ok: true, codes: [{ id, name: 'Alarm', digits: 6 }] });
+    expect(keypad.checkCode(id, '4711')).toEqual({ result: 'wrongCode', left: 4 }); // the old one; the change reset the count
+    expect(keypad.checkCode(id, '246810')).toBeNull();
+    for (let i = 0; i < 5; i++) keypad.changeCode(id, '0000', '1357');
+    expect(keypad.changeCode(id, '246810', '1357')).toEqual({ ok: false, reason: 'locked', retryAfter: 30 });
+  });
+
+  it('removes a code without its digits; its widgets then refuse its buttons', async () => {
+    const { keypad, flows } = setup();
+    const id = codeId(keypad, '4711');
+    expect(keypad.removeCode(id)).toEqual({ ok: true, codes: [] });
+    expect(keypad.removeCode(id)).toEqual({ ok: false, reason: 'missing' });
+    expect(keypad.checkCode(id, '4711')).toEqual({ result: 'codeMissing' });
+    expect(await keypad.press({ flow: 'flow:f1', codeId: id, code: '4711' })).toEqual({ result: 'codeMissing' });
+    expect(flows.trigger).not.toHaveBeenCalled();
+  });
+
+  it('a code made with a key that was lost no longer matches', () => {
+    const { keypad, homey } = setup();
+    const id = codeId(keypad, '4711');
+    Secrets.for(homey).unset(KEYPAD_SECRET); // the secrets file lost its key: a new one comes with the next check
+    expect(keypad.checkCode(id, '4711')).toEqual({ result: 'wrongCode', left: 4 });
   });
 });
 
@@ -244,13 +294,13 @@ describe('Keypad: a press', () => {
     await expect(keypad.press({ flow: 'flow:f1' })).rejects.toBeInstanceOf(KeyError);
   });
 
-  it('reports counts, never codes or their hashes', () => {
-    const { keypad } = setup();
-    const id = codeId(keypad, '4711');
+  it('reports counts, never codes, names or hashes', () => {
+    const { keypad, homey } = setup();
+    const id = codeId(keypad, '4711', 'Front door');
     keypad.checkCode(id, '1234');
     const text = JSON.stringify(keypad.describe());
-    expect(text).not.toContain(id.split(':')[4]);
-    expect(text).not.toContain('4711');
+    expect(keypad.describe()).toMatchObject({ codes: 1, wrongCodes: 1 });
+    for (const secret of ['4711', 'Front door', id, (Secrets.for(homey).get(KEYPAD_CODES) as any)[0].mac]) expect(text).not.toContain(secret);
   });
 });
 

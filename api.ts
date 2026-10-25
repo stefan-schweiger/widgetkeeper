@@ -220,6 +220,33 @@ export default {
   },
 
   /** Used by the app settings page: whether the web dashboards have a password, never the password. */
+  /** The app settings page: the Keypad's codes by name and length (`{codes}`), never their digits or hashes. */
+  async getKeypadCodes({ homey }: { homey: Homey }) {
+    const app = homey.app as WidgetkeeperApp;
+    return { codes: app.keypad.listCodes() };
+  },
+
+  /** The app settings page: a new Keypad code, `{name, code}` → `{ok, codes}` or `{ok: false, reason}`. */
+  async postKeypadCode({ homey, body }: { homey: Homey, body: { name?: unknown, code?: unknown } }) {
+    const app = homey.app as WidgetkeeperApp;
+    return app.keypad.addCode(body?.name, body?.code);
+  },
+
+  /**
+   * The app settings page: a Keypad code's new digits, `{current, code}`. The current one is needed: anyone whose API key
+   * may call the app reaches this route, not only the owner.
+   */
+  async putKeypadCode({ homey, params, body }: { homey: Homey, params: Record<string, string>, body: { current?: unknown, code?: unknown } }) {
+    const app = homey.app as WidgetkeeperApp;
+    return app.keypad.changeCode(params?.id, body?.current, body?.code);
+  },
+
+  /** The app settings page: removes a Keypad code (its widgets refuse their buttons until another is picked). */
+  async deleteKeypadCode({ homey, params }: { homey: Homey, params: Record<string, string> }) {
+    const app = homey.app as WidgetkeeperApp;
+    return app.keypad.removeCode(params?.id);
+  },
+
   async getWebPassword({ homey }: { homey: Homey }) {
     const app = homey.app as WidgetkeeperApp;
     return { set: app.webPassword.isSet };

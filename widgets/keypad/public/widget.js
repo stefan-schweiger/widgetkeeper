@@ -1,8 +1,10 @@
 /*
  * Keypad: up to three buttons behind an optional code, each starting a Flow or setting the state the widget shows (a
- * Logic variable or a device value). The state is on the left, the buttons are stacked on the right, and the code pad
- * takes the right half (compact: the whole widget). The app checks the code: the widget only knows its length, and
- * sends what was typed with the code's id. Plain browser JS (served as-is).
+ * Logic variable or a device value). The state is on the left, the buttons are stacked on the right, and a 3×4 keypad
+ * takes the right half when a button wants the code (compact: the whole widget); or, with Show the keypad: Always, it
+ * stays beside the state with the buttons under it. The codes are made on the app settings page and the app checks
+ * them: the widget only knows its code's length, and sends what was typed with the code's id. Plain browser JS (served
+ * as-is).
  */
 (function () {
   'use strict';
@@ -20,9 +22,12 @@
     wrongCode: 'Wrong code',
     triesLeft: 'Wrong code. Tries left: __n__',
     lockedOut: 'Too many tries. Try again in __s__ s.',
-    codeReset: 'Set the code again in the widget settings.',
+    codeMissing: 'This code was removed: pick one in the widget settings.',
+    enterCode: 'Enter the code',
+    pickButton: 'Now tap a button',
     needsCode: 'Needs the code',
     close: 'Close',
+    clear: 'Clear',
     delete: 'Delete',
     yes: 'Yes',
     no: 'No',
@@ -72,11 +77,14 @@
   };
   const MAX_AUTO = 4;
 
+  /** The keys, a phone's: 1–9, then the bottom row (left: ✕ to clear when the keypad is always shown, else nothing). */
+  const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'left', '0', 'back'];
+
   const DONE_MS = 1500; // the tick after a button worked
   const MIN_BUSY_MS = 400; // the spinner, at least: a quick answer still shows something happened
   const OPTIMISTIC_MS = 10e3; // a set value shows until the state reports it, or this long
   const WRONG_MS = 700; // the red dots after a wrong code, then they empty
-  const IDLE_CLOSE_MS = 30e3; // the pad closes when left alone
+  const IDLE_MS = 30e3; // left alone, an open keypad closes and what was typed goes
 
   /** An icon (the kit's `{d, fill}` or a mark's path) as an inline SVG in `currentColor`. */
   function glyph(icon, cls) {
@@ -97,15 +105,14 @@
   }
 
   /**
-   * The widget's settings: the state's id (`var:<id>` or `cap:<deviceId>:<capabilityId>`), the code (`{id, digits}`,
-   * never the digits themselves), and the buttons with a Flow or a value, in order.
+   * The widget's settings: the state's id (`var:<id>` or `cap:<deviceId>:<capabilityId>`), the code's id (one made on the
+   * app settings page; its length comes with the state), when the keypad shows (`tap` or `always`), and the buttons with
+   * a Flow or a value, in order.
    */
   function keypadSettings(settings) {
     const s = settings || {};
     const sourceId = s.state && typeof s.state.id === 'string' && /^(var|cap):./.test(s.state.id) ? s.state.id : null;
-    const c = s.code;
-    const code = c && typeof c.id === 'string' && /^code:/.test(c.id) && Number.isInteger(c.digits) && c.digits >= 3 && c.digits <= 6
-      ? { id: c.id, digits: c.digits } : null;
+    const codeId = s.code && typeof s.code.id === 'string' && s.code.id && s.code.id !== 'none' ? s.code.id : null;
     const buttons = [];
     for (const n of [1, 2, 3]) {
       const f = s[`flow${n}`];
@@ -127,13 +134,13 @@
         needsCode: s[`code${n}`] !== false,
       });
     }
-    return { sourceId, code, buttons };
+    return { sourceId, codeId, keypad: s.keypad === 'always' ? 'always' : 'tap', buttons };
   }
 
   /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, locale?: string, layout?: string, colorStyle?: string,
-   *   title?: string, sourceId?: string | null, code?: { id: string, digits: number } | null, buttons?: any[],
+   *   title?: string, sourceId?: string | null, codeId?: string | null, keypad?: string, buttons?: any[],
    *   onPress?: (body: object) => Promise<any>, onHaptic?: () => void, onHeight?: () => void }} opts
    */
   function createKeypadWidget(root, opts = {}) {
@@ -145,7 +152,8 @@
     const numberFmt = new Intl.NumberFormat(opts.locale, { maximumFractionDigits: 3 });
     const title = typeof opts.title === 'string' ? opts.title.trim() : '';
     const sourceId = opts.sourceId || null;
-    const code = opts.code || null;
+    const codeId = opts.codeId || null;
+    const always = opts.keypad === 'always' && !!codeId; // without a code there's nothing to type
     const own = Array.isArray(opts.buttons) ? opts.buttons : [];
     const compact = opts.layout === 'compact';
     const guard = touchGuard();
@@ -153,30 +161,53 @@
 
     let source = null; // the state from /state: a variable or a capability, or `{missing: true}`
     let flows = new Map(); // the buttons' flows, by id
+    let code = null; // the code's `{id, name, digits}` from /state, or `{missing: true}`
     let optimistic = null; // { value, until }: a value just set, until the state reports it
     const busy = new Map(); // button n → 'running' | 'done'
     let lasting = null; // a message in place of everything
-    let pad = null; // { n, typed, checking, error, dead }
+    let open = false; // the keypad, when it isn't always shown
+    const entry = { n: null, typed: '', checking: false, error: false }; // what's being typed, and for which button
     let lockedUntil = 0; // the app's lock after too many wrong codes
     let idleTimer = null;
     let lockTimer = null;
 
     root.classList.add('kp');
     root.classList.toggle('kp-compact', compact);
+    root.classList.toggle('kp-always', always);
     applyColors(root, { style: opts.colorStyle });
 
     const left = el('div', { class: 'kp-left' }, root);
     const stack = el('div', { class: 'kp-stack' }, root);
-    const padNode = el('div', { class: 'kp-pad' }, root);
+    const pad = el('div', { class: 'kp-pad' }, root);
     const only = el('div', { class: 'kp-only', dir: 'auto' }, root);
     const message = messageLine(render);
 
     let stackKey = null;
     const nodes = new Map(); // button n → its node
-    let padTop = null;
-    let padSub = null;
-    let padDots = null;
-    let padKeys = null;
+    const padTop = el('div', { class: 'kp-pad-top' }, pad);
+    const padGlyph = el('span', { class: 'kp-pad-glyph' }, padTop);
+    const padLabel = el('span', { class: 'kp-pad-label', dir: 'auto' }, padTop);
+    const padSub = el('span', { class: 'kp-pad-sub', dir: 'auto' }, padTop);
+    const padDots = el('div', { class: 'kp-dots', 'aria-hidden': 'true' }, padTop);
+    const keys = el('div', { class: 'kp-keys' }, pad);
+    if (!always) {
+      const close = el('button', { type: 'button', class: 'kp-close', 'aria-label': t('close') }, padTop);
+      close.appendChild(glyph({ d: MARKS.close }, ''));
+      onTap(close, () => closePad(), { keys: false, guard });
+    }
+    for (const k of KEYS) {
+      if (k === 'left' && !always) {
+        el('span', { class: 'kp-key blank' }, keys);
+        continue;
+      }
+      const label = k === 'back' ? t('delete') : k === 'left' ? t('clear') : k;
+      const key = el('button', { type: 'button', class: k === 'back' || k === 'left' ? 'kp-key fn' : 'kp-key', 'aria-label': label }, keys);
+      if (k === 'back') key.appendChild(glyph({ d: MARKS.back }, ''));
+      else if (k === 'left') key.appendChild(glyph({ d: MARKS.close }, ''));
+      else key.textContent = k;
+      onTap(key, () => typeKey(k), { keys: false, guard });
+    }
+    if (always) doc.addEventListener('keydown', onKey);
 
     /** The buttons: the ones set up, or else one per value of a list or yes/no state. */
     function buttons() {
@@ -196,7 +227,9 @@
       return [];
     }
 
-    const needsCode = b => !!code && b.needsCode;
+    const needsCode = b => !!codeId && b.needsCode;
+    const digits = () => (code && !code.missing ? code.digits : 0);
+    const target = () => (entry.n == null ? null : buttons().find(b => b.n === entry.n) || null);
 
     /** What the state has now: a value just set until it's reported, else the state's; undefined when unknown. */
     function current() {
@@ -232,9 +265,9 @@
         const lit = now === undefined ? null : list.find(b => b.value && sameValue(now, b.value.value)) || null;
         renderLeft(list, lit, now);
         renderStack(list, lit);
-        renderPad();
+        renderPad(list);
       }
-      root.classList.toggle('pad-open', !!pad && !lasting);
+      root.classList.toggle('pad-open', open && !lasting);
       if (opts.onHeight) opts.onHeight();
     }
 
@@ -282,6 +315,7 @@
       const state = busy.get(b.n);
       const label = labelOf(b);
       node.classList.toggle('on', on);
+      node.classList.toggle('target', always && entry.n === b.n);
       node.classList.toggle('missing', !!(f && f.missing));
       node.classList.toggle('unavailable', !!(f && !f.missing && (!f.enabled || !f.triggerable)));
       node.setAttribute('aria-label', needsCode(b) ? `${label} (${t('needsCode')})` : label);
@@ -309,29 +343,51 @@
 
     function press(n) {
       const b = buttons().find(x => x.n === n);
-      if (!b || pad || busy.get(n) === 'running') return;
+      if (!b || entry.checking || busy.get(n) === 'running' || (open && !always)) return;
       const f = b.flow ? flows.get(b.flow) : null;
       if (f && f.missing) return refuse(b, t('flowMissing'));
       if (f && !f.enabled) return refuse(b, t('flowDisabled', { name: labelOf(b) }));
       if (f && !f.triggerable) return refuse(b, t('flowNotTriggerable', { name: labelOf(b) }));
+      if (!needsCode(b)) {
+        if (opts.onHaptic) opts.onHaptic();
+        run(b);
+        return;
+      }
+      if (code && code.missing) return refuse(b, t('codeMissing'));
+      if (!digits()) return; // the code's length comes with the state
       if (opts.onHaptic) opts.onHaptic();
-      if (needsCode(b)) openPad(b);
-      else run(b);
+      armIdle();
+      if (!always) {
+        // The keypad, for this button.
+        Object.assign(entry, { n: b.n, typed: '', error: false });
+        open = true;
+        doc.addEventListener('keydown', onKey);
+        message.set(null); // renders
+        if (Date.now() < lockedUntil) tickLock();
+        return;
+      }
+      // Always shown: the code typed first goes at once; else this button waits for it (a second tap lets go).
+      if (entry.typed.length === digits()) {
+        submit(b);
+        return;
+      }
+      entry.n = entry.n === b.n ? null : b.n;
+      render();
     }
 
     /** The press's request: the Flow, or the state and the value to set it to; with the code when typed. */
     function body(b, typed) {
       const out = b.flow ? { flow: b.flow } : { source: sourceId, value: b.value.value };
-      if (typed != null) Object.assign(out, { codeId: code.id, code: typed });
+      if (typed != null) Object.assign(out, { codeId, code: typed });
       return out;
     }
 
     async function send(b, typed) {
       try {
-        return { res: opts.onPress ? await opts.onPress(body(b, typed)) : { ok: true, result: 'done' } };
+        return opts.onPress ? await opts.onPress(body(b, typed)) : { ok: true, result: 'done' };
       } catch (err) {
         console.error(err);
-        return { res: null };
+        return null;
       }
     }
 
@@ -340,7 +396,7 @@
       busy.set(b.n, 'running');
       render();
       const started = Date.now();
-      const { res } = await send(b, null);
+      const res = await send(b, null);
       const wait = MIN_BUSY_MS - (Date.now() - started);
       if (wait > 0) await new Promise(r => setTimeout(r, wait));
       busy.delete(b.n);
@@ -368,149 +424,132 @@
       refuse(b, text);
     }
 
-    // ---------------------------------------------------------------- the pad
-
-    function openPad(b) {
-      buildPad(b);
-      pad = { n: b.n, typed: '', checking: false, error: false, dead: false };
-      armIdle();
-      doc.addEventListener('keydown', onKey);
-      message.set(null); // renders
-      if (Date.now() < lockedUntil) tickLock();
-    }
+    // ---------------------------------------------------------------- the keypad
 
     function closePad() {
-      if (!pad || pad.checking) return;
-      pad = null;
+      if (!open || entry.checking) return;
+      open = false;
+      Object.assign(entry, { n: null, typed: '', error: false });
       clearTimeout(idleTimer);
       doc.removeEventListener('keydown', onKey);
-      message.set(null);
+      message.set(null); // renders
     }
 
+    /** Left alone: an open keypad closes, and an always-shown one forgets what was typed. */
     function armIdle() {
       clearTimeout(idleTimer);
       idleTimer = setTimeout(() => {
-        if (!pad || pad.checking) return armIdle();
-        closePad();
-        render();
-      }, IDLE_CLOSE_MS);
+        if (entry.checking) return armIdle();
+        if (always) clearEntry();
+        else closePad();
+      }, IDLE_MS);
     }
 
-    function buildPad(b) {
-      padNode.replaceChildren();
-      padTop = el('div', { class: 'kp-pad-top' }, padNode);
-      if (b.color !== 'grey') padTop.dataset.wkColor = b.color;
-      if (b.icon) padTop.appendChild(glyph(ICONS[b.icon], 'kp-pad-glyph'));
-      el('span', { class: 'kp-pad-label', dir: 'auto', text: labelOf(b) }, padTop);
-      padSub = el('span', { class: 'kp-pad-sub', dir: 'auto' }, padTop);
-      padDots = el('div', { class: 'kp-dots', 'aria-hidden': 'true' }, padTop);
-      const close = el('button', { type: 'button', class: 'kp-close', 'aria-label': t('close') }, padTop);
-      close.appendChild(glyph({ d: MARKS.close }, ''));
-      onTap(close, () => {
-        closePad();
-        render();
-      }, { keys: false, guard });
-      padKeys = el('div', { class: 'kp-keys' }, padNode);
-      const order = compact
-        ? ['1', '2', '3', '4', '5', 'back', '6', '7', '8', '9', '0', '']
-        : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'back'];
-      for (const k of order) {
-        if (!k) {
-          el('span', { class: 'kp-key blank' }, padKeys);
-          continue;
-        }
-        const key = el('button', { type: 'button', class: k === 'back' ? 'kp-key fn' : 'kp-key', 'aria-label': k === 'back' ? t('delete') : k }, padKeys);
-        if (k === 'back') key.appendChild(glyph({ d: MARKS.back }, ''));
-        else key.textContent = k;
-        onTap(key, () => typeKey(k), { keys: false, guard });
-      }
+    function clearEntry() {
+      Object.assign(entry, { n: null, typed: '', error: false });
+      render();
     }
 
-    function renderPad() {
-      if (!pad) return;
-      const off = pad.checking || pad.dead || Date.now() < lockedUntil;
-      for (const key of padKeys.querySelectorAll('button')) key.disabled = off;
-      padDots.replaceChildren(...Array.from({ length: code.digits }, (_, i) => el('span', { class: i < pad.typed.length ? 'kp-dot f' : 'kp-dot' })));
-      padDots.classList.toggle('err', pad.error);
-      padDots.classList.toggle('checking', pad.checking);
+    function renderPad(list) {
+      if (!always && !open) return;
+      const b = target();
+      const full = digits() > 0 && entry.typed.length === digits();
+      const label = b ? labelOf(b) : code && code.missing ? t('codeMissing') : full ? t('pickButton') : t('enterCode');
+      padTop.classList.toggle('missing', !!(code && code.missing));
+      if (b && b.color !== 'grey') padTop.dataset.wkColor = b.color;
+      else delete padTop.dataset.wkColor;
+      padGlyph.replaceChildren(...(b && b.icon ? [glyph(ICONS[b.icon], '')] : []));
+      padLabel.textContent = label;
+      // Compact (open, in place of the widget): the title or a message beside the label.
       padSub.textContent = message.text || title || (source && !source.missing && source.name) || '';
       padSub.classList.toggle('error', !!message.text);
+      const off = entry.checking || !digits() || Date.now() < lockedUntil || !list.some(needsCode);
+      for (const key of keys.querySelectorAll('button')) key.disabled = off;
+      padDots.replaceChildren(...Array.from({ length: digits() || 4 }, (_, i) => el('span', { class: i < entry.typed.length ? 'kp-dot f' : 'kp-dot' })));
+      padDots.classList.toggle('err', entry.error);
+      padDots.classList.toggle('checking', entry.checking);
     }
 
     function onKey(e) {
-      if (!pad) return;
       if (/^[0-9]$/.test(e.key)) typeKey(e.key);
       else if (e.key === 'Backspace') typeKey('back');
       else if (e.key === 'Escape') {
-        closePad();
-        render();
+        if (always) clearEntry();
+        else closePad();
       } else return;
       e.preventDefault();
     }
 
     function typeKey(k) {
-      if (!pad || pad.checking || pad.dead || Date.now() < lockedUntil) return;
+      if (entry.checking || !digits() || Date.now() < lockedUntil || (!always && !open)) return;
       armIdle();
       if (opts.onHaptic) opts.onHaptic();
-      if (pad.error) {
-        pad.error = false;
-        pad.typed = '';
+      if (k === 'left') {
+        clearEntry();
+        return;
       }
-      if (k === 'back') pad.typed = pad.typed.slice(0, -1);
-      else if (pad.typed.length < code.digits) pad.typed += k;
-      render();
-      if (pad.typed.length === code.digits) submit();
-    }
-
-    async function submit() {
-      const b = buttons().find(x => x.n === pad.n);
-      if (!b) {
-        closePad();
+      if (entry.error) {
+        entry.error = false;
+        entry.typed = '';
+      }
+      if (k === 'back') entry.typed = entry.typed.slice(0, -1);
+      else if (entry.typed.length < digits()) entry.typed += k;
+      if (entry.typed.length < digits()) {
         render();
         return;
       }
-      pad.checking = true;
+      // The code is complete: its button's, the only button behind the code, or wait for a tap.
+      const behind = buttons().filter(needsCode);
+      const b = target() || (behind.length === 1 ? behind[0] : null);
+      if (b) submit(b);
+      else render();
+    }
+
+    async function submit(b) {
+      entry.n = b.n;
+      entry.checking = true;
       render();
-      const { res } = await send(b, pad.typed);
-      pad.checking = false;
+      const res = await send(b, entry.typed);
+      entry.checking = false;
       if (res && res.ok !== false && refused(res)) return;
-      closePad();
+      if (always) Object.assign(entry, { n: null, typed: '', error: false });
+      else closePad();
       finish(b, res);
     }
 
-    /** A code the app turned down: the pad stays and says why. False for any other answer. */
+    /** A code the app turned down: the keypad stays and says why. False for any other answer. */
     function refused(res) {
       if (res.result === 'wrongCode') {
-        pad.error = true;
+        entry.error = true;
         message.set(res.left <= 2 ? t('triesLeft', { n: res.left }) : t('wrongCode'), true);
         setTimeout(() => {
-          if (!pad || !pad.error) return;
-          pad.error = false;
-          pad.typed = '';
+          if (!entry.error) return;
+          entry.error = false;
+          entry.typed = '';
           render();
         }, WRONG_MS);
         return true;
       }
       if (res.result === 'locked') {
         lockedUntil = Date.now() + (Number(res.retryAfter) || 30) * 1000;
-        pad.typed = '';
+        entry.typed = '';
         tickLock();
         return true;
       }
-      if (res.result === 'codeReset') {
-        pad.dead = true;
-        pad.typed = '';
-        message.set(t('codeReset'), true);
+      if (res.result === 'codeMissing') {
+        code = { missing: true };
+        entry.typed = '';
+        message.set(t('codeMissing'), true);
         return true;
       }
       return false;
     }
 
-    /** The lock's countdown, while the pad is open. */
+    /** The lock's countdown, while the keypad shows. */
     function tickLock() {
       clearTimeout(lockTimer);
       const leftMs = lockedUntil - Date.now();
-      if (!pad) return;
+      if (!always && !open) return;
       if (leftMs <= 0) {
         message.set(null);
         return;
@@ -521,11 +560,12 @@
 
     // ---------------------------------------------------------------- state
 
-    /** `/state`: `{source, flows}`. Flows that couldn't be read (`null`) keep the last ones. */
+    /** `/state`: `{source, flows, code}`. Flows that couldn't be read (`null`) keep the last ones. */
     function setState(state) {
       lasting = null;
       source = state && state.source ? state.source : null;
       if (state && Array.isArray(state.flows)) flows = new Map(state.flows.map(f => [f.id, f]));
+      code = state && state.code ? state.code : codeId ? { missing: true } : null;
       if (optimistic && source && !source.missing && sameValue(source.value, optimistic.value)) optimistic = null;
       if (!buttons().length) lasting = t('selectButtons');
       render();

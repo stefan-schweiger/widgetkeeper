@@ -121,6 +121,22 @@
       "method": "GET",
       "path": "/web/address"
     },
+    "getKeypadCodes": {
+      "method": "GET",
+      "path": "/keypad-codes"
+    },
+    "postKeypadCode": {
+      "method": "POST",
+      "path": "/keypad-codes"
+    },
+    "putKeypadCode": {
+      "method": "PUT",
+      "path": "/keypad-codes/:id"
+    },
+    "deleteKeypadCode": {
+      "method": "DELETE",
+      "path": "/keypad-codes/:id"
+    },
     "getWebPassword": {
       "method": "GET",
       "path": "/web/password"
@@ -10799,20 +10815,93 @@
             "ar": "الرمز"
           },
           "hint": {
-            "en": "Type 3 to 6 digits, then pick the code. Only a fingerprint of it is kept. Buttons with Needs the code on ask for it.",
-            "nl": "Typ 3 tot 6 cijfers en kies dan de code. Alleen een vingerafdruk ervan wordt bewaard. Knoppen met Code nodig aan vragen erom.",
-            "de": "Tippe 3 bis 6 Ziffern und wähle dann den Code. Nur ein Fingerabdruck davon wird gespeichert. Tasten mit eingeschaltetem Code nötig fragen danach.",
-            "fr": "Tapez 3 à 6 chiffres, puis choisissez le code. Seule une empreinte en est gardée. Les boutons avec Code requis activé le demandent.",
-            "it": "Digita da 3 a 6 cifre, poi scegli il codice. Ne viene conservata solo un’impronta. I pulsanti con Richiede il codice attivo lo chiedono.",
-            "sv": "Skriv 3 till 6 siffror och välj sedan koden. Bara ett fingeravtryck av den sparas. Knappar med Kräver koden på frågar efter den.",
-            "no": "Skriv 3 til 6 sifre, og velg deretter koden. Bare et fingeravtrykk av den lagres. Knapper med Krever koden på spør etter den.",
-            "es": "Escribe de 3 a 6 dígitos y elige el código. Solo se guarda una huella de él. Los botones con Pide el código activado lo piden.",
-            "da": "Skriv 3 til 6 cifre, og vælg derefter koden. Kun et fingeraftryk af den gemmes. Knapper med Kræver koden slået til beder om den.",
-            "ru": "Введите от 3 до 6 цифр и выберите код. Хранится только его отпечаток. Кнопки с включённым «Нужен код» запрашивают его.",
-            "pl": "Wpisz od 3 do 6 cyfr, a potem wybierz kod. Przechowywany jest tylko jego odcisk. Przyciski z włączonym Wymaga kodu o niego proszą.",
-            "ko": "숫자 3~6자리를 입력한 뒤 코드를 선택하세요. 코드의 지문만 저장됩니다. 코드 필요가 켜진 버튼에서 코드를 묻습니다.",
-            "ar": "اكتب من 3 إلى 6 أرقام ثم اختر الرمز. تُحفظ بصمته فقط. تطلبه الأزرار التي فُعّل فيها يتطلب الرمز."
+            "en": "Pick a code made in Widgetkeeper’s app settings, under Keypad codes. Buttons with Needs the code on ask for it.",
+            "nl": "Kies een code uit de app-instellingen van Widgetkeeper, onder Codepaneel-codes. Knoppen met Code nodig aan vragen erom.",
+            "de": "Wähle einen Code aus den App-Einstellungen von Widgetkeeper, unter Tastenfeld-Codes. Tasten mit eingeschaltetem Code nötig fragen danach.",
+            "fr": "Choisissez un code créé dans les réglages de l’app Widgetkeeper, sous Codes du clavier à code. Les boutons avec Code requis activé le demandent.",
+            "it": "Scegli un codice creato nelle impostazioni dell’app Widgetkeeper, in Codici del tastierino. I pulsanti con Richiede il codice attivo lo chiedono.",
+            "sv": "Välj en kod som skapats i Widgetkeepers appinställningar, under Knappsatskoder. Knappar med Kräver koden på frågar efter den.",
+            "no": "Velg en kode laget i Widgetkeepers appinnstillinger, under Kodepanel-koder. Knapper med Krever koden på spør etter den.",
+            "es": "Elige un código creado en los ajustes de la app Widgetkeeper, en Códigos del teclado de código. Los botones con Pide el código activado lo piden.",
+            "da": "Vælg en kode, der er lavet i Widgetkeepers app-indstillinger, under Kodepanel-koder. Knapper med Kræver koden slået til beder om den.",
+            "ru": "Выберите код, созданный в настройках приложения Widgetkeeper, в разделе «Коды кодовой панели». Кнопки с включённым «Нужен код» запрашивают его.",
+            "pl": "Wybierz kod utworzony w ustawieniach aplikacji Widgetkeeper, w sekcji Kody klawiatury kodowej. Przyciski z włączonym Wymaga kodu o niego proszą.",
+            "ko": "Widgetkeeper 앱 설정의 키패드 코드에서 만든 코드를 선택하세요. 코드 필요가 켜진 버튼에서 코드를 묻습니다.",
+            "ar": "اختر رمزًا أُنشئ في إعدادات تطبيق Widgetkeeper، ضمن رموز لوحة الرمز. تطلبه الأزرار التي فُعّل فيها يتطلب الرمز."
           }
+        },
+        {
+          "id": "keypad",
+          "type": "dropdown",
+          "title": {
+            "en": "Show the keypad",
+            "nl": "Toetsenblok tonen",
+            "de": "Ziffernblock zeigen",
+            "fr": "Afficher le pavé numérique",
+            "it": "Mostra il tastierino",
+            "sv": "Visa knappsatsen",
+            "no": "Vis talltastaturet",
+            "es": "Mostrar el teclado",
+            "da": "Vis taltastaturet",
+            "ru": "Показывать клавиатуру",
+            "pl": "Pokazuj klawiaturę",
+            "ko": "키패드 표시",
+            "ar": "إظهار لوحة الأرقام"
+          },
+          "hint": {
+            "en": "Always: the keypad stays beside the state. Type the code, then tap the button; with one button behind the code, the code alone is enough.",
+            "nl": "Altijd: het toetsenblok staat naast de status. Typ de code en tik dan op de knop; met één knop achter de code is de code genoeg.",
+            "de": "Immer: Der Ziffernblock bleibt neben dem Zustand. Code eingeben, dann auf die Taste tippen; mit nur einer Taste hinter dem Code reicht der Code.",
+            "fr": "Toujours : le pavé reste à côté de l’état. Tapez le code, puis le bouton ; avec un seul bouton derrière le code, le code suffit.",
+            "it": "Sempre: il tastierino resta accanto allo stato. Digita il codice, poi tocca il pulsante; con un solo pulsante protetto basta il codice.",
+            "sv": "Alltid: knappsatsen visas bredvid läget. Skriv koden och tryck sedan på knappen; med bara en knapp bakom koden räcker koden.",
+            "no": "Alltid: tastaturet står ved siden av tilstanden. Skriv koden og trykk så på knappen; med bare én knapp bak koden holder koden.",
+            "es": "Siempre: el teclado queda junto al estado. Escribe el código y luego toca el botón; con un solo botón tras el código, basta el código.",
+            "da": "Altid: tastaturet står ved siden af tilstanden. Skriv koden, og tryk så på knappen; med kun én knap bag koden er koden nok.",
+            "ru": "Всегда: клавиатура видна рядом с состоянием. Введите код, затем нажмите кнопку; если код нужен только одной кнопке, достаточно кода.",
+            "pl": "Zawsze: klawiatura jest obok stanu. Wpisz kod, potem dotknij przycisku; gdy kod chroni tylko jeden przycisk, wystarczy sam kod.",
+            "ko": "항상: 키패드가 상태 옆에 표시됩니다. 코드를 입력한 뒤 버튼을 누르세요. 코드가 필요한 버튼이 하나뿐이면 코드만으로 충분합니다.",
+            "ar": "دائمًا: تبقى لوحة الأرقام بجانب الحالة. اكتب الرمز ثم اضغط الزر؛ وإن كان زر واحد فقط خلف الرمز فالرمز وحده يكفي."
+          },
+          "value": "tap",
+          "values": [
+            {
+              "id": "tap",
+              "title": {
+                "en": "When a button needs it",
+                "nl": "Als een knop hem nodig heeft",
+                "de": "Wenn eine Taste ihn braucht",
+                "fr": "Quand un bouton le demande",
+                "it": "Quando un pulsante lo richiede",
+                "sv": "När en knapp behöver den",
+                "no": "Når en knapp trenger det",
+                "es": "Cuando un botón lo pide",
+                "da": "Når en knap skal bruge det",
+                "ru": "Когда кнопке нужен код",
+                "pl": "Gdy przycisk jej potrzebuje",
+                "ko": "버튼에 필요할 때",
+                "ar": "عندما يحتاجها زر"
+              }
+            },
+            {
+              "id": "always",
+              "title": {
+                "en": "Always",
+                "nl": "Altijd",
+                "de": "Immer",
+                "fr": "Toujours",
+                "it": "Sempre",
+                "sv": "Alltid",
+                "no": "Alltid",
+                "es": "Siempre",
+                "da": "Altid",
+                "ru": "Всегда",
+                "pl": "Zawsze",
+                "ko": "항상",
+                "ar": "دائمًا"
+              }
+            }
+          ]
         },
         {
           "id": "layout",

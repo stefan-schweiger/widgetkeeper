@@ -120,6 +120,22 @@
       "method": "GET",
       "path": "/web/address"
     },
+    "getKeypadCodes": {
+      "method": "GET",
+      "path": "/keypad-codes"
+    },
+    "postKeypadCode": {
+      "method": "POST",
+      "path": "/keypad-codes"
+    },
+    "putKeypadCode": {
+      "method": "PUT",
+      "path": "/keypad-codes/:id"
+    },
+    "deleteKeypadCode": {
+      "method": "DELETE",
+      "path": "/keypad-codes/:id"
+    },
     "getWebPassword": {
       "method": "GET",
       "path": "/web/password"
