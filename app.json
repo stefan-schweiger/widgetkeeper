@@ -517,6 +517,149 @@
         ]
       },
       {
+        "id": "keypad_wrong_code",
+        "title": {
+          "en": "A wrong code was typed on a Keypad",
+          "nl": "Er is een verkeerde code getypt op een Codepaneel",
+          "de": "Auf einem Tastenfeld wurde ein falscher Code eingegeben",
+          "fr": "Un mauvais code a été saisi sur un Clavier à code",
+          "it": "È stato inserito un codice errato su un Tastierino",
+          "sv": "En fel kod angavs på en Knappsats",
+          "no": "En feil kode ble tastet på et Kodepanel",
+          "es": "Se introdujo un código incorrecto en un Teclado de código",
+          "da": "Der blev indtastet en forkert kode på et Kodepanel",
+          "ru": "На «Кодовой панели» введён неверный код",
+          "pl": "Na Klawiaturze kodowej wpisano zły kod",
+          "ko": "키패드에 잘못된 코드를 입력했을 때",
+          "ar": "تم إدخال رمز خاطئ في «لوحة الرمز»"
+        },
+        "hint": {
+          "en": "On a Keypad widget, or at a web dashboard’s code. Keypad is the widget’s title or the dashboard’s name. Locked says this try locked the code; Tries left counts down to that.",
+          "nl": "Op een Codepaneel-widget of bij de code van een webdashboard. Codepaneel is de titel van de widget of de naam van het dashboard. Vergrendeld zegt dat deze poging de code vergrendelde; Pogingen over telt daarheen af.",
+          "de": "Auf einem Tastenfeld-Widget oder beim Code eines Web-Dashboards. Tastenfeld ist der Titel des Widgets oder der Name des Dashboards. Gesperrt heißt, dieser Versuch hat den Code gesperrt; Verbleibende Versuche zählt bis dahin herunter.",
+          "fr": "Sur un widget Clavier à code ou au code d’un tableau de bord web. Clavier à code est le titre du widget ou le nom du tableau de bord. Verrouillé indique que cet essai a verrouillé le code ; Essais restants compte jusque-là.",
+          "it": "Su un widget Tastierino o al codice di una dashboard web. Tastierino è il titolo del widget o il nome della dashboard. Bloccato indica che questo tentativo ha bloccato il codice; Tentativi rimasti conta fino a lì.",
+          "sv": "På en Knappsats-widget eller vid en webbinstrumentpanels kod. Knappsats är widgetens titel eller instrumentpanelens namn. Låst betyder att det här försöket låste koden; Försök kvar räknar ner dit.",
+          "no": "På en Kodepanel-widget eller ved koden til et nettdashbord. Kodepanel er widgetens tittel eller dashbordets navn. Låst betyr at dette forsøket låste koden; Forsøk igjen teller ned dit.",
+          "es": "En un widget Teclado de código o en el código de un panel web. Teclado de código es el título del widget o el nombre del panel. Bloqueado indica que este intento bloqueó el código; Intentos restantes cuenta hasta ahí.",
+          "da": "På en Kodepanel-widget eller ved et webdashboards kode. Kodepanel er widgettens titel eller dashboardets navn. Låst betyder, at dette forsøg låste koden; Forsøg tilbage tæller ned dertil.",
+          "ru": "В виджете «Кодовая панель» или у кода веб-панели. «Кодовая панель» — название виджета или имя панели. «Заблокировано» — эта попытка заблокировала код; «Осталось попыток» отсчитывает до этого.",
+          "pl": "W widżecie Klawiatura kodowa lub przy kodzie pulpitu web. Klawiatura kodowa to tytuł widżetu lub nazwa pulpitu. Zablokowano oznacza, że ta próba zablokowała kod; Pozostałe próby odliczają do tego.",
+          "ko": "키패드 위젯이나 웹 대시보드의 코드에서. 키패드는 위젯 제목이나 대시보드 이름입니다. 잠김은 이번 시도로 코드가 잠겼다는 뜻이고, 남은 시도는 그때까지 줄어듭니다.",
+          "ar": "في أداة «لوحة الرمز» أو عند رمز لوحة تحكم ويب. «لوحة الرمز» هي عنوان الأداة أو اسم لوحة التحكم. «مقفل» يعني أن هذه المحاولة أقفلت الرمز؛ «المحاولات المتبقية» تعدّ تنازليًا حتى ذلك."
+        },
+        "tokens": [
+          {
+            "name": "button",
+            "type": "string",
+            "title": {
+              "en": "Button",
+              "nl": "Knop",
+              "de": "Taste",
+              "fr": "Bouton",
+              "it": "Pulsante",
+              "sv": "Knapp",
+              "no": "Knapp",
+              "es": "Botón",
+              "da": "Knap",
+              "ru": "Кнопка",
+              "pl": "Przycisk",
+              "ko": "버튼",
+              "ar": "الزر"
+            },
+            "example": {
+              "en": "Disarm",
+              "nl": "Uitschakelen",
+              "de": "Unscharf",
+              "fr": "Désarmer",
+              "it": "Disattiva",
+              "sv": "Larma av",
+              "no": "Deaktiver",
+              "es": "Desarmar",
+              "da": "Frakobl",
+              "ru": "Снять с охраны",
+              "pl": "Rozbrój",
+              "ko": "해제",
+              "ar": "إلغاء التسليح"
+            }
+          },
+          {
+            "name": "keypad",
+            "type": "string",
+            "title": {
+              "en": "Keypad",
+              "nl": "Codepaneel",
+              "de": "Tastenfeld",
+              "fr": "Clavier à code",
+              "it": "Tastierino",
+              "sv": "Knappsats",
+              "no": "Kodepanel",
+              "es": "Teclado de código",
+              "da": "Kodepanel",
+              "ru": "Кодовая панель",
+              "pl": "Klawiatura kodowa",
+              "ko": "키패드",
+              "ar": "لوحة الرمز"
+            },
+            "example": {
+              "en": "Alarm",
+              "nl": "Alarm",
+              "de": "Alarm",
+              "fr": "Alarme",
+              "it": "Allarme",
+              "sv": "Larm",
+              "no": "Alarm",
+              "es": "Alarma",
+              "da": "Alarm",
+              "ru": "Сигнализация",
+              "pl": "Alarm",
+              "ko": "경보",
+              "ar": "الإنذار"
+            }
+          },
+          {
+            "name": "locked",
+            "type": "boolean",
+            "title": {
+              "en": "Locked",
+              "nl": "Vergrendeld",
+              "de": "Gesperrt",
+              "fr": "Verrouillé",
+              "it": "Bloccato",
+              "sv": "Låst",
+              "no": "Låst",
+              "es": "Bloqueado",
+              "da": "Låst",
+              "ru": "Заблокировано",
+              "pl": "Zablokowano",
+              "ko": "잠김",
+              "ar": "مقفل"
+            },
+            "example": false
+          },
+          {
+            "name": "left",
+            "type": "number",
+            "title": {
+              "en": "Tries left",
+              "nl": "Pogingen over",
+              "de": "Verbleibende Versuche",
+              "fr": "Essais restants",
+              "it": "Tentativi rimasti",
+              "sv": "Försök kvar",
+              "no": "Forsøk igjen",
+              "es": "Intentos restantes",
+              "da": "Forsøg tilbage",
+              "ru": "Осталось попыток",
+              "pl": "Pozostałe próby",
+              "ko": "남은 시도",
+              "ar": "المحاولات المتبقية"
+            },
+            "example": 2
+          }
+        ]
+      },
+      {
         "id": "thermostat_preset_tapped",
         "title": {
           "en": "A Thermostat Presets button was tapped",

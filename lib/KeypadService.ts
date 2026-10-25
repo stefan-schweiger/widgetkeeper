@@ -22,6 +22,8 @@ export const ANY_CODE = 'any';
 export const ANY_PRESS = 'anyone';
 /** The trigger *A Keypad button was tapped by …*, its tokens the code's name, the button and the widget. */
 export const KEYPAD_TAPPED_CARD = 'keypad_tapped';
+/** The trigger *A wrong code was typed on a Keypad*: at a Keypad widget or a web dashboard's code. */
+export const KEYPAD_WRONG_CARD = 'keypad_wrong_code';
 
 /** Wrong codes in a row before the pad locks, then 30 s, doubling with each further wrong one up to 15 min (the web password's rule). */
 const FREE_TRIES = 5;
@@ -93,6 +95,11 @@ export type PressBody = {
 
 /** The trigger's tokens: the code's name (empty without one), the button's label and the widget's title. */
 export type PressTokens = { code: string, button: string, keypad: string };
+/**
+ * The wrong-code trigger's tokens: the button and the widget's title (for a web dashboard's code, no button and the
+ * dashboard's name), whether this try locked the code, and the tries left before it would.
+ */
+export type WrongTokens = { button: string, keypad: string, locked: boolean, left: number };
 /** What the trigger's run listener matches its argument with. */
 export type PressState = { codeId: string | null, name: string };
 /** The trigger's `code` argument: an item of `pressCodeItems()`. */
@@ -155,6 +162,8 @@ export default class KeypadService {
       flows: FlowService, values: ValueService, variables: VariableService,
       /** Fires the trigger *A Keypad button was tapped by …*. */
       onPress?: (tokens: PressTokens, state: PressState) => Promise<unknown>,
+      /** Fires the trigger *A wrong code was typed on a Keypad*. */
+      onWrong?: (tokens: WrongTokens) => Promise<unknown>,
     },
     private log: (...args: any[]) => void, // errors and warnings: always kept
     private debug: (...args: any[]) => void = () => {}, // routine detail: only with the `debugLog` setting on
@@ -455,8 +464,12 @@ export default class KeypadService {
    * Locks and Doors). A missing key throws `KeyError`, which the route answers as `{ok: false, reason}`.
    */
   async press(body: PressBody): Promise<PressResult> {
+    const wrong = this.wrongCodes;
     const checked = this.check(body.codeId, body.code);
-    if (checked.result !== 'right') return checked;
+    if (checked.result !== 'right') {
+      if (this.wrongCodes > wrong) this.fireWrong(body.button, body.title, checked); // not for a try refused while locked
+      return checked;
+    }
     try {
       const result = await this.act(body);
       this.lastError = null;
@@ -496,12 +509,15 @@ export default class KeypadService {
 
   /**
    * A web dashboard's code, typed to edit it or leave it for the front page: ok, or why not (counted as at a Keypad).
-   * One that no longer locks (removed, or Any code while there's none) lets anyone on.
+   * One that no longer locks (removed, or Any code while there's none) lets anyone on. A wrong one fires the trigger
+   * with the dashboard's name.
    */
-  unlock(codeId: unknown, code: unknown): UnlockResult {
+  unlock(codeId: unknown, code: unknown, where = ''): UnlockResult {
     const info = this.codeInfo(codeId);
     if (!info || 'missing' in info) return { ok: true };
+    const wrong = this.wrongCodes;
     const refused = this.checkCode(codeId, code);
+    if (this.wrongCodes > wrong && refused) this.fireWrong('', where, refused);
     if (!refused || refused.result === 'codeMissing') return { ok: true };
     return refused.result === 'locked' ? { ok: false, reason: 'locked', retryAfter: refused.retryAfter } : { ok: false, reason: 'wrongCode', left: refused.left };
   }
@@ -513,6 +529,15 @@ export default class KeypadService {
     const tokens = { code: entry?.name ?? '', button: tokenText(body.button), keypad: tokenText(body.title) };
     fire(tokens, { codeId: entry?.id ?? null, name: entry?.name ?? '' })
       .catch(err => this.log('Keypad: the trigger failed:', err));
+  }
+
+  /** The wrong-code trigger, after a code that was checked and wrong; it never changes the answer. */
+  private fireWrong(button: unknown, where: unknown, refused: CodeRefusal) {
+    const fire = this.deps.onWrong;
+    if (!fire) return;
+    const locked = refused.result === 'locked';
+    fire({ button: tokenText(button), keypad: tokenText(where), locked, left: refused.result === 'wrongCode' ? refused.left : 0 })
+      .catch(err => this.log('Keypad: the wrong-code trigger failed:', err));
   }
 
   /**

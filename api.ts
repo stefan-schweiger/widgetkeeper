@@ -184,7 +184,7 @@ export default {
     assertWebSession(app, query);
     const dashboard = app.web.list().find(d => d.id === params?.id);
     if (!dashboard) return { ok: false, reason: 'missing' };
-    return app.keypad.unlock(dashboard.code?.id ?? null, body?.code);
+    return app.keypad.unlock(dashboard.code?.id ?? null, body?.code, dashboard.name);
   },
 
   /** The front page's edit mode: copies a dashboard right after it; answers `{dashboard, dashboards}`. */
