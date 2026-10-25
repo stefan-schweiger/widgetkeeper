@@ -392,26 +392,51 @@
    *   input) would bubble to it, or on a `<button>`, which clicks on them itself.
    * - `stop`: the touch, click and keys stop at this node, so a button inside a row or tile doesn't press it too.
    * - `guard`: the widget's `touchGuard()` (default: one of the node's own).
+   * - `hold` (Quick Actions' `press: long`): while `hold.when()` says so, a touch held still, the left mouse button or
+   *   Enter/Space (whose own click is kept back) held for `hold.ms` calls `hold.act()`; let go sooner and it's a tap.
+   *   `holding` is on the node meanwhile, `hold.start()` is called as it begins, and the long-press menu is prevented.
    * @param {HTMLElement} node
    * @param {(e: Event) => void} fn
-   * @param {{ keys?: boolean, stop?: boolean, guard?: { touched: () => void, recent: () => boolean } }} [opts]
+   * @param {{ keys?: boolean, stop?: boolean, guard?: { touched: () => void, recent: () => boolean },
+   *   hold?: { ms: number, when: () => boolean, act: () => void, start?: () => void } }} [opts]
    */
-  function onTap(node, fn, { keys = true, stop = false, guard = touchGuard() } = {}) {
+  function onTap(node, fn, { keys = true, stop = false, guard = touchGuard(), hold = null } = {}) {
     let start = null;
-    const unpress = () => { start = null; node.classList.remove('pressing'); };
+    let holdTimer = null;
+    let held = false; // a long press acted: the touch, click or key that ends it isn't a tap
+    const unpress = () => {
+      start = null;
+      clearTimeout(holdTimer);
+      holdTimer = null;
+      node.classList.remove('pressing', 'holding');
+    };
+    const holds = () => !!hold && hold.when();
+    const press = () => {
+      held = false;
+      if (!holds()) return;
+      node.classList.add('holding');
+      holdTimer = setTimeout(() => {
+        unpress();
+        held = true;
+        hold.act();
+      }, hold.ms);
+      if (hold.start) hold.start();
+    };
     node.addEventListener('touchstart', (e) => {
       if (stop) e.stopPropagation();
       const p = e.changedTouches[0];
       start = { x: p.clientX, y: p.clientY };
       node.classList.add('pressing');
+      press();
     }, { passive: true });
     node.addEventListener('touchmove', (e) => {
       const p = e.changedTouches[0];
       if (start && Math.hypot(p.clientX - start.x, p.clientY - start.y) > TAP_SLOP) unpress();
     }, { passive: true });
     node.addEventListener('touchend', (e) => {
-      const tap = !!start;
+      const tap = !!start; // not after a drag, or a long press that acted
       unpress();
+      held = false;
       // Every touch: one that moved past TAP_SLOP can still get the browser's click.
       guard.touched();
       if (!tap) return;
@@ -423,15 +448,39 @@
     node.addEventListener('click', (e) => {
       if (stop) e.stopPropagation();
       if (guard.recent()) return;
+      if (held) {
+        held = false;
+        return;
+      }
       fn(e);
     });
-    if (keys) {
+    if (keys || hold) {
       node.addEventListener('keydown', (e) => {
         if (e.key !== 'Enter' && e.key !== ' ') return;
+        const holding = holds();
+        if (!keys && !holding) return;
         e.preventDefault();
         if (stop) e.stopPropagation();
-        fn(e);
+        if (!holding) fn(e);
+        else if (!e.repeat && !holdTimer) press();
       });
+    }
+    if (hold) {
+      node.addEventListener('keyup', (e) => {
+        if ((e.key !== 'Enter' && e.key !== ' ') || (!holdTimer && !held)) return;
+        e.preventDefault();
+        if (stop) e.stopPropagation();
+        const early = !!holdTimer;
+        unpress();
+        held = false;
+        if (early) fn(e);
+      });
+      // The mouse after a touch is the browser's own (no hold of its own).
+      node.addEventListener('mousedown', (e) => { if (e.button === 0 && !guard.recent()) press(); });
+      node.addEventListener('mouseup', unpress);
+      node.addEventListener('mouseleave', unpress);
+      // A long press would open Android's context menu.
+      node.addEventListener('contextmenu', (e) => { if (holds()) e.preventDefault(); });
     }
   }
 

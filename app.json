@@ -15588,6 +15588,155 @@
               }
             }
           ]
+        },
+        {
+          "id": "press",
+          "type": "dropdown",
+          "title": {
+            "en": "Activate with",
+            "nl": "Activeren met",
+            "de": "Auslösen mit",
+            "fr": "Activer par",
+            "it": "Attiva con",
+            "sv": "Aktivera med",
+            "no": "Aktiver med",
+            "es": "Activar con",
+            "da": "Aktivér med",
+            "ru": "Срабатывание",
+            "pl": "Uruchamiaj przez",
+            "ko": "실행 방식",
+            "ar": "التفعيل بـ"
+          },
+          "hint": {
+            "en": "Double press: the first tap turns the tile red and asks for a second within 3 seconds. Long press: hold the tile until it has filled. So a stray tap can't unlock a door.",
+            "nl": "Dubbele tik: de eerste tik kleurt de tegel rood en vraagt binnen 3 seconden om een tweede. Lang indrukken: houd de tegel vast tot hij gevuld is. Zo ontgrendelt een verdwaalde tik geen deur.",
+            "de": "Doppelt tippen: Das erste Tippen färbt die Kachel rot und verlangt innerhalb von 3 Sekunden ein zweites. Lange drücken: Halte die Kachel, bis sie gefüllt ist. So entriegelt ein versehentliches Tippen keine Tür.",
+            "fr": "Double appui : le premier appui colore la tuile en rouge et en demande un second dans les 3 secondes. Appui long : maintenez la tuile jusqu'à ce qu'elle soit remplie. Ainsi, un appui accidentel ne déverrouille pas une porte.",
+            "it": "Doppio tocco: il primo tocco colora il riquadro di rosso e ne chiede un secondo entro 3 secondi. Pressione lunga: tieni premuto il riquadro finché non si riempie. Così un tocco accidentale non sblocca una porta.",
+            "sv": "Dubbeltryck: det första trycket gör rutan röd och ber om ett andra inom 3 sekunder. Långt tryck: håll in rutan tills den har fyllts. Så låser ett oavsiktligt tryck inte upp en dörr.",
+            "no": "Dobbelttrykk: det første trykket gjør flisen rød og ber om et nytt innen 3 sekunder. Langt trykk: hold inne flisen til den er fylt. Slik låser ikke et utilsiktet trykk opp en dør.",
+            "es": "Doble toque: el primer toque pone el mosaico en rojo y pide otro en 3 segundos. Pulsación larga: mantén pulsado el mosaico hasta que se llene. Así un toque accidental no desbloquea una puerta.",
+            "da": "Dobbelttryk: det første tryk gør feltet rødt og beder om et til inden for 3 sekunder. Langt tryk: hold feltet inde, til det er fyldt. Så låser et utilsigtet tryk ikke en dør op.",
+            "ru": "Двойное нажатие: первое нажатие окрашивает плитку в красный и ждёт второго в течение 3 секунд. Долгое нажатие: удерживайте плитку, пока она не заполнится. Так случайное нажатие не отопрёт дверь.",
+            "pl": "Podwójne dotknięcie: pierwsze dotknięcie barwi kafelek na czerwono i czeka 3 sekundy na drugie. Długie przytrzymanie: przytrzymaj kafelek, aż się wypełni. Dzięki temu przypadkowe dotknięcie nie odblokuje drzwi.",
+            "ko": "두 번 탭: 첫 번째 탭은 타일을 빨간색으로 바꾸고 3초 안에 한 번 더 탭하도록 요청합니다. 길게 누르기: 타일이 가득 찰 때까지 누르고 있으세요. 그래서 실수로 탭해도 문 잠금이 해제되지 않습니다.",
+            "ar": "نقرة مزدوجة: النقرة الأولى تجعل المربع أحمر وتطلب نقرة ثانية خلال 3 ثوانٍ. ضغطة مطوّلة: اضغط على المربع حتى يمتلئ. وبذلك لا تفتح نقرة عابرة قفل باب."
+          },
+          "value": "single",
+          "values": [
+            {
+              "id": "single",
+              "title": {
+                "en": "Single press",
+                "nl": "Enkele tik",
+                "de": "Einmal tippen",
+                "fr": "Appui simple",
+                "it": "Tocco singolo",
+                "sv": "Ett tryck",
+                "no": "Ett trykk",
+                "es": "Toque simple",
+                "da": "Ét tryk",
+                "ru": "Одно нажатие",
+                "pl": "Jedno dotknięcie",
+                "ko": "한 번 탭",
+                "ar": "نقرة واحدة"
+              }
+            },
+            {
+              "id": "double",
+              "title": {
+                "en": "Double press",
+                "nl": "Dubbele tik",
+                "de": "Doppelt tippen",
+                "fr": "Double appui",
+                "it": "Doppio tocco",
+                "sv": "Dubbeltryck",
+                "no": "Dobbelttrykk",
+                "es": "Doble toque",
+                "da": "Dobbelttryk",
+                "ru": "Двойное нажатие",
+                "pl": "Podwójne dotknięcie",
+                "ko": "두 번 탭",
+                "ar": "نقرة مزدوجة"
+              }
+            },
+            {
+              "id": "long",
+              "title": {
+                "en": "Long press",
+                "nl": "Lang indrukken",
+                "de": "Lange drücken",
+                "fr": "Appui long",
+                "it": "Pressione lunga",
+                "sv": "Långt tryck",
+                "no": "Langt trykk",
+                "es": "Pulsación larga",
+                "da": "Langt tryk",
+                "ru": "Долгое нажатие",
+                "pl": "Długie przytrzymanie",
+                "ko": "길게 누르기",
+                "ar": "ضغطة مطوّلة"
+              }
+            }
+          ]
+        },
+        {
+          "id": "pressFor",
+          "type": "dropdown",
+          "title": {
+            "en": "  – Tiles",
+            "nl": "  – Tegels",
+            "de": "  – Kacheln",
+            "fr": "  – Tuiles",
+            "it": "  – Riquadri",
+            "sv": "  – Rutor",
+            "no": "  – Fliser",
+            "es": "  – Mosaicos",
+            "da": "  – Felter",
+            "ru": "  – Плитки",
+            "pl": "  – Kafelki",
+            "ko": "  – 타일",
+            "ar": "  – المربعات"
+          },
+          "value": "all",
+          "values": [
+            {
+              "id": "all",
+              "title": {
+                "en": "Every tile",
+                "nl": "Elke tegel",
+                "de": "Jede Kachel",
+                "fr": "Chaque tuile",
+                "it": "Ogni riquadro",
+                "sv": "Varje ruta",
+                "no": "Hver flis",
+                "es": "Cada mosaico",
+                "da": "Hvert felt",
+                "ru": "Все плитки",
+                "pl": "Każdy kafelek",
+                "ko": "모든 타일",
+                "ar": "كل المربعات"
+              }
+            },
+            {
+              "id": "locks",
+              "title": {
+                "en": "Locks and garage doors",
+                "nl": "Sloten en garagedeuren",
+                "de": "Schlösser und Garagentore",
+                "fr": "Serrures et portes de garage",
+                "it": "Serrature e porte del garage",
+                "sv": "Lås och garageportar",
+                "no": "Låser og garasjeporter",
+                "es": "Cerraduras y puertas de garaje",
+                "da": "Låse og garageporte",
+                "ru": "Замки и гаражные ворота",
+                "pl": "Zamki i bramy garażowe",
+                "ko": "잠금장치 및 차고 문",
+                "ar": "الأقفال وأبواب المرآب"
+              }
+            }
+          ]
         }
       ],
       "api": {

@@ -40,7 +40,9 @@
     "error": "Kunde inte läsa in enheterna.",
     "failed": "Kunde inte ändra __name__.",
     "unavailable": "Inte tillgänglig",
-    "renameFailed": "Kunde inte spara namnet."
+    "renameFailed": "Kunde inte spara namnet.",
+    "tapAgain": "Tryck igen",
+    "hold": "Håll in"
   },
   "sensoralarms": {
     "selectDevices": "Välj sensorer i widgetinställningarna.",

@@ -40,7 +40,9 @@
     "error": "Nie udało się wczytać urządzeń.",
     "failed": "Nie udało się zmienić __name__.",
     "unavailable": "Niedostępne",
-    "renameFailed": "Nie udało się zapisać nazwy."
+    "renameFailed": "Nie udało się zapisać nazwy.",
+    "tapAgain": "Stuknij ponownie",
+    "hold": "Przytrzymaj"
   },
   "sensoralarms": {
     "selectDevices": "Wybierz czujniki w ustawieniach widżetu.",

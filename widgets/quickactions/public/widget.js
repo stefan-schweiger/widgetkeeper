@@ -9,6 +9,10 @@
 
   const OPTIMISTIC_MS = 10e3; // how long a tapped tile shows its new state while waiting for the device
   const PRESS_MS = 600; // how long a momentary (button) action lights the tile
+  const CONFIRM_MS = 3e3; // how long a tile that asks for a second tap waits for it
+  const HOLD_MS = 600; // how long a long press holds the tile before it acts
+  const HINT_MS = 1500; // how long a tile that wants a long press says so after a short tap
+  const SECURE = ['locked', 'garagedoor_closed']; // the quick actions `pressFor: locks` guards
 
   const DEFAULT_STRINGS = {
     selectDevices: 'Select devices in the widget settings.',
@@ -16,6 +20,8 @@
     failed: 'Could not change __name__.',
     unavailable: 'Unavailable',
     renameFailed: 'Could not save the name.',
+    tapAgain: 'Tap again',
+    hold: 'Hold',
   };
 
   // Homey's standard capabilities carry no icon of their own (the Homey app draws them), so these
@@ -45,8 +51,8 @@
   /**
    * @param {HTMLElement} root
    * @param {{ t?: (key: string, tokens?: object) => string, activeStyle?: 'tint' | 'lighter',
-   *   color?: string, colorStyle?: string,
-   *   onTrigger?: (deviceId: string, value: boolean) => Promise<any>,
+   *   color?: string, colorStyle?: string, press?: 'single' | 'double' | 'long', pressFor?: 'all' | 'locks',
+   *   onTrigger?: (deviceId: string, value: boolean) => Promise<any>, onHaptic?: () => void,
    *   renameTiles?: boolean, onRename?: (key: string, name: string) => Promise<any>,
    *   onHeight?: (h: number) => void }} opts
    */
@@ -60,6 +66,8 @@
     let devices = []; // [{ id, name, icon, quickAction } | { id, missing }]
     const optimistic = new Map(); // deviceId → { value, until }
     const pressed = new Map(); // deviceId → until (momentary actions)
+    const confirming = new Map(); // deviceId → { from, timer }: waiting for the second tap
+    const hints = new Map(); // deviceId → timer: a short tap on a tile that wants a long press
     // What failed: a lasting message replaces the content, a transient one goes by itself.
     const message = messageLine(() => render(), { clear: () => { devices = []; } });
 
@@ -71,6 +79,7 @@
     root.classList.toggle('renaming', names.renaming);
     root.dataset.activeStyle = opts.activeStyle === 'lighter' ? 'lighter' : 'tint';
     applyColors(root, { style: opts.colorStyle, color: opts.color, fallback: 'blue' });
+    root.style.setProperty('--qa-hold', `${HOLD_MS}ms`); // the long press's fill
     const grid = el('div', { class: 'qa-grid' }, root);
     const messageEl = el('div', { class: 'qa-message', dir: 'auto' }, root);
     const touches = touchGuard(); // the tiles' taps
@@ -89,6 +98,8 @@
       d.quickAction.value = value;
       const o = optimistic.get(deviceId);
       if (o && o.value === value) optimistic.delete(deviceId);
+      const c = confirming.get(deviceId);
+      if (c && c.from !== value) clearConfirm(deviceId); // changed elsewhere: a second tap would no longer do what was asked
       render();
     }
 
@@ -104,9 +115,53 @@
       return d.quickAction.value;
     }
 
+    /** Whether the `press` setting (double or long) applies to a quick action: every tile, or locks and garage doors. */
+    const guarded = qa => opts.pressFor !== 'locks' || SECURE.includes(qa.capabilityId.split('.')[0]);
+
+    /** Whether a tap only asks for a second one (`press: double`). */
+    const asksConfirm = qa => opts.press === 'double' && guarded(qa);
+
+    /** Whether the tile acts on a long press only (`press: long`). */
+    function holds(id) {
+      const d = devices.find(x => x.id === id);
+      return opts.press === 'long' && !names.renaming && !!d && !!d.quickAction && d.quickAction.actionable
+        && guarded(d.quickAction);
+    }
+
+    /** A tap: on a tile that wants a long press it only says *Hold*. */
+    function tap(id) {
+      if (!holds(id)) {
+        press(id);
+        return;
+      }
+      clearTimeout(hints.get(id));
+      hints.set(id, setTimeout(() => { hints.delete(id); render(); }, HINT_MS));
+      render();
+    }
+
+    function clearConfirm(id) {
+      const c = confirming.get(id);
+      if (c) clearTimeout(c.timer);
+      confirming.delete(id);
+    }
+
     async function press(id) {
       const d = devices.find(x => x.id === id);
       if (!d || !d.quickAction || !d.quickAction.actionable || !opts.onTrigger || names.renaming) return;
+      // The first tap asks for a second (*Tap again*, CONFIRM_MS), so a stray tap on the dashboard can't unlock a door.
+      // A change of state in between asks again: the second tap would otherwise do the opposite of what was asked.
+      if (asksConfirm(d.quickAction)) {
+        const c = confirming.get(id);
+        clearConfirm(id);
+        if (!c || c.from !== shownValue(d)) {
+          confirming.set(id, {
+            from: shownValue(d),
+            timer: setTimeout(() => { confirming.delete(id); render(); }, CONFIRM_MS),
+          });
+          render();
+          return;
+        }
+      }
       const value = d.quickAction.momentary ? true : !shownValue(d);
       if (d.quickAction.momentary) {
         pressed.set(id, Date.now() + PRESS_MS);
@@ -151,7 +206,17 @@
         // Taps from the touch events (the kit's `onTap()`), so the pressed state also shows on iOS (where :active
         // needs a touch listener) and the dashboard's own touch handling can't swallow the click; a drag is left
         // to the dashboard, so dragging over the tiles still scrolls it. A button clicks on Enter and Space itself.
-        onTap(button, () => press(id), { keys: false, guard: touches });
+        // A long press (`press: long`): the tile fills while held and acts once full; let go sooner, it's a tap.
+        onTap(button, () => tap(id), {
+          keys: false,
+          guard: touches,
+          hold: {
+            ms: HOLD_MS,
+            when: () => holds(id),
+            start: () => { clearTimeout(hints.get(id)); hints.delete(id); render(); },
+            act: () => { if (opts.onHaptic) opts.onHaptic(); press(id); },
+          },
+        });
         tiles.set(id, tile);
       }
       return tile;
@@ -177,8 +242,11 @@
         const isPressed = !!until && Date.now() < until;
         if (!isPressed) pressed.delete(d.id);
         const value = qa ? shownValue(d) : null;
+        const confirm = !!qa && confirming.has(d.id) && !names.renaming;
+        const hint = !!qa && hints.has(d.id) && !names.renaming;
 
-        tile.name.textContent = 'missing' in d ? t('unavailable') : names.name(d.id, d.name);
+        tile.name.textContent = 'missing' in d ? t('unavailable')
+          : hint ? t('hold') : confirm ? t('tapAgain') : names.name(d.id, d.name);
         if (names.renaming && !('missing' in d)) {
           const field = names.field(d.id, d.name);
           if (field.previousSibling !== tile.name) tile.name.after(field);
@@ -186,9 +254,11 @@
         tile.button.classList.toggle('missing', 'missing' in d);
         setMask(tile.icon, 'missing' in d ? null : d.icon);
         tile.icon.classList.toggle('fallback', 'missing' in d || !d.icon);
-        setMask(tile.action, qa ? (qa.icon || glyph(qa.capabilityId, value)) : null);
+        // While asking for the second tap, the action icon shows what it will do (an open padlock to unlock).
+        setMask(tile.action, qa ? (qa.icon || glyph(qa.capabilityId, confirm && !qa.momentary ? !value : value)) : null);
         tile.action.style.display = qa ? '' : 'none';
-        tile.button.classList.toggle('active', qa ? (qa.momentary ? isPressed : value === true) : false);
+        tile.button.classList.toggle('confirm', confirm);
+        tile.button.classList.toggle('active', qa && !confirm ? (qa.momentary ? isPressed : value === true) : false);
         tile.button.disabled = !qa || !qa.actionable;
         tile.button.dataset.capability = qa ? qa.capabilityId : '';
       }

@@ -40,7 +40,9 @@
     "error": "Kon de apparaten niet laden.",
     "failed": "Kon __name__ niet wijzigen.",
     "unavailable": "Niet beschikbaar",
-    "renameFailed": "Kon de naam niet opslaan."
+    "renameFailed": "Kon de naam niet opslaan.",
+    "tapAgain": "Tik nogmaals",
+    "hold": "Vasthouden"
   },
   "sensoralarms": {
     "selectDevices": "Kies sensoren in de widgetinstellingen.",
