@@ -58,7 +58,7 @@ beforeEach(() => { document.body.innerHTML = ''; });
 afterEach(() => { vi.useRealTimers(); });
 
 describe('Keypad: settings', () => {
-  it("reads the state, the code's id, when the keypad shows, and the buttons with a Flow or a value", () => {
+  it("reads the state, the code's id, when the keypad shows, and the buttons with a Flow, a value or a label", () => {
     expect(win.keypadSettings({
       ...ALARM, keypad: 'always', value2: { id: 'none', name: 'None' }, flow2: { id: 'none' }, label3: ' Off ', color3: 'nope',
     })).toEqual({
@@ -67,9 +67,12 @@ describe('Keypad: settings', () => {
       keypad: 'always',
       buttons: [
         { n: 1, flow: null, flowName: '', value: { value: 'armed', type: 'string', name: 'Armed' }, label: 'Arm', icon: 'shield', color: 'red', needsCode: false },
+        { n: 2, flow: null, flowName: '', value: null, label: 'Night', icon: 'moon', color: 'purple', needsCode: false }, // the trigger only
         { n: 3, flow: 'flow:f1', flowName: 'Disarm alarm', value: { value: 'disarmed', type: 'string', name: 'Disarmed' }, label: 'Off', icon: 'unlock', color: 'blue', needsCode: true },
       ],
     });
+    expect(win.keypadSettings({ ...ALARM, value2: { id: 'none' }, label2: ' ' }).buttons.map((b: any) => b.n)).toEqual([1, 3]);
+    expect(win.keypadSettings({ code: { id: 'any', name: 'Any code' } }).codeId).toBe('any');
     expect(win.keypadSettings({ state: { id: 'none' }, code: { id: 'none' }, keypad: 'nope' })).toEqual({ sourceId: null, codeId: null, keypad: 'tap', buttons: [] });
   });
 
@@ -143,7 +146,73 @@ describe('Keypad: the state and the buttons', () => {
     expect(padOpen()).toBe(false);
     expect(left()[1]).toBe('This code was removed: pick one in the widget settings.');
     press(1);
-    expect(onPress).toHaveBeenCalledWith({ source: 'cap:alarm:homealarm_state', value: 'partially_armed' });
+    expect(onPress).toHaveBeenCalledWith({ source: 'cap:alarm:homealarm_state', value: 'partially_armed', button: 'Night', title: 'Surveillance' });
+  });
+});
+
+describe('Keypad: Any code', () => {
+  const anyCode = { ...ALARM, code: { id: 'any', name: 'Any code' } };
+  const ANY = { id: 'any', name: 'Any code', digits: null }; // the codes' lengths differ
+
+  it("has OK while the codes' lengths differ: the dots are what was typed, and OK or Enter sends it", async () => {
+    const { press, key, keys, type, dots, onPress, padOpen } = widget(anyCode, alarm('armed', { code: ANY }));
+    press(2);
+    expect(padOpen()).toBe(true);
+    expect(keys().map(k => k.getAttribute('aria-label'))).toEqual(['1', '2', '3', '4', '5', '6', '7', '8', '9', 'OK', '0', 'Delete']);
+    expect(dots()).toBe('');
+    type('47');
+    expect(dots()).toBe('●●');
+    keys().find(k => k.getAttribute('aria-label') === 'OK')!.click(); // under three digits: nothing yet
+    expect(onPress).not.toHaveBeenCalled();
+    type('1105');
+    expect(dots()).toBe('●●●●●●');
+    key('9'); // six at most
+    expect(dots()).toBe('●●●●●●');
+    key('back');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    expect(onPress).toHaveBeenCalledWith({ flow: 'flow:f1', codeId: 'any', code: '47110', button: 'Disarm alarm', title: 'Surveillance' });
+    await vi.waitFor(() => expect(padOpen()).toBe(false));
+  });
+
+  it('sends on the last digit while every code has the same length', () => {
+    const { press, type, onPress, keys, dots } = widget(anyCode, alarm('armed', { code: { ...ANY, digits: 4 } }));
+    press(2);
+    expect(keys().map(k => k.getAttribute('aria-label'))).not.toContain('OK');
+    expect(dots()).toBe('○○○○');
+    type('2580');
+    expect(onPress).toHaveBeenCalledWith(expect.objectContaining({ codeId: 'any', code: '2580' }));
+  });
+
+  it('always shown: a button tapped after the digits sends them; OK alone asks for a button', () => {
+    const settings = { ...anyCode, keypad: 'always', code1: true };
+    const { press, type, keys, label, onPress } = widget(settings, alarm('disarmed', { code: ANY }));
+    type('47110');
+    expect(onPress).not.toHaveBeenCalled();
+    expect(label()).toBe('Enter the code');
+    keys().find(k => k.getAttribute('aria-label') === 'OK')!.click();
+    expect(label()).toBe('Now tap a button');
+    press(0);
+    expect(onPress).toHaveBeenCalledWith(expect.objectContaining({ value: 'armed', codeId: 'any', code: '47110' }));
+  });
+
+  it('says where to add a code while there is none', () => {
+    const { press, left, padOpen } = widget(anyCode, alarm('armed', { code: { id: 'any', missing: true } }));
+    press(2);
+    expect(padOpen()).toBe(false);
+    expect(left()[1]).toBe('No codes yet: add one in the app settings.');
+  });
+});
+
+describe('Keypad: a button with only a label', () => {
+  it('only fires the trigger: the label and title go, and the state stays', async () => {
+    vi.useFakeTimers();
+    const { press, onPress, buttons, left } = widget({ ...ALARM, value2: { id: 'none' }, label2: 'Home', title: 'Hall' }, alarm('armed'));
+    expect(buttons()[1]).toBe('Home purple');
+    press(1);
+    expect(onPress).toHaveBeenCalledWith({ button: 'Home', title: 'Hall' });
+    await vi.advanceTimersByTimeAsync(500);
+    expect(buttons()[1]).toBe('Home tick purple');
+    expect(left()[0]).toBe('Armed');
   });
 });
 
@@ -152,7 +221,7 @@ describe('Keypad: a button without the code', () => {
     vi.useFakeTimers();
     const { press, onPress, buttons, left, w } = widget(ALARM, alarm('disarmed'));
     press(1);
-    expect(onPress).toHaveBeenCalledWith({ source: 'cap:alarm:homealarm_state', value: 'partially_armed' });
+    expect(onPress).toHaveBeenCalledWith({ source: 'cap:alarm:homealarm_state', value: 'partially_armed', button: 'Night', title: 'Surveillance' });
     expect(buttons()[1]).toBe('Night spin purple');
     await vi.advanceTimersByTimeAsync(400);
     expect(buttons()[1]).toBe('Night on tick purple');
@@ -208,7 +277,7 @@ describe('Keypad: the keypad on a tap', () => {
     expect(dots()).toBe('●●●○');
     expect(onPress).not.toHaveBeenCalled();
     key('1');
-    expect(onPress).toHaveBeenCalledWith({ flow: 'flow:f1', codeId: 'c1', code: '4711' });
+    expect(onPress).toHaveBeenCalledWith({ flow: 'flow:f1', codeId: 'c1', code: '4711', button: 'Disarm alarm', title: 'Surveillance' });
     await vi.waitFor(() => expect(padOpen()).toBe(false));
     expect(buttons()[2]).toBe('Disarm alarm tick green');
   });
@@ -321,7 +390,7 @@ describe('Keypad: the keypad always shown', () => {
   it('with one button behind the code, the code alone runs it', async () => {
     const { type, onPress, dots, buttons } = widget(always, alarm('armed'));
     type('4711');
-    expect(onPress).toHaveBeenCalledWith({ flow: 'flow:f1', codeId: 'c1', code: '4711' });
+    expect(onPress).toHaveBeenCalledWith({ flow: 'flow:f1', codeId: 'c1', code: '4711', button: 'Disarm alarm', title: 'Surveillance' });
     await vi.waitFor(() => expect(buttons()[2]).toBe('Disarm alarm tick green'));
     expect(dots()).toBe('○○○○');
   });
@@ -333,7 +402,7 @@ describe('Keypad: the keypad always shown', () => {
     expect(first.onPress).not.toHaveBeenCalled();
     expect(first.label()).toBe('Now tap a button');
     first.press(0);
-    expect(first.onPress).toHaveBeenCalledWith({ source: 'cap:alarm:homealarm_state', value: 'armed', codeId: 'c1', code: '4711' });
+    expect(first.onPress).toHaveBeenCalledWith({ source: 'cap:alarm:homealarm_state', value: 'armed', codeId: 'c1', code: '4711', button: 'Arm', title: 'Surveillance' });
 
     const second = widget(settings, alarm('partially_armed'));
     second.press(2);
@@ -343,14 +412,14 @@ describe('Keypad: the keypad always shown', () => {
     expect(second.buttons()[2]).toBe('Disarm alarm code green');
     second.press(0);
     second.type('4711');
-    expect(second.onPress).toHaveBeenCalledWith({ source: 'cap:alarm:homealarm_state', value: 'armed', codeId: 'c1', code: '4711' });
+    expect(second.onPress).toHaveBeenCalledWith({ source: 'cap:alarm:homealarm_state', value: 'armed', codeId: 'c1', code: '4711', button: 'Arm', title: 'Surveillance' });
   });
 
   it('a button without the code runs at once, whatever was typed', () => {
     const { type, press, onPress, dots } = widget(always, alarm('armed'));
     type('47');
     press(1);
-    expect(onPress).toHaveBeenCalledWith({ source: 'cap:alarm:homealarm_state', value: 'partially_armed' });
+    expect(onPress).toHaveBeenCalledWith({ source: 'cap:alarm:homealarm_state', value: 'partially_armed', button: 'Night', title: 'Surveillance' });
     expect(dots()).toBe('●●○○');
   });
 
@@ -411,6 +480,6 @@ describe('Keypad: mount', () => {
     expect(root.querySelector('.kp-state')!.textContent).toBe('Disarmed');
     root.querySelectorAll<HTMLElement>('.kp-btn')[0].click();
     expect(Homey.hapticFeedback).toHaveBeenCalled();
-    expect(api).toHaveBeenCalledWith('POST', '/press', { source: 'cap:alarm:homealarm_state', value: 'armed' });
+    expect(api).toHaveBeenCalledWith('POST', '/press', { source: 'cap:alarm:homealarm_state', value: 'armed', button: 'Arm', title: 'Surveillance' });
   });
 });

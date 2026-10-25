@@ -125,7 +125,7 @@ html, body { margin: 0; }
 .kp-pad-top.missing .kp-pad-label { color: var(--kp-red); font-weight: var(--kp-regular); white-space: normal; }
 /* The title or a message beside the label: only where the keypad takes the whole widget (compact), as the state is hidden. */
 .kp-pad-sub { display: none; }
-.kp-dots { display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; }
+.kp-dots { display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; min-height: 9px; } /* a dot's, with none typed yet (Any code's lengths differ) */
 .kp-dot { width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--kp-muted); }
 .kp-dot.f { background: var(--kp-text); border-color: var(--kp-text); }
 .kp-dots.err .kp-dot { border-color: var(--kp-red); }

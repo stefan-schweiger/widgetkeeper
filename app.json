@@ -325,6 +325,194 @@
         ]
       },
       {
+        "id": "keypad_tapped",
+        "title": {
+          "en": "A Keypad button was tapped",
+          "nl": "Op een knop van een Codepaneel is getikt",
+          "de": "Eine Taste eines Tastenfelds wurde angetippt",
+          "fr": "Un bouton d’un Clavier à code a été touché",
+          "it": "È stato toccato un pulsante di un Tastierino",
+          "sv": "En knapp i en Knappsats trycktes",
+          "no": "En knapp i et Kodepanel ble trykket",
+          "es": "Se tocó un botón de un Teclado de código",
+          "da": "Der blev trykket på en knap i et Kodepanel",
+          "ru": "Нажата кнопка «Кодовой панели»",
+          "pl": "Dotknięto przycisku Klawiatury kodowej",
+          "ko": "키패드 버튼을 눌렀을 때",
+          "ar": "تم النقر على زر من «لوحة الرمز»"
+        },
+        "titleFormatted": {
+          "en": "A Keypad button was tapped by [[code]]",
+          "nl": "[[code]] tikte op een knop van een Codepaneel",
+          "de": "[[code]] hat eine Taste eines Tastenfelds angetippt",
+          "fr": "[[code]] a touché un bouton d’un Clavier à code",
+          "it": "[[code]] ha toccato un pulsante di un Tastierino",
+          "sv": "[[code]] tryckte på en knapp i en Knappsats",
+          "no": "[[code]] trykket på en knapp i et Kodepanel",
+          "es": "[[code]] tocó un botón de un Teclado de código",
+          "da": "[[code]] trykkede på en knap i et Kodepanel",
+          "ru": "Кнопку «Кодовой панели» нажал: [[code]]",
+          "pl": "Przycisku Klawiatury kodowej dotknął: [[code]]",
+          "ko": "[[code]]이(가) 키패드 버튼을 눌렀을 때",
+          "ar": "نقر [[code]] على زر من «لوحة الرمز»"
+        },
+        "hint": {
+          "en": "When a Keypad button ran, on any dashboard. Code is the name of the code typed: with Any code, whose it was. Empty for a button without one.",
+          "nl": "Wanneer een knop van een Codepaneel is uitgevoerd, op elk dashboard. Code is de naam van de getypte code: bij Elke code van wie die was. Leeg bij een knop zonder code.",
+          "de": "Wenn eine Taste eines Tastenfelds ausgeführt wurde, auf jedem Dashboard. Code ist der Name des eingegebenen Codes: bei Jeder Code, wessen er war. Leer bei einer Taste ohne Code.",
+          "fr": "Quand un bouton d’un Clavier à code s’est exécuté, sur n’importe quel tableau de bord. Code est le nom du code saisi : avec N’importe quel code, à qui il était. Vide pour un bouton sans code.",
+          "it": "Quando un pulsante di un Tastierino è stato eseguito, su qualsiasi dashboard. Codice è il nome del codice inserito: con Qualsiasi codice, di chi era. Vuoto per un pulsante senza codice.",
+          "sv": "När en knapp i en Knappsats har körts, på vilken instrumentpanel som helst. Kod är namnet på koden som angavs: med Vilken kod som helst, vems den var. Tom för en knapp utan kod.",
+          "no": "Når en knapp i et Kodepanel har kjørt, på hvilket som helst dashbord. Kode er navnet på koden som ble tastet: med Hvilken som helst kode, hvem sin den var. Tom for en knapp uten kode.",
+          "es": "Cuando se ejecutó un botón de un Teclado de código, en cualquier panel. Código es el nombre del código introducido: con Cualquier código, de quién era. Vacío para un botón sin código.",
+          "da": "Når en knap i et Kodepanel er kørt, på ethvert dashboard. Kode er navnet på den indtastede kode: med Enhver kode, hvis den var. Tom for en knap uden kode.",
+          "ru": "Когда кнопка «Кодовой панели» сработала, на любой панели. Код — название введённого кода: при «Любой код» — чей он. Пусто для кнопки без кода.",
+          "pl": "Gdy przycisk Klawiatury kodowej zadziałał, na dowolnym pulpicie. Kod to nazwa wpisanego kodu: przy Dowolny kod — czyj był. Puste dla przycisku bez kodu.",
+          "ko": "모든 대시보드에서 키패드 버튼이 실행되었을 때. 코드는 입력한 코드의 이름으로, 모든 코드에서는 누구의 코드인지 알려 줍니다. 코드가 없는 버튼은 비어 있습니다.",
+          "ar": "عند تشغيل زر من «لوحة الرمز»، على أي لوحة تحكم. الرمز هو اسم الرمز المُدخل: مع أي رمز، لمن كان. فارغ لزر بلا رمز."
+        },
+        "tokens": [
+          {
+            "name": "code",
+            "type": "string",
+            "title": {
+              "en": "Code",
+              "nl": "Code",
+              "de": "Code",
+              "fr": "Code",
+              "it": "Codice",
+              "sv": "Kod",
+              "no": "Kode",
+              "es": "Código",
+              "da": "Kode",
+              "ru": "Код",
+              "pl": "Kod",
+              "ko": "코드",
+              "ar": "الرمز"
+            },
+            "example": {
+              "en": "Anna",
+              "nl": "Anna",
+              "de": "Anna",
+              "fr": "Anna",
+              "it": "Anna",
+              "sv": "Anna",
+              "no": "Anna",
+              "es": "Anna",
+              "da": "Anna",
+              "ru": "Anna",
+              "pl": "Anna",
+              "ko": "Anna",
+              "ar": "Anna"
+            }
+          },
+          {
+            "name": "button",
+            "type": "string",
+            "title": {
+              "en": "Button",
+              "nl": "Knop",
+              "de": "Taste",
+              "fr": "Bouton",
+              "it": "Pulsante",
+              "sv": "Knapp",
+              "no": "Knapp",
+              "es": "Botón",
+              "da": "Knap",
+              "ru": "Кнопка",
+              "pl": "Przycisk",
+              "ko": "버튼",
+              "ar": "الزر"
+            },
+            "example": {
+              "en": "Disarm",
+              "nl": "Uitschakelen",
+              "de": "Unscharf",
+              "fr": "Désarmer",
+              "it": "Disattiva",
+              "sv": "Larma av",
+              "no": "Deaktiver",
+              "es": "Desarmar",
+              "da": "Frakobl",
+              "ru": "Снять с охраны",
+              "pl": "Rozbrój",
+              "ko": "해제",
+              "ar": "إلغاء التسليح"
+            }
+          },
+          {
+            "name": "keypad",
+            "type": "string",
+            "title": {
+              "en": "Keypad",
+              "nl": "Codepaneel",
+              "de": "Tastenfeld",
+              "fr": "Clavier à code",
+              "it": "Tastierino",
+              "sv": "Knappsats",
+              "no": "Kodepanel",
+              "es": "Teclado de código",
+              "da": "Kodepanel",
+              "ru": "Кодовая панель",
+              "pl": "Klawiatura kodowa",
+              "ko": "키패드",
+              "ar": "لوحة الرمز"
+            },
+            "example": {
+              "en": "Alarm",
+              "nl": "Alarm",
+              "de": "Alarm",
+              "fr": "Alarme",
+              "it": "Allarme",
+              "sv": "Larm",
+              "no": "Alarm",
+              "es": "Alarma",
+              "da": "Alarm",
+              "ru": "Сигнализация",
+              "pl": "Alarm",
+              "ko": "경보",
+              "ar": "الإنذار"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "autocomplete",
+            "name": "code",
+            "title": {
+              "en": "Code",
+              "nl": "Code",
+              "de": "Code",
+              "fr": "Code",
+              "it": "Codice",
+              "sv": "Kod",
+              "no": "Kode",
+              "es": "Código",
+              "da": "Kode",
+              "ru": "Код",
+              "pl": "Kod",
+              "ko": "코드",
+              "ar": "الرمز"
+            },
+            "placeholder": {
+              "en": "Anyone",
+              "nl": "Iedereen",
+              "de": "Jeder",
+              "fr": "N’importe qui",
+              "it": "Chiunque",
+              "sv": "Vem som helst",
+              "no": "Hvem som helst",
+              "es": "Cualquiera",
+              "da": "Hvem som helst",
+              "ru": "Кто угодно",
+              "pl": "Ktokolwiek",
+              "ko": "누구나",
+              "ar": "أي شخص"
+            }
+          }
+        ]
+      },
+      {
         "id": "thermostat_preset_tapped",
         "title": {
           "en": "A Thermostat Presets button was tapped",
@@ -10815,19 +11003,19 @@
             "ar": "الرمز"
           },
           "hint": {
-            "en": "Pick a code made in Widgetkeeper’s app settings, under Keypad codes. Buttons with Needs the code on ask for it.",
-            "nl": "Kies een code uit de app-instellingen van Widgetkeeper, onder Codepaneel-codes. Knoppen met Code nodig aan vragen erom.",
-            "de": "Wähle einen Code aus den App-Einstellungen von Widgetkeeper, unter Tastenfeld-Codes. Tasten mit eingeschaltetem Code nötig fragen danach.",
-            "fr": "Choisissez un code créé dans les réglages de l’app Widgetkeeper, sous Codes du clavier à code. Les boutons avec Code requis activé le demandent.",
-            "it": "Scegli un codice creato nelle impostazioni dell’app Widgetkeeper, in Codici del tastierino. I pulsanti con Richiede il codice attivo lo chiedono.",
-            "sv": "Välj en kod som skapats i Widgetkeepers appinställningar, under Knappsatskoder. Knappar med Kräver koden på frågar efter den.",
-            "no": "Velg en kode laget i Widgetkeepers appinnstillinger, under Kodepanel-koder. Knapper med Krever koden på spør etter den.",
-            "es": "Elige un código creado en los ajustes de la app Widgetkeeper, en Códigos del teclado de código. Los botones con Pide el código activado lo piden.",
-            "da": "Vælg en kode, der er lavet i Widgetkeepers app-indstillinger, under Kodepanel-koder. Knapper med Kræver koden slået til beder om den.",
-            "ru": "Выберите код, созданный в настройках приложения Widgetkeeper, в разделе «Коды кодовой панели». Кнопки с включённым «Нужен код» запрашивают его.",
-            "pl": "Wybierz kod utworzony w ustawieniach aplikacji Widgetkeeper, w sekcji Kody klawiatury kodowej. Przyciski z włączonym Wymaga kodu o niego proszą.",
-            "ko": "Widgetkeeper 앱 설정의 키패드 코드에서 만든 코드를 선택하세요. 코드 필요가 켜진 버튼에서 코드를 묻습니다.",
-            "ar": "اختر رمزًا أُنشئ في إعدادات تطبيق Widgetkeeper، ضمن رموز لوحة الرمز. تطلبه الأزرار التي فُعّل فيها يتطلب الرمز."
+            "en": "Pick a code made in Widgetkeeper’s app settings, under Keypad codes. Or Any code: everyone’s works, and the Flow card A Keypad button was tapped says whose. Buttons with Needs the code on ask for it.",
+            "nl": "Kies een code uit de app-instellingen van Widgetkeeper, onder Codepaneel-codes. Of Elke code: dan werkt ieders code en zegt de Flow-kaart Op een knop van een Codepaneel is getikt van wie die was. Knoppen met Code nodig aan vragen erom.",
+            "de": "Wähle einen Code aus den App-Einstellungen von Widgetkeeper, unter Tastenfeld-Codes. Oder Jeder Code: Dann gilt jeder Code, und die Flow-Karte Eine Taste eines Tastenfelds wurde angetippt sagt, wessen es war. Tasten mit eingeschaltetem Code nötig fragen danach.",
+            "fr": "Choisissez un code créé dans les réglages de l’app Widgetkeeper, sous Codes du clavier à code. Ou N’importe quel code : chacun fonctionne, et la carte Flow Un bouton d’un Clavier à code a été touché dit à qui il était. Les boutons avec Code requis activé le demandent.",
+            "it": "Scegli un codice creato nelle impostazioni dell’app Widgetkeeper, in Codici del tastierino. Oppure Qualsiasi codice: vale il codice di tutti e la scheda Flow È stato toccato un pulsante di un Tastierino dice di chi era. I pulsanti con Richiede il codice attivo lo chiedono.",
+            "sv": "Välj en kod som skapats i Widgetkeepers appinställningar, under Knappsatskoder. Eller Vilken kod som helst: allas koder fungerar, och Flow-kortet En knapp i en Knappsats trycktes säger vems det var. Knappar med Kräver koden på frågar efter den.",
+            "no": "Velg en kode laget i Widgetkeepers appinnstillinger, under Kodepanel-koder. Eller Hvilken som helst kode: alles koder virker, og Flow-kortet En knapp i et Kodepanel ble trykket sier hvem sin det var. Knapper med Krever koden på spør etter den.",
+            "es": "Elige un código creado en los ajustes de la app Widgetkeeper, en Códigos del teclado de código. O Cualquier código: sirve el de todos y la tarjeta de Flow Se tocó un botón de un Teclado de código dice de quién era. Los botones con Pide el código activado lo piden.",
+            "da": "Vælg en kode, der er lavet i Widgetkeepers app-indstillinger, under Kodepanel-koder. Eller Enhver kode: så virker alles kode, og Flow-kortet Der blev trykket på en knap i et Kodepanel siger, hvis den var. Knapper med Kræver koden slået til beder om den.",
+            "ru": "Выберите код, созданный в настройках приложения Widgetkeeper, в разделе «Коды кодовой панели». Или «Любой код»: подойдёт код каждого, а карточка Flow о нажатии кнопки скажет, чей он был. Кнопки с включённым «Нужен код» запрашивают его.",
+            "pl": "Wybierz kod utworzony w ustawieniach aplikacji Widgetkeeper, w sekcji Kody klawiatury kodowej. Albo Dowolny kod: działa kod każdego, a karta Flow Dotknięto przycisku Klawiatury kodowej mówi, czyj był. Przyciski z włączonym Wymaga kodu o niego proszą.",
+            "ko": "Widgetkeeper 앱 설정의 키패드 코드에서 만든 코드를 선택하세요. 또는 모든 코드를 고르면 누구의 코드든 작동하고, Flow 카드 키패드 버튼을 눌렀을 때가 누구의 코드인지 알려 줍니다. 코드 필요가 켜진 버튼에서 코드를 묻습니다.",
+            "ar": "اختر رمزًا أُنشئ في إعدادات تطبيق Widgetkeeper، ضمن رموز لوحة الرمز. أو أي رمز: يعمل رمز أي شخص، وتخبر بطاقة Flow «تم النقر على زر من لوحة الرمز» لمن كان. تطلبه الأزرار التي فُعّل فيها يتطلب الرمز."
           }
         },
         {
@@ -11121,19 +11309,19 @@
             "ar": "  – التسمية"
           },
           "hint": {
-            "en": "Optional. Leave empty for the Flow’s name or the value.",
-            "nl": "Optioneel. Laat leeg voor de naam van de flow of de waarde.",
-            "de": "Optional. Leer lassen für den Namen des Flows oder den Wert.",
-            "fr": "Facultatif. Laissez vide pour le nom du flow ou la valeur.",
-            "it": "Facoltativo. Lascia vuoto per il nome del flow o il valore.",
-            "sv": "Valfritt. Lämna tomt för flödets namn eller värdet.",
-            "no": "Valgfritt. La stå tomt for flytens navn eller verdien.",
-            "es": "Opcional. Déjalo vacío para el nombre del flujo o el valor.",
-            "da": "Valgfrit. Lad den være tom for flowets navn eller værdien.",
-            "ru": "Необязательно. Оставьте пустым для имени потока или значения.",
-            "pl": "Opcjonalnie. Zostaw puste, aby była nazwa Flow lub wartość.",
-            "ko": "선택 사항입니다. 비워 두면 플로우 이름이나 값이 표시됩니다.",
-            "ar": "اختياري. اتركه فارغًا لإظهار اسم التدفق أو القيمة."
+            "en": "Optional. Leave empty for the Flow’s name or the value. A label alone, without a Flow or value, makes a button that only fires the Keypad’s Flow card.",
+            "nl": "Optioneel. Laat leeg voor de naam van de flow of de waarde. Alleen een label, zonder flow of waarde, maakt een knop die alleen de Flow-kaart van het Codepaneel activeert.",
+            "de": "Optional. Leer lassen für den Namen des Flows oder den Wert. Nur eine Beschriftung, ohne Flow oder Wert, ergibt eine Taste, die nur die Flow-Karte des Tastenfelds auslöst.",
+            "fr": "Facultatif. Laissez vide pour le nom du flow ou la valeur. Un libellé seul, sans flow ni valeur, fait un bouton qui ne déclenche que la carte Flow du Clavier à code.",
+            "it": "Facoltativo. Lascia vuoto per il nome del flow o il valore. Solo un’etichetta, senza flow né valore, crea un pulsante che attiva solo la scheda Flow del Tastierino.",
+            "sv": "Valfritt. Lämna tomt för flödets namn eller värdet. Bara en etikett, utan flöde eller värde, ger en knapp som bara utlöser Knappsatsens Flow-kort.",
+            "no": "Valgfritt. La stå tomt for flytens navn eller verdien. Bare en etikett, uten flyt eller verdi, gir en knapp som bare utløser Kodepanelets Flow-kort.",
+            "es": "Opcional. Déjalo vacío para el nombre del flujo o el valor. Solo una etiqueta, sin flujo ni valor, crea un botón que solo activa la tarjeta de Flow del Teclado de código.",
+            "da": "Valgfrit. Lad den være tom for flowets navn eller værdien. Kun en etiket, uden flow eller værdi, giver en knap, der kun udløser Kodepanelets Flow-kort.",
+            "ru": "Необязательно. Оставьте пустым для имени потока или значения. Одна подпись, без потока и значения, даёт кнопку, которая только запускает карточку Flow кодовой панели.",
+            "pl": "Opcjonalnie. Zostaw puste, aby była nazwa Flow lub wartość. Sama etykieta, bez Flow i wartości, tworzy przycisk, który uruchamia tylko kartę Flow Klawiatury kodowej.",
+            "ko": "선택 사항입니다. 비워 두면 플로우 이름이나 값이 표시됩니다. 플로우나 값 없이 레이블만 있으면 키패드의 Flow 카드만 실행하는 버튼이 됩니다.",
+            "ar": "اختياري. اتركه فارغًا لإظهار اسم التدفق أو القيمة. تسمية وحدها، بلا تدفق أو قيمة، تنشئ زرًا يشغّل بطاقة Flow الخاصة بلوحة الرمز فقط."
           },
           "value": ""
         },
