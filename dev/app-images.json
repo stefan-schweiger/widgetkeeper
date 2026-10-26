@@ -3,18 +3,7 @@
   "columns": [
     ["varpresets", "sensoralarms", "textline"],
     ["price", "thermostat", "flows", "dayssince", "stack"],
-    [
-      ["keypad", "media"],
-      {
-        "theme": "light",
-        "browser": [
-          ["shortcuts", "electricity", "valuematrix"],
-          ["weather", "lights", "quickactions"],
-          ["cameras", "sparklines", "heatmap"]
-        ]
-      },
-      ["timers", "locks"]
-    ],
+    [["keypad", "media"], { "space": 2 }, ["timers", "locks"]],
     ["clock", "curtains", "charts", "values", "sensordots"],
     ["webpage", "lightrooms", "roomhealth", "variables", "pollen"]
   ],
@@ -22,6 +11,17 @@
   "gap": 64,
   "stagger": 160,
   "tilt": -8,
+  "dim": 0.35,
+  "browser": {
+    "columns": [
+      ["shortcuts", "electricity", "valuematrix"],
+      ["weather", "lights", "quickactions"],
+      ["cameras", "sparklines", "heatmap"]
+    ],
+    "page": ["#5B3DB8", "#2A1958"],
+    "width": { "small": 0.74, "large": 0.6, "xlarge": 0.56 },
+    "toolbar": { "small": 11, "large": 16, "xlarge": 23 }
+  },
   "background": {
     "angle": 150,
     "stops": ["#4A2F94", "#2A1958", "#120A27"],

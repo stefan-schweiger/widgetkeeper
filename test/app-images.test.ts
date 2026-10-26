@@ -3,19 +3,23 @@ import { describe, expect, it } from 'vitest';
 
 // The App Store images are rendered from the widget previews by `npm run app-images` (scripts/app-images.mjs).
 const config = JSON.parse(readFileSync('dev/app-images.json', 'utf8'));
-// A column's item: a widget id, a row of ids, or the browser window with columns of its own (and maybe its own theme).
-type Item = string | string[] | { browser: string[][], span?: number, theme?: string };
-const previews = (config.columns as Item[][]).flat().flatMap(item => typeof item === 'string' || Array.isArray(item)
-  ? [item].flat().map(id => ({ id, theme: config.theme }))
-  : item.browser.flat().map(id => ({ id, theme: item.theme ?? config.theme })));
+// A column's item: a widget id, a row of ids, or the space the browser on top covers; the browser has columns of its own.
+type Item = string | string[] | { space: number };
+const ids = [
+  ...(config.columns as Item[][]).flat().flatMap(item => typeof item === 'string' ? [item] : Array.isArray(item) ? item : []),
+  ...(config.browser?.columns.flat() ?? []) as string[],
+];
 
 describe('app store images', () => {
   it('are made from widgets that have a preview, each once', () => {
-    const ids = previews.map(p => p.id);
     expect(ids.length).toBeGreaterThan(0);
     expect(new Set(ids).size).toBe(ids.length);
-    for (const { id, theme } of previews) expect(existsSync(`widgets/${id}/preview-${theme}.png`), id).toBe(true);
+    for (const id of ids) expect(existsSync(`widgets/${id}/preview-${config.theme}.png`), id).toBe(true);
     expect(config.background.stops.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("size the browser for each of Homey's sizes", () => {
+    for (const key of ['width', 'toolbar']) expect(Object.keys(config.browser[key]).sort(), key).toEqual(['large', 'small', 'xlarge']);
   });
 
   it("are the app's images, in Homey's sizes", () => {
