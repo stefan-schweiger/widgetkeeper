@@ -72,7 +72,7 @@ export default class WidgetkeeperApp extends Homey.App {
   web!: WebDashboardService;
   /** The web dashboards' optional password and the browsers signed in with it. */
   webPassword!: WebPassword;
-  /** Messages and Yes/No questions that Flows show on web dashboards and Popups widgets. */
+  /** Messages and questions that Flows show on web dashboards and Popups widgets. */
   popups!: PopupService;
   /** The user's personal API key, shared by Variables, Flow Buttons, Media and the Smart Stack (the app's token may only read). */
   apiKey!: PersonalApiKey;
@@ -314,7 +314,7 @@ export default class WidgetkeeperApp extends Homey.App {
   private registerPopupFlows() {
     type Screen = { screen?: { id?: string } };
     type Shown = Screen & { text: string, duration: number, unit: string, sound?: string };
-    type Asked = Screen & { question: string, seconds: number, sound?: string };
+    type Asked = Screen & { question: string, button1?: string, button2?: string, seconds: number, sound?: string };
     const screens = async (query: string) => this.popups.targetItems(query);
     const pictures = async (query: string) => this.popups.pictureItems(query);
     const seconds = (args: Shown) => args.duration * (args.unit === 'minutes' ? 60 : 1);
@@ -334,11 +334,13 @@ export default class WidgetkeeperApp extends Homey.App {
       }));
     this.homey.flow.getActionCard(POPUP_ASK_CARD)
       .registerRunListener(async (args: Asked & { picture?: { id?: string } }) => this.popups.ask({
-        target: args.screen?.id, text: args.question, seconds: args.seconds, picture: PopupService.pictureArg(args.picture), sound: args.sound,
+        target: args.screen?.id, text: args.question, buttons: [args.button1, args.button2], seconds: args.seconds,
+        picture: PopupService.pictureArg(args.picture), sound: args.sound,
       }));
     this.homey.flow.getActionCard(POPUP_ASK_IMAGE_CARD)
       .registerRunListener(async (args: Asked & { droptoken?: unknown }) => this.popups.ask({
-        target: args.screen?.id, text: args.question, seconds: args.seconds, picture: PopupService.droptokenArg(args.droptoken), sound: args.sound,
+        target: args.screen?.id, text: args.question, buttons: [args.button1, args.button2], seconds: args.seconds,
+        picture: PopupService.droptokenArg(args.droptoken), sound: args.sound,
       }));
     this.homey.flow.getActionCard(POPUP_CLOSE_CARD)
       .registerRunListener(async (args: Screen) => this.popups.close(args.screen?.id));

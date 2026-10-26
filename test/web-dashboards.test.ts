@@ -1001,8 +1001,9 @@ describe('web dashboards: popups (wk-084)', () => {
     expect((await api.getWebSetup({ homey, query: {} })).popups!.popups).toHaveLength(1);
     const { id } = listed.popups[0];
     await expect(api.getWebPopupImage({ homey, query: {}, params: { id } })).rejects.toThrow('Not found'); // no picture
-    expect(await api.postWebPopupAnswer({ homey, query: {}, params: { id }, body: { answer: true } })).toEqual({ ok: true, answer: true });
-    await expect(asked).resolves.toEqual({ answer: true, answered: true });
+    expect(listed.popups[0].buttons).toEqual(['Yes', 'No']);
+    expect(await api.postWebPopupAnswer({ homey, query: {}, params: { id }, body: { answer: true } })).toEqual({ ok: true, answer: true, button: 'Yes' });
+    await expect(asked).resolves.toEqual({ answer: true, answered: true, button: 'Yes' });
     // Turned off, the page's routes refuse as the rest do.
     const off = setup({}, false);
     await expect(api.getWebPopups({ homey: off.homey, query: {} })).rejects.toThrow(/turned off/);

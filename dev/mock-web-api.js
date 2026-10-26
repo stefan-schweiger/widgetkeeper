@@ -125,8 +125,10 @@ function mockWebApi({ lang = 'en', dashboards = [], front: frontIn = {}, zones =
     if (popupAnswer) {
       const popup = popups.find(x => x.id === popupAnswer[1]);
       popups = popups.filter(x => x.id !== popupAnswer[1]);
-      if (popup && popup.elsewhere) return { ok: false, reason: 'closed', answer: true };
-      return popup ? { ok: true, answer: body.answer === true } : { ok: false, reason: 'closed', answer: null };
+      if (popup && popup.elsewhere) return { ok: false, reason: 'closed', answer: true, button: popup.buttons[0] };
+      return popup
+        ? { ok: true, answer: body.answer === true, button: popup.buttons[body.answer === true ? 0 : 1] }
+        : { ok: false, reason: 'closed', answer: null, button: null };
     }
     if (p === '/web/devices') {
       // Another app's widget sends its filter (the made-up app has no devices of its own, so `app=1` is left out).

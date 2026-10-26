@@ -37,8 +37,9 @@ body { font-family: Roboto, -apple-system, system-ui, sans-serif; -webkit-text-s
 }
 .pp-actions { display: flex; gap: 12px; }
 .pp-btn {
-  -webkit-appearance: none; appearance: none; flex: 1 1 0; min-height: 56px; margin: 0; border: 0; border-radius: 28px; cursor: pointer;
+  -webkit-appearance: none; appearance: none; flex: 1 1 0; min-height: 56px; margin: 0; padding: 14px 16px; border: 0; border-radius: 28px; cursor: pointer;
   background: var(--pp-raised); color: var(--pp-text); font-family: inherit; font-size: 20px; line-height: 28px; font-weight: 500;
+  overflow-wrap: anywhere; /* a Flow's own button text wraps inside the button */
 }
 .pp-btn.primary { background: var(--pp-accent); color: #FFFFFF; }
 .pp-btn:disabled { opacity: .5; cursor: default; }

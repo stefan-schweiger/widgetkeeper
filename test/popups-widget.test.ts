@@ -146,8 +146,8 @@ describe('popup prompt page (settings/popup.js)', () => {
     const win = load();
     const sent: any[] = [];
     const fetch = fakeFetch({
-      '/': () => ({ body: { closed: false, kind: 'ask', text: 'Open the garage?', picture: null, until: Date.now() + 30e3, now: Date.now(), language: 'da', strings: { yes: 'Ja', no: 'Nej', answeredYes: 'Besvaret: Ja' } } }),
-      '/answer': (body) => { sent.push(body); return { body: { ok: true, answer: true } }; },
+      '/': () => ({ body: { closed: false, kind: 'ask', text: 'Open the garage?', buttons: ['Ja', 'Nej'], picture: null, until: Date.now() + 30e3, now: Date.now(), language: 'da', strings: { answered: 'Besvaret: __button__' } } }),
+      '/answer': (body) => { sent.push(body); return { body: { ok: true, answer: true, button: 'Ja' } }; },
     });
     const root = document.createElement('main');
     document.body.append(root);
@@ -156,6 +156,7 @@ describe('popup prompt page (settings/popup.js)', () => {
     expect(root.querySelector('.pp-text')!.textContent).toBe('Open the garage?');
     expect(document.documentElement.lang).toBe('da');
     const yes = [...root.querySelectorAll('button')].find(b => b.textContent === 'Ja')!;
+    expect(yes.classList.contains('primary')).toBe(true);
     yes.click();
     await vi.advanceTimersByTimeAsync(0);
     expect(sent).toEqual([{ t: 'secret', answer: true }]);
@@ -163,6 +164,29 @@ describe('popup prompt page (settings/popup.js)', () => {
     expect(fetch.mock.calls[0][0]).toBe('/api/app/com.thomassidor.widgetkeeper/popup/p1');
     // The strings only on the first call.
     expect(JSON.parse(fetch.mock.calls[0][1].body)).toEqual({ t: 'secret', strings: true });
+  });
+
+  it("draws the Flow's buttons in its order, the first highlighted, and answers yes for the first only", async () => {
+    const win = load();
+    const sent: any[] = [];
+    const ask = (buttons: string[]) => fakeFetch({
+      '/': () => ({ body: { closed: false, kind: 'ask', text: 'Visitor', buttons, picture: null, until: Date.now() + 30e3, now: Date.now() } }),
+      '/answer': (body) => { sent.push(body.answer); return { body: { ok: true, answer: body.answer, button: buttons[body.answer ? 0 : 1] } }; },
+    });
+    const two = document.createElement('main');
+    win.mountPopupPage(two, { fetch: ask(['Open', 'Ignore']), hash: '#id=p1&t=secret' });
+    const one = document.createElement('main');
+    win.mountPopupPage(one, { fetch: ask(['Got it']), hash: '#id=p2&t=secret' });
+    await vi.advanceTimersByTimeAsync(0);
+    const labels = (root: HTMLElement) => [...root.querySelectorAll('.pp-btn')].map(b => [b.textContent, b.classList.contains('primary')]);
+    expect(labels(two)).toEqual([['Open', true], ['Ignore', false]]);
+    expect(labels(one)).toEqual([['Got it', true]]);
+    (two.querySelectorAll('.pp-btn')[1] as HTMLElement).click();
+    (one.querySelector('.pp-btn') as HTMLElement).click();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(sent).toEqual([false, true]);
+    expect(two.querySelector('.pp-result')!.textContent).toBe('Answered: Ignore');
+    expect(one.querySelector('.pp-result')!.textContent).toBe('Answered: Got it');
   });
 
   it("shows a message's bar running down only with the countdown asked for", async () => {
@@ -184,15 +208,15 @@ describe('popup prompt page (settings/popup.js)', () => {
     let closed = false;
     const fetch = fakeFetch({
       '/': () => ({ body: closed
-        ? { closed: true, kind: 'ask', answer: false, reason: 'answered', now: Date.now() }
-        : { closed: false, kind: 'ask', text: 'Q?', picture: null, until: Date.now() + 30e3, now: Date.now() } }),
+        ? { closed: true, kind: 'ask', answer: false, button: 'Ignore', reason: 'answered', now: Date.now() }
+        : { closed: false, kind: 'ask', text: 'Q?', buttons: ['Open', 'Ignore'], picture: null, until: Date.now() + 30e3, now: Date.now() } }),
     });
     const root = document.createElement('main');
     win.mountPopupPage(root, { fetch, hash: '#id=p1&t=secret' });
     await vi.advanceTimersByTimeAsync(0);
     closed = true;
     await vi.advanceTimersByTimeAsync(2000);
-    expect(root.querySelector('.pp-result')!.textContent).toBe('Answered on another screen: No');
+    expect(root.querySelector('.pp-result')!.textContent).toBe('Answered on another screen: Ignore');
     expect([...root.querySelectorAll('button')].every(b => b.disabled)).toBe(true);
   });
 

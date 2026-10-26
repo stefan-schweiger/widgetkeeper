@@ -303,10 +303,10 @@ A level is the day's average in grains per m³, by Astma-Allergi Danmark's bands
 Pollen and UV data from [Open-Meteo](https://open-meteo.com), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), generated using Copernicus Atmosphere Monitoring Service information.
 
 ## Popups
-A Flow shows a message, or asks a question with **Yes** and **No**, in front of everything on the screens you choose: a web dashboard, or the phones and tablets showing a Homey dashboard with a Popups widget.
+A Flow shows a message, or asks a question with one or two buttons of your own (**Yes** and **No** unless you name them), in front of everything on the screens you choose: a web dashboard, or the phones and tablets showing a Homey dashboard with a Popups widget.
 
 - *Show [text] on [screen] for [duration], picture: [picture], sound: [sound]*: closes after the time, or with a tap on that screen.
-- *Ask [question] on [screen], picture: [picture], wait up to [seconds] seconds, sound: [sound]*: the first answer from any screen closes it everywhere and goes back to the Flow as the tags **Answer** (yes or no) and **Answered** (no when nobody answered in time), which only reach the next cards in an **Advanced Flow**. It waits at most 85 seconds, as Homey stops a Flow card after 90.
+- *Ask [question] on [screen], buttons: [button] and [second button], picture: [picture], wait up to [seconds] seconds, sound: [sound]*: the buttons are yours, such as *Open* and *Ignore*, or one *Got it*; left empty, they're *Yes* and *No*. The first one is highlighted. The first answer from any screen closes it everywhere and goes back to the Flow as the tags **Answer** (yes for the first button, no for the second), **Button** (its text) and **Answered** (no when nobody answered in time), which only reach the next cards in an **Advanced Flow**. It waits at most 85 seconds, as Homey stops a Flow card after 90.
 - *Close the popups on [screen]* closes them early; an open question then ends unanswered.
 - **Picture:** a camera (refreshed while the popup is open) or a picture address. The cards *with an image* take an image tag instead, such as a doorbell's snapshot from its own Flow, taken when the Flow runs, or a text tag holding a picture address.
 - **Sound:** a chime, a doorbell or an alert. Browsers only play sound on a page that has been tapped, so a wall tablet plays it once someone has used the web dashboard; on phones it may stay silent.

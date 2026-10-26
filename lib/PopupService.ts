@@ -29,6 +29,8 @@ export type PopupSound = typeof POPUP_SOUNDS[number];
 
 const MAX_OPEN = 20;
 const MAX_TEXT = 500;
+/** A question's button text: the buttons sit side by side on a phone. */
+const MAX_BUTTON = 30;
 const MAX_NAME = 60;
 const MAX_NAMES = 50;
 /** Image tags and pictures from an address are kept in memory while their popup is open. */
@@ -57,6 +59,8 @@ type Popup = {
   target: string,
   kind: PopupKind,
   text: string,
+  /** A question's one or two buttons, in order (the first answers yes); null for a message. */
+  buttons: string[] | null,
   picture: Picture | null,
   sound: PopupSound | null,
   createdAt: number,
@@ -65,20 +69,28 @@ type Popup = {
   resolve?: (result: AskResult) => void,
 };
 
-type Closed = { token: string, kind: PopupKind, answer: boolean | null, reason: CloseReason, closedAt: number };
+type Closed = {
+  token: string, kind: PopupKind, answer: boolean | null, button: string | null, reason: CloseReason, closedAt: number,
+};
 
-/** What a Flow card gives: the screen, the text, the picture and the sound (`soundArg()`). */
-type PopupInput = { target: unknown, text: unknown, picture?: PictureInput, sound?: unknown };
+/**
+ * What a Flow card gives: the screen, the text, the picture, the sound (`soundArg()`) and a question's button texts
+ * (none given: Yes and No).
+ */
+type PopupInput = { target: unknown, text: unknown, picture?: PictureInput, sound?: unknown, buttons?: unknown[] };
 
-export type AskResult = { answer: boolean, answered: boolean };
-export type AnswerResult = { ok: true, answer: boolean } | { ok: false, reason: 'closed' | 'notAsk', answer: boolean | null };
+/** The Ask card's tags: `answer` is yes for the first button, `button` its text (`''` when nobody answered). */
+export type AskResult = { answer: boolean, answered: boolean, button: string };
+export type AnswerResult =
+  | { ok: true, answer: boolean, button: string }
+  | { ok: false, reason: 'closed' | 'notAsk', answer: boolean | null, button: string | null };
 
 /**
  * A popup as the screens get it (`popups:show`, `/web/popups`): the picture's source only, and never the token, which
  * alone answers it through the public routes (anyone who may listen to the app's realtime would get it).
  */
 export type PopupView = {
-  id: string, target: string, kind: PopupKind, text: string,
+  id: string, target: string, kind: PopupKind, text: string, buttons: string[] | null,
   picture: { source: 'camera' | 'stored' } | null, sound: PopupSound | null, createdAt: number, until: number,
 };
 
@@ -95,8 +107,9 @@ function sameToken(a: string, b: unknown): boolean {
 }
 
 /**
- * Popups (wk-084): a Flow shows a message, or asks Yes/No, on web dashboards (the page draws it over everything) and on
- * the screens of Homey's own dashboards that have a Popups widget (it opens a prompt page in the app's in-app browser).
+ * Popups (wk-084): a Flow shows a message, or asks with one or two buttons, on web dashboards (the page draws it over
+ * everything) and on the screens of Homey's own dashboards that have a Popups widget (it opens a prompt page in the
+ * app's in-app browser).
  * A Flow names where: everywhere (`all`), one web dashboard (`web:<id>`) or a Popups widget's screen name
  * (`name:<key>`). Popups are kept in memory only; the first answer to a question closes it on every screen.
  */
@@ -133,7 +146,7 @@ export default class PopupService {
 
   /**
    * The Flow card *Ask … on …*: waits for the first answer from any screen, or until `seconds` (at most
-   * `MAX_ASK_SECONDS`) have passed, which is `{answer: false, answered: false}`.
+   * `MAX_ASK_SECONDS`) have passed, which is `{answer: false, answered: false, button: ''}`.
    */
   async ask(input: PopupInput & { seconds: number }): Promise<AskResult> {
     const seconds = Math.min(Math.max(Number(input.seconds) || 0, 5), MAX_ASK_SECONDS);
@@ -185,12 +198,14 @@ export default class PopupService {
     const p = this.open.get(id);
     if (p && sameToken(p.token, token)) {
       return {
-        closed: false, kind: p.kind, text: p.text, picture: p.picture ? { source: p.picture.source } : null, sound: p.sound,
-        until: p.until, now: Date.now(),
+        closed: false, kind: p.kind, text: p.text, buttons: p.buttons, picture: p.picture ? { source: p.picture.source } : null,
+        sound: p.sound, until: p.until, now: Date.now(),
       };
     }
     const c = this.closed.get(id);
-    if (c && sameToken(c.token, token)) return { closed: true, kind: c.kind, answer: c.answer, reason: c.reason, now: Date.now() };
+    if (c && sameToken(c.token, token)) {
+      return { closed: true, kind: c.kind, answer: c.answer, button: c.button, reason: c.reason, now: Date.now() };
+    }
     throw new Error('Not found');
   }
 
@@ -293,18 +308,23 @@ export default class PopupService {
 
   // ---- Inside -----------------------------------------------------------------------------------------------
 
-  /** `may`: whether a token is the one the caller gave (the prompt page); null for a signed-in web dashboard. */
+  /**
+   * `yes`: the first button (true) or the second; `may`: whether a token is the one the caller gave (the prompt page),
+   * null for a signed-in web dashboard.
+   */
   private answerAs(id: string, yes: unknown, may: ((token: string) => boolean) | null): AnswerResult {
     const p = this.open.get(id);
     if (!p || (may && !may(p.token))) {
       const c = this.closed.get(id);
       if (may && !(c && may(c.token))) throw new Error('Not found');
-      return { ok: false, reason: 'closed', answer: c ? c.answer : null };
+      return { ok: false, reason: 'closed', answer: c ? c.answer : null, button: c ? c.button : null };
     }
-    if (p.kind !== 'ask') return { ok: false, reason: 'notAsk', answer: null };
+    if (p.kind !== 'ask' || !p.buttons) return { ok: false, reason: 'notAsk', answer: null, button: null };
     const answer = yes === true;
+    const button = p.buttons[answer ? 0 : 1];
+    if (button === undefined) throw new Error('No such button');
     this.finish(id, answer, 'answered');
-    return { ok: true, answer };
+    return { ok: true, answer, button };
   }
 
   private async imageAs(id: string, may: ((token: string) => boolean) | null): Promise<Snapshot> {
@@ -348,6 +368,7 @@ export default class PopupService {
       target,
       kind,
       text,
+      buttons: kind === 'ask' ? this.buttons(input.buttons) : null,
       picture,
       sound: PopupService.soundArg(input.sound),
       createdAt: now,
@@ -366,20 +387,30 @@ export default class PopupService {
     this.open.delete(id);
     this.homey.clearTimeout(p.timer);
     const now = Date.now();
-    this.closed.set(id, { token: p.token, kind: p.kind, answer, reason, closedAt: now });
+    const button = answer === null ? null : p.buttons?.[answer ? 0 : 1] ?? null;
+    this.closed.set(id, { token: p.token, kind: p.kind, answer, button, reason, closedAt: now });
     for (const [cid, c] of this.closed) {
       if (now - c.closedAt > CLOSED_KEPT || this.closed.size > MAX_CLOSED) this.closed.delete(cid);
       else break;
     }
-    p.resolve?.({ answer: answer === true, answered: answer !== null });
-    this.homey.api.realtime(POPUP_CLOSE_EVENT, { id, answer, reason });
+    p.resolve?.({ answer: answer === true, answered: answer !== null, button: button ?? '' });
+    this.homey.api.realtime(POPUP_CLOSE_EVENT, { id, answer, button, reason });
   }
 
   private view(p: Popup): PopupView {
     return {
-      id: p.id, target: p.target, kind: p.kind, text: p.text,
+      id: p.id, target: p.target, kind: p.kind, text: p.text, buttons: p.buttons,
       picture: p.picture ? { source: p.picture.source } : null, sound: p.sound, createdAt: p.createdAt, until: p.until,
     };
+  }
+
+  /** A question's buttons: the texts given, trimmed, without empty ones; none given is Yes and No. */
+  private buttons(input: unknown[] | undefined): string[] {
+    const given = (input ?? [])
+      .map(b => (typeof b === 'string' ? b.trim().slice(0, MAX_BUTTON) : ''))
+      .filter(Boolean)
+      .slice(0, 2);
+    return given.length ? given : [this.homey.__('popups.yes') || 'Yes', this.homey.__('popups.no') || 'No'];
   }
 
   private remember(key: string, name: string) {

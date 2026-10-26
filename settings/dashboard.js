@@ -173,10 +173,7 @@
     trustHint: 'Runs it outside the sandbox, for a widget that doesn\'t work in it. A trusted widget can read this browser\'s API key.',
     scaleTitle: 'Size as on Homey',
     scaleHint: 'Lays it out at a phone\'s width and scales it to fill the column, so it wraps and sizes as on Homey\'s dashboard.',
-    popupYes: 'Yes',
-    popupNo: 'No',
-    popupElsewhereYes: 'Answered on another screen: Yes',
-    popupElsewhereNo: 'Answered on another screen: No',
+    popupElsewhere: 'Answered on another screen: __button__',
     popupClose: 'Close',
     popupPictureFailed: 'The picture could not be loaded',
     popupAnswerFailed: 'The answer didn\'t reach Homey',
@@ -3885,7 +3882,7 @@
       return wrap;
     }
 
-    // ---- Popups (wk-084): a Flow's message or Yes/No question, over everything ----------------------------------
+    // ---- Popups (wk-084): a Flow's message or question, over everything ---------------------------------------
 
     /**
      * The open popups (`lib/PopupService.ts`), oldest first, each with `localUntil` (its end on this browser's clock).
@@ -3920,7 +3917,8 @@
       popups.set(p.id, Object.assign({}, p, { localUntil, timer }));
     }
 
-    function removePopup(id, answer, reason) {
+    /** `button`: the text of the button that answered it, if one did. */
+    function removePopup(id, answer, reason, button) {
       const p = popups.get(id);
       if (p) clearTimeout(p.timer);
       popups.delete(id);
@@ -3929,11 +3927,11 @@
       if (shownPopup && shownPopup.id === id) {
         if (shownPopup.sending) {
           // This screen's answer is on its way, so this close may be its own or another screen's: its reply says.
-          shownPopup.held = { answer, reason };
+          shownPopup.held = { answer, reason, button };
         } else {
           // Another screen's answer: said for a moment, so this screen sees what happened.
-          const note = reason === 'answered' && !shownPopup.answeredHere && answer != null
-            ? t(answer ? 'popupElsewhereYes' : 'popupElsewhereNo') : null;
+          const note = reason === 'answered' && !shownPopup.answeredHere && typeof button === 'string'
+            ? t('popupElsewhere', { button }) : null;
           shownPopup.close(note);
         }
       }
@@ -4034,7 +4032,7 @@
           } catch (err) {
             shown.sending = false;
             // It closed meanwhile (another screen, or the time ran out): say how.
-            if (shown.held) { removePopup(p.id, shown.held.answer, shown.held.reason); return; }
+            if (shown.held) { removePopup(p.id, shown.held.answer, shown.held.reason, shown.held.button); return; }
             status.textContent = t('popupAnswerFailed');
             for (const b of actions.querySelectorAll('button')) b.disabled = false;
             return;
@@ -4042,16 +4040,18 @@
           shown.sending = false;
           if (res && res.ok === false && res.reason === 'closed') {
             // Someone else was first: say what they answered.
-            removePopup(p.id, res.answer, res.answer == null ? 'closed' : 'answered');
+            removePopup(p.id, res.answer, res.answer == null ? 'closed' : 'answered', res.button);
           } else {
             shown.answeredHere = true;
-            removePopup(p.id, answer, 'answered');
+            removePopup(p.id, answer, 'answered', res && res.button);
           }
         };
-        actions.append(
-          button('wd-btn wd-popup-no', t('popupNo'), () => send(false)),
-          button('wd-btn primary wd-popup-yes', t('popupYes'), () => send(true)),
-        );
+        // The Flow's buttons in its order, the first highlighted (it answers yes).
+        (Array.isArray(p.buttons) && p.buttons.length ? p.buttons : ['Yes', 'No']).forEach((label, i) => {
+          const b = button(i === 0 ? 'wd-btn primary wd-popup-first' : 'wd-btn', label, () => send(i === 0));
+          b.dir = 'auto';
+          actions.append(b);
+        });
         box.append(actions, status);
       } else {
         // A message: a bar runs down to its end; a tap anywhere closes it on this screen.
@@ -4098,8 +4098,8 @@
         sounded.add(p.id);
         window.WidgetkeeperKit.sound.play(p.sound);
       }
-      const yes = d.querySelector('.wd-popup-yes');
-      if (yes) /** @type {HTMLElement} */ (yes).focus();
+      const first = d.querySelector('.wd-popup-first');
+      if (first) /** @type {HTMLElement} */ (first).focus();
     }
 
     /** The open popups again, after a reconnect: a screen that was offline missed their events. */
@@ -4120,7 +4120,7 @@
         syncPopups();
       });
       on('popups:close', (data) => {
-        if (data && typeof data.id === 'string') removePopup(data.id, data.answer == null ? null : data.answer === true, data.reason);
+        if (data && typeof data.id === 'string') removePopup(data.id, data.answer == null ? null : data.answer === true, data.reason, data.button);
       });
     }
 

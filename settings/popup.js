@@ -1,5 +1,5 @@
 /*
- * The prompt page (popup.html, wk-084): a Flow's message or Yes/No question in the phone app's in-app browser, which a
+ * The prompt page (popup.html, wk-084): a Flow's message or question in the phone app's in-app browser, which a
  * Popups widget opened with `Homey.popup()`. It has no login: `#id=&t=` name the popup and its token, which the app's
  * public routes take in the body (`POST /api/app/<appId>/popup/:id`, `/image`, `/answer`); the first call also asks for
  * the strings (`strings: true`). `&countdown=1` (the widget's Countdown) shows a message's bar running down. It polls
@@ -23,10 +23,8 @@
     pictureFailed: 'The picture could not be loaded',
     yes: 'Yes',
     no: 'No',
-    answeredYes: 'Answered: Yes',
-    answeredNo: 'Answered: No',
-    elsewhereYes: 'Answered on another screen: Yes',
-    elsewhereNo: 'Answered on another screen: No',
+    answered: 'Answered: __button__',
+    elsewhere: 'Answered on another screen: __button__',
     expired: 'Time is up',
     closed: 'Closed',
     closeWindow: 'You can close this window',
@@ -57,11 +55,15 @@
     const countdown = params.get('countdown') === '1';
     const appId = (location.pathname.match(/\/app\/([^/]+)\//) || [])[1] || 'com.thomassidor.widgetkeeper';
     let strings = {};
-    const t = key => (typeof strings[key] === 'string' && strings[key]) || DEFAULT_STRINGS[key] || key;
+    function t(key, tokens) {
+      let s = (typeof strings[key] === 'string' && strings[key]) || DEFAULT_STRINGS[key] || key;
+      for (const k in tokens || {}) s = s.split(`__${k}__`).join(String(tokens[k]));
+      return s;
+    }
 
     let card = null;
     let status = null;
-    let answeredHere = null; // the answer this page sent, once Homey took it
+    let answeredHere = false; // whether Homey took this page's answer
     let finished = false;
     const timers = [];
 
@@ -87,11 +89,10 @@
       document.title = t('title');
     }
 
-    /** How a closed popup ended, in words. */
+    /** How a closed popup ended, in words: the button pressed (here or on another screen), or why it closed. */
     function ending(data) {
-      if (data.reason === 'answered' && data.answer != null) {
-        if (answeredHere != null) return t(answeredHere ? 'answeredYes' : 'answeredNo');
-        return t(data.answer ? 'elsewhereYes' : 'elsewhereNo');
+      if (data.reason === 'answered' && data.button != null) {
+        return t(answeredHere ? 'answered' : 'elsewhere', { button: data.button });
       }
       if (data.reason === 'expired' && data.kind === 'ask') return t('expired');
       return t('closed');
@@ -157,10 +158,10 @@
           try {
             const res = await call('/answer', { answer });
             if (res && res.ok) {
-              answeredHere = answer;
-              finish(t(answer ? 'answeredYes' : 'answeredNo'));
+              answeredHere = true;
+              finish(t('answered', { button: res.button }));
             } else {
-              finish(res && res.answer != null ? t(res.answer ? 'elsewhereYes' : 'elsewhereNo') : t('closed'));
+              finish(res && res.button != null ? t('elsewhere', { button: res.button }) : t('closed'));
             }
           } catch (err) {
             if (err.notFound) { finish(t('notFound')); return; }
@@ -168,13 +169,15 @@
             for (const b of actions.querySelectorAll('button')) b.disabled = false;
           }
         };
-        const no = el('button', 'pp-btn', t('no'));
-        const yes = el('button', 'pp-btn primary', t('yes'));
-        no.type = 'button';
-        yes.type = 'button';
-        no.addEventListener('click', () => send(false));
-        yes.addEventListener('click', () => send(true));
-        actions.append(no, yes);
+        // The Flow's buttons in its order, the first highlighted (it answers yes); Yes and No unless it named others.
+        const buttons = Array.isArray(p.buttons) && p.buttons.length ? p.buttons : [t('yes'), t('no')];
+        buttons.forEach((label, i) => {
+          const b = el('button', i === 0 ? 'pp-btn primary' : 'pp-btn', label);
+          b.type = 'button';
+          b.dir = 'auto';
+          b.addEventListener('click', () => send(i === 0));
+          actions.append(b);
+        });
         card.append(actions, status);
       } else if (countdown) {
         const bar = el('div', 'pp-bar');

@@ -50,7 +50,7 @@ describe('show (a message)', () => {
     expect(service.all().popups[0]).not.toHaveProperty('token');
     expect(service.forScreen('Hall').popups[0].token).toMatch(/^[0-9a-f]{32}$/);
     await vi.advanceTimersByTimeAsync(10e3);
-    expect(events(POPUP_CLOSE_EVENT)).toEqual([{ id: shown.id, answer: null, reason: 'expired' }]);
+    expect(events(POPUP_CLOSE_EVENT)).toEqual([{ id: shown.id, answer: null, button: null, reason: 'expired' }]);
     expect(service.all().popups).toEqual([]);
   });
 
@@ -74,21 +74,53 @@ describe('show (a message)', () => {
   it("isn't answered: a message has no answer", async () => {
     const { service, events } = setup();
     await service.show({ target: 'all', text: 'Hi', seconds: 5 });
-    expect(service.answerFromSession(events(POPUP_SHOW_EVENT)[0].id, true)).toEqual({ ok: false, reason: 'notAsk', answer: null });
+    const [shown] = events(POPUP_SHOW_EVENT);
+    expect(shown.buttons).toBeNull();
+    expect(service.answerFromSession(shown.id, true)).toEqual({ ok: false, reason: 'notAsk', answer: null, button: null });
   });
 });
 
-describe('ask (a Yes/No question)', () => {
+describe('ask (a question with one or two buttons)', () => {
   it('waits for the first answer, which closes it everywhere; later answers hear what it was', async () => {
     const { service, events } = setup();
     const asked = service.ask({ target: 'all', text: 'Open the garage?', seconds: 30 });
     await vi.advanceTimersByTimeAsync(0);
     const [shown] = events(POPUP_SHOW_EVENT);
     expect(shown.kind).toBe('ask');
-    expect(service.answerFromSession(shown.id, true)).toEqual({ ok: true, answer: true });
-    await expect(asked).resolves.toEqual({ answer: true, answered: true });
-    expect(service.answerFromSession(shown.id, false)).toEqual({ ok: false, reason: 'closed', answer: true });
-    expect(events(POPUP_CLOSE_EVENT)).toEqual([{ id: shown.id, answer: true, reason: 'answered' }]);
+    // No buttons given (a card saved before it had them): Yes and No.
+    expect(shown.buttons).toEqual(['Yes', 'No']);
+    expect(service.answerFromSession(shown.id, true)).toEqual({ ok: true, answer: true, button: 'Yes' });
+    await expect(asked).resolves.toEqual({ answer: true, answered: true, button: 'Yes' });
+    expect(service.answerFromSession(shown.id, false)).toEqual({ ok: false, reason: 'closed', answer: true, button: 'Yes' });
+    expect(events(POPUP_CLOSE_EVENT)).toEqual([{ id: shown.id, answer: true, button: 'Yes', reason: 'answered' }]);
+  });
+
+  it("shows the Flow's buttons in its order, trimmed and cut at 30 characters; empty ones are left out", async () => {
+    const { service, events } = setup();
+    const ask = (buttons: unknown[]) => service.ask({ target: 'all', text: 'Q?', seconds: 30, buttons });
+    ask([' Open ', 'Ignore']);
+    ask(['', undefined]);
+    ask(['Got it', '']);
+    ask([undefined, ' Later ']);
+    ask(['x'.repeat(40), 7]);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(events(POPUP_SHOW_EVENT).map((e: any) => e.buttons)).toEqual([
+      ['Open', 'Ignore'], ['Yes', 'No'], ['Got it'], ['Later'], ['x'.repeat(30)],
+    ]);
+  });
+
+  it('answers with the second button, and takes no second answer when it has one button', async () => {
+    const { service, events } = setup();
+    const two = service.ask({ target: 'all', text: 'Visitor', seconds: 30, buttons: ['Open', 'Ignore'] });
+    const one = service.ask({ target: 'all', text: 'Done', seconds: 30, buttons: ['Got it'] });
+    await vi.advanceTimersByTimeAsync(0);
+    const [a, b] = events(POPUP_SHOW_EVENT);
+    expect(service.answerFromSession(a.id, false)).toEqual({ ok: true, answer: false, button: 'Ignore' });
+    await expect(two).resolves.toEqual({ answer: false, answered: true, button: 'Ignore' });
+    expect(() => service.answerFromSession(b.id, false)).toThrow('No such button');
+    expect(service.all().popups.map(p => p.id)).toEqual([b.id]);
+    expect(service.answerFromSession(b.id, true)).toEqual({ ok: true, answer: true, button: 'Got it' });
+    await expect(one).resolves.toEqual({ answer: true, answered: true, button: 'Got it' });
   });
 
   it('ends unanswered at its time, which is at most MAX_ASK_SECONDS', async () => {
@@ -97,7 +129,7 @@ describe('ask (a Yes/No question)', () => {
     await vi.advanceTimersByTimeAsync(0);
     expect(events(POPUP_SHOW_EVENT)[0].until - Date.now()).toBe(MAX_ASK_SECONDS * 1000);
     await vi.advanceTimersByTimeAsync(MAX_ASK_SECONDS * 1000);
-    await expect(asked).resolves.toEqual({ answer: false, answered: false });
+    await expect(asked).resolves.toEqual({ answer: false, answered: false, button: '' });
   });
 
   it('ends unanswered when closed by a Flow or when the app stops', async () => {
@@ -106,10 +138,10 @@ describe('ask (a Yes/No question)', () => {
     const b = service.ask({ target: 'all', text: 'B?', seconds: 30 });
     await vi.advanceTimersByTimeAsync(0);
     service.close({ id: 'name:hall' });
-    await expect(a).resolves.toEqual({ answer: false, answered: false });
+    await expect(a).resolves.toEqual({ answer: false, answered: false, button: '' });
     expect(service.all().popups.map(p => p.text)).toEqual(['B?']);
     service.stop();
-    await expect(b).resolves.toEqual({ answer: false, answered: false });
+    await expect(b).resolves.toEqual({ answer: false, answered: false, button: '' });
   });
 });
 
@@ -165,7 +197,7 @@ describe('screens', () => {
 describe('the prompt page (public, by token)', () => {
   it('reads and answers a popup only with its token, and says how it ended', async () => {
     const { service } = setup();
-    const asked = service.ask({ target: 'all', text: 'Q?', seconds: 30 });
+    const asked = service.ask({ target: 'all', text: 'Q?', seconds: 30, buttons: ['Open', 'Ignore'] });
     await vi.advanceTimersByTimeAsync(0);
     const { id, token } = service.forScreen('').popups[0];
     expect(() => service.page(id, 'wrong')).toThrow('Not found');
@@ -174,12 +206,12 @@ describe('the prompt page (public, by token)', () => {
     // Leaving the token out is no way past it.
     expect(() => service.answerWithToken(id, true, undefined)).toThrow('Not found');
     expect(() => service.answerWithToken('gone', true, undefined)).toThrow('Not found');
-    expect(service.page(id, token)).toMatchObject({ closed: false, kind: 'ask', text: 'Q?', picture: null });
-    expect(service.answerWithToken(id, false, token)).toEqual({ ok: true, answer: false });
-    await expect(asked).resolves.toEqual({ answer: false, answered: true });
-    expect(service.page(id, token)).toMatchObject({ closed: true, kind: 'ask', answer: false, reason: 'answered' });
+    expect(service.page(id, token)).toMatchObject({ closed: false, kind: 'ask', text: 'Q?', buttons: ['Open', 'Ignore'], picture: null });
+    expect(service.answerWithToken(id, false, token)).toEqual({ ok: true, answer: false, button: 'Ignore' });
+    await expect(asked).resolves.toEqual({ answer: false, answered: true, button: 'Ignore' });
+    expect(service.page(id, token)).toMatchObject({ closed: true, kind: 'ask', answer: false, button: 'Ignore', reason: 'answered' });
     expect(() => service.page(id, 'wrong')).toThrow('Not found');
-    expect(service.answerWithToken(id, true, token)).toEqual({ ok: false, reason: 'closed', answer: false });
+    expect(service.answerWithToken(id, true, token)).toEqual({ ok: false, reason: 'closed', answer: false, button: 'Ignore' });
   });
 });
 
