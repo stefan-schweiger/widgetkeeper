@@ -302,6 +302,35 @@ describe('two series on one chart', () => {
     }
   });
 
+  it('puts both on one scale on the left with sharedScale, as wide as one chart', () => {
+    const both = (opts: Record<string, unknown>) => widget([{}, { color: 'green' }],
+      [entry(series(24 * HOUR, x => 20 + x * 2)), entry(series(24 * HOUR, x => 10 + x * 20), { deviceId: 'd2', name: 'Outdoor' })], { overlay: true, ...opts });
+    const dots = (r: ReturnType<typeof widget>) => r.all('g[data-color] .dot-core').map(c => +c.getAttribute('cy')!);
+    const gridEnd = (r: ReturnType<typeof widget>) => Math.max(...[...r.q('.ch-chart .grid')!.getAttribute('d')!.matchAll(/H([\d.]+)/g)].map(m => +m[1]));
+    // Each on its own scale, both values end at the top; on one, 22 lies well below 30.
+    const own = both({});
+    expect(dots(own)[0]).toBeCloseTo(dots(own)[1], 0);
+    const one = both({ sharedScale: true });
+    expect(dots(one)[0] - dots(one)[1]).toBeGreaterThan(30);
+    expect(rightLabels(one)).toEqual([]);
+    expect([...one.yLabels()].map(t => t.textContent)).toEqual(expect.arrayContaining(['10', '30']));
+    expect(gridEnd(one)).toBe(gridEnd(widget([{}], [entry(series(24 * HOUR, x => 20 + x))])));
+    expect(gridEnd(one)).toBeGreaterThan(gridEnd(own));
+  });
+
+  it('keeps one scale over the series that can be drawn', () => {
+    const r = widget([{}, {}], [entry(series(24 * HOUR, x => 20 + x * 2)), { deviceId: 'h', capabilityId: 'measure_power', missing: true }],
+      { overlay: true, sharedScale: true });
+    expect(r.all('.series-line').length).toBe(1);
+    expect([...r.yLabels()].map(t => t.textContent)).toContain('22');
+  });
+
+  it('ignores sharedScale on stacked charts', () => {
+    const r = widget([{}, {}], [entry(series(24 * HOUR, x => 20 + x)), power(24 * HOUR, x => 500 + x * 1000)], { sharedScale: true });
+    expect(r.all('.ch-chart').filter(r.shown).length).toBe(2);
+    expect([...r.yLabels(1)].map(t => t.textContent)).toContain('1,5k');
+  });
+
   it('uses chart 1\'s time span for both', () => {
     const r = two({ span: '7d', style: 'bars' });
     expect(r.all('rect.bar').length).toBe(25); // hourly bars over 24 h, not 6-hourly over 7 days

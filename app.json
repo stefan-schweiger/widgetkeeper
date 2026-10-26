@@ -5100,6 +5100,41 @@
           ]
         },
         {
+          "id": "sharedScale",
+          "type": "checkbox",
+          "title": {
+            "en": "One scale for both",
+            "nl": "Eén schaal voor beide",
+            "de": "Eine Skala für beide",
+            "fr": "Une échelle pour les deux",
+            "it": "Una scala per entrambi",
+            "sv": "En skala för båda",
+            "no": "Én skala for begge",
+            "es": "Una escala para ambos",
+            "da": "Én skala til begge",
+            "ru": "Одна шкала для обоих",
+            "pl": "Jedna skala dla obu",
+            "ko": "두 값에 같은 눈금",
+            "ar": "مقياس واحد للقيمتين"
+          },
+          "hint": {
+            "en": "On one chart, both values use the left scale, so they compare directly.",
+            "nl": "In één grafiek gebruiken beide waarden de linkerschaal, zodat ze direct te vergelijken zijn.",
+            "de": "In einem Diagramm nutzen beide Werte die linke Skala und sind direkt vergleichbar.",
+            "fr": "Dans un graphique, les deux valeurs utilisent l’échelle de gauche et se comparent directement.",
+            "it": "In un grafico, entrambi i valori usano la scala di sinistra e si confrontano direttamente.",
+            "sv": "I ett diagram använder båda värdena den vänstra skalan och kan jämföras direkt.",
+            "no": "I ett diagram bruker begge verdiene skalaen til venstre og kan sammenlignes direkte.",
+            "es": "En un gráfico, ambos valores usan la escala de la izquierda y se comparan directamente.",
+            "da": "I én graf bruger begge værdier skalaen til venstre og kan sammenlignes direkte.",
+            "ru": "На одном графике оба значения используют левую шкалу, и их можно сравнить напрямую.",
+            "pl": "Na jednym wykresie obie wartości używają lewej skali i można je porównać wprost.",
+            "ko": "차트 1개에서 두 값 모두 왼쪽 눈금을 사용해 바로 비교할 수 있습니다.",
+            "ar": "في مخطط واحد، تستخدم القيمتان المقياس الأيسر فتُقارنان مباشرة."
+          },
+          "value": false
+        },
+        {
           "id": "showHeader",
           "type": "checkbox",
           "title": {

@@ -41,6 +41,7 @@ All notable changes to Widgetkeeper. The version numbers match the Homey app ver
 
 ### Charts and Sparklines
 - **Today and Yesterday** as time spans: a calendar day in the phone's own time. Today shows the whole day, 00–24, with the line up to now; Yesterday ends at midnight, and Charts' header shows the day's average.
+- **One scale for both** (Charts): two values on one chart can share the scale on the left, so they compare directly, such as the temperature inside and out.
 
 ### Days Since
 - **Show:** only the counters that are amber and red, or only red, so counters due every month or so don't take room until they're due. A counter not started yet, or one just tapped, still shows; with none due it says *Nothing due.*

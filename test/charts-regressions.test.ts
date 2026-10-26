@@ -110,6 +110,25 @@ describe('mount: spans', () => {
   });
 });
 
+describe('mount: one scale for both', () => {
+  it('draws the right scale only without the setting', async () => {
+    const slot = (id: string) => ({ id, name: id });
+    for (const sharedScale of [undefined, false, true]) {
+      document.body.innerHTML = '';
+      const charts = [entry(minutes()), { ...entry(minutes().map(([t, v]) => [t, v * 3] as [number, number])), deviceId: 'd2' }];
+      const Homey = {
+        getSettings: () => ({ charts: 'overlay', chart1: slot('d1:measure_temperature'), chart2: slot('d2:measure_temperature'), sharedScale }),
+        api: vi.fn(async () => ({ charts, language: 'en' })), on: () => {}, ready: () => {}, setHeight: () => {}, __: (k: string) => k,
+      };
+      const root = document.createElement('div');
+      document.body.append(root);
+      win.mountChartsWidget(Homey, { root, frame: root });
+      await vi.waitFor(() => expect(root.querySelector('.ch-chart svg text')).not.toBeNull());
+      expect(root.querySelectorAll('svg text[text-anchor="start"][dominant-baseline="central"]').length > 0).toBe(sharedScale !== true);
+    }
+  });
+});
+
 describe('chartBuckets: on the local clock across a DST change', () => {
   it('keeps 6-hour bars at 00, 06, 12 and 18 after the change', () => {
     const from = new Date('2026-10-21T18:40:00').getTime(); // summer time

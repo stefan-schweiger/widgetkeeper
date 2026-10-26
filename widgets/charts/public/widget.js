@@ -75,7 +75,7 @@
    * @param {HTMLElement} root
    * @param {{ colorStyle?: string, t?: (key: string, tokens?: object) => string, locale?: string, language?: string, now?: () => number,
    *   charts?: { span?: string, style?: string, color?: string, range?: string, negative?: boolean, smooth?: boolean, title?: string }[],
-   *   overlay?: boolean, showHeader?: boolean, onHeight?: (h: number) => void }} opts
+   *   overlay?: boolean, sharedScale?: boolean, showHeader?: boolean, onHeight?: (h: number) => void }} opts
    */
   function createChartsWidget(root, opts = {}) {
     const t = (key, tokens) => {
@@ -108,9 +108,10 @@
       smooth: c.smooth === true,
       title: typeof c.title === 'string' ? c.title.trim() : '',
     }));
-    // Two series on one chart share chart 1's time axis and kind of scale.
+    // Two series on one chart share chart 1's time axis and kind of scale; with `sharedScale`, the scale itself.
     const overlay = opts.overlay === true && charts.length === 2;
     if (overlay) Object.assign(charts[1], { span: charts[0].span, fit: charts[0].fit });
+    const sharedScale = overlay && opts.sharedScale === true;
     const showHeader = opts.showHeader !== false;
 
     const state = {
@@ -292,11 +293,14 @@
       if (drawn.dot) drawn.dot(svg);
     }
 
-    /** Two series on one chart (`overlay`): one plot, chart 1's scale on the left and chart 2's on the right. */
+    /**
+     * Two series on one chart (`overlay`): one plot, chart 1's scale on the left and chart 2's on the right, or
+     * with `sharedScale` one scale on the left over both, as wide as one chart's.
+     */
     function renderOverlay() {
       const u = ui[0];
       const w = state.width;
-      const pw = Math.max(40, w - L - R);
+      const pw = Math.max(40, w - L - (sharedScale ? 4 : R));
       const plotH = PLOT_H[1];
       const top = CHIP_H, base = top + plotH;
       const H = base + X_LABEL_GAP + X_LABEL_H;
@@ -320,9 +324,18 @@
       const svg = u.svg;
       kit.prepareSvg(svg, w, H);
       const x = ms => L + pw * (ms - win.from) / (win.to - win.from);
-      // A side with nothing to draw still gets a scale, so the other series keeps its place.
-      const side = d => (d.drawable ? { max: d.max, min: d.min, format: axisLabel } : { max: 1, min: 0, format: () => '' });
-      const scales = kit.dualScale(svg, { a: side(data[0]), b: side(data[1]), h: plotH, top, pw, fit: charts[0].fit });
+      let scales;
+      if (sharedScale) {
+        // One scale over what both draw (a series with nothing to draw leaves it to the other).
+        const drawable = data.filter(d => d.drawable);
+        const scale = kit.valueScale(svg, { max: Math.max(...drawable.map(d => d.max)), min: Math.min(...drawable.map(d => d.min)),
+          h: plotH, top, pw, format: axisLabel, fit: charts[0].fit });
+        scales = { a: scale, b: scale };
+      } else {
+        // A side with nothing to draw still gets a scale, so the other series keeps its place.
+        const side = d => (d.drawable ? { max: d.max, min: d.min, format: axisLabel } : { max: 1, min: 0, format: () => '' });
+        scales = kit.dualScale(svg, { a: side(data[0]), b: side(data[1]), h: plotH, top, pw, fit: charts[0].fit });
+      }
       xLabels(svg, win, pw, top, base);
       kit.axis(svg, top, base, pw);
 

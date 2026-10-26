@@ -435,7 +435,7 @@ const BUILD = {
   async charts() {
     const items = await autocomplete('charts', 'chart1');
     const cap = c => i => i.id.endsWith(`:${c}`);
-    const temp = pick(items, cap('measure_temperature'))[0];
+    const [temp, temp2] = pick(items, cap('measure_temperature'), 2);
     const power = pick(items, cap('measure_power'))[0];
     const other = pick(items, i => i !== temp && i !== power, 3);
     const missing = { id: `${MISSING}:measure_temperature`, name: 'Deleted device · Temperature' };
@@ -446,6 +446,7 @@ const BUILD = {
       w('charts', 'Two · area + bars', { charts: '2', chart1: temp, chart2: power, style2: 'bars' }),
       w('charts', 'Two · line, smooth 6 h + bars 7 d', { charts: '2', chart1: power, span1: '6h', style1: 'line', smooth1: true, chart2: power, span2: '7d', style2: 'bars', color2: 'orange' }),
       w('charts', 'On one chart · area + line', { charts: 'overlay', chart1: temp, color1: 'purple', chart2: power, style2: 'line', smooth2: true, color2: 'orange' }),
+      w('charts', 'On one chart · one scale for both', { charts: 'overlay', sharedScale: true, chart1: temp, chart2: temp2 || power, style2: 'line', color2: 'orange' }),
       w('charts', 'On one chart · bars + bars, from zero', { charts: 'overlay', chart1: power, span1: '6h', style1: 'bars', range1: 'zero', chart2: other[0] || temp, style2: 'bars' }),
       w('charts', 'Start at zero · below zero yellow', { chart1: temp, range1: 'zero', negative1: true, color1: 'purple' }),
       w('charts', 'Two · today area + yesterday bars', { charts: '2', chart1: temp, span1: 'today', chart2: power, span2: 'yesterday', style2: 'bars', color2: 'green' }),

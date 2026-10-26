@@ -23,6 +23,7 @@
   <div class="col"><span>358 px · light · two charts · area + bars</span><div class="card light" style="width:358px"><div id="w2"></div></div></div>
   <div class="col"><span>300 px · dark · two charts · line (smooth) + bars 7 d</span><div class="card homey-dark-mode" style="width:300px"><div id="w3"></div></div></div>
   <div class="col"><span>358 px · dark · on one chart · area + smooth line</span><div class="card homey-dark-mode" style="width:358px"><div id="o1"></div></div></div>
+  <div class="col"><span>358 px · dark · on one chart · one scale for both · area + line</span><div class="card homey-dark-mode" style="width:358px"><div id="o3"></div></div></div>
   <div class="col"><span>300 px · light · on one chart · bars + bars, from zero</span><div class="card light" style="width:300px"><div id="o2"></div></div></div>
   <div class="col"><span>400 px · dark · outdoor below zero · yellow on (fit) / off (zero)</span><div class="card homey-dark-mode" style="width:400px"><div id="w4"></div></div></div>
   <div class="col"><span>358 px · light · below zero in yellow · bars + line</span><div class="card light" style="width:358px"><div id="w5"></div></div></div>
@@ -59,6 +60,7 @@
       .setState([hum(48 * HOUR), power(168 * HOUR)]);
     make('o1', { overlay: true, charts: [{ span: '24h', color: 'purple' }, { style: 'line', smooth: true, color: 'orange' }] }).setState([outdoor(24 * HOUR), power(24 * HOUR)]);
     make('o2', { overlay: true, charts: [{ span: '6h', style: 'bars', range: 'zero' }, { style: 'bars', color: 'green' }] }).setState([power(6 * HOUR), solar(6 * HOUR)]);
+    make('o3', { overlay: true, sharedScale: true, charts: [{ span: '24h', color: 'purple' }, { style: 'line', color: 'orange' }] }).setState([temp(24 * HOUR), outdoor(24 * HOUR)]);
     make('w4', { charts: [{ span: '24h', negative: true }, { span: '24h', range: 'zero', color: 'red' }] }).setState([outdoor(24 * HOUR), outdoor(24 * HOUR)]);
     make('w5', { charts: [{ span: '24h', style: 'bars', negative: true }, { span: '6h', style: 'line', negative: true, color: 'yellow' }] })
       .setState([outdoor(24 * HOUR), solar(6 * HOUR)]);
