@@ -242,7 +242,7 @@
           ],
         } });
       }],
-      ['Activity Dots', 'the driveway active', (el, o) => MOUNT.sensordots(el, { ...findWidget('sensordots', 1),
+      ['Activity Dots', 'the side path active', (el, o) => MOUNT.sensordots(el, { ...findWidget('sensordots', 1),
         open: null, opts: { ...findWidget('sensordots', 1).opts, ...o } })],
       ['Weather Forecast', 'Vivid is a theme', (el, o) => MOUNT.weather(el, { hours: findWidget('weather').hours,
         opts: { theme: o.colorStyle === 'deep' ? 'card' : 'default', density: o.color ? 'detailed' : 'compact' } }), 'wf-frame', true],
